@@ -3,6 +3,7 @@
 
 import pandas as pd
 import numpy as np
+
 from pandas.core import frame
 import pandas_flavor as pf
 
@@ -82,7 +83,6 @@ def aggregate_by_time(
         data = data.set_index(date_column)
 
 
-    
     # Handle Groups
     if groups is not None:
         if type(groups) is not list:
@@ -95,6 +95,7 @@ def aggregate_by_time(
     ret = data \
         .resample(rule=by, kind=kind, **kwargs) \
         .agg(agg_dict)
+
 
     # Handle Wide Format
     if (wide_format):
