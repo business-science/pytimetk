@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "timetk"
+version = "0.0.0.9000"
+description = "The time series toolkit for Python."
+authors = ["Matt Dancho <mdancho@business-science.io>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pandas = "^2.1.0"
+pandas-flavor = "^0.6.0"
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.25.2"
+pytest = "^7.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
