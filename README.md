@@ -49,7 +49,7 @@ This is a simple code to test the function `summarize_by_time`:
 import timetk
 import pandas as pd
 
-df = timetk.data.load_dataset('bikes_sales_sample')
+df = timetk.data.load_dataset('bike_sales_sample')
 df['order_date'] = pd.to_datetime(df['order_date'])
 
 df \
