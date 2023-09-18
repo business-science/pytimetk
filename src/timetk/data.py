@@ -34,11 +34,18 @@ def load_dataset(name = "m4_daily", verbose=False, **kwargs):
     """
     
     # Return the list of available datasets
+    file_names   = list(contents("timetk.datasets"))
+    dataset_list = [name.rstrip('.csv') for name in file_names]
+    dataset_list = [x for x in dataset_list if x not in ['__init__.py', '__pycache__']]
+    dataset_list = sorted(dataset_list)
+
+    
     if verbose:
-        file_names = list(contents("timetk.datasets"))
-        dataset_list = [name.rstrip('.csv') for name in file_names]
         print("Available Datasets:")
         print(dataset_list)
+        
+    if name not in dataset_list:
+        raise ValueError(f"Dataset {name} not found. Please choose from the following: \n{dataset_list}")
     
     # Load the dataset
     with open_text("timetk.datasets", f"{name}.csv") as f:
