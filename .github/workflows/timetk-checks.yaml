@@ -33,7 +33,7 @@ jobs:
       - name: Set up Python Version
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.config.python-version }}}
+          python-version: ${{ matrix.config.python-version }}
 
       - name: Check-out repository
         uses: actions/checkout@v2
