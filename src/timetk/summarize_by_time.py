@@ -1,5 +1,6 @@
 import pandas as pd
 import pandas_flavor as pf
+from timetk.utils.pandas_helpers import flatten_multiindex_column_names
 
 @pf.register_dataframe_method
 def summarize_by_time(
@@ -12,6 +13,8 @@ def summarize_by_time(
     kind: str = "timestamp",
     wide_format: bool = False,
     fillna: int = 0,
+    flatten_column_names: bool = True,
+    reset_index: bool = True,
     *args,
     **kwargs
 ) -> pd.DataFrame:
@@ -46,6 +49,11 @@ def summarize_by_time(
         fillna (int, optional): 
             Value to fill missing data. Defaults to 0.
             If missing values are desired, use np.nan.
+        flatten_column_names (bool, optional):
+            Whether or not to flatten the multiindex column
+            names. Defaults to True.
+        reset_index (bool, optional):
+            Whether or not to reset the index. Defaults to True.
         *args, **kwargs:
             Arguments passed to pd.DataFrame.agg()
 
@@ -127,6 +135,14 @@ def summarize_by_time(
     
     # Fill missing values with the specified fillna value
     data = data.fillna(fillna)
+    
+    # Flatten the multiindex column names if flatten_column_names is True
+    if flatten_column_names:
+        data = flatten_multiindex_column_names(data)
+    
+    # Reset the index of data   
+    if reset_index: 
+        data.reset_index(inplace=True)
     
     return data
 

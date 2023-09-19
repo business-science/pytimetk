@@ -24,7 +24,9 @@ def test_summarize_by_time_dataframe_functions(sumarize_by_time_data_test):
     result = data.summarize_by_time(
         'date', 'value',
         agg_func = 'sum',
-        rule = 'M'
+        rule = 'M',
+        flatten_column_names = False,
+        reset_index = False,
     )
     
     expected = pd.DataFrame({
@@ -40,7 +42,9 @@ def test_summarize_by_time_dataframe_functions(sumarize_by_time_data_test):
     result = data.summarize_by_time(
         'date', 'value',
         agg_func = ['sum', 'mean'],
-        rule = 'M'
+        rule = 'M',
+        flatten_column_names = False,
+        reset_index = False,
     )
     
     expected = pd.DataFrame({
@@ -65,7 +69,9 @@ def test_summarize_by_time_grouped_functions(sumarize_by_time_data_test):
     result = data.groupby('groups').summarize_by_time(
         'date', 'value', 
         rule = 'MS', 
-        wide_format = True
+        wide_format = True,
+        flatten_column_names = False,
+        reset_index = False,
     )
     
     cols = pd.MultiIndex(
