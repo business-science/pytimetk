@@ -44,7 +44,7 @@ def summarize_by_time(
             Whether or not to return "wide" of "long format.
             Defaults to False.
         fillna (int, optional): 
-            Value to fill is missing data. Defaults to 0.
+            Value to fill missing data. Defaults to 0.
             If missing values are desired, use np.nan.
         *args, **kwargs:
             Arguments passed to pd.DataFrame.agg()
@@ -54,27 +54,35 @@ def summarize_by_time(
             by time.
             
     Examples:
-    >>> import timetk
-    >>> import pandas as pd
-    >>> 
-    >>> df = timetk.data.load_dataset('bike_sales_sample')
-    >>> df['order_date'] = pd.to_datetime(df['order_date'])
-    >>> 
-    >>> # Summarize by time with a DataFrame object
-    >>> df \
-    >>>     .summarize_by_time(
-    >>>         date_column ='order_date', 
-    >>>         value_column = 'total_price',
-    >>>         groups = "category_2",
-    >>>         rule = "MS",
-    >>>         kind = 'timestamp',
-    >>>         agg_func = ['mean', 'sum']
-    >>>     )
-    >>>
-    >>> # Summarize by time with a GroupBy object
-    >>> df \
-    >>>     .groupby('groups') \
-    >>>     .summarize_by_time('date', 'value', rule = 'MS')
+    import timetk
+    import pandas as pd
+    
+    df = timetk.data.load_dataset('bike_sales_sample')
+    df['order_date'] = pd.to_datetime(df['order_date'])
+    
+    # Summarize by time with a DataFrame object
+    ( 
+        df 
+            .summarize_by_time(
+                date_column ='order_date', 
+                value_column = 'total_price',
+                groups = "category_2",
+                rule = "MS",
+                kind = 'timestamp',
+                agg_func = ['mean', 'sum']
+            )
+    )
+    
+    # Summarize by time with a GroupBy object
+    (
+        df 
+            .groupby('category_1') 
+            .summarize_by_time(
+                'order_date', 'total_price', 
+                rule = 'MS',
+                wide_format = True,
+            )
+    )
     """
     
     # Check if data is a Pandas DataFrame
