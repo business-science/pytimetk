@@ -14,16 +14,18 @@ def floor_date(
     unit: str = "D",
 ):
     """
-    Takes a date-time object and time unit, and rounds it to the first value of the specified time unit.
-
-    Args:
-        x ([pandas.Series]): A pandas series containing pandas timestamps. 
-        unit (str, optional): A pandas offset frequency. Defaults to "D".
-
-    Returns:
-        [pandas.Series]: [description]
+    The `floor_date` function takes a pandas Series of dates and returns a new Series with the dates
+    rounded down to the specified unit.
+    
+    :param data: A pandas Series containing datetime values
+    :type data: pd.Series
+    :param unit: The `unit` parameter in the `floor_date` function is a string that specifies the time
+    unit to which the dates in the `data` series should be rounded down. It has a default value of "D",
+    which stands for day. Other possible values for the `unit` parameter could be, defaults to D
+    :type unit: str (optional)
+    :return: The function `floor_date` returns a pandas Series object.
     """
-
+    
     # Check pandas series
     
     period = data.dt.to_period(unit)
