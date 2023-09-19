@@ -4,5 +4,7 @@
     ],
     "files.exclude": {
         "**/.git": false
-   }
+},
+"docwriter.style": "NumPy",
+"docwriter.progress.trackFunctions": true
 }

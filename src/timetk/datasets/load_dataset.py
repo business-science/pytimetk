@@ -19,7 +19,7 @@ def load_dataset(name = "m4_daily", verbose=False, **kwargs):
     - `wikipedia_traffic_daily`: The Wikipedia traffic daily dataset
 
     Args:
-        name (str, optional): Name of the dataset. Defaults to "m4_daily".
+        name (str, optional): Name of the dataset. Defaults to "m4_daily". See timetk.get_available_datasets() for a list of available datasets.
         verbose (bool, optional): Prints the names of the available datasets. Defaults to False.
         **kwargs: Additional arguments passed to `pandas.read_csv`
         
@@ -28,17 +28,16 @@ def load_dataset(name = "m4_daily", verbose=False, **kwargs):
         pandas.DataFrame: The requested dataset as a pandas DataFrame
         
     Example:
-    >>> import timetk
-    >>> timetk.load_dataset("m4_daily", verbose=True)
+    import timetk
+    
+    timetk.get_available_datasets()
+    
+    timetk.load_dataset("m4_daily", verbose=True)
     
     """
     
     # Return the list of available datasets
-    file_names   = list(contents("timetk.datasets"))
-    dataset_list = [name.rstrip('.csv') for name in file_names]
-    dataset_list = [x for x in dataset_list if x not in ['__init__.py', '__pycache__']]
-    dataset_list = sorted(dataset_list)
-
+    dataset_list = get_available_datasets()
     
     if verbose:
         print("Available Datasets:")
@@ -53,3 +52,16 @@ def load_dataset(name = "m4_daily", verbose=False, **kwargs):
         
     return df
 
+def get_available_datasets():
+    """
+    The function `get_available_datasets` returns a sorted list of available dataset names from the
+    `timetk.datasets` module.
+    :return: a list of available datasets.
+    """
+    
+    file_names   = list(contents("timetk.datasets"))
+    dataset_list = [item for item in file_names if item.endswith(".csv")]
+    dataset_list = [name.rstrip('.csv') for name in dataset_list]
+    dataset_list = sorted(dataset_list)
+    
+    return dataset_list
