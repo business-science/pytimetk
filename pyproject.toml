@@ -9,6 +9,9 @@ readme = "README.md"
 python = "^3.9"
 pandas = "^2.1.0"
 pandas-flavor = "^0.6.0"
+matplotlib = "^3.8.0"
+plotnine = "^0.12.3"
+plotly = "^5.17.0"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.25.2"
