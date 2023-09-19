@@ -1,0 +1,45 @@
+# Reference: https://github.com/rstudio/pins-python/tree/main/docs
+# Key Commands:
+#   - quartodoc build
+#   - quarto preview
+
+project:
+  type: website
+  output-dir: _site
+
+# tell quarto to read the generated sidebar
+metadata-files:
+  - _sidebar.yml
+
+website:
+  title: "timetk for Python"
+  description: "Your toolkit for time series in Python."
+  page-navigation: true
+  favicon: "favicon.ico"
+  navbar:
+    background: primary
+    pinned: true
+    search: true
+    logo: "logo-timetk.png"
+    left:
+      - text: Home
+        file: index.qmd
+      - text: Docs
+        file: reference/index.qmd
+
+format:
+  html:
+    theme: 
+      dark: [lux, theme-dark.scss]
+      light: lux
+    highlight-style: github
+
+
+quartodoc:
+  package: timetk
+  sidebar: _sidebar.yml
+  sections:
+    - title: Pandas Time Series Extensions
+      desc: Functions that manipulate time series DataFrames.
+      contents:
+        - summarize_by_time

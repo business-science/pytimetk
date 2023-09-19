@@ -1,0 +1,9 @@
+# Function reference
+
+## Pandas Time Series Extensions
+
+Functions that manipulate time series DataFrames.
+
+| | |
+| --- | --- |
+| [summarize_by_time](summarize_by_time.qmd#timetk.summarize_by_time) |  |

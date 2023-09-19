@@ -1,0 +1,9 @@
+website:
+  sidebar:
+  - contents:
+    - reference/index.qmd
+    - contents:
+      - reference/summarize_by_time.qmd
+      section: Pandas Time Series Extensions
+    id: reference
+  - id: dummy-sidebar

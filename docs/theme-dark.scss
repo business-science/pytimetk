@@ -1,0 +1,15 @@
+/*-- scss:defaults --*/
+// Base document colors
+$body-bg: #181818;
+$body-color: white;
+$link-color: #75AADB;
+$navbar-bg: #13dab2;
+
+
+// Code blocks
+$code-block-bg-alpha: -.8;
+
+// Headers
+h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
+    color: $body-color !important;
+}
