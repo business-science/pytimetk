@@ -15,7 +15,7 @@ def sumarize_by_time_data_test():
     
     return data
 
-def test_summarize_by_time_agg_functions(sumarize_by_time_data_test):
+def test_summarize_by_time_dataframe_functions(sumarize_by_time_data_test):
     """ Test if the aggreagation functions is working"""
     
     data = sumarize_by_time_data_test
@@ -51,6 +51,36 @@ def test_summarize_by_time_agg_functions(sumarize_by_time_data_test):
         .set_index('date')
     multilevel_column = [('value', 'sum'), ('value', 'mean')]
     expected.columns = pd.MultiIndex.from_tuples(multilevel_column)    
+    
+    assert result.equals(expected), \
+        'Aggregate with two functions as a list is not working!'
+        
+
+def test_summarize_by_time_grouped_functions(sumarize_by_time_data_test):
+    """ Test if the aggreagation functions is working"""
+    
+    data = sumarize_by_time_data_test
+    
+    # Test groupby objects
+    result = data.groupby('groups').summarize_by_time(
+        'date', 'value', 
+        rule = 'MS', 
+        wide_format = True
+    )
+    
+    cols = pd.MultiIndex(
+        levels = [['value'], ['Group_1', 'Group_2']], 
+        codes  = list([[0, 0], [0, 1]]),
+        names  = [None, 'groups']
+    )
+    
+    idx = pd.DatetimeIndex(['2020-01-01', '2020-02-01'], dtype='datetime64[ns]', name='date', freq='MS')
+
+    expected = pd.DataFrame(
+        [[256, 240],[644,690]],
+        index = idx,
+        columns = cols
+    )
     
     assert result.equals(expected), \
         'Aggregate with two functions as a list is not working!'

@@ -1,17 +1,16 @@
 import pandas as pd
-import numpy as np
 import pandas_flavor as pf
 
 @pf.register_dataframe_method
 def summarize_by_time(
-    data: pd.DataFrame,
+    data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
     date_column: str,
     value_column: str or list,
     groups: str or list or None = None,
     rule: str = "D",
-    agg_func: list = np.sum,
+    agg_func: list = 'sum',
     kind: str = "timestamp",
-    wide_format: bool = True,
+    wide_format: bool = False,
     fillna: int = 0,
     *args,
     **kwargs
@@ -43,7 +42,7 @@ def summarize_by_time(
             One of "timestamp" or "period". Defaults to "timestamp".
         wide_format (bool, optional): 
             Whether or not to return "wide" of "long format.
-            Defaults to True.
+            Defaults to False.
         fillna (int, optional): 
             Value to fill is missing data. Defaults to 0.
             If missing values are desired, use np.nan.
@@ -53,17 +52,48 @@ def summarize_by_time(
     Returns:
         pd.DataFrame: A data frame that is summarized
             by time.
+            
+    Examples:
+    >>> import timetk
+    >>> import pandas as pd
+    >>> 
+    >>> df = timetk.data.load_dataset('bike_sales_sample')
+    >>> df['order_date'] = pd.to_datetime(df['order_date'])
+    >>> 
+    >>> # Summarize by time with a DataFrame object
+    >>> df \
+    >>>     .summarize_by_time(
+    >>>         date_column ='order_date', 
+    >>>         value_column = 'total_price',
+    >>>         groups = "category_2",
+    >>>         rule = "MS",
+    >>>         kind = 'timestamp',
+    >>>         agg_func = ['mean', 'sum']
+    >>>     )
+    >>>
+    >>> # Summarize by time with a GroupBy object
+    >>> df \
+    >>>     .groupby('groups') \
+    >>>     .summarize_by_time('date', 'value', rule = 'MS')
     """
+    
     # Check if data is a Pandas DataFrame
     if not isinstance(data, pd.DataFrame):
-        raise TypeError("`data` is not a Pandas DataFrame.")
+        if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+            raise TypeError("`data` is not a Pandas DataFrame.")
     
     # Convert value_column to a list if it is not already
     if not isinstance(value_column, list):
         value_column = [value_column]
     
     # Set the index of data to the date_column
-    data = data.set_index(date_column)
+    if isinstance(data, pd.DataFrame):
+        data = data.set_index(date_column)
+    
+    group_names = None
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        group_names = data.grouper.names
+        data = data.obj.set_index(date_column).groupby(group_names)
     
     # Group data by the groups columns if groups is not None
     if groups is not None:
@@ -79,8 +109,11 @@ def summarize_by_time(
     data = data.agg(agg_dict, *args, **kwargs)
     
     # Unstack the grouped columns if wide_format is True and groups is not None
-    if wide_format and groups is not None:
-        data = data.unstack(groups)
+    if wide_format:
+        if groups is not None:
+            data = data.unstack(groups)
+        elif group_names is not None:
+            data = data.unstack(group_names) 
         if kind == 'period':
             data.index = data.index.to_period()
     
@@ -88,3 +121,6 @@ def summarize_by_time(
     data = data.fillna(fillna)
     
     return data
+
+# Monkey patch the summarize_by_time method to pandas groupby objects
+pd.core.groupby.generic.DataFrameGroupBy.summarize_by_time = summarize_by_time
