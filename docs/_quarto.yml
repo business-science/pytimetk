@@ -32,8 +32,8 @@ website:
 format:
   html:
     theme: 
-      dark: [lux, theme-dark.scss]
-      light: lux
+      light: [lux, theme-light.scss, theme.scss]
+      dark: [lux, theme-dark.scss, theme.scss]
     highlight-style: github
 
 

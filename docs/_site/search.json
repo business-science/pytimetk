@@ -53,7 +53,7 @@
     "href": "index.html",
     "title": "timetk for Python ",
     "section": "",
-    "text": "The time series toolkit for Python\nThis library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0."
+    "text": "The Time Series Toolkit for Python\nThis library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0."
   },
   {
     "objectID": "index.html#usage",
