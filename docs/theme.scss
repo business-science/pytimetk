@@ -1,5 +1,46 @@
 /*-- scss:defaults --*/
 
+
+/* sidebar formatting */
+
+.sidebar a.nav-link {
+    font-size: 14.4px;
+    font-weight: 400;
+  }
+  
+  
+  .sidebar-item-container .text-start {
+    font-weight: 600;
+    font-size: 14.4px !important;
+  }
+  
+  .sidebar-item-text {
+    /*color: rgba(60, 60, 60, 0.7);*/
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 22px;
+  }
+  
+  .sidebar-item {
+    margin-top: 0px;
+  }
+  
+  .sidebar-item-section {
+    padding-top: 16px;
+  }
+  
+  .sidebar-section {
+    padding-left: 0px !important;
+  }
+  
+  .sidebar-item-section .sidebar-item-section {
+    padding-top: 0px;
+    padding-left: 10px;
+  }
+
+
+/* navbar formatting */
+
 @media (max-device-width: 600px) {
     .navbar {
         padding-top: 1rem !important;
@@ -9,3 +50,5 @@
         font-size: 0.8rem !important;
     }
 }
+
+

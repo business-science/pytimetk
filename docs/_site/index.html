@@ -95,6 +95,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=330861489"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '330861489', { 'anonymize_ip': true});
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
@@ -116,9 +125,21 @@ require(['plotly'], function(Plotly) {
 
 
 
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:image" content="https://business-science.github.io/pytimetk/logo-timetk.png">
+<meta property="og:site-name" content="timetk for Python">
+<meta property="og:image:height" content="832">
+<meta property="og:image:width" content="722">
+<meta name="twitter:title" content="">
+<meta name="twitter:description" content="">
+<meta name="twitter:image" content="https://business-science.github.io/pytimetk/logo-timetk.png">
+<meta name="twitter:image-height" content="832">
+<meta name="twitter:image-width" content="722">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -139,8 +160,8 @@ require(['plotly'], function(Plotly) {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" rel="" target="" aria-current="page">
- <span class="menu-text">Home</span></a>
+    <a class="nav-link" href="./guides/index.html" rel="" target="">
+ <span class="menu-text">Tutorials</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./reference/index.html" rel="" target="">
@@ -148,6 +169,7 @@ require(['plotly'], function(Plotly) {
   </li>  
 </ul>
             <div class="quarto-navbar-tools ms-auto">
+    <a href="https://github.com/business-science/pytimetk" rel="" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
           </div> <!-- /navcollapse -->
@@ -158,7 +180,26 @@ require(['plotly'], function(Plotly) {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#usage" id="toc-usage" class="nav-link active" data-scroll-target="#usage">Usage</a>
+  <ul class="collapse">
+  <li><a href="#import-libraries-data" id="toc-import-libraries-data" class="nav-link" data-scroll-target="#import-libraries-data">Import Libraries &amp; Data</a></li>
+  <li><a href="#summarize-by-time-for-a-monthly-aggregation" id="toc-summarize-by-time-for-a-monthly-aggregation" class="nav-link" data-scroll-target="#summarize-by-time-for-a-monthly-aggregation">Summarize By Time (For a Monthly Aggregation)</a></li>
+  </ul></li>
+  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a>
+  <ul class="collapse">
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites">1. Prerequisites</a></li>
+  <li><a href="#install-poetry" id="toc-install-poetry" class="nav-link" data-scroll-target="#install-poetry">2. Install Poetry</a></li>
+  <li><a href="#clone-the-repository" id="toc-clone-the-repository" class="nav-link" data-scroll-target="#clone-the-repository">3. Clone the Repository</a></li>
+  <li><a href="#install-dependencies" id="toc-install-dependencies" class="nav-link" data-scroll-target="#install-dependencies">4. Install Dependencies</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/index.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
