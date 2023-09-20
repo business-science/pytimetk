@@ -1,2 +1,6 @@
 pandas
 numpy
+plotnine
+matplotlib
+plotly
+pandas-flavor

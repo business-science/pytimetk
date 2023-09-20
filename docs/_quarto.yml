@@ -2,6 +2,7 @@
 # Key Commands:
 #   - quartodoc build
 #   - quarto preview
+#   - quarto publish gh-pages
 
 project:
   type: website
