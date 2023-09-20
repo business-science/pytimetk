@@ -1,1 +1,1 @@
-Sitemap: https://github.com/business-science/pytimetk/sitemap.xml
+Sitemap: https://business-science.github.io/pytimetk/sitemap.xml
