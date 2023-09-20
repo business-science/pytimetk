@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>timetk for Python – summarize_by_time</title>
+<title>timetk for Python – load_dataset</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -63,8 +63,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../reference/load_dataset.html" rel="next">
-<link href="../reference/index.html" rel="prev">
+<link href="../reference/get_available_datasets.html" rel="next">
+<link href="../reference/summarize_by_time.html" rel="prev">
 <link href="../favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -144,7 +144,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reference/summarize_by_time.html">🐼 Pandas Extensions</a></li><li class="breadcrumb-item"><a href="../reference/summarize_by_time.html">summarize_by_time</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reference/load_dataset.html">💾 Datasets</a></li><li class="breadcrumb-item"><a href="../reference/load_dataset.html">load_dataset</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -173,7 +173,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/summarize_by_time.html" class="sidebar-item-text sidebar-link active">
+  <a href="../reference/summarize_by_time.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">summarize_by_time</span></a>
   </div>
 </li>
@@ -190,7 +190,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/load_dataset.html" class="sidebar-item-text sidebar-link">
+  <a href="../reference/load_dataset.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">load_dataset</span></a>
   </div>
 </li>
@@ -213,7 +213,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">summarize_by_time</h1>
+<h1 class="title">load_dataset</h1>
 </div>
 
 
@@ -228,16 +228,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p><code>summarize_by_time.summarize_by_time(data, date_column, value_column, groups=None, rule='D', agg_func='sum', kind='timestamp', wide_format=False, fillna=0, flatten_column_names=True, reset_index=True, *args, **kwargs)</code></p>
-<p>The <code>summarize_by_time</code> function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the aggregation.</p>
+<p><code>datasets.get_datasets.load_dataset(name='m4_daily', verbose=False, **kwargs)</code></p>
+<p>The <code>load_dataset</code> function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to <code>pandas.read_csv</code>. The available datasets are:</p>
+<ul>
+<li><code>m4_hourly</code>: The M4 hourly dataset</li>
+<li><code>m4_daily</code>: The M4 daily dataset</li>
+<li><code>m4_weekly</code>: The M4 weekly dataset</li>
+<li><code>m4_monthly</code>: The M4 monthly dataset</li>
+<li><code>m4_quarterly</code>: The M4 quarterly dataset</li>
+<li><code>m4_yearly</code>: The M4 yearly dataset</li>
+<li><code>bike_sharing_daily</code>: The bike sharing daily dataset</li>
+<li><code>bike_sales_sample</code>: The bike sales sample dataset</li>
+<li><code>taylor_30_min</code>: The Taylor 30 minute dataset</li>
+<li><code>walmart_sales_weekly</code>: The Walmart sales weekly dataset</li>
+<li><code>wikipedia_traffic_daily</code>: The Wikipedia traffic daily dataset</li>
+</ul>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 5%">
-<col style="width: 12%">
-<col style="width: 79%">
 <col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 89%">
+<col style="width: 4%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -249,70 +262,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>data</code></td>
-<td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
-<td>A pandas DataFrame or a pandas GroupBy object. This is the data that you want to summarize by time.</td>
-<td><em>required</em></td>
-</tr>
-<tr class="even">
-<td><code>date_column</code></td>
+<td><code>name</code></td>
 <td>str</td>
-<td>The name of the column in the data frame that contains the dates or timestamps to be aggregated by. This column must be of type datetime64.</td>
-<td><em>required</em></td>
-</tr>
-<tr class="odd">
-<td><code>value_column</code></td>
-<td>str or list</td>
-<td>The <code>value_column</code> parameter is the name of one or more columns in the DataFrame that you want to aggregate by. It can be either a string representing a single column name, or a list of strings representing multiple column names.</td>
-<td><em>required</em></td>
+<td>The <code>name</code> parameter is used to specify the name of the dataset that you want to load. The default value is set to “m4_daily”, which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned in the function’s docstring.</td>
+<td><code>'m4_daily'</code></td>
 </tr>
 <tr class="even">
-<td><code>groups</code></td>
-<td>str or list or None</td>
-<td>The <code>groups</code> parameter is an optional parameter that allows you to specify one or more column names representing groups to aggregate by. If you want to aggregate the data by specific groups, you can pass the column names as a string or a list to the <code>groups</code> parameter. If you want to aggregate the data without grouping, you can set <code>groups</code> to None. The default value is None.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="odd">
-<td><code>rule</code></td>
-<td>str</td>
-<td>The <code>rule</code> parameter specifies the frequency at which the data should be aggregated. It accepts a string representing a pandas frequency offset, such as “D” for daily or “MS” for month start. The default value is “D”, which means the data will be aggregated on a daily basis.</td>
-<td><code>'D'</code></td>
-</tr>
-<tr class="even">
-<td><code>agg_func</code></td>
-<td>list</td>
-<td>The <code>agg_func</code> parameter is used to specify one or more aggregating functions to apply to the value column(s) during the summarization process. It can be a single function or a list of functions. The default value is <code>"sum"</code>, which represents the sum function.</td>
-<td><code>'sum'</code></td>
-</tr>
-<tr class="odd">
-<td><code>kind</code></td>
-<td>str</td>
-<td>The <code>kind</code> parameter specifies whether the time series data is represented as a “timestamp” or a “period”. If <code>kind</code> is set to “timestamp”, the data is treated as a continuous time series with specific timestamps. If <code>kind</code> is set to “period”, the data is treated as a discrete time series with specific periods. The default value is “timestamp”.</td>
-<td><code>'timestamp'</code></td>
-</tr>
-<tr class="even">
-<td><code>wide_format</code></td>
+<td><code>verbose</code></td>
 <td>bool</td>
-<td>A boolean parameter that determines whether the output should be in “wide” or “long” format. If set to <code>True</code>, the output will be in wide format, where each group is represented by a separate column. If set to False, the output will be in long format, where each group is represented by a separate row. The default value is <code>False</code>.</td>
+<td>The <code>verbose</code> parameter is a boolean flag that determines whether or not to print the names of the available datasets. If <code>verbose</code> is set to <code>True</code>, the function will print the names of the available datasets. If <code>verbose</code> is set to <code>False</code>, the function will not print anything.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
-<td><code>fillna</code></td>
-<td>int</td>
-<td>The <code>fillna</code> parameter is used to specify the value to fill missing data with. By default, it is set to 0. If you want to keep missing values as NaN, you can use <code>np.nan</code> as the value for <code>fillna</code>.</td>
-<td><code>0</code></td>
-</tr>
-<tr class="even">
-<td><code>flatten_column_names</code></td>
-<td>bool</td>
-<td>A boolean parameter that determines whether or not to flatten the multiindex column names. If set to <code>True</code>, the multiindex column names will be flattened. If set to <code>False</code>, the multiindex column names will be preserved. The default value is <code>True</code>.</td>
-<td><code>True</code></td>
-</tr>
-<tr class="odd">
-<td><code>reset_index</code></td>
-<td>bool</td>
-<td>A boolean parameter that determines whether or not to reset the index of the resulting DataFrame. If set to True, the index will be reset to the default integer index. If set to False, the index will not be reset. The default value is True.</td>
-<td><code>True</code></td>
+<td><code>**kwargs</code></td>
+<td></td>
+<td>The <code>**kwargs</code> parameter is used to pass additional arguments to <code>pandas.read_csv</code>.</td>
+<td><code>{}</code></td>
 </tr>
 </tbody>
 </table>
@@ -320,6 +285,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="returns" class="level2">
 <h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
+<colgroup>
+<col style="width: 84%">
+<col style="width: 15%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Type</th>
@@ -328,7 +297,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td>a Pandas DataFrame that is summarized by time.</td>
+<td>The <code>load_dataset</code> function returns the requested dataset as a pandas DataFrame.</td>
 <td></td>
 </tr>
 </tbody>
@@ -339,13 +308,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timetk</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> timetk <span class="im">import</span> load_dataset</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> load_dataset(<span class="st">'bike_sales_sample'</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'order_date'</span>] <span class="op">=</span> pd.to_datetime(df[<span class="st">'order_date'</span>])</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bike Sales Sample Dataset</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> load_dataset(<span class="st">'bike_sales_sample'</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'order_date'</span>] <span class="op">=</span> pd.to_datetime(df[<span class="st">'order_date'</span>])</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
@@ -552,129 +523,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize by time with a DataFrame object</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>( </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    df </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span><span class="st">'order_date'</span>, </span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'total_price'</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            groups <span class="op">=</span> <span class="st">"category_2"</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            rule <span class="op">=</span> <span class="st">"MS"</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            kind <span class="op">=</span> <span class="st">'timestamp'</span>,</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            agg_func <span class="op">=</span> [<span class="st">'mean'</span>, <span class="st">'sum'</span>]</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">category_2</th>
-<th data-quarto-table-cell-role="th">order_date</th>
-<th data-quarto-table-cell-role="th">total_price_mean</th>
-<th data-quarto-table-cell-role="th">total_price_sum</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>Cross Country Race</td>
-<td>2011-01-01</td>
-<td>7561.052632</td>
-<td>143660</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>Cross Country Race</td>
-<td>2011-02-01</td>
-<td>5406.666667</td>
-<td>324400</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>Cross Country Race</td>
-<td>2011-03-01</td>
-<td>7888.888889</td>
-<td>142000</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>Cross Country Race</td>
-<td>2011-04-01</td>
-<td>6475.064935</td>
-<td>498580</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>Cross Country Race</td>
-<td>2011-05-01</td>
-<td>6676.060606</td>
-<td>220310</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">102</td>
-<td>Triathalon</td>
-<td>2011-08-01</td>
-<td>5512.500000</td>
-<td>44100</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">103</td>
-<td>Triathalon</td>
-<td>2011-09-01</td>
-<td>3143.750000</td>
-<td>25150</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">104</td>
-<td>Triathalon</td>
-<td>2011-10-01</td>
-<td>5775.000000</td>
-<td>57750</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">105</td>
-<td>Triathalon</td>
-<td>2011-11-01</td>
-<td>4892.307692</td>
-<td>63600</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">106</td>
-<td>Triathalon</td>
-<td>2011-12-01</td>
-<td>4992.857143</td>
-<td>34950</td>
-</tr>
-</tbody>
-</table>
-
-<p>107 rows × 4 columns</p>
-</div>
-</div>
-</div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize by time with a GroupBy object</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>(</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'category_1'</span>) </span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">'order_date'</span>, <span class="st">'total_price'</span>, </span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            rule <span class="op">=</span> <span class="st">'MS'</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            wide_format <span class="op">=</span> <span class="va">True</span>,</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Taylor 30-Minute Dataset</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> load_dataset(<span class="st">'taylor_30_min'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'date'</span>] <span class="op">=</span> pd.to_datetime(df[<span class="st">'date'</span>])</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
@@ -683,87 +537,70 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">order_date</th>
-<th data-quarto-table-cell-role="th">total_price_Mountain</th>
-<th data-quarto-table-cell-role="th">total_price_Road</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>2011-01-01</td>
-<td>221490</td>
-<td>261525</td>
+<td>2000-06-05 00:00:00+00:00</td>
+<td>22262</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>2011-02-01</td>
-<td>660555</td>
-<td>501520</td>
+<td>2000-06-05 00:30:00+00:00</td>
+<td>21756</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>2011-03-01</td>
-<td>358855</td>
-<td>301120</td>
+<td>2000-06-05 01:00:00+00:00</td>
+<td>22247</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>2011-04-01</td>
-<td>1075975</td>
-<td>751165</td>
+<td>2000-06-05 01:30:00+00:00</td>
+<td>22759</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>2011-05-01</td>
-<td>450440</td>
-<td>393730</td>
+<td>2000-06-05 02:00:00+00:00</td>
+<td>22549</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">5</td>
-<td>2011-06-01</td>
-<td>723040</td>
-<td>690405</td>
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">6</td>
-<td>2011-07-01</td>
-<td>767740</td>
-<td>426690</td>
+<td data-quarto-table-cell-role="th">4027</td>
+<td>2000-08-27 21:30:00+00:00</td>
+<td>27946</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">7</td>
-<td>2011-08-01</td>
-<td>361255</td>
-<td>318535</td>
+<td data-quarto-table-cell-role="th">4028</td>
+<td>2000-08-27 22:00:00+00:00</td>
+<td>27133</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">8</td>
-<td>2011-09-01</td>
-<td>401125</td>
-<td>413595</td>
+<td data-quarto-table-cell-role="th">4029</td>
+<td>2000-08-27 22:30:00+00:00</td>
+<td>25996</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">9</td>
-<td>2011-10-01</td>
-<td>377335</td>
-<td>357585</td>
+<td data-quarto-table-cell-role="th">4030</td>
+<td>2000-08-27 23:00:00+00:00</td>
+<td>24610</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">10</td>
-<td>2011-11-01</td>
-<td>549345</td>
-<td>456740</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">11</td>
-<td>2011-12-01</td>
-<td>276055</td>
-<td>197065</td>
+<td data-quarto-table-cell-role="th">4031</td>
+<td>2000-08-27 23:30:00+00:00</td>
+<td>23132</td>
 </tr>
 </tbody>
 </table>
 
+<p>4032 rows × 2 columns</p>
 </div>
 </div>
 </div>
@@ -1122,13 +959,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../reference/index.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Function reference</span>
+      <a href="../reference/summarize_by_time.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">summarize_by_time</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../reference/load_dataset.html" class="pagination-link">
-        <span class="nav-page-text">load_dataset</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../reference/get_available_datasets.html" class="pagination-link">
+        <span class="nav-page-text">get_available_datasets</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

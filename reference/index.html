@@ -127,7 +127,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
- <span class="menu-text">Pandas Time Series Extensions</span></a>
+ <span class="menu-text">🐼 Pandas Extensions</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -137,6 +137,29 @@ ul.task-list li input[type="checkbox"] {
   <div class="sidebar-item-container"> 
   <a href="../reference/summarize_by_time.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">summarize_by_time</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">💾 Datasets</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reference/load_dataset.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">load_dataset</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reference/get_available_datasets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">get_available_datasets</span></a>
   </div>
 </li>
       </ul>
@@ -154,14 +177,30 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="function-reference" class="level1">
 <h1>Function reference</h1>
-<section id="pandas-time-series-extensions" class="level2">
-<h2 class="anchored" data-anchor-id="pandas-time-series-extensions">Pandas Time Series Extensions</h2>
-<p>Functions that manipulate time series DataFrames.</p>
+<section id="pandas-extensions" class="level2">
+<h2 class="anchored" data-anchor-id="pandas-extensions">🐼 Pandas Extensions</h2>
+<p>Time series functions that manipulate DataFrames.</p>
 <table class="table">
 <tbody>
 <tr class="odd">
-<td><a href="../reference/summarize_by_time.html#timetk.summarize_by_time">summarize_by_time</a></td>
-<td></td>
+<td><a href="../reference/summarize_by_time.html#timetk.summarize_by_time.summarize_by_time">summarize_by_time</a></td>
+<td>The <code>summarize_by_time</code> function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the aggregation.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="datasets" class="level2">
+<h2 class="anchored" data-anchor-id="datasets">💾 Datasets</h2>
+<p>Try out <code>timetk</code> on some of our datasets.</p>
+<table class="table">
+<tbody>
+<tr class="odd">
+<td><a href="../reference/load_dataset.html#timetk.datasets.get_datasets.load_dataset">load_dataset</a></td>
+<td>The <code>load_dataset</code> function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to <code>pandas.read_csv</code>. The available datasets are:</td>
+</tr>
+<tr class="even">
+<td><a href="../reference/get_available_datasets.html#timetk.datasets.get_datasets.get_available_datasets">get_available_datasets</a></td>
+<td>The <code>get_available_datasets</code> function returns a sorted list of available dataset names from the <code>timetk.datasets</code> module.</td>
 </tr>
 </tbody>
 </table>
