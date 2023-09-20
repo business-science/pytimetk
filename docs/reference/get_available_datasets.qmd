@@ -1,0 +1,20 @@
+# get_available_datasets { #timetk.datasets.get_datasets.get_available_datasets }
+
+`datasets.get_datasets.get_available_datasets()`
+
+The `get_available_datasets` function returns a sorted list of available dataset names from the `timetk.datasets` module.
+
+## Returns
+
+| Type                                                                                                                      | Description   |
+|---------------------------------------------------------------------------------------------------------------------------|---------------|
+| The function `get_available_datasets` returns a sorted list of available dataset names from the `timetk.datasets` module. |               |
+
+## Examples
+
+```{python}
+import timetk
+from timetk import get_available_datasets
+
+get_available_datasets()
+```

@@ -4,7 +4,7 @@
     "href": "reference/summarize_by_time.html",
     "title": "summarize_by_time",
     "section": "",
-    "text": "summarize_by_time"
+    "text": "summarize_by_time.summarize_by_time(data, date_column, value_column, groups=None, rule='D', agg_func='sum', kind='timestamp', wide_format=False, fillna=0, flatten_column_names=True, reset_index=True, *args, **kwargs)\nThe summarize_by_time function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the aggregation."
   },
   {
     "objectID": "reference/summarize_by_time.html#functions",
@@ -39,7 +39,7 @@
     "href": "reference/index.html",
     "title": "Function reference",
     "section": "",
-    "text": "Functions that manipulate time series DataFrames.\n\n\n\nsummarize_by_time"
+    "text": "Time series functions that manipulate DataFrames.\n\n\n\nsummarize_by_time\nThe summarize_by_time function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the aggregation.\n\n\n\n\n\n\nTry out timetk on some of our datasets.\n\n\n\nload_dataset\nThe load_dataset function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to pandas.read_csv. The available datasets are:\n\n\nget_available_datasets\nThe get_available_datasets function returns a sorted list of available dataset names from the timetk.datasets module."
   },
   {
     "objectID": "reference/index.html#pandas-time-series-extensions",
@@ -47,5 +47,89 @@
     "title": "Function reference",
     "section": "",
     "text": "Functions that manipulate time series DataFrames.\n\n\n\nsummarize_by_time"
+  },
+  {
+    "objectID": "reference/load_dataset.html",
+    "href": "reference/load_dataset.html",
+    "title": "load_dataset",
+    "section": "",
+    "text": "datasets.get_datasets.load_dataset(name='m4_daily', verbose=False, **kwargs)\nThe load_dataset function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to pandas.read_csv. The available datasets are:"
+  },
+  {
+    "objectID": "reference/load_dataset.html#parameters",
+    "href": "reference/load_dataset.html#parameters",
+    "title": "load_dataset",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nname\nstr\nThe name parameter is used to specify the name of the dataset that you want to load. The default value is set to “m4_daily”, which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned in the function’s docstring.\n'm4_daily'\n\n\nverbose\nbool\nThe verbose parameter is a boolean flag that determines whether or not to print the names of the available datasets. If verbose is set to True, the function will print the names of the available datasets. If verbose is set to False, the function will not print anything.\nFalse\n\n\n**kwargs\n\nThe **kwargs parameter is used to pass additional arguments to pandas.read_csv.\n{}"
+  },
+  {
+    "objectID": "reference/load_dataset.html#returns",
+    "href": "reference/load_dataset.html#returns",
+    "title": "load_dataset",
+    "section": "Returns",
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\nThe load_dataset function returns the requested dataset as a pandas DataFrame."
+  },
+  {
+    "objectID": "reference/load_dataset.html#examples",
+    "href": "reference/load_dataset.html#examples",
+    "title": "load_dataset",
+    "section": "Examples",
+    "text": "Examples\n\nimport timetk\nfrom timetk import load_dataset\nimport pandas as pd\n\n\n# Bike Sales Sample Dataset\ndf = load_dataset('bike_sales_sample')\ndf['order_date'] = pd.to_datetime(df['order_date'])\n\ndf\n\n\n\n\n\n\n\n\norder_id\norder_line\norder_date\nquantity\nprice\ntotal_price\nmodel\ncategory_1\ncategory_2\nframe_material\nbikeshop_name\ncity\nstate\n\n\n\n\n0\n1\n1\n2011-01-07\n1\n6070\n6070\nJekyll Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n\n\n1\n1\n2\n2011-01-07\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n\n\n2\n2\n1\n2011-01-10\n1\n2770\n2770\nBeast of the East 1\nMountain\nTrail\nAluminum\nKansas City 29ers\nKansas City\nKS\n\n\n3\n2\n2\n2011-01-10\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nKansas City 29ers\nKansas City\nKS\n\n\n4\n3\n1\n2011-01-10\n1\n10660\n10660\nSupersix Evo Hi-Mod Team\nRoad\nElite Road\nCarbon\nLouisville Race Equipment\nLouisville\nKY\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n2461\n321\n3\n2011-12-22\n1\n1410\n1410\nCAAD8 105\nRoad\nElite Road\nAluminum\nMiami Race Equipment\nMiami\nFL\n\n\n2462\n322\n1\n2011-12-28\n1\n1250\n1250\nSynapse Disc Tiagra\nRoad\nEndurance Road\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2463\n322\n2\n2011-12-28\n1\n2660\n2660\nBad Habit 2\nMountain\nTrail\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2464\n322\n3\n2011-12-28\n1\n2340\n2340\nF-Si 1\nMountain\nCross Country Race\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2465\n322\n4\n2011-12-28\n1\n5860\n5860\nSynapse Hi-Mod Dura Ace\nRoad\nEndurance Road\nCarbon\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n\n\n2466 rows × 13 columns\n\n\n\n\n# Taylor 30-Minute Dataset\ndf = load_dataset('taylor_30_min')\ndf['date'] = pd.to_datetime(df['date'])\n\ndf\n\n\n\n\n\n\n\n\ndate\nvalue\n\n\n\n\n0\n2000-06-05 00:00:00+00:00\n22262\n\n\n1\n2000-06-05 00:30:00+00:00\n21756\n\n\n2\n2000-06-05 01:00:00+00:00\n22247\n\n\n3\n2000-06-05 01:30:00+00:00\n22759\n\n\n4\n2000-06-05 02:00:00+00:00\n22549\n\n\n...\n...\n...\n\n\n4027\n2000-08-27 21:30:00+00:00\n27946\n\n\n4028\n2000-08-27 22:00:00+00:00\n27133\n\n\n4029\n2000-08-27 22:30:00+00:00\n25996\n\n\n4030\n2000-08-27 23:00:00+00:00\n24610\n\n\n4031\n2000-08-27 23:30:00+00:00\n23132\n\n\n\n\n4032 rows × 2 columns"
+  },
+  {
+    "objectID": "reference/index.html#pandas-extensions",
+    "href": "reference/index.html#pandas-extensions",
+    "title": "Function reference",
+    "section": "",
+    "text": "Time series functions that manipulate DataFrames.\n\n\n\nsummarize_by_time\nThe summarize_by_time function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the aggregation."
+  },
+  {
+    "objectID": "reference/index.html#datasets",
+    "href": "reference/index.html#datasets",
+    "title": "Function reference",
+    "section": "",
+    "text": "Try out timetk on some of our datasets.\n\n\n\nload_dataset\nThe load_dataset function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to pandas.read_csv. The available datasets are:\n\n\nget_available_datasets\nThe get_available_datasets function returns a sorted list of available dataset names from the timetk.datasets module."
+  },
+  {
+    "objectID": "reference/get_available_datasets.html",
+    "href": "reference/get_available_datasets.html",
+    "title": "get_available_datasets",
+    "section": "",
+    "text": "datasets.get_datasets.get_available_datasets()\nThe get_available_datasets function returns a sorted list of available dataset names from the timetk.datasets module."
+  },
+  {
+    "objectID": "reference/get_available_datasets.html#returns",
+    "href": "reference/get_available_datasets.html#returns",
+    "title": "get_available_datasets",
+    "section": "Returns",
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\nThe function get_available_datasets returns a sorted list of available dataset names from the timetk.datasets module."
+  },
+  {
+    "objectID": "reference/get_available_datasets.html#examples",
+    "href": "reference/get_available_datasets.html#examples",
+    "title": "get_available_datasets",
+    "section": "Examples",
+    "text": "Examples\n\nimport timetk\nfrom timetk import get_available_datasets\n\nget_available_datasets()\n\n['bike_sales_sample',\n 'bike_sharing_daily',\n 'm4_daily',\n 'm4_hourly',\n 'm4_monthly',\n 'm4_quarterly',\n 'm4_weekly',\n 'm4_yearly',\n 'taylor_30_min',\n 'walmart_sales_weekly',\n 'wikipedia_traffic_daily']"
+  },
+  {
+    "objectID": "reference/summarize_by_time.html#parameters",
+    "href": "reference/summarize_by_time.html#parameters",
+    "title": "summarize_by_time",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy\nA pandas DataFrame or a pandas GroupBy object. This is the data that you want to summarize by time.\nrequired\n\n\ndate_column\nstr\nThe name of the column in the data frame that contains the dates or timestamps to be aggregated by. This column must be of type datetime64.\nrequired\n\n\nvalue_column\nstr or list\nThe value_column parameter is the name of one or more columns in the DataFrame that you want to aggregate by. It can be either a string representing a single column name, or a list of strings representing multiple column names.\nrequired\n\n\ngroups\nstr or list or None\nThe groups parameter is an optional parameter that allows you to specify one or more column names representing groups to aggregate by. If you want to aggregate the data by specific groups, you can pass the column names as a string or a list to the groups parameter. If you want to aggregate the data without grouping, you can set groups to None. The default value is None.\nNone\n\n\nrule\nstr\nThe rule parameter specifies the frequency at which the data should be aggregated. It accepts a string representing a pandas frequency offset, such as “D” for daily or “MS” for month start. The default value is “D”, which means the data will be aggregated on a daily basis.\n'D'\n\n\nagg_func\nlist\nThe agg_func parameter is used to specify one or more aggregating functions to apply to the value column(s) during the summarization process. It can be a single function or a list of functions. The default value is \"sum\", which represents the sum function.\n'sum'\n\n\nkind\nstr\nThe kind parameter specifies whether the time series data is represented as a “timestamp” or a “period”. If kind is set to “timestamp”, the data is treated as a continuous time series with specific timestamps. If kind is set to “period”, the data is treated as a discrete time series with specific periods. The default value is “timestamp”.\n'timestamp'\n\n\nwide_format\nbool\nA boolean parameter that determines whether the output should be in “wide” or “long” format. If set to True, the output will be in wide format, where each group is represented by a separate column. If set to False, the output will be in long format, where each group is represented by a separate row. The default value is False.\nFalse\n\n\nfillna\nint\nThe fillna parameter is used to specify the value to fill missing data with. By default, it is set to 0. If you want to keep missing values as NaN, you can use np.nan as the value for fillna.\n0\n\n\nflatten_column_names\nbool\nA boolean parameter that determines whether or not to flatten the multiindex column names. If set to True, the multiindex column names will be flattened. If set to False, the multiindex column names will be preserved. The default value is True.\nTrue\n\n\nreset_index\nbool\nA boolean parameter that determines whether or not to reset the index of the resulting DataFrame. If set to True, the index will be reset to the default integer index. If set to False, the index will not be reset. The default value is True.\nTrue"
+  },
+  {
+    "objectID": "reference/summarize_by_time.html#returns",
+    "href": "reference/summarize_by_time.html#returns",
+    "title": "summarize_by_time",
+    "section": "Returns",
+    "text": "Returns\n\n\n\nType\nDescription\n\n\n\n\na Pandas DataFrame that is summarized by time."
+  },
+  {
+    "objectID": "reference/summarize_by_time.html#examples",
+    "href": "reference/summarize_by_time.html#examples",
+    "title": "summarize_by_time",
+    "section": "Examples",
+    "text": "Examples\n\nimport timetk\nfrom timetk import load_dataset\nimport pandas as pd\n\ndf = load_dataset('bike_sales_sample')\ndf['order_date'] = pd.to_datetime(df['order_date'])\n\ndf\n\n\n\n\n\n\n\n\norder_id\norder_line\norder_date\nquantity\nprice\ntotal_price\nmodel\ncategory_1\ncategory_2\nframe_material\nbikeshop_name\ncity\nstate\n\n\n\n\n0\n1\n1\n2011-01-07\n1\n6070\n6070\nJekyll Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n\n\n1\n1\n2\n2011-01-07\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n\n\n2\n2\n1\n2011-01-10\n1\n2770\n2770\nBeast of the East 1\nMountain\nTrail\nAluminum\nKansas City 29ers\nKansas City\nKS\n\n\n3\n2\n2\n2011-01-10\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nKansas City 29ers\nKansas City\nKS\n\n\n4\n3\n1\n2011-01-10\n1\n10660\n10660\nSupersix Evo Hi-Mod Team\nRoad\nElite Road\nCarbon\nLouisville Race Equipment\nLouisville\nKY\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n2461\n321\n3\n2011-12-22\n1\n1410\n1410\nCAAD8 105\nRoad\nElite Road\nAluminum\nMiami Race Equipment\nMiami\nFL\n\n\n2462\n322\n1\n2011-12-28\n1\n1250\n1250\nSynapse Disc Tiagra\nRoad\nEndurance Road\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2463\n322\n2\n2011-12-28\n1\n2660\n2660\nBad Habit 2\nMountain\nTrail\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2464\n322\n3\n2011-12-28\n1\n2340\n2340\nF-Si 1\nMountain\nCross Country Race\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2465\n322\n4\n2011-12-28\n1\n5860\n5860\nSynapse Hi-Mod Dura Ace\nRoad\nEndurance Road\nCarbon\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n\n\n2466 rows × 13 columns\n\n\n\n\n# Summarize by time with a DataFrame object\n( \n    df \n        .summarize_by_time(\n            date_column ='order_date', \n            value_column = 'total_price',\n            groups = \"category_2\",\n            rule = \"MS\",\n            kind = 'timestamp',\n            agg_func = ['mean', 'sum']\n        )\n)\n\n\n\n\n\n\n\n\ncategory_2\norder_date\ntotal_price_mean\ntotal_price_sum\n\n\n\n\n0\nCross Country Race\n2011-01-01\n7561.052632\n143660\n\n\n1\nCross Country Race\n2011-02-01\n5406.666667\n324400\n\n\n2\nCross Country Race\n2011-03-01\n7888.888889\n142000\n\n\n3\nCross Country Race\n2011-04-01\n6475.064935\n498580\n\n\n4\nCross Country Race\n2011-05-01\n6676.060606\n220310\n\n\n...\n...\n...\n...\n...\n\n\n102\nTriathalon\n2011-08-01\n5512.500000\n44100\n\n\n103\nTriathalon\n2011-09-01\n3143.750000\n25150\n\n\n104\nTriathalon\n2011-10-01\n5775.000000\n57750\n\n\n105\nTriathalon\n2011-11-01\n4892.307692\n63600\n\n\n106\nTriathalon\n2011-12-01\n4992.857143\n34950\n\n\n\n\n107 rows × 4 columns\n\n\n\n\n# Summarize by time with a GroupBy object\n(\n    df \n        .groupby('category_1') \n        .summarize_by_time(\n            'order_date', 'total_price', \n            rule = 'MS',\n            wide_format = True,\n        )\n)\n\n\n\n\n\n\n\n\norder_date\ntotal_price_Mountain\ntotal_price_Road\n\n\n\n\n0\n2011-01-01\n221490\n261525\n\n\n1\n2011-02-01\n660555\n501520\n\n\n2\n2011-03-01\n358855\n301120\n\n\n3\n2011-04-01\n1075975\n751165\n\n\n4\n2011-05-01\n450440\n393730\n\n\n5\n2011-06-01\n723040\n690405\n\n\n6\n2011-07-01\n767740\n426690\n\n\n7\n2011-08-01\n361255\n318535\n\n\n8\n2011-09-01\n401125\n413595\n\n\n9\n2011-10-01\n377335\n357585\n\n\n10\n2011-11-01\n549345\n456740\n\n\n11\n2011-12-01\n276055\n197065"
   }
 ]

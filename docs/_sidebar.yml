@@ -4,6 +4,10 @@ website:
     - reference/index.qmd
     - contents:
       - reference/summarize_by_time.qmd
-      section: Pandas Time Series Extensions
+      section: "\U0001F43C Pandas Extensions"
+    - contents:
+      - reference/load_dataset.qmd
+      - reference/get_available_datasets.qmd
+      section: "\U0001F4BE Datasets"
     id: reference
   - id: dummy-sidebar

@@ -18,8 +18,7 @@ def summarize_by_time(
     *args,
     **kwargs
 ) -> pd.DataFrame:
-    '''The `summarize_by_time` function aggregates data by a specified time period and one or more numeric
-    columns, allowing for grouping and customization of the aggregation.
+    '''The `summarize_by_time` function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the aggregation.
     
     Parameters
     ----------
