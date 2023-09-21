@@ -182,7 +182,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
- <span class="menu-text">🗺️ Guides: (Coming Soon)</span></a>
+ <span class="menu-text">🗺️ Guides:</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -190,14 +190,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../guides/tutorial_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Tutorial 1</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../guides/tutorial_2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Tutorial 2</span></a>
+  <a href="../guides/01_timetk_concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Timetk Basics</span></a>
   </div>
 </li>
       </ul>
@@ -275,14 +269,15 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td><a href="#timetk.summarize_by_time.summarize_by_time">summarize_by_time</a></td>
-<td>The <code>summarize_by_time</code> function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the aggregation.</td>
+<td>Summarize a DataFrame or GroupBy object by time.</td>
 </tr>
 </tbody>
 </table>
 <section id="timetk.summarize_by_time.summarize_by_time" class="level3">
 <h3 class="anchored" data-anchor-id="timetk.summarize_by_time.summarize_by_time">summarize_by_time</h3>
 <p><code>summarize_by_time.summarize_by_time(data, date_column, value_column, groups=None, rule='D', agg_func='sum', kind='timestamp', wide_format=False, fillna=0, flatten_column_names=True, reset_index=True, *args, **kwargs)</code></p>
-<p>The <code>summarize_by_time</code> function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the aggregation.</p>
+<p>Summarize a DataFrame or GroupBy object by time.</p>
+<p>The <code>summarize_by_time</code> function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the time-based aggregation.</p>
 <section id="parameters" class="level4">
 <h4 class="anchored" data-anchor-id="parameters">Parameters</h4>
 <table class="table">
@@ -381,8 +376,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td>a Pandas DataFrame that is summarized by time.</td>
-<td></td>
+<td>pd.DataFrame</td>
+<td>A Pandas DataFrame that is summarized by time.</td>
 </tr>
 </tbody>
 </table>
@@ -715,7 +710,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize by time with a GroupBy object</span></span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize by time with a GroupBy object (Long Format)</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>(</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df </span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'category_1'</span>) </span>
@@ -723,10 +718,186 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'total_price'</span>, </span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            rule         <span class="op">=</span> <span class="st">'MS'</span>,</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            wide_format  <span class="op">=</span> <span class="va">True</span>, </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            wide_format  <span class="op">=</span> <span class="va">False</span>, </span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">category_1</th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">total_price</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Mountain</td>
+<td>2011-01-01</td>
+<td>221490</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Mountain</td>
+<td>2011-02-01</td>
+<td>660555</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Mountain</td>
+<td>2011-03-01</td>
+<td>358855</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Mountain</td>
+<td>2011-04-01</td>
+<td>1075975</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Mountain</td>
+<td>2011-05-01</td>
+<td>450440</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>Mountain</td>
+<td>2011-06-01</td>
+<td>723040</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>Mountain</td>
+<td>2011-07-01</td>
+<td>767740</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>Mountain</td>
+<td>2011-08-01</td>
+<td>361255</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>Mountain</td>
+<td>2011-09-01</td>
+<td>401125</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>Mountain</td>
+<td>2011-10-01</td>
+<td>377335</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>Mountain</td>
+<td>2011-11-01</td>
+<td>549345</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>Mountain</td>
+<td>2011-12-01</td>
+<td>276055</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>Road</td>
+<td>2011-01-01</td>
+<td>261525</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>Road</td>
+<td>2011-02-01</td>
+<td>501520</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>Road</td>
+<td>2011-03-01</td>
+<td>301120</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>Road</td>
+<td>2011-04-01</td>
+<td>751165</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>Road</td>
+<td>2011-05-01</td>
+<td>393730</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>Road</td>
+<td>2011-06-01</td>
+<td>690405</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>Road</td>
+<td>2011-07-01</td>
+<td>426690</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>Road</td>
+<td>2011-08-01</td>
+<td>318535</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>Road</td>
+<td>2011-09-01</td>
+<td>413595</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>Road</td>
+<td>2011-10-01</td>
+<td>357585</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>Road</td>
+<td>2011-11-01</td>
+<td>456740</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>Road</td>
+<td>2011-12-01</td>
+<td>197065</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize by time with a GroupBy object (Wide Format)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'category_1'</span>) </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'total_price'</span>, </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            rule         <span class="op">=</span> <span class="st">'MS'</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            wide_format  <span class="op">=</span> <span class="va">True</span>, </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>timetk for Python - Install</title>
+<title>timetk for Python – week_of_month</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -29,7 +63,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../getting-started/02_quick_start.html" rel="next">
 <link href="../favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -73,12 +106,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </script>
 
 
-<meta property="og:title" content="timetk for Python - Install">
-<meta property="og:description" content="">
-<meta property="og:site-name" content="timetk for Python">
-<meta name="twitter:title" content="timetk for Python - Install">
-<meta name="twitter:description" content="">
-<meta name="twitter:card" content="summary">
 </head>
 
 <body class="nav-sidebar floating nav-fixed">
@@ -107,7 +134,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../getting-started/01_installation.html">🏁 Getting Started:</a></li><li class="breadcrumb-item"><a href="../getting-started/01_installation.html">Install</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">week_of_month</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -128,16 +155,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
  <span class="menu-text">🏁 Getting Started:</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../getting-started/01_installation.html" class="sidebar-item-text sidebar-link active">
+  <a href="../getting-started/01_installation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Install</span></a>
   </div>
 </li>
@@ -199,22 +226,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#installation" id="toc-installation" class="nav-link active" data-scroll-target="#installation">Installation</a>
-  <ul class="collapse">
-  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites">1. Prerequisites</a></li>
-  <li><a href="#install-poetry" id="toc-install-poetry" class="nav-link" data-scroll-target="#install-poetry">2. Install Poetry</a></li>
-  <li><a href="#clone-the-repository" id="toc-clone-the-repository" class="nav-link" data-scroll-target="#clone-the-repository">3. Clone the Repository</a></li>
-  <li><a href="#install-dependencies" id="toc-install-dependencies" class="nav-link" data-scroll-target="#install-dependencies">4. Install Dependencies</a></li>
-  </ul></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/getting-started/01_installation.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/week_of_month.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Install</h1>
+<h1 class="title">week_of_month</h1>
 </div>
 
 
@@ -229,48 +252,213 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Under Development
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
-<div class="callout-body-container callout-body">
-<p>This library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0.</p>
-</div>
-</div>
-</div>
-<section id="installation" class="level2">
-<h2 class="anchored" data-anchor-id="installation">Installation</h2>
-<p>To install <code>timetk</code> using <a href="https://python-poetry.org/">Poetry</a>, follow these steps:</p>
-<section id="prerequisites" class="level3">
-<h3 class="anchored" data-anchor-id="prerequisites">1. Prerequisites</h3>
-<p>Make sure you have Python 3.9 or later installed on your system.</p>
+<p><code>week_of_month(idx)</code></p>
+<p>The “week_of_month” function calculates the week number of a given date within its month.</p>
+<section id="parameters" class="level2">
+<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<table class="table">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 16%">
+<col style="width: 72%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>idx</code></td>
+<td>pd.Series or pd.DatetimeIndex</td>
+<td>The parameter “idx” is a pandas Series object that represents a specific date for which you want to determine the week of the month.</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="install-poetry" class="level3">
-<h3 class="anchored" data-anchor-id="install-poetry">2. Install Poetry</h3>
-<p>To install Poetry, you can use the <a href="https://python-poetry.org/docs/#installing-with-the-official-installer">official installer</a> provided by Poetry. Do not use pip.</p>
+<section id="returns" class="level2">
+<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>pd.Series</td>
+<td>The week of the month for a given date.</td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="clone-the-repository" class="level3">
-<h3 class="anchored" data-anchor-id="clone-the-repository">3. Clone the Repository</h3>
-<p>Clone the <code>timetk</code> repository from GitHub:</p>
-<pre><code>git clone https://github.com/business-science/pytimetk</code></pre>
-</section>
-<section id="install-dependencies" class="level3">
-<h3 class="anchored" data-anchor-id="install-dependencies">4. Install Dependencies</h3>
-<p>Use Poetry to install the package and its dependencies:</p>
-<pre><code>pip install poetry</code></pre>
-<p>or you can create a virtualenv with poetry and install the dependencies</p>
-<pre><code>poetry shell
-poetry install</code></pre>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timetk <span class="im">as</span> tk</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.date_range(<span class="st">"2020-01-01"</span>, <span class="st">"2020-02-28"</span>, freq<span class="op">=</span><span class="st">"1D"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>dates</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>DatetimeIndex(['2020-01-01', '2020-01-02', '2020-01-03', '2020-01-04',
+               '2020-01-05', '2020-01-06', '2020-01-07', '2020-01-08',
+               '2020-01-09', '2020-01-10', '2020-01-11', '2020-01-12',
+               '2020-01-13', '2020-01-14', '2020-01-15', '2020-01-16',
+               '2020-01-17', '2020-01-18', '2020-01-19', '2020-01-20',
+               '2020-01-21', '2020-01-22', '2020-01-23', '2020-01-24',
+               '2020-01-25', '2020-01-26', '2020-01-27', '2020-01-28',
+               '2020-01-29', '2020-01-30', '2020-01-31', '2020-02-01',
+               '2020-02-02', '2020-02-03', '2020-02-04', '2020-02-05',
+               '2020-02-06', '2020-02-07', '2020-02-08', '2020-02-09',
+               '2020-02-10', '2020-02-11', '2020-02-12', '2020-02-13',
+               '2020-02-14', '2020-02-15', '2020-02-16', '2020-02-17',
+               '2020-02-18', '2020-02-19', '2020-02-20', '2020-02-21',
+               '2020-02-22', '2020-02-23', '2020-02-24', '2020-02-25',
+               '2020-02-26', '2020-02-27', '2020-02-28'],
+              dtype='datetime64[ns]', freq='D')</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Works on DateTimeIndex</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tk.week_of_month(dates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>0     1
+1     1
+2     1
+3     1
+4     1
+5     1
+6     1
+7     2
+8     2
+9     2
+10    2
+11    2
+12    2
+13    2
+14    3
+15    3
+16    3
+17    3
+18    3
+19    3
+20    3
+21    4
+22    4
+23    4
+24    4
+25    4
+26    4
+27    4
+28    5
+29    5
+30    5
+31    1
+32    1
+33    1
+34    1
+35    1
+36    1
+37    1
+38    2
+39    2
+40    2
+41    2
+42    2
+43    2
+44    2
+45    3
+46    3
+47    3
+48    3
+49    3
+50    3
+51    3
+52    4
+53    4
+54    4
+55    4
+56    4
+57    4
+58    4
+Name: week_of_month, dtype: int32</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Works on Pandas Series</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>dates.to_series().week_of_month()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>2020-01-01    1
+2020-01-02    1
+2020-01-03    1
+2020-01-04    1
+2020-01-05    1
+2020-01-06    1
+2020-01-07    1
+2020-01-08    2
+2020-01-09    2
+2020-01-10    2
+2020-01-11    2
+2020-01-12    2
+2020-01-13    2
+2020-01-14    2
+2020-01-15    3
+2020-01-16    3
+2020-01-17    3
+2020-01-18    3
+2020-01-19    3
+2020-01-20    3
+2020-01-21    3
+2020-01-22    4
+2020-01-23    4
+2020-01-24    4
+2020-01-25    4
+2020-01-26    4
+2020-01-27    4
+2020-01-28    4
+2020-01-29    5
+2020-01-30    5
+2020-01-31    5
+2020-02-01    1
+2020-02-02    1
+2020-02-03    1
+2020-02-04    1
+2020-02-05    1
+2020-02-06    1
+2020-02-07    1
+2020-02-08    2
+2020-02-09    2
+2020-02-10    2
+2020-02-11    2
+2020-02-12    2
+2020-02-13    2
+2020-02-14    2
+2020-02-15    3
+2020-02-16    3
+2020-02-17    3
+2020-02-18    3
+2020-02-19    3
+2020-02-20    3
+2020-02-21    3
+2020-02-22    4
+2020-02-23    4
+2020-02-24    4
+2020-02-25    4
+2020-02-26    4
+2020-02-27    4
+2020-02-28    4
+Freq: D, Name: week_of_month, dtype: int32</code></pre>
+</div>
+</div>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -622,15 +810,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-  </div>
-  <div class="nav-page nav-page-next">
-      <a href="../getting-started/02_quick_start.html" class="pagination-link">
-        <span class="nav-page-text">Quick Start</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
-  </div>
-</nav>
 </div> <!-- /content -->
 
 

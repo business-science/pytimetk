@@ -179,7 +179,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
- <span class="menu-text">🗺️ Guides: (Coming Soon)</span></a>
+ <span class="menu-text">🗺️ Guides:</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -187,14 +187,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../guides/tutorial_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Tutorial 1</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../guides/tutorial_2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Tutorial 2</span></a>
+  <a href="../guides/01_timetk_concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Timetk Basics</span></a>
   </div>
 </li>
       </ul>
@@ -259,6 +253,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </header>
 
 <p><code>floor_date(idx, unit='D')</code></p>
+<p>Round a date down to the specified unit (e.g.&nbsp;Flooring).</p>
 <p>The <code>floor_date</code> function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
@@ -297,8 +292,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 79%">
-<col style="width: 20%">
+<col style="width: 10%">
+<col style="width: 89%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -308,8 +303,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td>The <code>floor_date</code> function returns a pandas Series object.</td>
-<td></td>
+<td>pd.Series</td>
+<td>The <code>floor_date</code> function returns a pandas Series object containing datetime64[ns] values.</td>
 </tr>
 </tbody>
 </table>

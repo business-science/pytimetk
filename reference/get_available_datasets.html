@@ -179,7 +179,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
- <span class="menu-text">🗺️ Guides: (Coming Soon)</span></a>
+ <span class="menu-text">🗺️ Guides:</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -187,14 +187,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../guides/tutorial_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Tutorial 1</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../guides/tutorial_2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Tutorial 2</span></a>
+  <a href="../guides/01_timetk_concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Timetk Basics</span></a>
   </div>
 </li>
       </ul>
@@ -258,13 +252,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </header>
 
 <p><code>datasets.get_datasets.get_available_datasets()</code></p>
-<p>The <code>get_available_datasets</code> function returns a sorted list of available dataset names from the <code>timetk.datasets</code> module.</p>
+<p>Get a list of 11 datasets that can be loaded with <code>timetk.load_dataset</code>.</p>
+<p>The <code>get_available_datasets</code> function returns a sorted list of available dataset names from the <code>timetk.datasets</code> module. The available datasets are:</p>
 <section id="returns" class="level2">
 <h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 89%">
-<col style="width: 10%">
+<col style="width: 6%">
+<col style="width: 93%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -274,8 +269,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
+<td>list</td>
 <td>The function <code>get_available_datasets</code> returns a sorted list of available dataset names from the <code>timetk.datasets</code> module.</td>
-<td></td>
 </tr>
 </tbody>
 </table>

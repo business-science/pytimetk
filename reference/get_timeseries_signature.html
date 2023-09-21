@@ -182,7 +182,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
- <span class="menu-text">🗺️ Guides: (Coming Soon)</span></a>
+ <span class="menu-text">🗺️ Guides:</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -190,14 +190,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../guides/tutorial_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Tutorial 1</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../guides/tutorial_2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Tutorial 2</span></a>
+  <a href="../guides/01_timetk_concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Timetk Basics</span></a>
   </div>
 </li>
       </ul>
@@ -262,6 +256,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </header>
 
 <p><code>get_timeseries_signature(idx)</code></p>
+<p>Convert a timestamp to a set of 29 time series features.</p>
 <p>The function <code>tk_get_timeseries_signature</code> engineers <strong>29 different date and time based features</strong> from a single datetime index <code>idx</code>:</p>
 <ul>
 <li>index_num: An int64 feature that captures the entire datetime as a numeric value to the second</li>
