@@ -13,8 +13,7 @@ The `get_available_datasets` function returns a sorted list of available dataset
 ## Examples
 
 ```{python}
-import timetk
-from timetk import get_available_datasets
+import timetk as tk
 
-get_available_datasets()
+tk.get_available_datasets()
 ```

@@ -6,7 +6,11 @@ jupyter: python3
 
 > The Time Series Toolkit for Python
 
-This library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0.
+::: {.callout-warning collapse="false"}
+## Under Development
+
+This library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0. 
+:::
 
 ## Usage
 
@@ -52,7 +56,8 @@ px.line(
     x = 'order_date', 
     y = ['total_price_Mountain', 'total_price_Road'],
     template = "plotly_dark",    
-    title = "Monthly Sales of Mountain and Road Bicycles"
+    title = "Monthly Sales of Mountain and Road Bicycles",
+    width = 900
 )
 ```
 

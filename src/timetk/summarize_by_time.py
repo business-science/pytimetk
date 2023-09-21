@@ -52,12 +52,10 @@ def summarize_by_time(
     Examples
     --------
     ```{python}
-    import timetk
-    from timetk import load_dataset
+    import timetk as tk
     import pandas as pd
     
-    df = load_dataset('bike_sales_sample')
-    df['order_date'] = pd.to_datetime(df['order_date'])
+    df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
     
     df
     ```
@@ -67,12 +65,11 @@ def summarize_by_time(
     ( 
         df 
             .summarize_by_time(
-                date_column ='order_date', 
+                date_column  = 'order_date', 
                 value_column = 'total_price',
-                groups = "category_2",
-                rule = "MS",
-                kind = 'timestamp',
-                agg_func = ['mean', 'sum']
+                groups       = "category_2",
+                rule         = "MS",
+                agg_func     = ['mean', 'sum']
             )
     )
     ```
@@ -83,9 +80,10 @@ def summarize_by_time(
         df 
             .groupby('category_1') 
             .summarize_by_time(
-                'order_date', 'total_price', 
-                rule = 'MS',
-                wide_format = True,
+                date_column  = 'order_date', 
+                value_column = 'total_price', 
+                rule         = 'MS',
+                wide_format  = True, 
             )
     )
     ```

@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://business-science.github.io/pytimetk/index.html</loc>
-    <lastmod>2023-09-20T14:49:49.928Z</lastmod>
+    <loc>https://business-science.github.io/pytimetk/reference/load_dataset.html</loc>
+    <lastmod>2023-09-21T00:02:43.705Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2023-09-20T15:04:26.100Z</lastmod>
+    <lastmod>2023-09-21T00:01:44.825Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/index.html</loc>
+    <lastmod>2023-09-21T00:15:10.066Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/index.html</loc>
-    <lastmod>2023-09-20T14:57:17.540Z</lastmod>
+    <lastmod>2023-09-20T23:35:44.927Z</lastmod>
   </url>
   <url>
-    <loc>https://business-science.github.io/pytimetk/reference/load_dataset.html</loc>
-    <lastmod>2023-09-20T14:56:45.761Z</lastmod>
+    <loc>https://business-science.github.io/pytimetk/reference/get_available_datasets.html</loc>
+    <lastmod>2023-09-20T23:50:20.689Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/summarize_by_time.html</loc>
+    <lastmod>2023-09-20T23:56:19.772Z</lastmod>
   </url>
 </urlset>

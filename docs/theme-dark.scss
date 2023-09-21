@@ -12,4 +12,27 @@ $code-block-bg-alpha: -.8;
 // Headers
 h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
     color: $body-color !important;
+    text-transform: none !important;
+}
+
+
+code:not(.sourceCode) {
+    background-color: rgb(249, 250, 251, 0.7) !important;
+    border: 1px solid rgba(12, 18, 26, 0.1) !important;
+    border-radius: 0.375rem;
+    color: rgba(12, 18, 26, 0.8) !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    padding: 0.25rem 0.5rem !important;
+}
+
+code {
+    background-color: black !important;
+    border: 1px solid rgba(12, 18, 26, 0.1) !important;
+    border-radius: 0.75rem;
+    color: rgba(12, 18, 26, 0.8) !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    padding: 1rem !important;
+    overflow-x: scroll !important;
 }

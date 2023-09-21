@@ -33,23 +33,20 @@ The `load_dataset` function is used to load various time series datasets by name
 ## Examples
 
 ```{python}
-import timetk
-from timetk import load_dataset
+import timetk as tk
 import pandas as pd
 ```
 
 ```{python}
 # Bike Sales Sample Dataset
-df = load_dataset('bike_sales_sample')
-df['order_date'] = pd.to_datetime(df['order_date'])
+df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
 
 df
 ```
 
 ```{python}
 # Taylor 30-Minute Dataset
-df = load_dataset('taylor_30_min')
-df['date'] = pd.to_datetime(df['date'])
+df = tk.load_dataset('taylor_30_min', parse_dates = ['date'])
 
 df
 ```

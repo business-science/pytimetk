@@ -40,23 +40,20 @@ def load_dataset(
     Examples
     --------
     ```{python}
-    import timetk
-    from timetk import load_dataset
+    import timetk as tk
     import pandas as pd
     ```
     
     ```{python}
     # Bike Sales Sample Dataset
-    df = load_dataset('bike_sales_sample')
-    df['order_date'] = pd.to_datetime(df['order_date'])
+    df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
     
     df
     ```
     
     ```{python}
     # Taylor 30-Minute Dataset
-    df = load_dataset('taylor_30_min')
-    df['date'] = pd.to_datetime(df['date'])
+    df = tk.load_dataset('taylor_30_min', parse_dates = ['date'])
     
     df
     ```
@@ -91,10 +88,9 @@ def get_available_datasets():
     Examples
     --------
     ```{python}
-    import timetk
-    from timetk import get_available_datasets
+    import timetk as tk
     
-    get_available_datasets()
+    tk.get_available_datasets()
     ```
     
     '''
