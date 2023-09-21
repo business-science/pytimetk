@@ -4,10 +4,14 @@ website:
     - reference/index.qmd
     - contents:
       - reference/summarize_by_time.qmd
-      section: "\U0001F43C Pandas Extensions"
+      - reference/augment_timeseries_signature.qmd
+      section: "\U0001F43C Time Series for Pandas DataFrames"
     - contents:
-      - reference/load_dataset.qmd
+      - reference/get_timeseries_signature.qmd
+      section: "\U0001F43C Time Series for Pandas Series"
+    - contents:
       - reference/get_available_datasets.qmd
+      - reference/load_dataset.qmd
       section: "\U0001F4BE Datasets"
     id: reference
   - id: dummy-sidebar

@@ -161,9 +161,13 @@ a > code:hover {
 
 
 .aa-SubmitIcon {
-  fill: rgba(17, 24,39, 0.6) !important;
+  // fill: rgba(17, 24,39, 0.6) !important;
   height: 20px !important;
   margin-top: -2px;
+}
+
+.navbar-brand-logo {
+  -webkit-filter: drop-shadow(3px 3px 3px #222);
 }
 
 .navbar #quarto-search {

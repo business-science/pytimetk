@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>timetk for Python – index</title>
+<title>timetk for Python - Install</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -29,7 +29,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../guides/tutorial_2.html" rel="prev">
+<link href="../getting-started/02_quick_start.html" rel="next">
 <link href="../favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -73,6 +73,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </script>
 
 
+<meta property="og:title" content="timetk for Python - Install">
+<meta property="og:description" content="">
+<meta property="og:site-name" content="timetk for Python">
+<meta name="twitter:title" content="timetk for Python - Install">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
 </head>
 
 <body class="nav-sidebar floating nav-fixed">
@@ -101,7 +107,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reference/index.html">📄 API Reference</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../getting-started/01_installation.html">🏁 Getting Started:</a></li><li class="breadcrumb-item"><a href="../getting-started/01_installation.html">Install</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -122,16 +128,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
  <span class="menu-text">🏁 Getting Started:</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../getting-started/01_installation.html" class="sidebar-item-text sidebar-link">
+  <a href="../getting-started/01_installation.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Install</span></a>
   </div>
 </li>
@@ -168,7 +174,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/index.html" class="sidebar-item-text sidebar-link active">
+  <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📄 API Reference</span></a>
   </div>
 </li>
@@ -199,65 +205,75 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#function-reference" id="toc-function-reference" class="nav-link active" data-scroll-target="#function-reference">Function reference</a>
+  <li><a href="#installation" id="toc-installation" class="nav-link active" data-scroll-target="#installation">Installation</a>
   <ul class="collapse">
-  <li><a href="#time-series-for-pandas-dataframes" id="toc-time-series-for-pandas-dataframes" class="nav-link" data-scroll-target="#time-series-for-pandas-dataframes">🐼 Time Series for Pandas DataFrames</a></li>
-  <li><a href="#time-series-for-pandas-series" id="toc-time-series-for-pandas-series" class="nav-link" data-scroll-target="#time-series-for-pandas-series">🐼 Time Series for Pandas Series</a></li>
-  <li><a href="#datasets" id="toc-datasets" class="nav-link" data-scroll-target="#datasets">💾 Datasets</a></li>
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites">1. Prerequisites</a></li>
+  <li><a href="#install-poetry" id="toc-install-poetry" class="nav-link" data-scroll-target="#install-poetry">2. Install Poetry</a></li>
+  <li><a href="#clone-the-repository" id="toc-clone-the-repository" class="nav-link" data-scroll-target="#clone-the-repository">3. Clone the Repository</a></li>
+  <li><a href="#install-dependencies" id="toc-install-dependencies" class="nav-link" data-scroll-target="#install-dependencies">4. Install Dependencies</a></li>
   </ul></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/index.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/getting-started/01_installation.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Install</h1>
+</div>
 
 
-<section id="function-reference" class="level1">
-<h1>Function reference</h1>
-<section id="time-series-for-pandas-dataframes" class="level2">
-<h2 class="anchored" data-anchor-id="time-series-for-pandas-dataframes">🐼 Time Series for Pandas DataFrames</h2>
-<p>Time series functions that manipulate DataFrames.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/summarize_by_time.html#timetk.summarize_by_time">summarize_by_time</a></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_timeseries_signature.html#timetk.augment_timeseries_signature">augment_timeseries_signature</a></td>
-<td>The function <code>augment_timeseries_signature</code> takes a DataFrame and a date column as input and returns the original DataFrame with the <strong>29 different date and time based features</strong> added as new columns:</td>
-</tr>
-</tbody>
-</table>
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Under Development
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>This library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0.</p>
+</div>
+</div>
+</div>
+<section id="installation" class="level2">
+<h2 class="anchored" data-anchor-id="installation">Installation</h2>
+<p>To install <code>timetk</code> using <a href="https://python-poetry.org/">Poetry</a>, follow these steps:</p>
+<section id="prerequisites" class="level3">
+<h3 class="anchored" data-anchor-id="prerequisites">1. Prerequisites</h3>
+<p>Make sure you have Python 3.9 or later installed on your system.</p>
 </section>
-<section id="time-series-for-pandas-series" class="level2">
-<h2 class="anchored" data-anchor-id="time-series-for-pandas-series">🐼 Time Series for Pandas Series</h2>
-<p>Time series functions that manipulate Pandas Series.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/get_timeseries_signature.html#timetk.get_timeseries_signature">get_timeseries_signature</a></td>
-<td>The function <code>tk_get_timeseries_signature</code> engineers <strong>29 different date and time based features</strong> from a single datetime index <code>idx</code>:</td>
-</tr>
-</tbody>
-</table>
+<section id="install-poetry" class="level3">
+<h3 class="anchored" data-anchor-id="install-poetry">2. Install Poetry</h3>
+<p>To install Poetry, you can use the <a href="https://python-poetry.org/docs/#installing-with-the-official-installer">official installer</a> provided by Poetry. Do not use pip.</p>
 </section>
-<section id="datasets" class="level2">
-<h2 class="anchored" data-anchor-id="datasets">💾 Datasets</h2>
-<p>Practice <code>timetk</code> with our complementary time series datasets.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/get_available_datasets.html#timetk.datasets.get_datasets.get_available_datasets">get_available_datasets</a></td>
-<td>The <code>get_available_datasets</code> function returns a sorted list of available dataset names from the <code>timetk.datasets</code> module.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/load_dataset.html#timetk.datasets.get_datasets.load_dataset">load_dataset</a></td>
-<td>The <code>load_dataset</code> function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to <code>pandas.read_csv</code>. The available datasets are:</td>
-</tr>
-</tbody>
-</table>
+<section id="clone-the-repository" class="level3">
+<h3 class="anchored" data-anchor-id="clone-the-repository">3. Clone the Repository</h3>
+<p>Clone the <code>timetk</code> repository from GitHub:</p>
+<pre><code>git clone https://github.com/business-science/pytimetk</code></pre>
+</section>
+<section id="install-dependencies" class="level3">
+<h3 class="anchored" data-anchor-id="install-dependencies">4. Install Dependencies</h3>
+<p>Use Poetry to install the package and its dependencies:</p>
+<pre><code>pip install poetry</code></pre>
+<p>or you can create a virtualenv with poetry and install the dependencies</p>
+<pre><code>poetry shell
+poetry install</code></pre>
 
 
 </section>
@@ -614,11 +630,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../guides/tutorial_2.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Tutorial 2</span>
-      </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../getting-started/02_quick_start.html" class="pagination-link">
+        <span class="nav-page-text">Quick Start</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->

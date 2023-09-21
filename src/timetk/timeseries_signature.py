@@ -9,43 +9,42 @@ from .utils.datetime_helpers import week_of_month
  
 @pf.register_series_method
 def get_timeseries_signature(idx: pd.Series or pd.DatetimeIndex) -> pd.DataFrame:
-    '''The function `tk_get_timeseries_signature` engineers 29 different date and time based features from
-    a single datetime. 
+    '''The function `tk_get_timeseries_signature` engineers **29 different date and time based features** from a single datetime index `idx`: 
     
-        - index_num: An int64 feature that captures the entire datetime as a numeric value to the second
-        - year: The year of the datetime
-        - year_iso: The iso year of the datetime
-        - yearstart: Logical (0,1) indicating if first day of year (defined by frequency)
-        - yearend: Logical (0,1) indicating if last day of year (defined by frequency)
-        - leapyear: Logical (0,1) indicating if the date belongs to a leap year
-        - half: Half year of the date: Jan-Jun = 1, July-Dec = 2
-        - quarter: Quarter of the date: Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4
-        - quarteryear: Quarter of the date + relative year
-        - quarterstart: Logical (0,1) indicating if first day of quarter (defined by frequency)
-        - quarterend: Logical (0,1) indicating if last day of quarter (defined by frequency)
-        - month: The month of the datetime
-        - month_lbl: The month label of the datetime
-        - monthstart: Logical (0,1) indicating if first day of month (defined by frequency)
-        - monthend: Logical (0,1) indicating if last day of month (defined by frequency)
-        - yweek: The week ordinal of the year
-        - mweek: The week ordinal of the month
-        - wday: The number of the day of the week with Monday=1, Sunday=6
-        - wday_lbl: The day of the week label
-        - mday: The day of the datetime
-        - qday: The days of the relative quarter
-        - yday: The ordinal day of year
-        - weekend: Logical (0,1) indicating if the day is a weekend 
-        - hour: The hour of the datetime
-        - minute: The minutes of the datetime
-        - second: The seconds of the datetime
-        - msecond: The microseconds of the datetime
-        - nsecond: The nanoseconds of the datetime
-        - am_pm: Half of the day, AM = ante meridiem, PM = post meridiem
+    - index_num: An int64 feature that captures the entire datetime as a numeric value to the second
+    - year: The year of the datetime
+    - year_iso: The iso year of the datetime
+    - yearstart: Logical (0,1) indicating if first day of year (defined by frequency)
+    - yearend: Logical (0,1) indicating if last day of year (defined by frequency)
+    - leapyear: Logical (0,1) indicating if the date belongs to a leap year
+    - half: Half year of the date: Jan-Jun = 1, July-Dec = 2
+    - quarter: Quarter of the date: Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4
+    - quarteryear: Quarter of the date + relative year
+    - quarterstart: Logical (0,1) indicating if first day of quarter (defined by frequency)
+    - quarterend: Logical (0,1) indicating if last day of quarter (defined by frequency)
+    - month: The month of the datetime
+    - month_lbl: The month label of the datetime
+    - monthstart: Logical (0,1) indicating if first day of month (defined by frequency)
+    - monthend: Logical (0,1) indicating if last day of month (defined by frequency)
+    - yweek: The week ordinal of the year
+    - mweek: The week ordinal of the month
+    - wday: The number of the day of the week with Monday=1, Sunday=6
+    - wday_lbl: The day of the week label
+    - mday: The day of the datetime
+    - qday: The days of the relative quarter
+    - yday: The ordinal day of year
+    - weekend: Logical (0,1) indicating if the day is a weekend 
+    - hour: The hour of the datetime
+    - minute: The minutes of the datetime
+    - second: The seconds of the datetime
+    - msecond: The microseconds of the datetime
+    - nsecond: The nanoseconds of the datetime
+    - am_pm: Half of the day, AM = ante meridiem, PM = post meridiem
     
     Parameters
     ----------
-    idx : pd.Series
-        idx is a pandas Series object containing datetime values.
+    idx : pd.Series or pd.DatetimeIndex
+        idx is a pandas Series object containing datetime values. Alternatively a pd.DatetimeIndex can be passed.
     
     Returns
     -------
@@ -53,13 +52,17 @@ def get_timeseries_signature(idx: pd.Series or pd.DatetimeIndex) -> pd.DataFrame
         
     Examples
     --------
+    ```{python}
     import pandas as pd
     import timetk as tk
     
+    pd.set_option('display.max_columns', None)
+    
     dates = pd.date_range(start = '2019-01', end = '2019-03', freq = 'D')
     
-    tk.get_timeseries_signature(dates)
-    
+    # Makes 29 new time series features from the dates
+    tk.get_timeseries_signature(dates).head()
+    ```
     '''
     
     # If idx is a DatetimeIndex, convert to Series
@@ -156,22 +159,48 @@ def augment_timeseries_signature(
     data: pd.DataFrame, 
     date_column: str,
 ) -> pd.DataFrame:
-    '''The function `augment_timeseries_signature` takes a DataFrame and a date column as input, calculates
-    the timeseries signature of the date column, and returns the original DataFrame with the timeseries
-    signature appended as additional columns.
+    '''The function `augment_timeseries_signature` takes a DataFrame and a date column as input and returns the original DataFrame with the **29 different date and time based features** added as new columns: 
+    
+    - index_num: An int64 feature that captures the entire datetime as a numeric value to the second
+    - year: The year of the datetime
+    - year_iso: The iso year of the datetime
+    - yearstart: Logical (0,1) indicating if first day of year (defined by frequency)
+    - yearend: Logical (0,1) indicating if last day of year (defined by frequency)
+    - leapyear: Logical (0,1) indicating if the date belongs to a leap year
+    - half: Half year of the date: Jan-Jun = 1, July-Dec = 2
+    - quarter: Quarter of the date: Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4
+    - quarteryear: Quarter of the date + relative year
+    - quarterstart: Logical (0,1) indicating if first day of quarter (defined by frequency)
+    - quarterend: Logical (0,1) indicating if last day of quarter (defined by frequency)
+    - month: The month of the datetime
+    - month_lbl: The month label of the datetime
+    - monthstart: Logical (0,1) indicating if first day of month (defined by frequency)
+    - monthend: Logical (0,1) indicating if last day of month (defined by frequency)
+    - yweek: The week ordinal of the year
+    - mweek: The week ordinal of the month
+    - wday: The number of the day of the week with Monday=1, Sunday=6
+    - wday_lbl: The day of the week label
+    - mday: The day of the datetime
+    - qday: The days of the relative quarter
+    - yday: The ordinal day of year
+    - weekend: Logical (0,1) indicating if the day is a weekend 
+    - hour: The hour of the datetime
+    - minute: The minutes of the datetime
+    - second: The seconds of the datetime
+    - msecond: The microseconds of the datetime
+    - nsecond: The nanoseconds of the datetime
+    - am_pm: Half of the day, AM = ante meridiem, PM = post meridiem
     
     Parameters
     ----------
     data : pd.DataFrame
         The `data` parameter is a pandas DataFrame that contains the time series data.
     date_column : str
-        The `date_column` parameter is a string that represents the name of the column in the `data`
-    DataFrame that contains the dates for the time series data.
+        The `date_column` parameter is a string that represents the name of the date column in the `data` DataFrame.
     
     Returns
     -------
-        a pandas DataFrame that is the concatenation of the original data DataFrame and the ts_signature_df
-    DataFrame.
+        A pandas DataFrame that is the concatenation of the original data DataFrame and the ts_signature_df DataFrame.
     
     Examples
     --------
@@ -179,9 +208,13 @@ def augment_timeseries_signature(
     import pandas as pd
     import timetk as tk
     
+    pd.set_option('display.max_columns', None)
+    
+    # Adds 29 new time series features as columns to the original DataFrame
     ( 
         tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
             .augment_timeseries_signature(date_column = 'order_date')
+            .head()
     )
     ```
     

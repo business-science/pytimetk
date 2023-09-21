@@ -1,12 +1,7 @@
 ---
+title: "Quick Start"
 jupyter: python3
 ---
-
-# timetk for Python <img src="logo-timetk.png" align="right" height="138" />
-
-> The Time Series Toolkit for Python
-
-**Timetk's Mission:** To make time series analysis easier, faster, and more enjoyable in Python.
 
 ::: {.callout-warning collapse="false"}
 ## Under Development
@@ -46,7 +41,6 @@ Your company might be interested in sales patterns for various categories of bic
 2. Next, use timetk's `summarize_by_time()` method to apply the sum function my month start ("MS") and use `wide_format` to return the dataframe in wide format. 
 
 The result is the total revenue for Mountain and Road bikes by month. 
-
 ```{python}
 summary_category_1_df = df \
     .groupby("category_1") \
@@ -73,8 +67,6 @@ We are working on an even easier and more attractive plotting solution specifica
 
 We can visualize with `plotly`. 
 
-
-
 ```{python}
 #| warning: false
 import plotly.express as px
@@ -89,38 +81,6 @@ px.line(
 )
 ```
 
-## Installation
+## More coming soon...
 
-To install `timetk` using [Poetry](https://python-poetry.org/), follow these steps:
-
-### 1. Prerequisites
-
-Make sure you have Python 3.9 or later installed on your system.
-
-### 2. Install Poetry
-
-To install Poetry, you can use the [official installer](https://python-poetry.org/docs/#installing-with-the-official-installer)  provided by Poetry. Do not use pip.
-
-### 3. Clone the Repository
-
-Clone the `timetk` repository from GitHub:
-
-```
-git clone https://github.com/business-science/pytimetk
-```
-
-### 4. Install Dependencies
-
-Use Poetry to install the package and its dependencies:
-
-```
-pip install poetry
-```
-
-or you can create a virtualenv with poetry and install the dependencies
-
-```
-poetry shell
-poetry install
-```
-
+There's a lot more coming in `timetk` for Python. You can check out our [Project Roadmap here](https://github.com/business-science/pytimetk/issues/2). 

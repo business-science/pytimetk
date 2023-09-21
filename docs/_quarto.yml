@@ -32,16 +32,37 @@ website:
   navbar:
     background: primary
     pinned: true
-    logo: "logo-timetk.png"
+    logo: "https://www.business-science.io/img/business-science-logo.png"
+    # logo: "logo-timetk.png"
     collapse-below: lg
-    left:
-      - text: Tutorials
-        file: guides/index.qmd
-      - text: Docs
-        file: reference/index.qmd
+    # left:
+      # - text: Tutorials
+      #   file: guides/index.qmd
+      # - text: Docs
+      #   file: reference/index.qmd
     tools:
       - icon: github
         href: https://github.com/business-science/pytimetk
+  sidebar: 
+    collapse-level: 1
+    contents: 
+      - text: Timetk for Python📈
+        file: index.qmd
+      - text: "---"
+      - section: "🏁 Getting Started:"
+        contents: getting-started/*
+      - section: "🗺️ Guides: (Coming Soon)"
+        contents: guides/*
+      - text: 📄 API Reference
+        file: reference/index.qmd
+      - text: "---"
+      - section: "More References:"
+      - text: Business Science
+        file: https://www.business-science.io/index.html
+        external: true
+      - text: Timetk (R Version)
+        file: https://business-science.github.io/timetk/
+        external: true
 
 
 format:
@@ -61,14 +82,21 @@ quartodoc:
   package: timetk
   sidebar: _sidebar.yml
   sections:
-    - title: 🐼 Pandas Extensions
+    - title: 🐼 Time Series for Pandas DataFrames
       desc: Time series functions that manipulate DataFrames.
-      package: timetk.summarize_by_time
+      package: timetk
       contents:
         - summarize_by_time
+        - augment_timeseries_signature
+    - title: 🐼 Time Series for Pandas Series
+      desc: Time series functions that manipulate Pandas Series.
+      package: timetk
+      contents:
+        - get_timeseries_signature
     - title: 💾 Datasets
       package: timetk.datasets.get_datasets
-      desc: Try out `timetk` on some of our datasets.
+      desc: Practice `timetk` with our complementary time series datasets.
       contents:
-        - load_dataset
         - get_available_datasets
+        - load_dataset
+        

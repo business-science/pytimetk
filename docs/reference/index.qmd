@@ -1,18 +1,27 @@
 # Function reference
 
-## 🐼 Pandas Extensions
+## 🐼 Time Series for Pandas DataFrames
 
 Time series functions that manipulate DataFrames.
 
 | | |
 | --- | --- |
-| [summarize_by_time](summarize_by_time.qmd#timetk.summarize_by_time.summarize_by_time) | The `summarize_by_time` function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the aggregation. |
+| [summarize_by_time](summarize_by_time.qmd#timetk.summarize_by_time) |  |
+| [augment_timeseries_signature](augment_timeseries_signature.qmd#timetk.augment_timeseries_signature) | The function `augment_timeseries_signature` takes a DataFrame and a date column as input and returns the original DataFrame with the **29 different date and time based features** added as new columns:  |
 
-## 💾 Datasets
+## 🐼 Time Series for Pandas Series
 
-Try out `timetk` on some of our datasets.
+Time series functions that manipulate Pandas Series.
 
 | | |
 | --- | --- |
-| [load_dataset](load_dataset.qmd#timetk.datasets.get_datasets.load_dataset) | The `load_dataset` function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to `pandas.read_csv`. The available datasets are: |
+| [get_timeseries_signature](get_timeseries_signature.qmd#timetk.get_timeseries_signature) | The function `tk_get_timeseries_signature` engineers **29 different date and time based features** from a single datetime index `idx`:  |
+
+## 💾 Datasets
+
+Practice `timetk` with our complementary time series datasets.
+
+| | |
+| --- | --- |
 | [get_available_datasets](get_available_datasets.qmd#timetk.datasets.get_datasets.get_available_datasets) | The `get_available_datasets` function returns a sorted list of available dataset names from the `timetk.datasets` module. |
+| [load_dataset](load_dataset.qmd#timetk.datasets.get_datasets.load_dataset) | The `load_dataset` function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to `pandas.read_csv`. The available datasets are: |
