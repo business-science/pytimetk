@@ -54,7 +54,7 @@ website:
       - text: "---"
       - section: "🏁 Getting Started:"
         contents: getting-started/*
-      - section: "🗺️ Guides: (Coming Soon)"
+      - section: "🗺️ Guides:"
         contents: guides/*
       - text: 📄 API Reference
         file: reference/index.qmd
