@@ -1,27 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://business-science.github.io/pytimetk/reference/get_timeseries_signature.html</loc>
+    <lastmod>2023-09-21T02:23:30.698Z</lastmod>
+  </url>
+  <url>
     <loc>https://business-science.github.io/pytimetk/reference/load_dataset.html</loc>
-    <lastmod>2023-09-21T00:20:22.785Z</lastmod>
+    <lastmod>2023-09-21T02:23:23.137Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2023-09-21T00:20:14.627Z</lastmod>
+    <lastmod>2023-09-21T02:23:15.140Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/guides/tutorial_2.html</loc>
+    <lastmod>2023-09-21T02:23:07.261Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/getting-started/01_installation.html</loc>
+    <lastmod>2023-09-21T02:22:59.126Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/index.html</loc>
-    <lastmod>2023-09-21T00:20:06.917Z</lastmod>
+    <lastmod>2023-09-21T02:22:55.668Z</lastmod>
   </url>
   <url>
-    <loc>https://business-science.github.io/pytimetk/guides/index.html</loc>
-    <lastmod>2023-09-21T00:20:10.373Z</lastmod>
+    <loc>https://business-science.github.io/pytimetk/getting-started/02_quick_start.html</loc>
+    <lastmod>2023-09-21T02:23:03.948Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/guides/tutorial_1.html</loc>
+    <lastmod>2023-09-21T02:23:10.728Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_available_datasets.html</loc>
-    <lastmod>2023-09-21T00:20:14.244Z</lastmod>
+    <lastmod>2023-09-21T02:23:14.651Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/summarize_by_time.html</loc>
-    <lastmod>2023-09-21T00:20:18.773Z</lastmod>
+    <lastmod>2023-09-21T02:23:19.423Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/augment_timeseries_signature.html</loc>
+    <lastmod>2023-09-21T02:23:26.889Z</lastmod>
   </url>
 </urlset>
