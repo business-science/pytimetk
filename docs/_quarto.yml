@@ -72,8 +72,9 @@ format:
       light: [lux, theme-light.scss, theme.scss]
       dark: [lux, theme-dark.scss, theme.scss]
     highlight-style: github
+    linestretch: 1.8
     grid:
-      sidebar-width: 250px
+      sidebar-width: 300px
       body-width: 900px
       margin-width: 300px
 
