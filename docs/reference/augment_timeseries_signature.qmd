@@ -2,6 +2,8 @@
 
 `augment_timeseries_signature(data, date_column)`
 
+Add 29 time series features to a DataFrame.
+
 The function `augment_timeseries_signature` takes a DataFrame and a date column as input and returns the original DataFrame with the **29 different date and time based features** added as new columns: 
 
 - index_num: An int64 feature that captures the entire datetime as a numeric value to the second

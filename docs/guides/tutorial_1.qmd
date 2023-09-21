@@ -1,6 +1,0 @@
----
-title: "Tutorial 1"
-jupyter: python3
----
-
-## Coming soon...

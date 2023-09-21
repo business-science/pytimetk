@@ -2,8 +2,9 @@
 
 `floor_date(idx, unit='D')`
 
-The `floor_date` function takes a pandas Series of dates and returns a new Series with the dates
-rounded down to the specified unit.
+Round a date down to the specified unit (e.g. Flooring).
+
+The `floor_date` function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit.
 
 ## Parameters
 
@@ -14,9 +15,9 @@ rounded down to the specified unit.
 
 ## Returns
 
-| Type                                                      | Description   |
-|-----------------------------------------------------------|---------------|
-| The `floor_date` function returns a pandas Series object. |               |
+| Type      | Description                                                                                |
+|-----------|--------------------------------------------------------------------------------------------|
+| pd.Series | The `floor_date` function returns a pandas Series object containing datetime64[ns] values. |
 
 ## Examples
 

@@ -2,6 +2,8 @@
 
 `datasets.get_datasets.load_dataset(name='m4_daily', verbose=False, **kwargs)`
 
+Load one of 11 Time Series Datasets.
+
 The `load_dataset` function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to `pandas.read_csv`. The available datasets are:
 
 - `m4_hourly`: The M4 hourly dataset
@@ -16,6 +18,8 @@ The `load_dataset` function is used to load various time series datasets by name
 - `walmart_sales_weekly`: The Walmart sales weekly dataset
 - `wikipedia_traffic_daily`: The Wikipedia traffic daily dataset
 
+The datasets can be loaded with `timetk.load_dataset(name)`, where `name` is the name of the dataset that you want to load. The default value is set to "m4_daily", which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned above.
+
 ## Parameters
 
 | Name       | Type   | Description                                                                                                                                                                                                                                                                              | Default      |
@@ -26,9 +30,9 @@ The `load_dataset` function is used to load various time series datasets by name
 
 ## Returns
 
-| Type                                                                             | Description   |
-|----------------------------------------------------------------------------------|---------------|
-| The `load_dataset` function returns the requested dataset as a pandas DataFrame. |               |
+| Type         | Description                                                                      |
+|--------------|----------------------------------------------------------------------------------|
+| pd.DataFrame | The `load_dataset` function returns the requested dataset as a pandas DataFrame. |
 
 ## Examples
 

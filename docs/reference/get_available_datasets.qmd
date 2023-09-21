@@ -2,13 +2,15 @@
 
 `datasets.get_datasets.get_available_datasets()`
 
-The `get_available_datasets` function returns a sorted list of available dataset names from the `timetk.datasets` module.
+Get a list of 11 datasets that can be loaded with `timetk.load_dataset`.
+
+The `get_available_datasets` function returns a sorted list of available dataset names from the `timetk.datasets` module. The available datasets are:
 
 ## Returns
 
-| Type                                                                                                                      | Description   |
-|---------------------------------------------------------------------------------------------------------------------------|---------------|
-| The function `get_available_datasets` returns a sorted list of available dataset names from the `timetk.datasets` module. |               |
+| Type   | Description                                                                                                               |
+|--------|---------------------------------------------------------------------------------------------------------------------------|
+| list   | The function `get_available_datasets` returns a sorted list of available dataset names from the `timetk.datasets` module. |
 
 ## Examples
 

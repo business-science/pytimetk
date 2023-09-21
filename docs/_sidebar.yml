@@ -9,6 +9,7 @@ website:
     - contents:
       - reference/get_timeseries_signature.qmd
       - reference/floor_date.qmd
+      - reference/week_of_month.qmd
       section: "\U0001F43C Time Series for Pandas Series"
     - contents:
       - reference/get_available_datasets.qmd

@@ -9,7 +9,9 @@ from .utils.datetime_helpers import week_of_month
  
 @pf.register_series_method
 def get_timeseries_signature(idx: pd.Series or pd.DatetimeIndex) -> pd.DataFrame:
-    '''The function `tk_get_timeseries_signature` engineers **29 different date and time based features** from a single datetime index `idx`: 
+    '''Convert a timestamp to a set of 29 time series features.
+    
+    The function `tk_get_timeseries_signature` engineers **29 different date and time based features** from a single datetime index `idx`: 
     
     - index_num: An int64 feature that captures the entire datetime as a numeric value to the second
     - year: The year of the datetime
@@ -159,7 +161,10 @@ def augment_timeseries_signature(
     data: pd.DataFrame, 
     date_column: str,
 ) -> pd.DataFrame:
-    '''The function `augment_timeseries_signature` takes a DataFrame and a date column as input and returns the original DataFrame with the **29 different date and time based features** added as new columns: 
+    ''' 
+    Add 29 time series features to a DataFrame.
+    
+    The function `augment_timeseries_signature` takes a DataFrame and a date column as input and returns the original DataFrame with the **29 different date and time based features** added as new columns: 
     
     - index_num: An int64 feature that captures the entire datetime as a numeric value to the second
     - year: The year of the datetime

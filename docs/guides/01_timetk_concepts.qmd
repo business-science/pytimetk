@@ -1,0 +1,151 @@
+---
+title: "How to use Timetk"
+jupyter: python3
+toc: true
+toc-depth: 2
+---
+
+> *Timetk has one mission:* To make time series analysis simpler, easier, and faster in Python. This goal requires some opinionated ways of treating time series in Python. We will conceptually lay out how `timetk` can help. 
+
+::: {.callout-note collapse="false"}
+## How this guide benefits you
+
+This guide covers how to use `timetk` conceptually. Once you understand key concepts, you can go from basic to advanced time series analysis very fast. 
+:::
+
+
+
+Let's first start with how to think about time series data conceptually. **Time series data has 3 core properties.** 
+
+## The 3 Core Properties of Time Series Data
+
+Every time series DataFrame should have the following properties:
+
+1. *Time Series Index:* A column containing 'datetime64' time stamps.
+2. *Value Columns:* One or more columns containing numeric data that can be aggregated and visualized by time
+3. *Group Columns (Optional):* One or more `categorical` or `str` columns that can be grouped by and time series can be evaluated by groups. 
+
+In practice here's what this looks like using the "m4_daily" dataset:
+
+::: {.callout-note collapse="false"}
+## (Example: m4_daily dataset) 3 Core Properties of Time Series Data
+
+We can see that the `m4_daily` dataset has:
+
+1. *Time Series Index:* The `date` column
+2. *Value Column(s):* The `value` column
+3. *Group Column(s):* The `id` column
+:::
+
+```{python}
+# Import packages
+import timetk as tk
+import pandas as pd
+import numpy as np
+
+# Import a Time Series Data Set
+m4_daily_df = tk.load_dataset("m4_daily", parse_dates = ['date'])
+m4_daily_df
+```
+
+## 2 Ways that Timetk Makes Time Series Analysis Easier
+
+::: {.callout-note collapse="false"}
+## 2 Types of Time Series Functions
+
+1. Pandas `DataFrame` Operations
+2. Pandas `Series` Operations 
+:::
+
+Timetk contains a number of functions designed to make time series analysis operations easier. In general, these operations come in <u>2 types of time series functions</u>:
+
+1. *Pandas DataFrame Operations:* These functions work on `pd.DataFrame` objects and derivatives such as `groupby()` objects for Grouped Time Series Analysis. You will see `data` as the first parameter in these functions. 
+   
+2. *Pandas Series Operations:* These functions work on `pd.Series` objects.
+    
+   - *Time Series Index Operations:* Are designed for *Time Series index*. You will see `idx` as the first parameter of these functions. In these cases, these functions also work with `datetime64` values (e.g. those produced when you parse_dates via `pd.read_csv()` or create time series with `pd.date_range()`)
+   
+   - *Numeric Operations:* Are designed for *Numeric Values*. You will see `x` as the first parameter for these functions. 
+
+Let's take a look at how to use the different types of Time Series Analysis functions in `timetk`. We'll start with Type 1: Pandas `DataFrame` Operations. 
+
+## Type 1: Pandas `DataFrame` Operations
+
+Before we start using `timetk`, let's make sure our data is set up properly. 
+
+#### Timetk Data Format Compliance
+
+::: {.callout-important collapse="false"}
+## 3 Core Properties Must Be Upheald
+
+A `Timetk`-Compliant Pandas `DataFrame` must have:
+
+1. *Time Series Index:* A Time Stamp column containing `datetime64` values
+2. *Value Column(s):* The value column(s) containing `float` or `int` values
+3. *Group Column(s):* Optionally for grouped time series analysis, one or more columns containg `str` or `categorical` values (shown as an object)
+
+If these are NOT upheld, the `timetk` DataFrame operations will likely fail. 
+:::
+
+::: {.callout-tip collapse="false"}
+## Inspect the DataFrame
+
+Use Pandas `info()` method to check compliance. 
+:::
+
+Using pandas `info()` method, we can see that we have a compliant data frame with a `date` column containing `datetime64` and a `value` column containing `float64`. For grouped analysis we have the `id` column containing `object` dtype. 
+
+```{python}
+# Tip: Inspect for compliance with info()
+m4_daily_df.info()
+```
+
+### Grouped Time Series Analysis with Summarize By Time
+
+First, inspect how the `summarize_by_time` function works by calling `help()`. 
+
+```{python}
+#| output: false
+# Review the summarize_by_time documentation (output not shown)
+help(tk.summarize_by_time)
+```
+
+::: {.callout-note collapse="false"}
+## Help Doc Info: `summarize_by_time()`
+
+- The first parameter is `data`, indicating this is a `DataFrame` operation. 
+- The Examples show different use cases for how to apply the function on a DataFrame
+:::
+
+Let's test the `summarize_by_time()` DataFrame operation out using the grouped approach with method chaining. DataFrame operations can be used as Pandas methods with method-chaining, which allows us to more succinctly apply time series operations.
+
+```{python}
+# Grouped Summarize By Time with Method Chaining
+(
+    m4_daily_df
+        .groupby('id')
+        .summarize_by_time(
+            date_column  = 'date',
+            value_column = 'value',
+            rule         = 'QS', # QS = Quarter Start
+            agg_func     = [
+                'mean', 
+                'median', 
+                'min',
+                ('q25', lambda x: np.quantile(x, 0.25)),
+                ('q75', lambda x: np.quantile(x, 0.75)),
+                'max',
+                ('range',lambda x: x.max() - x.min()),
+            ],
+        )
+)
+```
+
+::: {.callout-note collapse="false"}
+## Key Takeaways: `summarize_by_time()`
+
+- The `data` must comply with the 3 core properties (date column, value column(s), and group column(s)) 
+- The aggregation functions were applied by combination of group (id) and resample (Quarter Start)
+- The result was a pandas DataFrame with group column, resampled date column, and summary values (mean, median, min, 25th-quantile, etc)
+:::
+

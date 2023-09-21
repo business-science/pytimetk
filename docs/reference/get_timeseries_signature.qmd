@@ -2,6 +2,8 @@
 
 `get_timeseries_signature(idx)`
 
+Convert a timestamp to a set of 29 time series features.
+
 The function `tk_get_timeseries_signature` engineers **29 different date and time based features** from a single datetime index `idx`: 
 
 - index_num: An int64 feature that captures the entire datetime as a numeric value to the second

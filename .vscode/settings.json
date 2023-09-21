@@ -6,5 +6,6 @@
         "**/.git": false
 },
 "docwriter.style": "NumPy",
-"docwriter.progress.trackFunctions": true
+"docwriter.progress.trackFunctions": true,
+"notebook.output.scrolling": true
 }

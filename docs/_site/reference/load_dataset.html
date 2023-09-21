@@ -262,6 +262,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </header>
 
 <p><code>datasets.get_datasets.load_dataset(name='m4_daily', verbose=False, **kwargs)</code></p>
+<p>Load one of 11 Time Series Datasets.</p>
 <p>The <code>load_dataset</code> function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to <code>pandas.read_csv</code>. The available datasets are:</p>
 <ul>
 <li><code>m4_hourly</code>: The M4 hourly dataset</li>
@@ -276,6 +277,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <li><code>walmart_sales_weekly</code>: The Walmart sales weekly dataset</li>
 <li><code>wikipedia_traffic_daily</code>: The Wikipedia traffic daily dataset</li>
 </ul>
+<p>The datasets can be loaded with <code>timetk.load_dataset(name)</code>, where <code>name</code> is the name of the dataset that you want to load. The default value is set to “m4_daily”, which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned above.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
@@ -319,8 +321,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 84%">
-<col style="width: 15%">
+<col style="width: 14%">
+<col style="width: 85%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -330,8 +332,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
+<td>pd.DataFrame</td>
 <td>The <code>load_dataset</code> function returns the requested dataset as a pandas DataFrame.</td>
-<td></td>
 </tr>
 </tbody>
 </table>

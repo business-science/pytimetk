@@ -2,6 +2,8 @@ import pandas as pd
 import pandas_flavor as pf
 from timetk.utils.pandas_helpers import flatten_multiindex_column_names
 
+from itertools import cycle
+
 @pf.register_dataframe_method
 def summarize_by_time(
     data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
@@ -18,7 +20,10 @@ def summarize_by_time(
     *args,
     **kwargs
 ) -> pd.DataFrame:
-    '''The `summarize_by_time` function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the aggregation.
+    '''
+    Summarize a DataFrame or GroupBy object by time.
+    
+    The `summarize_by_time` function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the time-based aggregation.
     
     Parameters
     ----------
@@ -47,7 +52,8 @@ def summarize_by_time(
     
     Returns
     -------
-        a Pandas DataFrame that is summarized by time.
+    pd.DataFrame
+        A Pandas DataFrame that is summarized by time.
         
     Examples
     --------
@@ -75,7 +81,21 @@ def summarize_by_time(
     ```
     
     ```{python}
-    # Summarize by time with a GroupBy object
+    # Summarize by time with a GroupBy object (Long Format)
+    (
+        df 
+            .groupby('category_1') 
+            .summarize_by_time(
+                date_column  = 'order_date', 
+                value_column = 'total_price', 
+                rule         = 'MS',
+                wide_format  = False, 
+            )
+    )
+    ```
+    
+    ```{python}
+    # Summarize by time with a GroupBy object (Wide Format)
     (
         df 
             .groupby('category_1') 
@@ -87,10 +107,7 @@ def summarize_by_time(
             )
     )
     ```
-    
     '''
-    
-    
     
     # Check if data is a Pandas DataFrame
     if not isinstance(data, pd.DataFrame):
@@ -120,8 +137,22 @@ def summarize_by_time(
     # Create a dictionary mapping each value column to the aggregating function(s)
     agg_dict = {col: agg_func for col in value_column}
     
-    # Apply the aggregation using the agg method of the resampled data
-    data = data.agg(agg_dict, *args, **kwargs)
+    # **** FIX BUG WITH GROUPBY RESAMPLED OBJECTS (PART 1) ****
+    
+    unique_first_elements = [func[0] for value in agg_dict.values() for func in value if isinstance(func, tuple)]
+    
+    # print(unique_first_elements)
+
+    if not unique_first_elements == []:
+        for key, value in agg_dict.items():
+            agg_dict[key] = [func[1] if isinstance(func, tuple) else func for func in value]
+            
+    # **** END FIX BUG WITH GROUPBY RESAMPLED OBJECTS (PART 1) ****
+
+    
+    # Apply the aggregation using the dict method of the resampled data
+    data = data.agg(func=agg_dict, *args, **kwargs)    
+    
     
     # Unstack the grouped columns if wide_format is True and groups is not None
     if wide_format:
@@ -142,6 +173,19 @@ def summarize_by_time(
     # Reset the index of data   
     if reset_index: 
         data.reset_index(inplace=True)
+        
+    # **** FIX BUG WITH GROUPBY RESAMPLED OBJECTS (PART 2)
+    if not unique_first_elements == []:        
+        
+        columns = data.columns
+        # print(columns)
+        
+        names_iter = cycle(unique_first_elements)
+        
+        new_columns = [col.replace('<lambda>', next(names_iter)) if '<lambda>' in col else col for col in columns]
+        
+        data.columns = new_columns
+    # **** END FIX BUG WITH GROUPBY RESAMPLED OBJECTS (PART 2)
     
     return data
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>timetk for Python – get_timeseries_signature</title>
+<title>timetk for Python - How to use Timetk</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -63,6 +63,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../guides/tutorial_2.html" rel="next">
+<link href="../getting-started/02_quick_start.html" rel="prev">
 <link href="../favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -109,6 +111,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
+<meta property="og:title" content="timetk for Python - How to use Timetk">
+<meta property="og:description" content="">
+<meta property="og:site-name" content="timetk for Python">
+<meta name="twitter:title" content="timetk for Python - How to use Timetk">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
 </head>
 
 <body class="nav-sidebar floating nav-fixed">
@@ -137,7 +145,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">get_timeseries_signature</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../guides/01_timetk_concepts.html">🗺️ Guides: (Coming Soon)</a></li><li class="breadcrumb-item"><a href="../guides/01_timetk_concepts.html">How to use Timetk</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -181,17 +189,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
  <span class="menu-text">🗺️ Guides: (Coming Soon)</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../guides/tutorial_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Tutorial 1</span></a>
+  <a href="../guides/01_timetk_concepts.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">How to use Timetk</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -234,19 +242,19 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
-  <ul>
-  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
-  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <ul class="collapse">
+  <li><a href="#the-3-core-properties-of-time-series-data" id="toc-the-3-core-properties-of-time-series-data" class="nav-link active" data-scroll-target="#the-3-core-properties-of-time-series-data">The 3 Core Properties of Time Series Data</a></li>
+  <li><a href="#ways-that-timetk-makes-time-series-analysis-easier" id="toc-ways-that-timetk-makes-time-series-analysis-easier" class="nav-link" data-scroll-target="#ways-that-timetk-makes-time-series-analysis-easier">2 Ways that Timetk Makes Time Series Analysis Easier</a></li>
+  <li><a href="#type-1-pandas-dataframe-operations" id="toc-type-1-pandas-dataframe-operations" class="nav-link" data-scroll-target="#type-1-pandas-dataframe-operations">Type 1: Pandas <code>DataFrame</code> Operations</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/get_timeseries_signature.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/guides/01_timetk_concepts.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">get_timeseries_signature</h1>
+<h1 class="title">How to use Timetk</h1>
 </div>
 
 
@@ -261,101 +269,66 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>get_timeseries_signature(idx)</code></p>
-<p>Convert a timestamp to a set of 29 time series features.</p>
-<p>The function <code>tk_get_timeseries_signature</code> engineers <strong>29 different date and time based features</strong> from a single datetime index <code>idx</code>:</p>
-<ul>
-<li>index_num: An int64 feature that captures the entire datetime as a numeric value to the second</li>
-<li>year: The year of the datetime</li>
-<li>year_iso: The iso year of the datetime</li>
-<li>yearstart: Logical (0,1) indicating if first day of year (defined by frequency)</li>
-<li>yearend: Logical (0,1) indicating if last day of year (defined by frequency)</li>
-<li>leapyear: Logical (0,1) indicating if the date belongs to a leap year</li>
-<li>half: Half year of the date: Jan-Jun = 1, July-Dec = 2</li>
-<li>quarter: Quarter of the date: Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4</li>
-<li>quarteryear: Quarter of the date + relative year</li>
-<li>quarterstart: Logical (0,1) indicating if first day of quarter (defined by frequency)</li>
-<li>quarterend: Logical (0,1) indicating if last day of quarter (defined by frequency)</li>
-<li>month: The month of the datetime</li>
-<li>month_lbl: The month label of the datetime</li>
-<li>monthstart: Logical (0,1) indicating if first day of month (defined by frequency)</li>
-<li>monthend: Logical (0,1) indicating if last day of month (defined by frequency)</li>
-<li>yweek: The week ordinal of the year</li>
-<li>mweek: The week ordinal of the month</li>
-<li>wday: The number of the day of the week with Monday=1, Sunday=6</li>
-<li>wday_lbl: The day of the week label</li>
-<li>mday: The day of the datetime</li>
-<li>qday: The days of the relative quarter</li>
-<li>yday: The ordinal day of year</li>
-<li>weekend: Logical (0,1) indicating if the day is a weekend</li>
-<li>hour: The hour of the datetime</li>
-<li>minute: The minutes of the datetime</li>
-<li>second: The seconds of the datetime</li>
-<li>msecond: The microseconds of the datetime</li>
-<li>nsecond: The nanoseconds of the datetime</li>
-<li>am_pm: Half of the day, AM = ante meridiem, PM = post meridiem</li>
-</ul>
-<section id="parameters" class="level2">
-<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
-<table class="table">
-<colgroup>
-<col style="width: 5%">
-<col style="width: 19%">
-<col style="width: 67%">
-<col style="width: 7%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>idx</code></td>
-<td>pd.Series or pd.DatetimeIndex</td>
-<td>idx is a pandas Series object containing datetime values. Alternatively a pd.DatetimeIndex can be passed.</td>
-<td><em>required</em></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="returns" class="level2">
-<h2 class="anchored" data-anchor-id="returns">Returns</h2>
-<table class="table">
-<colgroup>
-<col style="width: 91%">
-<col style="width: 8%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>The function <code>tk_get_timeseries_signature</code> returns a pandas DataFrame that contains 29 different date and time based features derived from a single datetime column.</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<blockquote class="blockquote">
+<p><em>Timetk has one mission:</em> To make time series analysis simpler, easier, and faster in Python. This goal requires some opinionated ways of treating time series in Python. We will conceptually lay out how <code>timetk</code> can help.</p>
+</blockquote>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+How this guide benefits you
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>This guide covers how to use <code>timetk</code> conceptually. Once you understand key concepts, you can go from basic to advanced time series analysis very fast.</p>
+</div>
+</div>
+</div>
+<p>Let’s first start with how to think about time series data conceptually. <strong>Time series data has 3 core properties.</strong></p>
+<section id="the-3-core-properties-of-time-series-data" class="level2">
+<h2 class="anchored" data-anchor-id="the-3-core-properties-of-time-series-data">The 3 Core Properties of Time Series Data</h2>
+<p>Every time series DataFrame should have the following properties:</p>
+<ol type="1">
+<li><em>Time Series Index:</em> A column containing ‘datetime64’ time stamps.</li>
+<li><em>Value Columns:</em> One or more columns containing numeric data that can be aggregated and visualized by time</li>
+<li><em>Group Columns (Optional):</em> One or more <code>categorical</code> or <code>str</code> columns that can be grouped by and time series can be evaluated by groups.</li>
+</ol>
+<p>In practice here’s what this looks like using the “m4_daily” dataset:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+(Example: m4_daily dataset) 3 Core Properties of Time Series Data
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>We can see that the <code>m4_daily</code> dataset has:</p>
+<ol type="1">
+<li><em>Time Series Index:</em> The <code>date</code> column</li>
+<li><em>Value Column(s):</em> The <code>value</code> column</li>
+<li><em>Group Column(s):</em> The <code>id</code> column</li>
+</ol>
+</div>
+</div>
+</div>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Import packages</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timetk <span class="im">as</span> tk</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_columns'</span>, <span class="va">None</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.date_range(start <span class="op">=</span> <span class="st">'2019-01'</span>, end <span class="op">=</span> <span class="st">'2019-03'</span>, freq <span class="op">=</span> <span class="st">'D'</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Makes 29 new time series features from the dates</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>tk.get_timeseries_signature(dates).head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Import a Time Series Data Set</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>m4_daily_df <span class="op">=</span> tk.load_dataset(<span class="st">"m4_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>m4_daily_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="81">
 <div>
 
 
@@ -363,206 +336,408 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">index_num</th>
-<th data-quarto-table-cell-role="th">year</th>
-<th data-quarto-table-cell-role="th">year_iso</th>
-<th data-quarto-table-cell-role="th">yearstart</th>
-<th data-quarto-table-cell-role="th">yearend</th>
-<th data-quarto-table-cell-role="th">leapyear</th>
-<th data-quarto-table-cell-role="th">half</th>
-<th data-quarto-table-cell-role="th">quarter</th>
-<th data-quarto-table-cell-role="th">quarteryear</th>
-<th data-quarto-table-cell-role="th">quarterstart</th>
-<th data-quarto-table-cell-role="th">quarterend</th>
-<th data-quarto-table-cell-role="th">month</th>
-<th data-quarto-table-cell-role="th">month_lbl</th>
-<th data-quarto-table-cell-role="th">monthstart</th>
-<th data-quarto-table-cell-role="th">monthend</th>
-<th data-quarto-table-cell-role="th">yweek</th>
-<th data-quarto-table-cell-role="th">mweek</th>
-<th data-quarto-table-cell-role="th">wday</th>
-<th data-quarto-table-cell-role="th">wday_lbl</th>
-<th data-quarto-table-cell-role="th">mday</th>
-<th data-quarto-table-cell-role="th">qday</th>
-<th data-quarto-table-cell-role="th">yday</th>
-<th data-quarto-table-cell-role="th">weekend</th>
-<th data-quarto-table-cell-role="th">hour</th>
-<th data-quarto-table-cell-role="th">minute</th>
-<th data-quarto-table-cell-role="th">second</th>
-<th data-quarto-table-cell-role="th">msecond</th>
-<th data-quarto-table-cell-role="th">nsecond</th>
-<th data-quarto-table-cell-role="th">am_pm</th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>1546300800</td>
-<td>2019</td>
-<td>2019</td>
-<td>1</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>2019Q1</td>
-<td>1</td>
-<td>0</td>
-<td>1</td>
-<td>January</td>
-<td>1</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>2</td>
-<td>Tuesday</td>
-<td>1</td>
-<td>1</td>
-<td>1</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>am</td>
+<td>D10</td>
+<td>2014-07-03</td>
+<td>2076.2</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>1546387200</td>
-<td>2019</td>
-<td>2019</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>2019Q1</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>January</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>3</td>
-<td>Wednesday</td>
-<td>2</td>
-<td>2</td>
-<td>2</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>am</td>
+<td>D10</td>
+<td>2014-07-04</td>
+<td>2073.4</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>1546473600</td>
-<td>2019</td>
-<td>2019</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>2019Q1</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>January</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>4</td>
-<td>Thursday</td>
-<td>3</td>
-<td>3</td>
-<td>3</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>am</td>
+<td>D10</td>
+<td>2014-07-05</td>
+<td>2048.7</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>1546560000</td>
-<td>2019</td>
-<td>2019</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>2019Q1</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>January</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>5</td>
-<td>Friday</td>
-<td>4</td>
-<td>4</td>
-<td>4</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>am</td>
+<td>D10</td>
+<td>2014-07-06</td>
+<td>2048.9</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>1546646400</td>
-<td>2019</td>
-<td>2019</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>2019Q1</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>January</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>6</td>
-<td>Saturday</td>
-<td>5</td>
-<td>5</td>
-<td>5</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>am</td>
+<td>D10</td>
+<td>2014-07-07</td>
+<td>2006.4</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9738</td>
+<td>D500</td>
+<td>2012-09-19</td>
+<td>9418.8</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9739</td>
+<td>D500</td>
+<td>2012-09-20</td>
+<td>9365.7</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9740</td>
+<td>D500</td>
+<td>2012-09-21</td>
+<td>9445.9</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9741</td>
+<td>D500</td>
+<td>2012-09-22</td>
+<td>9497.9</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9742</td>
+<td>D500</td>
+<td>2012-09-23</td>
+<td>9545.3</td>
 </tr>
 </tbody>
 </table>
 
+<p>9743 rows × 3 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="ways-that-timetk-makes-time-series-analysis-easier" class="level2">
+<h2 class="anchored" data-anchor-id="ways-that-timetk-makes-time-series-analysis-easier">2 Ways that Timetk Makes Time Series Analysis Easier</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+2 Types of Time Series Functions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Pandas <code>DataFrame</code> Operations</li>
+<li>Pandas <code>Series</code> Operations</li>
+</ol>
+</div>
+</div>
+</div>
+<p>Timetk contains a number of functions designed to make time series analysis operations easier. In general, these operations come in <u>2 types of time series functions</u>:</p>
+<ol type="1">
+<li><p><em>Pandas DataFrame Operations:</em> These functions work on <code>pd.DataFrame</code> objects and derivatives such as <code>groupby()</code> objects for Grouped Time Series Analysis. You will see <code>data</code> as the first parameter in these functions.</p></li>
+<li><p><em>Pandas Series Operations:</em> These functions work on <code>pd.Series</code> objects.</p>
+<ul>
+<li><p><em>Time Series Index Operations:</em> Are designed for <em>Time Series index</em>. You will see <code>idx</code> as the first parameter of these functions. In these cases, these functions also work with <code>datetime64</code> values (e.g.&nbsp;those produced when you parse_dates via <code>pd.read_csv()</code> or create time series with <code>pd.date_range()</code>)</p></li>
+<li><p><em>Numeric Operations:</em> Are designed for <em>Numeric Values</em>. You will see <code>x</code> as the first parameter for these functions.</p></li>
+</ul></li>
+</ol>
+<p>Let’s take a look at how to use the different types of Time Series Analysis functions in <code>timetk</code>. We’ll start with Type 1: Pandas <code>DataFrame</code> Operations.</p>
+</section>
+<section id="type-1-pandas-dataframe-operations" class="level2">
+<h2 class="anchored" data-anchor-id="type-1-pandas-dataframe-operations">Type 1: Pandas <code>DataFrame</code> Operations</h2>
+<p>Before we start using <code>timetk</code>, let’s make sure our data is set up properly.</p>
+<section id="timetk-data-format-compliance" class="level4">
+<h4 class="anchored" data-anchor-id="timetk-data-format-compliance">Timetk Data Format Compliance</h4>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+3 Core Properties Must Be Upheald
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>A <code>Timetk</code>-Compliant Pandas <code>DataFrame</code> must have:</p>
+<ol type="1">
+<li><em>Time Series Index:</em> A Time Stamp column containing <code>datetime64</code> values</li>
+<li><em>Value Column(s):</em> The value column(s) containing <code>float</code> or <code>int</code> values</li>
+<li><em>Group Column(s):</em> Optionally for grouped time series analysis, one or more columns containg <code>str</code> or <code>categorical</code> values (shown as an object)</li>
+</ol>
+<p>If these are NOT upheld, the <code>timetk</code> DataFrame operations will likely fail.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Inspect the DataFrame
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Use Pandas <code>info()</code> method to check compliance.</p>
+</div>
+</div>
+</div>
+<p>Using pandas <code>info()</code> method, we can see that we have a compliant data frame with a <code>date</code> column containing <code>datetime64</code> and a <code>value</code> column containing <code>float64</code>. For grouped analysis we have the <code>id</code> column containing <code>object</code> dtype.</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tip: Inspect for compliance with info()</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 9743 entries, 0 to 9742
+Data columns (total 3 columns):
+ #   Column  Non-Null Count  Dtype         
+---  ------  --------------  -----         
+ 0   id      9743 non-null   object        
+ 1   date    9743 non-null   datetime64[ns]
+ 2   value   9743 non-null   float64       
+dtypes: datetime64[ns](1), float64(1), object(1)
+memory usage: 228.5+ KB</code></pre>
+</div>
+</div>
+</section>
+<section id="grouped-time-series-analysis-with-summarize-by-time" class="level3">
+<h3 class="anchored" data-anchor-id="grouped-time-series-analysis-with-summarize-by-time">Grouped Time Series Analysis with Summarize By Time</h3>
+<p>First, inspect how the <code>summarize_by_time</code> function works by calling <code>help()</code>.</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Review the summarize_by_time documentation (output not shown)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">help</span>(tk.summarize_by_time)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Help Doc Info: <code>summarize_by_time()</code>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<ul>
+<li>The first parameter is <code>data</code>, indicating this is a <code>DataFrame</code> operation.</li>
+<li>The Examples show different use cases for how to apply the function on a DataFrame</li>
+</ul>
+</div>
+</div>
+</div>
+<p>Let’s test the <code>summarize_by_time()</code> DataFrame operation out using the grouped approach with method chaining. DataFrame operations can be used as Pandas methods with method-chaining, which allows us to more succinctly apply time series operations.</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Grouped Summarize By Time with Method Chaining</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            rule         <span class="op">=</span> <span class="st">'QS'</span>, <span class="co"># QS = Quarter Start</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> [</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>, </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'median'</span>, </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">'min'</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'q25'</span>, <span class="kw">lambda</span> x: np.quantile(x, <span class="fl">0.25</span>)),</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'q75'</span>, <span class="kw">lambda</span> x: np.quantile(x, <span class="fl">0.75</span>)),</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>                <span class="st">'max'</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'range'</span>,<span class="kw">lambda</span> x: x.<span class="bu">max</span>() <span class="op">-</span> x.<span class="bu">min</span>()),</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>            ],</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="84">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value_mean</th>
+<th data-quarto-table-cell-role="th">value_median</th>
+<th data-quarto-table-cell-role="th">value_min</th>
+<th data-quarto-table-cell-role="th">value_q25</th>
+<th data-quarto-table-cell-role="th">value_q75</th>
+<th data-quarto-table-cell-role="th">value_max</th>
+<th data-quarto-table-cell-role="th">value_range</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>D10</td>
+<td>2014-07-01</td>
+<td>1960.078889</td>
+<td>1979.90</td>
+<td>1781.6</td>
+<td>1915.225</td>
+<td>2002.575</td>
+<td>2076.2</td>
+<td>294.6</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>D10</td>
+<td>2014-10-01</td>
+<td>2184.586957</td>
+<td>2154.05</td>
+<td>2022.8</td>
+<td>2125.075</td>
+<td>2274.150</td>
+<td>2344.9</td>
+<td>322.1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>D10</td>
+<td>2015-01-01</td>
+<td>2309.830000</td>
+<td>2312.30</td>
+<td>2209.6</td>
+<td>2284.575</td>
+<td>2342.150</td>
+<td>2392.4</td>
+<td>182.8</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>D10</td>
+<td>2015-04-01</td>
+<td>2344.481319</td>
+<td>2333.00</td>
+<td>2185.1</td>
+<td>2301.750</td>
+<td>2391.000</td>
+<td>2499.8</td>
+<td>314.7</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>D10</td>
+<td>2015-07-01</td>
+<td>2156.754348</td>
+<td>2186.70</td>
+<td>1856.6</td>
+<td>1997.250</td>
+<td>2289.425</td>
+<td>2368.1</td>
+<td>511.5</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">105</td>
+<td>D500</td>
+<td>2011-07-01</td>
+<td>9727.321739</td>
+<td>9745.55</td>
+<td>8964.5</td>
+<td>9534.125</td>
+<td>10003.900</td>
+<td>10463.9</td>
+<td>1499.4</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">106</td>
+<td>D500</td>
+<td>2011-10-01</td>
+<td>8175.565217</td>
+<td>7897.00</td>
+<td>6755.0</td>
+<td>7669.875</td>
+<td>8592.575</td>
+<td>9860.0</td>
+<td>3105.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">107</td>
+<td>D500</td>
+<td>2012-01-01</td>
+<td>8291.317582</td>
+<td>8412.60</td>
+<td>7471.5</td>
+<td>7814.800</td>
+<td>8677.850</td>
+<td>8980.7</td>
+<td>1509.2</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">108</td>
+<td>D500</td>
+<td>2012-04-01</td>
+<td>8654.020879</td>
+<td>8471.10</td>
+<td>8245.6</td>
+<td>8389.850</td>
+<td>9017.250</td>
+<td>9349.2</td>
+<td>1103.6</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">109</td>
+<td>D500</td>
+<td>2012-07-01</td>
+<td>8770.502353</td>
+<td>8690.50</td>
+<td>8348.1</td>
+<td>8604.400</td>
+<td>8846.000</td>
+<td>9545.3</td>
+<td>1197.2</td>
+</tr>
+</tbody>
+</table>
+
+<p>110 rows × 9 columns</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Key Takeaways: <code>summarize_by_time()</code>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<ul>
+<li>The <code>data</code> must comply with the 3 core properties (date column, value column(s), and group column(s))</li>
+<li>The aggregation functions were applied by combination of group (id) and resample (Quarter Start)</li>
+<li>The result was a pandas DataFrame with group column, resampled date column, and summary values (mean, median, min, 25th-quantile, etc)</li>
+</ul>
 </div>
 </div>
 </div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -914,6 +1089,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../getting-started/02_quick_start.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Quick Start</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../guides/tutorial_2.html" class="pagination-link">
+        <span class="nav-page-text">Tutorial 2</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
 
 

@@ -8,13 +8,15 @@
 
 | Name | Description |
 | --- | --- |
-| [summarize_by_time](#timetk.summarize_by_time.summarize_by_time) | The `summarize_by_time` function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the aggregation. |
+| [summarize_by_time](#timetk.summarize_by_time.summarize_by_time) | Summarize a DataFrame or GroupBy object by time. |
 
 ### summarize_by_time { #timetk.summarize_by_time.summarize_by_time }
 
 `summarize_by_time.summarize_by_time(data, date_column, value_column, groups=None, rule='D', agg_func='sum', kind='timestamp', wide_format=False, fillna=0, flatten_column_names=True, reset_index=True, *args, **kwargs)`
 
-The `summarize_by_time` function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the aggregation.
+Summarize a DataFrame or GroupBy object by time.
+
+The `summarize_by_time` function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the time-based aggregation.
 
 #### Parameters
 
@@ -34,9 +36,9 @@ The `summarize_by_time` function aggregates data by a specified time period and 
 
 #### Returns
 
-| Type                                           | Description   |
-|------------------------------------------------|---------------|
-| a Pandas DataFrame that is summarized by time. |               |
+| Type         | Description                                    |
+|--------------|------------------------------------------------|
+| pd.DataFrame | A Pandas DataFrame that is summarized by time. |
 
 #### Examples
 
@@ -64,7 +66,21 @@ df
 ```
 
 ```{python}
-# Summarize by time with a GroupBy object
+# Summarize by time with a GroupBy object (Long Format)
+(
+    df 
+        .groupby('category_1') 
+        .summarize_by_time(
+            date_column  = 'order_date', 
+            value_column = 'total_price', 
+            rule         = 'MS',
+            wide_format  = False, 
+        )
+)
+```
+
+```{python}
+# Summarize by time with a GroupBy object (Wide Format)
 (
     df 
         .groupby('category_1') 

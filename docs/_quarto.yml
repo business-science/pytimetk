@@ -98,6 +98,7 @@ quartodoc:
       contents:
         - get_timeseries_signature
         - floor_date
+        - week_of_month
     - title: 💾 Datasets
       package: timetk.datasets.get_datasets
       desc: Practice `timetk` with our complementary time series datasets.

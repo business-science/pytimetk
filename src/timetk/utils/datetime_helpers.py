@@ -13,8 +13,9 @@ def floor_date(
     idx: pd.Series or pd.DatetimeIndex, 
     unit: str = "D",
 ) -> pd.Series:
-    '''The `floor_date` function takes a pandas Series of dates and returns a new Series with the dates
-    rounded down to the specified unit.
+    '''Round a date down to the specified unit (e.g. Flooring).
+    
+    The `floor_date` function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit.
     
     Parameters
     ----------
@@ -25,7 +26,8 @@ def floor_date(
     
     Returns
     -------
-        The `floor_date` function returns a pandas Series object.
+    pd.Series 
+        The `floor_date` function returns a pandas Series object containing datetime64[ns] values.
     
     Examples
     --------
@@ -73,12 +75,33 @@ def week_of_month(idx: pd.Series or pd.DatetimeIndex,) -> pd.Series:
     
     Parameters
     ----------
-    idx : pd.Series
+    idx : pd.Series or pd.DatetimeIndex
         The parameter "idx" is a pandas Series object that represents a specific date for which you want to determine the week of the month.
     
     Returns
     -------
+    pd.Series
         The week of the month for a given date.
+    
+    Examples
+    --------
+    ```{python}
+    import timetk as tk
+    import pandas as pd
+    
+    dates = pd.date_range("2020-01-01", "2020-02-28", freq="1D")
+    dates
+    ```
+    
+    ```{python}
+    # Works on DateTimeIndex
+    tk.week_of_month(dates)
+    ```
+    
+    ```{python}
+    # Works on Pandas Series
+    dates.to_series().week_of_month()
+    ```
     
     '''
     

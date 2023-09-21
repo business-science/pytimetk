@@ -7,7 +7,7 @@ Time series functions that manipulate DataFrames.
 | | |
 | --- | --- |
 | [summarize_by_time](summarize_by_time.qmd#timetk.summarize_by_time) |  |
-| [augment_timeseries_signature](augment_timeseries_signature.qmd#timetk.augment_timeseries_signature) | The function `augment_timeseries_signature` takes a DataFrame and a date column as input and returns the original DataFrame with the **29 different date and time based features** added as new columns:  |
+| [augment_timeseries_signature](augment_timeseries_signature.qmd#timetk.augment_timeseries_signature) | Add 29 time series features to a DataFrame. |
 
 ## 🐼 Time Series for Pandas Series
 
@@ -15,8 +15,9 @@ Time series functions that manipulate Pandas Series.
 
 | | |
 | --- | --- |
-| [get_timeseries_signature](get_timeseries_signature.qmd#timetk.get_timeseries_signature) | The function `tk_get_timeseries_signature` engineers **29 different date and time based features** from a single datetime index `idx`:  |
-| [floor_date](floor_date.qmd#timetk.floor_date) | The `floor_date` function takes a pandas Series of dates and returns a new Series with the dates |
+| [get_timeseries_signature](get_timeseries_signature.qmd#timetk.get_timeseries_signature) | Convert a timestamp to a set of 29 time series features. |
+| [floor_date](floor_date.qmd#timetk.floor_date) | Round a date down to the specified unit (e.g. Flooring). |
+| [week_of_month](week_of_month.qmd#timetk.week_of_month) | The "week_of_month" function calculates the week number of a given date within its month. |
 
 ## 💾 Datasets
 
@@ -24,5 +25,5 @@ Practice `timetk` with our complementary time series datasets.
 
 | | |
 | --- | --- |
-| [get_available_datasets](get_available_datasets.qmd#timetk.datasets.get_datasets.get_available_datasets) | The `get_available_datasets` function returns a sorted list of available dataset names from the `timetk.datasets` module. |
-| [load_dataset](load_dataset.qmd#timetk.datasets.get_datasets.load_dataset) | The `load_dataset` function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to `pandas.read_csv`. The available datasets are: |
+| [get_available_datasets](get_available_datasets.qmd#timetk.datasets.get_datasets.get_available_datasets) | Get a list of 11 datasets that can be loaded with `timetk.load_dataset`. |
+| [load_dataset](load_dataset.qmd#timetk.datasets.get_datasets.load_dataset) | Load one of 11 Time Series Datasets. |
