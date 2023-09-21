@@ -8,6 +8,7 @@ website:
       section: "\U0001F43C Time Series for Pandas DataFrames"
     - contents:
       - reference/get_timeseries_signature.qmd
+      - reference/floor_date.qmd
       section: "\U0001F43C Time Series for Pandas Series"
     - contents:
       - reference/get_available_datasets.qmd

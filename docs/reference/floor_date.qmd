@@ -1,0 +1,39 @@
+# floor_date { #timetk.floor_date }
+
+`floor_date(idx, unit='D')`
+
+The `floor_date` function takes a pandas Series of dates and returns a new Series with the dates
+rounded down to the specified unit.
+
+## Parameters
+
+| Name   | Type                          | Description                                                                                                                                                                                                                                                            | Default    |
+|--------|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `idx`  | pd.Series or pd.DatetimeIndex | The `idx` parameter is a pandas Series or pandas DatetimeIndex object that contains datetime values. It represents the dates that you want to round down.                                                                                                              | _required_ |
+| `unit` | str                           | The `unit` parameter in the `floor_date` function is a string that specifies the time unit to which the dates in the `idx` series should be rounded down. It has a default value of "D", which stands for day. Other possible values for the `unit` parameter could be | `'D'`      |
+
+## Returns
+
+| Type                                                      | Description   |
+|-----------------------------------------------------------|---------------|
+| The `floor_date` function returns a pandas Series object. |               |
+
+## Examples
+
+```{python}
+import timetk as tk
+import pandas as pd
+
+dates = pd.date_range("2020-01-01", "2020-01-10", freq="1H")
+dates
+```
+
+```{python}
+# Works on DateTimeIndex
+tk.floor_date(dates, unit="D")
+```
+
+```{python}
+# Works on Pandas Series
+dates.to_series().floor_date(unit="D")
+```

@@ -60,7 +60,7 @@
     "href": "reference/index.html",
     "title": "Function reference",
     "section": "",
-    "text": "Time series functions that manipulate DataFrames.\n\n\n\nsummarize_by_time\n\n\n\naugment_timeseries_signature\nThe function augment_timeseries_signature takes a DataFrame and a date column as input and returns the original DataFrame with the 29 different date and time based features added as new columns:\n\n\n\n\n\n\nTime series functions that manipulate Pandas Series.\n\n\n\nget_timeseries_signature\nThe function tk_get_timeseries_signature engineers 29 different date and time based features from a single datetime index idx:\n\n\n\n\n\n\nPractice timetk with our complementary time series datasets.\n\n\n\nget_available_datasets\nThe get_available_datasets function returns a sorted list of available dataset names from the timetk.datasets module.\n\n\nload_dataset\nThe load_dataset function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to pandas.read_csv. The available datasets are:"
+    "text": "Time series functions that manipulate DataFrames.\n\n\n\nsummarize_by_time\n\n\n\naugment_timeseries_signature\nThe function augment_timeseries_signature takes a DataFrame and a date column as input and returns the original DataFrame with the 29 different date and time based features added as new columns:\n\n\n\n\n\n\nTime series functions that manipulate Pandas Series.\n\n\n\nget_timeseries_signature\nThe function tk_get_timeseries_signature engineers 29 different date and time based features from a single datetime index idx:\n\n\nfloor_date\nThe floor_date function takes a pandas Series of dates and returns a new Series with the dates\n\n\n\n\n\n\nPractice timetk with our complementary time series datasets.\n\n\n\nget_available_datasets\nThe get_available_datasets function returns a sorted list of available dataset names from the timetk.datasets module.\n\n\nload_dataset\nThe load_dataset function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to pandas.read_csv. The available datasets are:"
   },
   {
     "objectID": "reference/index.html#time-series-for-pandas-dataframes",
@@ -74,7 +74,7 @@
     "href": "reference/index.html#time-series-for-pandas-series",
     "title": "Function reference",
     "section": "",
-    "text": "Time series functions that manipulate Pandas Series.\n\n\n\nget_timeseries_signature\nThe function tk_get_timeseries_signature engineers 29 different date and time based features from a single datetime index idx:"
+    "text": "Time series functions that manipulate Pandas Series.\n\n\n\nget_timeseries_signature\nThe function tk_get_timeseries_signature engineers 29 different date and time based features from a single datetime index idx:\n\n\nfloor_date\nThe floor_date function takes a pandas Series of dates and returns a new Series with the dates"
   },
   {
     "objectID": "reference/index.html#datasets",
@@ -201,5 +201,33 @@
     "title": "augment_timeseries_signature",
     "section": "Examples",
     "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\npd.set_option('display.max_columns', None)\n\n# Adds 29 new time series features as columns to the original DataFrame\n( \n    tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])\n        .augment_timeseries_signature(date_column = 'order_date')\n        .head()\n)\n\n\n\n\n\n\n\n\norder_id\norder_line\norder_date\nquantity\nprice\ntotal_price\nmodel\ncategory_1\ncategory_2\nframe_material\nbikeshop_name\ncity\nstate\norder_date_index_num\norder_date_year\norder_date_year_iso\norder_date_yearstart\norder_date_yearend\norder_date_leapyear\norder_date_half\norder_date_quarter\norder_date_quarteryear\norder_date_quarterstart\norder_date_quarterend\norder_date_month\norder_date_month_lbl\norder_date_monthstart\norder_date_monthend\norder_date_yweek\norder_date_mweek\norder_date_wday\norder_date_wday_lbl\norder_date_mday\norder_date_qday\norder_date_yday\norder_date_weekend\norder_date_hour\norder_date_minute\norder_date_second\norder_date_msecond\norder_date_nsecond\norder_date_am_pm\n\n\n\n\n0\n1\n1\n2011-01-07\n1\n6070\n6070\nJekyll Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n1294358400\n2011\n2011\n0\n0\n0\n1\n1\n2011Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n5\nFriday\n7\n7\n7\n0\n0\n0\n0\n0\n0\nam\n\n\n1\n1\n2\n2011-01-07\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n1294358400\n2011\n2011\n0\n0\n0\n1\n1\n2011Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n5\nFriday\n7\n7\n7\n0\n0\n0\n0\n0\n0\nam\n\n\n2\n2\n1\n2011-01-10\n1\n2770\n2770\nBeast of the East 1\nMountain\nTrail\nAluminum\nKansas City 29ers\nKansas City\nKS\n1294617600\n2011\n2011\n0\n0\n0\n1\n1\n2011Q1\n0\n0\n1\nJanuary\n0\n0\n2\n2\n1\nMonday\n10\n10\n10\n0\n0\n0\n0\n0\n0\nam\n\n\n3\n2\n2\n2011-01-10\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nKansas City 29ers\nKansas City\nKS\n1294617600\n2011\n2011\n0\n0\n0\n1\n1\n2011Q1\n0\n0\n1\nJanuary\n0\n0\n2\n2\n1\nMonday\n10\n10\n10\n0\n0\n0\n0\n0\n0\nam\n\n\n4\n3\n1\n2011-01-10\n1\n10660\n10660\nSupersix Evo Hi-Mod Team\nRoad\nElite Road\nCarbon\nLouisville Race Equipment\nLouisville\nKY\n1294617600\n2011\n2011\n0\n0\n0\n1\n1\n2011Q1\n0\n0\n1\nJanuary\n0\n0\n2\n2\n1\nMonday\n10\n10\n10\n0\n0\n0\n0\n0\n0\nam"
+  },
+  {
+    "objectID": "reference/floor_date.html",
+    "href": "reference/floor_date.html",
+    "title": "floor_date",
+    "section": "",
+    "text": "floor_date(idx, unit='D')\nThe floor_date function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit."
+  },
+  {
+    "objectID": "reference/floor_date.html#parameters",
+    "href": "reference/floor_date.html#parameters",
+    "title": "floor_date",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DatetimeIndex\nThe idx parameter is a pandas Series or pandas DatetimeIndex object that contains datetime values. It represents the dates that you want to round down.\nrequired\n\n\nunit\nstr\nThe unit parameter in the floor_date function is a string that specifies the time unit to which the dates in the idx series should be rounded down. It has a default value of “D”, which stands for day. Other possible values for the unit parameter could be\n'D'"
+  },
+  {
+    "objectID": "reference/floor_date.html#returns",
+    "href": "reference/floor_date.html#returns",
+    "title": "floor_date",
+    "section": "Returns",
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\nThe floor_date function returns a pandas Series object."
+  },
+  {
+    "objectID": "reference/floor_date.html#examples",
+    "href": "reference/floor_date.html#examples",
+    "title": "floor_date",
+    "section": "Examples",
+    "text": "Examples\n\nimport timetk as tk\nimport pandas as pd\n\ndates = pd.date_range(\"2020-01-01\", \"2020-01-10\", freq=\"1H\")\ndates\n\nDatetimeIndex(['2020-01-01 00:00:00', '2020-01-01 01:00:00',\n               '2020-01-01 02:00:00', '2020-01-01 03:00:00',\n               '2020-01-01 04:00:00', '2020-01-01 05:00:00',\n               '2020-01-01 06:00:00', '2020-01-01 07:00:00',\n               '2020-01-01 08:00:00', '2020-01-01 09:00:00',\n               ...\n               '2020-01-09 15:00:00', '2020-01-09 16:00:00',\n               '2020-01-09 17:00:00', '2020-01-09 18:00:00',\n               '2020-01-09 19:00:00', '2020-01-09 20:00:00',\n               '2020-01-09 21:00:00', '2020-01-09 22:00:00',\n               '2020-01-09 23:00:00', '2020-01-10 00:00:00'],\n              dtype='datetime64[ns]', length=217, freq='H')\n\n\n\n# Works on DateTimeIndex\ntk.floor_date(dates, unit=\"D\")\n\n0     2020-01-01\n1     2020-01-01\n2     2020-01-01\n3     2020-01-01\n4     2020-01-01\n         ...    \n212   2020-01-09\n213   2020-01-09\n214   2020-01-09\n215   2020-01-09\n216   2020-01-10\nName: idx, Length: 217, dtype: datetime64[ns]\n\n\n\n# Works on Pandas Series\ndates.to_series().floor_date(unit=\"D\")\n\n2020-01-01 00:00:00   2020-01-01\n2020-01-01 01:00:00   2020-01-01\n2020-01-01 02:00:00   2020-01-01\n2020-01-01 03:00:00   2020-01-01\n2020-01-01 04:00:00   2020-01-01\n                         ...    \n2020-01-09 20:00:00   2020-01-09\n2020-01-09 21:00:00   2020-01-09\n2020-01-09 22:00:00   2020-01-09\n2020-01-09 23:00:00   2020-01-09\n2020-01-10 00:00:00   2020-01-10\nFreq: H, Length: 217, dtype: datetime64[ns]"
   }
 ]

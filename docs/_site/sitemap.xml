@@ -10,7 +10,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2023-09-21T02:48:40.830Z</lastmod>
+    <lastmod>2023-09-21T12:53:08.117Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/tutorial_2.html</loc>
@@ -43,5 +43,9 @@
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_timeseries_signature.html</loc>
     <lastmod>2023-09-21T02:48:52.551Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/floor_date.html</loc>
+    <lastmod>2023-09-21T12:53:12.809Z</lastmod>
   </url>
 </urlset>

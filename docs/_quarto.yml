@@ -2,6 +2,9 @@
 # - https://github.com/rstudio/pins-python/tree/main/docs
 # - https://github.com/machow/quartodoc/blob/main/docs/_quarto.yml
 # - https://github.com/quarto-dev/quarto-web/blob/main/_quarto.yml
+# - https://nixtla.github.io/statsforecast/
+# - https://github.com/nixtla/statsforecast
+# - 
 # Key Commands:
 #   - cd docs
 #   - quartodoc build
@@ -94,6 +97,7 @@ quartodoc:
       package: timetk
       contents:
         - get_timeseries_signature
+        - floor_date
     - title: 💾 Datasets
       package: timetk.datasets.get_datasets
       desc: Practice `timetk` with our complementary time series datasets.
