@@ -2,7 +2,10 @@
 from .core.summarize_by_time import *
 from .core.timeseries_signature import *
 from .core.future_timeseries import *
+from .core.lags import *
+
 from .datasets.get_datasets import *
+
 from .utils.datetime_helpers import *
 from .utils.pandas_helpers import *
 
@@ -14,7 +17,10 @@ from .core.timeseries_signature import (
     get_timeseries_signature, augment_timeseries_signature
 )
 from .core.future_timeseries import (
-    make_future_timeseries, future_frame,
+    make_future_timeseries, future_frame
+)
+from .core.lags import (
+    augment_lags
 )
 from .datasets.get_datasets import (
     load_dataset, get_available_datasets

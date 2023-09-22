@@ -93,6 +93,7 @@ quartodoc:
         - summarize_by_time
         - future_frame
         - augment_timeseries_signature
+        - augment_lags
     - title: 🐼 Time Series for Pandas Series
       desc: Time series functions that manipulate Pandas Series.
       package: timetk

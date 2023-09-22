@@ -187,6 +187,7 @@ df_augmented.head()
 - The result was a pandas DataFrame with 29 time series features that can be used for Machine Learning and Forecasting
 :::
 
+
 ### Making Future Dates with Future Frame
 
 A common time series task before forecasting with machine learning models is to make a future DataFrame some `length_out` into the future. You can do this with `tk.future_frame()`. Here's how. 
@@ -212,6 +213,8 @@ future_df = (
 )
 future_df
 ```
+
+
 
 ## Type 2: Pandas Series Operations
 

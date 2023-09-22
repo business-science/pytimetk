@@ -96,7 +96,7 @@ def make_future_timeseries(
 
 @pf.register_dataframe_method
 def future_frame(
-    data: pd.DataFrame,
+    data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
     date_column: str, 
     length_out: int, 
     bind_data: bool = True,
@@ -107,7 +107,7 @@ def future_frame(
     
     Parameters
     ----------
-    data : pd.DataFrame
+    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
         The `data` parameter is the input DataFrame or DataFrameGroupBy object that you want to extend with future dates.
     date_column : str
         The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to generate future dates.
@@ -209,7 +209,7 @@ def future_frame(
     
     
     # GROUPED EXTENSION - If data is a GroupBy object, extend with future dates by group
-    group_names = None
+    
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         
         # Get the group names and original ungrouped data

@@ -6,6 +6,7 @@ website:
       - reference/summarize_by_time.qmd
       - reference/future_frame.qmd
       - reference/augment_timeseries_signature.qmd
+      - reference/augment_lags.qmd
       section: "\U0001F43C Time Series for Pandas DataFrames"
     - contents:
       - reference/make_future_timeseries.qmd

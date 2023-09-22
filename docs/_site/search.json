@@ -116,14 +116,14 @@
     "href": "reference/index.html",
     "title": "Function reference",
     "section": "",
-    "text": "Time series functions that manipulate DataFrames.\n\n\n\nsummarize_by_time\nSummarize a DataFrame or GroupBy object by time.\n\n\nfuture_frame\nExtend a DataFrame or GroupBy object with future dates.\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame.\n\n\n\n\n\n\nTime series functions that manipulate Pandas Series.\n\n\n\nmake_future_timeseries\nMake future dates for a time series.\n\n\nget_timeseries_signature\nConvert a timestamp to a set of 29 time series features.\n\n\nfloor_date\nRound a date down to the specified unit (e.g. Flooring).\n\n\nweek_of_month\nThe “week_of_month” function calculates the week number of a given date within its month.\n\n\n\n\n\n\nPractice timetk with 11 complementary time series datasets.\n\n\n\nget_available_datasets\nGet a list of 11 datasets that can be loaded with timetk.load_dataset.\n\n\nload_dataset\nLoad one of 11 Time Series Datasets."
+    "text": "Time series functions that manipulate DataFrames.\n\n\n\nsummarize_by_time\nSummarize a DataFrame or GroupBy object by time.\n\n\nfuture_frame\nExtend a DataFrame or GroupBy object with future dates.\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame.\n\n\naugment_lags\nAdds lags to a Pandas DataFrame or DataFrameGroupBy object.\n\n\n\n\n\n\nTime series functions that manipulate Pandas Series.\n\n\n\nmake_future_timeseries\nMake future dates for a time series.\n\n\nget_timeseries_signature\nConvert a timestamp to a set of 29 time series features.\n\n\nfloor_date\nRound a date down to the specified unit (e.g. Flooring).\n\n\nweek_of_month\nThe “week_of_month” function calculates the week number of a given date within its month.\n\n\n\n\n\n\nPractice timetk with 11 complementary time series datasets.\n\n\n\nget_available_datasets\nGet a list of 11 datasets that can be loaded with timetk.load_dataset.\n\n\nload_dataset\nLoad one of 11 Time Series Datasets."
   },
   {
     "objectID": "reference/index.html#time-series-for-pandas-dataframes",
     "href": "reference/index.html#time-series-for-pandas-dataframes",
     "title": "Function reference",
     "section": "",
-    "text": "Time series functions that manipulate DataFrames.\n\n\n\nsummarize_by_time\nSummarize a DataFrame or GroupBy object by time.\n\n\nfuture_frame\nExtend a DataFrame or GroupBy object with future dates.\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame."
+    "text": "Time series functions that manipulate DataFrames.\n\n\n\nsummarize_by_time\nSummarize a DataFrame or GroupBy object by time.\n\n\nfuture_frame\nExtend a DataFrame or GroupBy object with future dates.\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame.\n\n\naugment_lags\nAdds lags to a Pandas DataFrame or DataFrameGroupBy object."
   },
   {
     "objectID": "reference/index.html#time-series-for-pandas-series",
@@ -277,7 +277,7 @@
     "href": "reference/future_frame.html#parameters",
     "title": "future_frame",
     "section": "Parameters",
-    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame\nThe data parameter is the input DataFrame or DataFrameGroupBy object that you want to extend with future dates.\nrequired\n\n\ndate_column\nstr\nThe date_column parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to generate future dates.\nrequired\n\n\nlength_out\nint\nThe length_out parameter specifies the number of future dates to be added to the DataFrame.\nrequired\n\n\nbind_data\nbool\nThe bind_data parameter is a boolean flag that determines whether the extended data should be concatenated with the original data or returned separately. If bind_data is set to True, the extended data will be concatenated with the original data using pd.concat. If bind_data is set to False, the extended data will be returned separately. The default value is True.\nTrue"
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy\nThe data parameter is the input DataFrame or DataFrameGroupBy object that you want to extend with future dates.\nrequired\n\n\ndate_column\nstr\nThe date_column parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to generate future dates.\nrequired\n\n\nlength_out\nint\nThe length_out parameter specifies the number of future dates to be added to the DataFrame.\nrequired\n\n\nbind_data\nbool\nThe bind_data parameter is a boolean flag that determines whether the extended data should be concatenated with the original data or returned separately. If bind_data is set to True, the extended data will be concatenated with the original data using pd.concat. If bind_data is set to False, the extended data will be returned separately. The default value is True.\nTrue"
   },
   {
     "objectID": "reference/future_frame.html#returns",
@@ -355,5 +355,33 @@
     "title": "get_timeseries_signature",
     "section": "Examples",
     "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\npd.set_option('display.max_columns', None)\n\ndates = pd.date_range(start = '2019-01', end = '2019-03', freq = 'D')\n\n# Makes 29 new time series features from the dates\ntk.get_timeseries_signature(dates).head()\n\n\n\n\n\n\n\n\nindex_num\nyear\nyear_iso\nyearstart\nyearend\nleapyear\nhalf\nquarter\nquarteryear\nquarterstart\nquarterend\nmonth\nmonth_lbl\nmonthstart\nmonthend\nyweek\nmweek\nwday\nwday_lbl\nmday\nqday\nyday\nweekend\nhour\nminute\nsecond\nmsecond\nnsecond\nam_pm\n\n\n\n\n0\n1546300800\n2019\n2019\n1\n0\n0\n1\n1\n2019Q1\n1\n0\n1\nJanuary\n1\n0\n1\n1\n2\nTuesday\n1\n1\n1\n0\n0\n0\n0\n0\n0\nam\n\n\n1\n1546387200\n2019\n2019\n0\n0\n0\n1\n1\n2019Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n3\nWednesday\n2\n2\n2\n0\n0\n0\n0\n0\n0\nam\n\n\n2\n1546473600\n2019\n2019\n0\n0\n0\n1\n1\n2019Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n4\nThursday\n3\n3\n3\n0\n0\n0\n0\n0\n0\nam\n\n\n3\n1546560000\n2019\n2019\n0\n0\n0\n1\n1\n2019Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n5\nFriday\n4\n4\n4\n0\n0\n0\n0\n0\n0\nam\n\n\n4\n1546646400\n2019\n2019\n0\n0\n0\n1\n1\n2019Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n6\nSaturday\n5\n5\n5\n0\n0\n0\n0\n0\n0\nam"
+  },
+  {
+    "objectID": "reference/augment_lags.html",
+    "href": "reference/augment_lags.html",
+    "title": "augment_lags",
+    "section": "",
+    "text": "augment_lags(data, date_column, value_column, lags=1)\nAdds lags to a Pandas DataFrame or DataFrameGroupBy object.\nThe augment_lags function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a lag or list of lags, and adds lagged versions of the value columns to the DataFrame."
+  },
+  {
+    "objectID": "reference/augment_lags.html#parameters",
+    "href": "reference/augment_lags.html#parameters",
+    "title": "augment_lags",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy\nThe data parameter is the input DataFrame or DataFrameGroupBy object that you want to add lagged columns to.\nrequired\n\n\ndate_column\nstr\nThe date_column parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the lagged values.\nrequired\n\n\nvalue_column\nstr or list\nThe value_column parameter is the column(s) in the DataFrame that you want to add lagged values for. It can be either a single column name (string) or a list of column names.\nrequired\n\n\nlags\nint or list\nThe lags parameter is an integer or a list of integers that specifies the number of lagged values to add to the dataframe. If it is an integer, the function will add that number of lagged values for each column specified in the value_column parameter. If it is a list\n1"
+  },
+  {
+    "objectID": "reference/augment_lags.html#returns",
+    "href": "reference/augment_lags.html#returns",
+    "title": "augment_lags",
+    "section": "Returns",
+    "text": "Returns\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\nA Pandas DataFrame with lagged columns added to it."
+  },
+  {
+    "objectID": "reference/augment_lags.html#examples",
+    "href": "reference/augment_lags.html#examples",
+    "title": "augment_lags",
+    "section": "Examples",
+    "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\ndf = tk.load_dataset('m4_daily', parse_dates = ['date'])\ndf\n\n\n\n\n\n\n\n\nid\ndate\nvalue\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\n\n\n1\nD10\n2014-07-04\n2073.4\n\n\n2\nD10\n2014-07-05\n2048.7\n\n\n3\nD10\n2014-07-06\n2048.9\n\n\n4\nD10\n2014-07-07\n2006.4\n\n\n...\n...\n...\n...\n\n\n9738\nD500\n2012-09-19\n9418.8\n\n\n9739\nD500\n2012-09-20\n9365.7\n\n\n9740\nD500\n2012-09-21\n9445.9\n\n\n9741\nD500\n2012-09-22\n9497.9\n\n\n9742\nD500\n2012-09-23\n9545.3\n\n\n\n\n9743 rows × 3 columns\n\n\n\n\n# Add 7 lagged values for each grouped time series\nlagged_df = (\n    df \n        .groupby('id')\n        .augment_lags(\n            date_column  = 'date',\n            value_column = 'value',\n            lags         = range(1, 8)\n        )\n)\n\nlagged_df\n\n\n\n\n\n\n\n\nid\ndate\nvalue\nvalue_lag_1\nvalue_lag_2\nvalue_lag_3\nvalue_lag_4\nvalue_lag_5\nvalue_lag_6\nvalue_lag_7\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n1\nD10\n2014-07-04\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n2\nD10\n2014-07-05\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n3\nD10\n2014-07-06\n2048.9\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\n\n\n4\nD10\n2014-07-07\n2006.4\n2048.9\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n9738\nD500\n2012-09-19\n9418.8\n9431.9\n9437.7\n9474.6\n9359.2\n9286.9\n9265.4\n9091.4\n\n\n9739\nD500\n2012-09-20\n9365.7\n9418.8\n9431.9\n9437.7\n9474.6\n9359.2\n9286.9\n9265.4\n\n\n9740\nD500\n2012-09-21\n9445.9\n9365.7\n9418.8\n9431.9\n9437.7\n9474.6\n9359.2\n9286.9\n\n\n9741\nD500\n2012-09-22\n9497.9\n9445.9\n9365.7\n9418.8\n9431.9\n9437.7\n9474.6\n9359.2\n\n\n9742\nD500\n2012-09-23\n9545.3\n9497.9\n9445.9\n9365.7\n9418.8\n9431.9\n9437.7\n9474.6\n\n\n\n\n9743 rows × 10 columns\n\n\n\n\n# Add 7 lagged values for a single time series\n(\n    df \n        .query('id == \"D10\"')\n        .augment_lags(\n            date_column  = 'date',\n            value_column = 'value',\n            lags         = range(1, 8)\n        )\n)\n\n\n\n\n\n\n\n\nid\ndate\nvalue\nvalue_lag_1\nvalue_lag_2\nvalue_lag_3\nvalue_lag_4\nvalue_lag_5\nvalue_lag_6\nvalue_lag_7\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n1\nD10\n2014-07-04\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n2\nD10\n2014-07-05\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n3\nD10\n2014-07-06\n2048.9\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\n\n\n4\nD10\n2014-07-07\n2006.4\n2048.9\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n669\nD10\n2016-05-02\n2630.7\n2601.0\n2572.9\n2544.0\n2579.9\n2585.8\n2542.0\n2534.2\n\n\n670\nD10\n2016-05-03\n2649.3\n2630.7\n2601.0\n2572.9\n2544.0\n2579.9\n2585.8\n2542.0\n\n\n671\nD10\n2016-05-04\n2631.8\n2649.3\n2630.7\n2601.0\n2572.9\n2544.0\n2579.9\n2585.8\n\n\n672\nD10\n2016-05-05\n2622.5\n2631.8\n2649.3\n2630.7\n2601.0\n2572.9\n2544.0\n2579.9\n\n\n673\nD10\n2016-05-06\n2620.1\n2622.5\n2631.8\n2649.3\n2630.7\n2601.0\n2572.9\n2544.0\n\n\n\n\n674 rows × 10 columns"
   }
 ]
