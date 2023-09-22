@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>timetk for Python – index</title>
+<title>timetk for Python – get_pandas_frequency</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -29,7 +29,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../guides/02_pandas_frequency.html" rel="prev">
 <link href="../favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -101,7 +100,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reference/index.html">📄 API Reference</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -168,7 +167,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/index.html" class="sidebar-item-text sidebar-link active">
+  <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📄 API Reference</span></a>
   </div>
 </li>
@@ -199,99 +198,70 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#function-reference" id="toc-function-reference" class="nav-link active" data-scroll-target="#function-reference">Function reference</a>
+  <li><a href="#timetk.get_pandas_frequency" id="toc-timetk.get_pandas_frequency" class="nav-link active" data-scroll-target="#timetk.get_pandas_frequency">get_pandas_frequency</a>
   <ul class="collapse">
-  <li><a href="#time-series-for-pandas-dataframes" id="toc-time-series-for-pandas-dataframes" class="nav-link" data-scroll-target="#time-series-for-pandas-dataframes">🐼 Time Series for Pandas DataFrames</a></li>
-  <li><a href="#time-series-for-pandas-series" id="toc-time-series-for-pandas-series" class="nav-link" data-scroll-target="#time-series-for-pandas-series">🐼 Time Series for Pandas Series</a></li>
-  <li><a href="#utilities" id="toc-utilities" class="nav-link" data-scroll-target="#utilities">🛠️ Utilities</a></li>
-  <li><a href="#datasets" id="toc-datasets" class="nav-link" data-scroll-target="#datasets">💾 12 Datasets</a></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   </ul></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/index.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/get_pandas_frequency.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
 
-<section id="function-reference" class="level1">
-<h1>Function reference</h1>
-<section id="time-series-for-pandas-dataframes" class="level2">
-<h2 class="anchored" data-anchor-id="time-series-for-pandas-dataframes">🐼 Time Series for Pandas DataFrames</h2>
-<p>Time series functions that manipulate DataFrames.</p>
+<section id="timetk.get_pandas_frequency" class="level1">
+<h1>get_pandas_frequency</h1>
+<p><code>get_pandas_frequency(idx, force_regular=False)</code></p>
+<p>Get the frequency of a pandas Series or DatetimeIndex.</p>
+<p>The function <code>get_pandas_frequency</code> takes a Pandas Series or DatetimeIndex as input and returns the inferred frequency of the index, with an option to force regular frequency.</p>
+<section id="parameters" class="level2">
+<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 7%">
+<col style="width: 85%">
+<col style="width: 2%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td><a href="../reference/summarize_by_time.html#timetk.summarize_by_time">summarize_by_time</a></td>
-<td>Summarize a DataFrame or GroupBy object by time.</td>
+<td><code>idx</code></td>
+<td>pd.Series or pd.DatetimeIndex</td>
+<td>The <code>idx</code> parameter can be either a <code>pd.Series</code> or a <code>pd.DatetimeIndex</code>. It represents the index or the time series data for which we want to determine the frequency.</td>
+<td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><a href="../reference/pad_by_time.html#timetk.pad_by_time">pad_by_time</a></td>
-<td>Make irregular time series regular by padding with missing dates.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/future_frame.html#timetk.future_frame">future_frame</a></td>
-<td>Extend a DataFrame or GroupBy object with future dates.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_timeseries_signature.html#timetk.augment_timeseries_signature">augment_timeseries_signature</a></td>
-<td>Add 29 time series features to a DataFrame.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_lags.html#timetk.augment_lags">augment_lags</a></td>
-<td>Adds lags to a Pandas DataFrame or DataFrameGroupBy object.</td>
+<td><code>force_regular</code></td>
+<td>bool</td>
+<td>The <code>force_regular</code> parameter is a boolean flag that determines whether to force the frequency to be regular. If set to <code>True</code>, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is ‘B’ (business days), it will be converted to ‘D’ (calendar days). The default value is <code>False</code>.</td>
+<td><code>False</code></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="time-series-for-pandas-series" class="level2">
-<h2 class="anchored" data-anchor-id="time-series-for-pandas-series">🐼 Time Series for Pandas Series</h2>
-<p>Time series functions that manipulate Pandas Series.</p>
+<section id="returns" class="level2">
+<h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td><a href="../reference/make_future_timeseries.html#timetk.make_future_timeseries">make_future_timeseries</a></td>
-<td>Make future dates for a time series.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/get_timeseries_signature.html#timetk.get_timeseries_signature">get_timeseries_signature</a></td>
-<td>Convert a timestamp to a set of 29 time series features.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="utilities" class="level2">
-<h2 class="anchored" data-anchor-id="utilities">🛠️ Utilities</h2>
-<p>Helper functions to make your life easier.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/get_pandas_frequency.html#timetk.get_pandas_frequency">get_pandas_frequency</a></td>
-<td>Get the frequency of a pandas Series or DatetimeIndex.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/floor_date.html#timetk.floor_date">floor_date</a></td>
-<td>Round a date down to the specified unit (e.g.&nbsp;Flooring).</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/week_of_month.html#timetk.week_of_month">week_of_month</a></td>
-<td>The “week_of_month” function calculates the week number of a given date within its month.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="datasets" class="level2">
-<h2 class="anchored" data-anchor-id="datasets">💾 12 Datasets</h2>
-<p>Practice <code>timetk</code> with 12 complementary time series datasets.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/get_available_datasets.html#timetk.datasets.get_datasets.get_available_datasets">get_available_datasets</a></td>
-<td>Get a list of 12 datasets that can be loaded with <code>timetk.load_dataset</code>.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/load_dataset.html#timetk.datasets.get_datasets.load_dataset">load_dataset</a></td>
-<td>Load one of 12 Time Series Datasets.</td>
+<td>str</td>
+<td>The frequency of the given pandas series or datetime index.</td>
 </tr>
 </tbody>
 </table>
@@ -649,15 +619,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-      <a href="../guides/02_pandas_frequency.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Pandas Frequencies</span>
-      </a>          
-  </div>
-  <div class="nav-page nav-page-next">
-  </div>
-</nav>
 </div> <!-- /content -->
 
 
