@@ -194,6 +194,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
  <span class="menu-text">Timetk Basics</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/02_pandas_frequency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pandas Frequencies</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
@@ -262,10 +268,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 3%">
-<col style="width: 13%">
-<col style="width: 79%">
-<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 8%">
+<col style="width: 86%">
+<col style="width: 2%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -297,7 +303,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="even">
 <td><code>freq</code></td>
 <td>str</td>
-<td>The <code>freq</code> parameter specifies the frequency at which the data should be aggregated. It accepts a string representing a pandas frequency offset, such as “D” for daily or “MS” for month start. The default value is “D”, which means the data will be aggregated on a daily basis.</td>
+<td>The <code>freq</code> parameter specifies the frequency at which the data should be aggregated. It accepts a string representing a pandas frequency offset, such as “D” for daily or “MS” for month start. The default value is “D”, which means the data will be aggregated on a daily basis. Some common frequency aliases include: - S: secondly frequency - min: minute frequency - H: hourly frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency</td>
 <td><code>'D'</code></td>
 </tr>
 <tr class="odd">

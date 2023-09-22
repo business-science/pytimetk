@@ -10,7 +10,7 @@ def load_dataset(
     **kwargs
 ) -> pd.DataFrame:
     '''
-    Load one of 11 Time Series Datasets.
+    Load one of 12 Time Series Datasets.
     
     The `load_dataset` function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to `pandas.read_csv`. The available datasets are:
     
@@ -25,6 +25,7 @@ def load_dataset(
     - `taylor_30_min`: The Taylor 30 minute dataset
     - `walmart_sales_weekly`: The Walmart sales weekly dataset
     - `wikipedia_traffic_daily`: The Wikipedia traffic daily dataset
+    - `stocks_daily`: The MAANNG stocks dataset
     
     The datasets can be loaded with `timetk.load_dataset(name)`, where `name` is the name of the dataset that you want to load. The default value is set to "m4_daily", which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned above.
     
@@ -58,8 +59,15 @@ def load_dataset(
     ```
     
     ```{python}
-    # Taylor 30-Minute Dataset
+    # Taylor 30-Minute Power Demand Dataset
     df = tk.load_dataset('taylor_30_min', parse_dates = ['date'])
+    
+    df
+    ```
+    
+    ```{python}
+    # Stocks Daily Dataset: META, APPL, AMZN, NFLX, NVDA, GOOG
+    df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
     
     df
     ```
@@ -85,7 +93,7 @@ def load_dataset(
 
     
 def get_available_datasets():
-    '''Get a list of 11 datasets that can be loaded with `timetk.load_dataset`.
+    '''Get a list of 12 datasets that can be loaded with `timetk.load_dataset`.
     
     The `get_available_datasets` function returns a sorted list of available dataset names from the `timetk.datasets` module. The available datasets are:
     

@@ -22,11 +22,11 @@ Time series functions that manipulate Pandas Series.
 | [floor_date](floor_date.qmd#timetk.floor_date) | Round a date down to the specified unit (e.g. Flooring). |
 | [week_of_month](week_of_month.qmd#timetk.week_of_month) | The "week_of_month" function calculates the week number of a given date within its month. |
 
-## 💾 11 Datasets
+## 💾 12 Datasets
 
-Practice `timetk` with 11 complementary time series datasets.
+Practice `timetk` with 12 complementary time series datasets.
 
 | | |
 | --- | --- |
-| [get_available_datasets](get_available_datasets.qmd#timetk.datasets.get_datasets.get_available_datasets) | Get a list of 11 datasets that can be loaded with `timetk.load_dataset`. |
-| [load_dataset](load_dataset.qmd#timetk.datasets.get_datasets.load_dataset) | Load one of 11 Time Series Datasets. |
+| [get_available_datasets](get_available_datasets.qmd#timetk.datasets.get_datasets.get_available_datasets) | Get a list of 12 datasets that can be loaded with `timetk.load_dataset`. |
+| [load_dataset](load_dataset.qmd#timetk.datasets.get_datasets.load_dataset) | Load one of 12 Time Series Datasets. |

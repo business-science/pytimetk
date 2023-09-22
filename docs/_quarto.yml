@@ -102,9 +102,9 @@ quartodoc:
         - get_timeseries_signature
         - floor_date
         - week_of_month
-    - title: 💾 11 Datasets
+    - title: 💾 12 Datasets
       package: timetk.datasets.get_datasets
-      desc: Practice `timetk` with 11 complementary time series datasets.
+      desc: Practice `timetk` with 12 complementary time series datasets.
       contents:
         - get_available_datasets
         - load_dataset

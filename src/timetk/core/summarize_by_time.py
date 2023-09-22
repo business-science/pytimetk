@@ -31,7 +31,20 @@ def summarize_by_time(
     value_column : str or list
         The `value_column` parameter is the name of one or more columns in the DataFrame that you want to aggregate by. It can be either a string representing a single column name, or a list of strings representing multiple column names.
     freq : str, optional
-        The `freq` parameter specifies the frequency at which the data should be aggregated. It accepts a string representing a pandas frequency offset, such as "D" for daily or "MS" for month start. The default value is "D", which means the data will be aggregated on a daily basis.
+        The `freq` parameter specifies the frequency at which the data should be aggregated. It accepts a string representing a pandas frequency offset, such as "D" for daily or "MS" for month start. The default value is "D", which means the data will be aggregated on a daily basis. Some common frequency aliases include:
+        
+        - S: secondly frequency
+        - min: minute frequency
+        - H: hourly frequency
+        - D: daily frequency
+        - W: weekly frequency
+        - M: month end frequency
+        - MS: month start frequency
+        - Q: quarter end frequency
+        - QS: quarter start frequency
+        - Y: year end frequency
+        - YS: year start frequency
+        
     agg_func : list, optional
         The `agg_func` parameter is used to specify one or more aggregating functions to apply to the value column(s) during the summarization process. It can be a single function or a list of functions. The default value is `"sum"`, which represents the sum function. 
     kind : str, optional
