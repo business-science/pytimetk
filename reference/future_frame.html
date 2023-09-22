@@ -429,9 +429,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            length_out  <span class="op">=</span> <span class="dv">12</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>extended_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        .assign(<span class="bu">id</span> <span class="op">=</span> <span class="kw">lambda</span> x: x[<span class="st">'id'</span>].ffill())</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>extended_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
@@ -484,31 +485,31 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">707</td>
-<td>NaN</td>
+<td>H10</td>
 <td>2015-07-30 23:00:00</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">708</td>
-<td>NaN</td>
+<td>H10</td>
 <td>2015-07-31 00:00:00</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">709</td>
-<td>NaN</td>
+<td>H10</td>
 <td>2015-07-31 01:00:00</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">710</td>
-<td>NaN</td>
+<td>H10</td>
 <td>2015-07-31 02:00:00</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">711</td>
-<td>NaN</td>
+<td>H10</td>
 <td>2015-07-31 03:00:00</td>
 <td>NaN</td>
 </tr>
