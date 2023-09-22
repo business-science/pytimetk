@@ -116,14 +116,14 @@
     "href": "reference/index.html",
     "title": "Function reference",
     "section": "",
-    "text": "Time series functions that manipulate DataFrames.\n\n\n\nsummarize_by_time\nSummarize a DataFrame or GroupBy object by time.\n\n\nfuture_frame\nExtend a DataFrame or GroupBy object with future dates.\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame.\n\n\n\n\n\n\nTime series functions that manipulate Pandas Series.\n\n\n\nmake_future_timeseries\nMake future dates for a time series.\n\n\nget_timeseries_signature\nConvert a timestamp to a set of 29 time series features.\n\n\nfloor_date\nRound a date down to the specified unit (e.g. Flooring).\n\n\nweek_of_month\nThe “week_of_month” function calculates the week number of a given date within its month.\n\n\n\n\n\n\nPractice timetk with 11 complementary time series datasets.\n\n\n\nget_available_datasets\nGet a list of 11 datasets that can be loaded with timetk.load_dataset.\n\n\nload_dataset\nLoad one of 11 Time Series Datasets."
+    "text": "Time series functions that manipulate DataFrames.\n\n\n\nsummarize_by_time\nSummarize a DataFrame or GroupBy object by time.\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame.\n\n\n\n\n\n\nTime series functions that manipulate Pandas Series.\n\n\n\nmake_future_timeseries\nMake future dates for a time series.\n\n\nget_timeseries_signature\nConvert a timestamp to a set of 29 time series features.\n\n\nfloor_date\nRound a date down to the specified unit (e.g. Flooring).\n\n\nweek_of_month\nThe “week_of_month” function calculates the week number of a given date within its month.\n\n\n\n\n\n\nPractice timetk with 11 complementary time series datasets.\n\n\n\nget_available_datasets\nGet a list of 11 datasets that can be loaded with timetk.load_dataset.\n\n\nload_dataset\nLoad one of 11 Time Series Datasets."
   },
   {
     "objectID": "reference/index.html#time-series-for-pandas-dataframes",
     "href": "reference/index.html#time-series-for-pandas-dataframes",
     "title": "Function reference",
     "section": "",
-    "text": "Time series functions that manipulate DataFrames.\n\n\n\nsummarize_by_time\nSummarize a DataFrame or GroupBy object by time.\n\n\nfuture_frame\nExtend a DataFrame or GroupBy object with future dates.\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame."
+    "text": "Time series functions that manipulate DataFrames.\n\n\n\nsummarize_by_time\nSummarize a DataFrame or GroupBy object by time.\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame."
   },
   {
     "objectID": "reference/index.html#time-series-for-pandas-series",
