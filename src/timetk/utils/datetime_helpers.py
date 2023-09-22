@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import pandas_flavor as pf
 
-from math import ceil
+from dateutil import parser
 from warnings import warn
 
 
@@ -120,3 +120,43 @@ def week_of_month(idx: pd.Series or pd.DatetimeIndex,) -> pd.Series:
     )
     
     return ret
+
+
+
+
+def is_datetime_string(x: str or pd.Series or pd.DatetimeIndex) -> bool:
+    
+    if isinstance(x, pd.Series):
+        x = x.values[0]
+    
+    if isinstance(x, pd.DatetimeIndex):
+        x = x[0]
+    
+    try:
+        parser.parse(str(x))
+        return True
+    except ValueError:
+        return False
+    
+def detect_timeseries_columns(data: pd.DataFrame, verbose: bool = False) -> pd.DataFrame:
+    
+    df = data.head(1)
+    
+    if verbose:
+        print(df)
+    
+    return df.map(is_datetime_string)
+
+def has_timeseries_columns(data: pd.DataFrame, verbose: bool = False) -> bool:
+    
+    if verbose:
+        print(detect_timeseries_columns(data).iloc[0])
+    
+    return detect_timeseries_columns(data).iloc[0].any()
+
+def get_timeseries_colname(data: pd.DataFrame, verbose: bool = False) -> str:
+    
+    if verbose:
+        print(detect_timeseries_columns(data).iloc[0])
+        
+    return detect_timeseries_columns(data).iloc[0].idxmax()
