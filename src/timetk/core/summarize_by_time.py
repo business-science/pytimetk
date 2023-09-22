@@ -200,6 +200,6 @@ def summarize_by_time(
     
     return data
 
-# Monkey patch the summarize_by_time method to pandas groupby objects
+# Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.summarize_by_time = summarize_by_time
 

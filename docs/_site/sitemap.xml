@@ -2,54 +2,58 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/floor_date.html</loc>
-    <lastmod>2023-09-22T03:50:48.938Z</lastmod>
+    <lastmod>2023-09-22T11:40:46.930Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_timeseries_signature.html</loc>
-    <lastmod>2023-09-22T03:50:41.551Z</lastmod>
+    <lastmod>2023-09-22T11:40:39.597Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/load_dataset.html</loc>
-    <lastmod>2023-09-22T03:50:34.433Z</lastmod>
+    <lastmod>2023-09-22T11:40:32.082Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/summarize_by_time.html</loc>
-    <lastmod>2023-09-22T11:38:50.119Z</lastmod>
+    <lastmod>2023-09-22T11:40:24.596Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_available_datasets.html</loc>
-    <lastmod>2023-09-22T03:50:22.287Z</lastmod>
+    <lastmod>2023-09-22T11:40:19.507Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/01_timetk_concepts.html</loc>
-    <lastmod>2023-09-22T03:50:18.665Z</lastmod>
+    <lastmod>2023-09-22T15:12:16.698Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/getting-started/01_installation.html</loc>
-    <lastmod>2023-09-22T03:50:08.262Z</lastmod>
+    <lastmod>2023-09-22T11:40:04.903Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/index.html</loc>
-    <lastmod>2023-09-22T03:50:05.016Z</lastmod>
+    <lastmod>2023-09-22T11:40:01.261Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/getting-started/02_quick_start.html</loc>
-    <lastmod>2023-09-22T03:50:12.783Z</lastmod>
+    <lastmod>2023-09-22T11:40:09.355Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2023-09-22T11:38:44.625Z</lastmod>
+    <lastmod>2023-09-22T15:09:57.020Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/week_of_month.html</loc>
-    <lastmod>2023-09-22T03:50:30.554Z</lastmod>
+    <lastmod>2023-09-22T11:40:28.132Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/make_future_timeseries.html</loc>
-    <lastmod>2023-09-22T03:50:37.781Z</lastmod>
+    <lastmod>2023-09-22T11:40:35.662Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_timeseries_signature.html</loc>
-    <lastmod>2023-09-22T03:50:45.404Z</lastmod>
+    <lastmod>2023-09-22T11:40:43.417Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/future_frame.html</loc>
+    <lastmod>2023-09-22T15:10:05.803Z</lastmod>
   </url>
 </urlset>
