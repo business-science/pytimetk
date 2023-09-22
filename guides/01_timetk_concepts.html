@@ -236,12 +236,24 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
+  <ul>
+  <li><a href="#the-3-core-properties-of-time-series-data" id="toc-the-3-core-properties-of-time-series-data" class="nav-link active" data-scroll-target="#the-3-core-properties-of-time-series-data"><span class="header-section-number">1</span> The 3 Core Properties of Time Series Data</a></li>
+  <li><a href="#the-2-ways-that-timetk-makes-time-series-analysis-easier" id="toc-the-2-ways-that-timetk-makes-time-series-analysis-easier" class="nav-link" data-scroll-target="#the-2-ways-that-timetk-makes-time-series-analysis-easier"><span class="header-section-number">2</span> The 2 Ways that Timetk Makes Time Series Analysis Easier</a>
   <ul class="collapse">
-  <li><a href="#the-3-core-properties-of-time-series-data" id="toc-the-3-core-properties-of-time-series-data" class="nav-link active" data-scroll-target="#the-3-core-properties-of-time-series-data">The 3 Core Properties of Time Series Data</a></li>
-  <li><a href="#ways-that-timetk-makes-time-series-analysis-easier" id="toc-ways-that-timetk-makes-time-series-analysis-easier" class="nav-link" data-scroll-target="#ways-that-timetk-makes-time-series-analysis-easier">2 Ways that Timetk Makes Time Series Analysis Easier</a></li>
-  <li><a href="#type-1-pandas-dataframe-operations" id="toc-type-1-pandas-dataframe-operations" class="nav-link" data-scroll-target="#type-1-pandas-dataframe-operations">Type 1: Pandas DataFrame Operations</a></li>
-  <li><a href="#type-2-pandas-series-operations" id="toc-type-2-pandas-series-operations" class="nav-link" data-scroll-target="#type-2-pandas-series-operations">Type 2: Pandas Series Operations</a></li>
-  <li><a href="#more-coming-soon" id="toc-more-coming-soon" class="nav-link" data-scroll-target="#more-coming-soon">More Coming Soon…</a></li>
+  <li><a href="#type-1-pandas-dataframe-operations" id="toc-type-1-pandas-dataframe-operations" class="nav-link" data-scroll-target="#type-1-pandas-dataframe-operations"><span class="header-section-number">2.1</span> Type 1: Pandas DataFrame Operations</a>
+  <ul class="collapse">
+  <li><a href="#timetk-data-format-compliance" id="toc-timetk-data-format-compliance" class="nav-link" data-scroll-target="#timetk-data-format-compliance">Timetk Data Format Compliance</a></li>
+  <li><a href="#grouped-time-series-analysis-with-summarize-by-time" id="toc-grouped-time-series-analysis-with-summarize-by-time" class="nav-link" data-scroll-target="#grouped-time-series-analysis-with-summarize-by-time">Grouped Time Series Analysis with Summarize By Time</a></li>
+  <li><a href="#another-dataframe-example-creating-29-engineered-features" id="toc-another-dataframe-example-creating-29-engineered-features" class="nav-link" data-scroll-target="#another-dataframe-example-creating-29-engineered-features">Another DataFrame Example: Creating 29 Engineered Features</a></li>
+  </ul></li>
+  <li><a href="#type-2-pandas-series-operations" id="toc-type-2-pandas-series-operations" class="nav-link" data-scroll-target="#type-2-pandas-series-operations"><span class="header-section-number">2.2</span> Type 2: Pandas Series Operations</a>
+  <ul class="collapse">
+  <li><a href="#the-make-future-time-series-function" id="toc-the-make-future-time-series-function" class="nav-link" data-scroll-target="#the-make-future-time-series-function">The Make Future Time Series Function</a></li>
+  <li><a href="#flooring-dates" id="toc-flooring-dates" class="nav-link" data-scroll-target="#flooring-dates">Flooring Dates</a></li>
+  <li><a href="#the-get-time-series-signature-function" id="toc-the-get-time-series-signature-function" class="nav-link" data-scroll-target="#the-get-time-series-signature-function">The Get Time Series Signature Function</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#more-coming-soon" id="toc-more-coming-soon" class="nav-link" data-scroll-target="#more-coming-soon"><span class="header-section-number">3</span> More Coming Soon…</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/guides/01_timetk_concepts.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -285,8 +297,8 @@ How this guide benefits you
 </div>
 </div>
 <p>Let’s first start with how to think about time series data conceptually. <strong>Time series data has 3 core properties.</strong></p>
-<section id="the-3-core-properties-of-time-series-data" class="level2">
-<h2 class="anchored" data-anchor-id="the-3-core-properties-of-time-series-data">The 3 Core Properties of Time Series Data</h2>
+<section id="the-3-core-properties-of-time-series-data" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> The 3 Core Properties of Time Series Data</h1>
 <p>Every time series DataFrame should have the following properties:</p>
 <ol type="1">
 <li><em>Time Series Index:</em> A column containing ‘datetime64’ time stamps.</li>
@@ -444,8 +456,8 @@ No Pandas Index, No Problem
 </div>
 </div>
 </section>
-<section id="ways-that-timetk-makes-time-series-analysis-easier" class="level2">
-<h2 class="anchored" data-anchor-id="ways-that-timetk-makes-time-series-analysis-easier">2 Ways that Timetk Makes Time Series Analysis Easier</h2>
+<section id="the-2-ways-that-timetk-makes-time-series-analysis-easier" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> The 2 Ways that Timetk Makes Time Series Analysis Easier</h1>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="true" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -475,12 +487,11 @@ No Pandas Index, No Problem
 </ul></li>
 </ol>
 <p>Let’s take a look at how to use the different types of Time Series Analysis functions in <code>timetk</code>. We’ll start with Type 1: Pandas <code>DataFrame</code> Operations.</p>
-</section>
-<section id="type-1-pandas-dataframe-operations" class="level2">
-<h2 class="anchored" data-anchor-id="type-1-pandas-dataframe-operations">Type 1: Pandas DataFrame Operations</h2>
+<section id="type-1-pandas-dataframe-operations" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="type-1-pandas-dataframe-operations"><span class="header-section-number">2.1</span> Type 1: Pandas DataFrame Operations</h2>
 <p>Before we start using <code>timetk</code>, let’s make sure our data is set up properly.</p>
-<section id="timetk-data-format-compliance" class="level4">
-<h4 class="anchored" data-anchor-id="timetk-data-format-compliance">Timetk Data Format Compliance</h4>
+<section id="timetk-data-format-compliance" class="level3">
+<h3 class="anchored" data-anchor-id="timetk-data-format-compliance">Timetk Data Format Compliance</h3>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="true" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -958,25 +969,139 @@ Key Takeaways: <code>augment_timeseries_signature()</code>
 </div>
 </section>
 </section>
-<section id="type-2-pandas-series-operations" class="level2">
-<h2 class="anchored" data-anchor-id="type-2-pandas-series-operations">Type 2: Pandas Series Operations</h2>
+<section id="type-2-pandas-series-operations" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="type-2-pandas-series-operations"><span class="header-section-number">2.2</span> Type 2: Pandas Series Operations</h2>
 <p>The main difference between a <code>DataFrame</code> operation and a Series operation is that we are operating on an array of values from typically one of the following <code>dtypes</code>:</p>
 <ol type="1">
 <li>Timestamps (<code>datetime64</code>)</li>
 <li>Numeric (<code>float64</code> or <code>int64</code>)</li>
 </ol>
-<section id="timestamps-the-index-idx" class="level3">
-<h3 class="anchored" data-anchor-id="timestamps-the-index-idx">Timestamps (The Index <code>idx</code>)</h3>
 <p>The first argument of Series operations that operate on Timestamps will always be <code>idx</code>.</p>
-<p>An example is <code>tk.floor_date</code>, which is used to round down dates. See <code>help(tk.floor_date)</code>.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">With Flooring</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Without Flooring</a></li></ul>
-<div class="tab-content" data-group="language">
-<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>Let’s take a look at one shall we? We’ll start with a common action: Making future time series from an existing time series with a regular frequency.</p>
+<section id="the-make-future-time-series-function" class="level3">
+<h3 class="anchored" data-anchor-id="the-make-future-time-series-function">The Make Future Time Series Function</h3>
+<p>Say we have a monthly sequence of timestamps. What if we want to create a forecast where we predict 12 months into the future? Well, we will need to create 12 future timestamps. Here’s how.</p>
+<p>First create a <code>pd.date_range()</code> with dates starting at the beginning of each month.</p>
 <div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Monthly flooring rounds dates down to 1st of the month</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df[<span class="st">'date'</span>].floor_date(unit <span class="op">=</span> <span class="st">"M"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make a monthly date range</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>dates_dt <span class="op">=</span> pd.date_range(<span class="st">"2023-01"</span>, <span class="st">"2024-01"</span>, freq<span class="op">=</span><span class="st">"MS"</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>dates_dt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>DatetimeIndex(['2023-01-01', '2023-02-01', '2023-03-01', '2023-04-01',
+               '2023-05-01', '2023-06-01', '2023-07-01', '2023-08-01',
+               '2023-09-01', '2023-10-01', '2023-11-01', '2023-12-01',
+               '2024-01-01'],
+              dtype='datetime64[ns]', freq='MS')</code></pre>
+</div>
+</div>
+<p>Next, use <code>tk.make_future_timeseries()</code> to create the next 12 timestamps in the sequence.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="future-dates">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">Pandas Series</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">DateTimeIndex</a></li></ul>
+<div class="tab-content" data-group="future-dates">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pandas Series: Future Dates</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>future_series <span class="op">=</span> pd.Series(dates_dt).make_future_timeseries(<span class="dv">12</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>future_series</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>0    2024-02-01
+1    2024-03-01
+2    2024-04-01
+3    2024-05-01
+4    2024-06-01
+5    2024-07-01
+6    2024-08-01
+7    2024-09-01
+8    2024-10-01
+9    2024-11-01
+10   2024-12-01
+11   2025-01-01
+dtype: datetime64[ns]</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DateTimeIndex: Future Dates</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>future_dt <span class="op">=</span> tk.make_future_timeseries(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    idx      <span class="op">=</span> dates_dt,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    length_out <span class="op">=</span> <span class="dv">12</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>future_dt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<pre><code>0    2024-02-01
+1    2024-03-01
+2    2024-04-01
+3    2024-05-01
+4    2024-06-01
+5    2024-07-01
+6    2024-08-01
+7    2024-09-01
+8    2024-10-01
+9    2024-11-01
+10   2024-12-01
+11   2025-01-01
+dtype: datetime64[ns]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>We can combine the actual and future timestamps into one combined timeseries.</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combining the 2 series and resetting the index</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>combined_timeseries <span class="op">=</span> (</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    pd.concat(</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        [pd.Series(dates_dt), pd.Series(future_dt)],</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        axis<span class="op">=</span><span class="dv">0</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>        .reset_index(drop <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>combined_timeseries</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>0    2023-01-01
+1    2023-02-01
+2    2023-03-01
+3    2023-04-01
+4    2023-05-01
+5    2023-06-01
+6    2023-07-01
+7    2023-08-01
+8    2023-09-01
+9    2023-10-01
+10   2023-11-01
+11   2023-12-01
+12   2024-01-01
+13   2024-02-01
+14   2024-03-01
+15   2024-04-01
+16   2024-05-01
+17   2024-06-01
+18   2024-07-01
+19   2024-08-01
+20   2024-09-01
+21   2024-10-01
+22   2024-11-01
+23   2024-12-01
+24   2025-01-01
+dtype: datetime64[ns]</code></pre>
+</div>
+</div>
+<p>Next, we’ll take a look at how to go from an irregular time series to a regular time series.</p>
+</section>
+<section id="flooring-dates" class="level3">
+<h3 class="anchored" data-anchor-id="flooring-dates">Flooring Dates</h3>
+<p>An example is <code>tk.floor_date</code>, which is used to round down dates. See <code>help(tk.floor_date)</code>.</p>
+<p>Flooring dates is often used as part of a strategy to go from an irregular time series to regular by combining with an aggregation. Often <code>summarize_by_time()</code> is used (I’ll share why shortly). But conceptually, date flooring is the secret.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="flooring">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">With Flooring</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Without Flooring</a></li></ul>
+<div class="tab-content" data-group="flooring">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Monthly flooring rounds dates down to 1st of the month</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df[<span class="st">'date'</span>].floor_date(unit <span class="op">=</span> <span class="st">"M"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>0      2014-07-01
 1      2014-07-01
 2      2014-07-01
@@ -992,11 +1117,11 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Before Flooring</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df[<span class="st">'date'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Before Flooring</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df[<span class="st">'date'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
 <pre><code>0      2014-07-03
 1      2014-07-04
 2      2014-07-05
@@ -1015,15 +1140,15 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 </div>
 </div>
 <p>This “date flooring” operation can be useful for creating date groupings.</p>
-<div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adding a date group with floor_date()</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>dates_grouped_by_month <span class="op">=</span> (</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        .assign(date_group <span class="op">=</span> <span class="kw">lambda</span> x: x[<span class="st">'date'</span>].floor_date(<span class="st">"M"</span>))</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>dates_grouped_by_month</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adding a date group with floor_date()</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>dates_grouped_by_month <span class="op">=</span> (</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>        .assign(date_group <span class="op">=</span> <span class="kw">lambda</span> x: x[<span class="st">'date'</span>].floor_date(<span class="st">"M"</span>))</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>dates_grouped_by_month</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
 <div>
 
 
@@ -1123,18 +1248,18 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 </div>
 </div>
 <p>We can then do grouped operations.</p>
-<div class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example of a grouped operation with floored dates</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>summary_df <span class="op">=</span> (</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    dates_grouped_by_month</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>        .drop(<span class="st">'date'</span>, axis<span class="op">=</span><span class="dv">1</span>) <span class="op">\</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">'id'</span>, <span class="st">'date_group'</span>])</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        .mean() <span class="op">\</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        .reset_index()</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>summary_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example of a grouped operation with floored dates</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>summary_df <span class="op">=</span> (</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    dates_grouped_by_month</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>        .drop(<span class="st">'date'</span>, axis<span class="op">=</span><span class="dv">1</span>) <span class="op">\</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">'id'</span>, <span class="st">'date_group'</span>])</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>        .mean() <span class="op">\</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        .reset_index()</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>summary_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
 
@@ -1222,18 +1347,18 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 </div>
 </div>
 <p>Of course for this operation, we can do it faster with <code>summarize_by_time()</code> (and it’s much more flexible).</p>
-<div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize by time is less code and more flexible</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>(</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    m4_daily_df </span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">'date'</span>, <span class="st">'value'</span>, </span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>            rule <span class="op">=</span> <span class="st">"MS"</span>,</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>            agg_func <span class="op">=</span> [<span class="st">'mean'</span>, <span class="st">'median'</span>, <span class="st">'min'</span>, <span class="st">'max'</span>]</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize by time is less code and more flexible</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    m4_daily_df </span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">'date'</span>, <span class="st">'value'</span>, </span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>            rule <span class="op">=</span> <span class="st">"MS"</span>,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>            agg_func <span class="op">=</span> [<span class="st">'mean'</span>, <span class="st">'median'</span>, <span class="st">'min'</span>, <span class="st">'max'</span>]</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
 
@@ -1359,14 +1484,14 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 <p>And that’s the core idea behind <code>timetk</code>, writing less code and getting more.</p>
 <p>Next, let’s do one more function. The brother of <code>augment_timeseries_signature()</code>…</p>
 </section>
-<section id="the-get_timeseries_signature-function" class="level3">
-<h3 class="anchored" data-anchor-id="the-get_timeseries_signature-function">The <code>get_timeseries_signature()</code> Function</h3>
+<section id="the-get-time-series-signature-function" class="level3">
+<h3 class="anchored" data-anchor-id="the-get-time-series-signature-function">The Get Time Series Signature Function</h3>
 <p>This function takes a pandas <code>Series</code> or <code>DateTimeIndex</code> and returns a <code>DataFrame</code> containing the 29 engineered features.</p>
 <p>Start with either a DateTimeIndex…</p>
-<div class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>timestamps_dt <span class="op">=</span> pd.date_range(<span class="st">"2023"</span>, <span class="st">"2024"</span>, freq <span class="op">=</span> <span class="st">"D"</span>)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>timestamps_dt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>timestamps_dt <span class="op">=</span> pd.date_range(<span class="st">"2023"</span>, <span class="st">"2024"</span>, freq <span class="op">=</span> <span class="st">"D"</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>timestamps_dt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
 <pre><code>DatetimeIndex(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04',
                '2023-01-05', '2023-01-06', '2023-01-07', '2023-01-08',
                '2023-01-09', '2023-01-10',
@@ -1378,10 +1503,10 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 </div>
 </div>
 <p>… Or a Pandas Series.</p>
-<div class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>timestamps_series <span class="op">=</span> pd.Series(timestamps_dt)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>timestamps_series</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="12">
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>timestamps_series <span class="op">=</span> pd.Series(timestamps_dt)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>timestamps_series</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
 <pre><code>0     2023-01-01
 1     2023-01-02
 2     2023-01-03
@@ -1398,13 +1523,13 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </div>
 <p>And you can use the pandas Series function, <code>tk.get_timeseries_signature()</code> to create 29 features from the date sequence.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset" data-group="get_timeseries_signature">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Pandas Series</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">DateTimeIndex</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Pandas Series</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">DateTimeIndex</a></li></ul>
 <div class="tab-content" data-group="get_timeseries_signature">
-<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
-<div class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pandas series: get_timeseries_signature</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>timestamps_series.get_timeseries_signature()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="13">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pandas series: get_timeseries_signature</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>timestamps_series.get_timeseries_signature()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
 <div>
 
 
@@ -1708,11 +1833,11 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
-<div class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DateTimeIndex: get_timeseries_signature</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>tk.get_timeseries_signature(timestamps_dt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="14">
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DateTimeIndex: get_timeseries_signature</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>tk.get_timeseries_signature(timestamps_dt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
 <div>
 
 
@@ -2020,8 +2145,9 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </div>
 </section>
 </section>
-<section id="more-coming-soon" class="level1">
-<h1>More Coming Soon…</h1>
+</section>
+<section id="more-coming-soon" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> More Coming Soon…</h1>
 <p>We are in the early stages of development. But it’s obvious the potential for <code>timetk</code> now in Python. 🐍</p>
 <ul>
 <li>For requested functions, please see our <a href="https://github.com/business-science/pytimetk/issues/2">Project Roadmap GH Issue #2</a>. You can make requests there.</li>
