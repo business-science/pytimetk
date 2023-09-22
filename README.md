@@ -57,7 +57,7 @@ df \
         date_column='order_date', 
         value_column= 'total_price',
         groups = "category_2",
-        rule = "M",
+        freq = "M",
         kind = 'timestamp',
         agg_func = ['mean', 'sum']
     )

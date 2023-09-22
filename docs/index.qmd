@@ -53,7 +53,7 @@ summary_category_1_df = df \
     .summarize_by_time(
         date_column  = 'order_date', 
         value_column = 'total_price',
-        rule         = "MS",
+        freq         = "MS",
         agg_func     = 'sum',
         wide_format  = True
     )

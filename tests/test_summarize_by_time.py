@@ -40,7 +40,7 @@ def test_summarize_by_time_dataframe_functions(summarize_by_time_data_test):
     result = data.summarize_by_time(
         'date', 'value',
         agg_func = 'sum',
-        rule = 'M',
+        freq = 'M',
     )
     
     expected = pd.DataFrame({
@@ -56,7 +56,7 @@ def test_summarize_by_time_dataframe_functions(summarize_by_time_data_test):
     result = data.summarize_by_time(
         'date', 'value',
         agg_func = 'sum',
-        rule = 'M',
+        freq = 'M',
     )
     
     expected = pd.DataFrame({
@@ -71,7 +71,7 @@ def test_summarize_by_time_dataframe_functions(summarize_by_time_data_test):
     result = data.summarize_by_time(
         'date', 'value',
         agg_func = ['sum', 'mean'],
-        rule = 'M',
+        freq = 'M',
     )
     
     expected = pd.DataFrame({
@@ -102,7 +102,7 @@ def test_summarize_by_time_grouped_functions(summarize_by_time_data_test):
     # Test groupby objects 
     result = data.groupby('groups').summarize_by_time(
         'date', 'value', 
-        rule = 'MS', 
+        freq = 'MS', 
         agg_func = 'sum',
         wide_format = True,
     )
@@ -128,7 +128,7 @@ def test_summarize_by_time_lambda_functions(summarize_by_time_data_test):
             .summarize_by_time(
                 date_column  = 'date', 
                 value_column = 'value', 
-                rule         = 'MS',
+                freq         = 'MS',
                 agg_func     = ['sum', ('q25', lambda x: x.quantile(0.25))],
                 wide_format  = True, 
             )

@@ -141,7 +141,7 @@ df_summarized = (
         .summarize_by_time(
             date_column  = 'date',
             value_column = 'value',
-            rule         = 'QS', # QS = Quarter Start
+            freq         = 'QS', # QS = Quarter Start
             agg_func     = [
                 'mean', 
                 'median', 
@@ -343,7 +343,7 @@ Of course for this operation, we can do it faster with `summarize_by_time()` (an
         .groupby('id')
         .summarize_by_time(
             'date', 'value', 
-            rule = "MS",
+            freq = "MS",
             agg_func = ['mean', 'median', 'min', 'max']
         )
 )

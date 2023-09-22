@@ -9,7 +9,7 @@ def summarize_by_time(
     data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
     date_column: str,
     value_column: str or list,
-    rule: str = "D",
+    freq: str = "D",
     agg_func: list = 'sum',
     kind: str = "timestamp",
     wide_format: bool = False,
@@ -30,8 +30,8 @@ def summarize_by_time(
         The name of the column in the data frame that contains the dates or timestamps to be aggregated by. This column must be of type datetime64.
     value_column : str or list
         The `value_column` parameter is the name of one or more columns in the DataFrame that you want to aggregate by. It can be either a string representing a single column name, or a list of strings representing multiple column names.
-    rule : str, optional
-        The `rule` parameter specifies the frequency at which the data should be aggregated. It accepts a string representing a pandas frequency offset, such as "D" for daily or "MS" for month start. The default value is "D", which means the data will be aggregated on a daily basis.
+    freq : str, optional
+        The `freq` parameter specifies the frequency at which the data should be aggregated. It accepts a string representing a pandas frequency offset, such as "D" for daily or "MS" for month start. The default value is "D", which means the data will be aggregated on a daily basis.
     agg_func : list, optional
         The `agg_func` parameter is used to specify one or more aggregating functions to apply to the value column(s) during the summarization process. It can be a single function or a list of functions. The default value is `"sum"`, which represents the sum function. 
     kind : str, optional
@@ -64,7 +64,7 @@ def summarize_by_time(
             .summarize_by_time(
                 date_column  = 'order_date', 
                 value_column = 'total_price',
-                rule         = "MS",
+                freq         = "MS",
                 agg_func     = ['mean', 'sum']
             )
     )
@@ -78,7 +78,7 @@ def summarize_by_time(
             .summarize_by_time(
                 date_column  = 'order_date', 
                 value_column = 'total_price', 
-                rule         = 'MS',
+                freq         = 'MS',
                 agg_func     = 'sum',
                 wide_format  = False, 
             )
@@ -93,7 +93,7 @@ def summarize_by_time(
             .summarize_by_time(
                 date_column  = 'order_date', 
                 value_column = 'total_price', 
-                rule         = 'MS',
+                freq         = 'MS',
                 agg_func     = 'sum',
                 wide_format  = True, 
             )
@@ -108,7 +108,7 @@ def summarize_by_time(
             .summarize_by_time(
                 date_column  = 'order_date', 
                 value_column = 'total_price', 
-                rule         = 'MS',
+                freq         = 'MS',
                 agg_func     = ['sum', 'mean', ('q25', lambda x: x.quantile(0.25)), ('q75', lambda x: x.quantile(0.75))],
                 wide_format  = True, 
             )
@@ -138,8 +138,8 @@ def summarize_by_time(
     # if groups is not None:
     #     data = data.groupby(groups)
     
-    # Resample data based on the specified rule and kind
-    data = data.resample(rule=rule, kind=kind)
+    # Resample data based on the specified freq and kind
+    data = data.resample(rule=freq, kind=kind)
     
     # Create a dictionary mapping each value column to the aggregating function(s)
     agg_dict = {col: agg_func for col in value_column}
