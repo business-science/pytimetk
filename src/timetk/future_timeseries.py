@@ -93,12 +93,29 @@ def make_future_timeseries(
     return ret
 
 
-# @pf.register_dataframe_method
-# def future_frame(
-#     data: pd.DataFrame, 
-#     length_out: int, 
-#     bind_data: bool = False
-# ) -> pd.DataFrame:
+@pf.register_dataframe_method
+def future_frame(
+    data: pd.DataFrame,
+    date_column: str, 
+    length_out: int, 
+    bind_data: bool = False
+) -> pd.DataFrame:
+    
+    
+    # Check if data is a Pandas DataFrame
+    if not isinstance(data, pd.DataFrame):
+        if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+            raise TypeError("`data` is not a Pandas DataFrame.")
+    
+    # Prep groups
+    group_names = None
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        group_names = data.grouper.names
+        data = data.obj.set_index(date_column).groupby(group_names)
+    
+    # TODO - Finish this function
+    
+    return None
     
     
     
