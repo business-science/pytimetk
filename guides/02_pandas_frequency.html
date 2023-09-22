@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>timetk for Python – index</title>
+<title>timetk for Python - Pandas Frequencies</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -29,7 +63,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../guides/02_pandas_frequency.html" rel="prev">
+<link href="../reference/index.html" rel="next">
+<link href="../guides/01_timetk_concepts.html" rel="prev">
 <link href="../favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -73,6 +108,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </script>
 
 
+<meta property="og:title" content="timetk for Python - Pandas Frequencies">
+<meta property="og:description" content="">
+<meta property="og:site-name" content="timetk for Python">
+<meta name="twitter:title" content="timetk for Python - Pandas Frequencies">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
 </head>
 
 <body class="nav-sidebar floating nav-fixed">
@@ -101,7 +142,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reference/index.html">📄 API Reference</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../guides/01_timetk_concepts.html">🗺️ Guides:</a></li><li class="breadcrumb-item"><a href="../guides/02_pandas_frequency.html">Pandas Frequencies</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -145,13 +186,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
  <span class="menu-text">🗺️ Guides:</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../guides/01_timetk_concepts.html" class="sidebar-item-text sidebar-link">
@@ -160,7 +201,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../guides/02_pandas_frequency.html" class="sidebar-item-text sidebar-link">
+  <a href="../guides/02_pandas_frequency.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Pandas Frequencies</span></a>
   </div>
 </li>
@@ -168,7 +209,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/index.html" class="sidebar-item-text sidebar-link active">
+  <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📄 API Reference</span></a>
   </div>
 </li>
@@ -199,92 +240,93 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#function-reference" id="toc-function-reference" class="nav-link active" data-scroll-target="#function-reference">Function reference</a>
-  <ul class="collapse">
-  <li><a href="#time-series-for-pandas-dataframes" id="toc-time-series-for-pandas-dataframes" class="nav-link" data-scroll-target="#time-series-for-pandas-dataframes">🐼 Time Series for Pandas DataFrames</a></li>
-  <li><a href="#time-series-for-pandas-series" id="toc-time-series-for-pandas-series" class="nav-link" data-scroll-target="#time-series-for-pandas-series">🐼 Time Series for Pandas Series</a></li>
-  <li><a href="#datasets" id="toc-datasets" class="nav-link" data-scroll-target="#datasets">💾 12 Datasets</a></li>
-  </ul></li>
+  <li><a href="#custom-frequencies" id="toc-custom-frequencies" class="nav-link active" data-scroll-target="#custom-frequencies">Custom Frequencies:</a></li>
+  <li><a href="#compound-frequencies" id="toc-compound-frequencies" class="nav-link" data-scroll-target="#compound-frequencies">Compound Frequencies:</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example:</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/index.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/guides/02_pandas_frequency.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Pandas Frequencies</h1>
+</div>
 
 
-<section id="function-reference" class="level1">
-<h1>Function reference</h1>
-<section id="time-series-for-pandas-dataframes" class="level2">
-<h2 class="anchored" data-anchor-id="time-series-for-pandas-dataframes">🐼 Time Series for Pandas DataFrames</h2>
-<p>Time series functions that manipulate DataFrames.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/summarize_by_time.html#timetk.summarize_by_time">summarize_by_time</a></td>
-<td>Summarize a DataFrame or GroupBy object by time.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/pad_by_time.html#timetk.pad_by_time">pad_by_time</a></td>
-<td>Make irregular time series regular by padding with missing dates.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/future_frame.html#timetk.future_frame">future_frame</a></td>
-<td>Extend a DataFrame or GroupBy object with future dates.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_timeseries_signature.html#timetk.augment_timeseries_signature">augment_timeseries_signature</a></td>
-<td>Add 29 time series features to a DataFrame.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_lags.html#timetk.augment_lags">augment_lags</a></td>
-<td>Adds lags to a Pandas DataFrame or DataFrameGroupBy object.</td>
-</tr>
-</tbody>
-</table>
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Pandas offers a variety of frequency strings, also known as offset aliases, to define the frequency of a time series. Here are some common frequency strings used in pandas:</p>
+<ol type="1">
+<li><strong>‘B’</strong>: Business Day</li>
+<li><strong>‘D’</strong>: Calendar day</li>
+<li><strong>‘W’</strong>: Weekly</li>
+<li><strong>‘M’</strong>: Month end</li>
+<li><strong>‘BM’</strong>: Business month end</li>
+<li><strong>‘MS’</strong>: Month start</li>
+<li><strong>‘BMS’</strong>: Business month start</li>
+<li><strong>‘Q’</strong>: Quarter end</li>
+<li><strong>‘BQ’</strong>: Business quarter end</li>
+<li><strong>‘QS’</strong>: Quarter start</li>
+<li><strong>‘BQS’</strong>: Business quarter start</li>
+<li><strong>‘A’ or ‘Y’</strong>: Year end</li>
+<li><strong>‘BA’ or ‘BY’</strong>: Business year end</li>
+<li><strong>‘AS’ or ‘YS’</strong>: Year start</li>
+<li><strong>‘BAS’ or ‘BYS’</strong>: Business year start</li>
+<li><strong>‘H’</strong>: Hourly</li>
+<li><strong>‘T’ or ‘min’</strong>: Minutely</li>
+<li><strong>‘S’</strong>: Secondly</li>
+<li><strong>‘L’ or ‘ms’</strong>: Milliseconds</li>
+<li><strong>‘U’</strong>: Microseconds</li>
+<li><strong>‘N’</strong>: Nanoseconds</li>
+</ol>
+<section id="custom-frequencies" class="level3">
+<h3 class="anchored" data-anchor-id="custom-frequencies">Custom Frequencies:</h3>
+<ul>
+<li>You can also create custom frequencies by combining base frequencies, like:
+<ul>
+<li><strong>‘2D’</strong>: Every 2 days</li>
+<li><strong>‘3W’</strong>: Every 3 weeks</li>
+<li><strong>‘4H’</strong>: Every 4 hours</li>
+<li><strong>‘1H30T’</strong>: Every 1 hour and 30 minutes</li>
+</ul></li>
+</ul>
 </section>
-<section id="time-series-for-pandas-series" class="level2">
-<h2 class="anchored" data-anchor-id="time-series-for-pandas-series">🐼 Time Series for Pandas Series</h2>
-<p>Time series functions that manipulate Pandas Series.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/make_future_timeseries.html#timetk.make_future_timeseries">make_future_timeseries</a></td>
-<td>Make future dates for a time series.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/get_timeseries_signature.html#timetk.get_timeseries_signature">get_timeseries_signature</a></td>
-<td>Convert a timestamp to a set of 29 time series features.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/floor_date.html#timetk.floor_date">floor_date</a></td>
-<td>Round a date down to the specified unit (e.g.&nbsp;Flooring).</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/week_of_month.html#timetk.week_of_month">week_of_month</a></td>
-<td>The “week_of_month” function calculates the week number of a given date within its month.</td>
-</tr>
-</tbody>
-</table>
+<section id="compound-frequencies" class="level3">
+<h3 class="anchored" data-anchor-id="compound-frequencies">Compound Frequencies:</h3>
+<ul>
+<li>You can combine multiple frequencies by adding them together.
+<ul>
+<li><strong>‘1D1H’</strong>: 1 day and 1 hour</li>
+<li><strong>‘1H30T’</strong>: 1 hour and 30 minutes</li>
+</ul></li>
+</ul>
 </section>
-<section id="datasets" class="level2">
-<h2 class="anchored" data-anchor-id="datasets">💾 12 Datasets</h2>
-<p>Practice <code>timetk</code> with 12 complementary time series datasets.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/get_available_datasets.html#timetk.datasets.get_datasets.get_available_datasets">get_available_datasets</a></td>
-<td>Get a list of 12 datasets that can be loaded with <code>timetk.load_dataset</code>.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/load_dataset.html#timetk.datasets.get_datasets.load_dataset">load_dataset</a></td>
-<td>Load one of 12 Time Series Datasets.</td>
-</tr>
-</tbody>
-</table>
+<section id="example" class="level3">
+<h3 class="anchored" data-anchor-id="example">Example:</h3>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a date range with daily frequency</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>date_range_daily <span class="op">=</span> pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, end<span class="op">=</span><span class="st">'2023-01-10'</span>, freq<span class="op">=</span><span class="st">'D'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a date range with 2 days frequency</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>date_range_two_days <span class="op">=</span> pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, end<span class="op">=</span><span class="st">'2023-01-10'</span>, freq<span class="op">=</span><span class="st">'2D'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>These frequency strings help in resampling, creating date ranges, and handling time-series data efficiently in pandas.</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -638,11 +680,14 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../guides/02_pandas_frequency.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Pandas Frequencies</span>
+      <a href="../guides/01_timetk_concepts.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Timetk Basics</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../reference/index.html" class="pagination-link">
+        <span class="nav-page-text">📄 API Reference</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->

@@ -194,6 +194,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
  <span class="menu-text">Timetk Basics</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/02_pandas_frequency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pandas Frequencies</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
@@ -262,10 +268,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 3%">
-<col style="width: 13%">
-<col style="width: 79%">
-<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 5%">
+<col style="width: 92%">
+<col style="width: 1%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -297,28 +303,22 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="even">
 <td><code>freq</code></td>
 <td>str</td>
-<td>The <code>freq</code> parameter specifies the frequency at which the data should be aggregated. It accepts a string representing a pandas frequency offset, such as “D” for daily or “MS” for month start. The default value is “D”, which means the data will be aggregated on a daily basis.</td>
+<td>The <code>freq</code> parameter specifies the frequency at which the data should be aggregated. It accepts a string representing a pandas frequency offset, such as “D” for daily or “MS” for month start. The default value is “D”, which means the data will be aggregated on a daily basis. Some common frequency aliases include: - S: secondly frequency - min: minute frequency - H: hourly frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency</td>
 <td><code>'D'</code></td>
 </tr>
 <tr class="odd">
 <td><code>agg_func</code></td>
 <td>list</td>
-<td>The <code>agg_func</code> parameter is used to specify one or more aggregating functions to apply to the value column(s) during the summarization process. It can be a single function or a list of functions. The default value is <code>"sum"</code>, which represents the sum function.</td>
+<td>The <code>agg_func</code> parameter is used to specify one or more aggregating functions to apply to the value column(s) during the summarization process. It can be a single function or a list of functions. The default value is <code>"sum"</code>, which represents the sum function. Some common aggregating functions include: - “sum”: Sum of values - “mean”: Mean of values - “median”: Median of values - “min”: Minimum of values - “max”: Maximum of values - “std”: Standard deviation of values - “var”: Variance of values - “first”: First value in group - “last”: Last value in group - “count”: Count of values - “nunique”: Number of unique values - “corr”: Correlation between values Custom <code>lambda</code> aggregating functions can be used too. Here are several common examples: - (“q25”, lambda x: x.quantile(0.25)): 25th percentile of values - (“q75”, lambda x: x.quantile(0.75)): 75th percentile of values - (“iqr”, lambda x: x.quantile(0.75) - x.quantile(0.25)): Interquartile range of values - (“range”, lambda x: x.max() - x.min()): Range of values</td>
 <td><code>'sum'</code></td>
 </tr>
 <tr class="even">
-<td><code>kind</code></td>
-<td>str</td>
-<td>The <code>kind</code> parameter specifies whether the time series data is represented as a “timestamp” or a “period”. If <code>kind</code> is set to “timestamp”, the data is treated as a continuous time series with specific timestamps. If <code>kind</code> is set to “period”, the data is treated as a discrete time series with specific periods. The default value is “timestamp”.</td>
-<td><code>'timestamp'</code></td>
-</tr>
-<tr class="odd">
 <td><code>wide_format</code></td>
 <td>bool</td>
 <td>A boolean parameter that determines whether the output should be in “wide” or “long” format. If set to <code>True</code>, the output will be in wide format, where each group is represented by a separate column. If set to False, the output will be in long format, where each group is represented by a separate row. The default value is <code>False</code>.</td>
 <td><code>False</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>fillna</code></td>
 <td>int</td>
 <td>The <code>fillna</code> parameter is used to specify the value to fill missing data with. By default, it is set to 0. If you want to keep missing values as NaN, you can use <code>np.nan</code> as the value for <code>fillna</code>.</td>

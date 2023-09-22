@@ -191,6 +191,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
  <span class="menu-text">Timetk Basics</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/02_pandas_frequency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pandas Frequencies</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
@@ -252,17 +258,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>make_future_timeseries(idx, length_out)</code></p>
+<p><code>make_future_timeseries(idx, length_out, force_regular=False)</code></p>
 <p>Make future dates for a time series.</p>
 <p>The function <code>make_future_timeseries</code> takes a pandas Series or DateTimeIndex and generates a future sequence of dates based on the frequency of the input series.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
+<col style="width: 3%">
 <col style="width: 6%">
-<col style="width: 13%">
-<col style="width: 74%">
-<col style="width: 5%">
+<col style="width: 87%">
+<col style="width: 2%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -282,8 +288,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="even">
 <td><code>length_out</code></td>
 <td>int</td>
-<td>The parameter <code>length_out</code> is an integer that represents the number of future dates to generate in the time series.</td>
+<td>The parameter <code>length_out</code> is an integer that represents the number of future dates to generate for the time series.</td>
 <td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td><code>force_regular</code></td>
+<td>bool</td>
+<td>The <code>force_regular</code> parameter is a boolean flag that determines whether the frequency of the future dates should be forced to be regular. If <code>force_regular</code> is set to <code>True</code>, the frequency of the future dates will be forced to be regular. If <code>force_regular</code> is set to <code>False</code>, the frequency of the future dates will be inferred from the input data (e.g.&nbsp;business calendars might be used). The default value is <code>False</code>.</td>
+<td><code>False</code></td>
 </tr>
 </tbody>
 </table>
@@ -384,6 +396,32 @@ dtype: datetime64[ns]</code></pre>
 1   2022-04-01
 2   2022-07-01
 3   2022-10-01
+dtype: datetime64[ns]</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Irregular Dates: Business Days</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.to_datetime([<span class="st">"2021-01-01"</span>, <span class="st">"2021-01-04"</span>, <span class="st">"2021-01-05"</span>, <span class="st">"2021-01-06"</span>])</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>tk.get_pandas_frequency(dates)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>0   2021-01-07
+1   2021-01-08
+2   2021-01-11
+3   2021-01-12
+dtype: datetime64[ns]</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Irregular Dates: Business Days (Force Regular)    </span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">4</span>, force_regular<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<pre><code>0   2021-01-07
+1   2021-01-08
+2   2021-01-09
+3   2021-01-10
 dtype: datetime64[ns]</code></pre>
 </div>
 </div>
