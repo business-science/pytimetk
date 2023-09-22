@@ -43,7 +43,14 @@ import pandas as pd
 ```
 
 ```{python}
-# Bike Sales Sample Dataset
+# Stocks Daily Dataset: META, APPL, AMZN, NFLX, NVDA, GOOG
+df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
+
+df
+```
+
+```{python}
+# Bike Sales CRM Sample Dataset
 df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
 
 df
@@ -52,13 +59,6 @@ df
 ```{python}
 # Taylor 30-Minute Power Demand Dataset
 df = tk.load_dataset('taylor_30_min', parse_dates = ['date'])
-
-df
-```
-
-```{python}
-# Stocks Daily Dataset: META, APPL, AMZN, NFLX, NVDA, GOOG
-df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
 
 df
 ```

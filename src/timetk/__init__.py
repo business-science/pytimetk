@@ -1,8 +1,11 @@
+
 # *** Import everything to make timetk a standalone package ***
+
 from .core.summarize_by_time import *
 from .core.timeseries_signature import *
 from .core.future_timeseries import *
 from .core.lags import *
+from .core.pad import *
 
 from .datasets.get_datasets import *
 
@@ -21,6 +24,9 @@ from .core.future_timeseries import (
 )
 from .core.lags import (
     augment_lags
+)
+from .core.pad import (
+    pad_by_time
 )
 from .datasets.get_datasets import (
     load_dataset, get_available_datasets

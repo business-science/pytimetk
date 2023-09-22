@@ -2,10 +2,13 @@ import pandas as pd
 import numpy as np
 import pandas_flavor as pf
 
+from timetk.utils.datetime_helpers import get_pandas_frequency
+
 @pf.register_series_method
 def make_future_timeseries(
     idx: pd.Series or pd.DateTimeIndex,
     length_out: int,
+    force_regular: bool = False,
 ) -> pd.Series:
     '''Make future dates for a time series.
     
@@ -16,7 +19,9 @@ def make_future_timeseries(
     idx : pd.Series or pd.DateTimeIndex
         The `idx` parameter is the input time series data. It can be either a pandas Series or a pandas DateTimeIndex. It represents the existing dates in the time series.
     length_out : int
-        The parameter `length_out` is an integer that represents the number of future dates to generate in the time series.
+        The parameter `length_out` is an integer that represents the number of future dates to generate for the time series.
+    force_regular : bool, optional
+        The `force_regular` parameter is a boolean flag that determines whether the frequency of the future dates should be forced to be regular. If `force_regular` is set to `True`, the frequency of the future dates will be forced to be regular. If `force_regular` is set to `False`, the frequency of the future dates will be inferred from the input data (e.g. business calendars might be used). The default value is `False`.
     
     Returns
     -------
@@ -66,6 +71,20 @@ def make_future_timeseries(
 
     tk.make_future_timeseries(dates, 4)
     ```
+    
+    ```{python}
+    # Irregular Dates: Business Days
+    dates = pd.to_datetime(["2021-01-01", "2021-01-04", "2021-01-05", "2021-01-06"])
+    
+    tk.get_pandas_frequency(dates)
+    
+    tk.make_future_timeseries(dates, 4)
+    ```
+    
+    ```{python}
+    # Irregular Dates: Business Days (Force Regular)    
+    tk.make_future_timeseries(dates, 4, force_regular=True)
+    ```
     '''
     
     # If idx is a DatetimeIndex, convert to Series
@@ -80,7 +99,7 @@ def make_future_timeseries(
     dt_index = pd.DatetimeIndex(pd.Series(idx).values)
     
     # Determine the frequency
-    frequency = dt_index.inferred_freq  
+    frequency = get_pandas_frequency(dt_index, force_regular=force_regular)  
     
     # Generate the next four periods (dates)
     future_dates = pd.date_range(
@@ -99,6 +118,7 @@ def future_frame(
     data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
     date_column: str, 
     length_out: int, 
+    force_regular: bool = False,
     bind_data: bool = True,
 ) -> pd.DataFrame:
     '''Extend a DataFrame or GroupBy object with future dates.
@@ -113,6 +133,8 @@ def future_frame(
         The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to generate future dates.
     length_out : int
         The `length_out` parameter specifies the number of future dates to be added to the DataFrame.
+    force_regular : bool, optional
+        The `force_regular` parameter is a boolean flag that determines whether the frequency of the future dates should be forced to be regular. If `force_regular` is set to `True`, the frequency of the future dates will be forced to be regular. If `force_regular` is set to `False`, the frequency of the future dates will be inferred from the input data (e.g. business calendars might be used). The default value is `False`.
     bind_data : bool, optional
         The `bind_data` parameter is a boolean flag that determines whether the extended data should be concatenated with the original data or returned separately. If `bind_data` is set to `True`, the extended data will be concatenated with the original data using `pd.concat`. If `bind_data` is set to `False`, the extended data will be returned separately. The default value is `True`.
     
@@ -146,7 +168,6 @@ def future_frame(
             )
             .assign(id = lambda x: x['id'].ffill())
     )
-    
     extended_df
     ```
     
@@ -159,26 +180,59 @@ def future_frame(
                 date_column = 'date', 
                 length_out  = 12
             )
-    )
-    
+    )    
     extended_df
     ```
     
     ```{python}
-    # Same as above, but just return the extended data
+    # Same as above, but just return the extended data with bind_data=False
     extended_df = (
         df
             .groupby('id')
             .future_frame(
                 date_column = 'date', 
                 length_out  = 12,
-                bind_data   = False
+                bind_data   = False # Returns just future data
             )
-    )
-    
+    )    
     extended_df
     ```
     
+    ```{python}
+     # Working with irregular dates: Business Days (Stocks Data)
+    df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
+    df
+    ```
+    
+    ```{python}
+    # Allow irregular future dates (i.e. business days)
+    extended_df = (
+        df
+            .groupby('symbol')
+            .future_frame(
+                date_column = 'date', 
+                length_out  = 12,
+                force_regular = False, # Allow irregular future dates (i.e. business days)),
+                bind_data   = False
+            )
+    )    
+    extended_df
+    ```
+    
+    ```{python}
+    # Force regular: Include Weekends
+    extended_df = (
+        df
+            .groupby('symbol')
+            .future_frame(
+                date_column = 'date', 
+                length_out  = 12,
+                force_regular = True, # Force regular future dates (i.e. include weekends)),
+                bind_data   = False
+            )
+    )    
+    extended_df
+    ```
     '''
     
     # Check if data is a Pandas DataFrame or GroupBy object
@@ -192,7 +246,11 @@ def future_frame(
         
         ts_series = data[date_column]
             
-        new_dates = make_future_timeseries(ts_series, length_out)
+        new_dates = make_future_timeseries(
+            idx=ts_series, 
+            length_out=length_out, 
+            force_regular=force_regular
+        )
         
         new_rows = pd.DataFrame({date_column: new_dates})
         
@@ -221,7 +279,11 @@ def future_frame(
             
             ts_series = group_df[date_column]
             
-            new_dates = make_future_timeseries(ts_series, length_out)
+            new_dates = make_future_timeseries(
+                idx=ts_series, 
+                length_out=length_out, 
+                force_regular=force_regular
+            )
             
             new_rows = pd.DataFrame({date_column: new_dates})
             for group_name in group_names:

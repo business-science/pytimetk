@@ -10,15 +10,15 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/make_future_timeseries.html</loc>
-    <lastmod>2023-09-22T19:02:14.460Z</lastmod>
+    <lastmod>2023-09-22T20:58:54.040Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/future_frame.html</loc>
-    <lastmod>2023-09-22T19:02:06.754Z</lastmod>
+    <lastmod>2023-09-22T20:58:50.202Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/summarize_by_time.html</loc>
-    <lastmod>2023-09-22T19:37:13.127Z</lastmod>
+    <lastmod>2023-09-22T20:03:07.525Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_available_datasets.html</loc>
@@ -26,7 +26,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/01_timetk_concepts.html</loc>
-    <lastmod>2023-09-22T19:01:49.929Z</lastmod>
+    <lastmod>2023-09-22T21:04:23.278Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/getting-started/01_installation.html</loc>
@@ -42,7 +42,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2023-09-22T19:38:48.577Z</lastmod>
+    <lastmod>2023-09-22T21:02:57.356Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/week_of_month.html</loc>
@@ -50,7 +50,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/load_dataset.html</loc>
-    <lastmod>2023-09-22T19:38:54.056Z</lastmod>
+    <lastmod>2023-09-22T20:03:11.963Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_timeseries_signature.html</loc>
@@ -62,6 +62,10 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/02_pandas_frequency.html</loc>
-    <lastmod>2023-09-22T19:37:03.951Z</lastmod>
+    <lastmod>2023-09-22T21:03:43.775Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/pad_by_time.html</loc>
+    <lastmod>2023-09-22T21:02:56.893Z</lastmod>
   </url>
 </urlset>

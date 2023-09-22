@@ -7,6 +7,7 @@ Time series functions that manipulate DataFrames.
 | | |
 | --- | --- |
 | [summarize_by_time](summarize_by_time.qmd#timetk.summarize_by_time) | Summarize a DataFrame or GroupBy object by time. |
+| [pad_by_time](pad_by_time.qmd#timetk.pad_by_time) | Make irregular time series regular by padding with missing dates. |
 | [future_frame](future_frame.qmd#timetk.future_frame) | Extend a DataFrame or GroupBy object with future dates. |
 | [augment_timeseries_signature](augment_timeseries_signature.qmd#timetk.augment_timeseries_signature) | Add 29 time series features to a DataFrame. |
 | [augment_lags](augment_lags.qmd#timetk.augment_lags) | Adds lags to a Pandas DataFrame or DataFrameGroupBy object. |

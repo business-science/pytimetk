@@ -46,9 +46,28 @@ def summarize_by_time(
         - YS: year start frequency
         
     agg_func : list, optional
-        The `agg_func` parameter is used to specify one or more aggregating functions to apply to the value column(s) during the summarization process. It can be a single function or a list of functions. The default value is `"sum"`, which represents the sum function. 
-    kind : str, optional
-        The `kind` parameter specifies whether the time series data is represented as a "timestamp" or a "period". If `kind` is set to "timestamp", the data is treated as a continuous time series with specific timestamps. If `kind` is set to "period", the data is treated as a discrete time series with specific periods. The default value is "timestamp".
+        The `agg_func` parameter is used to specify one or more aggregating functions to apply to the value column(s) during the summarization process. It can be a single function or a list of functions. The default value is `"sum"`, which represents the sum function. Some common aggregating functions include:
+        
+        - "sum": Sum of values
+        - "mean": Mean of values
+        - "median": Median of values
+        - "min": Minimum of values
+        - "max": Maximum of values
+        - "std": Standard deviation of values
+        - "var": Variance of values
+        - "first": First value in group
+        - "last": Last value in group
+        - "count": Count of values
+        - "nunique": Number of unique values
+        - "corr": Correlation between values
+        
+        Custom `lambda` aggregating functions can be used too. Here are several common examples:
+        
+        - ("q25", lambda x: x.quantile(0.25)): 25th percentile of values
+        - ("q75", lambda x: x.quantile(0.75)): 75th percentile of values
+        - ("iqr", lambda x: x.quantile(0.75) - x.quantile(0.25)): Interquartile range of values
+        - ("range", lambda x: x.max() - x.min()): Range of values
+        
     wide_format : bool, optional
         A boolean parameter that determines whether the output should be in "wide" or "long" format. If set to `True`, the output will be in wide format, where each group is represented by a separate column. If set to False, the output will be in long format, where each group is represented by a separate row. The default value is `False`.
     fillna : int, optional

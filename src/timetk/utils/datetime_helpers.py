@@ -160,3 +160,44 @@ def get_timeseries_colname(data: pd.DataFrame, verbose: bool = False) -> str:
         print(detect_timeseries_columns(data).iloc[0])
         
     return detect_timeseries_columns(data).iloc[0].idxmax()
+
+@pf.register_series_method
+def get_pandas_frequency(idx: pd.Series or pd.DatetimeIndex, force_regular: bool = False) -> str:
+    
+    if isinstance(idx, pd.Series):
+        idx = idx.values
+        
+    _len = len(idx)
+    if _len > 10:
+        _len = 10
+    
+    dt_index = pd.DatetimeIndex(idx[0:_len])
+    
+    freq = dt_index.inferred_freq
+    
+    if freq is None:
+            raise ValueError("The frequency could not be detectied.")
+    
+    if force_regular:
+        if freq == 'B':
+            freq = 'D'
+        if freq == 'BM':
+            freq = 'M'
+        if freq == 'BQ':
+            freq = 'Q'
+        if freq == 'BA':
+            freq = 'A'
+        if freq == 'BY':
+            freq = 'Y'
+        if freq == 'BMS':
+            freq = 'MS'
+        if freq == 'BQS':
+            freq = 'QS'
+        if freq == 'BYS':
+            freq = 'YS'
+        if freq == 'BAS':
+            freq = 'AS'
+        
+    
+    return freq
+

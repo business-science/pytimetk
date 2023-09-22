@@ -1,0 +1,68 @@
+---
+title: "Pandas Frequencies"
+jupyter: python3
+toc: true
+toc-depth: 3
+number-sections: true
+number-depth: 2
+---
+
+
+
+Pandas offers a variety of frequency strings, also known as offset aliases, to define the frequency of a time series. Here are some common frequency strings used in pandas:
+
+1. **'B'**: Business Day
+2. **'D'**: Calendar day
+3. **'W'**: Weekly
+4. **'M'**: Month end
+5. **'BM'**: Business month end
+6. **'MS'**: Month start
+7. **'BMS'**: Business month start
+8. **'Q'**: Quarter end
+9. **'BQ'**: Business quarter end
+10. **'QS'**: Quarter start
+11. **'BQS'**: Business quarter start
+12. **'A' or 'Y'**: Year end
+13. **'BA' or 'BY'**: Business year end
+14. **'AS' or 'YS'**: Year start
+15. **'BAS' or 'BYS'**: Business year start
+16. **'H'**: Hourly
+17. **'T' or 'min'**: Minutely
+18. **'S'**: Secondly
+19. **'L' or 'ms'**: Milliseconds
+20. **'U'**: Microseconds
+21. **'N'**: Nanoseconds
+
+### Custom Frequencies:
+- You can also create custom frequencies by combining base frequencies, like:
+   - **'2D'**: Every 2 days
+   - **'3W'**: Every 3 weeks
+   - **'4H'**: Every 4 hours
+   - **'1H30T'**: Every 1 hour and 30 minutes
+
+### Compound Frequencies:
+- You can combine multiple frequencies by adding them together.
+   - **'1D1H'**: 1 day and 1 hour
+   - **'1H30T'**: 1 hour and 30 minutes
+
+### Example:
+```{python}
+import pandas as pd
+
+# Creating a date range with daily frequency
+date_range_daily = pd.date_range(start='2023-01-01', end='2023-01-10', freq='D')
+```
+
+```{python}
+# Creating a date range with 2 days frequency
+date_range_two_days = pd.date_range(start='2023-01-01', end='2023-01-10', freq='2D')
+```
+
+These frequency strings help in resampling, creating date ranges, and handling time-series data efficiently in pandas.
+
+
+
+
+
+
+

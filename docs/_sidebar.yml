@@ -4,6 +4,7 @@ website:
     - reference/index.qmd
     - contents:
       - reference/summarize_by_time.qmd
+      - reference/pad_by_time.qmd
       - reference/future_frame.qmd
       - reference/augment_timeseries_signature.qmd
       - reference/augment_lags.qmd

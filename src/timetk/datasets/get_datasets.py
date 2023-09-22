@@ -52,7 +52,14 @@ def load_dataset(
     ```
     
     ```{python}
-    # Bike Sales Sample Dataset
+    # Stocks Daily Dataset: META, APPL, AMZN, NFLX, NVDA, GOOG
+    df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
+    
+    df
+    ```
+    
+    ```{python}
+    # Bike Sales CRM Sample Dataset
     df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
     
     df
@@ -63,16 +70,7 @@ def load_dataset(
     df = tk.load_dataset('taylor_30_min', parse_dates = ['date'])
     
     df
-    ```
-    
-    ```{python}
-    # Stocks Daily Dataset: META, APPL, AMZN, NFLX, NVDA, GOOG
-    df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
-    
-    df
-    ```
-    
-    
+    ```    
     '''
     
     # Return the list of available datasets
