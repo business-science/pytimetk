@@ -252,16 +252,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>make_future_timeseries(idx, n_future)</code></p>
+<p><code>make_future_timeseries(idx, length_out)</code></p>
 <p>Make future dates for a time series.</p>
 <p>The function <code>make_future_timeseries</code> takes a pandas Series or DateTimeIndex and generates a future sequence of dates based on the frequency of the input series.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 5%">
-<col style="width: 14%">
-<col style="width: 75%">
+<col style="width: 6%">
+<col style="width: 13%">
+<col style="width: 74%">
 <col style="width: 5%">
 </colgroup>
 <thead>
@@ -280,9 +280,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>n_future</code></td>
+<td><code>length_out</code></td>
 <td>int</td>
-<td>The parameter <code>n_future</code> is an integer that represents the number of future dates to generate in the time series.</td>
+<td>The parameter <code>length_out</code> is an integer that represents the number of future dates to generate in the time series.</td>
 <td><em>required</em></td>
 </tr>
 </tbody>

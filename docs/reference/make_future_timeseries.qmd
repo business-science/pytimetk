@@ -1,6 +1,6 @@
 # make_future_timeseries { #timetk.make_future_timeseries }
 
-`make_future_timeseries(idx, n_future)`
+`make_future_timeseries(idx, length_out)`
 
 Make future dates for a time series.
 
@@ -8,10 +8,10 @@ The function `make_future_timeseries` takes a pandas Series or DateTimeIndex and
 
 ## Parameters
 
-| Name       | Type                          | Description                                                                                                                                                         | Default    |
-|------------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `idx`      | pd.Series or pd.DateTimeIndex | The `idx` parameter is the input time series data. It can be either a pandas Series or a pandas DateTimeIndex. It represents the existing dates in the time series. | _required_ |
-| `n_future` | int                           | The parameter `n_future` is an integer that represents the number of future dates to generate in the time series.                                                   | _required_ |
+| Name         | Type                          | Description                                                                                                                                                         | Default    |
+|--------------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `idx`        | pd.Series or pd.DateTimeIndex | The `idx` parameter is the input time series data. It can be either a pandas Series or a pandas DateTimeIndex. It represents the existing dates in the time series. | _required_ |
+| `length_out` | int                           | The parameter `length_out` is an integer that represents the number of future dates to generate in the time series.                                                 | _required_ |
 
 ## Returns
 

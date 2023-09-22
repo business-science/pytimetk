@@ -228,7 +228,7 @@ future_series
 # DateTimeIndex: Future Dates
 future_dt = tk.make_future_timeseries(
     idx      = dates_dt,
-    n_future = 12
+    length_out = 12
 )
 future_dt
 ```
