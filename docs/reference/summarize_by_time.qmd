@@ -1,24 +1,12 @@
 # summarize_by_time { #timetk.summarize_by_time }
 
-`summarize_by_time`
-
-
-
-## Functions
-
-| Name | Description |
-| --- | --- |
-| [summarize_by_time](#timetk.summarize_by_time.summarize_by_time) | Summarize a DataFrame or GroupBy object by time. |
-
-### summarize_by_time { #timetk.summarize_by_time.summarize_by_time }
-
-`summarize_by_time.summarize_by_time(data, date_column, value_column, rule='D', agg_func='sum', kind='timestamp', wide_format=False, fillna=0, flatten_column_names=True, reset_index=True, *args, **kwargs)`
+`summarize_by_time(data, date_column, value_column, rule='D', agg_func='sum', kind='timestamp', wide_format=False, fillna=0, flatten_column_names=True, reset_index=True, *args, **kwargs)`
 
 Summarize a DataFrame or GroupBy object by time.
 
 The `summarize_by_time` function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the time-based aggregation.
 
-#### Parameters
+## Parameters
 
 | Name                   | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                | Default       |
 |------------------------|----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
@@ -33,13 +21,13 @@ The `summarize_by_time` function aggregates data by a specified time period and 
 | `flatten_column_names` | bool                                                     | A boolean parameter that determines whether or not to flatten the multiindex column names. If set to `True`, the multiindex column names will be flattened. If set to `False`, the multiindex column names will be preserved. The default value is `True`.                                                                                                 | `True`        |
 | `reset_index`          | bool                                                     | A boolean parameter that determines whether or not to reset the index of the resulting DataFrame. If set to True, the index will be reset to the default integer index. If set to False, the index will not be reset. The default value is True.                                                                                                           | `True`        |
 
-#### Returns
+## Returns
 
 | Type         | Description                                    |
 |--------------|------------------------------------------------|
 | pd.DataFrame | A Pandas DataFrame that is summarized by time. |
 
-#### Examples
+## Examples
 
 ```{python}
 import timetk as tk

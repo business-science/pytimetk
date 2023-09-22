@@ -6,7 +6,7 @@ Time series functions that manipulate DataFrames.
 
 | | |
 | --- | --- |
-| [summarize_by_time](summarize_by_time.qmd#timetk.summarize_by_time) |  |
+| [summarize_by_time](summarize_by_time.qmd#timetk.summarize_by_time) | Summarize a DataFrame or GroupBy object by time. |
 | [augment_timeseries_signature](augment_timeseries_signature.qmd#timetk.augment_timeseries_signature) | Add 29 time series features to a DataFrame. |
 
 ## 🐼 Time Series for Pandas Series

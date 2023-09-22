@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import pandas_flavor as pf
 
-from .utils.datetime_helpers import week_of_month
+from timetk.utils.datetime_helpers import week_of_month
 
 
  
