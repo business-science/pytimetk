@@ -44,6 +44,7 @@ extended_df = (
             date_column = 'date', 
             length_out  = 12
         )
+        .assign(id = lambda x: x['id'].ffill())
 )
 
 extended_df

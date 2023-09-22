@@ -187,6 +187,32 @@ df_augmented.head()
 - The result was a pandas DataFrame with 29 time series features that can be used for Machine Learning and Forecasting
 :::
 
+### Making Future Dates with Future Frame
+
+A common time series task before forecasting with machine learning models is to make a future DataFrame some `length_out` into the future. You can do this with `tk.future_frame()`. Here's how. 
+
+```{python}
+# Preparing a time series data set for Machine Learning Forecasting
+full_augmented_df = (
+    m4_daily_df 
+        .groupby('id')
+        .future_frame('date', length_out = 365)
+        .augment_timeseries_signature('date')
+)
+full_augmented_df
+```
+
+We can then get the future data by keying in on the data with `value` column that is missing (`np.nan`).
+
+```{python}
+# Get the future data (just the observations that haven't happened yet)
+future_df = (
+    full_augmented_df
+        .query('value.isna()')
+)
+future_df
+```
+
 ## Type 2: Pandas Series Operations
 
 The main difference between a `DataFrame` operation and a Series operation is that we are operating on an array of values from typically one of the following `dtypes`:
