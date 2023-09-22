@@ -255,16 +255,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>summarize_by_time(data, date_column, value_column, rule='D', agg_func='sum', kind='timestamp', wide_format=False, fillna=0, flatten_column_names=True, reset_index=True, *args, **kwargs)</code></p>
+<p><code>summarize_by_time(data, date_column, value_column, rule='D', agg_func='sum', kind='timestamp', wide_format=False, fillna=0, *args, **kwargs)</code></p>
 <p>Summarize a DataFrame or GroupBy object by time.</p>
 <p>The <code>summarize_by_time</code> function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the time-based aggregation.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 5%">
+<col style="width: 3%">
 <col style="width: 13%">
-<col style="width: 78%">
+<col style="width: 79%">
 <col style="width: 3%">
 </colgroup>
 <thead>
@@ -323,18 +323,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>int</td>
 <td>The <code>fillna</code> parameter is used to specify the value to fill missing data with. By default, it is set to 0. If you want to keep missing values as NaN, you can use <code>np.nan</code> as the value for <code>fillna</code>.</td>
 <td><code>0</code></td>
-</tr>
-<tr class="odd">
-<td><code>flatten_column_names</code></td>
-<td>bool</td>
-<td>A boolean parameter that determines whether or not to flatten the multiindex column names. If set to <code>True</code>, the multiindex column names will be flattened. If set to <code>False</code>, the multiindex column names will be preserved. The default value is <code>True</code>.</td>
-<td><code>True</code></td>
-</tr>
-<tr class="even">
-<td><code>reset_index</code></td>
-<td>bool</td>
-<td>A boolean parameter that determines whether or not to reset the index of the resulting DataFrame. If set to True, the index will be reset to the default integer index. If set to False, the index will not be reset. The default value is True.</td>
-<td><code>True</code></td>
 </tr>
 </tbody>
 </table>

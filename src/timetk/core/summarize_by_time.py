@@ -14,8 +14,6 @@ def summarize_by_time(
     kind: str = "timestamp",
     wide_format: bool = False,
     fillna: int = 0,
-    flatten_column_names: bool = True,
-    reset_index: bool = True,
     *args,
     **kwargs
 ) -> pd.DataFrame:
@@ -42,10 +40,6 @@ def summarize_by_time(
         A boolean parameter that determines whether the output should be in "wide" or "long" format. If set to `True`, the output will be in wide format, where each group is represented by a separate column. If set to False, the output will be in long format, where each group is represented by a separate row. The default value is `False`.
     fillna : int, optional
         The `fillna` parameter is used to specify the value to fill missing data with. By default, it is set to 0. If you want to keep missing values as NaN, you can use `np.nan` as the value for `fillna`.
-    flatten_column_names : bool, optional
-        A boolean parameter that determines whether or not to flatten the multiindex column names. If set to `True`, the multiindex column names will be flattened. If set to `False`, the multiindex column names will be preserved. The default value is `True`.
-    reset_index : bool, optional
-        A boolean parameter that determines whether or not to reset the index of the resulting DataFrame. If set to True, the index will be reset to the default integer index. If set to False, the index will not be reset. The default value is True.
     
     Returns
     -------
@@ -178,12 +172,10 @@ def summarize_by_time(
     data = data.fillna(fillna)
     
     # Flatten the multiindex column names if flatten_column_names is True
-    if flatten_column_names:
-        data = flatten_multiindex_column_names(data)
+    data = flatten_multiindex_column_names(data)
     
     # Reset the index of data   
-    if reset_index: 
-        data.reset_index(inplace=True)
+    data.reset_index(inplace=True)
         
     # **** FIX BUG WITH GROUPBY RESAMPLED OBJECTS (PART 2)
     if not unique_first_elements == []:        
