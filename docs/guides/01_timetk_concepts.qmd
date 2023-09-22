@@ -2,7 +2,9 @@
 title: "Timetk Basics"
 jupyter: python3
 toc: true
-toc-depth: 2
+toc-depth: 3
+number-sections: true
+number-depth: 2
 ---
 
 > *Timetk has one mission:* To make time series analysis simpler, easier, and faster in Python. This goal requires some opinionated ways of treating time series in Python. We will conceptually lay out how `timetk` can help. 
@@ -17,7 +19,7 @@ This guide covers how to use `timetk` conceptually. Once you understand key conc
 
 Let's first start with how to think about time series data conceptually. **Time series data has 3 core properties.** 
 
-## The 3 Core Properties of Time Series Data
+# The 3 Core Properties of Time Series Data
 
 Every time series DataFrame should have the following properties:
 
@@ -60,7 +62,7 @@ If your data is not formatted properly for `timetk`, meaning it's missing column
 Timetk standardizes using a date column. This is to reduce friction in converting to other package formats like `polars`, which don't use an an index (each row is indexed by its integer position). 
 :::
 
-## 2 Ways that Timetk Makes Time Series Analysis Easier
+# The 2 Ways that Timetk Makes Time Series Analysis Easier
 
 ::: {.callout-note collapse="false"}
 ## 2 Types of Time Series Functions
@@ -85,7 +87,7 @@ Let's take a look at how to use the different types of Time Series Analysis func
 
 Before we start using `timetk`, let's make sure our data is set up properly. 
 
-#### Timetk Data Format Compliance
+### Timetk Data Format Compliance
 
 ::: {.callout-important collapse="false"}
 ## 3 Core Properties Must Be Upheald
@@ -192,13 +194,73 @@ The main difference between a `DataFrame` operation and a Series operation is th
 1. Timestamps (`datetime64`)
 2. Numeric (`float64` or `int64`) 
 
-### Timestamps (The Index `idx`)
-
 The first argument of Series operations that operate on Timestamps will always be `idx`. 
+
+Let's take a look at one shall we? We'll start with a common action: Making future time series from an existing time series with a regular frequency. 
+
+### The Make Future Time Series Function
+
+Say we have a monthly sequence of timestamps. What if we want to create a forecast where we predict 12 months into the future? Well, we will need to create 12 future timestamps. Here's how. 
+
+First create a `pd.date_range()` with dates starting at the beginning of each month.
+
+```{python}
+# Make a monthly date range
+dates_dt = pd.date_range("2023-01", "2024-01", freq="MS")
+dates_dt
+```
+
+Next, use `tk.make_future_timeseries()` to create the next 12 timestamps in the sequence. 
+
+::: {.panel-tabset group="future-dates"}
+
+## Pandas Series
+
+```{python}
+# Pandas Series: Future Dates
+future_series = pd.Series(dates_dt).make_future_timeseries(12)
+future_series
+```
+
+## DateTimeIndex
+
+```{python}
+# DateTimeIndex: Future Dates
+future_dt = tk.make_future_timeseries(
+    idx      = dates_dt,
+    n_future = 12
+)
+future_dt
+```
+
+:::
+
+We can combine the actual and future timestamps into one combined timeseries.  
+
+```{python}
+# Combining the 2 series and resetting the index
+combined_timeseries = (
+    pd.concat(
+        [pd.Series(dates_dt), pd.Series(future_dt)],
+        axis=0
+    )
+        .reset_index(drop = True)
+)
+
+combined_timeseries
+```
+
+
+Next, we'll take a look at how to go from an irregular time series to a regular time series. 
+
+### Flooring Dates
 
 An example is `tk.floor_date`, which is used to round down dates. See `help(tk.floor_date)`.
 
-::: {.panel-tabset group="language"}
+Flooring dates is often used as part of a strategy to go from an irregular time series to regular by combining with an aggregation. Often `summarize_by_time()` is used (I'll share why shortly). But conceptually, date flooring is the secret. 
+
+
+::: {.panel-tabset group="flooring"}
 
 ## With Flooring
 
@@ -260,9 +322,11 @@ Of course for this operation, we can do it faster with `summarize_by_time()` (an
 
 And that's the core idea behind `timetk`, writing less code and getting more. 
 
+
+
 Next, let's do one more function. The brother of `augment_timeseries_signature()`...
 
-### The `get_timeseries_signature()` Function
+### The Get Time Series Signature Function
 
 This function takes a pandas `Series` or `DateTimeIndex` and returns a `DataFrame` containing the 29 engineered features. 
 
@@ -300,6 +364,8 @@ tk.get_timeseries_signature(timestamps_dt)
 ```
 
 :::
+
+
 
 # More Coming Soon...
 

@@ -7,6 +7,7 @@ website:
       - reference/augment_timeseries_signature.qmd
       section: "\U0001F43C Time Series for Pandas DataFrames"
     - contents:
+      - reference/make_future_timeseries.qmd
       - reference/get_timeseries_signature.qmd
       - reference/floor_date.qmd
       - reference/week_of_month.qmd
@@ -14,6 +15,6 @@ website:
     - contents:
       - reference/get_available_datasets.qmd
       - reference/load_dataset.qmd
-      section: "\U0001F4BE Datasets"
+      section: "\U0001F4BE 11 Datasets"
     id: reference
   - id: dummy-sidebar

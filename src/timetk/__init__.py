@@ -4,6 +4,9 @@ from .summarize_by_time import (
 from .timeseries_signature import (
     get_timeseries_signature, augment_timeseries_signature
 )
+from .future_timeseries import (
+    make_future_timeseries
+)
 from .datasets.get_datasets import (
     load_dataset, get_available_datasets
 )

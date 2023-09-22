@@ -95,13 +95,14 @@ quartodoc:
     - title: 🐼 Time Series for Pandas Series
       desc: Time series functions that manipulate Pandas Series.
       package: timetk
-      contents:
+      contents:        
+        - make_future_timeseries
         - get_timeseries_signature
         - floor_date
         - week_of_month
-    - title: 💾 Datasets
+    - title: 💾 11 Datasets
       package: timetk.datasets.get_datasets
-      desc: Practice `timetk` with our complementary time series datasets.
+      desc: Practice `timetk` with 11 complementary time series datasets.
       contents:
         - get_available_datasets
         - load_dataset

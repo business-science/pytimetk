@@ -15,13 +15,14 @@ Time series functions that manipulate Pandas Series.
 
 | | |
 | --- | --- |
+| [make_future_timeseries](make_future_timeseries.qmd#timetk.make_future_timeseries) | Make future dates for a time series. |
 | [get_timeseries_signature](get_timeseries_signature.qmd#timetk.get_timeseries_signature) | Convert a timestamp to a set of 29 time series features. |
 | [floor_date](floor_date.qmd#timetk.floor_date) | Round a date down to the specified unit (e.g. Flooring). |
 | [week_of_month](week_of_month.qmd#timetk.week_of_month) | The "week_of_month" function calculates the week number of a given date within its month. |
 
-## 💾 Datasets
+## 💾 11 Datasets
 
-Practice `timetk` with our complementary time series datasets.
+Practice `timetk` with 11 complementary time series datasets.
 
 | | |
 | --- | --- |

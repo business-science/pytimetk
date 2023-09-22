@@ -14,7 +14,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2023-09-21T21:35:24.492Z</lastmod>
+    <lastmod>2023-09-22T02:07:51.007Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/getting-started/02_quick_start.html</loc>
@@ -22,7 +22,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/index.html</loc>
-    <lastmod>2023-09-21T21:35:07.532Z</lastmod>
+    <lastmod>2023-09-22T02:08:23.933Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/getting-started/01_installation.html</loc>
@@ -30,7 +30,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/01_timetk_concepts.html</loc>
-    <lastmod>2023-09-21T21:35:20.545Z</lastmod>
+    <lastmod>2023-09-22T02:09:28.483Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_available_datasets.html</loc>
@@ -47,5 +47,9 @@
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_timeseries_signature.html</loc>
     <lastmod>2023-09-21T21:35:42.783Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/make_future_timeseries.html</loc>
+    <lastmod>2023-09-22T02:05:19.349Z</lastmod>
   </url>
 </urlset>
