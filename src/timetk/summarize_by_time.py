@@ -9,7 +9,6 @@ def summarize_by_time(
     data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
     date_column: str,
     value_column: str or list,
-    groups: str or list or None = None,
     rule: str = "D",
     agg_func: list = 'sum',
     kind: str = "timestamp",
@@ -33,8 +32,6 @@ def summarize_by_time(
         The name of the column in the data frame that contains the dates or timestamps to be aggregated by. This column must be of type datetime64.
     value_column : str or list
         The `value_column` parameter is the name of one or more columns in the DataFrame that you want to aggregate by. It can be either a string representing a single column name, or a list of strings representing multiple column names.
-    groups : str or list or None
-        The `groups` parameter is an optional parameter that allows you to specify one or more column names representing groups to aggregate by. If you want to aggregate the data by specific groups, you can pass the column names as a string or a list to the `groups` parameter. If you want to aggregate the data without grouping, you can set `groups` to None. The default value is None.
     rule : str, optional
         The `rule` parameter specifies the frequency at which the data should be aggregated. It accepts a string representing a pandas frequency offset, such as "D" for daily or "MS" for month start. The default value is "D", which means the data will be aggregated on a daily basis.
     agg_func : list, optional
@@ -73,7 +70,6 @@ def summarize_by_time(
             .summarize_by_time(
                 date_column  = 'order_date', 
                 value_column = 'total_price',
-                groups       = "category_2",
                 rule         = "MS",
                 agg_func     = ['mean', 'sum']
             )
@@ -89,6 +85,7 @@ def summarize_by_time(
                 date_column  = 'order_date', 
                 value_column = 'total_price', 
                 rule         = 'MS',
+                agg_func     = 'sum',
                 wide_format  = False, 
             )
     )
@@ -103,6 +100,22 @@ def summarize_by_time(
                 date_column  = 'order_date', 
                 value_column = 'total_price', 
                 rule         = 'MS',
+                agg_func     = 'sum',
+                wide_format  = True, 
+            )
+    )
+    ```
+    
+    ```{python}
+    # Summarize by time with a GroupBy object and multiple summaries (Wide Format)
+    (
+        df 
+            .groupby('category_1') 
+            .summarize_by_time(
+                date_column  = 'order_date', 
+                value_column = 'total_price', 
+                rule         = 'MS',
+                agg_func     = ['sum', 'mean', ('q25', lambda x: x.quantile(0.25)), ('q75', lambda x: x.quantile(0.75))],
                 wide_format  = True, 
             )
     )
@@ -128,8 +141,8 @@ def summarize_by_time(
         data = data.obj.set_index(date_column).groupby(group_names)
     
     # Group data by the groups columns if groups is not None
-    if groups is not None:
-        data = data.groupby(groups)
+    # if groups is not None:
+    #     data = data.groupby(groups)
     
     # Resample data based on the specified rule and kind
     data = data.resample(rule=rule, kind=kind)
@@ -156,9 +169,7 @@ def summarize_by_time(
     
     # Unstack the grouped columns if wide_format is True and groups is not None
     if wide_format:
-        if groups is not None:
-            data = data.unstack(groups)
-        elif group_names is not None:
+        if group_names is not None:
             data = data.unstack(group_names) 
         if kind == 'period':
             data.index = data.index.to_period()
