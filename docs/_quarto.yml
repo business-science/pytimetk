@@ -99,6 +99,7 @@ quartodoc:
       contents:
         - augment_timeseries_signature
         - augment_lags
+        - augment_rolling
     - title: 🐼 Time Series for Pandas Series
       desc: Time series functions that manipulate Pandas Series.
       package: timetk

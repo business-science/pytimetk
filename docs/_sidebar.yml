@@ -10,6 +10,7 @@ website:
     - contents:
       - reference/augment_timeseries_signature.qmd
       - reference/augment_lags.qmd
+      - reference/augment_rolling.qmd
       section: "\U0001F3D7\uFE0F Adding Features to Time Series DataFrames (Augmenting)"
     - contents:
       - reference/make_future_timeseries.qmd

@@ -1,9 +1,10 @@
 import pandas as pd
 import pandas_flavor as pf
 
+    
 @pf.register_dataframe_method
 def augment_rolling(
-    data: pd.DataFrame, 
+    data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy, 
     date_column: str, 
     value_column: str or list, 
     window: int or list, 
@@ -11,32 +12,71 @@ def augment_rolling(
     center: bool = False,
     **kwargs_rolling,
 ) -> pd.DataFrame:
-    """
-    Apply multiple rolling window apply_func with varying window sizes to specified columns of a DataFrame,
-    considering grouping columns and a datetime column for sorting within each group.
+    '''Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.
     
-    :param df: Input DataFrame.
-    :param group_names: List of column names to group by.
-    :param date_column: The name of the datetime column by which the data should be sorted within each group.
-    :param value_columns: List of column names to which the apply_func should be applied.
-    :param window: List of the sizes of the rolling windows.
-    :param apply_func: List of apply_func or tuples where, if it's a tuple, the first element is the name of the new column,
-                      and the second element is the function to be applied to the rolling windows.
-    :return: DataFrame with new columns for each applied function, window size, and value column.
+    The `augment_rolling` function applies multiple rolling window functions with varying window sizes to specified columns of a DataFrame, considering grouping columns and a datetime column for sorting within each group.
     
+    Parameters
+    ----------
+    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
+        The input DataFrame or GroupBy object.
+    date_column : str
+        The `date_column` parameter is the name of the datetime column in the DataFrame by which the data should be sorted within each group.
+    value_column : str or list
+        The `value_column` parameter is the name of the column(s) in the DataFrame to which the rolling window function(s) should be applied. It can be a single column name or a list of column names.
+    window : int or list
+        The `window` parameter in the `augment_rolling` function is used to specify the size of the rolling windows. It can be either an integer or a list of integers. If it is an integer, the same window size will be applied to all columns specified in the `value_column`. If it is a list of integers, each integer in the list will be used as the window size for the corresponding column in the `value_column` list.
+    apply_func : str or list, optional
+        The `apply_func` parameter in the `augment_rolling` function is used to specify the function(s) to be applied to the rolling windows. It can be a string or a list of strings, where each string represents the name of the function to be applied. Alternatively, it can be a list of tuples, where each tuple contains the name of the function to be applied and the function itself. If it is a string or a list of strings, the same function will be applied to all columns specified in the `value_column`. If it is a list of tuples, each tuple in the list will be used as the function to be applied to the corresponding column in the `value_column` list.
+    center : bool, optional
+        The `center` parameter in the `augment_rolling` function determines whether the rolling window is centered or not. If `center` is set to `True`, the rolling window will be centered, meaning that the alue at the center of the window will be used as the result. If `False`, the rolling window will not be centered, meaning that the value at the end of the window will be used as the result. The default value is `False`.
+    
+    Returns
+    -------
+    pd.DataFrame
+        The function `augment_rolling` returns a DataFrame with new columns for each applied function, window size, and value column.
+    
+    Examples
+    --------
     ```{python}
     import timetk as tk
     import pandas as pd
     
     df = tk.load_dataset("m4_daily", parse_dates = ['date'])
     df
-    
-    df.groupby('id').augment_rolling(date_column = 'date', value_column = 'value', window = [2,7], apply_func = ['mean', ('std', lambda x: x.std())])
-    
-    df.query('id == "D10"').augment_rolling(date_column = 'date', value_column = 'value', window = [2,7], apply_func = ['mean', ('std', lambda x: x.std())])
-    
     ```
-    """
+    
+    ```{python}
+    # Apply multiple rolling functions with multiple windows 
+    rolled_df = (
+        df
+            .query('id == "D10"')
+            .augment_rolling(
+                date_column = 'date', 
+                value_column = 'value', 
+                window = [2,7], 
+                apply_func = ['mean', ('std', lambda x: x.std())]
+            )
+    )
+    rolled_df
+    ```
+    
+    ```{python}
+    # Apply multiple rolling functions with multiple windows to multiple groups
+    rolled_df = (
+        df
+            .query('id == "D10"')
+            .augment_rolling(
+                date_column = 'date', 
+                value_column = 'value', 
+                window = [2,7], 
+                apply_func = ['mean', ('std', lambda x: x.std())]
+            )
+    )
+    rolled_df 
+    ```
+    '''
+    
     
     # Check if data is a Pandas DataFrame or GroupBy object
     if not isinstance(data, pd.DataFrame):
