@@ -1,14 +1,21 @@
 # Function reference
 
-## 🐼 Time Series for Pandas DataFrames
+## 🔥 Wrangling Pandas Time Series DataFrames
 
-Time series functions that manipulate DataFrames.
+Bend time series data to your will.
 
 | | |
 | --- | --- |
 | [summarize_by_time](summarize_by_time.qmd#timetk.summarize_by_time) | Summarize a DataFrame or GroupBy object by time. |
 | [pad_by_time](pad_by_time.qmd#timetk.pad_by_time) | Make irregular time series regular by padding with missing dates. |
 | [future_frame](future_frame.qmd#timetk.future_frame) | Extend a DataFrame or GroupBy object with future dates. |
+
+## 🏗️ Adding Features to Time Series DataFrames (Augmenting)
+
+Add one or more feature columns to time series data.
+
+| | |
+| --- | --- |
 | [augment_timeseries_signature](augment_timeseries_signature.qmd#timetk.augment_timeseries_signature) | Add 29 time series features to a DataFrame. |
 | [augment_lags](augment_lags.qmd#timetk.augment_lags) | Adds lags to a Pandas DataFrame or DataFrameGroupBy object. |
 
@@ -20,6 +27,14 @@ Time series functions that manipulate Pandas Series.
 | --- | --- |
 | [make_future_timeseries](make_future_timeseries.qmd#timetk.make_future_timeseries) | Make future dates for a time series. |
 | [get_timeseries_signature](get_timeseries_signature.qmd#timetk.get_timeseries_signature) | Convert a timestamp to a set of 29 time series features. |
+| [get_pandas_frequency](get_pandas_frequency.qmd#timetk.get_pandas_frequency) | Get the frequency of a pandas Series or DatetimeIndex. |
+
+## 🛠️ Utilities
+
+Helper functions to make your life easier.
+
+| | |
+| --- | --- |
 | [floor_date](floor_date.qmd#timetk.floor_date) | Round a date down to the specified unit (e.g. Flooring). |
 | [week_of_month](week_of_month.qmd#timetk.week_of_month) | The "week_of_month" function calculates the week number of a given date within its month. |
 

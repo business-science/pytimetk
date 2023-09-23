@@ -29,7 +29,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../guides/02_pandas_frequency.html" rel="prev">
+<link href="../guides/05_augmenting.html" rel="prev">
 <link href="../favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -154,14 +154,32 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../guides/01_timetk_concepts.html" class="sidebar-item-text sidebar-link">
+  <a href="../guides/01_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Visualization</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/02_timetk_concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Timetk Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../guides/02_pandas_frequency.html" class="sidebar-item-text sidebar-link">
+  <a href="../guides/03_pandas_frequency.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Pandas Frequencies</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/04_wrangling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Wrangling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/05_augmenting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Adding Features (Augmenting)</span></a>
   </div>
 </li>
       </ul>
@@ -201,8 +219,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <ul>
   <li><a href="#function-reference" id="toc-function-reference" class="nav-link active" data-scroll-target="#function-reference">Function reference</a>
   <ul class="collapse">
-  <li><a href="#time-series-for-pandas-dataframes" id="toc-time-series-for-pandas-dataframes" class="nav-link" data-scroll-target="#time-series-for-pandas-dataframes">🐼 Time Series for Pandas DataFrames</a></li>
+  <li><a href="#wrangling-pandas-time-series-dataframes" id="toc-wrangling-pandas-time-series-dataframes" class="nav-link" data-scroll-target="#wrangling-pandas-time-series-dataframes">🔥 Wrangling Pandas Time Series DataFrames</a></li>
+  <li><a href="#adding-features-to-time-series-dataframes-augmenting" id="toc-adding-features-to-time-series-dataframes-augmenting" class="nav-link" data-scroll-target="#adding-features-to-time-series-dataframes-augmenting">🏗️ Adding Features to Time Series DataFrames (Augmenting)</a></li>
   <li><a href="#time-series-for-pandas-series" id="toc-time-series-for-pandas-series" class="nav-link" data-scroll-target="#time-series-for-pandas-series">🐼 Time Series for Pandas Series</a></li>
+  <li><a href="#utilities" id="toc-utilities" class="nav-link" data-scroll-target="#utilities">🛠️ Utilities</a></li>
   <li><a href="#datasets" id="toc-datasets" class="nav-link" data-scroll-target="#datasets">💾 12 Datasets</a></li>
   </ul></li>
   </ul>
@@ -215,9 +235,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <section id="function-reference" class="level1">
 <h1>Function reference</h1>
-<section id="time-series-for-pandas-dataframes" class="level2">
-<h2 class="anchored" data-anchor-id="time-series-for-pandas-dataframes">🐼 Time Series for Pandas DataFrames</h2>
-<p>Time series functions that manipulate DataFrames.</p>
+<section id="wrangling-pandas-time-series-dataframes" class="level2">
+<h2 class="anchored" data-anchor-id="wrangling-pandas-time-series-dataframes">🔥 Wrangling Pandas Time Series DataFrames</h2>
+<p>Bend time series data to your will.</p>
 <table class="table">
 <tbody>
 <tr class="odd">
@@ -232,11 +252,19 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><a href="../reference/future_frame.html#timetk.future_frame">future_frame</a></td>
 <td>Extend a DataFrame or GroupBy object with future dates.</td>
 </tr>
-<tr class="even">
+</tbody>
+</table>
+</section>
+<section id="adding-features-to-time-series-dataframes-augmenting" class="level2">
+<h2 class="anchored" data-anchor-id="adding-features-to-time-series-dataframes-augmenting">🏗️ Adding Features to Time Series DataFrames (Augmenting)</h2>
+<p>Add one or more feature columns to time series data.</p>
+<table class="table">
+<tbody>
+<tr class="odd">
 <td><a href="../reference/augment_timeseries_signature.html#timetk.augment_timeseries_signature">augment_timeseries_signature</a></td>
 <td>Add 29 time series features to a DataFrame.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="../reference/augment_lags.html#timetk.augment_lags">augment_lags</a></td>
 <td>Adds lags to a Pandas DataFrame or DataFrameGroupBy object.</td>
 </tr>
@@ -256,6 +284,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><a href="../reference/get_timeseries_signature.html#timetk.get_timeseries_signature">get_timeseries_signature</a></td>
 <td>Convert a timestamp to a set of 29 time series features.</td>
 </tr>
+<tr class="odd">
+<td><a href="../reference/get_pandas_frequency.html#timetk.get_pandas_frequency">get_pandas_frequency</a></td>
+<td>Get the frequency of a pandas Series or DatetimeIndex.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="utilities" class="level2">
+<h2 class="anchored" data-anchor-id="utilities">🛠️ Utilities</h2>
+<p>Helper functions to make your life easier.</p>
+<table class="table">
+<tbody>
 <tr class="odd">
 <td><a href="../reference/floor_date.html#timetk.floor_date">floor_date</a></td>
 <td>Round a date down to the specified unit (e.g.&nbsp;Flooring).</td>
@@ -638,8 +678,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../guides/02_pandas_frequency.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Pandas Frequencies</span>
+      <a href="../guides/05_augmenting.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Adding Features (Augmenting)</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

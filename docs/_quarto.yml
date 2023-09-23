@@ -86,13 +86,17 @@ quartodoc:
   package: timetk
   sidebar: _sidebar.yml
   sections:
-    - title: 🐼 Time Series for Pandas DataFrames
-      desc: Time series functions that manipulate DataFrames.
+    - title: 🔥 Wrangling Pandas Time Series DataFrames
+      desc: Bend time series data to your will.
       package: timetk
       contents:
         - summarize_by_time
         - pad_by_time
         - future_frame
+    - title: 🏗️ Adding Features to Time Series DataFrames (Augmenting)
+      desc: Add one or more feature columns to time series data.
+      package: timetk
+      contents:
         - augment_timeseries_signature
         - augment_lags
     - title: 🐼 Time Series for Pandas Series
@@ -101,6 +105,11 @@ quartodoc:
       contents:        
         - make_future_timeseries
         - get_timeseries_signature
+        - get_pandas_frequency
+    - title: 🛠️ Utilities
+      desc: Helper functions to make your life easier.
+      package: timetk
+      contents:      
         - floor_date
         - week_of_month
     - title: 💾 12 Datasets

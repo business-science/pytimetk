@@ -6,15 +6,20 @@ website:
       - reference/summarize_by_time.qmd
       - reference/pad_by_time.qmd
       - reference/future_frame.qmd
+      section: "\U0001F525 Wrangling Pandas Time Series DataFrames"
+    - contents:
       - reference/augment_timeseries_signature.qmd
       - reference/augment_lags.qmd
-      section: "\U0001F43C Time Series for Pandas DataFrames"
+      section: "\U0001F3D7\uFE0F Adding Features to Time Series DataFrames (Augmenting)"
     - contents:
       - reference/make_future_timeseries.qmd
       - reference/get_timeseries_signature.qmd
+      - reference/get_pandas_frequency.qmd
+      section: "\U0001F43C Time Series for Pandas Series"
+    - contents:
       - reference/floor_date.qmd
       - reference/week_of_month.qmd
-      section: "\U0001F43C Time Series for Pandas Series"
+      section: "\U0001F6E0\uFE0F Utilities"
     - contents:
       - reference/get_available_datasets.qmd
       - reference/load_dataset.qmd

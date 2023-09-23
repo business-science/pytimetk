@@ -63,7 +63,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../reference/index.html" rel="next">
+<link href="../guides/03_wrangling.html" rel="next">
 <link href="../guides/01_timetk_concepts.html" rel="prev">
 <link href="../favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js"></script>
@@ -142,7 +142,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../guides/01_timetk_concepts.html">🗺️ Guides:</a></li><li class="breadcrumb-item"><a href="../guides/02_pandas_frequency.html">Pandas Frequencies</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../guides/00_visualization.html">🗺️ Guides:</a></li><li class="breadcrumb-item"><a href="../guides/02_pandas_frequency.html">Pandas Frequencies</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -195,6 +195,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../guides/00_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Visualization</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../guides/01_timetk_concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Timetk Basics</span></a>
   </div>
@@ -203,6 +209,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <div class="sidebar-item-container"> 
   <a href="../guides/02_pandas_frequency.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Pandas Frequencies</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/03_wrangling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Wrangling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/04_augmenting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Adding Features (Augmenting)</span></a>
   </div>
 </li>
       </ul>
@@ -240,9 +258,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#custom-frequencies" id="toc-custom-frequencies" class="nav-link active" data-scroll-target="#custom-frequencies">Custom Frequencies:</a></li>
+  <li><a href="#pandas-frequencies" id="toc-pandas-frequencies" class="nav-link active" data-scroll-target="#pandas-frequencies"><span class="header-section-number">1</span> Pandas Frequencies</a>
+  <ul class="collapse">
+  <li><a href="#custom-frequencies" id="toc-custom-frequencies" class="nav-link" data-scroll-target="#custom-frequencies">Custom Frequencies:</a></li>
   <li><a href="#compound-frequencies" id="toc-compound-frequencies" class="nav-link" data-scroll-target="#compound-frequencies">Compound Frequencies:</a></li>
   <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example:</a></li>
+  </ul></li>
+  <li><a href="#timetk-incorporates-pandas-frequencies" id="toc-timetk-incorporates-pandas-frequencies" class="nav-link" data-scroll-target="#timetk-incorporates-pandas-frequencies"><span class="header-section-number">2</span> Timetk Incorporates Pandas Frequencies</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/guides/02_pandas_frequency.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -266,6 +288,24 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+How this guide benefits you
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>This guide covers how to use the <code>pandas</code> frequency strings within <code>timetk</code>. Once you understand key frequencies, you can apply them to manipulate time series data like a pro.</p>
+</div>
+</div>
+</div>
+<section id="pandas-frequencies" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Pandas Frequencies</h1>
 <p>Pandas offers a variety of frequency strings, also known as offset aliases, to define the frequency of a time series. Here are some common frequency strings used in pandas:</p>
 <ol type="1">
 <li><strong>‘B’</strong>: Business Day</li>
@@ -318,13 +358,33 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a date range with daily frequency</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>date_range_daily <span class="op">=</span> pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, end<span class="op">=</span><span class="st">'2023-01-10'</span>, freq<span class="op">=</span><span class="st">'D'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>date_range_daily <span class="op">=</span> pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, end<span class="op">=</span><span class="st">'2023-01-10'</span>, freq<span class="op">=</span><span class="st">'D'</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>date_range_daily</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>DatetimeIndex(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04',
+               '2023-01-05', '2023-01-06', '2023-01-07', '2023-01-08',
+               '2023-01-09', '2023-01-10'],
+              dtype='datetime64[ns]', freq='D')</code></pre>
+</div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a date range with 2 days frequency</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>date_range_two_days <span class="op">=</span> pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, end<span class="op">=</span><span class="st">'2023-01-10'</span>, freq<span class="op">=</span><span class="st">'2D'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a date range with 2 days frequency</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>date_range_two_days <span class="op">=</span> pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, end<span class="op">=</span><span class="st">'2023-01-10'</span>, freq<span class="op">=</span><span class="st">'2D'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>date_range_two_days</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>DatetimeIndex(['2023-01-01', '2023-01-03', '2023-01-05', '2023-01-07',
+               '2023-01-09'],
+              dtype='datetime64[ns]', freq='2D')</code></pre>
+</div>
 </div>
 <p>These frequency strings help in resampling, creating date ranges, and handling time-series data efficiently in pandas.</p>
+</section>
+</section>
+<section id="timetk-incorporates-pandas-frequencies" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Timetk Incorporates Pandas Frequencies</h1>
+<p>Now that you’ve seen pandas frequencies, you’ll see them pop up in many of the <code>timetk</code> functions.</p>
 
 
 </section>
@@ -685,8 +745,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../reference/index.html" class="pagination-link">
-        <span class="nav-page-text">📄 API Reference</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../guides/03_wrangling.html" class="pagination-link">
+        <span class="nav-page-text">Data Wrangling</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>timetk for Python – make_future_timeseries</title>
+<title>timetk for Python - Pandas Frequencies</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -63,6 +63,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../guides/04_wrangling.html" rel="next">
+<link href="../guides/02_timetk_concepts.html" rel="prev">
 <link href="../favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -104,8 +106,17 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', '330861489', { 'anonymize_ip': true});
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
+<meta property="og:title" content="timetk for Python - Pandas Frequencies">
+<meta property="og:description" content="">
+<meta property="og:site-name" content="timetk for Python">
+<meta name="twitter:title" content="timetk for Python - Pandas Frequencies">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
 </head>
 
 <body class="nav-sidebar floating nav-fixed">
@@ -134,7 +145,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">make_future_timeseries</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../guides/01_visualization.html">🗺️ Guides:</a></li><li class="breadcrumb-item"><a href="../guides/03_pandas_frequency.html">Pandas Frequencies</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -178,13 +189,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
  <span class="menu-text">🗺️ Guides:</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../guides/01_visualization.html" class="sidebar-item-text sidebar-link">
@@ -199,7 +210,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../guides/03_pandas_frequency.html" class="sidebar-item-text sidebar-link">
+  <a href="../guides/03_pandas_frequency.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Pandas Frequencies</span></a>
   </div>
 </li>
@@ -250,18 +261,25 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
-  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#pandas-frequencies" id="toc-pandas-frequencies" class="nav-link active" data-scroll-target="#pandas-frequencies"><span class="header-section-number">1</span> Pandas Frequencies</a>
+  <ul class="collapse">
+  <li><a href="#custom-frequencies" id="toc-custom-frequencies" class="nav-link" data-scroll-target="#custom-frequencies">Custom Frequencies:</a></li>
+  <li><a href="#compound-frequencies" id="toc-compound-frequencies" class="nav-link" data-scroll-target="#compound-frequencies">Compound Frequencies:</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example:</a></li>
+  </ul></li>
+  <li><a href="#timetk-incorporates-pandas-frequencies" id="toc-timetk-incorporates-pandas-frequencies" class="nav-link" data-scroll-target="#timetk-incorporates-pandas-frequencies"><span class="header-section-number">2</span> Timetk Incorporates Pandas Frequencies</a>
+  <ul class="collapse">
+  <li><a href="#example-padding-dates" id="toc-example-padding-dates" class="nav-link" data-scroll-target="#example-padding-dates">Example: Padding Dates</a></li>
+  </ul></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/make_future_timeseries.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/guides/03_pandas_frequency.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">make_future_timeseries</h1>
+<h1 class="title">Pandas Frequencies</h1>
 </div>
 
 
@@ -276,175 +294,301 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>make_future_timeseries(idx, length_out, force_regular=False)</code></p>
-<p>Make future dates for a time series.</p>
-<p>The function <code>make_future_timeseries</code> takes a pandas Series or DateTimeIndex and generates a future sequence of dates based on the frequency of the input series.</p>
-<section id="parameters" class="level2">
-<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
-<table class="table">
-<colgroup>
-<col style="width: 3%">
-<col style="width: 6%">
-<col style="width: 87%">
-<col style="width: 2%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>idx</code></td>
-<td>pd.Series or pd.DateTimeIndex</td>
-<td>The <code>idx</code> parameter is the input time series data. It can be either a pandas Series or a pandas DateTimeIndex. It represents the existing dates in the time series.</td>
-<td><em>required</em></td>
-</tr>
-<tr class="even">
-<td><code>length_out</code></td>
-<td>int</td>
-<td>The parameter <code>length_out</code> is an integer that represents the number of future dates to generate for the time series.</td>
-<td><em>required</em></td>
-</tr>
-<tr class="odd">
-<td><code>force_regular</code></td>
-<td>bool</td>
-<td>The <code>force_regular</code> parameter is a boolean flag that determines whether the frequency of the future dates should be forced to be regular. If <code>force_regular</code> is set to <code>True</code>, the frequency of the future dates will be forced to be regular. If <code>force_regular</code> is set to <code>False</code>, the frequency of the future dates will be inferred from the input data (e.g.&nbsp;business calendars might be used). The default value is <code>False</code>.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+How this guide benefits you
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>This guide covers how to use the <code>pandas</code> frequency strings within <code>timetk</code>. Once you understand key frequencies, you can apply them to manipulate time series data like a pro.</p>
+</div>
+</div>
+</div>
+<section id="pandas-frequencies" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Pandas Frequencies</h1>
+<p>Pandas offers a variety of frequency strings, also known as offset aliases, to define the frequency of a time series. Here are some common frequency strings used in pandas:</p>
+<ol type="1">
+<li><strong>‘B’</strong>: Business Day</li>
+<li><strong>‘D’</strong>: Calendar day</li>
+<li><strong>‘W’</strong>: Weekly</li>
+<li><strong>‘M’</strong>: Month end</li>
+<li><strong>‘BM’</strong>: Business month end</li>
+<li><strong>‘MS’</strong>: Month start</li>
+<li><strong>‘BMS’</strong>: Business month start</li>
+<li><strong>‘Q’</strong>: Quarter end</li>
+<li><strong>‘BQ’</strong>: Business quarter end</li>
+<li><strong>‘QS’</strong>: Quarter start</li>
+<li><strong>‘BQS’</strong>: Business quarter start</li>
+<li><strong>‘A’ or ‘Y’</strong>: Year end</li>
+<li><strong>‘BA’ or ‘BY’</strong>: Business year end</li>
+<li><strong>‘AS’ or ‘YS’</strong>: Year start</li>
+<li><strong>‘BAS’ or ‘BYS’</strong>: Business year start</li>
+<li><strong>‘H’</strong>: Hourly</li>
+<li><strong>‘T’ or ‘min’</strong>: Minutely</li>
+<li><strong>‘S’</strong>: Secondly</li>
+<li><strong>‘L’ or ‘ms’</strong>: Milliseconds</li>
+<li><strong>‘U’</strong>: Microseconds</li>
+<li><strong>‘N’</strong>: Nanoseconds</li>
+</ol>
+<section id="custom-frequencies" class="level3">
+<h3 class="anchored" data-anchor-id="custom-frequencies">Custom Frequencies:</h3>
+<ul>
+<li>You can also create custom frequencies by combining base frequencies, like:
+<ul>
+<li><strong>‘2D’</strong>: Every 2 days</li>
+<li><strong>‘3W’</strong>: Every 3 weeks</li>
+<li><strong>‘4H’</strong>: Every 4 hours</li>
+<li><strong>‘1H30T’</strong>: Every 1 hour and 30 minutes</li>
+</ul></li>
+</ul>
 </section>
-<section id="returns" class="level2">
-<h2 class="anchored" data-anchor-id="returns">Returns</h2>
-<table class="table">
-<thead>
-<tr class="header">
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>pd.Series</td>
-<td>A pandas Series object containing future dates.</td>
-</tr>
-</tbody>
-</table>
+<section id="compound-frequencies" class="level3">
+<h3 class="anchored" data-anchor-id="compound-frequencies">Compound Frequencies:</h3>
+<ul>
+<li>You can combine multiple frequencies by adding them together.
+<ul>
+<li><strong>‘1D1H’</strong>: 1 day and 1 hour</li>
+<li><strong>‘1H30T’</strong>: 1 hour and 30 minutes</li>
+</ul></li>
+</ul>
 </section>
-<section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<section id="example" class="level3">
+<h3 class="anchored" data-anchor-id="example">Example:</h3>
 <div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timetk <span class="im">as</span> tk</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.Series(pd.to_datetime([<span class="st">'2022-01-01'</span>, <span class="st">'2022-01-02'</span>, <span class="st">'2022-01-03'</span>, <span class="st">'2022-01-04'</span>]))</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>dates</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a date range with daily frequency</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>date_range_daily <span class="op">=</span> pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, end<span class="op">=</span><span class="st">'2023-01-10'</span>, freq<span class="op">=</span><span class="st">'D'</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>date_range_daily</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>0   2022-01-01
-1   2022-01-02
-2   2022-01-03
-3   2022-01-04
-dtype: datetime64[ns]</code></pre>
+<pre><code>DatetimeIndex(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04',
+               '2023-01-05', '2023-01-06', '2023-01-07', '2023-01-08',
+               '2023-01-09', '2023-01-10'],
+              dtype='datetime64[ns]', freq='D')</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DateTimeIndex: Generate 5 future dates</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>future_dates_dt <span class="op">=</span> tk.make_future_timeseries(dates, <span class="dv">5</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>future_dates_dt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a date range with 2 days frequency</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>date_range_two_days <span class="op">=</span> pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, end<span class="op">=</span><span class="st">'2023-01-10'</span>, freq<span class="op">=</span><span class="st">'2D'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>date_range_two_days</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
-<pre><code>0   2022-01-05
-1   2022-01-06
-2   2022-01-07
-3   2022-01-08
-4   2022-01-09
-dtype: datetime64[ns]</code></pre>
+<pre><code>DatetimeIndex(['2023-01-01', '2023-01-03', '2023-01-05', '2023-01-07',
+               '2023-01-09'],
+              dtype='datetime64[ns]', freq='2D')</code></pre>
 </div>
 </div>
+<p>These frequency strings help in resampling, creating date ranges, and handling time-series data efficiently in pandas.</p>
+</section>
+</section>
+<section id="timetk-incorporates-pandas-frequencies" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Timetk Incorporates Pandas Frequencies</h1>
+<p>Now that you’ve seen pandas frequencies, you’ll see them pop up in many of the <code>timetk</code> functions.</p>
+<section id="example-padding-dates" class="level3">
+<h3 class="anchored" data-anchor-id="example-padding-dates">Example: Padding Dates</h3>
+<p>This example shows how to use Pandas frequencies inside of <code>timetk</code> functions.</p>
+<p>We’ll use <code>pad_by_time</code> to show how to use freq to fill in missing dates.</p>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Series: Generate 5 future dates</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pd.Series(future_dates_dt).make_future_timeseries(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DataFrame with missing dates</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> {</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># '2023-09-05' is missing</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'datetime'</span>: [<span class="st">'2023-09-01'</span>, <span class="st">'2023-09-02'</span>, <span class="st">'2023-09-03'</span>, <span class="st">'2023-09-04'</span>, <span class="st">'2023-09-06'</span>],  </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'value'</span>: [<span class="dv">10</span>, <span class="dv">30</span>, <span class="dv">40</span>, <span class="dv">50</span>, <span class="dv">60</span>]</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(data)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'datetime'</span>] <span class="op">=</span> pd.to_datetime(df[<span class="st">'datetime'</span>])</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>0   2022-01-10
-1   2022-01-11
-2   2022-01-12
-3   2022-01-13
-4   2022-01-14
-dtype: datetime64[ns]</code></pre>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2023-09-01</td>
+<td>10</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2023-09-02</td>
+<td>30</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2023-09-03</td>
+<td>40</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2023-09-04</td>
+<td>50</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2023-09-06</td>
+<td>60</td>
+</tr>
+</tbody>
+</table>
+
 </div>
 </div>
+</div>
+<p>We can resample to fill in the missing day using <code>pad_by_time</code> with <code>freq = 'D'</code>.</p>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>timestamps <span class="op">=</span> [<span class="st">"2023-01-01 01:00"</span>, <span class="st">"2023-01-01 02:00"</span>, <span class="st">"2023-01-01 03:00"</span>, <span class="st">"2023-01-01 04:00"</span>, <span class="st">"2023-01-01 05:00"</span>]</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.to_datetime(timestamps)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timetk <span class="im">as</span> tk</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>df.pad_by_time(<span class="st">'datetime'</span>, freq <span class="op">=</span> <span class="st">'D'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
-<pre><code>0   2023-01-01 06:00:00
-1   2023-01-01 07:00:00
-2   2023-01-01 08:00:00
-3   2023-01-01 09:00:00
-4   2023-01-01 10:00:00
-dtype: datetime64[ns]</code></pre>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2023-09-01</td>
+<td>10.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2023-09-02</td>
+<td>30.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2023-09-03</td>
+<td>40.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2023-09-04</td>
+<td>50.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2023-09-05</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>2023-09-06</td>
+<td>60.0</td>
+</tr>
+</tbody>
+</table>
+
 </div>
 </div>
+</div>
+<p>What about resampling every 12 hours? Just set `freq = ‘12H’.</p>
 <div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Monthly Frequency: Generate 4 future dates</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.to_datetime([<span class="st">"2021-01-01"</span>, <span class="st">"2021-02-01"</span>, <span class="st">"2021-03-01"</span>, <span class="st">"2021-04-01"</span>])</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timetk <span class="im">as</span> tk</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>df.pad_by_time(<span class="st">'datetime'</span>, freq <span class="op">=</span> <span class="st">'12H'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>0   2021-05-01
-1   2021-06-01
-2   2021-07-01
-3   2021-08-01
-dtype: datetime64[ns]</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Quarterly Frequency: Generate 4 future dates</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.to_datetime([<span class="st">"2021-01-01"</span>, <span class="st">"2021-04-01"</span>, <span class="st">"2021-07-01"</span>, <span class="st">"2021-10-01"</span>])</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
-<pre><code>0   2022-01-01
-1   2022-04-01
-2   2022-07-01
-3   2022-10-01
-dtype: datetime64[ns]</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Irregular Dates: Business Days</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.to_datetime([<span class="st">"2021-01-01"</span>, <span class="st">"2021-01-04"</span>, <span class="st">"2021-01-05"</span>, <span class="st">"2021-01-06"</span>])</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>tk.get_pandas_frequency(dates)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="7">
-<pre><code>0   2021-01-07
-1   2021-01-08
-2   2021-01-11
-3   2021-01-12
-dtype: datetime64[ns]</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Irregular Dates: Business Days (Force Regular)    </span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">4</span>, force_regular<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
-<pre><code>0   2021-01-07
-1   2021-01-08
-2   2021-01-09
-3   2021-01-10
-dtype: datetime64[ns]</code></pre>
-</div>
-</div>
+<div>
 
 
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2023-09-01 00:00:00</td>
+<td>10.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2023-09-01 12:00:00</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2023-09-02 00:00:00</td>
+<td>30.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2023-09-02 12:00:00</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2023-09-03 00:00:00</td>
+<td>40.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>2023-09-03 12:00:00</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>2023-09-04 00:00:00</td>
+<td>50.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>2023-09-04 12:00:00</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>2023-09-05 00:00:00</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>2023-09-05 12:00:00</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>2023-09-06 00:00:00</td>
+<td>60.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>You’ll see these pandas frequencies come up as the parameter <code>freq</code> in many <code>timetk</code> functions.</p>
+
+
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -796,6 +940,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../guides/02_timetk_concepts.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Timetk Basics</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../guides/04_wrangling.html" class="pagination-link">
+        <span class="nav-page-text">Data Wrangling</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
 
 

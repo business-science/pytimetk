@@ -7,7 +7,13 @@ number-sections: true
 number-depth: 2
 ---
 
+::: {.callout-note collapse="false"}
+## How this guide benefits you
 
+This guide covers how to use the `pandas` frequency strings within `timetk`. Once you understand key frequencies, you can apply them to manipulate time series data like a pro. 
+:::
+
+# Pandas Frequencies
 
 Pandas offers a variety of frequency strings, also known as offset aliases, to define the frequency of a time series. Here are some common frequency strings used in pandas:
 
@@ -46,23 +52,64 @@ Pandas offers a variety of frequency strings, also known as offset aliases, to d
    - **'1H30T'**: 1 hour and 30 minutes
 
 ### Example:
+
 ```{python}
 import pandas as pd
 
 # Creating a date range with daily frequency
 date_range_daily = pd.date_range(start='2023-01-01', end='2023-01-10', freq='D')
+
+date_range_daily
 ```
 
 ```{python}
 # Creating a date range with 2 days frequency
 date_range_two_days = pd.date_range(start='2023-01-01', end='2023-01-10', freq='2D')
+
+date_range_two_days
 ```
 
 These frequency strings help in resampling, creating date ranges, and handling time-series data efficiently in pandas.
 
+# Timetk Incorporates Pandas Frequencies
 
+Now that you've seen pandas frequencies, you'll see them pop up in many of the `timetk` functions. 
 
+### Example: Padding Dates
 
+This example shows how to use Pandas frequencies inside of `timetk` functions. 
 
+We'll use `pad_by_time` to show how to use freq to fill in missing dates. 
 
+```{python}
+# DataFrame with missing dates
+import pandas as pd
 
+data = {
+    # '2023-09-05' is missing
+    'datetime': ['2023-09-01', '2023-09-02', '2023-09-03', '2023-09-04', '2023-09-06'],  
+    'value': [10, 30, 40, 50, 60]
+}
+
+df = pd.DataFrame(data)
+df['datetime'] = pd.to_datetime(df['datetime'])
+df
+```
+
+We can resample to fill in the missing day using `pad_by_time` with `freq = 'D'`.
+
+```{python}
+import timetk as tk
+
+df.pad_by_time('datetime', freq = 'D')
+```
+
+What about resampling every 12 hours? Just set `freq = '12H'.
+
+```{python}
+import timetk as tk
+
+df.pad_by_time('datetime', freq = '12H')
+```
+
+You'll see these pandas frequencies come up as the parameter `freq` in many `timetk` functions. 

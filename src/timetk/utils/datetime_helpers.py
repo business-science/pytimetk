@@ -163,6 +163,25 @@ def get_timeseries_colname(data: pd.DataFrame, verbose: bool = False) -> str:
 
 @pf.register_series_method
 def get_pandas_frequency(idx: pd.Series or pd.DatetimeIndex, force_regular: bool = False) -> str:
+    '''
+    Get the frequency of a pandas Series or DatetimeIndex.
+    
+    The function `get_pandas_frequency` takes a Pandas Series or DatetimeIndex as input and returns the inferred frequency of the index, with an option to force regular frequency.
+    
+    Parameters
+    ----------
+    idx : pd.Series or pd.DatetimeIndex
+        The `idx` parameter can be either a `pd.Series` or a `pd.DatetimeIndex`. It represents the index or the time series data for which we want to determine the frequency.
+    force_regular : bool, optional
+        The `force_regular` parameter is a boolean flag that determines whether to force the frequency to be regular. If set to `True`, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is 'B' (business days), it will be converted to 'D' (calendar days). The default value is `False`.
+    
+    Returns
+    -------
+    str
+        The frequency of the given pandas series or datetime index.
+    
+    '''
+   
     
     if isinstance(idx, pd.Series):
         idx = idx.values
