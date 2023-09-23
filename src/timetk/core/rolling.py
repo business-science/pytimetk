@@ -33,12 +33,12 @@ def augment_rolling(
     
     df.groupby('id').augment_rolling(date_column = 'date', value_column = 'value', window = [2,7], apply_func = ['mean', ('std', lambda x: x.std())])
     
+    df.query('id == "D10"').augment_rolling(date_column = 'date', value_column = 'value', window = [2,7], apply_func = ['mean', ('std', lambda x: x.std())])
+    
     ```
     """
     
-    
-    
-     # Check if data is a Pandas DataFrame or GroupBy object
+    # Check if data is a Pandas DataFrame or GroupBy object
     if not isinstance(data, pd.DataFrame):
         if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
             raise TypeError("`data` is not a Pandas DataFrame.")
@@ -51,57 +51,51 @@ def augment_rolling(
         
     if isinstance(apply_func, str):
         apply_func = [apply_func]
-    
+        
     if isinstance(data, pd.DataFrame):
-        
-        df = data.copy()
-        
-        df.sort_values(by=[date_column], inplace=True)
-        
-        # TODO
-    
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        
-        # Get the group names and original ungrouped data
+        data = data.copy()
+        group_names = None
+        group_df = data.sort_values(by=[date_column])
+        grouped = [([], data)]
+    else: 
         group_names = data.grouper.names
-        data = data.obj
-        
-        df = data.copy()
-        result_dfs = []
-        
-        for _, group_df in df.groupby(group_names):
-            
-            df = data.copy()
-            group_df = df.sort_values(by=[*group_names, date_column])
-            
-            for value_col in value_column:
-                for window_size in window:
-                    for func in apply_func:
-                        
-                        if isinstance(func, tuple):
-                            
-                            func_name, func = func
-                            
-                            new_column_name = f"{value_col}_rolling_{func_name}_win_{window_size}"
-                            
-                            group_df[new_column_name] = group_df[value_col].rolling(window=window_size, min_periods=1,center=center, **kwargs_rolling).apply(func, raw=True)
-                        
-                        elif isinstance(func, str):
-                            
-                            new_column_name = f"{value_col}_rolling_{func}_win_{window_size}"
-                            
-                            rolling_method = getattr(group_df[value_col].rolling(window=window_size, min_periods=1,center=center, **kwargs_rolling), func, None)
-                            
-                            if rolling_method:
-                                group_df[new_column_name] = rolling_method()
-                            else:
-                                raise ValueError(f"Invalid function name: {func}")
-                        
-                        else:
-                            raise TypeError(f"Invalid function type: {type(func)}")
-            
-            result_dfs.append(group_df)
+        grouped = data.obj.copy()
+        grouped = grouped.sort_values(by=[*group_names, date_column]).groupby(group_names)           
     
+    result_dfs = []
+    
+    for _, group_df in grouped:
+        for value_col in value_column:
+            for window_size in window:
+                for func in apply_func:
+                    
+                    if isinstance(func, tuple):
+                        
+                        func_name, func = func
+                        
+                        new_column_name = f"{value_col}_rolling_{func_name}_win_{window_size}"
+                        
+                        group_df[new_column_name] = group_df[value_col].rolling(window=window_size, min_periods=1,center=center, **kwargs_rolling).apply(func, raw=True)
+                    
+                    elif isinstance(func, str):
+                        
+                        new_column_name = f"{value_col}_rolling_{func}_win_{window_size}"
+                        
+                        rolling_method = getattr(group_df[value_col].rolling(window=window_size, min_periods=1,center=center, **kwargs_rolling), func, None)
+                        
+                        if rolling_method:
+                            group_df[new_column_name] = rolling_method()
+                        else:
+                            raise ValueError(f"Invalid function name: {func}")
+                    
+                    else:
+                        raise TypeError(f"Invalid function type: {type(func)}")
+        
+        result_dfs.append(group_df)
+
+    if group_names is None:
+        result_df = pd.concat(result_dfs).sort_values(by=[date_column])
+    else:
         result_df = pd.concat(result_dfs).sort_values(by=[*group_names, date_column])
     
     return result_df
