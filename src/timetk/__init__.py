@@ -6,6 +6,7 @@ from .core.timeseries_signature import *
 from .core.future_timeseries import *
 from .core.lags import *
 from .core.pad import *
+from .core.rolling import *
 
 from .datasets.get_datasets import *
 
@@ -27,6 +28,9 @@ from .core.lags import (
 )
 from .core.pad import (
     pad_by_time
+)
+from .core.rolling import (
+    augment_rolling
 )
 from .datasets.get_datasets import (
     load_dataset, get_available_datasets

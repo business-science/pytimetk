@@ -6,7 +6,64 @@ import pandas_flavor as pf
 from dateutil import parser
 from warnings import warn
 
-
+@pf.register_series_method
+def get_pandas_frequency(idx: pd.Series or pd.DatetimeIndex, force_regular: bool = False) -> str:
+    '''
+    Get the frequency of a pandas Series or DatetimeIndex.
+    
+    The function `get_pandas_frequency` takes a Pandas Series or DatetimeIndex as input and returns the inferred frequency of the index, with an option to force regular frequency.
+    
+    Parameters
+    ----------
+    idx : pd.Series or pd.DatetimeIndex
+        The `idx` parameter can be either a `pd.Series` or a `pd.DatetimeIndex`. It represents the index or the time series data for which we want to determine the frequency.
+    force_regular : bool, optional
+        The `force_regular` parameter is a boolean flag that determines whether to force the frequency to be regular. If set to `True`, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is 'B' (business days), it will be converted to 'D' (calendar days). The default value is `False`.
+    
+    Returns
+    -------
+    str
+        The frequency of the given pandas series or datetime index.
+    
+    '''
+   
+    
+    if isinstance(idx, pd.Series):
+        idx = idx.values
+        
+    _len = len(idx)
+    if _len > 10:
+        _len = 10
+    
+    dt_index = pd.DatetimeIndex(idx[0:_len])
+    
+    freq = dt_index.inferred_freq
+    
+    if freq is None:
+            raise ValueError("The frequency could not be detectied.")
+    
+    if force_regular:
+        if freq == 'B':
+            freq = 'D'
+        if freq == 'BM':
+            freq = 'M'
+        if freq == 'BQ':
+            freq = 'Q'
+        if freq == 'BA':
+            freq = 'A'
+        if freq == 'BY':
+            freq = 'Y'
+        if freq == 'BMS':
+            freq = 'MS'
+        if freq == 'BQS':
+            freq = 'QS'
+        if freq == 'BYS':
+            freq = 'YS'
+        if freq == 'BAS':
+            freq = 'AS'
+        
+    
+    return freq
 
 @pf.register_series_method
 def floor_date(
@@ -161,62 +218,5 @@ def get_timeseries_colname(data: pd.DataFrame, verbose: bool = False) -> str:
         
     return detect_timeseries_columns(data).iloc[0].idxmax()
 
-@pf.register_series_method
-def get_pandas_frequency(idx: pd.Series or pd.DatetimeIndex, force_regular: bool = False) -> str:
-    '''
-    Get the frequency of a pandas Series or DatetimeIndex.
-    
-    The function `get_pandas_frequency` takes a Pandas Series or DatetimeIndex as input and returns the inferred frequency of the index, with an option to force regular frequency.
-    
-    Parameters
-    ----------
-    idx : pd.Series or pd.DatetimeIndex
-        The `idx` parameter can be either a `pd.Series` or a `pd.DatetimeIndex`. It represents the index or the time series data for which we want to determine the frequency.
-    force_regular : bool, optional
-        The `force_regular` parameter is a boolean flag that determines whether to force the frequency to be regular. If set to `True`, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is 'B' (business days), it will be converted to 'D' (calendar days). The default value is `False`.
-    
-    Returns
-    -------
-    str
-        The frequency of the given pandas series or datetime index.
-    
-    '''
-   
-    
-    if isinstance(idx, pd.Series):
-        idx = idx.values
-        
-    _len = len(idx)
-    if _len > 10:
-        _len = 10
-    
-    dt_index = pd.DatetimeIndex(idx[0:_len])
-    
-    freq = dt_index.inferred_freq
-    
-    if freq is None:
-            raise ValueError("The frequency could not be detectied.")
-    
-    if force_regular:
-        if freq == 'B':
-            freq = 'D'
-        if freq == 'BM':
-            freq = 'M'
-        if freq == 'BQ':
-            freq = 'Q'
-        if freq == 'BA':
-            freq = 'A'
-        if freq == 'BY':
-            freq = 'Y'
-        if freq == 'BMS':
-            freq = 'MS'
-        if freq == 'BQS':
-            freq = 'QS'
-        if freq == 'BYS':
-            freq = 'YS'
-        if freq == 'BAS':
-            freq = 'AS'
-        
-    
-    return freq
+
 
