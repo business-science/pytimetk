@@ -263,7 +263,7 @@
     "href": "index.html#installation",
     "title": "timetk for Python ",
     "section": "Installation",
-    "text": "Installation\nTo install timetk using Poetry, follow these steps:\n\n1. Prerequisites\nMake sure you have Python 3.9 or later installed on your system.\n\n\n2. Install Poetry\nTo install Poetry, you can use the official installer provided by Poetry. Do not use pip.\n\n\n3. Clone the Repository\nClone the timetk repository from GitHub:\ngit clone https://github.com/business-science/pytimetk\n\n\n4. Install Dependencies\nUse Poetry to install the package and its dependencies:\npip install poetry\nor you can create a virtualenv with poetry and install the dependencies\npoetry shell\npoetry install"
+    "text": "Installation\nTo install timetk using Poetry, follow these steps:\n\n1. Prerequisites\nMake sure you have Python 3.9 or later installed on your system.\n\n\n2. Install Poetry\nTo install Poetry, you can use the official installer provided by Poetry. Do not use pip.\n\n\n3. Clone the Repository\nClone the timetk repository from GitHub:\ngit clone https://github.com/business-science/pytimetk\n\n\n4. Install Dependencies\nUse Poetry to install the package and its dependencies:\npoetry install\nor you can create a virtualenv with poetry and install the dependencies\npoetry shell\npoetry install"
   },
   {
     "objectID": "getting-started/01_installation.html",
@@ -277,7 +277,7 @@
     "href": "getting-started/01_installation.html#installation",
     "title": "Install",
     "section": "Installation",
-    "text": "Installation\nTo install timetk using Poetry, follow these steps:\n\n1. Prerequisites\nMake sure you have Python 3.9 or later installed on your system.\n\n\n2. Install Poetry\nTo install Poetry, you can use the official installer provided by Poetry. Do not use pip.\n\n\n3. Clone the Repository\nClone the timetk repository from GitHub:\ngit clone https://github.com/business-science/pytimetk\n\n\n4. Install Dependencies\nUse Poetry to install the package and its dependencies:\npip install poetry\nor you can create a virtualenv with poetry and install the dependencies\npoetry shell\npoetry install"
+    "text": "Installation\nTo install timetk using Poetry, follow these steps:\n\n1. Prerequisites\nMake sure you have Python 3.9 or later installed on your system.\n\n\n2. Install Poetry\nTo install Poetry, you can use the official installer provided by Poetry. Do not use pip.\n\n\n3. Clone the Repository\nClone the timetk repository from GitHub:\ngit clone https://github.com/business-science/pytimetk\n\n\n4. Install Dependencies\nUse Poetry to install the package and its dependencies:\npoetry install\nor you can create a virtualenv with poetry and install the dependencies\npoetry shell\npoetry install"
   },
   {
     "objectID": "guides/03_pandas_frequency.html",
