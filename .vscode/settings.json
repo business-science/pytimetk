@@ -1,3 +1,11 @@
 {
-    "python.pythonPath": "/Users/mdancho/opt/anaconda3/envs/temp_env/bin/python"
+    "python.analysis.extraPaths": [
+        "./src"
+    ],
+    "files.exclude": {
+        "**/.git": false
+},
+"docwriter.style": "NumPy",
+"docwriter.progress.trackFunctions": true,
+"notebook.output.scrolling": true
 }

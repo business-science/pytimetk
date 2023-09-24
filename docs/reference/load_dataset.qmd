@@ -1,0 +1,64 @@
+# load_dataset { #timetk.datasets.get_datasets.load_dataset }
+
+`datasets.get_datasets.load_dataset(name='m4_daily', verbose=False, **kwargs)`
+
+Load one of 12 Time Series Datasets.
+
+The `load_dataset` function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to `pandas.read_csv`. The available datasets are:
+
+- `m4_hourly`: The M4 hourly dataset
+- `m4_daily`: The M4 daily dataset
+- `m4_weekly`: The M4 weekly dataset
+- `m4_monthly`: The M4 monthly dataset
+- `m4_quarterly`: The M4 quarterly dataset
+- `m4_yearly`: The M4 yearly dataset
+- `bike_sharing_daily`: The bike sharing daily dataset
+- `bike_sales_sample`: The bike sales sample dataset
+- `taylor_30_min`: The Taylor 30 minute dataset
+- `walmart_sales_weekly`: The Walmart sales weekly dataset
+- `wikipedia_traffic_daily`: The Wikipedia traffic daily dataset
+- `stocks_daily`: The MAANNG stocks dataset
+
+The datasets can be loaded with `timetk.load_dataset(name)`, where `name` is the name of the dataset that you want to load. The default value is set to "m4_daily", which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned above.
+
+## Parameters
+
+| Name       | Type   | Description                                                                                                                                                                                                                                                                              | Default      |
+|------------|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| `name`     | str    | The `name` parameter is used to specify the name of the dataset that you want to load. The default value is set to "m4_daily", which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned in the function's docstring.                           | `'m4_daily'` |
+| `verbose`  | bool   | The `verbose` parameter is a boolean flag that determines whether or not to print the names of the available datasets. If `verbose` is set to `True`, the function will print the names of the available datasets. If `verbose` is set to `False`, the function will not print anything. | `False`      |
+| `**kwargs` |        | The `**kwargs` parameter is used to pass additional arguments to `pandas.read_csv`.                                                                                                                                                                                                      | `{}`         |
+
+## Returns
+
+| Type         | Description                                                                      |
+|--------------|----------------------------------------------------------------------------------|
+| pd.DataFrame | The `load_dataset` function returns the requested dataset as a pandas DataFrame. |
+
+## Examples
+
+```{python}
+import timetk as tk
+import pandas as pd
+```
+
+```{python}
+# Stocks Daily Dataset: META, APPL, AMZN, NFLX, NVDA, GOOG
+df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
+
+df
+```
+
+```{python}
+# Bike Sales CRM Sample Dataset
+df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
+
+df
+```
+
+```{python}
+# Taylor 30-Minute Power Demand Dataset
+df = tk.load_dataset('taylor_30_min', parse_dates = ['date'])
+
+df
+```

@@ -1,0 +1,114 @@
+# future_frame { #timetk.future_frame }
+
+`future_frame(data, date_column, length_out, force_regular=False, bind_data=True)`
+
+Extend a DataFrame or GroupBy object with future dates.
+
+The `future_frame` function extends a given DataFrame or GroupBy object with future dates based on a specified length, optionally binding the original data.
+
+## Parameters
+
+| Name            | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                        | Default    |
+|-----------------|----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `data`          | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | The `data` parameter is the input DataFrame or DataFrameGroupBy object that you want to extend with future dates.                                                                                                                                                                                                                                                                                                                  | _required_ |
+| `date_column`   | str                                                      | The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to generate future dates.                                                                                                                                                                                                                                                         | _required_ |
+| `length_out`    | int                                                      | The `length_out` parameter specifies the number of future dates to be added to the DataFrame.                                                                                                                                                                                                                                                                                                                                      | _required_ |
+| `force_regular` | bool                                                     | The `force_regular` parameter is a boolean flag that determines whether the frequency of the future dates should be forced to be regular. If `force_regular` is set to `True`, the frequency of the future dates will be forced to be regular. If `force_regular` is set to `False`, the frequency of the future dates will be inferred from the input data (e.g. business calendars might be used). The default value is `False`. | `False`    |
+| `bind_data`     | bool                                                     | The `bind_data` parameter is a boolean flag that determines whether the extended data should be concatenated with the original data or returned separately. If `bind_data` is set to `True`, the extended data will be concatenated with the original data using `pd.concat`. If `bind_data` is set to `False`, the extended data will be returned separately. The default value is `True`.                                        | `True`     |
+
+## Returns
+
+| Type         | Description                              |
+|--------------|------------------------------------------|
+| pd.DataFrame | An extended DataFrame with future dates. |
+
+## See Also
+
+make_future_timeseries: Generate future dates for a time series.
+
+## Examples
+
+```{python}
+import pandas as pd
+import timetk as tk
+
+df = tk.load_dataset('m4_hourly', parse_dates = ['date'])
+df
+```
+
+```{python}
+# Extend the data for a single time series group by 12 hours
+extended_df = (
+    df
+        .query('id == "H10"')
+        .future_frame(
+            date_column = 'date', 
+            length_out  = 12
+        )
+        .assign(id = lambda x: x['id'].ffill())
+)
+extended_df
+```
+
+```{python}
+# Extend the data for each group by 12 hours
+extended_df = (
+    df
+        .groupby('id')
+        .future_frame(
+            date_column = 'date', 
+            length_out  = 12
+        )
+)    
+extended_df
+```
+
+```{python}
+# Same as above, but just return the extended data with bind_data=False
+extended_df = (
+    df
+        .groupby('id')
+        .future_frame(
+            date_column = 'date', 
+            length_out  = 12,
+            bind_data   = False # Returns just future data
+        )
+)    
+extended_df
+```
+
+```{python}
+ # Working with irregular dates: Business Days (Stocks Data)
+df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
+df
+```
+
+```{python}
+# Allow irregular future dates (i.e. business days)
+extended_df = (
+    df
+        .groupby('symbol')
+        .future_frame(
+            date_column = 'date', 
+            length_out  = 12,
+            force_regular = False, # Allow irregular future dates (i.e. business days)),
+            bind_data   = False
+        )
+)    
+extended_df
+```
+
+```{python}
+# Force regular: Include Weekends
+extended_df = (
+    df
+        .groupby('symbol')
+        .future_frame(
+            date_column = 'date', 
+            length_out  = 12,
+            force_regular = True, # Force regular future dates (i.e. include weekends)),
+            bind_data   = False
+        )
+)    
+extended_df
+```

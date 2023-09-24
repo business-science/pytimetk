@@ -1,0 +1,37 @@
+# week_of_month { #timetk.week_of_month }
+
+`week_of_month(idx)`
+
+The "week_of_month" function calculates the week number of a given date within its month.
+
+## Parameters
+
+| Name   | Type                          | Description                                                                                                                          | Default    |
+|--------|-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `idx`  | pd.Series or pd.DatetimeIndex | The parameter "idx" is a pandas Series object that represents a specific date for which you want to determine the week of the month. | _required_ |
+
+## Returns
+
+| Type      | Description                             |
+|-----------|-----------------------------------------|
+| pd.Series | The week of the month for a given date. |
+
+## Examples
+
+```{python}
+import timetk as tk
+import pandas as pd
+
+dates = pd.date_range("2020-01-01", "2020-02-28", freq="1D")
+dates
+```
+
+```{python}
+# Works on DateTimeIndex
+tk.week_of_month(dates)
+```
+
+```{python}
+# Works on Pandas Series
+dates.to_series().week_of_month()
+```

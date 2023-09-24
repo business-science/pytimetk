@@ -1,0 +1,122 @@
+# References: 
+# - https://github.com/rstudio/pins-python/tree/main/docs
+# - https://github.com/machow/quartodoc/blob/main/docs/_quarto.yml
+# - https://github.com/quarto-dev/quarto-web/blob/main/_quarto.yml
+# - https://nixtla.github.io/statsforecast/
+# - https://github.com/nixtla/statsforecast
+# - 
+# Key Commands:
+#   - cd docs
+#   - quartodoc build
+#   - quarto preview
+#   - quarto publish gh-pages
+
+project:
+  type: website
+  output-dir: _site
+
+# tell quarto to read the generated sidebar
+metadata-files:
+  - _sidebar.yml
+
+website:
+  title: "timetk for Python"
+  description: "Your toolkit for time series in Python."
+  favicon: "favicon.ico"
+  google-analytics: "330861489"
+  open-graph: true
+  twitter-card: true
+  site-url: https://business-science.github.io/pytimetk/
+  repo-url: https://github.com/business-science/pytimetk
+  issue-url: https://github.com/business-science/pytimetk/issues
+  repo-actions: [edit, issue]
+  page-navigation: true
+  search: true
+  navbar:
+    background: primary
+    pinned: true
+    logo: "https://www.business-science.io/img/business-science-logo.png"
+    # logo: "logo-timetk.png"
+    collapse-below: lg
+    # left:
+      # - text: Tutorials
+      #   file: guides/index.qmd
+      # - text: Docs
+      #   file: reference/index.qmd
+    tools:
+      - icon: github
+        href: https://github.com/business-science/pytimetk
+  sidebar: 
+    collapse-level: 1
+    contents: 
+      - text: Timetk for Python📈
+        file: index.qmd
+      - text: "---"
+      - section: "🏁 Getting Started:"
+        contents: getting-started/*
+      - section: "🗺️ Guides:"
+        contents: guides/*
+      - text: 📄 API Reference
+        file: reference/index.qmd
+      - text: "---"
+      - section: "More References:"
+      - text: Business Science
+        file: https://www.business-science.io/index.html
+        external: true
+      - text: Timetk (R Version)
+        file: https://business-science.github.io/timetk/
+        external: true
+
+
+format:
+  html:
+    toc: true
+    theme: 
+      light: [lux, theme-light.scss, theme.scss]
+      dark: [lux, theme-dark.scss, theme.scss]
+    highlight-style: github
+    linestretch: 1.8
+    grid:
+      sidebar-width: 300px
+      body-width: 900px
+      margin-width: 300px
+
+
+quartodoc:
+  package: timetk
+  sidebar: _sidebar.yml
+  sections:
+    - title: 🔥 Wrangling Pandas Time Series DataFrames
+      desc: Bend time series data to your will.
+      package: timetk
+      contents:
+        - summarize_by_time
+        - pad_by_time
+        - future_frame
+    - title: 🏗️ Adding Features to Time Series DataFrames (Augmenting)
+      desc: Add one or more feature columns to time series data.
+      package: timetk
+      contents:
+        - augment_timeseries_signature
+        - augment_lags
+        - augment_rolling
+    - title: 🐼 Time Series for Pandas Series
+      desc: Time series functions that manipulate Pandas Series.
+      package: timetk
+      contents:        
+        - make_future_timeseries
+        - get_timeseries_signature
+        - get_pandas_frequency
+    - title: 🛠️ Utilities
+      desc: Helper functions to make your life easier.
+      package: timetk
+      contents:      
+        - floor_date
+        - week_of_month
+    - title: 💾 12 Datasets
+      package: timetk.datasets.get_datasets
+      desc: Practice `timetk` with 12 complementary time series datasets.
+      contents:
+        - get_available_datasets
+        - load_dataset
+        

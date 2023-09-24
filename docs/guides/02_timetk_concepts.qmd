@@ -1,0 +1,403 @@
+---
+title: "Timetk Basics"
+jupyter: python3
+toc: true
+toc-depth: 3
+number-sections: true
+number-depth: 2
+---
+
+> *Timetk has one mission:* To make time series analysis simpler, easier, and faster in Python. This goal requires some opinionated ways of treating time series in Python. We will conceptually lay out how `timetk` can help. 
+
+::: {.callout-note collapse="false"}
+## How this guide benefits you
+
+This guide covers how to use `timetk` conceptually. Once you understand key concepts, you can go from basic to advanced time series analysis very fast. 
+:::
+
+
+
+Let's first start with how to think about time series data conceptually. **Time series data has 3 core properties.** 
+
+# The 3 Core Properties of Time Series Data
+
+Every time series DataFrame should have the following properties:
+
+1. *Time Series Index:* A column containing 'datetime64' time stamps.
+2. *Value Columns:* One or more columns containing numeric data that can be aggregated and visualized by time
+3. *Group Columns (Optional):* One or more `categorical` or `str` columns that can be grouped by and time series can be evaluated by groups. 
+
+In practice here's what this looks like using the "m4_daily" dataset:
+
+```{python}
+# Import packages
+import timetk as tk
+import pandas as pd
+import numpy as np
+
+# Import a Time Series Data Set
+m4_daily_df = tk.load_dataset("m4_daily", parse_dates = ['date'])
+m4_daily_df
+```
+
+::: {.callout-note collapse="false"}
+## (Example: m4_daily dataset) 3 Core Properties of Time Series Data
+
+We can see that the `m4_daily` dataset has:
+
+1. *Time Series Index:* The `date` column
+2. *Value Column(s):* The `value` column
+3. *Group Column(s):* The `id` column
+:::
+
+::: {.callout-important collapse="false"}
+## Missing any of the 3 Core Properties of Time Series Data
+
+If your data is not formatted properly for `timetk`, meaning it's missing columns containing datetime, numeric values, or grouping columns, this can impact your ability to use `timetk` for time series anlysis. 
+:::
+
+::: {.callout-important collapse="false"}
+## No Pandas Index, No Problem
+
+Timetk standardizes using a date column. This is to reduce friction in converting to other package formats like `polars`, which don't use an an index (each row is indexed by its integer position). 
+:::
+
+# The 2 Ways that Timetk Makes Time Series Analysis Easier
+
+::: {.callout-note collapse="false"}
+## 2 Types of Time Series Functions
+
+1. Pandas `DataFrame` Operations
+2. Pandas `Series` Operations 
+:::
+
+Timetk contains a number of functions designed to make time series analysis operations easier. In general, these operations come in <u>2 types of time series functions</u>:
+
+1. *Pandas DataFrame Operations:* These functions work on `pd.DataFrame` objects and derivatives such as `groupby()` objects for Grouped Time Series Analysis. You will see `data` as the first parameter in these functions. 
+   
+2. *Pandas Series Operations:* These functions work on `pd.Series` objects.
+    
+   - *Time Series Index Operations:* Are designed for *Time Series index*. You will see `idx` as the first parameter of these functions. In these cases, these functions also work with `datetime64` values (e.g. those produced when you parse_dates via `pd.read_csv()` or create time series with `pd.date_range()`)
+   
+   - *Numeric Operations:* Are designed for *Numeric Values*. You will see `x` as the first parameter for these functions. 
+
+Let's take a look at how to use the different types of Time Series Analysis functions in `timetk`. We'll start with Type 1: Pandas `DataFrame` Operations. 
+
+## Type 1: Pandas DataFrame Operations
+
+Before we start using `timetk`, let's make sure our data is set up properly. 
+
+### Timetk Data Format Compliance
+
+::: {.callout-important collapse="false"}
+## 3 Core Properties Must Be Upheald
+
+A `Timetk`-Compliant Pandas `DataFrame` must have:
+
+1. *Time Series Index:* A Time Stamp column containing `datetime64` values
+2. *Value Column(s):* The value column(s) containing `float` or `int` values
+3. *Group Column(s):* Optionally for grouped time series analysis, one or more columns containg `str` or `categorical` values (shown as an object)
+
+If these are NOT upheld, this will impact your ability to use `timetk` DataFrame operations. 
+:::
+
+::: {.callout-tip collapse="false"}
+## Inspect the DataFrame
+
+Use Pandas `info()` method to check compliance. 
+:::
+
+Using pandas `info()` method, we can see that we have a compliant data frame with a `date` column containing `datetime64` and a `value` column containing `float64`. For grouped analysis we have the `id` column containing `object` dtype. 
+
+```{python}
+# Tip: Inspect for compliance with info()
+m4_daily_df.info()
+```
+
+### Grouped Time Series Analysis with Summarize By Time
+
+First, inspect how the `summarize_by_time` function works by calling `help()`. 
+
+```{python}
+#| output: false
+# Review the summarize_by_time documentation (output not shown)
+help(tk.summarize_by_time)
+```
+
+::: {.callout-note collapse="false"}
+## Help Doc Info: `summarize_by_time()`
+
+- The first parameter is `data`, indicating this is a `DataFrame` operation. 
+- The Examples show different use cases for how to apply the function on a DataFrame
+:::
+
+Let's test the `summarize_by_time()` DataFrame operation out using the grouped approach with method chaining. DataFrame operations can be used as Pandas methods with method-chaining, which allows us to more succinctly apply time series operations.
+
+```{python}
+# Grouped Summarize By Time with Method Chaining
+df_summarized = (
+    m4_daily_df
+        .groupby('id')
+        .summarize_by_time(
+            date_column  = 'date',
+            value_column = 'value',
+            freq         = 'QS', # QS = Quarter Start
+            agg_func     = [
+                'mean', 
+                'median', 
+                'min',
+                ('q25', lambda x: np.quantile(x, 0.25)),
+                ('q75', lambda x: np.quantile(x, 0.75)),
+                'max',
+                ('range',lambda x: x.max() - x.min()),
+            ],
+        )
+)
+
+df_summarized
+```
+
+::: {.callout-note collapse="false"}
+## Key Takeaways: `summarize_by_time()`
+
+- The `data` must comply with the 3 core properties (date column, value column(s), and group column(s)) 
+- The aggregation functions were applied by combination of group (id) and resample (Quarter Start)
+- The result was a pandas DataFrame with group column, resampled date column, and summary values (mean, median, min, 25th-quantile, etc)
+:::
+
+### Another DataFrame Example: Creating 29 Engineered Features
+
+Let's examine another `DataFrame` function, `tk.augment_timeseries_signature()`. Feel free to inspect the documentation with `help(tk.augment_timeseries_signature)`.
+
+```{python}
+# Creating 29 engineered features from the date column
+# Not run: help(tk.augment_timeseries_signature)
+df_augmented = (
+    m4_daily_df
+        .augment_timeseries_signature(date_column = 'date')
+)
+
+df_augmented.head()
+```
+
+::: {.callout-note collapse="false"}
+## Key Takeaways: `augment_timeseries_signature()`
+
+- The `data` must comply with the 1 of the 3 core properties (date column) 
+- The result was a pandas DataFrame with 29 time series features that can be used for Machine Learning and Forecasting
+:::
+
+
+### Making Future Dates with Future Frame
+
+A common time series task before forecasting with machine learning models is to make a future DataFrame some `length_out` into the future. You can do this with `tk.future_frame()`. Here's how. 
+
+```{python}
+# Preparing a time series data set for Machine Learning Forecasting
+full_augmented_df = (
+    m4_daily_df 
+        .groupby('id')
+        .future_frame('date', length_out = 365)
+        .augment_timeseries_signature('date')
+)
+full_augmented_df
+```
+
+We can then get the future data by keying in on the data with `value` column that is missing (`np.nan`).
+
+```{python}
+# Get the future data (just the observations that haven't happened yet)
+future_df = (
+    full_augmented_df
+        .query('value.isna()')
+)
+future_df
+```
+
+
+
+## Type 2: Pandas Series Operations
+
+The main difference between a `DataFrame` operation and a Series operation is that we are operating on an array of values from typically one of the following `dtypes`:
+
+1. Timestamps (`datetime64`)
+2. Numeric (`float64` or `int64`) 
+
+The first argument of Series operations that operate on Timestamps will always be `idx`. 
+
+Let's take a look at one shall we? We'll start with a common action: Making future time series from an existing time series with a regular frequency. 
+
+### The Make Future Time Series Function
+
+Say we have a monthly sequence of timestamps. What if we want to create a forecast where we predict 12 months into the future? Well, we will need to create 12 future timestamps. Here's how. 
+
+First create a `pd.date_range()` with dates starting at the beginning of each month.
+
+```{python}
+# Make a monthly date range
+dates_dt = pd.date_range("2023-01", "2024-01", freq="MS")
+dates_dt
+```
+
+Next, use `tk.make_future_timeseries()` to create the next 12 timestamps in the sequence. 
+
+::: {.panel-tabset group="future-dates"}
+
+## Pandas Series
+
+```{python}
+# Pandas Series: Future Dates
+future_series = pd.Series(dates_dt).make_future_timeseries(12)
+future_series
+```
+
+## DateTimeIndex
+
+```{python}
+# DateTimeIndex: Future Dates
+future_dt = tk.make_future_timeseries(
+    idx      = dates_dt,
+    length_out = 12
+)
+future_dt
+```
+
+:::
+
+We can combine the actual and future timestamps into one combined timeseries.  
+
+```{python}
+# Combining the 2 series and resetting the index
+combined_timeseries = (
+    pd.concat(
+        [pd.Series(dates_dt), pd.Series(future_dt)],
+        axis=0
+    )
+        .reset_index(drop = True)
+)
+
+combined_timeseries
+```
+
+
+Next, we'll take a look at how to go from an irregular time series to a regular time series. 
+
+### Flooring Dates
+
+An example is `tk.floor_date`, which is used to round down dates. See `help(tk.floor_date)`.
+
+Flooring dates is often used as part of a strategy to go from an irregular time series to regular by combining with an aggregation. Often `summarize_by_time()` is used (I'll share why shortly). But conceptually, date flooring is the secret. 
+
+
+::: {.panel-tabset group="flooring"}
+
+## With Flooring
+
+```{python}
+# Monthly flooring rounds dates down to 1st of the month
+m4_daily_df['date'].floor_date(unit = "M")
+```
+
+## Without Flooring
+
+```{python}
+# Before Flooring
+m4_daily_df['date']
+```
+
+:::
+
+This "date flooring" operation can be useful for creating date groupings.
+
+```{python}
+# Adding a date group with floor_date()
+dates_grouped_by_month = (
+    m4_daily_df
+        .assign(date_group = lambda x: x['date'].floor_date("M"))
+)
+
+dates_grouped_by_month
+```
+
+We can then do grouped operations. 
+
+```{python}
+# Example of a grouped operation with floored dates
+summary_df = (
+    dates_grouped_by_month
+        .drop('date', axis=1) \
+        .groupby(['id', 'date_group'])
+        .mean() \
+        .reset_index()
+)
+
+summary_df
+```
+
+Of course for this operation, we can do it faster with `summarize_by_time()` (and it's much more flexible). 
+
+```{python}
+# Summarize by time is less code and more flexible
+(
+    m4_daily_df 
+        .groupby('id')
+        .summarize_by_time(
+            'date', 'value', 
+            freq = "MS",
+            agg_func = ['mean', 'median', 'min', 'max']
+        )
+)
+```
+
+And that's the core idea behind `timetk`, writing less code and getting more. 
+
+
+
+Next, let's do one more function. The brother of `augment_timeseries_signature()`...
+
+### The Get Time Series Signature Function
+
+This function takes a pandas `Series` or `DateTimeIndex` and returns a `DataFrame` containing the 29 engineered features. 
+
+Start with either a DateTimeIndex...
+
+```{python}
+timestamps_dt = pd.date_range("2023", "2024", freq = "D")
+timestamps_dt
+```
+
+... Or a Pandas Series.
+
+
+```{python}
+timestamps_series = pd.Series(timestamps_dt)
+timestamps_series
+```
+
+And you can use the pandas Series function, `tk.get_timeseries_signature()` to create 29 features from the date sequence. 
+
+::: {.panel-tabset group="get_timeseries_signature"}
+
+## Pandas Series
+
+```{python}
+# Pandas series: get_timeseries_signature
+timestamps_series.get_timeseries_signature()
+```
+
+## DateTimeIndex
+
+```{python}
+# DateTimeIndex: get_timeseries_signature
+tk.get_timeseries_signature(timestamps_dt)
+```
+
+:::
+
+
+
+# More Coming Soon...
+
+We are in the early stages of development. But it's obvious the potential for `timetk` now in Python. 🐍
+
+- For requested functions, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 
