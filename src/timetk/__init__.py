@@ -29,6 +29,10 @@ from .utils.datetime_helpers import (
     floor_date, week_of_month, 
 )
 
+from .plot.plot_time_series import (
+    plot_time_series
+)
+
 
 __version__ = '0.0.0.9000'
 __author__ = 'Matt Dancho (Business Science)'
