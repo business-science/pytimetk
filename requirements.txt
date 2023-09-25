@@ -4,3 +4,5 @@ plotnine
 matplotlib
 plotly
 pandas-flavor
+math
+holidays
