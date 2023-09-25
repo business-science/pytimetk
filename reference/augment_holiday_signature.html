@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>timetk for Python – index</title>
+<title>timetk for Python – augment_holiday_signature</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -29,7 +63,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../guides/05_augmenting.html" rel="prev">
 <link href="../favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -71,6 +104,9 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', '330861489', { 'anonymize_ip': true});
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -101,7 +137,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reference/index.html">📄 API Reference</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">augment_holiday_signature</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -186,7 +222,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/index.html" class="sidebar-item-text sidebar-link active">
+  <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📄 API Reference</span></a>
   </div>
 </li>
@@ -217,138 +253,317 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#function-reference" id="toc-function-reference" class="nav-link active" data-scroll-target="#function-reference">Function reference</a>
-  <ul class="collapse">
-  <li><a href="#wrangling-pandas-time-series-dataframes" id="toc-wrangling-pandas-time-series-dataframes" class="nav-link" data-scroll-target="#wrangling-pandas-time-series-dataframes">🔥 Wrangling Pandas Time Series DataFrames</a></li>
-  <li><a href="#adding-features-to-time-series-dataframes-augmenting" id="toc-adding-features-to-time-series-dataframes-augmenting" class="nav-link" data-scroll-target="#adding-features-to-time-series-dataframes-augmenting">🏗️ Adding Features to Time Series DataFrames (Augmenting)</a></li>
-  <li><a href="#time-series-for-pandas-series" id="toc-time-series-for-pandas-series" class="nav-link" data-scroll-target="#time-series-for-pandas-series">🐼 Time Series for Pandas Series</a></li>
-  <li><a href="#utilities" id="toc-utilities" class="nav-link" data-scroll-target="#utilities">🛠️ Utilities</a></li>
-  <li><a href="#datasets" id="toc-datasets" class="nav-link" data-scroll-target="#datasets">💾 12 Datasets</a></li>
-  </ul></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/index.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_holiday_signature.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">augment_holiday_signature</h1>
+</div>
 
 
-<section id="function-reference" class="level1">
-<h1>Function reference</h1>
-<section id="wrangling-pandas-time-series-dataframes" class="level2">
-<h2 class="anchored" data-anchor-id="wrangling-pandas-time-series-dataframes">🔥 Wrangling Pandas Time Series DataFrames</h2>
-<p>Bend time series data to your will.</p>
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p><code>augment_holiday_signature(data, date_column, country_name='UnitedStates')</code></p>
+<p>Engineers 4 different holiday features from a single datetime for 80+ countries.</p>
+<p>Note: Requires the <code>holidays</code> package to be installed. See https://pypi.org/project/holidays/ for more information.</p>
+<section id="parameters" class="level2">
+<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
+<colgroup>
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 99%">
+<col style="width: 0%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td><a href="../reference/summarize_by_time.html#timetk.summarize_by_time">summarize_by_time</a></td>
-<td>Summarize a DataFrame or GroupBy object by time.</td>
+<td><code>data</code></td>
+<td>pd.DataFrame</td>
+<td>The input DataFrame.</td>
+<td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><a href="../reference/pad_by_time.html#timetk.pad_by_time">pad_by_time</a></td>
-<td>Make irregular time series regular by padding with missing dates.</td>
+<td><code>date_column</code></td>
+<td>str</td>
+<td>The name of the datetime-like column in the DataFrame.</td>
+<td><em>required</em></td>
 </tr>
 <tr class="odd">
-<td><a href="../reference/future_frame.html#timetk.future_frame">future_frame</a></td>
-<td>Extend a DataFrame or GroupBy object with future dates.</td>
+<td><code>country_name</code></td>
+<td>str</td>
+<td>The name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code: Any of the following are acceptable keys for <code>country_name</code>: Available Countries: Full Country, Abrv. #1, #2, #3 Angola: Angola, AO, AGO, Argentina: Argentina, AR, ARG, Aruba: Aruba, AW, ABW, Australia: Australia, AU, AUS, Austria: Austria, AT, AUT, Bangladesh: Bangladesh, BD, BGD, Belarus: Belarus, BY, BLR, Belgium: Belgium, BE, BEL, Botswana: Botswana, BW, BWA, Brazil: Brazil, BR, BRA, Bulgaria: Bulgaria, BG, BLG, Burundi: Burundi, BI, BDI, Canada: Canada, CA, CAN, Chile: Chile, CL, CHL, Colombia: Colombia, CO, COL, Croatia: Croatia, HR, HRV, Curacao: Curacao, CW, CUW, Czechia: Czechia, CZ, CZE, Denmark: Denmark, DK, DNK, Djibouti: Djibouti, DJ, DJI, Dominican Republic: DominicanRepublic, DO, DOM, Egypt: Egypt, EG, EGY, England: England, Estonia: Estonia, EE, EST, European Central Bank: EuropeanCentralBank, Finland: Finland, FI, FIN, France: France, FR, FRA, Georgia: Georgia, GE, GEO, Germany: Germany, DE, DEU, Greece: Greece, GR, GRC, Honduras: Honduras, HN, HND, Hong Kong: HongKong, HK, HKG, Hungary: Hungary, HU, HUN, Iceland: Iceland, IS, ISL, India: India, IN, IND, Ireland: Ireland, IE, IRL, Isle Of Man: IsleOfMan, Israel: Israel, IL, ISR, Italy: Italy, IT, ITA, Jamaica: Jamaica, JM, JAM, Japan: Japan, JP, JPN, Kenya: Kenya, KE, KEN, Korea: Korea, KR, KOR, Latvia: Latvia, LV, LVA, Lithuania: Lithuania, LT, LTU, Luxembourg: Luxembourg, LU, LUX, Malaysia: Malaysia, MY, MYS, Malawi: Malawi, MW, MWI, Mexico: Mexico, MX, MEX, Morocco: Morocco, MA, MOR, Mozambique: Mozambique, MZ, MOZ, Netherlands: Netherlands, NL, NLD, NewZealand: NewZealand, NZ, NZL, Nicaragua: Nicaragua, NI, NIC, Nigeria: Nigeria, NG, NGA, Northern Ireland: NorthernIreland, Norway: Norway, NO, NOR, Paraguay: Paraguay, PY, PRY, Peru: Peru, PE, PER, Poland: Poland, PL, POL, Portugal: Portugal, PT, PRT, Portugal Ext: PortugalExt, PTE, Romania: Romania, RO, ROU, Russia: Russia, RU, RUS, Saudi Arabia: SaudiArabia, SA, SAU, Scotland: Scotland, Serbia: Serbia, RS, SRB, Singapore: Singapore, SG, SGP, Slovokia: Slovokia, SK, SVK, Slovenia: Slovenia, SI, SVN, South Africa: SouthAfrica, ZA, ZAF, Spain: Spain, ES, ESP, Sweden: Sweden, SE, SWE, Switzerland: Switzerland, CH, CHE, Turkey: Turkey, TR, TUR, Ukraine: Ukraine, UA, UKR, United Arab Emirates: UnitedArabEmirates, AE, ARE, United Kingdom: UnitedKingdom, GB, GBR, UK, United States: UnitedStates, US, USA, Venezuela: Venezuela, YV, VEN, Vietnam: Vietnam, VN, VNM, Wales: Wales</td>
+<td><code>'UnitedStates'</code></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="adding-features-to-time-series-dataframes-augmenting" class="level2">
-<h2 class="anchored" data-anchor-id="adding-features-to-time-series-dataframes-augmenting">🏗️ Adding Features to Time Series DataFrames (Augmenting)</h2>
-<p>Add one or more feature columns to time series data.</p>
+<section id="returns" class="level2">
+<h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 94%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td><a href="../reference/augment_timeseries_signature.html#timetk.augment_timeseries_signature">augment_timeseries_signature</a></td>
-<td>Add 29 time series features to a DataFrame.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_holiday_signature.html#timetk.augment_holiday_signature">augment_holiday_signature</a></td>
-<td>Engineers 4 different holiday features from a single datetime for 80+ countries.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_lags.html#timetk.augment_lags">augment_lags</a></td>
-<td>Adds lags to a Pandas DataFrame or DataFrameGroupBy object.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_rolling.html#timetk.augment_rolling">augment_rolling</a></td>
-<td>Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.</td>
+<td>pd.DataFrame:</td>
+<td>A pandas DataFrame with three holiday-specific features: - is_holiday: (0, 1) indicator for holiday - before_holiday: (0, 1) indicator for day before holiday - after_holiday: (0, 1) indicator for day after holiday - holiday_name: name of the holiday</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="time-series-for-pandas-series" class="level2">
-<h2 class="anchored" data-anchor-id="time-series-for-pandas-series">🐼 Time Series for Pandas Series</h2>
-<p>Time series functions that generate / manipulate Pandas Series.</p>
-<table class="table">
+<section id="example" class="level2">
+<h2 class="anchored" data-anchor-id="example">Example</h2>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timetk <span class="im">as</span> tk</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Make a DataFrame with a date column</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>start_date <span class="op">=</span> <span class="st">'2023-01-01'</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>end_date <span class="op">=</span> <span class="st">'2023-01-10'</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(pd.date_range(start<span class="op">=</span>start_date, end<span class="op">=</span>end_date), columns<span class="op">=</span>[<span class="st">'date'</span>])</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Add holiday features for US</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>tk.augment_holiday_signature(df, <span class="st">'date'</span>, <span class="st">'UnitedStates'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">is_holiday</th>
+<th data-quarto-table-cell-role="th">before_holiday</th>
+<th data-quarto-table-cell-role="th">after_holiday</th>
+<th data-quarto-table-cell-role="th">holiday_name</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td><a href="../reference/make_future_timeseries.html#timetk.make_future_timeseries">make_future_timeseries</a></td>
-<td>Make future dates for a time series.</td>
+<td data-quarto-table-cell-role="th">0</td>
+<td>2023-01-01</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>New Year's Day</td>
 </tr>
 <tr class="even">
-<td><a href="../reference/make_weekday_sequence.html#timetk.make_weekday_sequence">make_weekday_sequence</a></td>
-<td>Generate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays.</td>
+<td data-quarto-table-cell-role="th">1</td>
+<td>2023-01-02</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>New Year's Day (Observed)</td>
 </tr>
 <tr class="odd">
-<td><a href="../reference/make_weekend_sequence.html#timetk.make_weekend_sequence">make_weekend_sequence</a></td>
-<td>Generate a sequence of weekend dates within a specified date range, optionally excluding holidays.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="utilities" class="level2">
-<h2 class="anchored" data-anchor-id="utilities">🛠️ Utilities</h2>
-<p>Helper functions to make your life easier.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/get_pandas_frequency.html#timetk.get_pandas_frequency">get_pandas_frequency</a></td>
-<td>Get the frequency of a pandas Series or DatetimeIndex.</td>
+<td data-quarto-table-cell-role="th">2</td>
+<td>2023-01-03</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
-<td><a href="../reference/get_timeseries_signature.html#timetk.get_timeseries_signature">get_timeseries_signature</a></td>
-<td>Convert a timestamp to a set of 29 time series features.</td>
+<td data-quarto-table-cell-role="th">3</td>
+<td>2023-01-04</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
 </tr>
 <tr class="odd">
-<td><a href="../reference/get_holiday_signature.html#timetk.get_holiday_signature">get_holiday_signature</a></td>
-<td>Engineers 4 different holiday features from a single datetime for 80+ countries.</td>
+<td data-quarto-table-cell-role="th">4</td>
+<td>2023-01-05</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
-<td><a href="../reference/floor_date.html#timetk.floor_date">floor_date</a></td>
-<td>Round a date down to the specified unit (e.g.&nbsp;Flooring).</td>
+<td data-quarto-table-cell-role="th">5</td>
+<td>2023-01-06</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
 </tr>
 <tr class="odd">
-<td><a href="../reference/is_holiday.html#timetk.is_holiday">is_holiday</a></td>
-<td>Check if a given list of dates are holidays for a specified country.</td>
+<td data-quarto-table-cell-role="th">6</td>
+<td>2023-01-07</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
-<td><a href="../reference/week_of_month.html#timetk.week_of_month">week_of_month</a></td>
-<td>The “week_of_month” function calculates the week number of a given date within its month.</td>
+<td data-quarto-table-cell-role="th">7</td>
+<td>2023-01-08</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
 </tr>
-</tbody>
-</table>
-</section>
-<section id="datasets" class="level2">
-<h2 class="anchored" data-anchor-id="datasets">💾 12 Datasets</h2>
-<p>Practice <code>timetk</code> with 12 complementary time series datasets.</p>
-<table class="table">
-<tbody>
 <tr class="odd">
-<td><a href="../reference/get_available_datasets.html#timetk.datasets.get_datasets.get_available_datasets">get_available_datasets</a></td>
-<td>Get a list of 12 datasets that can be loaded with <code>timetk.load_dataset</code>.</td>
+<td data-quarto-table-cell-role="th">8</td>
+<td>2023-01-09</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
-<td><a href="../reference/load_dataset.html#timetk.datasets.get_datasets.load_dataset">load_dataset</a></td>
-<td>Load one of 12 Time Series Datasets.</td>
+<td data-quarto-table-cell-role="th">9</td>
+<td>2023-01-10</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
 </tr>
 </tbody>
 </table>
 
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add holiday features for France</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>tk.augment_holiday_signature(df, <span class="st">'date'</span>, <span class="st">'France'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
 
-</section>
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">is_holiday</th>
+<th data-quarto-table-cell-role="th">before_holiday</th>
+<th data-quarto-table-cell-role="th">after_holiday</th>
+<th data-quarto-table-cell-role="th">holiday_name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2023-01-01</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>New Year's Day</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2023-01-02</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2023-01-03</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2023-01-04</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2023-01-05</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>2023-01-06</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>2023-01-07</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>2023-01-08</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>2023-01-09</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>2023-01-10</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
@@ -700,15 +915,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-      <a href="../guides/05_augmenting.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Adding Features (Augmenting)</span>
-      </a>          
-  </div>
-  <div class="nav-page nav-page-next">
-  </div>
-</nav>
 </div> <!-- /content -->
 
 
