@@ -279,7 +279,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_rolling(data, date_column, value_column, window, apply_func='mean', center=False, **kwargs_rolling)</code></p>
+<p><code>augment_rolling(data, date_column, value_column, window, window_func='mean', center=False, **kwargs)</code></p>
 <p>Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.</p>
 <p>The <code>augment_rolling</code> function applies multiple rolling window functions with varying window sizes to specified columns of a DataFrame, considering grouping columns and a datetime column for sorting within each group.</p>
 <section id="parameters" class="level2">
@@ -320,14 +320,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="even">
 <td><code>window</code></td>
-<td>int or list</td>
-<td>The <code>window</code> parameter in the <code>augment_rolling</code> function is used to specify the size of the rolling windows. It can be either an integer or a list of integers. If it is an integer, the same window size will be applied to all columns specified in the <code>value_column</code>. If it is a list of integers, each integer in the list will be used as the window size for the corresponding column in the <code>value_column</code> list.</td>
+<td>int or tuple or list</td>
+<td>The <code>window</code> parameter in the <code>augment_rolling</code> function is used to specify the size of the rolling windows. It can be either an integer or a list of integers. - If it is an integer, the same window size will be applied to all columns specified in the <code>value_column</code>. - If it is a tuple, it will generate windows from the first to the second value (inclusive). - If it is a list of integers, each integer in the list will be used as the window size for the corresponding column in the <code>value_column</code> list.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
-<td><code>apply_func</code></td>
+<td><code>window_func</code></td>
 <td>str or list</td>
-<td>The <code>apply_func</code> parameter in the <code>augment_rolling</code> function is used to specify the function(s) to be applied to the rolling windows. It can be a string or a list of strings, where each string represents the name of the function to be applied. Alternatively, it can be a list of tuples, where each tuple contains the name of the function to be applied and the function itself. If it is a string or a list of strings, the same function will be applied to all columns specified in the <code>value_column</code>. If it is a list of tuples, each tuple in the list will be used as the function to be applied to the corresponding column in the <code>value_column</code> list.</td>
+<td>The <code>window_func</code> parameter in the <code>augment_rolling</code> function is used to specify the function(s) to be applied to the rolling windows. It can be a string or a list of strings, where each string represents the name of the function to be applied. Alternatively, it can be a list of tuples, where each tuple contains the name of the function to be applied and the function itself. - If it is a string or a list of strings, the same function will be applied to all columns specified in the <code>value_column</code>. - If it is a list of tuples, each tuple in the list will be used as the function to be applied to the corresponding column in the <code>value_column</code> list.</td>
 <td><code>'mean'</code></td>
 </tr>
 <tr class="even">
@@ -335,6 +335,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>bool</td>
 <td>The <code>center</code> parameter in the <code>augment_rolling</code> function determines whether the rolling window is centered or not. If <code>center</code> is set to <code>True</code>, the rolling window will be centered, meaning that the alue at the center of the window will be used as the result. If <code>False</code>, the rolling window will not be centered, meaning that the value at the end of the window will be used as the result. The default value is <code>False</code>.</td>
 <td><code>False</code></td>
+</tr>
+<tr class="odd">
+<td><code>**kwargs</code></td>
+<td>optional</td>
+<td>Additional keyword arguments to be passed to the <code>pandas.DataFrame.rolling</code> function.</td>
+<td><code>{}</code></td>
 </tr>
 </tbody>
 </table>
@@ -456,15 +462,15 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply multiple rolling functions with multiple windows </span></span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># window = [2,7] yields only 2 and 7</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>rolled_df <span class="op">=</span> (</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'id == "D10"'</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        .augment_rolling(</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            window <span class="op">=</span> [<span class="dv">2</span>,<span class="dv">7</span>], </span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            apply_func <span class="op">=</span> [<span class="st">'mean'</span>, (<span class="st">'std'</span>, <span class="kw">lambda</span> x: x.std())]</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [<span class="st">'mean'</span>, (<span class="st">'std'</span>, <span class="kw">lambda</span> x: x.std())]</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>rolled_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -547,72 +553,72 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>...</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">669</td>
-<td>D10</td>
-<td>2016-05-02</td>
-<td>2630.7</td>
-<td>2615.85</td>
-<td>14.85</td>
-<td>2579.471429</td>
-<td>28.868159</td>
+<td data-quarto-table-cell-role="th">9738</td>
+<td>D500</td>
+<td>2012-09-19</td>
+<td>9418.8</td>
+<td>9425.35</td>
+<td>6.55</td>
+<td>9382.071429</td>
+<td>74.335988</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">670</td>
-<td>D10</td>
-<td>2016-05-03</td>
-<td>2649.3</td>
-<td>2640.00</td>
-<td>9.30</td>
-<td>2594.800000</td>
-<td>33.081631</td>
+<td data-quarto-table-cell-role="th">9739</td>
+<td>D500</td>
+<td>2012-09-20</td>
+<td>9365.7</td>
+<td>9392.25</td>
+<td>26.55</td>
+<td>9396.400000</td>
+<td>58.431303</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">671</td>
-<td>D10</td>
-<td>2016-05-04</td>
-<td>2631.8</td>
-<td>2640.55</td>
-<td>8.75</td>
-<td>2601.371429</td>
-<td>35.145563</td>
+<td data-quarto-table-cell-role="th">9740</td>
+<td>D500</td>
+<td>2012-09-21</td>
+<td>9445.9</td>
+<td>9405.80</td>
+<td>40.10</td>
+<td>9419.114286</td>
+<td>39.184451</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">672</td>
-<td>D10</td>
-<td>2016-05-05</td>
-<td>2622.5</td>
-<td>2627.15</td>
-<td>4.65</td>
-<td>2607.457143</td>
-<td>34.584508</td>
+<td data-quarto-table-cell-role="th">9741</td>
+<td>D500</td>
+<td>2012-09-22</td>
+<td>9497.9</td>
+<td>9471.90</td>
+<td>26.00</td>
+<td>9438.928571</td>
+<td>38.945336</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">673</td>
-<td>D10</td>
-<td>2016-05-06</td>
-<td>2620.1</td>
-<td>2621.30</td>
-<td>1.20</td>
-<td>2618.328571</td>
-<td>22.923270</td>
+<td data-quarto-table-cell-role="th">9742</td>
+<td>D500</td>
+<td>2012-09-23</td>
+<td>9545.3</td>
+<td>9521.60</td>
+<td>23.70</td>
+<td>9449.028571</td>
+<td>53.379416</td>
 </tr>
 </tbody>
 </table>
 
-<p>674 rows × 7 columns</p>
+<p>9743 rows × 7 columns</p>
 </div>
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply multiple rolling functions with multiple windows to multiple groups</span></span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># window = (1,3) yields 1, 2, and 3</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>rolled_df <span class="op">=</span> (</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'id == "D10"'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .augment_rolling(</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            window <span class="op">=</span> [<span class="dv">2</span>,<span class="dv">7</span>], </span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            apply_func <span class="op">=</span> [<span class="st">'mean'</span>, (<span class="st">'std'</span>, <span class="kw">lambda</span> x: x.std())]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            window <span class="op">=</span> (<span class="dv">1</span>,<span class="dv">3</span>), </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [<span class="st">'mean'</span>, (<span class="st">'std'</span>, <span class="kw">lambda</span> x: x.std())]</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>rolled_df </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -627,10 +633,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <th data-quarto-table-cell-role="th">id</th>
 <th data-quarto-table-cell-role="th">date</th>
 <th data-quarto-table-cell-role="th">value</th>
+<th data-quarto-table-cell-role="th">value_rolling_mean_win_1</th>
+<th data-quarto-table-cell-role="th">value_rolling_std_win_1</th>
 <th data-quarto-table-cell-role="th">value_rolling_mean_win_2</th>
 <th data-quarto-table-cell-role="th">value_rolling_std_win_2</th>
-<th data-quarto-table-cell-role="th">value_rolling_mean_win_7</th>
-<th data-quarto-table-cell-role="th">value_rolling_std_win_7</th>
+<th data-quarto-table-cell-role="th">value_rolling_mean_win_3</th>
+<th data-quarto-table-cell-role="th">value_rolling_std_win_3</th>
 </tr>
 </thead>
 <tbody>
@@ -639,6 +647,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>D10</td>
 <td>2014-07-03</td>
 <td>2076.2</td>
+<td>2076.2</td>
+<td>0.0</td>
 <td>2076.20</td>
 <td>0.00</td>
 <td>2076.200000</td>
@@ -649,6 +659,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>D10</td>
 <td>2014-07-04</td>
 <td>2073.4</td>
+<td>2073.4</td>
+<td>0.0</td>
 <td>2074.80</td>
 <td>1.40</td>
 <td>2074.800000</td>
@@ -659,6 +671,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>D10</td>
 <td>2014-07-05</td>
 <td>2048.7</td>
+<td>2048.7</td>
+<td>0.0</td>
 <td>2061.05</td>
 <td>12.35</td>
 <td>2066.100000</td>
@@ -669,20 +683,24 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>D10</td>
 <td>2014-07-06</td>
 <td>2048.9</td>
+<td>2048.9</td>
+<td>0.0</td>
 <td>2048.80</td>
 <td>0.10</td>
-<td>2061.800000</td>
-<td>13.037830</td>
+<td>2057.000000</td>
+<td>11.596839</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>D10</td>
 <td>2014-07-07</td>
 <td>2006.4</td>
+<td>2006.4</td>
+<td>0.0</td>
 <td>2027.65</td>
 <td>21.25</td>
-<td>2050.720000</td>
-<td>25.041038</td>
+<td>2034.666667</td>
+<td>19.987718</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -693,61 +711,73 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>...</td>
 <td>...</td>
 <td>...</td>
+<td>...</td>
+<td>...</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">669</td>
-<td>D10</td>
-<td>2016-05-02</td>
-<td>2630.7</td>
-<td>2615.85</td>
-<td>14.85</td>
-<td>2579.471429</td>
-<td>28.868159</td>
+<td data-quarto-table-cell-role="th">9738</td>
+<td>D500</td>
+<td>2012-09-19</td>
+<td>9418.8</td>
+<td>9418.8</td>
+<td>0.0</td>
+<td>9425.35</td>
+<td>6.55</td>
+<td>9429.466667</td>
+<td>7.905413</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">670</td>
-<td>D10</td>
-<td>2016-05-03</td>
-<td>2649.3</td>
-<td>2640.00</td>
-<td>9.30</td>
-<td>2594.800000</td>
-<td>33.081631</td>
+<td data-quarto-table-cell-role="th">9739</td>
+<td>D500</td>
+<td>2012-09-20</td>
+<td>9365.7</td>
+<td>9365.7</td>
+<td>0.0</td>
+<td>9392.25</td>
+<td>26.55</td>
+<td>9405.466667</td>
+<td>28.623339</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">671</td>
-<td>D10</td>
-<td>2016-05-04</td>
-<td>2631.8</td>
-<td>2640.55</td>
-<td>8.75</td>
-<td>2601.371429</td>
-<td>35.145563</td>
+<td data-quarto-table-cell-role="th">9740</td>
+<td>D500</td>
+<td>2012-09-21</td>
+<td>9445.9</td>
+<td>9445.9</td>
+<td>0.0</td>
+<td>9405.80</td>
+<td>40.10</td>
+<td>9410.133333</td>
+<td>33.310092</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">672</td>
-<td>D10</td>
-<td>2016-05-05</td>
-<td>2622.5</td>
-<td>2627.15</td>
-<td>4.65</td>
-<td>2607.457143</td>
-<td>34.584508</td>
+<td data-quarto-table-cell-role="th">9741</td>
+<td>D500</td>
+<td>2012-09-22</td>
+<td>9497.9</td>
+<td>9497.9</td>
+<td>0.0</td>
+<td>9471.90</td>
+<td>26.00</td>
+<td>9436.500000</td>
+<td>54.378182</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">673</td>
-<td>D10</td>
-<td>2016-05-06</td>
-<td>2620.1</td>
-<td>2621.30</td>
-<td>1.20</td>
-<td>2618.328571</td>
-<td>22.923270</td>
+<td data-quarto-table-cell-role="th">9742</td>
+<td>D500</td>
+<td>2012-09-23</td>
+<td>9545.3</td>
+<td>9545.3</td>
+<td>0.0</td>
+<td>9521.60</td>
+<td>23.70</td>
+<td>9496.366667</td>
+<td>40.594362</td>
 </tr>
 </tbody>
 </table>
 
-<p>674 rows × 7 columns</p>
+<p>9743 rows × 9 columns</p>
 </div>
 </div>
 </div>
