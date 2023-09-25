@@ -131,6 +131,7 @@ def ts_features(
         df = data.copy()        
         df.sort_values(by=[date_column], inplace=True)
         df['unique_id'] = "X1"
+        df = df[['unique_id', date_column, value_column]]
         group_names = ['unique_id']
     
     group_names = None
@@ -141,6 +142,7 @@ def ts_features(
         df = data.copy()
         df.sort_values(by=[*group_names, date_column], inplace=True)
         
+        df = df[[*group_names, date_column, value_column]]
     
     if features is None:
         features = [
@@ -164,8 +166,11 @@ def ts_features(
         ]
     
     # Construct the DataFrame for tsfeatures
-    construct_df = pd.DataFrame()    
-    construct_df['unique_id'] = df[group_names].apply(lambda row: '_'.join(row), axis=1)
+    construct_df = df[group_names]    
+    for col in group_names:
+        construct_df[col] = df[col].astype(str)
+    construct_df['unique_id'] = construct_df[group_names].apply(lambda row: '_'.join(row), axis=1)
+    construct_df.drop(columns=group_names, inplace=True)
     construct_df['ds'] = df[date_column]
     construct_df['y'] = df[value_column]
     
