@@ -7,4 +7,189 @@ number-sections: true
 number-depth: 2
 ---
 
-Coming soon...
+---
+title: 'Data Wrangling'
+jupyter: python3
+toc: true
+toc-depth: 3
+number-sections: true
+number-depth: 2
+---
+
+This section will cover data wrangling for timeseries using pytimetk. We'll show examples for the following functions:
+
+* `summarize_by_time()`
+* `future_frame()`
+* `pad_by_time()`
+
+::: {.callout-note collapse="false"}
+## Perequisite
+
+Before proceeding, be sure to review the Timetk Basics section if you haven't already.
+
+:::
+
+# Summarize by Time
+
+`summarize_by_time()` aggregates time series data from lower frequency (time periods) to higher frequency.
+
+**Load Libraries & Data**
+```{python}
+# import libraries
+import timetk as tk
+import pandas as pd
+import numpy as np
+
+# import data
+m4_daily_df = tk.load_dataset('m4_daily', parse_dates = ['date'])
+
+print(m4_daily_df.head())
+print('\nLength of the full dataset:', len(m4_daily_df))
+
+```
+
+::: {.callout-tip collapse="false"}
+## Help Doc Info: `summarize_by_time`
+
+Use `help(tk.summarize_by_time)` to review additional helpful documentation.
+
+:::
+
+## Basic Example
+
+The `m4_daily` dataset has a **daily** frequency. Say we are interested in forecasting at the **weekly** level. We can use `summarize_by_time()` to aggregate to a weekly level
+
+
+```{python}
+# summarize by time: daily to weekly
+summarized_df = m4_daily_df \
+	.summarize_by_time(
+		date_column  = 'date',
+		value_column = 'value',
+		freq         = 'W',
+		agg_func     = 'sum'
+	)
+
+print(summarized_df.head())
+print('\nLength of the full dataset:', len(summarized_df))
+```
+
+The data has now been aggregated at the weekly level. Notice we now have 1977 rows, compared to full dataset which had 9743 rows.
+
+
+## Additional Aggregate Functions
+`summarize_by_time()` can take additional aggregate functions in the `agg_func` argument.
+
+```{python}
+# summarize by time with additional aggregate functions
+summarized_multiple_agg_df = m4_daily_df \
+	.summarize_by_time(
+		date_column  = 'date',
+		value_column = 'value',
+		freq         = 'W',
+		agg_func     = ['sum', 'min', 'max']
+	)
+
+summarized_multiple_agg_df.head()
+```
+
+## Summarize by Time with Grouped Time Series
+`summarize_by_time()` also works with groups.
+
+```{python}
+# summarize by time with groups and additional aggregate functions
+grouped_summarized_df = (
+    m4_daily_df
+        .groupby('id')
+        .summarize_by_time(
+            date_column  = 'date',
+            value_column = 'value',
+            freq         = 'W',
+            agg_func     = [
+                'sum',
+                'min',
+                ('q25', lambda x: np.quantile(x, 0.25)),
+				'median',
+                ('q75', lambda x: np.quantile(x, 0.75)),
+                'max'
+            ],
+        )
+)
+
+grouped_summarized_df.head()
+```
+
+
+# Future Frame
+
+`future_frame()` can be used to extend timeseries data beyond the existing index (date). This is necessary when trying to make future predictions.
+
+::: {.callout-tip collapse="false"}
+## Help Doc Info: `future_frame()`
+
+Use `help(tk.future_frame)` to review additional helpful documentation.
+
+:::
+
+
+## Basic Example
+We'll continue with our use of the `m4_daily_df` dataset. Recall we've alread aggregated at the **weekly** level (`summarized_df`). Lets checkout the last week in the `summarized_df`:
+
+```{python}
+# last week in dataset
+summarized_df \
+    .sort_values(by = 'date', ascending = True) \
+    .iloc[: -1] \
+    .tail(1)
+```
+
+::: {.callout-note collapse="false"}
+## `iloc()`
+
+`iloc[: -1]` is used to filter out the last row and keep only dates that are the start of the week.
+
+:::
+
+We can see that the last week is the week of 2016-05-01. Now say we wanted to forecast the next 8 weeks. We can extend the dataset beyound the week of 2016-05-01:
+
+```{python}
+# extend dataset by 12 weeks
+summarized_extended_df = summarized_df \
+	.future_frame(
+		date_column = 'date',
+		length_out  = 8
+	)
+
+summarized_extended_df
+```
+
+To get only the future data, we can filter the dataset for where `value` is missing (`np.nan`).
+
+```{python}
+# get only future data
+summarized_extended_df \
+	.query('value.isna()')
+
+```
+
+## Future Frame with Grouped Time Series
+`future_frame()` also works for grouped time series. We can see an example using our grouped summarized dataset (`grouped_summarized_df`) from earlier:
+
+```{python}
+# future frame with grouped time series
+grouped_summarized_df[['id', 'date', 'value_sum']] \
+	.groupby('id') \
+	.future_frame(
+		date_column = 'date',
+		length_out  = 8
+	) \
+	.query('value_sum.isna()') # filtering to return only the future data
+
+```
+
+
+
+# Pad by Time
+`pad_by_time()` can be used to add rows where timestamps are missing. For example, when working with sales data that may have missing values on weekends or holidays.
+
+## Basic Example
