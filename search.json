@@ -305,7 +305,49 @@
     "href": "guides/04_wrangling.html",
     "title": "Data Wrangling",
     "section": "",
-    "text": "Coming soon…"
+    "text": "This section will cover data wrangling for timeseries using pytimetk. We’ll show examples for the following functions:"
+  },
+  {
+    "objectID": "guides/04_wrangling.html#basic-example",
+    "href": "guides/04_wrangling.html#basic-example",
+    "title": "Data Wrangling",
+    "section": "1.1 Basic Example",
+    "text": "1.1 Basic Example\nThe m4_daily dataset has a daily frequency. Say we are interested in forecasting at the weekly level. We can use summarize_by_time() to aggregate to a weekly level\n\n# summarize by time: daily to weekly\nsummarized_df = m4_daily_df \\\n    .summarize_by_time(\n        date_column  = 'date',\n        value_column = 'value',\n        freq         = 'W',\n        agg_func     = 'sum'\n    )\n\nprint(summarized_df.head())\nprint('\\nLength of the full dataset:', len(summarized_df))\n\n        date     value\n0 1978-06-25  27328.12\n1 1978-07-02  63621.88\n2 1978-07-09  63334.38\n3 1978-07-16  63737.51\n4 1978-07-23  64718.76\n\nLength of the full dataset: 1977\n\n\nThe data has now been aggregated at the weekly level. Notice we now have 1977 rows, compared to full dataset which had 9743 rows."
+  },
+  {
+    "objectID": "guides/04_wrangling.html#additional-aggregate-functions",
+    "href": "guides/04_wrangling.html#additional-aggregate-functions",
+    "title": "Data Wrangling",
+    "section": "1.2 Additional Aggregate Functions",
+    "text": "1.2 Additional Aggregate Functions\nsummarize_by_time() can take additional aggregate functions in the agg_func argument.\n\n# summarize by time with additional aggregate functions\nsummarized_multiple_agg_df = m4_daily_df \\\n    .summarize_by_time(\n        date_column  = 'date',\n        value_column = 'value',\n        freq         = 'W',\n        agg_func     = ['sum', 'min', 'max']\n    )\n\nsummarized_multiple_agg_df.head()\n\n\n\n\n\n\n\n\ndate\nvalue_sum\nvalue_min\nvalue_max\n\n\n\n\n0\n1978-06-25\n27328.12\n9103.12\n9115.62\n\n\n1\n1978-07-02\n63621.88\n9046.88\n9115.62\n\n\n2\n1978-07-09\n63334.38\n9028.12\n9096.88\n\n\n3\n1978-07-16\n63737.51\n9075.00\n9146.88\n\n\n4\n1978-07-23\n64718.76\n9171.88\n9315.62"
+  },
+  {
+    "objectID": "guides/04_wrangling.html#summarize-by-time-with-grouped-time-series",
+    "href": "guides/04_wrangling.html#summarize-by-time-with-grouped-time-series",
+    "title": "Data Wrangling",
+    "section": "1.3 Summarize by Time with Grouped Time Series",
+    "text": "1.3 Summarize by Time with Grouped Time Series\nsummarize_by_time() also works with groups.\n\n# summarize by time with groups and additional aggregate functions\ngrouped_summarized_df = (\n    m4_daily_df\n        .groupby('id')\n        .summarize_by_time(\n            date_column  = 'date',\n            value_column = 'value',\n            freq         = 'W',\n            agg_func     = [\n                'sum',\n                'min',\n                ('q25', lambda x: np.quantile(x, 0.25)),\n                'median',\n                ('q75', lambda x: np.quantile(x, 0.75)),\n                'max'\n            ],\n        )\n)\n\ngrouped_summarized_df.head()\n\n\n\n\n\n\n\n\nid\ndate\nvalue_sum\nvalue_min\nvalue_q25\nvalue_median\nvalue_q75\nvalue_max\n\n\n\n\n0\nD10\n2014-07-06\n8247.2\n2048.7\n2048.85\n2061.15\n2074.10\n2076.2\n\n\n1\nD10\n2014-07-13\n14040.8\n1978.8\n2003.95\n2007.40\n2013.80\n2019.1\n\n\n2\nD10\n2014-07-20\n13867.6\n1943.0\n1955.30\n1988.30\n2005.60\n2014.5\n\n\n3\nD10\n2014-07-27\n13266.3\n1876.0\n1887.15\n1891.00\n1895.85\n1933.3\n\n\n4\nD10\n2014-08-03\n13471.2\n1886.2\n1914.60\n1920.00\n1939.55\n1956.7"
+  },
+  {
+    "objectID": "guides/04_wrangling.html#basic-example-1",
+    "href": "guides/04_wrangling.html#basic-example-1",
+    "title": "Data Wrangling",
+    "section": "2.1 Basic Example",
+    "text": "2.1 Basic Example\nWe’ll continue with our use of the m4_daily_df dataset. Recall we’ve alread aggregated at the weekly level (summarized_df). Lets checkout the last week in the summarized_df:\n\n# last week in dataset\nsummarized_df \\\n    .sort_values(by = 'date', ascending = True) \\\n    .iloc[: -1] \\\n    .tail(1)\n\n\n\n\n\n\n\n\ndate\nvalue\n\n\n\n\n1975\n2016-05-01\n17959.8\n\n\n\n\n\n\n\n\n\n\n\n\n\niloc()\n\n\n\n\n\niloc[: -1] is used to filter out the last row and keep only dates that are the start of the week.\n\n\n\nWe can see that the last week is the week of 2016-05-01. Now say we wanted to forecast the next 8 weeks. We can extend the dataset beyound the week of 2016-05-01:\n\n# extend dataset by 12 weeks\nsummarized_extended_df = summarized_df \\\n    .future_frame(\n        date_column = 'date',\n        length_out  = 8\n    )\n\nsummarized_extended_df\n\n\n\n\n\n\n\n\ndate\nvalue\n\n\n\n\n0\n1978-06-25\n27328.12\n\n\n1\n1978-07-02\n63621.88\n\n\n2\n1978-07-09\n63334.38\n\n\n3\n1978-07-16\n63737.51\n\n\n4\n1978-07-23\n64718.76\n\n\n...\n...\n...\n\n\n1980\n2016-06-05\nNaN\n\n\n1981\n2016-06-12\nNaN\n\n\n1982\n2016-06-19\nNaN\n\n\n1983\n2016-06-26\nNaN\n\n\n1984\n2016-07-03\nNaN\n\n\n\n\n1985 rows × 2 columns\n\n\n\nTo get only the future data, we can filter the dataset for where value is missing (np.nan).\n\n# get only future data\nsummarized_extended_df \\\n    .query('value.isna()')\n\n\n\n\n\n\n\n\ndate\nvalue\n\n\n\n\n1977\n2016-05-15\nNaN\n\n\n1978\n2016-05-22\nNaN\n\n\n1979\n2016-05-29\nNaN\n\n\n1980\n2016-06-05\nNaN\n\n\n1981\n2016-06-12\nNaN\n\n\n1982\n2016-06-19\nNaN\n\n\n1983\n2016-06-26\nNaN\n\n\n1984\n2016-07-03\nNaN"
+  },
+  {
+    "objectID": "guides/04_wrangling.html#future-frame-with-grouped-time-series",
+    "href": "guides/04_wrangling.html#future-frame-with-grouped-time-series",
+    "title": "Data Wrangling",
+    "section": "2.2 Future Frame with Grouped Time Series",
+    "text": "2.2 Future Frame with Grouped Time Series\nfuture_frame() also works for grouped time series. We can see an example using our grouped summarized dataset (grouped_summarized_df) from earlier:\n\n# future frame with grouped time series\ngrouped_summarized_df[['id', 'date', 'value_sum']] \\\n    .groupby('id') \\\n    .future_frame(\n        date_column = 'date',\n        length_out  = 8\n    ) \\\n    .query('value_sum.isna()') # filtering to return only the future data\n\n\n\n\n\n\n\n\nid\ndate\nvalue_sum\n\n\n\n\n97\nD10\n2016-05-15\nNaN\n\n\n98\nD10\n2016-05-22\nNaN\n\n\n99\nD10\n2016-05-29\nNaN\n\n\n100\nD10\n2016-06-05\nNaN\n\n\n101\nD10\n2016-06-12\nNaN\n\n\n102\nD10\n2016-06-19\nNaN\n\n\n103\nD10\n2016-06-26\nNaN\n\n\n104\nD10\n2016-07-03\nNaN\n\n\n600\nD160\n2011-07-10\nNaN\n\n\n601\nD160\n2011-07-17\nNaN\n\n\n602\nD160\n2011-07-24\nNaN\n\n\n603\nD160\n2011-07-31\nNaN\n\n\n604\nD160\n2011-08-07\nNaN\n\n\n605\nD160\n2011-08-14\nNaN\n\n\n606\nD160\n2011-08-21\nNaN\n\n\n607\nD160\n2011-08-28\nNaN\n\n\n98\nD410\n1980-05-11\nNaN\n\n\n99\nD410\n1980-05-18\nNaN\n\n\n100\nD410\n1980-05-25\nNaN\n\n\n101\nD410\n1980-06-01\nNaN\n\n\n102\nD410\n1980-06-08\nNaN\n\n\n103\nD410\n1980-06-15\nNaN\n\n\n104\nD410\n1980-06-22\nNaN\n\n\n105\nD410\n1980-06-29\nNaN\n\n\n600\nD500\n2012-09-30\nNaN\n\n\n601\nD500\n2012-10-07\nNaN\n\n\n602\nD500\n2012-10-14\nNaN\n\n\n603\nD500\n2012-10-21\nNaN\n\n\n604\nD500\n2012-10-28\nNaN\n\n\n605\nD500\n2012-11-04\nNaN\n\n\n606\nD500\n2012-11-11\nNaN\n\n\n607\nD500\n2012-11-18\nNaN"
+  },
+  {
+    "objectID": "guides/04_wrangling.html#basic-example-2",
+    "href": "guides/04_wrangling.html#basic-example-2",
+    "title": "Data Wrangling",
+    "section": "3.1 Basic Example",
+    "text": "3.1 Basic Example"
   },
   {
     "objectID": "guides/01_visualization.html",

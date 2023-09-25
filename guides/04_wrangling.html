@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -72,6 +106,9 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', '330861489', { 'anonymize_ip': true});
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <meta property="og:title" content="timetk for Python - Data Wrangling">
@@ -220,7 +257,27 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#summarize-by-time" id="toc-summarize-by-time" class="nav-link active" data-scroll-target="#summarize-by-time"><span class="header-section-number">1</span> Summarize by Time</a>
+  <ul class="collapse">
+  <li><a href="#basic-example" id="toc-basic-example" class="nav-link" data-scroll-target="#basic-example"><span class="header-section-number">1.1</span> Basic Example</a></li>
+  <li><a href="#additional-aggregate-functions" id="toc-additional-aggregate-functions" class="nav-link" data-scroll-target="#additional-aggregate-functions"><span class="header-section-number">1.2</span> Additional Aggregate Functions</a></li>
+  <li><a href="#summarize-by-time-with-grouped-time-series" id="toc-summarize-by-time-with-grouped-time-series" class="nav-link" data-scroll-target="#summarize-by-time-with-grouped-time-series"><span class="header-section-number">1.3</span> Summarize by Time with Grouped Time Series</a></li>
+  </ul></li>
+  <li><a href="#future-frame" id="toc-future-frame" class="nav-link" data-scroll-target="#future-frame"><span class="header-section-number">2</span> Future Frame</a>
+  <ul class="collapse">
+  <li><a href="#basic-example-1" id="toc-basic-example-1" class="nav-link" data-scroll-target="#basic-example-1"><span class="header-section-number">2.1</span> Basic Example</a></li>
+  <li><a href="#future-frame-with-grouped-time-series" id="toc-future-frame-with-grouped-time-series" class="nav-link" data-scroll-target="#future-frame-with-grouped-time-series"><span class="header-section-number">2.2</span> Future Frame with Grouped Time Series</a></li>
+  </ul></li>
+  <li><a href="#pad-by-time" id="toc-pad-by-time" class="nav-link" data-scroll-target="#pad-by-time"><span class="header-section-number">3</span> Pad by Time</a>
+  <ul class="collapse">
+  <li><a href="#basic-example-2" id="toc-basic-example-2" class="nav-link" data-scroll-target="#basic-example-2"><span class="header-section-number">3.1</span> Basic Example</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/guides/04_wrangling.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -242,9 +299,728 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p>Coming soon…</p>
+<p>This section will cover data wrangling for timeseries using pytimetk. We’ll show examples for the following functions:</p>
+<ul>
+<li><code>summarize_by_time()</code></li>
+<li><code>future_frame()</code></li>
+<li><code>pad_by_time()</code></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Perequisite
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Before proceeding, be sure to review the Timetk Basics section if you haven’t already.</p>
+</div>
+</div>
+</div>
+<section id="summarize-by-time" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Summarize by Time</h1>
+<p><code>summarize_by_time()</code> aggregates time series data from lower frequency (time periods) to higher frequency.</p>
+<p><strong>Load Libraries &amp; Data</strong></p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import libraries</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timetk <span class="im">as</span> tk</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># import data</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>m4_daily_df <span class="op">=</span> tk.load_dataset(<span class="st">'m4_daily'</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(m4_daily_df.head())</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="ch">\n</span><span class="st">Length of the full dataset:'</span>, <span class="bu">len</span>(m4_daily_df))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    id       date   value
+0  D10 2014-07-03  2076.2
+1  D10 2014-07-04  2073.4
+2  D10 2014-07-05  2048.7
+3  D10 2014-07-06  2048.9
+4  D10 2014-07-07  2006.4
+
+Length of the full dataset: 9743</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Help Doc Info: <code>summarize_by_time</code>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Use <code>help(tk.summarize_by_time)</code> to review additional helpful documentation.</p>
+</div>
+</div>
+</div>
+<section id="basic-example" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="basic-example"><span class="header-section-number">1.1</span> Basic Example</h2>
+<p>The <code>m4_daily</code> dataset has a <strong>daily</strong> frequency. Say we are interested in forecasting at the <strong>weekly</strong> level. We can use <code>summarize_by_time()</code> to aggregate to a weekly level</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># summarize by time: daily to weekly</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>summarized_df <span class="op">=</span> m4_daily_df <span class="op">\</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    .summarize_by_time(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        date_column  <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span> <span class="st">'value'</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        freq         <span class="op">=</span> <span class="st">'W'</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        agg_func     <span class="op">=</span> <span class="st">'sum'</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(summarized_df.head())</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="ch">\n</span><span class="st">Length of the full dataset:'</span>, <span class="bu">len</span>(summarized_df))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        date     value
+0 1978-06-25  27328.12
+1 1978-07-02  63621.88
+2 1978-07-09  63334.38
+3 1978-07-16  63737.51
+4 1978-07-23  64718.76
+
+Length of the full dataset: 1977</code></pre>
+</div>
+</div>
+<p>The data has now been aggregated at the weekly level. Notice we now have 1977 rows, compared to full dataset which had 9743 rows.</p>
+</section>
+<section id="additional-aggregate-functions" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="additional-aggregate-functions"><span class="header-section-number">1.2</span> Additional Aggregate Functions</h2>
+<p><code>summarize_by_time()</code> can take additional aggregate functions in the <code>agg_func</code> argument.</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># summarize by time with additional aggregate functions</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>summarized_multiple_agg_df <span class="op">=</span> m4_daily_df <span class="op">\</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    .summarize_by_time(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        date_column  <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span> <span class="st">'value'</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        freq         <span class="op">=</span> <span class="st">'W'</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        agg_func     <span class="op">=</span> [<span class="st">'sum'</span>, <span class="st">'min'</span>, <span class="st">'max'</span>]</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>summarized_multiple_agg_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
 
 
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value_sum</th>
+<th data-quarto-table-cell-role="th">value_min</th>
+<th data-quarto-table-cell-role="th">value_max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1978-06-25</td>
+<td>27328.12</td>
+<td>9103.12</td>
+<td>9115.62</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1978-07-02</td>
+<td>63621.88</td>
+<td>9046.88</td>
+<td>9115.62</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1978-07-09</td>
+<td>63334.38</td>
+<td>9028.12</td>
+<td>9096.88</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>1978-07-16</td>
+<td>63737.51</td>
+<td>9075.00</td>
+<td>9146.88</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>1978-07-23</td>
+<td>64718.76</td>
+<td>9171.88</td>
+<td>9315.62</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="summarize-by-time-with-grouped-time-series" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="summarize-by-time-with-grouped-time-series"><span class="header-section-number">1.3</span> Summarize by Time with Grouped Time Series</h2>
+<p><code>summarize_by_time()</code> also works with groups.</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># summarize by time with groups and additional aggregate functions</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>grouped_summarized_df <span class="op">=</span> (</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">'W'</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> [</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>                <span class="st">'sum'</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'min'</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'q25'</span>, <span class="kw">lambda</span> x: np.quantile(x, <span class="fl">0.25</span>)),</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                <span class="st">'median'</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'q75'</span>, <span class="kw">lambda</span> x: np.quantile(x, <span class="fl">0.75</span>)),</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                <span class="st">'max'</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>            ],</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>grouped_summarized_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value_sum</th>
+<th data-quarto-table-cell-role="th">value_min</th>
+<th data-quarto-table-cell-role="th">value_q25</th>
+<th data-quarto-table-cell-role="th">value_median</th>
+<th data-quarto-table-cell-role="th">value_q75</th>
+<th data-quarto-table-cell-role="th">value_max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>D10</td>
+<td>2014-07-06</td>
+<td>8247.2</td>
+<td>2048.7</td>
+<td>2048.85</td>
+<td>2061.15</td>
+<td>2074.10</td>
+<td>2076.2</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>D10</td>
+<td>2014-07-13</td>
+<td>14040.8</td>
+<td>1978.8</td>
+<td>2003.95</td>
+<td>2007.40</td>
+<td>2013.80</td>
+<td>2019.1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>D10</td>
+<td>2014-07-20</td>
+<td>13867.6</td>
+<td>1943.0</td>
+<td>1955.30</td>
+<td>1988.30</td>
+<td>2005.60</td>
+<td>2014.5</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>D10</td>
+<td>2014-07-27</td>
+<td>13266.3</td>
+<td>1876.0</td>
+<td>1887.15</td>
+<td>1891.00</td>
+<td>1895.85</td>
+<td>1933.3</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>D10</td>
+<td>2014-08-03</td>
+<td>13471.2</td>
+<td>1886.2</td>
+<td>1914.60</td>
+<td>1920.00</td>
+<td>1939.55</td>
+<td>1956.7</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="future-frame" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Future Frame</h1>
+<p><code>future_frame()</code> can be used to extend timeseries data beyond the existing index (date). This is necessary when trying to make future predictions.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Help Doc Info: <code>future_frame()</code>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Use <code>help(tk.future_frame)</code> to review additional helpful documentation.</p>
+</div>
+</div>
+</div>
+<section id="basic-example-1" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="basic-example-1"><span class="header-section-number">2.1</span> Basic Example</h2>
+<p>We’ll continue with our use of the <code>m4_daily_df</code> dataset. Recall we’ve alread aggregated at the <strong>weekly</strong> level (<code>summarized_df</code>). Lets checkout the last week in the <code>summarized_df</code>:</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># last week in dataset</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>summarized_df <span class="op">\</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    .sort_values(by <span class="op">=</span> <span class="st">'date'</span>, ascending <span class="op">=</span> <span class="va">True</span>) <span class="op">\</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    .iloc[: <span class="op">-</span><span class="dv">1</span>] <span class="op">\</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    .tail(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1975</td>
+<td>2016-05-01</td>
+<td>17959.8</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<code>iloc()</code>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p><code>iloc[: -1]</code> is used to filter out the last row and keep only dates that are the start of the week.</p>
+</div>
+</div>
+</div>
+<p>We can see that the last week is the week of 2016-05-01. Now say we wanted to forecast the next 8 weeks. We can extend the dataset beyound the week of 2016-05-01:</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># extend dataset by 12 weeks</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>summarized_extended_df <span class="op">=</span> summarized_df <span class="op">\</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    .future_frame(</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        length_out  <span class="op">=</span> <span class="dv">8</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>summarized_extended_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1978-06-25</td>
+<td>27328.12</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1978-07-02</td>
+<td>63621.88</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1978-07-09</td>
+<td>63334.38</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>1978-07-16</td>
+<td>63737.51</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>1978-07-23</td>
+<td>64718.76</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1980</td>
+<td>2016-06-05</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1981</td>
+<td>2016-06-12</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1982</td>
+<td>2016-06-19</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1983</td>
+<td>2016-06-26</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1984</td>
+<td>2016-07-03</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>1985 rows × 2 columns</p>
+</div>
+</div>
+</div>
+<p>To get only the future data, we can filter the dataset for where <code>value</code> is missing (<code>np.nan</code>).</p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get only future data</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>summarized_extended_df <span class="op">\</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">'value.isna()'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1977</td>
+<td>2016-05-15</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1978</td>
+<td>2016-05-22</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1979</td>
+<td>2016-05-29</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1980</td>
+<td>2016-06-05</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1981</td>
+<td>2016-06-12</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1982</td>
+<td>2016-06-19</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1983</td>
+<td>2016-06-26</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1984</td>
+<td>2016-07-03</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="future-frame-with-grouped-time-series" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="future-frame-with-grouped-time-series"><span class="header-section-number">2.2</span> Future Frame with Grouped Time Series</h2>
+<p><code>future_frame()</code> also works for grouped time series. We can see an example using our grouped summarized dataset (<code>grouped_summarized_df</code>) from earlier:</p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># future frame with grouped time series</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>grouped_summarized_df[[<span class="st">'id'</span>, <span class="st">'date'</span>, <span class="st">'value_sum'</span>]] <span class="op">\</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'id'</span>) <span class="op">\</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    .future_frame(</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        length_out  <span class="op">=</span> <span class="dv">8</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">\</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">'value_sum.isna()'</span>) <span class="co"># filtering to return only the future data</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value_sum</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">97</td>
+<td>D10</td>
+<td>2016-05-15</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">98</td>
+<td>D10</td>
+<td>2016-05-22</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">99</td>
+<td>D10</td>
+<td>2016-05-29</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">100</td>
+<td>D10</td>
+<td>2016-06-05</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">101</td>
+<td>D10</td>
+<td>2016-06-12</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">102</td>
+<td>D10</td>
+<td>2016-06-19</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">103</td>
+<td>D10</td>
+<td>2016-06-26</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">104</td>
+<td>D10</td>
+<td>2016-07-03</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">600</td>
+<td>D160</td>
+<td>2011-07-10</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">601</td>
+<td>D160</td>
+<td>2011-07-17</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">602</td>
+<td>D160</td>
+<td>2011-07-24</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">603</td>
+<td>D160</td>
+<td>2011-07-31</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">604</td>
+<td>D160</td>
+<td>2011-08-07</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">605</td>
+<td>D160</td>
+<td>2011-08-14</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">606</td>
+<td>D160</td>
+<td>2011-08-21</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">607</td>
+<td>D160</td>
+<td>2011-08-28</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">98</td>
+<td>D410</td>
+<td>1980-05-11</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">99</td>
+<td>D410</td>
+<td>1980-05-18</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">100</td>
+<td>D410</td>
+<td>1980-05-25</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">101</td>
+<td>D410</td>
+<td>1980-06-01</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">102</td>
+<td>D410</td>
+<td>1980-06-08</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">103</td>
+<td>D410</td>
+<td>1980-06-15</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">104</td>
+<td>D410</td>
+<td>1980-06-22</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">105</td>
+<td>D410</td>
+<td>1980-06-29</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">600</td>
+<td>D500</td>
+<td>2012-09-30</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">601</td>
+<td>D500</td>
+<td>2012-10-07</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">602</td>
+<td>D500</td>
+<td>2012-10-14</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">603</td>
+<td>D500</td>
+<td>2012-10-21</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">604</td>
+<td>D500</td>
+<td>2012-10-28</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">605</td>
+<td>D500</td>
+<td>2012-11-04</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">606</td>
+<td>D500</td>
+<td>2012-11-11</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">607</td>
+<td>D500</td>
+<td>2012-11-18</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="pad-by-time" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Pad by Time</h1>
+<p><code>pad_by_time()</code> can be used to add rows where timestamps are missing. For example, when working with sales data that may have missing values on weekends or holidays.</p>
+<section id="basic-example-2" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="basic-example-2"><span class="header-section-number">3.1</span> Basic Example</h2>
+
+
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -611,4 +1387,4 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/guides/04_wrangling.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></div></div></footer></body></html>
+</body></html>
