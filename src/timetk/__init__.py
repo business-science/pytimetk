@@ -1,6 +1,8 @@
 
 # *** Import everything to make timetk a standalone package ***
 
+from .plot.plot_timeseries import *
+
 from .core.summarize_by_time import *
 from .core.timeseries_signature import *
 from .core.holiday_signature import *
@@ -20,6 +22,9 @@ from .utils.pandas_helpers import *
 from .utils.memory_helpers import *
 
 # *** Needed for quartodoc build important functions ***
+from .plot.plot_timeseries import (
+    plot_timeseries
+)
 from .core.summarize_by_time import (
     summarize_by_time
 )
@@ -63,9 +68,7 @@ from .utils.memory_helpers import (
     reduce_memory_usage
 )
 
-from .plot.plot_time_series import (
-    plot_time_series
-)
+
 
 
 __version__ = '0.0.0.9000'

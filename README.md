@@ -1,6 +1,4 @@
-
-
-## TimeTK
+# TimeTK
 
 > The time series toolkit for Python
 
@@ -22,7 +20,7 @@ To install Poetry, you can use the [official installer](https://python-poetry.or
 
 Clone the `timetk` repository from GitHub:
 
-```
+```bash
 git clone https://github.com/business-science/pytimetk
 ```
 
@@ -30,14 +28,13 @@ git clone https://github.com/business-science/pytimetk
 
 Use Poetry to install the package and its dependencies:
 
-```
+```bash
 poetry install
-```
 ```
 
 or you can create a virtualenv with poetry and install the dependencies
 
-```
+```bash
 poetry shell
 poetry install
 ```
@@ -46,7 +43,7 @@ poetry install
 
 This is a simple code to test the function `summarize_by_time`:
 
-```
+```python
 import timetk
 import pandas as pd
 
@@ -62,6 +59,4 @@ df \
         kind = 'timestamp',
         agg_func = ['mean', 'sum']
     )
-    
-
 ```
