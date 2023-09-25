@@ -7,8 +7,11 @@ from .core.holiday_signature import *
 from .core.make_future_timeseries import *
 from .core.make_timeseries_sequence import *
 from .core.lags import *
+from .core.leads import *
 from .core.pad import *
 from .core.rolling import *
+from .core.fourier import *
+from .core.ts_features import *
 
 from .datasets.get_datasets import *
 
@@ -35,11 +38,20 @@ from .core.make_timeseries_sequence import (
 from .core.lags import (
     augment_lags
 )
+from .core.leads import (
+    augment_leads
+)
 from .core.pad import (
     pad_by_time
 )
 from .core.rolling import (
     augment_rolling
+)
+from .core.fourier import (
+    augment_fourier
+)
+from .core.ts_features import (
+    ts_features
 )
 from .datasets.get_datasets import (
     load_dataset, get_available_datasets

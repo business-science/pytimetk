@@ -3,13 +3,17 @@ import pandas as pd
 import numpy as np
 import pandas_flavor as pf
 
-import holidays
 from datetime import datetime
 
 from dateutil import parser
 from warnings import warn
 
 from typing import Union, List
+
+try: 
+    import holidays
+except ImportError:
+    pass
 
 @pf.register_series_method
 def get_pandas_frequency(idx: pd.Series or pd.DatetimeIndex, force_regular: bool = False) -> str:
@@ -192,6 +196,8 @@ def is_holiday(
 ) -> pd.Series:
     """
     Check if a given list of dates are holidays for a specified country.
+    
+    Note: This function requires the `holidays` package to be installed.
 
     Parameters
     ----------
@@ -239,6 +245,11 @@ def is_holiday(
     )
     ```
     """
+    # This function requires the holidays package to be installed
+    try:
+        import holidays
+    except ImportError:
+        raise ImportError("The 'holidays' package is not installed. Please install it by running 'pip install holidays'.")
 
     if country:
         country_name = country  # Override the default country_name with the provided one

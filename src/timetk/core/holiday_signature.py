@@ -1,10 +1,16 @@
 # Dependencies
 import pandas as pd
 import numpy as np
-import holidays
 import math
 import pandas_flavor as pf
+
 from typing import Union
+
+try: 
+    import holidays
+except ImportError:
+    pass
+
 
 @pf.register_dataframe_method
 def augment_holiday_signature(
@@ -350,6 +356,12 @@ def get_holiday_signature(
     pd.Series(dates, name='dates').get_holiday_signature('UnitedStates')
     ```    
     """
+    
+    # This function requires the holidays package to be installed
+    try:
+        import holidays
+    except ImportError:
+        raise ImportError("The 'holidays' package is not installed. Please install it by running 'pip install holidays'.")
     
     df = pd.DataFrame(idx)
     

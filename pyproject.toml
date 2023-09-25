@@ -12,8 +12,13 @@ pandas-flavor = "^0.6.0"
 matplotlib = "^3.8.0"
 plotnine = "^0.12.3"
 plotly = "^5.17.0"
-holidays = "^0.33"
-tsfeatures = "^0.4.5"
+
+# Optional Dependencies
+holidays = {version = "^0.33", optional = true}
+tsfeatures = {version = "^0.4.5", optional = true}
+
+[tool.poetry.extras]
+optional = ["holidays", "tsfeatures"]
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.25.2"

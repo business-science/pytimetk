@@ -23,7 +23,13 @@ def augment_lags(
     value_column : str or list
         The `value_column` parameter is the column(s) in the DataFrame that you want to add lagged values for. It can be either a single column name (string) or a list of column names.
     lags : int or tuple or list, optional
-        The `lags` parameter is an integer, tuple, or list that specifies the number of lagged values to add to the DataFrame. If it is an integer, the function will add that number of lagged values for each column specified in the `value_column` parameter. If it is a tuple, it will generate lags from the first to the second value (inclusive). If it is a list, it will generate lags based on the values in the list.
+        The `lags` parameter is an integer, tuple, or list that specifies the number of lagged values to add to the DataFrame. 
+        
+        - If it is an integer, the function will add that number of lagged values for each column specified in the `value_column` parameter. 
+        
+        - If it is a tuple, it will generate lags from the first to the second value (inclusive). 
+        
+        - If it is a list, it will generate lags based on the values in the list.
 
     Returns
     -------
@@ -37,7 +43,10 @@ def augment_lags(
     import timetk as tk
 
     df = tk.load_dataset('m4_daily', parse_dates=['date'])
+    df
+    ```
     
+    ```{python}
     # Add a lagged value of 2 for each grouped time series
     lagged_df = (
         df 
@@ -48,7 +57,10 @@ def augment_lags(
                 lags=2
             )
     )
-
+    lagged_df
+    ```
+    
+    ```{python}
     # Add 7 lagged values for a single time series
     lagged_df_single = (
         df 
@@ -59,7 +71,10 @@ def augment_lags(
                 lags=(1, 7)
             )
     )
+    lagged_df_single
+    ```
 
+    ```{python}
     # Add 2 lagged values, 2 and 4, for a single time series
     lagged_df_single_two = (
         df 
@@ -70,6 +85,7 @@ def augment_lags(
                 lags=[2, 4]
             )
     )
+    lagged_df_single_two
     ```
 
     """
@@ -87,7 +103,7 @@ def augment_lags(
     elif isinstance(lags, tuple):
         lags = list(range(lags[0], lags[1] + 1))
     elif not isinstance(lags, list):
-        raise ValueError("Invalid lags specification. Please use int, tuple, or list.")
+        raise TypeError(f"Invalid lags specification: type: {type(lags)}. Please use int, tuple, or list.")
 
     # DATAFRAME EXTENSION - If data is a Pandas DataFrame, extend with future dates
     if isinstance(data, pd.DataFrame):
