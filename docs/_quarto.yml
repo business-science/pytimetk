@@ -107,11 +107,14 @@ quartodoc:
         - make_future_timeseries
         - get_timeseries_signature
         - get_pandas_frequency
+        - make_weekday_sequence
+        - make_weekend_sequence
     - title: 🛠️ Utilities
       desc: Helper functions to make your life easier.
       package: timetk
       contents:      
         - floor_date
+        - is_holiday
         - week_of_month
     - title: 💾 12 Datasets
       package: timetk.datasets.get_datasets

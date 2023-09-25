@@ -7,9 +7,9 @@ import pandas_flavor as pf
 from typing import Union
 
 @pf.register_dataframe_method
-def tk_augment_holiday_signature(
-    df: pd.DataFrame,
-    date_col: Union[str, pd.Series],
+def augment_holiday_signature(
+    data: pd.DataFrame,
+    date_column: Union[str, pd.Series],
     country_name: str = 'UnitedStates'
 ) -> pd.DataFrame:
     """
@@ -17,13 +17,14 @@ def tk_augment_holiday_signature(
 
     Parameters
     ----------
-    df (pd.DataFrame): The input DataFrame.
-    date_col (str or pd.Series): The name of the datetime-like column in the DataFrame.
-    country_name (str): The name of the country for which to generate holiday features. 
-                        Defaults to United States holidays, but the following countries are currently 
-                        available and accessible by the full name or ISO code:
+    data (pd.DataFrame): 
+        The input DataFrame.
+    date_column (str or pd.Series): 
+        The name of the datetime-like column in the DataFrame.
+    country_name (str): 
+        The name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code:
             
-    Any of the following are acceptable keys for country_name
+        Any of the following are acceptable keys for `country_name`:
 
             Available Countries:    Full Country, Abrv. #1,   #2,   #3
             Angola:                 Angola,             AO,   AGO, 
@@ -111,7 +112,8 @@ def tk_augment_holiday_signature(
 
     Returns
     -------
-    pd.DataFrame: A pandas DataFrame with three holiday-specific features.
+    pd.DataFrame: 
+        A pandas DataFrame with three holiday-specific features.
 
     Example
     -------
@@ -123,17 +125,17 @@ def tk_augment_holiday_signature(
     end_date = '2023-01-10'
     date_range = pd.DataFrame(pd.date_range(start=start_date, end=end_date), columns=['date'])
    
-    tk_augment_holiday_signature(date_range, 'date', 'France').head()
+    tk.augment_holiday_signature(date_range, 'date', 'France').head()
     ```
     """
     
     # Ensure the date column exists in the DataFrame
-    if date_col not in df.columns:
-        raise ValueError(f"'{date_col}' not found in DataFrame columns.")
+    if date_column not in data.columns:
+        raise ValueError(f"'{date_column}' not found in DataFrame columns.")
     
     # Extract start and end years directly from the Series
-    start_year = df[date_col].min().year
-    end_year = df[date_col].max().year
+    start_year = data[date_column].min().year
+    end_year = data[date_column].max().year
 
     # Create a list of years (integers) from start year to end year
     years = list(range(math.ceil(start_year), math.floor(end_year) + 1))
@@ -143,8 +145,8 @@ def tk_augment_holiday_signature(
         raise ValueError("No valid years found for holiday calculations.")
     
     # Create a DataFrame of the full length of the Series
-    date_range = pd.date_range(df[date_col].min(), df[date_col].max())
-    holiday_df = pd.DataFrame({'date': date_range})
+    date_range = pd.date_range(data[date_column].min(), data[date_column].max())
+    holiday_data = pd.DataFrame({'date': date_range})
     
     # Create an empty list to store holidays
     series_holidays = []
@@ -162,19 +164,19 @@ def tk_augment_holiday_signature(
         series_holidays.append(str(date[0]))
 
     # Add (0, 1) indicator for holiday to the DataFrame
-    holiday_df['holiday'] = holiday_df['date'].dt.strftime('%Y-%m-%d').isin(series_holidays).astype(int)
+    holiday_data['holiday'] = holiday_data['date'].dt.strftime('%Y-%m-%d').isin(series_holidays).astype(int)
 
     # Add (0, 1) indicators for day before and day after holiday
-    holiday_df['before_holiday'] = holiday_df['holiday'].shift(1).fillna(0).astype(int)
-    holiday_df['after_holiday'] = holiday_df['holiday'].shift(-1).fillna(0).astype(int)
+    holiday_data['before_holiday'] = holiday_data['holiday'].shift(1).fillna(0).astype(int)
+    holiday_data['after_holiday'] = holiday_data['holiday'].shift(-1).fillna(0).astype(int)
 
     # Merge the two DataFrames on the 'date' column with an outer join
-    merged_df = df.merge(holiday_df, left_on=date_col, right_on='date', how='outer')
+    merged_data = data.merge(holiday_data, left_on=date_column, right_on='date', how='outer')
 
     # Drop the 'date' column
-    merged_df = merged_df.drop(columns=['date'])
+    merged_data = merged_data.drop(columns=['date'])
 
     # Fill NaN values in columns 'holiday', 'before_holiday', and 'after_holiday' with 0
-    merged_df[['holiday', 'before_holiday', 'after_holiday']] = merged_df[['holiday', 'before_holiday', 'after_holiday']].fillna(0).astype(int)
+    merged_data[['holiday', 'before_holiday', 'after_holiday']] = merged_data[['holiday', 'before_holiday', 'after_holiday']].fillna(0).astype(int)
 
-    return merged_df
+    return merged_data

@@ -3,7 +3,9 @@
 
 from .core.summarize_by_time import *
 from .core.timeseries_signature import *
-from .core.future_timeseries import *
+from .core.holiday_signature import *
+from .core.make_future_timeseries import *
+from .core.make_timeseries_sequence import *
 from .core.lags import *
 from .core.pad import *
 from .core.rolling import *
@@ -12,6 +14,7 @@ from .datasets.get_datasets import *
 
 from .utils.datetime_helpers import *
 from .utils.pandas_helpers import *
+from .utils.memory_helpers import *
 
 # *** Needed for quartodoc build important functions ***
 from .core.summarize_by_time import (
@@ -20,8 +23,14 @@ from .core.summarize_by_time import (
 from .core.timeseries_signature import (
     get_timeseries_signature, augment_timeseries_signature
 )
-from .core.future_timeseries import (
+from .core.holiday_signature import (
+    augment_holiday_signature
+)
+from .core.make_future_timeseries import (
     make_future_timeseries, future_frame
+)
+from .core.make_timeseries_sequence import (
+    make_weekday_sequence, make_weekend_sequence
 )
 from .core.lags import (
     augment_lags
@@ -36,7 +45,10 @@ from .datasets.get_datasets import (
     load_dataset, get_available_datasets
 )
 from .utils.datetime_helpers import (
-    floor_date, week_of_month, get_pandas_frequency
+    floor_date, week_of_month, get_pandas_frequency, is_holiday
+)
+from .utils.memory_helpers import (
+    reduce_memory_usage
 )
 
 

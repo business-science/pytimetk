@@ -31,7 +31,8 @@ git clone https://github.com/business-science/pytimetk
 Use Poetry to install the package and its dependencies:
 
 ```
-install poetry
+poetry install
+```
 ```
 
 or you can create a virtualenv with poetry and install the dependencies

@@ -4,9 +4,7 @@
 
 Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.
 
-The `augment_rolling` function applies multiple rolling window functions with varying window sizes
-to specified columns of a DataFrame, considering grouping columns and a datetime column for sorting
-within each group.
+The `augment_rolling` function applies multiple rolling window functions with varying window sizes to specified columns of a DataFrame, considering grouping columns and a datetime column for sorting within each group.
 
 ## Parameters
 

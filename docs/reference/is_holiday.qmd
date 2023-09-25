@@ -1,0 +1,54 @@
+# is_holiday { #timetk.is_holiday }
+
+`is_holiday(idx, country_name='UnitedStates', country=None)`
+
+Check if a given list of dates are holidays for a specified country.
+
+## Parameters
+
+| Name           | Type                                                                                | Description                                                                                                 | Default          |
+|----------------|-------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|------------------|
+| `idx`          | Union\[str, datetime, List\[Union\[str, datetime\]\], pd.DatetimeIndex, pd.Series\] | The dates to check for holiday status.                                                                      | _required_       |
+| `country_name` | str                                                                                 | The name of the country for which to check the holiday status. Defaults to 'UnitedStates' if not specified. | `'UnitedStates'` |
+| `country`      | str                                                                                 | An alternative parameter to specify the country for holiday checking, overriding country_name.              | `None`           |
+
+## Returns:
+
+pd.Series:
+    Series containing True if the date is a holiday, False otherwise.
+
+
+
+## Raises:
+
+ValueError:
+    If the specified country is not found in the holidays package.
+
+
+
+## Examples:
+
+```{python}
+import pandas as pd
+import timetk as tk
+
+tk.is_holiday('2023-01-01', country_name='UnitedStates')
+```
+
+```{python}
+# List of dates
+tk.is_holiday(['2023-01-01', '2023-01-02', '2023-01-03'], country_name='UnitedStates')
+```
+
+```{python}
+# DatetimeIndex
+tk.is_holiday(pd.date_range("2023-01-01", "2023-01-03"), country_name='UnitedStates')
+```
+
+```{python}
+# Pandas Series Method
+( 
+    pd.Series(pd.date_range("2023-01-01", "2023-01-03"))
+        .is_holiday(country_name='UnitedStates')
+)
+```

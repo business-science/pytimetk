@@ -29,6 +29,8 @@ Time series functions that manipulate Pandas Series.
 | [make_future_timeseries](make_future_timeseries.qmd#timetk.make_future_timeseries) | Make future dates for a time series. |
 | [get_timeseries_signature](get_timeseries_signature.qmd#timetk.get_timeseries_signature) | Convert a timestamp to a set of 29 time series features. |
 | [get_pandas_frequency](get_pandas_frequency.qmd#timetk.get_pandas_frequency) | Get the frequency of a pandas Series or DatetimeIndex. |
+| [make_weekday_sequence](make_weekday_sequence.qmd#timetk.make_weekday_sequence) | Generate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays. |
+| [make_weekend_sequence](make_weekend_sequence.qmd#timetk.make_weekend_sequence) | Generate a sequence of weekend dates within a specified date range, optionally excluding holidays. |
 
 ## 🛠️ Utilities
 
@@ -37,6 +39,7 @@ Helper functions to make your life easier.
 | | |
 | --- | --- |
 | [floor_date](floor_date.qmd#timetk.floor_date) | Round a date down to the specified unit (e.g. Flooring). |
+| [is_holiday](is_holiday.qmd#timetk.is_holiday) | Check if a given list of dates are holidays for a specified country. |
 | [week_of_month](week_of_month.qmd#timetk.week_of_month) | The "week_of_month" function calculates the week number of a given date within its month. |
 
 ## 💾 12 Datasets

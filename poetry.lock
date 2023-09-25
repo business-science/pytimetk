@@ -431,6 +431,21 @@ unicode = ["unicodedata2 (>=15.0.0)"]
 woff = ["brotli (>=1.0.1)", "brotlicffi (>=0.8.0)", "zopfli (>=0.1.4)"]
 
 [[package]]
+name = "holidays"
+version = "0.33"
+description = "Generate and work with holidays in Python"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "holidays-0.33-py3-none-any.whl", hash = "sha256:49e87b6d39227ddc8569bb2a27d333ffcd1bc2f182a7561cd48b9f7a393b2212"},
+    {file = "holidays-0.33.tar.gz", hash = "sha256:7fb33f5f1776f0fc95d98733aa9c3fece7dcdf5124574d0a003b61a1b6f93515"},
+]
+
+[package.dependencies]
+python-dateutil = "*"
+
+[[package]]
 name = "importlib-metadata"
 version = "6.8.0"
 description = "Read metadata from Python packages"
@@ -1765,4 +1780,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "04be9994ea671fc059aafcdd8c5788cc1330deda81b6cfac2a1628ffc38bb997"
+content-hash = "0831469fd99f972cee438cbf0fe100b943b299652ea9514108b285a0ed32e0fe"

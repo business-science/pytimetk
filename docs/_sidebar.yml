@@ -16,9 +16,12 @@ website:
       - reference/make_future_timeseries.qmd
       - reference/get_timeseries_signature.qmd
       - reference/get_pandas_frequency.qmd
+      - reference/make_weekday_sequence.qmd
+      - reference/make_weekend_sequence.qmd
       section: "\U0001F43C Time Series for Pandas Series"
     - contents:
       - reference/floor_date.qmd
+      - reference/is_holiday.qmd
       - reference/week_of_month.qmd
       section: "\U0001F6E0\uFE0F Utilities"
     - contents:

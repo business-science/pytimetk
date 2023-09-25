@@ -3,8 +3,13 @@ import pandas as pd
 import numpy as np
 import pandas_flavor as pf
 
+import holidays
+from datetime import datetime
+
 from dateutil import parser
 from warnings import warn
+
+from typing import Union, List
 
 @pf.register_series_method
 def get_pandas_frequency(idx: pd.Series or pd.DatetimeIndex, force_regular: bool = False) -> str:
@@ -178,6 +183,83 @@ def week_of_month(idx: pd.Series or pd.DatetimeIndex,) -> pd.Series:
     
     return ret
 
+
+@pf.register_series_method
+def is_holiday(
+    idx: Union[str, datetime, List[Union[str, datetime]], pd.DatetimeIndex, pd.Series],
+    country_name: str = 'UnitedStates',
+    country: str = None
+) -> pd.Series:
+    """
+    Check if a given list of dates are holidays for a specified country.
+
+    Parameters
+    ----------
+    idx : Union[str, datetime, List[Union[str, datetime]], pd.DatetimeIndex, pd.Series]
+        The dates to check for holiday status.
+    country_name (str, optional):
+        The name of the country for which to check the holiday status. Defaults to 'UnitedStates' if not specified.
+    country (str, optional):
+        An alternative parameter to specify the country for holiday checking, overriding country_name.
+
+    Returns:
+    -------
+    pd.Series:
+        Series containing True if the date is a holiday, False otherwise.
+
+    Raises:
+    -------
+    ValueError:
+        If the specified country is not found in the holidays package.
+
+    Examples:
+    --------
+    ```{python}
+    import pandas as pd
+    import timetk as tk
+    
+    tk.is_holiday('2023-01-01', country_name='UnitedStates')
+    ```
+    
+    ```{python}
+    # List of dates
+    tk.is_holiday(['2023-01-01', '2023-01-02', '2023-01-03'], country_name='UnitedStates')
+    ```
+    
+    ```{python}
+    # DatetimeIndex
+    tk.is_holiday(pd.date_range("2023-01-01", "2023-01-03"), country_name='UnitedStates')
+    ```
+    
+    ```{python}
+    # Pandas Series Method
+    ( 
+        pd.Series(pd.date_range("2023-01-01", "2023-01-03"))
+            .is_holiday(country_name='UnitedStates')
+    )
+    ```
+    """
+
+    if country:
+        country_name = country  # Override the default country_name with the provided one
+
+    # Find the country module from the holidays package
+    for key in holidays.__dict__.keys():
+        if key.lower() == country_name.lower():
+            country_module = holidays.__dict__[key]
+            break
+    else:
+        raise ValueError(f"Country '{country_name}' not found in holidays package.")
+    
+    if isinstance(idx, str) or isinstance(idx, datetime):
+        idx = [idx]
+    
+    idx = pd.to_datetime(idx)  # Convert all dates to pd.Timestamp if not already
+    
+    # Check each date if it's a holiday and return the results as a Series
+    ret = pd.Series([date in country_module(years=date.year) for date in idx], name='is_holiday')
+    
+    return ret
 
 
 

@@ -263,7 +263,7 @@
     "href": "index.html#installation",
     "title": "timetk for Python ",
     "section": "Installation",
-    "text": "Installation\nTo install timetk using Poetry, follow these steps:\n\n1. Prerequisites\nMake sure you have Python 3.9 or later installed on your system.\n\n\n2. Install Poetry\nTo install Poetry, you can use the official installer provided by Poetry. Do not use pip.\n\n\n3. Clone the Repository\nClone the timetk repository from GitHub:\ngit clone https://github.com/business-science/pytimetk\n\n\n4. Install Dependencies\nUse Poetry to install the package and its dependencies:\npip install poetry\nor you can create a virtualenv with poetry and install the dependencies\npoetry shell\npoetry install"
+    "text": "Installation\nTo install timetk using Poetry, follow these steps:\n\n1. Prerequisites\nMake sure you have Python 3.9 or later installed on your system.\n\n\n2. Install Poetry\nTo install Poetry, you can use the official installer provided by Poetry. Do not use pip.\n\n\n3. Clone the Repository\nClone the timetk repository from GitHub:\ngit clone https://github.com/business-science/pytimetk\n\n\n4. Install Dependencies\nUse Poetry to install the package and its dependencies:\npoetry install\nor you can create a virtualenv with poetry and install the dependencies\npoetry shell\npoetry install"
   },
   {
     "objectID": "getting-started/01_installation.html",
@@ -277,7 +277,7 @@
     "href": "getting-started/01_installation.html#installation",
     "title": "Install",
     "section": "Installation",
-    "text": "Installation\nTo install timetk using Poetry, follow these steps:\n\n1. Prerequisites\nMake sure you have Python 3.9 or later installed on your system.\n\n\n2. Install Poetry\nTo install Poetry, you can use the official installer provided by Poetry. Do not use pip.\n\n\n3. Clone the Repository\nClone the timetk repository from GitHub:\ngit clone https://github.com/business-science/pytimetk\n\n\n4. Install Dependencies\nUse Poetry to install the package and its dependencies:\npip install poetry\nor you can create a virtualenv with poetry and install the dependencies\npoetry shell\npoetry install"
+    "text": "Installation\nTo install timetk using Poetry, follow these steps:\n\n1. Prerequisites\nMake sure you have Python 3.9 or later installed on your system.\n\n\n2. Install Poetry\nTo install Poetry, you can use the official installer provided by Poetry. Do not use pip.\n\n\n3. Clone the Repository\nClone the timetk repository from GitHub:\ngit clone https://github.com/business-science/pytimetk\n\n\n4. Install Dependencies\nUse Poetry to install the package and its dependencies:\npoetry install\nor you can create a virtualenv with poetry and install the dependencies\npoetry shell\npoetry install"
   },
   {
     "objectID": "guides/03_pandas_frequency.html",
@@ -354,7 +354,7 @@
     "href": "reference/index.html",
     "title": "Function reference",
     "section": "",
-    "text": "Bend time series data to your will.\n\n\n\nsummarize_by_time\nSummarize a DataFrame or GroupBy object by time.\n\n\npad_by_time\nMake irregular time series regular by padding with missing dates.\n\n\nfuture_frame\nExtend a DataFrame or GroupBy object with future dates.\n\n\n\n\n\n\nAdd one or more feature columns to time series data.\n\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame.\n\n\naugment_lags\nAdds lags to a Pandas DataFrame or DataFrameGroupBy object.\n\n\naugment_rolling\nApply one or more rolling functions and window sizes to one or more columns of a DataFrame.\n\n\n\n\n\n\nTime series functions that manipulate Pandas Series.\n\n\n\nmake_future_timeseries\nMake future dates for a time series.\n\n\nget_timeseries_signature\nConvert a timestamp to a set of 29 time series features.\n\n\nget_pandas_frequency\nGet the frequency of a pandas Series or DatetimeIndex.\n\n\n\n\n\n\nHelper functions to make your life easier.\n\n\n\nfloor_date\nRound a date down to the specified unit (e.g. Flooring).\n\n\nweek_of_month\nThe “week_of_month” function calculates the week number of a given date within its month.\n\n\n\n\n\n\nPractice timetk with 12 complementary time series datasets.\n\n\n\nget_available_datasets\nGet a list of 12 datasets that can be loaded with timetk.load_dataset.\n\n\nload_dataset\nLoad one of 12 Time Series Datasets."
+    "text": "Bend time series data to your will.\n\n\n\nsummarize_by_time\nSummarize a DataFrame or GroupBy object by time.\n\n\npad_by_time\nMake irregular time series regular by padding with missing dates.\n\n\nfuture_frame\nExtend a DataFrame or GroupBy object with future dates.\n\n\n\n\n\n\nAdd one or more feature columns to time series data.\n\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame.\n\n\naugment_lags\nAdds lags to a Pandas DataFrame or DataFrameGroupBy object.\n\n\naugment_rolling\nApply one or more rolling functions and window sizes to one or more columns of a DataFrame.\n\n\n\n\n\n\nTime series functions that manipulate Pandas Series.\n\n\n\nmake_future_timeseries\nMake future dates for a time series.\n\n\nget_timeseries_signature\nConvert a timestamp to a set of 29 time series features.\n\n\nget_pandas_frequency\nGet the frequency of a pandas Series or DatetimeIndex.\n\n\nmake_weekday_sequence\nGenerate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays.\n\n\nmake_weekend_sequence\nGenerate a sequence of weekend dates within a specified date range, optionally excluding holidays.\n\n\n\n\n\n\nHelper functions to make your life easier.\n\n\n\nfloor_date\nRound a date down to the specified unit (e.g. Flooring).\n\n\nis_holiday\nCheck if a given list of dates are holidays for a specified country.\n\n\nweek_of_month\nThe “week_of_month” function calculates the week number of a given date within its month.\n\n\n\n\n\n\nPractice timetk with 12 complementary time series datasets.\n\n\n\nget_available_datasets\nGet a list of 12 datasets that can be loaded with timetk.load_dataset.\n\n\nload_dataset\nLoad one of 12 Time Series Datasets."
   },
   {
     "objectID": "reference/index.html#wrangling-pandas-time-series-dataframes",
@@ -375,14 +375,14 @@
     "href": "reference/index.html#time-series-for-pandas-series",
     "title": "Function reference",
     "section": "",
-    "text": "Time series functions that manipulate Pandas Series.\n\n\n\nmake_future_timeseries\nMake future dates for a time series.\n\n\nget_timeseries_signature\nConvert a timestamp to a set of 29 time series features.\n\n\nget_pandas_frequency\nGet the frequency of a pandas Series or DatetimeIndex."
+    "text": "Time series functions that manipulate Pandas Series.\n\n\n\nmake_future_timeseries\nMake future dates for a time series.\n\n\nget_timeseries_signature\nConvert a timestamp to a set of 29 time series features.\n\n\nget_pandas_frequency\nGet the frequency of a pandas Series or DatetimeIndex.\n\n\nmake_weekday_sequence\nGenerate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays.\n\n\nmake_weekend_sequence\nGenerate a sequence of weekend dates within a specified date range, optionally excluding holidays."
   },
   {
     "objectID": "reference/index.html#utilities",
     "href": "reference/index.html#utilities",
     "title": "Function reference",
     "section": "",
-    "text": "Helper functions to make your life easier.\n\n\n\nfloor_date\nRound a date down to the specified unit (e.g. Flooring).\n\n\nweek_of_month\nThe “week_of_month” function calculates the week number of a given date within its month."
+    "text": "Helper functions to make your life easier.\n\n\n\nfloor_date\nRound a date down to the specified unit (e.g. Flooring).\n\n\nis_holiday\nCheck if a given list of dates are holidays for a specified country.\n\n\nweek_of_month\nThe “week_of_month” function calculates the week number of a given date within its month."
   },
   {
     "objectID": "reference/index.html#datasets",
@@ -502,5 +502,96 @@
     "title": "augment_lags",
     "section": "Examples",
     "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\ndf = tk.load_dataset('m4_daily', parse_dates = ['date'])\ndf\n\n\n\n\n\n\n\n\nid\ndate\nvalue\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\n\n\n1\nD10\n2014-07-04\n2073.4\n\n\n2\nD10\n2014-07-05\n2048.7\n\n\n3\nD10\n2014-07-06\n2048.9\n\n\n4\nD10\n2014-07-07\n2006.4\n\n\n...\n...\n...\n...\n\n\n9738\nD500\n2012-09-19\n9418.8\n\n\n9739\nD500\n2012-09-20\n9365.7\n\n\n9740\nD500\n2012-09-21\n9445.9\n\n\n9741\nD500\n2012-09-22\n9497.9\n\n\n9742\nD500\n2012-09-23\n9545.3\n\n\n\n\n9743 rows × 3 columns\n\n\n\n\n# Add 7 lagged values for each grouped time series\nlagged_df = (\n    df \n        .groupby('id')\n        .augment_lags(\n            date_column  = 'date',\n            value_column = 'value',\n            lags         = range(1, 8)\n        )\n)\n\nlagged_df\n\n\n\n\n\n\n\n\nid\ndate\nvalue\nvalue_lag_1\nvalue_lag_2\nvalue_lag_3\nvalue_lag_4\nvalue_lag_5\nvalue_lag_6\nvalue_lag_7\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n1\nD10\n2014-07-04\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n2\nD10\n2014-07-05\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n3\nD10\n2014-07-06\n2048.9\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\n\n\n4\nD10\n2014-07-07\n2006.4\n2048.9\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n9738\nD500\n2012-09-19\n9418.8\n9431.9\n9437.7\n9474.6\n9359.2\n9286.9\n9265.4\n9091.4\n\n\n9739\nD500\n2012-09-20\n9365.7\n9418.8\n9431.9\n9437.7\n9474.6\n9359.2\n9286.9\n9265.4\n\n\n9740\nD500\n2012-09-21\n9445.9\n9365.7\n9418.8\n9431.9\n9437.7\n9474.6\n9359.2\n9286.9\n\n\n9741\nD500\n2012-09-22\n9497.9\n9445.9\n9365.7\n9418.8\n9431.9\n9437.7\n9474.6\n9359.2\n\n\n9742\nD500\n2012-09-23\n9545.3\n9497.9\n9445.9\n9365.7\n9418.8\n9431.9\n9437.7\n9474.6\n\n\n\n\n9743 rows × 10 columns\n\n\n\n\n# Add 7 lagged values for a single time series\n(\n    df \n        .query('id == \"D10\"')\n        .augment_lags(\n            date_column  = 'date',\n            value_column = 'value',\n            lags         = range(1, 8)\n        )\n)\n\n\n\n\n\n\n\n\nid\ndate\nvalue\nvalue_lag_1\nvalue_lag_2\nvalue_lag_3\nvalue_lag_4\nvalue_lag_5\nvalue_lag_6\nvalue_lag_7\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n1\nD10\n2014-07-04\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n2\nD10\n2014-07-05\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n3\nD10\n2014-07-06\n2048.9\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\n\n\n4\nD10\n2014-07-07\n2006.4\n2048.9\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n669\nD10\n2016-05-02\n2630.7\n2601.0\n2572.9\n2544.0\n2579.9\n2585.8\n2542.0\n2534.2\n\n\n670\nD10\n2016-05-03\n2649.3\n2630.7\n2601.0\n2572.9\n2544.0\n2579.9\n2585.8\n2542.0\n\n\n671\nD10\n2016-05-04\n2631.8\n2649.3\n2630.7\n2601.0\n2572.9\n2544.0\n2579.9\n2585.8\n\n\n672\nD10\n2016-05-05\n2622.5\n2631.8\n2649.3\n2630.7\n2601.0\n2572.9\n2544.0\n2579.9\n\n\n673\nD10\n2016-05-06\n2620.1\n2622.5\n2631.8\n2649.3\n2630.7\n2601.0\n2572.9\n2544.0\n\n\n\n\n674 rows × 10 columns"
+  },
+  {
+    "objectID": "reference/make_weekend_sequence.html",
+    "href": "reference/make_weekend_sequence.html",
+    "title": "make_weekend_sequence",
+    "section": "",
+    "text": "make_weekend_sequence(start_date, end_date, friday_saturday=False, remove_holidays=False, country=None)\nGenerate a sequence of weekend dates within a specified date range, optionally excluding holidays."
+  },
+  {
+    "objectID": "reference/make_weekend_sequence.html#parameters",
+    "href": "reference/make_weekend_sequence.html#parameters",
+    "title": "make_weekend_sequence",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nstart_date\nstr or datetime or pd.DatetimeIndex\nThe start date of the date range.\nrequired\n\n\nend_date\nstr or datetime or pd.DatetimeIndex\nThe end date of the date range.\nrequired\n\n\nfriday_saturday\nbool\nIf True, generates a sequence with Friday and Saturday as weekends.If False (default), generates a sequence with Saturday and Sunday as weekends.\nFalse\n\n\nremove_holidays\nbool\nIf True, excludes holidays (based on the specified country) from the generated sequence. If False (default), includes holidays in the sequence.\nFalse\n\n\ncountry\nstr\nThe name of the country for which to generate holiday-specific sequences. Defaults to None, which uses the United States as the default country.\nNone"
+  },
+  {
+    "objectID": "reference/make_weekend_sequence.html#returns",
+    "href": "reference/make_weekend_sequence.html#returns",
+    "title": "make_weekend_sequence",
+    "section": "Returns",
+    "text": "Returns\n\n\n\nType\nDescription\n\n\n\n\npd.Series\nA Series containing the generated weekday dates."
+  },
+  {
+    "objectID": "reference/make_weekend_sequence.html#examples",
+    "href": "reference/make_weekend_sequence.html#examples",
+    "title": "make_weekend_sequence",
+    "section": "Examples",
+    "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\n# United States has Saturday and Sunday as weekends\ntk.make_weekend_sequence(\"2023-01-01\", \"2023-01-31\", friday_saturday=False, remove_holidays=True, country='UnitedStates')\n\n0   2023-01-07\n1   2023-01-08\n2   2023-01-14\n3   2023-01-15\n4   2023-01-21\n5   2023-01-22\n6   2023-01-28\n7   2023-01-29\nName: Weekend Dates, dtype: datetime64[ns]\n\n\n\n# Saudi Arabia has Friday and Saturday as weekends\ntk.make_weekend_sequence(\"2023-01-01\", \"2023-01-31\", friday_saturday=True, remove_holidays=True, country='SaudiArabia')\n\n0   2023-01-06\n1   2023-01-07\n2   2023-01-13\n3   2023-01-14\n4   2023-01-20\n5   2023-01-21\n6   2023-01-27\n7   2023-01-28\nName: Weekend Dates, dtype: datetime64[ns]"
+  },
+  {
+    "objectID": "reference/is_holiday.html",
+    "href": "reference/is_holiday.html",
+    "title": "is_holiday",
+    "section": "",
+    "text": "is_holiday(idx, country_name='UnitedStates', country=None)\nCheck if a given list of dates are holidays for a specified country."
+  },
+  {
+    "objectID": "reference/is_holiday.html#parameters",
+    "href": "reference/is_holiday.html#parameters",
+    "title": "is_holiday",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\nUnion[str, datetime, List[Union[str, datetime]], pd.DatetimeIndex, pd.Series]\nThe dates to check for holiday status.\nrequired\n\n\ncountry_name\nstr\nThe name of the country for which to check the holiday status. Defaults to ‘UnitedStates’ if not specified.\n'UnitedStates'\n\n\ncountry\nstr\nAn alternative parameter to specify the country for holiday checking, overriding country_name.\nNone"
+  },
+  {
+    "objectID": "reference/is_holiday.html#returns",
+    "href": "reference/is_holiday.html#returns",
+    "title": "is_holiday",
+    "section": "Returns:",
+    "text": "Returns:\npd.Series: Series containing True if the date is a holiday, False otherwise."
+  },
+  {
+    "objectID": "reference/is_holiday.html#raises",
+    "href": "reference/is_holiday.html#raises",
+    "title": "is_holiday",
+    "section": "Raises:",
+    "text": "Raises:\nValueError: If the specified country is not found in the holidays package."
+  },
+  {
+    "objectID": "reference/is_holiday.html#examples",
+    "href": "reference/is_holiday.html#examples",
+    "title": "is_holiday",
+    "section": "Examples:",
+    "text": "Examples:\n\nimport pandas as pd\nimport timetk as tk\n\ntk.is_holiday('2023-01-01', country_name='UnitedStates')\n\n0    True\nName: is_holiday, dtype: bool\n\n\n\n# List of dates\ntk.is_holiday(['2023-01-01', '2023-01-02', '2023-01-03'], country_name='UnitedStates')\n\n0     True\n1     True\n2    False\nName: is_holiday, dtype: bool\n\n\n\n# DatetimeIndex\ntk.is_holiday(pd.date_range(\"2023-01-01\", \"2023-01-03\"), country_name='UnitedStates')\n\n0     True\n1     True\n2    False\nName: is_holiday, dtype: bool\n\n\n\n# Pandas Series Method\n( \n    pd.Series(pd.date_range(\"2023-01-01\", \"2023-01-03\"))\n        .is_holiday(country_name='UnitedStates')\n)\n\n0     True\n1     True\n2    False\nName: is_holiday, dtype: bool"
+  },
+  {
+    "objectID": "reference/make_weekday_sequence.html",
+    "href": "reference/make_weekday_sequence.html",
+    "title": "make_weekday_sequence",
+    "section": "",
+    "text": "make_weekday_sequence(start_date, end_date, sunday_to_thursday=False, remove_holidays=False, country=None)\nGenerate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays."
+  },
+  {
+    "objectID": "reference/make_weekday_sequence.html#parameters",
+    "href": "reference/make_weekday_sequence.html#parameters",
+    "title": "make_weekday_sequence",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nstart_date\nstr or datetime or pd.DatetimeIndex\nThe start date of the date range.\nrequired\n\n\nend_date\nstr or datetime or pd.DatetimeIndex\nThe end date of the date range.\nrequired\n\n\nsunday_to_thursday\nbool\nIf True, generates a sequence with Sunday to Thursday weekdays (excluding Friday and Saturday). If False (default), generates a sequence with Monday to Friday weekdays.\nFalse\n\n\nremove_holidays\n(bool, optional)\nIf True, excludes holidays (based on the specified country) from the generated sequence. If False (default), includes holidays in the sequence.\nFalse\n\n\ncountry\nstr\nThe name of the country for which to generate holiday-specific sequences. Defaults to None, which uses the United States as the default country.\nNone"
+  },
+  {
+    "objectID": "reference/make_weekday_sequence.html#returns",
+    "href": "reference/make_weekday_sequence.html#returns",
+    "title": "make_weekday_sequence",
+    "section": "Returns",
+    "text": "Returns\n\n\n\nType\nDescription\n\n\n\n\npd.Series\nA Series containing the generated weekday dates."
+  },
+  {
+    "objectID": "reference/make_weekday_sequence.html#examples",
+    "href": "reference/make_weekday_sequence.html#examples",
+    "title": "make_weekday_sequence",
+    "section": "Examples",
+    "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\n# United States has Monday to Friday as weekdays (excluding Saturday and Sunday and holidays)\ntk.make_weekday_sequence(\"2023-01-01\", \"2023-01-15\", sunday_to_thursday=False, remove_holidays=True, country='UnitedStates')\n\n0   2023-01-03\n1   2023-01-04\n2   2023-01-05\n3   2023-01-06\n4   2023-01-09\n5   2023-01-10\n6   2023-01-11\n7   2023-01-12\n8   2023-01-13\nName: Weekday Dates, dtype: datetime64[ns]\n\n\n\n# Israel has Sunday to Thursday as weekdays (excluding Friday and Saturday and Israel holidays)\ntk.make_weekday_sequence(\"2023-01-01\", \"2023-01-15\", sunday_to_thursday=True, remove_holidays=True, country='Israel')\n\n0    2023-01-01\n1    2023-01-02\n2    2023-01-03\n3    2023-01-04\n4    2023-01-05\n5    2023-01-08\n6    2023-01-09\n7    2023-01-10\n8    2023-01-11\n9    2023-01-12\n10   2023-01-15\nName: Weekday Dates, dtype: datetime64[ns]"
   }
 ]
