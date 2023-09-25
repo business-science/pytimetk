@@ -8,7 +8,14 @@ def readme():
 
 with open("requirements.txt") as f:
     required = f.read().splitlines()
+    
+with open("requirements-optional.txt") as f:
+    required_optional = f.read()
 
+extras_require = {
+    "optional": required_optional,
+    "full": required + required_optional,
+}
 
 setup(
     name="timetk",
@@ -30,4 +37,5 @@ setup(
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     include_package_data=True,
     install_requires=required,
+    extras_require=extras_require,
 )
