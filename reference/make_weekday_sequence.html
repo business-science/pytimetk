@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>timetk for Python – index</title>
+<title>timetk for Python – make_weekday_sequence</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -29,7 +63,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../guides/05_augmenting.html" rel="prev">
 <link href="../favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -101,7 +134,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reference/index.html">📄 API Reference</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">make_weekday_sequence</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -186,7 +219,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/index.html" class="sidebar-item-text sidebar-link active">
+  <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📄 API Reference</span></a>
   </div>
 </li>
@@ -217,130 +250,143 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#function-reference" id="toc-function-reference" class="nav-link active" data-scroll-target="#function-reference">Function reference</a>
-  <ul class="collapse">
-  <li><a href="#wrangling-pandas-time-series-dataframes" id="toc-wrangling-pandas-time-series-dataframes" class="nav-link" data-scroll-target="#wrangling-pandas-time-series-dataframes">🔥 Wrangling Pandas Time Series DataFrames</a></li>
-  <li><a href="#adding-features-to-time-series-dataframes-augmenting" id="toc-adding-features-to-time-series-dataframes-augmenting" class="nav-link" data-scroll-target="#adding-features-to-time-series-dataframes-augmenting">🏗️ Adding Features to Time Series DataFrames (Augmenting)</a></li>
-  <li><a href="#time-series-for-pandas-series" id="toc-time-series-for-pandas-series" class="nav-link" data-scroll-target="#time-series-for-pandas-series">🐼 Time Series for Pandas Series</a></li>
-  <li><a href="#utilities" id="toc-utilities" class="nav-link" data-scroll-target="#utilities">🛠️ Utilities</a></li>
-  <li><a href="#datasets" id="toc-datasets" class="nav-link" data-scroll-target="#datasets">💾 12 Datasets</a></li>
-  </ul></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/index.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/make_weekday_sequence.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">make_weekday_sequence</h1>
+</div>
 
 
-<section id="function-reference" class="level1">
-<h1>Function reference</h1>
-<section id="wrangling-pandas-time-series-dataframes" class="level2">
-<h2 class="anchored" data-anchor-id="wrangling-pandas-time-series-dataframes">🔥 Wrangling Pandas Time Series DataFrames</h2>
-<p>Bend time series data to your will.</p>
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p><code>make_weekday_sequence(start_date, end_date, sunday_to_thursday=False, remove_holidays=False, country=None)</code></p>
+<p>Generate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays.</p>
+<section id="parameters" class="level2">
+<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 15%">
+<col style="width: 70%">
+<col style="width: 4%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td><a href="../reference/summarize_by_time.html#timetk.summarize_by_time">summarize_by_time</a></td>
-<td>Summarize a DataFrame or GroupBy object by time.</td>
+<td><code>start_date</code></td>
+<td>str or datetime or pd.DatetimeIndex</td>
+<td>The start date of the date range.</td>
+<td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><a href="../reference/pad_by_time.html#timetk.pad_by_time">pad_by_time</a></td>
-<td>Make irregular time series regular by padding with missing dates.</td>
+<td><code>end_date</code></td>
+<td>str or datetime or pd.DatetimeIndex</td>
+<td>The end date of the date range.</td>
+<td><em>required</em></td>
 </tr>
 <tr class="odd">
-<td><a href="../reference/future_frame.html#timetk.future_frame">future_frame</a></td>
-<td>Extend a DataFrame or GroupBy object with future dates.</td>
+<td><code>sunday_to_thursday</code></td>
+<td>bool</td>
+<td>If True, generates a sequence with Sunday to Thursday weekdays (excluding Friday and Saturday). If False (default), generates a sequence with Monday to Friday weekdays.</td>
+<td><code>False</code></td>
+</tr>
+<tr class="even">
+<td><code>remove_holidays</code></td>
+<td>(bool, optional)</td>
+<td>If True, excludes holidays (based on the specified country) from the generated sequence. If False (default), includes holidays in the sequence.</td>
+<td><code>False</code></td>
+</tr>
+<tr class="odd">
+<td><code>country</code></td>
+<td>str</td>
+<td>The name of the country for which to generate holiday-specific sequences. Defaults to None, which uses the United States as the default country.</td>
+<td><code>None</code></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="adding-features-to-time-series-dataframes-augmenting" class="level2">
-<h2 class="anchored" data-anchor-id="adding-features-to-time-series-dataframes-augmenting">🏗️ Adding Features to Time Series DataFrames (Augmenting)</h2>
-<p>Add one or more feature columns to time series data.</p>
+<section id="returns" class="level2">
+<h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td><a href="../reference/augment_timeseries_signature.html#timetk.augment_timeseries_signature">augment_timeseries_signature</a></td>
-<td>Add 29 time series features to a DataFrame.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_lags.html#timetk.augment_lags">augment_lags</a></td>
-<td>Adds lags to a Pandas DataFrame or DataFrameGroupBy object.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_rolling.html#timetk.augment_rolling">augment_rolling</a></td>
-<td>Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.</td>
+<td>pd.Series</td>
+<td>A Series containing the generated weekday dates.</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="time-series-for-pandas-series" class="level2">
-<h2 class="anchored" data-anchor-id="time-series-for-pandas-series">🐼 Time Series for Pandas Series</h2>
-<p>Time series functions that manipulate Pandas Series.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/make_future_timeseries.html#timetk.make_future_timeseries">make_future_timeseries</a></td>
-<td>Make future dates for a time series.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/get_timeseries_signature.html#timetk.get_timeseries_signature">get_timeseries_signature</a></td>
-<td>Convert a timestamp to a set of 29 time series features.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/get_pandas_frequency.html#timetk.get_pandas_frequency">get_pandas_frequency</a></td>
-<td>Get the frequency of a pandas Series or DatetimeIndex.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/make_weekday_sequence.html#timetk.make_weekday_sequence">make_weekday_sequence</a></td>
-<td>Generate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/make_weekend_sequence.html#timetk.make_weekend_sequence">make_weekend_sequence</a></td>
-<td>Generate a sequence of weekend dates within a specified date range, optionally excluding holidays.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="utilities" class="level2">
-<h2 class="anchored" data-anchor-id="utilities">🛠️ Utilities</h2>
-<p>Helper functions to make your life easier.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/floor_date.html#timetk.floor_date">floor_date</a></td>
-<td>Round a date down to the specified unit (e.g.&nbsp;Flooring).</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/is_holiday.html#timetk.is_holiday">is_holiday</a></td>
-<td>Check if a given list of dates are holidays for a specified country.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/week_of_month.html#timetk.week_of_month">week_of_month</a></td>
-<td>The “week_of_month” function calculates the week number of a given date within its month.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="datasets" class="level2">
-<h2 class="anchored" data-anchor-id="datasets">💾 12 Datasets</h2>
-<p>Practice <code>timetk</code> with 12 complementary time series datasets.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/get_available_datasets.html#timetk.datasets.get_datasets.get_available_datasets">get_available_datasets</a></td>
-<td>Get a list of 12 datasets that can be loaded with <code>timetk.load_dataset</code>.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/load_dataset.html#timetk.datasets.get_datasets.load_dataset">load_dataset</a></td>
-<td>Load one of 12 Time Series Datasets.</td>
-</tr>
-</tbody>
-</table>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timetk <span class="im">as</span> tk</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># United States has Monday to Friday as weekdays (excluding Saturday and Sunday and holidays)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>tk.make_weekday_sequence(<span class="st">"2023-01-01"</span>, <span class="st">"2023-01-15"</span>, sunday_to_thursday<span class="op">=</span><span class="va">False</span>, remove_holidays<span class="op">=</span><span class="va">True</span>, country<span class="op">=</span><span class="st">'UnitedStates'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>0   2023-01-03
+1   2023-01-04
+2   2023-01-05
+3   2023-01-06
+4   2023-01-09
+5   2023-01-10
+6   2023-01-11
+7   2023-01-12
+8   2023-01-13
+Name: Weekday Dates, dtype: datetime64[ns]</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Israel has Sunday to Thursday as weekdays (excluding Friday and Saturday and Israel holidays)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tk.make_weekday_sequence(<span class="st">"2023-01-01"</span>, <span class="st">"2023-01-15"</span>, sunday_to_thursday<span class="op">=</span><span class="va">True</span>, remove_holidays<span class="op">=</span><span class="va">True</span>, country<span class="op">=</span><span class="st">'Israel'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>0    2023-01-01
+1    2023-01-02
+2    2023-01-03
+3    2023-01-04
+4    2023-01-05
+5    2023-01-08
+6    2023-01-09
+7    2023-01-10
+8    2023-01-11
+9    2023-01-12
+10   2023-01-15
+Name: Weekday Dates, dtype: datetime64[ns]</code></pre>
+</div>
+</div>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -692,15 +738,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-      <a href="../guides/05_augmenting.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Adding Features (Augmenting)</span>
-      </a>          
-  </div>
-  <div class="nav-page nav-page-next">
-  </div>
-</nav>
 </div> <!-- /content -->
 
 
