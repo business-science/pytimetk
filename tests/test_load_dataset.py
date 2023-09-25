@@ -61,11 +61,84 @@ def test_load_dataset():
         
     assert data.columns.tolist() == ['id', 'date', 'value'], \
         'The dataset has the wrong columns!'
-        
-    # TODO: Add the rest of the datasets
+
     # m4_quarterly
+    
+    data = timetk.load_dataset("m4_quarterly")
+    
+    assert data.shape == (196, 3), \
+        'The dataset has the wrong shape!'
+        
+    assert data.columns.tolist() == ['id', 'date', 'value'], \
+        'The dataset has the wrong columns!'
+
     # m4_yearly
-    # 'bike_sales_sample', 'bike_sharing_daily', 'taylor_30_min', 'walmart_sales_weekly', 'wikipedia_traffic_daily'
+    
+    data = timetk.load_dataset("m4_yearly")
+    
+    assert data.shape == (135, 3), \
+        'The dataset has the wrong shape!'
+        
+    assert data.columns.tolist() == ['id', 'date', 'value'], \
+        'The dataset has the wrong columns!'
+    
+    # bike_sales_sample
+    
+    data = timetk.load_dataset("bike_sales_sample")
+    
+    assert data.shape == (2466, 13), \
+        'The dataset has the wrong shape!'
+        
+    assert data.columns.tolist() == ['order_id', 'order_line', 'order_date', 'quantity', 'price',\
+                                    'total_price', 'model', 'category_1', 'category_2', 'frame_material',\
+                                    'bikeshop_name', 'city', 'state'], \
+        'The dataset has the wrong columns!'
+
+    # bike_sharing_daily
+    
+    data = timetk.load_dataset("bike_sharing_daily")
+    
+    assert data.shape == (731, 16), \
+        'The dataset has the wrong shape!'
+        
+    assert data.columns.tolist() == ['instant', 'dteday', 'season', 'yr', 'mnth', 'holiday', \
+                                    'weekday', 'workingday', 'weathersit', 'temp', 'atemp', \
+                                    'hum', 'windspeed', 'casual', 'registered', 'cnt'], \
+        'The dataset has the wrong columns!'  
+
+    # taylor_30_min
+    
+    data = timetk.load_dataset("taylor_30_min")
+    
+    assert data.shape == (4032, 2), \
+        'The dataset has the wrong shape!'
+        
+    assert data.columns.tolist() == ['date', 'value'], \
+        'The dataset has the wrong columns!'  
+
+    # walmart_sales_weekly
+    
+    data = timetk.load_dataset("walmart_sales_weekly")
+    
+    assert data.shape == (1001, 17), \
+        'The dataset has the wrong shape!'
+        
+    assert data.columns.tolist() == ['id', 'Store', 'Dept', 'Date', 'Weekly_Sales', \
+                                    'IsHoliday', 'Type', 'Size', 'Temperature', \
+                                    'Fuel_Price', 'MarkDown1', 'MarkDown2','MarkDown3', \
+                                    'MarkDown4', 'MarkDown5', 'CPI', 'Unemployment'], \
+        'The dataset has the wrong columns!'  
+
+    # wikipedia_traffic_daily
+    
+    data = timetk.load_dataset("wikipedia_traffic_daily")
+    
+    assert data.shape == (5500, 3), \
+        'The dataset has the wrong shape!'
+        
+    assert data.columns.tolist() == ['Page', 'date', 'value'], \
+        'The dataset has the wrong columns!'   
+
         
     
         
