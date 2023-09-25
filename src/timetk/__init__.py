@@ -24,7 +24,7 @@ from .core.timeseries_signature import (
     get_timeseries_signature, augment_timeseries_signature
 )
 from .core.holiday_signature import (
-    augment_holiday_signature
+    augment_holiday_signature, get_holiday_signature
 )
 from .core.make_future_timeseries import (
     make_future_timeseries, future_frame

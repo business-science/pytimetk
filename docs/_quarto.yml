@@ -98,21 +98,23 @@ quartodoc:
       package: timetk
       contents:
         - augment_timeseries_signature
+        - augment_holiday_signature
         - augment_lags
         - augment_rolling
     - title: 🐼 Time Series for Pandas Series
-      desc: Time series functions that manipulate Pandas Series.
+      desc: Time series functions that generate / manipulate Pandas Series.
       package: timetk
       contents:        
         - make_future_timeseries
-        - get_timeseries_signature
-        - get_pandas_frequency
         - make_weekday_sequence
         - make_weekend_sequence
     - title: 🛠️ Utilities
       desc: Helper functions to make your life easier.
       package: timetk
-      contents:      
+      contents:
+        - get_pandas_frequency
+        - get_timeseries_signature
+        - get_holiday_signature     
         - floor_date
         - is_holiday
         - week_of_month

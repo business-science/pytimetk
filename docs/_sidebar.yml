@@ -9,17 +9,19 @@ website:
       section: "\U0001F525 Wrangling Pandas Time Series DataFrames"
     - contents:
       - reference/augment_timeseries_signature.qmd
+      - reference/augment_holiday_signature.qmd
       - reference/augment_lags.qmd
       - reference/augment_rolling.qmd
       section: "\U0001F3D7\uFE0F Adding Features to Time Series DataFrames (Augmenting)"
     - contents:
       - reference/make_future_timeseries.qmd
-      - reference/get_timeseries_signature.qmd
-      - reference/get_pandas_frequency.qmd
       - reference/make_weekday_sequence.qmd
       - reference/make_weekend_sequence.qmd
       section: "\U0001F43C Time Series for Pandas Series"
     - contents:
+      - reference/get_pandas_frequency.qmd
+      - reference/get_timeseries_signature.qmd
+      - reference/get_holiday_signature.qmd
       - reference/floor_date.qmd
       - reference/is_holiday.qmd
       - reference/week_of_month.qmd
