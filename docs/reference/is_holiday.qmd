@@ -4,6 +4,8 @@
 
 Check if a given list of dates are holidays for a specified country.
 
+Note: This function requires the `holidays` package to be installed.
+
 ## Parameters
 
 | Name           | Type                                                                                | Description                                                                                                 | Default          |

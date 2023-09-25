@@ -37,7 +37,9 @@ def augment_leads(
     import timetk as tk
 
     df = tk.load_dataset('m4_daily', parse_dates=['date'])
+    ```
     
+    ```{python}
     # Add a leaded value of 2 for each grouped time series
     leaded_df = (
         df 
@@ -48,7 +50,10 @@ def augment_leads(
                 leads=2
             )
     )
+    leaded_df
+    ```
 
+    ```{python}
     # Add 7 leaded values for a single time series
     leaded_df_single = (
         df 
@@ -59,7 +64,10 @@ def augment_leads(
                 leads=(1, 7)
             )
     )
-
+    leaded_df_single 
+    ```
+    
+    ```{python}
     # Add 2 leaded values, 2 and 4, for a single time series
     leaded_df_single_two = (
         df 
@@ -70,6 +78,7 @@ def augment_leads(
                 leads=[2, 4]
             )
     )
+    leaded_df_single_two
     ```
 
     """

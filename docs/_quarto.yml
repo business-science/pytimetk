@@ -100,7 +100,13 @@ quartodoc:
         - augment_timeseries_signature
         - augment_holiday_signature
         - augment_lags
+        - augment_leads
         - augment_rolling
+    - title: TS Features
+      desc: Python implementation of the R package `tsfeatures`.
+      package: timetk
+      contents:
+        - ts_features
     - title: 🐼 Time Series for Pandas Series
       desc: Time series functions that generate / manipulate Pandas Series.
       package: timetk

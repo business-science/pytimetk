@@ -44,13 +44,15 @@ def augment_fourier(
     # Add Fourier transforms for a single column
     fourier_df = (
         df
+            .groupby('id')
             .augment_fourier(
                 date_column='date',
                 value_column='value',
-                num_periods=2,
-                max_order=3
+                num_periods=7,
+                max_order=1
             )
     )
+    fourier_df.head()
     ```
 
     """
@@ -64,12 +66,8 @@ def augment_fourier(
         value_column = [value_column]
 
     # Ensure the date column is of datetime type
-    if not pd.api.types.is_datetime64_ns_dtype(data[date_column]):
-        data[date_column] = pd.to_datetime(data[date_column])
-
-    # Calculate radians for the date values
-    min_date = data[date_column].min()
-    data['radians'] = 2 * np.pi * (data[date_column] - min_date).dt.total_seconds() / (24 * 3600)
+    # if not pd.api.types.is_datetime64_ns_dtype(data[date_column]):
+    #     data[date_column] = pd.to_datetime(data[date_column])
 
     # DATAFRAME EXTENSION - If data is a Pandas DataFrame, extend with Fourier transforms
     if isinstance(data, pd.DataFrame):
@@ -77,6 +75,10 @@ def augment_fourier(
         df = data.copy()
 
         df.sort_values(by=[date_column], inplace=True)
+        
+        # Calculate radians for the date values
+        min_date = data[date_column].min()
+        data['radians'] = 2 * np.pi * (data[date_column] - min_date).dt.total_seconds() / (24 * 3600)
 
         for col in value_column:
             for order in range(1, max_order + 1):
@@ -92,6 +94,10 @@ def augment_fourier(
         # Get the group names and original ungrouped data
         group_names = data.grouper.names
         data = data.obj
+        
+        # Calculate radians for the date values
+        min_date = data[date_column].min()
+        data['radians'] = 2 * np.pi * (data[date_column] - min_date).dt.total_seconds() / (24 * 3600)
 
         df = data.copy()
 

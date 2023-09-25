@@ -19,7 +19,16 @@ Add one or more feature columns to time series data.
 | [augment_timeseries_signature](augment_timeseries_signature.qmd#timetk.augment_timeseries_signature) | Add 29 time series features to a DataFrame. |
 | [augment_holiday_signature](augment_holiday_signature.qmd#timetk.augment_holiday_signature) | Engineers 4 different holiday features from a single datetime for 80+ countries. |
 | [augment_lags](augment_lags.qmd#timetk.augment_lags) | Adds lags to a Pandas DataFrame or DataFrameGroupBy object. |
+| [augment_leads](augment_leads.qmd#timetk.augment_leads) | Adds leads to a Pandas DataFrame or DataFrameGroupBy object. |
 | [augment_rolling](augment_rolling.qmd#timetk.augment_rolling) | Apply one or more rolling functions and window sizes to one or more columns of a DataFrame. |
+
+## TS Features
+
+Python implementation of the R package `tsfeatures`.
+
+| | |
+| --- | --- |
+| [ts_features](ts_features.qmd#timetk.ts_features) | Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the `tsfeatures` package. |
 
 ## 🐼 Time Series for Pandas Series
 

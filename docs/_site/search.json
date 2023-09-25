@@ -1,143 +1,171 @@
 [
   {
-    "objectID": "reference/floor_date.html",
-    "href": "reference/floor_date.html",
-    "title": "floor_date",
+    "objectID": "reference/ts_features.html",
+    "href": "reference/ts_features.html",
+    "title": "ts_features",
     "section": "",
-    "text": "floor_date(idx, unit='D')\nRound a date down to the specified unit (e.g. Flooring).\nThe floor_date function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit."
+    "text": "ts_features(data, date_column, value_column, features=None, freq=None, scale=True, threads=None)\nExtracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the tsfeatures package.\nNote: Requires the tsfeatures package to be installed.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy\nThe data parameter is the input data that can be either a Pandas DataFrame or a grouped DataFrame. It contains the time series data that you want to extract features from.\nrequired\n\n\ndate_column\nstr\nThe date_column parameter is the name of the column in the input data that contains the dates or timestamps of the time series data.\nrequired\n\n\nvalue_column\nstr\nThe value_column parameter is the name of the column in the DataFrame that contains the time series values.\nrequired\n\n\nfeatures\nlist\nThe features parameter is a list of functions that represent the time series features to be extracted. Each function should take a time series as input and return a scalar value as output. When None, uses the default list of features: - acf_features - arch_stat - crossing_points - entropy - flat_spots - heterogeneity - holt_parameters - lumpiness - nonlinearity - pacf_features - stl_features - stability - hw_parameters - unitroot_kpss - unitroot_pp - series_length - hurst\nNone\n\n\nfreq\nstr\nThe freq parameter specifies the frequency of the time series data. It is used to calculate features that are dependent on the frequency, such as seasonal features. - The frequency can be specified as a string, such as ‘D’ for daily, ‘W’ for weekly, ‘M’ for monthly. - The frequency can be a numeric value representing the number of observations per year, such as 365 for daily, 52 for weekly, 12 for monthly.\nNone\n\n\nscale\nbool\nThe scale parameter in the ts_features function determines whether or not to scale the extracted features. - If scale is set to True, the features will be scaled using z-score normalization. - If scale is set to False, the features will not be scaled.\nTrue\n\n\nthreads\nOptional[int]\nThe threads parameter is an optional parameter that specifies the number of threads to use for parallel processing. If not specified, the function will use the default number of threads available on the system.\nNone\n\n\n\n\n\n\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\nThe function ts_features returns a pandas DataFrame containing the extracted time series features.\n\n\n\n\n\n\n\n# REQUIRES tsfeatures: pip install tsfeatures\nimport pandas as pd\nimport timetk as tk\n\n# tsfeatures comes with these features:\nfrom tsfeatures import (\n    acf_features, arch_stat, crossing_points,\n    entropy, flat_spots, heterogeneity,\n    holt_parameters, lumpiness, nonlinearity,\n    pacf_features, stl_features, stability,\n    hw_parameters, unitroot_kpss, unitroot_pp,\n    series_length, hurst\n)\n\ndf = tk.load_dataset('m4_daily', parse_dates = ['date'])\ndf\n# Feature Extraction\nfeature_df = (\n    df\n        .groupby('id')\n        .ts_features(    \n            date_column  = 'date', \n            value_column = 'value',\n            features     = [acf_features, hurst],\n            freq         = 7\n        )\n) \nfeature_df"
   },
   {
-    "objectID": "reference/floor_date.html#parameters",
-    "href": "reference/floor_date.html#parameters",
-    "title": "floor_date",
-    "section": "Parameters",
-    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DatetimeIndex\nThe idx parameter is a pandas Series or pandas DatetimeIndex object that contains datetime values. It represents the dates that you want to round down.\nrequired\n\n\nunit\nstr\nThe unit parameter in the floor_date function is a string that specifies the time unit to which the dates in the idx series should be rounded down. It has a default value of “D”, which stands for day. Other possible values for the unit parameter could be\n'D'"
-  },
-  {
-    "objectID": "reference/floor_date.html#returns",
-    "href": "reference/floor_date.html#returns",
-    "title": "floor_date",
-    "section": "Returns",
-    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.Series\nThe floor_date function returns a pandas Series object containing datetime64[ns] values."
-  },
-  {
-    "objectID": "reference/floor_date.html#examples",
-    "href": "reference/floor_date.html#examples",
-    "title": "floor_date",
-    "section": "Examples",
-    "text": "Examples\n\nimport timetk as tk\nimport pandas as pd\n\ndates = pd.date_range(\"2020-01-01\", \"2020-01-10\", freq=\"1H\")\ndates\n\nDatetimeIndex(['2020-01-01 00:00:00', '2020-01-01 01:00:00',\n               '2020-01-01 02:00:00', '2020-01-01 03:00:00',\n               '2020-01-01 04:00:00', '2020-01-01 05:00:00',\n               '2020-01-01 06:00:00', '2020-01-01 07:00:00',\n               '2020-01-01 08:00:00', '2020-01-01 09:00:00',\n               ...\n               '2020-01-09 15:00:00', '2020-01-09 16:00:00',\n               '2020-01-09 17:00:00', '2020-01-09 18:00:00',\n               '2020-01-09 19:00:00', '2020-01-09 20:00:00',\n               '2020-01-09 21:00:00', '2020-01-09 22:00:00',\n               '2020-01-09 23:00:00', '2020-01-10 00:00:00'],\n              dtype='datetime64[ns]', length=217, freq='H')\n\n\n\n# Works on DateTimeIndex\ntk.floor_date(dates, unit=\"D\")\n\n0     2020-01-01\n1     2020-01-01\n2     2020-01-01\n3     2020-01-01\n4     2020-01-01\n         ...    \n212   2020-01-09\n213   2020-01-09\n214   2020-01-09\n215   2020-01-09\n216   2020-01-10\nName: idx, Length: 217, dtype: datetime64[ns]\n\n\n\n# Works on Pandas Series\ndates.to_series().floor_date(unit=\"D\")\n\n2020-01-01 00:00:00   2020-01-01\n2020-01-01 01:00:00   2020-01-01\n2020-01-01 02:00:00   2020-01-01\n2020-01-01 03:00:00   2020-01-01\n2020-01-01 04:00:00   2020-01-01\n                         ...    \n2020-01-09 20:00:00   2020-01-09\n2020-01-09 21:00:00   2020-01-09\n2020-01-09 22:00:00   2020-01-09\n2020-01-09 23:00:00   2020-01-09\n2020-01-10 00:00:00   2020-01-10\nFreq: H, Length: 217, dtype: datetime64[ns]"
-  },
-  {
-    "objectID": "reference/augment_lags.html",
-    "href": "reference/augment_lags.html",
-    "title": "augment_lags",
+    "objectID": "reference/ts_features.html#parameters",
+    "href": "reference/ts_features.html#parameters",
+    "title": "ts_features",
     "section": "",
-    "text": "augment_lags(data, date_column, value_column, lags=1)\nAdds lags to a Pandas DataFrame or DataFrameGroupBy object.\nThe augment_lags function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a lag or list of lags, and adds lagged versions of the value columns to the DataFrame."
+    "text": "Name\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy\nThe data parameter is the input data that can be either a Pandas DataFrame or a grouped DataFrame. It contains the time series data that you want to extract features from.\nrequired\n\n\ndate_column\nstr\nThe date_column parameter is the name of the column in the input data that contains the dates or timestamps of the time series data.\nrequired\n\n\nvalue_column\nstr\nThe value_column parameter is the name of the column in the DataFrame that contains the time series values.\nrequired\n\n\nfeatures\nlist\nThe features parameter is a list of functions that represent the time series features to be extracted. Each function should take a time series as input and return a scalar value as output. When None, uses the default list of features: - acf_features - arch_stat - crossing_points - entropy - flat_spots - heterogeneity - holt_parameters - lumpiness - nonlinearity - pacf_features - stl_features - stability - hw_parameters - unitroot_kpss - unitroot_pp - series_length - hurst\nNone\n\n\nfreq\nstr\nThe freq parameter specifies the frequency of the time series data. It is used to calculate features that are dependent on the frequency, such as seasonal features. - The frequency can be specified as a string, such as ‘D’ for daily, ‘W’ for weekly, ‘M’ for monthly. - The frequency can be a numeric value representing the number of observations per year, such as 365 for daily, 52 for weekly, 12 for monthly.\nNone\n\n\nscale\nbool\nThe scale parameter in the ts_features function determines whether or not to scale the extracted features. - If scale is set to True, the features will be scaled using z-score normalization. - If scale is set to False, the features will not be scaled.\nTrue\n\n\nthreads\nOptional[int]\nThe threads parameter is an optional parameter that specifies the number of threads to use for parallel processing. If not specified, the function will use the default number of threads available on the system.\nNone"
   },
   {
-    "objectID": "reference/augment_lags.html#parameters",
-    "href": "reference/augment_lags.html#parameters",
-    "title": "augment_lags",
-    "section": "Parameters",
-    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy\nThe data parameter is the input DataFrame or DataFrameGroupBy object that you want to add lagged columns to.\nrequired\n\n\ndate_column\nstr\nThe date_column parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the lagged values.\nrequired\n\n\nvalue_column\nstr or list\nThe value_column parameter is the column(s) in the DataFrame that you want to add lagged values for. It can be either a single column name (string) or a list of column names.\nrequired\n\n\nlags\nint or tuple or list\nThe lags parameter is an integer, tuple, or list that specifies the number of lagged values to add to the DataFrame. - If it is an integer, the function will add that number of lagged values for each column specified in the value_column parameter. - If it is a tuple, it will generate lags from the first to the second value (inclusive). - If it is a list, it will generate lags based on the values in the list.\n1"
-  },
-  {
-    "objectID": "reference/augment_lags.html#returns",
-    "href": "reference/augment_lags.html#returns",
-    "title": "augment_lags",
-    "section": "Returns",
-    "text": "Returns\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\nA Pandas DataFrame with lagged columns added to it."
-  },
-  {
-    "objectID": "reference/augment_lags.html#examples",
-    "href": "reference/augment_lags.html#examples",
-    "title": "augment_lags",
-    "section": "Examples",
-    "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\ndf = tk.load_dataset('m4_daily', parse_dates=['date'])\ndf\n\n\n\n\n\n\n\n\nid\ndate\nvalue\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\n\n\n1\nD10\n2014-07-04\n2073.4\n\n\n2\nD10\n2014-07-05\n2048.7\n\n\n3\nD10\n2014-07-06\n2048.9\n\n\n4\nD10\n2014-07-07\n2006.4\n\n\n...\n...\n...\n...\n\n\n9738\nD500\n2012-09-19\n9418.8\n\n\n9739\nD500\n2012-09-20\n9365.7\n\n\n9740\nD500\n2012-09-21\n9445.9\n\n\n9741\nD500\n2012-09-22\n9497.9\n\n\n9742\nD500\n2012-09-23\n9545.3\n\n\n\n\n9743 rows × 3 columns\n\n\n\n\n# Add a lagged value of 2 for each grouped time series\nlagged_df = (\n    df \n        .groupby('id')\n        .augment_lags(\n            date_column='date',\n            value_column='value',\n            lags=2\n        )\n)\nlagged_df\n\n\n\n\n\n\n\n\nid\ndate\nvalue\nvalue_lag_2\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\nNaN\n\n\n1\nD10\n2014-07-04\n2073.4\nNaN\n\n\n2\nD10\n2014-07-05\n2048.7\n2076.2\n\n\n3\nD10\n2014-07-06\n2048.9\n2073.4\n\n\n4\nD10\n2014-07-07\n2006.4\n2048.7\n\n\n...\n...\n...\n...\n...\n\n\n9738\nD500\n2012-09-19\n9418.8\n9437.7\n\n\n9739\nD500\n2012-09-20\n9365.7\n9431.9\n\n\n9740\nD500\n2012-09-21\n9445.9\n9418.8\n\n\n9741\nD500\n2012-09-22\n9497.9\n9365.7\n\n\n9742\nD500\n2012-09-23\n9545.3\n9445.9\n\n\n\n\n9743 rows × 4 columns\n\n\n\n\n# Add 7 lagged values for a single time series\nlagged_df_single = (\n    df \n        .query('id == \"D10\"')\n        .augment_lags(\n            date_column='date',\n            value_column='value',\n            lags=(1, 7)\n        )\n)\nlagged_df_single\n\n\n\n\n\n\n\n\nid\ndate\nvalue\nvalue_lag_1\nvalue_lag_2\nvalue_lag_3\nvalue_lag_4\nvalue_lag_5\nvalue_lag_6\nvalue_lag_7\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n1\nD10\n2014-07-04\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n2\nD10\n2014-07-05\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n3\nD10\n2014-07-06\n2048.9\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\n\n\n4\nD10\n2014-07-07\n2006.4\n2048.9\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n669\nD10\n2016-05-02\n2630.7\n2601.0\n2572.9\n2544.0\n2579.9\n2585.8\n2542.0\n2534.2\n\n\n670\nD10\n2016-05-03\n2649.3\n2630.7\n2601.0\n2572.9\n2544.0\n2579.9\n2585.8\n2542.0\n\n\n671\nD10\n2016-05-04\n2631.8\n2649.3\n2630.7\n2601.0\n2572.9\n2544.0\n2579.9\n2585.8\n\n\n672\nD10\n2016-05-05\n2622.5\n2631.8\n2649.3\n2630.7\n2601.0\n2572.9\n2544.0\n2579.9\n\n\n673\nD10\n2016-05-06\n2620.1\n2622.5\n2631.8\n2649.3\n2630.7\n2601.0\n2572.9\n2544.0\n\n\n\n\n674 rows × 10 columns\n\n\n\n\n# Add 2 lagged values, 2 and 4, for a single time series\nlagged_df_single_two = (\n    df \n        .query('id == \"D10\"')\n        .augment_lags(\n            date_column='date',\n            value_column='value',\n            lags=[2, 4]\n        )\n)\nlagged_df_single_two\n\n\n\n\n\n\n\n\nid\ndate\nvalue\nvalue_lag_2\nvalue_lag_4\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\nNaN\nNaN\n\n\n1\nD10\n2014-07-04\n2073.4\nNaN\nNaN\n\n\n2\nD10\n2014-07-05\n2048.7\n2076.2\nNaN\n\n\n3\nD10\n2014-07-06\n2048.9\n2073.4\nNaN\n\n\n4\nD10\n2014-07-07\n2006.4\n2048.7\n2076.2\n\n\n...\n...\n...\n...\n...\n...\n\n\n669\nD10\n2016-05-02\n2630.7\n2572.9\n2579.9\n\n\n670\nD10\n2016-05-03\n2649.3\n2601.0\n2544.0\n\n\n671\nD10\n2016-05-04\n2631.8\n2630.7\n2572.9\n\n\n672\nD10\n2016-05-05\n2622.5\n2649.3\n2601.0\n\n\n673\nD10\n2016-05-06\n2620.1\n2631.8\n2630.7\n\n\n\n\n674 rows × 5 columns"
-  },
-  {
-    "objectID": "reference/augment_timeseries_signature.html",
-    "href": "reference/augment_timeseries_signature.html",
-    "title": "augment_timeseries_signature",
+    "objectID": "reference/ts_features.html#returns",
+    "href": "reference/ts_features.html#returns",
+    "title": "ts_features",
     "section": "",
-    "text": "augment_timeseries_signature(data, date_column)\nAdd 29 time series features to a DataFrame.\nThe function augment_timeseries_signature takes a DataFrame and a date column as input and returns the original DataFrame with the 29 different date and time based features added as new columns:"
+    "text": "Type\nDescription\n\n\n\n\nThe function ts_features returns a pandas DataFrame containing the extracted time series features."
   },
   {
-    "objectID": "reference/augment_timeseries_signature.html#parameters",
-    "href": "reference/augment_timeseries_signature.html#parameters",
-    "title": "augment_timeseries_signature",
-    "section": "Parameters",
-    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame\nThe data parameter is a pandas DataFrame that contains the time series data.\nrequired\n\n\ndate_column\nstr\nThe date_column parameter is a string that represents the name of the date column in the data DataFrame.\nrequired"
-  },
-  {
-    "objectID": "reference/augment_timeseries_signature.html#returns",
-    "href": "reference/augment_timeseries_signature.html#returns",
-    "title": "augment_timeseries_signature",
-    "section": "Returns",
-    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\nA pandas DataFrame that is the concatenation of the original data DataFrame and the ts_signature_df DataFrame."
-  },
-  {
-    "objectID": "reference/augment_timeseries_signature.html#examples",
-    "href": "reference/augment_timeseries_signature.html#examples",
-    "title": "augment_timeseries_signature",
-    "section": "Examples",
-    "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\npd.set_option('display.max_columns', None)\n\n# Adds 29 new time series features as columns to the original DataFrame\n( \n    tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])\n        .augment_timeseries_signature(date_column = 'order_date')\n        .head()\n)\n\n\n\n\n\n\n\n\norder_id\norder_line\norder_date\nquantity\nprice\ntotal_price\nmodel\ncategory_1\ncategory_2\nframe_material\nbikeshop_name\ncity\nstate\norder_date_index_num\norder_date_year\norder_date_year_iso\norder_date_yearstart\norder_date_yearend\norder_date_leapyear\norder_date_half\norder_date_quarter\norder_date_quarteryear\norder_date_quarterstart\norder_date_quarterend\norder_date_month\norder_date_month_lbl\norder_date_monthstart\norder_date_monthend\norder_date_yweek\norder_date_mweek\norder_date_wday\norder_date_wday_lbl\norder_date_mday\norder_date_qday\norder_date_yday\norder_date_weekend\norder_date_hour\norder_date_minute\norder_date_second\norder_date_msecond\norder_date_nsecond\norder_date_am_pm\n\n\n\n\n0\n1\n1\n2011-01-07\n1\n6070\n6070\nJekyll Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n1294358400\n2011\n2011\n0\n0\n0\n1\n1\n2011Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n5\nFriday\n7\n7\n7\n0\n0\n0\n0\n0\n0\nam\n\n\n1\n1\n2\n2011-01-07\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n1294358400\n2011\n2011\n0\n0\n0\n1\n1\n2011Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n5\nFriday\n7\n7\n7\n0\n0\n0\n0\n0\n0\nam\n\n\n2\n2\n1\n2011-01-10\n1\n2770\n2770\nBeast of the East 1\nMountain\nTrail\nAluminum\nKansas City 29ers\nKansas City\nKS\n1294617600\n2011\n2011\n0\n0\n0\n1\n1\n2011Q1\n0\n0\n1\nJanuary\n0\n0\n2\n2\n1\nMonday\n10\n10\n10\n0\n0\n0\n0\n0\n0\nam\n\n\n3\n2\n2\n2011-01-10\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nKansas City 29ers\nKansas City\nKS\n1294617600\n2011\n2011\n0\n0\n0\n1\n1\n2011Q1\n0\n0\n1\nJanuary\n0\n0\n2\n2\n1\nMonday\n10\n10\n10\n0\n0\n0\n0\n0\n0\nam\n\n\n4\n3\n1\n2011-01-10\n1\n10660\n10660\nSupersix Evo Hi-Mod Team\nRoad\nElite Road\nCarbon\nLouisville Race Equipment\nLouisville\nKY\n1294617600\n2011\n2011\n0\n0\n0\n1\n1\n2011Q1\n0\n0\n1\nJanuary\n0\n0\n2\n2\n1\nMonday\n10\n10\n10\n0\n0\n0\n0\n0\n0\nam"
-  },
-  {
-    "objectID": "reference/make_weekend_sequence.html",
-    "href": "reference/make_weekend_sequence.html",
-    "title": "make_weekend_sequence",
+    "objectID": "reference/ts_features.html#examples",
+    "href": "reference/ts_features.html#examples",
+    "title": "ts_features",
     "section": "",
-    "text": "make_weekend_sequence(start_date, end_date, friday_saturday=False, remove_holidays=False, country=None)\nGenerate a sequence of weekend dates within a specified date range, optionally excluding holidays."
+    "text": "# REQUIRES tsfeatures: pip install tsfeatures\nimport pandas as pd\nimport timetk as tk\n\n# tsfeatures comes with these features:\nfrom tsfeatures import (\n    acf_features, arch_stat, crossing_points,\n    entropy, flat_spots, heterogeneity,\n    holt_parameters, lumpiness, nonlinearity,\n    pacf_features, stl_features, stability,\n    hw_parameters, unitroot_kpss, unitroot_pp,\n    series_length, hurst\n)\n\ndf = tk.load_dataset('m4_daily', parse_dates = ['date'])\ndf\n# Feature Extraction\nfeature_df = (\n    df\n        .groupby('id')\n        .ts_features(    \n            date_column  = 'date', \n            value_column = 'value',\n            features     = [acf_features, hurst],\n            freq         = 7\n        )\n) \nfeature_df"
   },
   {
-    "objectID": "reference/make_weekend_sequence.html#parameters",
-    "href": "reference/make_weekend_sequence.html#parameters",
-    "title": "make_weekend_sequence",
-    "section": "Parameters",
-    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nstart_date\nstr or datetime or pd.DatetimeIndex\nThe start date of the date range.\nrequired\n\n\nend_date\nstr or datetime or pd.DatetimeIndex\nThe end date of the date range.\nrequired\n\n\nfriday_saturday\nbool\nIf True, generates a sequence with Friday and Saturday as weekends.If False (default), generates a sequence with Saturday and Sunday as weekends.\nFalse\n\n\nremove_holidays\nbool\nIf True, excludes holidays (based on the specified country) from the generated sequence. If False (default), includes holidays in the sequence.\nFalse\n\n\ncountry\nstr\nThe name of the country for which to generate holiday-specific sequences. Defaults to None, which uses the United States as the default country.\nNone"
-  },
-  {
-    "objectID": "reference/make_weekend_sequence.html#returns",
-    "href": "reference/make_weekend_sequence.html#returns",
-    "title": "make_weekend_sequence",
-    "section": "Returns",
-    "text": "Returns\n\n\n\nType\nDescription\n\n\n\n\npd.Series\nA Series containing the generated weekday dates."
-  },
-  {
-    "objectID": "reference/make_weekend_sequence.html#examples",
-    "href": "reference/make_weekend_sequence.html#examples",
-    "title": "make_weekend_sequence",
-    "section": "Examples",
-    "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\n# United States has Saturday and Sunday as weekends\ntk.make_weekend_sequence(\"2023-01-01\", \"2023-01-31\", friday_saturday=False, remove_holidays=True, country='UnitedStates')\n\n0   2023-01-07\n1   2023-01-08\n2   2023-01-14\n3   2023-01-15\n4   2023-01-21\n5   2023-01-22\n6   2023-01-28\n7   2023-01-29\nName: Weekend Dates, dtype: datetime64[ns]\n\n\n\n# Saudi Arabia has Friday and Saturday as weekends\ntk.make_weekend_sequence(\"2023-01-01\", \"2023-01-31\", friday_saturday=True, remove_holidays=True, country='SaudiArabia')\n\n0   2023-01-06\n1   2023-01-07\n2   2023-01-13\n3   2023-01-14\n4   2023-01-20\n5   2023-01-21\n6   2023-01-27\n7   2023-01-28\nName: Weekend Dates, dtype: datetime64[ns]"
-  },
-  {
-    "objectID": "reference/load_dataset.html",
-    "href": "reference/load_dataset.html",
-    "title": "load_dataset",
+    "objectID": "reference/augment_holiday_signature.html",
+    "href": "reference/augment_holiday_signature.html",
+    "title": "augment_holiday_signature",
     "section": "",
-    "text": "datasets.get_datasets.load_dataset(name='m4_daily', verbose=False, **kwargs)\nLoad one of 12 Time Series Datasets.\nThe load_dataset function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to pandas.read_csv. The available datasets are:\nThe datasets can be loaded with timetk.load_dataset(name), where name is the name of the dataset that you want to load. The default value is set to “m4_daily”, which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned above."
+    "text": "augment_holiday_signature(data, date_column, country_name='UnitedStates')\nEngineers 4 different holiday features from a single datetime for 80+ countries.\nNote: Requires the holidays package to be installed. See https://pypi.org/project/holidays/ for more information."
   },
   {
-    "objectID": "reference/load_dataset.html#parameters",
-    "href": "reference/load_dataset.html#parameters",
-    "title": "load_dataset",
+    "objectID": "reference/augment_holiday_signature.html#parameters",
+    "href": "reference/augment_holiday_signature.html#parameters",
+    "title": "augment_holiday_signature",
     "section": "Parameters",
-    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nname\nstr\nThe name parameter is used to specify the name of the dataset that you want to load. The default value is set to “m4_daily”, which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned in the function’s docstring.\n'm4_daily'\n\n\nverbose\nbool\nThe verbose parameter is a boolean flag that determines whether or not to print the names of the available datasets. If verbose is set to True, the function will print the names of the available datasets. If verbose is set to False, the function will not print anything.\nFalse\n\n\n**kwargs\n\nThe **kwargs parameter is used to pass additional arguments to pandas.read_csv.\n{}"
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame\nThe input DataFrame.\nrequired\n\n\ndate_column\nstr\nThe name of the datetime-like column in the DataFrame.\nrequired\n\n\ncountry_name\nstr\nThe name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code: Any of the following are acceptable keys for country_name: Available Countries: Full Country, Abrv. #1, #2, #3 Angola: Angola, AO, AGO, Argentina: Argentina, AR, ARG, Aruba: Aruba, AW, ABW, Australia: Australia, AU, AUS, Austria: Austria, AT, AUT, Bangladesh: Bangladesh, BD, BGD, Belarus: Belarus, BY, BLR, Belgium: Belgium, BE, BEL, Botswana: Botswana, BW, BWA, Brazil: Brazil, BR, BRA, Bulgaria: Bulgaria, BG, BLG, Burundi: Burundi, BI, BDI, Canada: Canada, CA, CAN, Chile: Chile, CL, CHL, Colombia: Colombia, CO, COL, Croatia: Croatia, HR, HRV, Curacao: Curacao, CW, CUW, Czechia: Czechia, CZ, CZE, Denmark: Denmark, DK, DNK, Djibouti: Djibouti, DJ, DJI, Dominican Republic: DominicanRepublic, DO, DOM, Egypt: Egypt, EG, EGY, England: England, Estonia: Estonia, EE, EST, European Central Bank: EuropeanCentralBank, Finland: Finland, FI, FIN, France: France, FR, FRA, Georgia: Georgia, GE, GEO, Germany: Germany, DE, DEU, Greece: Greece, GR, GRC, Honduras: Honduras, HN, HND, Hong Kong: HongKong, HK, HKG, Hungary: Hungary, HU, HUN, Iceland: Iceland, IS, ISL, India: India, IN, IND, Ireland: Ireland, IE, IRL, Isle Of Man: IsleOfMan, Israel: Israel, IL, ISR, Italy: Italy, IT, ITA, Jamaica: Jamaica, JM, JAM, Japan: Japan, JP, JPN, Kenya: Kenya, KE, KEN, Korea: Korea, KR, KOR, Latvia: Latvia, LV, LVA, Lithuania: Lithuania, LT, LTU, Luxembourg: Luxembourg, LU, LUX, Malaysia: Malaysia, MY, MYS, Malawi: Malawi, MW, MWI, Mexico: Mexico, MX, MEX, Morocco: Morocco, MA, MOR, Mozambique: Mozambique, MZ, MOZ, Netherlands: Netherlands, NL, NLD, NewZealand: NewZealand, NZ, NZL, Nicaragua: Nicaragua, NI, NIC, Nigeria: Nigeria, NG, NGA, Northern Ireland: NorthernIreland, Norway: Norway, NO, NOR, Paraguay: Paraguay, PY, PRY, Peru: Peru, PE, PER, Poland: Poland, PL, POL, Portugal: Portugal, PT, PRT, Portugal Ext: PortugalExt, PTE, Romania: Romania, RO, ROU, Russia: Russia, RU, RUS, Saudi Arabia: SaudiArabia, SA, SAU, Scotland: Scotland, Serbia: Serbia, RS, SRB, Singapore: Singapore, SG, SGP, Slovokia: Slovokia, SK, SVK, Slovenia: Slovenia, SI, SVN, South Africa: SouthAfrica, ZA, ZAF, Spain: Spain, ES, ESP, Sweden: Sweden, SE, SWE, Switzerland: Switzerland, CH, CHE, Turkey: Turkey, TR, TUR, Ukraine: Ukraine, UA, UKR, United Arab Emirates: UnitedArabEmirates, AE, ARE, United Kingdom: UnitedKingdom, GB, GBR, UK, United States: UnitedStates, US, USA, Venezuela: Venezuela, YV, VEN, Vietnam: Vietnam, VN, VNM, Wales: Wales\n'UnitedStates'"
   },
   {
-    "objectID": "reference/load_dataset.html#returns",
-    "href": "reference/load_dataset.html#returns",
-    "title": "load_dataset",
+    "objectID": "reference/augment_holiday_signature.html#returns",
+    "href": "reference/augment_holiday_signature.html#returns",
+    "title": "augment_holiday_signature",
     "section": "Returns",
-    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\nThe load_dataset function returns the requested dataset as a pandas DataFrame."
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame:\nA pandas DataFrame with three holiday-specific features: - is_holiday: (0, 1) indicator for holiday - before_holiday: (0, 1) indicator for day before holiday - after_holiday: (0, 1) indicator for day after holiday - holiday_name: name of the holiday"
   },
   {
-    "objectID": "reference/load_dataset.html#examples",
-    "href": "reference/load_dataset.html#examples",
-    "title": "load_dataset",
+    "objectID": "reference/augment_holiday_signature.html#example",
+    "href": "reference/augment_holiday_signature.html#example",
+    "title": "augment_holiday_signature",
+    "section": "Example",
+    "text": "Example\n\nimport pandas as pd\nimport timetk as tk\n\n# Make a DataFrame with a date column\nstart_date = '2023-01-01'\nend_date = '2023-01-10'\ndf = pd.DataFrame(pd.date_range(start=start_date, end=end_date), columns=['date'])\n\n# Add holiday features for US\ntk.augment_holiday_signature(df, 'date', 'UnitedStates')\n\n\n\n\n\n\n\n\ndate\nis_holiday\nbefore_holiday\nafter_holiday\nholiday_name\n\n\n\n\n0\n2023-01-01\n1\n1\n0\nNew Year's Day\n\n\n1\n2023-01-02\n1\n0\n1\nNew Year's Day (Observed)\n\n\n2\n2023-01-03\n0\n0\n1\nNaN\n\n\n3\n2023-01-04\n0\n0\n0\nNaN\n\n\n4\n2023-01-05\n0\n0\n0\nNaN\n\n\n5\n2023-01-06\n0\n0\n0\nNaN\n\n\n6\n2023-01-07\n0\n0\n0\nNaN\n\n\n7\n2023-01-08\n0\n0\n0\nNaN\n\n\n8\n2023-01-09\n0\n0\n0\nNaN\n\n\n9\n2023-01-10\n0\n0\n0\nNaN\n\n\n\n\n\n\n\n\n# Add holiday features for France\ntk.augment_holiday_signature(df, 'date', 'France')\n\n\n\n\n\n\n\n\ndate\nis_holiday\nbefore_holiday\nafter_holiday\nholiday_name\n\n\n\n\n0\n2023-01-01\n1\n0\n0\nNew Year's Day\n\n\n1\n2023-01-02\n0\n0\n1\nNaN\n\n\n2\n2023-01-03\n0\n0\n0\nNaN\n\n\n3\n2023-01-04\n0\n0\n0\nNaN\n\n\n4\n2023-01-05\n0\n0\n0\nNaN\n\n\n5\n2023-01-06\n0\n0\n0\nNaN\n\n\n6\n2023-01-07\n0\n0\n0\nNaN\n\n\n7\n2023-01-08\n0\n0\n0\nNaN\n\n\n8\n2023-01-09\n0\n0\n0\nNaN\n\n\n9\n2023-01-10\n0\n0\n0\nNaN"
+  },
+  {
+    "objectID": "reference/get_timeseries_signature.html",
+    "href": "reference/get_timeseries_signature.html",
+    "title": "get_timeseries_signature",
+    "section": "",
+    "text": "get_timeseries_signature(idx)\nConvert a timestamp to a set of 29 time series features.\nThe function tk_get_timeseries_signature engineers 29 different date and time based features from a single datetime index idx:"
+  },
+  {
+    "objectID": "reference/get_timeseries_signature.html#parameters",
+    "href": "reference/get_timeseries_signature.html#parameters",
+    "title": "get_timeseries_signature",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DatetimeIndex\nidx is a pandas Series object containing datetime values. Alternatively a pd.DatetimeIndex can be passed.\nrequired"
+  },
+  {
+    "objectID": "reference/get_timeseries_signature.html#returns",
+    "href": "reference/get_timeseries_signature.html#returns",
+    "title": "get_timeseries_signature",
+    "section": "Returns",
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\nThe function tk_get_timeseries_signature returns a pandas DataFrame that contains 29 different date and time based features derived from a single datetime column."
+  },
+  {
+    "objectID": "reference/get_timeseries_signature.html#examples",
+    "href": "reference/get_timeseries_signature.html#examples",
+    "title": "get_timeseries_signature",
     "section": "Examples",
-    "text": "Examples\n\nimport timetk as tk\nimport pandas as pd\n\n\n# Stocks Daily Dataset: META, APPL, AMZN, NFLX, NVDA, GOOG\ndf = tk.load_dataset('stocks_daily', parse_dates = ['date'])\n\ndf\n\n\n\n\n\n\n\n\nsymbol\ndate\nopen\nhigh\nlow\nclose\nvolume\nadjusted\n\n\n\n\n0\nMETA\n2013-01-02\n27.440001\n28.180000\n27.420000\n28.000000\n69846400\n28.000000\n\n\n1\nMETA\n2013-01-03\n27.879999\n28.469999\n27.590000\n27.770000\n63140600\n27.770000\n\n\n2\nMETA\n2013-01-04\n28.010000\n28.930000\n27.830000\n28.760000\n72715400\n28.760000\n\n\n3\nMETA\n2013-01-07\n28.690001\n29.790001\n28.650000\n29.420000\n83781800\n29.420000\n\n\n4\nMETA\n2013-01-08\n29.510000\n29.600000\n28.860001\n29.059999\n45871300\n29.059999\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n16189\nGOOG\n2023-09-15\n138.800003\n139.360001\n137.179993\n138.300003\n48947600\n138.300003\n\n\n16190\nGOOG\n2023-09-18\n137.630005\n139.929993\n137.630005\n138.960007\n16233600\n138.960007\n\n\n16191\nGOOG\n2023-09-19\n138.250000\n139.175003\n137.500000\n138.830002\n15479100\n138.830002\n\n\n16192\nGOOG\n2023-09-20\n138.830002\n138.839996\n134.520004\n134.589996\n21473500\n134.589996\n\n\n16193\nGOOG\n2023-09-21\n132.389999\n133.190002\n131.089996\n131.360001\n22042700\n131.360001\n\n\n\n\n16194 rows × 8 columns\n\n\n\n\n# Bike Sales CRM Sample Dataset\ndf = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])\n\ndf\n\n\n\n\n\n\n\n\norder_id\norder_line\norder_date\nquantity\nprice\ntotal_price\nmodel\ncategory_1\ncategory_2\nframe_material\nbikeshop_name\ncity\nstate\n\n\n\n\n0\n1\n1\n2011-01-07\n1\n6070\n6070\nJekyll Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n\n\n1\n1\n2\n2011-01-07\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n\n\n2\n2\n1\n2011-01-10\n1\n2770\n2770\nBeast of the East 1\nMountain\nTrail\nAluminum\nKansas City 29ers\nKansas City\nKS\n\n\n3\n2\n2\n2011-01-10\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nKansas City 29ers\nKansas City\nKS\n\n\n4\n3\n1\n2011-01-10\n1\n10660\n10660\nSupersix Evo Hi-Mod Team\nRoad\nElite Road\nCarbon\nLouisville Race Equipment\nLouisville\nKY\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n2461\n321\n3\n2011-12-22\n1\n1410\n1410\nCAAD8 105\nRoad\nElite Road\nAluminum\nMiami Race Equipment\nMiami\nFL\n\n\n2462\n322\n1\n2011-12-28\n1\n1250\n1250\nSynapse Disc Tiagra\nRoad\nEndurance Road\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2463\n322\n2\n2011-12-28\n1\n2660\n2660\nBad Habit 2\nMountain\nTrail\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2464\n322\n3\n2011-12-28\n1\n2340\n2340\nF-Si 1\nMountain\nCross Country Race\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2465\n322\n4\n2011-12-28\n1\n5860\n5860\nSynapse Hi-Mod Dura Ace\nRoad\nEndurance Road\nCarbon\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n\n\n2466 rows × 13 columns\n\n\n\n\n# Taylor 30-Minute Power Demand Dataset\ndf = tk.load_dataset('taylor_30_min', parse_dates = ['date'])\n\ndf\n\n\n\n\n\n\n\n\ndate\nvalue\n\n\n\n\n0\n2000-06-05 00:00:00+00:00\n22262\n\n\n1\n2000-06-05 00:30:00+00:00\n21756\n\n\n2\n2000-06-05 01:00:00+00:00\n22247\n\n\n3\n2000-06-05 01:30:00+00:00\n22759\n\n\n4\n2000-06-05 02:00:00+00:00\n22549\n\n\n...\n...\n...\n\n\n4027\n2000-08-27 21:30:00+00:00\n27946\n\n\n4028\n2000-08-27 22:00:00+00:00\n27133\n\n\n4029\n2000-08-27 22:30:00+00:00\n25996\n\n\n4030\n2000-08-27 23:00:00+00:00\n24610\n\n\n4031\n2000-08-27 23:30:00+00:00\n23132\n\n\n\n\n4032 rows × 2 columns"
+    "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\npd.set_option('display.max_columns', None)\n\ndates = pd.date_range(start = '2019-01', end = '2019-03', freq = 'D')\n\n# Makes 29 new time series features from the dates\ntk.get_timeseries_signature(dates).head()\n\n\n\n\n\n\n\n\nindex_num\nyear\nyear_iso\nyearstart\nyearend\nleapyear\nhalf\nquarter\nquarteryear\nquarterstart\nquarterend\nmonth\nmonth_lbl\nmonthstart\nmonthend\nyweek\nmweek\nwday\nwday_lbl\nmday\nqday\nyday\nweekend\nhour\nminute\nsecond\nmsecond\nnsecond\nam_pm\n\n\n\n\n0\n1546300800\n2019\n2019\n1\n0\n0\n1\n1\n2019Q1\n1\n0\n1\nJanuary\n1\n0\n1\n1\n2\nTuesday\n1\n1\n1\n0\n0\n0\n0\n0\n0\nam\n\n\n1\n1546387200\n2019\n2019\n0\n0\n0\n1\n1\n2019Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n3\nWednesday\n2\n2\n2\n0\n0\n0\n0\n0\n0\nam\n\n\n2\n1546473600\n2019\n2019\n0\n0\n0\n1\n1\n2019Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n4\nThursday\n3\n3\n3\n0\n0\n0\n0\n0\n0\nam\n\n\n3\n1546560000\n2019\n2019\n0\n0\n0\n1\n1\n2019Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n5\nFriday\n4\n4\n4\n0\n0\n0\n0\n0\n0\nam\n\n\n4\n1546646400\n2019\n2019\n0\n0\n0\n1\n1\n2019Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n6\nSaturday\n5\n5\n5\n0\n0\n0\n0\n0\n0\nam"
+  },
+  {
+    "objectID": "reference/get_holiday_signature.html",
+    "href": "reference/get_holiday_signature.html",
+    "title": "get_holiday_signature",
+    "section": "",
+    "text": "get_holiday_signature(idx, country_name='UnitedStates')\nEngineers 4 different holiday features from a single datetime for 80+ countries.\nNote: Requires the holidays package to be installed. See https://pypi.org/project/holidays/ for more information."
+  },
+  {
+    "objectID": "reference/get_holiday_signature.html#parameters",
+    "href": "reference/get_holiday_signature.html#parameters",
+    "title": "get_holiday_signature",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.DatetimeIndex or pd.Series\nA pandas DatetimeIndex or Series containing the dates for which you want to get the holiday signature.\nrequired\n\n\ncountry_name\nstr\nThe name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code: Any of the following are acceptable keys for country_name: Available Countries: Full Country, Abrv. #1, #2, #3 Angola: Angola, AO, AGO, Argentina: Argentina, AR, ARG, Aruba: Aruba, AW, ABW, Australia: Australia, AU, AUS, Austria: Austria, AT, AUT, Bangladesh: Bangladesh, BD, BGD, Belarus: Belarus, BY, BLR, Belgium: Belgium, BE, BEL, Botswana: Botswana, BW, BWA, Brazil: Brazil, BR, BRA, Bulgaria: Bulgaria, BG, BLG, Burundi: Burundi, BI, BDI, Canada: Canada, CA, CAN, Chile: Chile, CL, CHL, Colombia: Colombia, CO, COL, Croatia: Croatia, HR, HRV, Curacao: Curacao, CW, CUW, Czechia: Czechia, CZ, CZE, Denmark: Denmark, DK, DNK, Djibouti: Djibouti, DJ, DJI, Dominican Republic: DominicanRepublic, DO, DOM, Egypt: Egypt, EG, EGY, England: England, Estonia: Estonia, EE, EST, European Central Bank: EuropeanCentralBank, Finland: Finland, FI, FIN, France: France, FR, FRA, Georgia: Georgia, GE, GEO, Germany: Germany, DE, DEU, Greece: Greece, GR, GRC, Honduras: Honduras, HN, HND, Hong Kong: HongKong, HK, HKG, Hungary: Hungary, HU, HUN, Iceland: Iceland, IS, ISL, India: India, IN, IND, Ireland: Ireland, IE, IRL, Isle Of Man: IsleOfMan, Israel: Israel, IL, ISR, Italy: Italy, IT, ITA, Jamaica: Jamaica, JM, JAM, Japan: Japan, JP, JPN, Kenya: Kenya, KE, KEN, Korea: Korea, KR, KOR, Latvia: Latvia, LV, LVA, Lithuania: Lithuania, LT, LTU, Luxembourg: Luxembourg, LU, LUX, Malaysia: Malaysia, MY, MYS, Malawi: Malawi, MW, MWI, Mexico: Mexico, MX, MEX, Morocco: Morocco, MA, MOR, Mozambique: Mozambique, MZ, MOZ, Netherlands: Netherlands, NL, NLD, NewZealand: NewZealand, NZ, NZL, Nicaragua: Nicaragua, NI, NIC, Nigeria: Nigeria, NG, NGA, Northern Ireland: NorthernIreland, Norway: Norway, NO, NOR, Paraguay: Paraguay, PY, PRY, Peru: Peru, PE, PER, Poland: Poland, PL, POL, Portugal: Portugal, PT, PRT, Portugal Ext: PortugalExt, PTE, Romania: Romania, RO, ROU, Russia: Russia, RU, RUS, Saudi Arabia: SaudiArabia, SA, SAU, Scotland: Scotland, Serbia: Serbia, RS, SRB, Singapore: Singapore, SG, SGP, Slovokia: Slovokia, SK, SVK, Slovenia: Slovenia, SI, SVN, South Africa: SouthAfrica, ZA, ZAF, Spain: Spain, ES, ESP, Sweden: Sweden, SE, SWE, Switzerland: Switzerland, CH, CHE, Turkey: Turkey, TR, TUR, Ukraine: Ukraine, UA, UKR, United Arab Emirates: UnitedArabEmirates, AE, ARE, United Kingdom: UnitedKingdom, GB, GBR, UK, United States: UnitedStates, US, USA, Venezuela: Venezuela, YV, VEN, Vietnam: Vietnam, VN, VNM, Wales: Wales\n'UnitedStates'"
+  },
+  {
+    "objectID": "reference/get_holiday_signature.html#returns",
+    "href": "reference/get_holiday_signature.html#returns",
+    "title": "get_holiday_signature",
+    "section": "Returns",
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame:\nA pandas DataFrame with three holiday-specific features: - is_holiday: (0, 1) indicator for holiday - before_holiday: (0, 1) indicator for day before holiday - after_holiday: (0, 1) indicator for day after holiday - holiday_name: name of the holiday"
+  },
+  {
+    "objectID": "reference/get_holiday_signature.html#example",
+    "href": "reference/get_holiday_signature.html#example",
+    "title": "get_holiday_signature",
+    "section": "Example",
+    "text": "Example\n\nimport pandas as pd\nimport timetk as tk\n\n# Make a DataFrame with a date column\nstart_date = '2023-01-01'\nend_date = '2023-01-10'\ndates = pd.date_range(start=start_date, end=end_date)\n\n# Get holiday features for US\ntk.get_holiday_signature(dates, 'UnitedStates')\n\n\n\n\n\n\n\n\nidx\nis_holiday\nbefore_holiday\nafter_holiday\nholiday_name\n\n\n\n\n0\n2023-01-01\n1\n1\n0\nNew Year's Day\n\n\n1\n2023-01-02\n1\n0\n1\nNew Year's Day (Observed)\n\n\n2\n2023-01-03\n0\n0\n1\nNaN\n\n\n3\n2023-01-04\n0\n0\n0\nNaN\n\n\n4\n2023-01-05\n0\n0\n0\nNaN\n\n\n5\n2023-01-06\n0\n0\n0\nNaN\n\n\n6\n2023-01-07\n0\n0\n0\nNaN\n\n\n7\n2023-01-08\n0\n0\n0\nNaN\n\n\n8\n2023-01-09\n0\n0\n0\nNaN\n\n\n9\n2023-01-10\n0\n0\n0\nNaN\n\n\n\n\n\n\n\n\n# Get holiday features for France\ntk.get_holiday_signature(dates, 'France')\n\n\n\n\n\n\n\n\nidx\nis_holiday\nbefore_holiday\nafter_holiday\nholiday_name\n\n\n\n\n0\n2023-01-01\n1\n0\n0\nNew Year's Day\n\n\n1\n2023-01-02\n0\n0\n1\nNaN\n\n\n2\n2023-01-03\n0\n0\n0\nNaN\n\n\n3\n2023-01-04\n0\n0\n0\nNaN\n\n\n4\n2023-01-05\n0\n0\n0\nNaN\n\n\n5\n2023-01-06\n0\n0\n0\nNaN\n\n\n6\n2023-01-07\n0\n0\n0\nNaN\n\n\n7\n2023-01-08\n0\n0\n0\nNaN\n\n\n8\n2023-01-09\n0\n0\n0\nNaN\n\n\n9\n2023-01-10\n0\n0\n0\nNaN\n\n\n\n\n\n\n\n\n# Pandas Series\npd.Series(dates, name='dates').get_holiday_signature('UnitedStates')\n\n\n\n\n\n\n\n\ndates\nis_holiday\nbefore_holiday\nafter_holiday\nholiday_name\n\n\n\n\n0\n2023-01-01\n1\n1\n0\nNew Year's Day\n\n\n1\n2023-01-02\n1\n0\n1\nNew Year's Day (Observed)\n\n\n2\n2023-01-03\n0\n0\n1\nNaN\n\n\n3\n2023-01-04\n0\n0\n0\nNaN\n\n\n4\n2023-01-05\n0\n0\n0\nNaN\n\n\n5\n2023-01-06\n0\n0\n0\nNaN\n\n\n6\n2023-01-07\n0\n0\n0\nNaN\n\n\n7\n2023-01-08\n0\n0\n0\nNaN\n\n\n8\n2023-01-09\n0\n0\n0\nNaN\n\n\n9\n2023-01-10\n0\n0\n0\nNaN"
+  },
+  {
+    "objectID": "reference/make_future_timeseries.html",
+    "href": "reference/make_future_timeseries.html",
+    "title": "make_future_timeseries",
+    "section": "",
+    "text": "make_future_timeseries(idx, length_out, force_regular=False)\nMake future dates for a time series.\nThe function make_future_timeseries takes a pandas Series or DateTimeIndex and generates a future sequence of dates based on the frequency of the input series."
+  },
+  {
+    "objectID": "reference/make_future_timeseries.html#parameters",
+    "href": "reference/make_future_timeseries.html#parameters",
+    "title": "make_future_timeseries",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DateTimeIndex\nThe idx parameter is the input time series data. It can be either a pandas Series or a pandas DateTimeIndex. It represents the existing dates in the time series.\nrequired\n\n\nlength_out\nint\nThe parameter length_out is an integer that represents the number of future dates to generate for the time series.\nrequired\n\n\nforce_regular\nbool\nThe force_regular parameter is a boolean flag that determines whether the frequency of the future dates should be forced to be regular. If force_regular is set to True, the frequency of the future dates will be forced to be regular. If force_regular is set to False, the frequency of the future dates will be inferred from the input data (e.g. business calendars might be used). The default value is False.\nFalse"
+  },
+  {
+    "objectID": "reference/make_future_timeseries.html#returns",
+    "href": "reference/make_future_timeseries.html#returns",
+    "title": "make_future_timeseries",
+    "section": "Returns",
+    "text": "Returns\n\n\n\nType\nDescription\n\n\n\n\npd.Series\nA pandas Series object containing future dates."
+  },
+  {
+    "objectID": "reference/make_future_timeseries.html#examples",
+    "href": "reference/make_future_timeseries.html#examples",
+    "title": "make_future_timeseries",
+    "section": "Examples",
+    "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\ndates = pd.Series(pd.to_datetime(['2022-01-01', '2022-01-02', '2022-01-03', '2022-01-04']))\ndates\n\n0   2022-01-01\n1   2022-01-02\n2   2022-01-03\n3   2022-01-04\ndtype: datetime64[ns]\n\n\n\n# DateTimeIndex: Generate 5 future dates\nfuture_dates_dt = tk.make_future_timeseries(dates, 5)\nfuture_dates_dt\n\n0   2022-01-05\n1   2022-01-06\n2   2022-01-07\n3   2022-01-08\n4   2022-01-09\ndtype: datetime64[ns]\n\n\n\n# Series: Generate 5 future dates\npd.Series(future_dates_dt).make_future_timeseries(5)\n\n0   2022-01-10\n1   2022-01-11\n2   2022-01-12\n3   2022-01-13\n4   2022-01-14\ndtype: datetime64[ns]\n\n\n\ntimestamps = [\"2023-01-01 01:00\", \"2023-01-01 02:00\", \"2023-01-01 03:00\", \"2023-01-01 04:00\", \"2023-01-01 05:00\"]\n\ndates = pd.to_datetime(timestamps)\n\ntk.make_future_timeseries(dates, 5)\n\n0   2023-01-01 06:00:00\n1   2023-01-01 07:00:00\n2   2023-01-01 08:00:00\n3   2023-01-01 09:00:00\n4   2023-01-01 10:00:00\ndtype: datetime64[ns]\n\n\n\n# Monthly Frequency: Generate 4 future dates\ndates = pd.to_datetime([\"2021-01-01\", \"2021-02-01\", \"2021-03-01\", \"2021-04-01\"])\n\ntk.make_future_timeseries(dates, 4)\n\n0   2021-05-01\n1   2021-06-01\n2   2021-07-01\n3   2021-08-01\ndtype: datetime64[ns]\n\n\n\n# Quarterly Frequency: Generate 4 future dates\ndates = pd.to_datetime([\"2021-01-01\", \"2021-04-01\", \"2021-07-01\", \"2021-10-01\"])\n\ntk.make_future_timeseries(dates, 4)\n\n0   2022-01-01\n1   2022-04-01\n2   2022-07-01\n3   2022-10-01\ndtype: datetime64[ns]\n\n\n\n# Irregular Dates: Business Days\ndates = pd.to_datetime([\"2021-01-01\", \"2021-01-04\", \"2021-01-05\", \"2021-01-06\"])\n\ntk.get_pandas_frequency(dates)\n\ntk.make_future_timeseries(dates, 4)\n\n0   2021-01-07\n1   2021-01-08\n2   2021-01-11\n3   2021-01-12\ndtype: datetime64[ns]\n\n\n\n# Irregular Dates: Business Days (Force Regular)    \ntk.make_future_timeseries(dates, 4, force_regular=True)\n\n0   2021-01-07\n1   2021-01-08\n2   2021-01-09\n3   2021-01-10\ndtype: datetime64[ns]"
+  },
+  {
+    "objectID": "reference/augment_leads.html",
+    "href": "reference/augment_leads.html",
+    "title": "augment_leads",
+    "section": "",
+    "text": "augment_leads(data, date_column, value_column, leads=1)\nAdds leads to a Pandas DataFrame or DataFrameGroupBy object.\nThe augment_leads function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a lead or list of leads, and adds leaded versions of the value columns to the DataFrame."
+  },
+  {
+    "objectID": "reference/augment_leads.html#parameters",
+    "href": "reference/augment_leads.html#parameters",
+    "title": "augment_leads",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy\nThe data parameter is the input DataFrame or DataFrameGroupBy object that you want to add leaded columns to.\nrequired\n\n\ndate_column\nstr\nThe date_column parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the leaded values.\nrequired\n\n\nvalue_column\nstr or list\nThe value_column parameter is the column(s) in the DataFrame that you want to add leaded values for. It can be either a single column name (string) or a list of column names.\nrequired\n\n\nleads\nint or tuple or list\nThe leads parameter is an integer, tuple, or list that specifies the number of leaded values to add to the DataFrame. If it is an integer, the function will add that number of leaded values for each column specified in the value_column parameter. If it is a tuple, it will generate leads from the first to the second value (inclusive). If it is a list, it will generate leads based on the values in the list.\n1"
+  },
+  {
+    "objectID": "reference/augment_leads.html#returns",
+    "href": "reference/augment_leads.html#returns",
+    "title": "augment_leads",
+    "section": "Returns",
+    "text": "Returns\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\nA Pandas DataFrame with leaded columns added to it."
+  },
+  {
+    "objectID": "reference/augment_leads.html#examples",
+    "href": "reference/augment_leads.html#examples",
+    "title": "augment_leads",
+    "section": "Examples",
+    "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\ndf = tk.load_dataset('m4_daily', parse_dates=['date'])\n\n\n# Add a leaded value of 2 for each grouped time series\nleaded_df = (\n    df \n        .groupby('id')\n        .augment_leads(\n            date_column='date',\n            value_column='value',\n            leads=2\n        )\n)\nleaded_df\n\n\n\n\n\n\n\n\nid\ndate\nvalue\nvalue_lead_2\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\n2048.7\n\n\n1\nD10\n2014-07-04\n2073.4\n2048.9\n\n\n2\nD10\n2014-07-05\n2048.7\n2006.4\n\n\n3\nD10\n2014-07-06\n2048.9\n2017.6\n\n\n4\nD10\n2014-07-07\n2006.4\n2019.1\n\n\n...\n...\n...\n...\n...\n\n\n9738\nD500\n2012-09-19\n9418.8\n9445.9\n\n\n9739\nD500\n2012-09-20\n9365.7\n9497.9\n\n\n9740\nD500\n2012-09-21\n9445.9\n9545.3\n\n\n9741\nD500\n2012-09-22\n9497.9\nNaN\n\n\n9742\nD500\n2012-09-23\n9545.3\nNaN\n\n\n\n\n9743 rows × 4 columns\n\n\n\n\n# Add 7 leaded values for a single time series\nleaded_df_single = (\n    df \n        .query('id == \"D10\"')\n        .augment_leads(\n            date_column='date',\n            value_column='value',\n            leads=(1, 7)\n        )\n)\nleaded_df_single \n\n\n\n\n\n\n\n\nid\ndate\nvalue\nvalue_lead_1\nvalue_lead_2\nvalue_lead_3\nvalue_lead_4\nvalue_lead_5\nvalue_lead_6\nvalue_lead_7\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\n2073.4\n2048.7\n2048.9\n2006.4\n2017.6\n2019.1\n2007.4\n\n\n1\nD10\n2014-07-04\n2073.4\n2048.7\n2048.9\n2006.4\n2017.6\n2019.1\n2007.4\n2010.0\n\n\n2\nD10\n2014-07-05\n2048.7\n2048.9\n2006.4\n2017.6\n2019.1\n2007.4\n2010.0\n2001.5\n\n\n3\nD10\n2014-07-06\n2048.9\n2006.4\n2017.6\n2019.1\n2007.4\n2010.0\n2001.5\n1978.8\n\n\n4\nD10\n2014-07-07\n2006.4\n2017.6\n2019.1\n2007.4\n2010.0\n2001.5\n1978.8\n1988.3\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n669\nD10\n2016-05-02\n2630.7\n2649.3\n2631.8\n2622.5\n2620.1\nNaN\nNaN\nNaN\n\n\n670\nD10\n2016-05-03\n2649.3\n2631.8\n2622.5\n2620.1\nNaN\nNaN\nNaN\nNaN\n\n\n671\nD10\n2016-05-04\n2631.8\n2622.5\n2620.1\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n672\nD10\n2016-05-05\n2622.5\n2620.1\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n673\nD10\n2016-05-06\n2620.1\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n\n\n674 rows × 10 columns\n\n\n\n\n# Add 2 leaded values, 2 and 4, for a single time series\nleaded_df_single_two = (\n    df \n        .query('id == \"D10\"')\n        .augment_leads(\n            date_column='date',\n            value_column='value',\n            leads=[2, 4]\n        )\n)\nleaded_df_single_two\n\n\n\n\n\n\n\n\nid\ndate\nvalue\nvalue_lead_2\nvalue_lead_4\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\n2048.7\n2006.4\n\n\n1\nD10\n2014-07-04\n2073.4\n2048.9\n2017.6\n\n\n2\nD10\n2014-07-05\n2048.7\n2006.4\n2019.1\n\n\n3\nD10\n2014-07-06\n2048.9\n2017.6\n2007.4\n\n\n4\nD10\n2014-07-07\n2006.4\n2019.1\n2010.0\n\n\n...\n...\n...\n...\n...\n...\n\n\n669\nD10\n2016-05-02\n2630.7\n2631.8\n2620.1\n\n\n670\nD10\n2016-05-03\n2649.3\n2622.5\nNaN\n\n\n671\nD10\n2016-05-04\n2631.8\n2620.1\nNaN\n\n\n672\nD10\n2016-05-05\n2622.5\nNaN\nNaN\n\n\n673\nD10\n2016-05-06\n2620.1\nNaN\nNaN\n\n\n\n\n674 rows × 5 columns"
   },
   {
     "objectID": "reference/future_frame.html",
@@ -410,7 +438,7 @@
     "href": "reference/is_holiday.html",
     "title": "is_holiday",
     "section": "",
-    "text": "is_holiday(idx, country_name='UnitedStates', country=None)\nCheck if a given list of dates are holidays for a specified country."
+    "text": "is_holiday(idx, country_name='UnitedStates', country=None)\nCheck if a given list of dates are holidays for a specified country.\nNote: This function requires the holidays package to be installed."
   },
   {
     "objectID": "reference/is_holiday.html#parameters",
@@ -445,7 +473,7 @@
     "href": "reference/index.html",
     "title": "Function reference",
     "section": "",
-    "text": "Bend time series data to your will.\n\n\n\nsummarize_by_time\nSummarize a DataFrame or GroupBy object by time.\n\n\npad_by_time\nMake irregular time series regular by padding with missing dates.\n\n\nfuture_frame\nExtend a DataFrame or GroupBy object with future dates.\n\n\n\n\n\n\nAdd one or more feature columns to time series data.\n\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame.\n\n\naugment_holiday_signature\nEngineers 4 different holiday features from a single datetime for 80+ countries.\n\n\naugment_lags\nAdds lags to a Pandas DataFrame or DataFrameGroupBy object.\n\n\naugment_rolling\nApply one or more rolling functions and window sizes to one or more columns of a DataFrame.\n\n\n\n\n\n\nTime series functions that generate / manipulate Pandas Series.\n\n\n\nmake_future_timeseries\nMake future dates for a time series.\n\n\nmake_weekday_sequence\nGenerate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays.\n\n\nmake_weekend_sequence\nGenerate a sequence of weekend dates within a specified date range, optionally excluding holidays.\n\n\n\n\n\n\nHelper functions to make your life easier.\n\n\n\nget_pandas_frequency\nGet the frequency of a pandas Series or DatetimeIndex.\n\n\nget_timeseries_signature\nConvert a timestamp to a set of 29 time series features.\n\n\nget_holiday_signature\nEngineers 4 different holiday features from a single datetime for 80+ countries.\n\n\nfloor_date\nRound a date down to the specified unit (e.g. Flooring).\n\n\nis_holiday\nCheck if a given list of dates are holidays for a specified country.\n\n\nweek_of_month\nThe “week_of_month” function calculates the week number of a given date within its month.\n\n\n\n\n\n\nPractice timetk with 12 complementary time series datasets.\n\n\n\nget_available_datasets\nGet a list of 12 datasets that can be loaded with timetk.load_dataset.\n\n\nload_dataset\nLoad one of 12 Time Series Datasets."
+    "text": "Bend time series data to your will.\n\n\n\nsummarize_by_time\nSummarize a DataFrame or GroupBy object by time.\n\n\npad_by_time\nMake irregular time series regular by padding with missing dates.\n\n\nfuture_frame\nExtend a DataFrame or GroupBy object with future dates.\n\n\n\n\n\n\nAdd one or more feature columns to time series data.\n\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame.\n\n\naugment_holiday_signature\nEngineers 4 different holiday features from a single datetime for 80+ countries.\n\n\naugment_lags\nAdds lags to a Pandas DataFrame or DataFrameGroupBy object.\n\n\naugment_leads\nAdds leads to a Pandas DataFrame or DataFrameGroupBy object.\n\n\naugment_rolling\nApply one or more rolling functions and window sizes to one or more columns of a DataFrame.\n\n\n\n\n\n\nPython implementation of the R package tsfeatures.\n\n\n\nts_features\nExtracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the tsfeatures package.\n\n\n\n\n\n\nTime series functions that generate / manipulate Pandas Series.\n\n\n\nmake_future_timeseries\nMake future dates for a time series.\n\n\nmake_weekday_sequence\nGenerate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays.\n\n\nmake_weekend_sequence\nGenerate a sequence of weekend dates within a specified date range, optionally excluding holidays.\n\n\n\n\n\n\nHelper functions to make your life easier.\n\n\n\nget_pandas_frequency\nGet the frequency of a pandas Series or DatetimeIndex.\n\n\nget_timeseries_signature\nConvert a timestamp to a set of 29 time series features.\n\n\nget_holiday_signature\nEngineers 4 different holiday features from a single datetime for 80+ countries.\n\n\nfloor_date\nRound a date down to the specified unit (e.g. Flooring).\n\n\nis_holiday\nCheck if a given list of dates are holidays for a specified country.\n\n\nweek_of_month\nThe “week_of_month” function calculates the week number of a given date within its month.\n\n\n\n\n\n\nPractice timetk with 12 complementary time series datasets.\n\n\n\nget_available_datasets\nGet a list of 12 datasets that can be loaded with timetk.load_dataset.\n\n\nload_dataset\nLoad one of 12 Time Series Datasets."
   },
   {
     "objectID": "reference/index.html#wrangling-pandas-time-series-dataframes",
@@ -459,7 +487,14 @@
     "href": "reference/index.html#adding-features-to-time-series-dataframes-augmenting",
     "title": "Function reference",
     "section": "",
-    "text": "Add one or more feature columns to time series data.\n\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame.\n\n\naugment_holiday_signature\nEngineers 4 different holiday features from a single datetime for 80+ countries.\n\n\naugment_lags\nAdds lags to a Pandas DataFrame or DataFrameGroupBy object.\n\n\naugment_rolling\nApply one or more rolling functions and window sizes to one or more columns of a DataFrame."
+    "text": "Add one or more feature columns to time series data.\n\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame.\n\n\naugment_holiday_signature\nEngineers 4 different holiday features from a single datetime for 80+ countries.\n\n\naugment_lags\nAdds lags to a Pandas DataFrame or DataFrameGroupBy object.\n\n\naugment_leads\nAdds leads to a Pandas DataFrame or DataFrameGroupBy object.\n\n\naugment_rolling\nApply one or more rolling functions and window sizes to one or more columns of a DataFrame."
+  },
+  {
+    "objectID": "reference/index.html#ts-features",
+    "href": "reference/index.html#ts-features",
+    "title": "Function reference",
+    "section": "",
+    "text": "Python implementation of the R package tsfeatures.\n\n\n\nts_features\nExtracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the tsfeatures package."
   },
   {
     "objectID": "reference/index.html#time-series-for-pandas-series",
@@ -539,115 +574,143 @@
     "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\n# United States has Monday to Friday as weekdays (excluding Saturday and Sunday and holidays)\ntk.make_weekday_sequence(\"2023-01-01\", \"2023-01-15\", sunday_to_thursday=False, remove_holidays=True, country='UnitedStates')\n\n0   2023-01-03\n1   2023-01-04\n2   2023-01-05\n3   2023-01-06\n4   2023-01-09\n5   2023-01-10\n6   2023-01-11\n7   2023-01-12\n8   2023-01-13\nName: Weekday Dates, dtype: datetime64[ns]\n\n\n\n# Israel has Sunday to Thursday as weekdays (excluding Friday and Saturday and Israel holidays)\ntk.make_weekday_sequence(\"2023-01-01\", \"2023-01-15\", sunday_to_thursday=True, remove_holidays=True, country='Israel')\n\n0    2023-01-01\n1    2023-01-02\n2    2023-01-03\n3    2023-01-04\n4    2023-01-05\n5    2023-01-08\n6    2023-01-09\n7    2023-01-10\n8    2023-01-11\n9    2023-01-12\n10   2023-01-15\nName: Weekday Dates, dtype: datetime64[ns]"
   },
   {
-    "objectID": "reference/make_future_timeseries.html",
-    "href": "reference/make_future_timeseries.html",
-    "title": "make_future_timeseries",
+    "objectID": "reference/load_dataset.html",
+    "href": "reference/load_dataset.html",
+    "title": "load_dataset",
     "section": "",
-    "text": "make_future_timeseries(idx, length_out, force_regular=False)\nMake future dates for a time series.\nThe function make_future_timeseries takes a pandas Series or DateTimeIndex and generates a future sequence of dates based on the frequency of the input series."
+    "text": "datasets.get_datasets.load_dataset(name='m4_daily', verbose=False, **kwargs)\nLoad one of 12 Time Series Datasets.\nThe load_dataset function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to pandas.read_csv. The available datasets are:\nThe datasets can be loaded with timetk.load_dataset(name), where name is the name of the dataset that you want to load. The default value is set to “m4_daily”, which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned above."
   },
   {
-    "objectID": "reference/make_future_timeseries.html#parameters",
-    "href": "reference/make_future_timeseries.html#parameters",
-    "title": "make_future_timeseries",
+    "objectID": "reference/load_dataset.html#parameters",
+    "href": "reference/load_dataset.html#parameters",
+    "title": "load_dataset",
     "section": "Parameters",
-    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DateTimeIndex\nThe idx parameter is the input time series data. It can be either a pandas Series or a pandas DateTimeIndex. It represents the existing dates in the time series.\nrequired\n\n\nlength_out\nint\nThe parameter length_out is an integer that represents the number of future dates to generate for the time series.\nrequired\n\n\nforce_regular\nbool\nThe force_regular parameter is a boolean flag that determines whether the frequency of the future dates should be forced to be regular. If force_regular is set to True, the frequency of the future dates will be forced to be regular. If force_regular is set to False, the frequency of the future dates will be inferred from the input data (e.g. business calendars might be used). The default value is False.\nFalse"
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nname\nstr\nThe name parameter is used to specify the name of the dataset that you want to load. The default value is set to “m4_daily”, which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned in the function’s docstring.\n'm4_daily'\n\n\nverbose\nbool\nThe verbose parameter is a boolean flag that determines whether or not to print the names of the available datasets. If verbose is set to True, the function will print the names of the available datasets. If verbose is set to False, the function will not print anything.\nFalse\n\n\n**kwargs\n\nThe **kwargs parameter is used to pass additional arguments to pandas.read_csv.\n{}"
   },
   {
-    "objectID": "reference/make_future_timeseries.html#returns",
-    "href": "reference/make_future_timeseries.html#returns",
-    "title": "make_future_timeseries",
+    "objectID": "reference/load_dataset.html#returns",
+    "href": "reference/load_dataset.html#returns",
+    "title": "load_dataset",
     "section": "Returns",
-    "text": "Returns\n\n\n\nType\nDescription\n\n\n\n\npd.Series\nA pandas Series object containing future dates."
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\nThe load_dataset function returns the requested dataset as a pandas DataFrame."
   },
   {
-    "objectID": "reference/make_future_timeseries.html#examples",
-    "href": "reference/make_future_timeseries.html#examples",
-    "title": "make_future_timeseries",
+    "objectID": "reference/load_dataset.html#examples",
+    "href": "reference/load_dataset.html#examples",
+    "title": "load_dataset",
     "section": "Examples",
-    "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\ndates = pd.Series(pd.to_datetime(['2022-01-01', '2022-01-02', '2022-01-03', '2022-01-04']))\ndates\n\n0   2022-01-01\n1   2022-01-02\n2   2022-01-03\n3   2022-01-04\ndtype: datetime64[ns]\n\n\n\n# DateTimeIndex: Generate 5 future dates\nfuture_dates_dt = tk.make_future_timeseries(dates, 5)\nfuture_dates_dt\n\n0   2022-01-05\n1   2022-01-06\n2   2022-01-07\n3   2022-01-08\n4   2022-01-09\ndtype: datetime64[ns]\n\n\n\n# Series: Generate 5 future dates\npd.Series(future_dates_dt).make_future_timeseries(5)\n\n0   2022-01-10\n1   2022-01-11\n2   2022-01-12\n3   2022-01-13\n4   2022-01-14\ndtype: datetime64[ns]\n\n\n\ntimestamps = [\"2023-01-01 01:00\", \"2023-01-01 02:00\", \"2023-01-01 03:00\", \"2023-01-01 04:00\", \"2023-01-01 05:00\"]\n\ndates = pd.to_datetime(timestamps)\n\ntk.make_future_timeseries(dates, 5)\n\n0   2023-01-01 06:00:00\n1   2023-01-01 07:00:00\n2   2023-01-01 08:00:00\n3   2023-01-01 09:00:00\n4   2023-01-01 10:00:00\ndtype: datetime64[ns]\n\n\n\n# Monthly Frequency: Generate 4 future dates\ndates = pd.to_datetime([\"2021-01-01\", \"2021-02-01\", \"2021-03-01\", \"2021-04-01\"])\n\ntk.make_future_timeseries(dates, 4)\n\n0   2021-05-01\n1   2021-06-01\n2   2021-07-01\n3   2021-08-01\ndtype: datetime64[ns]\n\n\n\n# Quarterly Frequency: Generate 4 future dates\ndates = pd.to_datetime([\"2021-01-01\", \"2021-04-01\", \"2021-07-01\", \"2021-10-01\"])\n\ntk.make_future_timeseries(dates, 4)\n\n0   2022-01-01\n1   2022-04-01\n2   2022-07-01\n3   2022-10-01\ndtype: datetime64[ns]\n\n\n\n# Irregular Dates: Business Days\ndates = pd.to_datetime([\"2021-01-01\", \"2021-01-04\", \"2021-01-05\", \"2021-01-06\"])\n\ntk.get_pandas_frequency(dates)\n\ntk.make_future_timeseries(dates, 4)\n\n0   2021-01-07\n1   2021-01-08\n2   2021-01-11\n3   2021-01-12\ndtype: datetime64[ns]\n\n\n\n# Irregular Dates: Business Days (Force Regular)    \ntk.make_future_timeseries(dates, 4, force_regular=True)\n\n0   2021-01-07\n1   2021-01-08\n2   2021-01-09\n3   2021-01-10\ndtype: datetime64[ns]"
+    "text": "Examples\n\nimport timetk as tk\nimport pandas as pd\n\n\n# Stocks Daily Dataset: META, APPL, AMZN, NFLX, NVDA, GOOG\ndf = tk.load_dataset('stocks_daily', parse_dates = ['date'])\n\ndf\n\n\n\n\n\n\n\n\nsymbol\ndate\nopen\nhigh\nlow\nclose\nvolume\nadjusted\n\n\n\n\n0\nMETA\n2013-01-02\n27.440001\n28.180000\n27.420000\n28.000000\n69846400\n28.000000\n\n\n1\nMETA\n2013-01-03\n27.879999\n28.469999\n27.590000\n27.770000\n63140600\n27.770000\n\n\n2\nMETA\n2013-01-04\n28.010000\n28.930000\n27.830000\n28.760000\n72715400\n28.760000\n\n\n3\nMETA\n2013-01-07\n28.690001\n29.790001\n28.650000\n29.420000\n83781800\n29.420000\n\n\n4\nMETA\n2013-01-08\n29.510000\n29.600000\n28.860001\n29.059999\n45871300\n29.059999\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n16189\nGOOG\n2023-09-15\n138.800003\n139.360001\n137.179993\n138.300003\n48947600\n138.300003\n\n\n16190\nGOOG\n2023-09-18\n137.630005\n139.929993\n137.630005\n138.960007\n16233600\n138.960007\n\n\n16191\nGOOG\n2023-09-19\n138.250000\n139.175003\n137.500000\n138.830002\n15479100\n138.830002\n\n\n16192\nGOOG\n2023-09-20\n138.830002\n138.839996\n134.520004\n134.589996\n21473500\n134.589996\n\n\n16193\nGOOG\n2023-09-21\n132.389999\n133.190002\n131.089996\n131.360001\n22042700\n131.360001\n\n\n\n\n16194 rows × 8 columns\n\n\n\n\n# Bike Sales CRM Sample Dataset\ndf = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])\n\ndf\n\n\n\n\n\n\n\n\norder_id\norder_line\norder_date\nquantity\nprice\ntotal_price\nmodel\ncategory_1\ncategory_2\nframe_material\nbikeshop_name\ncity\nstate\n\n\n\n\n0\n1\n1\n2011-01-07\n1\n6070\n6070\nJekyll Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n\n\n1\n1\n2\n2011-01-07\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n\n\n2\n2\n1\n2011-01-10\n1\n2770\n2770\nBeast of the East 1\nMountain\nTrail\nAluminum\nKansas City 29ers\nKansas City\nKS\n\n\n3\n2\n2\n2011-01-10\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nKansas City 29ers\nKansas City\nKS\n\n\n4\n3\n1\n2011-01-10\n1\n10660\n10660\nSupersix Evo Hi-Mod Team\nRoad\nElite Road\nCarbon\nLouisville Race Equipment\nLouisville\nKY\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n2461\n321\n3\n2011-12-22\n1\n1410\n1410\nCAAD8 105\nRoad\nElite Road\nAluminum\nMiami Race Equipment\nMiami\nFL\n\n\n2462\n322\n1\n2011-12-28\n1\n1250\n1250\nSynapse Disc Tiagra\nRoad\nEndurance Road\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2463\n322\n2\n2011-12-28\n1\n2660\n2660\nBad Habit 2\nMountain\nTrail\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2464\n322\n3\n2011-12-28\n1\n2340\n2340\nF-Si 1\nMountain\nCross Country Race\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2465\n322\n4\n2011-12-28\n1\n5860\n5860\nSynapse Hi-Mod Dura Ace\nRoad\nEndurance Road\nCarbon\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n\n\n2466 rows × 13 columns\n\n\n\n\n# Taylor 30-Minute Power Demand Dataset\ndf = tk.load_dataset('taylor_30_min', parse_dates = ['date'])\n\ndf\n\n\n\n\n\n\n\n\ndate\nvalue\n\n\n\n\n0\n2000-06-05 00:00:00+00:00\n22262\n\n\n1\n2000-06-05 00:30:00+00:00\n21756\n\n\n2\n2000-06-05 01:00:00+00:00\n22247\n\n\n3\n2000-06-05 01:30:00+00:00\n22759\n\n\n4\n2000-06-05 02:00:00+00:00\n22549\n\n\n...\n...\n...\n\n\n4027\n2000-08-27 21:30:00+00:00\n27946\n\n\n4028\n2000-08-27 22:00:00+00:00\n27133\n\n\n4029\n2000-08-27 22:30:00+00:00\n25996\n\n\n4030\n2000-08-27 23:00:00+00:00\n24610\n\n\n4031\n2000-08-27 23:30:00+00:00\n23132\n\n\n\n\n4032 rows × 2 columns"
   },
   {
-    "objectID": "reference/get_holiday_signature.html",
-    "href": "reference/get_holiday_signature.html",
-    "title": "get_holiday_signature",
+    "objectID": "reference/make_weekend_sequence.html",
+    "href": "reference/make_weekend_sequence.html",
+    "title": "make_weekend_sequence",
     "section": "",
-    "text": "get_holiday_signature(idx, country_name='UnitedStates')\nEngineers 4 different holiday features from a single datetime for 80+ countries.\nNote: Requires the holidays package to be installed. See https://pypi.org/project/holidays/ for more information."
+    "text": "make_weekend_sequence(start_date, end_date, friday_saturday=False, remove_holidays=False, country=None)\nGenerate a sequence of weekend dates within a specified date range, optionally excluding holidays."
   },
   {
-    "objectID": "reference/get_holiday_signature.html#parameters",
-    "href": "reference/get_holiday_signature.html#parameters",
-    "title": "get_holiday_signature",
+    "objectID": "reference/make_weekend_sequence.html#parameters",
+    "href": "reference/make_weekend_sequence.html#parameters",
+    "title": "make_weekend_sequence",
     "section": "Parameters",
-    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.DatetimeIndex or pd.Series\nA pandas DatetimeIndex or Series containing the dates for which you want to get the holiday signature.\nrequired\n\n\ncountry_name\nstr\nThe name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code: Any of the following are acceptable keys for country_name: Available Countries: Full Country, Abrv. #1, #2, #3 Angola: Angola, AO, AGO, Argentina: Argentina, AR, ARG, Aruba: Aruba, AW, ABW, Australia: Australia, AU, AUS, Austria: Austria, AT, AUT, Bangladesh: Bangladesh, BD, BGD, Belarus: Belarus, BY, BLR, Belgium: Belgium, BE, BEL, Botswana: Botswana, BW, BWA, Brazil: Brazil, BR, BRA, Bulgaria: Bulgaria, BG, BLG, Burundi: Burundi, BI, BDI, Canada: Canada, CA, CAN, Chile: Chile, CL, CHL, Colombia: Colombia, CO, COL, Croatia: Croatia, HR, HRV, Curacao: Curacao, CW, CUW, Czechia: Czechia, CZ, CZE, Denmark: Denmark, DK, DNK, Djibouti: Djibouti, DJ, DJI, Dominican Republic: DominicanRepublic, DO, DOM, Egypt: Egypt, EG, EGY, England: England, Estonia: Estonia, EE, EST, European Central Bank: EuropeanCentralBank, Finland: Finland, FI, FIN, France: France, FR, FRA, Georgia: Georgia, GE, GEO, Germany: Germany, DE, DEU, Greece: Greece, GR, GRC, Honduras: Honduras, HN, HND, Hong Kong: HongKong, HK, HKG, Hungary: Hungary, HU, HUN, Iceland: Iceland, IS, ISL, India: India, IN, IND, Ireland: Ireland, IE, IRL, Isle Of Man: IsleOfMan, Israel: Israel, IL, ISR, Italy: Italy, IT, ITA, Jamaica: Jamaica, JM, JAM, Japan: Japan, JP, JPN, Kenya: Kenya, KE, KEN, Korea: Korea, KR, KOR, Latvia: Latvia, LV, LVA, Lithuania: Lithuania, LT, LTU, Luxembourg: Luxembourg, LU, LUX, Malaysia: Malaysia, MY, MYS, Malawi: Malawi, MW, MWI, Mexico: Mexico, MX, MEX, Morocco: Morocco, MA, MOR, Mozambique: Mozambique, MZ, MOZ, Netherlands: Netherlands, NL, NLD, NewZealand: NewZealand, NZ, NZL, Nicaragua: Nicaragua, NI, NIC, Nigeria: Nigeria, NG, NGA, Northern Ireland: NorthernIreland, Norway: Norway, NO, NOR, Paraguay: Paraguay, PY, PRY, Peru: Peru, PE, PER, Poland: Poland, PL, POL, Portugal: Portugal, PT, PRT, Portugal Ext: PortugalExt, PTE, Romania: Romania, RO, ROU, Russia: Russia, RU, RUS, Saudi Arabia: SaudiArabia, SA, SAU, Scotland: Scotland, Serbia: Serbia, RS, SRB, Singapore: Singapore, SG, SGP, Slovokia: Slovokia, SK, SVK, Slovenia: Slovenia, SI, SVN, South Africa: SouthAfrica, ZA, ZAF, Spain: Spain, ES, ESP, Sweden: Sweden, SE, SWE, Switzerland: Switzerland, CH, CHE, Turkey: Turkey, TR, TUR, Ukraine: Ukraine, UA, UKR, United Arab Emirates: UnitedArabEmirates, AE, ARE, United Kingdom: UnitedKingdom, GB, GBR, UK, United States: UnitedStates, US, USA, Venezuela: Venezuela, YV, VEN, Vietnam: Vietnam, VN, VNM, Wales: Wales\n'UnitedStates'"
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nstart_date\nstr or datetime or pd.DatetimeIndex\nThe start date of the date range.\nrequired\n\n\nend_date\nstr or datetime or pd.DatetimeIndex\nThe end date of the date range.\nrequired\n\n\nfriday_saturday\nbool\nIf True, generates a sequence with Friday and Saturday as weekends.If False (default), generates a sequence with Saturday and Sunday as weekends.\nFalse\n\n\nremove_holidays\nbool\nIf True, excludes holidays (based on the specified country) from the generated sequence. If False (default), includes holidays in the sequence.\nFalse\n\n\ncountry\nstr\nThe name of the country for which to generate holiday-specific sequences. Defaults to None, which uses the United States as the default country.\nNone"
   },
   {
-    "objectID": "reference/get_holiday_signature.html#returns",
-    "href": "reference/get_holiday_signature.html#returns",
-    "title": "get_holiday_signature",
+    "objectID": "reference/make_weekend_sequence.html#returns",
+    "href": "reference/make_weekend_sequence.html#returns",
+    "title": "make_weekend_sequence",
     "section": "Returns",
-    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame:\nA pandas DataFrame with three holiday-specific features: - is_holiday: (0, 1) indicator for holiday - before_holiday: (0, 1) indicator for day before holiday - after_holiday: (0, 1) indicator for day after holiday - holiday_name: name of the holiday"
+    "text": "Returns\n\n\n\nType\nDescription\n\n\n\n\npd.Series\nA Series containing the generated weekday dates."
   },
   {
-    "objectID": "reference/get_holiday_signature.html#example",
-    "href": "reference/get_holiday_signature.html#example",
-    "title": "get_holiday_signature",
-    "section": "Example",
-    "text": "Example\n\nimport pandas as pd\nimport timetk as tk\n\n# Make a DataFrame with a date column\nstart_date = '2023-01-01'\nend_date = '2023-01-10'\ndates = pd.date_range(start=start_date, end=end_date)\n\n# Get holiday features for US\ntk.get_holiday_signature(dates, 'UnitedStates')\n\n\n\n\n\n\n\n\nidx\nis_holiday\nbefore_holiday\nafter_holiday\nholiday_name\n\n\n\n\n0\n2023-01-01\n1\n1\n0\nNew Year's Day\n\n\n1\n2023-01-02\n1\n0\n1\nNew Year's Day (Observed)\n\n\n2\n2023-01-03\n0\n0\n1\nNaN\n\n\n3\n2023-01-04\n0\n0\n0\nNaN\n\n\n4\n2023-01-05\n0\n0\n0\nNaN\n\n\n5\n2023-01-06\n0\n0\n0\nNaN\n\n\n6\n2023-01-07\n0\n0\n0\nNaN\n\n\n7\n2023-01-08\n0\n0\n0\nNaN\n\n\n8\n2023-01-09\n0\n0\n0\nNaN\n\n\n9\n2023-01-10\n0\n0\n0\nNaN\n\n\n\n\n\n\n\n\n# Get holiday features for France\ntk.get_holiday_signature(dates, 'France')\n\n\n\n\n\n\n\n\nidx\nis_holiday\nbefore_holiday\nafter_holiday\nholiday_name\n\n\n\n\n0\n2023-01-01\n1\n0\n0\nNew Year's Day\n\n\n1\n2023-01-02\n0\n0\n1\nNaN\n\n\n2\n2023-01-03\n0\n0\n0\nNaN\n\n\n3\n2023-01-04\n0\n0\n0\nNaN\n\n\n4\n2023-01-05\n0\n0\n0\nNaN\n\n\n5\n2023-01-06\n0\n0\n0\nNaN\n\n\n6\n2023-01-07\n0\n0\n0\nNaN\n\n\n7\n2023-01-08\n0\n0\n0\nNaN\n\n\n8\n2023-01-09\n0\n0\n0\nNaN\n\n\n9\n2023-01-10\n0\n0\n0\nNaN\n\n\n\n\n\n\n\n\n# Pandas Series\npd.Series(dates, name='dates').get_holiday_signature('UnitedStates')\n\n\n\n\n\n\n\n\ndates\nis_holiday\nbefore_holiday\nafter_holiday\nholiday_name\n\n\n\n\n0\n2023-01-01\n1\n1\n0\nNew Year's Day\n\n\n1\n2023-01-02\n1\n0\n1\nNew Year's Day (Observed)\n\n\n2\n2023-01-03\n0\n0\n1\nNaN\n\n\n3\n2023-01-04\n0\n0\n0\nNaN\n\n\n4\n2023-01-05\n0\n0\n0\nNaN\n\n\n5\n2023-01-06\n0\n0\n0\nNaN\n\n\n6\n2023-01-07\n0\n0\n0\nNaN\n\n\n7\n2023-01-08\n0\n0\n0\nNaN\n\n\n8\n2023-01-09\n0\n0\n0\nNaN\n\n\n9\n2023-01-10\n0\n0\n0\nNaN"
-  },
-  {
-    "objectID": "reference/get_timeseries_signature.html",
-    "href": "reference/get_timeseries_signature.html",
-    "title": "get_timeseries_signature",
-    "section": "",
-    "text": "get_timeseries_signature(idx)\nConvert a timestamp to a set of 29 time series features.\nThe function tk_get_timeseries_signature engineers 29 different date and time based features from a single datetime index idx:"
-  },
-  {
-    "objectID": "reference/get_timeseries_signature.html#parameters",
-    "href": "reference/get_timeseries_signature.html#parameters",
-    "title": "get_timeseries_signature",
-    "section": "Parameters",
-    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DatetimeIndex\nidx is a pandas Series object containing datetime values. Alternatively a pd.DatetimeIndex can be passed.\nrequired"
-  },
-  {
-    "objectID": "reference/get_timeseries_signature.html#returns",
-    "href": "reference/get_timeseries_signature.html#returns",
-    "title": "get_timeseries_signature",
-    "section": "Returns",
-    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\nThe function tk_get_timeseries_signature returns a pandas DataFrame that contains 29 different date and time based features derived from a single datetime column."
-  },
-  {
-    "objectID": "reference/get_timeseries_signature.html#examples",
-    "href": "reference/get_timeseries_signature.html#examples",
-    "title": "get_timeseries_signature",
+    "objectID": "reference/make_weekend_sequence.html#examples",
+    "href": "reference/make_weekend_sequence.html#examples",
+    "title": "make_weekend_sequence",
     "section": "Examples",
-    "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\npd.set_option('display.max_columns', None)\n\ndates = pd.date_range(start = '2019-01', end = '2019-03', freq = 'D')\n\n# Makes 29 new time series features from the dates\ntk.get_timeseries_signature(dates).head()\n\n\n\n\n\n\n\n\nindex_num\nyear\nyear_iso\nyearstart\nyearend\nleapyear\nhalf\nquarter\nquarteryear\nquarterstart\nquarterend\nmonth\nmonth_lbl\nmonthstart\nmonthend\nyweek\nmweek\nwday\nwday_lbl\nmday\nqday\nyday\nweekend\nhour\nminute\nsecond\nmsecond\nnsecond\nam_pm\n\n\n\n\n0\n1546300800\n2019\n2019\n1\n0\n0\n1\n1\n2019Q1\n1\n0\n1\nJanuary\n1\n0\n1\n1\n2\nTuesday\n1\n1\n1\n0\n0\n0\n0\n0\n0\nam\n\n\n1\n1546387200\n2019\n2019\n0\n0\n0\n1\n1\n2019Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n3\nWednesday\n2\n2\n2\n0\n0\n0\n0\n0\n0\nam\n\n\n2\n1546473600\n2019\n2019\n0\n0\n0\n1\n1\n2019Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n4\nThursday\n3\n3\n3\n0\n0\n0\n0\n0\n0\nam\n\n\n3\n1546560000\n2019\n2019\n0\n0\n0\n1\n1\n2019Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n5\nFriday\n4\n4\n4\n0\n0\n0\n0\n0\n0\nam\n\n\n4\n1546646400\n2019\n2019\n0\n0\n0\n1\n1\n2019Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n6\nSaturday\n5\n5\n5\n0\n0\n0\n0\n0\n0\nam"
+    "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\n# United States has Saturday and Sunday as weekends\ntk.make_weekend_sequence(\"2023-01-01\", \"2023-01-31\", friday_saturday=False, remove_holidays=True, country='UnitedStates')\n\n0   2023-01-07\n1   2023-01-08\n2   2023-01-14\n3   2023-01-15\n4   2023-01-21\n5   2023-01-22\n6   2023-01-28\n7   2023-01-29\nName: Weekend Dates, dtype: datetime64[ns]\n\n\n\n# Saudi Arabia has Friday and Saturday as weekends\ntk.make_weekend_sequence(\"2023-01-01\", \"2023-01-31\", friday_saturday=True, remove_holidays=True, country='SaudiArabia')\n\n0   2023-01-06\n1   2023-01-07\n2   2023-01-13\n3   2023-01-14\n4   2023-01-20\n5   2023-01-21\n6   2023-01-27\n7   2023-01-28\nName: Weekend Dates, dtype: datetime64[ns]"
   },
   {
-    "objectID": "reference/augment_holiday_signature.html",
-    "href": "reference/augment_holiday_signature.html",
-    "title": "augment_holiday_signature",
+    "objectID": "reference/augment_timeseries_signature.html",
+    "href": "reference/augment_timeseries_signature.html",
+    "title": "augment_timeseries_signature",
     "section": "",
-    "text": "augment_holiday_signature(data, date_column, country_name='UnitedStates')\nEngineers 4 different holiday features from a single datetime for 80+ countries.\nNote: Requires the holidays package to be installed. See https://pypi.org/project/holidays/ for more information."
+    "text": "augment_timeseries_signature(data, date_column)\nAdd 29 time series features to a DataFrame.\nThe function augment_timeseries_signature takes a DataFrame and a date column as input and returns the original DataFrame with the 29 different date and time based features added as new columns:"
   },
   {
-    "objectID": "reference/augment_holiday_signature.html#parameters",
-    "href": "reference/augment_holiday_signature.html#parameters",
-    "title": "augment_holiday_signature",
+    "objectID": "reference/augment_timeseries_signature.html#parameters",
+    "href": "reference/augment_timeseries_signature.html#parameters",
+    "title": "augment_timeseries_signature",
     "section": "Parameters",
-    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame\nThe input DataFrame.\nrequired\n\n\ndate_column\nstr\nThe name of the datetime-like column in the DataFrame.\nrequired\n\n\ncountry_name\nstr\nThe name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code: Any of the following are acceptable keys for country_name: Available Countries: Full Country, Abrv. #1, #2, #3 Angola: Angola, AO, AGO, Argentina: Argentina, AR, ARG, Aruba: Aruba, AW, ABW, Australia: Australia, AU, AUS, Austria: Austria, AT, AUT, Bangladesh: Bangladesh, BD, BGD, Belarus: Belarus, BY, BLR, Belgium: Belgium, BE, BEL, Botswana: Botswana, BW, BWA, Brazil: Brazil, BR, BRA, Bulgaria: Bulgaria, BG, BLG, Burundi: Burundi, BI, BDI, Canada: Canada, CA, CAN, Chile: Chile, CL, CHL, Colombia: Colombia, CO, COL, Croatia: Croatia, HR, HRV, Curacao: Curacao, CW, CUW, Czechia: Czechia, CZ, CZE, Denmark: Denmark, DK, DNK, Djibouti: Djibouti, DJ, DJI, Dominican Republic: DominicanRepublic, DO, DOM, Egypt: Egypt, EG, EGY, England: England, Estonia: Estonia, EE, EST, European Central Bank: EuropeanCentralBank, Finland: Finland, FI, FIN, France: France, FR, FRA, Georgia: Georgia, GE, GEO, Germany: Germany, DE, DEU, Greece: Greece, GR, GRC, Honduras: Honduras, HN, HND, Hong Kong: HongKong, HK, HKG, Hungary: Hungary, HU, HUN, Iceland: Iceland, IS, ISL, India: India, IN, IND, Ireland: Ireland, IE, IRL, Isle Of Man: IsleOfMan, Israel: Israel, IL, ISR, Italy: Italy, IT, ITA, Jamaica: Jamaica, JM, JAM, Japan: Japan, JP, JPN, Kenya: Kenya, KE, KEN, Korea: Korea, KR, KOR, Latvia: Latvia, LV, LVA, Lithuania: Lithuania, LT, LTU, Luxembourg: Luxembourg, LU, LUX, Malaysia: Malaysia, MY, MYS, Malawi: Malawi, MW, MWI, Mexico: Mexico, MX, MEX, Morocco: Morocco, MA, MOR, Mozambique: Mozambique, MZ, MOZ, Netherlands: Netherlands, NL, NLD, NewZealand: NewZealand, NZ, NZL, Nicaragua: Nicaragua, NI, NIC, Nigeria: Nigeria, NG, NGA, Northern Ireland: NorthernIreland, Norway: Norway, NO, NOR, Paraguay: Paraguay, PY, PRY, Peru: Peru, PE, PER, Poland: Poland, PL, POL, Portugal: Portugal, PT, PRT, Portugal Ext: PortugalExt, PTE, Romania: Romania, RO, ROU, Russia: Russia, RU, RUS, Saudi Arabia: SaudiArabia, SA, SAU, Scotland: Scotland, Serbia: Serbia, RS, SRB, Singapore: Singapore, SG, SGP, Slovokia: Slovokia, SK, SVK, Slovenia: Slovenia, SI, SVN, South Africa: SouthAfrica, ZA, ZAF, Spain: Spain, ES, ESP, Sweden: Sweden, SE, SWE, Switzerland: Switzerland, CH, CHE, Turkey: Turkey, TR, TUR, Ukraine: Ukraine, UA, UKR, United Arab Emirates: UnitedArabEmirates, AE, ARE, United Kingdom: UnitedKingdom, GB, GBR, UK, United States: UnitedStates, US, USA, Venezuela: Venezuela, YV, VEN, Vietnam: Vietnam, VN, VNM, Wales: Wales\n'UnitedStates'"
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame\nThe data parameter is a pandas DataFrame that contains the time series data.\nrequired\n\n\ndate_column\nstr\nThe date_column parameter is a string that represents the name of the date column in the data DataFrame.\nrequired"
   },
   {
-    "objectID": "reference/augment_holiday_signature.html#returns",
-    "href": "reference/augment_holiday_signature.html#returns",
-    "title": "augment_holiday_signature",
+    "objectID": "reference/augment_timeseries_signature.html#returns",
+    "href": "reference/augment_timeseries_signature.html#returns",
+    "title": "augment_timeseries_signature",
     "section": "Returns",
-    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame:\nA pandas DataFrame with three holiday-specific features: - is_holiday: (0, 1) indicator for holiday - before_holiday: (0, 1) indicator for day before holiday - after_holiday: (0, 1) indicator for day after holiday - holiday_name: name of the holiday"
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\nA pandas DataFrame that is the concatenation of the original data DataFrame and the ts_signature_df DataFrame."
   },
   {
-    "objectID": "reference/augment_holiday_signature.html#example",
-    "href": "reference/augment_holiday_signature.html#example",
-    "title": "augment_holiday_signature",
-    "section": "Example",
-    "text": "Example\n\nimport pandas as pd\nimport timetk as tk\n\n# Make a DataFrame with a date column\nstart_date = '2023-01-01'\nend_date = '2023-01-10'\ndf = pd.DataFrame(pd.date_range(start=start_date, end=end_date), columns=['date'])\n\n# Add holiday features for US\ntk.augment_holiday_signature(df, 'date', 'UnitedStates')\n\n\n\n\n\n\n\n\ndate\nis_holiday\nbefore_holiday\nafter_holiday\nholiday_name\n\n\n\n\n0\n2023-01-01\n1\n1\n0\nNew Year's Day\n\n\n1\n2023-01-02\n1\n0\n1\nNew Year's Day (Observed)\n\n\n2\n2023-01-03\n0\n0\n1\nNaN\n\n\n3\n2023-01-04\n0\n0\n0\nNaN\n\n\n4\n2023-01-05\n0\n0\n0\nNaN\n\n\n5\n2023-01-06\n0\n0\n0\nNaN\n\n\n6\n2023-01-07\n0\n0\n0\nNaN\n\n\n7\n2023-01-08\n0\n0\n0\nNaN\n\n\n8\n2023-01-09\n0\n0\n0\nNaN\n\n\n9\n2023-01-10\n0\n0\n0\nNaN\n\n\n\n\n\n\n\n\n# Add holiday features for France\ntk.augment_holiday_signature(df, 'date', 'France')\n\n\n\n\n\n\n\n\ndate\nis_holiday\nbefore_holiday\nafter_holiday\nholiday_name\n\n\n\n\n0\n2023-01-01\n1\n0\n0\nNew Year's Day\n\n\n1\n2023-01-02\n0\n0\n1\nNaN\n\n\n2\n2023-01-03\n0\n0\n0\nNaN\n\n\n3\n2023-01-04\n0\n0\n0\nNaN\n\n\n4\n2023-01-05\n0\n0\n0\nNaN\n\n\n5\n2023-01-06\n0\n0\n0\nNaN\n\n\n6\n2023-01-07\n0\n0\n0\nNaN\n\n\n7\n2023-01-08\n0\n0\n0\nNaN\n\n\n8\n2023-01-09\n0\n0\n0\nNaN\n\n\n9\n2023-01-10\n0\n0\n0\nNaN"
+    "objectID": "reference/augment_timeseries_signature.html#examples",
+    "href": "reference/augment_timeseries_signature.html#examples",
+    "title": "augment_timeseries_signature",
+    "section": "Examples",
+    "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\npd.set_option('display.max_columns', None)\n\n# Adds 29 new time series features as columns to the original DataFrame\n( \n    tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])\n        .augment_timeseries_signature(date_column = 'order_date')\n        .head()\n)\n\n\n\n\n\n\n\n\norder_id\norder_line\norder_date\nquantity\nprice\ntotal_price\nmodel\ncategory_1\ncategory_2\nframe_material\nbikeshop_name\ncity\nstate\norder_date_index_num\norder_date_year\norder_date_year_iso\norder_date_yearstart\norder_date_yearend\norder_date_leapyear\norder_date_half\norder_date_quarter\norder_date_quarteryear\norder_date_quarterstart\norder_date_quarterend\norder_date_month\norder_date_month_lbl\norder_date_monthstart\norder_date_monthend\norder_date_yweek\norder_date_mweek\norder_date_wday\norder_date_wday_lbl\norder_date_mday\norder_date_qday\norder_date_yday\norder_date_weekend\norder_date_hour\norder_date_minute\norder_date_second\norder_date_msecond\norder_date_nsecond\norder_date_am_pm\n\n\n\n\n0\n1\n1\n2011-01-07\n1\n6070\n6070\nJekyll Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n1294358400\n2011\n2011\n0\n0\n0\n1\n1\n2011Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n5\nFriday\n7\n7\n7\n0\n0\n0\n0\n0\n0\nam\n\n\n1\n1\n2\n2011-01-07\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n1294358400\n2011\n2011\n0\n0\n0\n1\n1\n2011Q1\n0\n0\n1\nJanuary\n0\n0\n1\n1\n5\nFriday\n7\n7\n7\n0\n0\n0\n0\n0\n0\nam\n\n\n2\n2\n1\n2011-01-10\n1\n2770\n2770\nBeast of the East 1\nMountain\nTrail\nAluminum\nKansas City 29ers\nKansas City\nKS\n1294617600\n2011\n2011\n0\n0\n0\n1\n1\n2011Q1\n0\n0\n1\nJanuary\n0\n0\n2\n2\n1\nMonday\n10\n10\n10\n0\n0\n0\n0\n0\n0\nam\n\n\n3\n2\n2\n2011-01-10\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nKansas City 29ers\nKansas City\nKS\n1294617600\n2011\n2011\n0\n0\n0\n1\n1\n2011Q1\n0\n0\n1\nJanuary\n0\n0\n2\n2\n1\nMonday\n10\n10\n10\n0\n0\n0\n0\n0\n0\nam\n\n\n4\n3\n1\n2011-01-10\n1\n10660\n10660\nSupersix Evo Hi-Mod Team\nRoad\nElite Road\nCarbon\nLouisville Race Equipment\nLouisville\nKY\n1294617600\n2011\n2011\n0\n0\n0\n1\n1\n2011Q1\n0\n0\n1\nJanuary\n0\n0\n2\n2\n1\nMonday\n10\n10\n10\n0\n0\n0\n0\n0\n0\nam"
+  },
+  {
+    "objectID": "reference/augment_lags.html",
+    "href": "reference/augment_lags.html",
+    "title": "augment_lags",
+    "section": "",
+    "text": "augment_lags(data, date_column, value_column, lags=1)\nAdds lags to a Pandas DataFrame or DataFrameGroupBy object.\nThe augment_lags function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a lag or list of lags, and adds lagged versions of the value columns to the DataFrame."
+  },
+  {
+    "objectID": "reference/augment_lags.html#parameters",
+    "href": "reference/augment_lags.html#parameters",
+    "title": "augment_lags",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy\nThe data parameter is the input DataFrame or DataFrameGroupBy object that you want to add lagged columns to.\nrequired\n\n\ndate_column\nstr\nThe date_column parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the lagged values.\nrequired\n\n\nvalue_column\nstr or list\nThe value_column parameter is the column(s) in the DataFrame that you want to add lagged values for. It can be either a single column name (string) or a list of column names.\nrequired\n\n\nlags\nint or tuple or list\nThe lags parameter is an integer, tuple, or list that specifies the number of lagged values to add to the DataFrame. - If it is an integer, the function will add that number of lagged values for each column specified in the value_column parameter. - If it is a tuple, it will generate lags from the first to the second value (inclusive). - If it is a list, it will generate lags based on the values in the list.\n1"
+  },
+  {
+    "objectID": "reference/augment_lags.html#returns",
+    "href": "reference/augment_lags.html#returns",
+    "title": "augment_lags",
+    "section": "Returns",
+    "text": "Returns\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\nA Pandas DataFrame with lagged columns added to it."
+  },
+  {
+    "objectID": "reference/augment_lags.html#examples",
+    "href": "reference/augment_lags.html#examples",
+    "title": "augment_lags",
+    "section": "Examples",
+    "text": "Examples\n\nimport pandas as pd\nimport timetk as tk\n\ndf = tk.load_dataset('m4_daily', parse_dates=['date'])\ndf\n\n\n\n\n\n\n\n\nid\ndate\nvalue\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\n\n\n1\nD10\n2014-07-04\n2073.4\n\n\n2\nD10\n2014-07-05\n2048.7\n\n\n3\nD10\n2014-07-06\n2048.9\n\n\n4\nD10\n2014-07-07\n2006.4\n\n\n...\n...\n...\n...\n\n\n9738\nD500\n2012-09-19\n9418.8\n\n\n9739\nD500\n2012-09-20\n9365.7\n\n\n9740\nD500\n2012-09-21\n9445.9\n\n\n9741\nD500\n2012-09-22\n9497.9\n\n\n9742\nD500\n2012-09-23\n9545.3\n\n\n\n\n9743 rows × 3 columns\n\n\n\n\n# Add a lagged value of 2 for each grouped time series\nlagged_df = (\n    df \n        .groupby('id')\n        .augment_lags(\n            date_column='date',\n            value_column='value',\n            lags=2\n        )\n)\nlagged_df\n\n\n\n\n\n\n\n\nid\ndate\nvalue\nvalue_lag_2\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\nNaN\n\n\n1\nD10\n2014-07-04\n2073.4\nNaN\n\n\n2\nD10\n2014-07-05\n2048.7\n2076.2\n\n\n3\nD10\n2014-07-06\n2048.9\n2073.4\n\n\n4\nD10\n2014-07-07\n2006.4\n2048.7\n\n\n...\n...\n...\n...\n...\n\n\n9738\nD500\n2012-09-19\n9418.8\n9437.7\n\n\n9739\nD500\n2012-09-20\n9365.7\n9431.9\n\n\n9740\nD500\n2012-09-21\n9445.9\n9418.8\n\n\n9741\nD500\n2012-09-22\n9497.9\n9365.7\n\n\n9742\nD500\n2012-09-23\n9545.3\n9445.9\n\n\n\n\n9743 rows × 4 columns\n\n\n\n\n# Add 7 lagged values for a single time series\nlagged_df_single = (\n    df \n        .query('id == \"D10\"')\n        .augment_lags(\n            date_column='date',\n            value_column='value',\n            lags=(1, 7)\n        )\n)\nlagged_df_single\n\n\n\n\n\n\n\n\nid\ndate\nvalue\nvalue_lag_1\nvalue_lag_2\nvalue_lag_3\nvalue_lag_4\nvalue_lag_5\nvalue_lag_6\nvalue_lag_7\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n1\nD10\n2014-07-04\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n2\nD10\n2014-07-05\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n3\nD10\n2014-07-06\n2048.9\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\nNaN\n\n\n4\nD10\n2014-07-07\n2006.4\n2048.9\n2048.7\n2073.4\n2076.2\nNaN\nNaN\nNaN\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n669\nD10\n2016-05-02\n2630.7\n2601.0\n2572.9\n2544.0\n2579.9\n2585.8\n2542.0\n2534.2\n\n\n670\nD10\n2016-05-03\n2649.3\n2630.7\n2601.0\n2572.9\n2544.0\n2579.9\n2585.8\n2542.0\n\n\n671\nD10\n2016-05-04\n2631.8\n2649.3\n2630.7\n2601.0\n2572.9\n2544.0\n2579.9\n2585.8\n\n\n672\nD10\n2016-05-05\n2622.5\n2631.8\n2649.3\n2630.7\n2601.0\n2572.9\n2544.0\n2579.9\n\n\n673\nD10\n2016-05-06\n2620.1\n2622.5\n2631.8\n2649.3\n2630.7\n2601.0\n2572.9\n2544.0\n\n\n\n\n674 rows × 10 columns\n\n\n\n\n# Add 2 lagged values, 2 and 4, for a single time series\nlagged_df_single_two = (\n    df \n        .query('id == \"D10\"')\n        .augment_lags(\n            date_column='date',\n            value_column='value',\n            lags=[2, 4]\n        )\n)\nlagged_df_single_two\n\n\n\n\n\n\n\n\nid\ndate\nvalue\nvalue_lag_2\nvalue_lag_4\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\nNaN\nNaN\n\n\n1\nD10\n2014-07-04\n2073.4\nNaN\nNaN\n\n\n2\nD10\n2014-07-05\n2048.7\n2076.2\nNaN\n\n\n3\nD10\n2014-07-06\n2048.9\n2073.4\nNaN\n\n\n4\nD10\n2014-07-07\n2006.4\n2048.7\n2076.2\n\n\n...\n...\n...\n...\n...\n...\n\n\n669\nD10\n2016-05-02\n2630.7\n2572.9\n2579.9\n\n\n670\nD10\n2016-05-03\n2649.3\n2601.0\n2544.0\n\n\n671\nD10\n2016-05-04\n2631.8\n2630.7\n2572.9\n\n\n672\nD10\n2016-05-05\n2622.5\n2649.3\n2601.0\n\n\n673\nD10\n2016-05-06\n2620.1\n2631.8\n2630.7\n\n\n\n\n674 rows × 5 columns"
+  },
+  {
+    "objectID": "reference/floor_date.html",
+    "href": "reference/floor_date.html",
+    "title": "floor_date",
+    "section": "",
+    "text": "floor_date(idx, unit='D')\nRound a date down to the specified unit (e.g. Flooring).\nThe floor_date function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit."
+  },
+  {
+    "objectID": "reference/floor_date.html#parameters",
+    "href": "reference/floor_date.html#parameters",
+    "title": "floor_date",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DatetimeIndex\nThe idx parameter is a pandas Series or pandas DatetimeIndex object that contains datetime values. It represents the dates that you want to round down.\nrequired\n\n\nunit\nstr\nThe unit parameter in the floor_date function is a string that specifies the time unit to which the dates in the idx series should be rounded down. It has a default value of “D”, which stands for day. Other possible values for the unit parameter could be\n'D'"
+  },
+  {
+    "objectID": "reference/floor_date.html#returns",
+    "href": "reference/floor_date.html#returns",
+    "title": "floor_date",
+    "section": "Returns",
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.Series\nThe floor_date function returns a pandas Series object containing datetime64[ns] values."
+  },
+  {
+    "objectID": "reference/floor_date.html#examples",
+    "href": "reference/floor_date.html#examples",
+    "title": "floor_date",
+    "section": "Examples",
+    "text": "Examples\n\nimport timetk as tk\nimport pandas as pd\n\ndates = pd.date_range(\"2020-01-01\", \"2020-01-10\", freq=\"1H\")\ndates\n\nDatetimeIndex(['2020-01-01 00:00:00', '2020-01-01 01:00:00',\n               '2020-01-01 02:00:00', '2020-01-01 03:00:00',\n               '2020-01-01 04:00:00', '2020-01-01 05:00:00',\n               '2020-01-01 06:00:00', '2020-01-01 07:00:00',\n               '2020-01-01 08:00:00', '2020-01-01 09:00:00',\n               ...\n               '2020-01-09 15:00:00', '2020-01-09 16:00:00',\n               '2020-01-09 17:00:00', '2020-01-09 18:00:00',\n               '2020-01-09 19:00:00', '2020-01-09 20:00:00',\n               '2020-01-09 21:00:00', '2020-01-09 22:00:00',\n               '2020-01-09 23:00:00', '2020-01-10 00:00:00'],\n              dtype='datetime64[ns]', length=217, freq='H')\n\n\n\n# Works on DateTimeIndex\ntk.floor_date(dates, unit=\"D\")\n\n0     2020-01-01\n1     2020-01-01\n2     2020-01-01\n3     2020-01-01\n4     2020-01-01\n         ...    \n212   2020-01-09\n213   2020-01-09\n214   2020-01-09\n215   2020-01-09\n216   2020-01-10\nName: idx, Length: 217, dtype: datetime64[ns]\n\n\n\n# Works on Pandas Series\ndates.to_series().floor_date(unit=\"D\")\n\n2020-01-01 00:00:00   2020-01-01\n2020-01-01 01:00:00   2020-01-01\n2020-01-01 02:00:00   2020-01-01\n2020-01-01 03:00:00   2020-01-01\n2020-01-01 04:00:00   2020-01-01\n                         ...    \n2020-01-09 20:00:00   2020-01-09\n2020-01-09 21:00:00   2020-01-09\n2020-01-09 22:00:00   2020-01-09\n2020-01-09 23:00:00   2020-01-09\n2020-01-10 00:00:00   2020-01-10\nFreq: H, Length: 217, dtype: datetime64[ns]"
   }
 ]

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>timetk for Python – is_holiday</title>
+<title>timetk for Python – ts_features</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -134,7 +134,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">is_holiday</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -250,44 +250,33 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
-  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns:</a></li>
-  <li><a href="#raises" id="toc-raises" class="nav-link" data-scroll-target="#raises">Raises:</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples:</a></li>
+  <li><a href="#timetk.ts_features" id="toc-timetk.ts_features" class="nav-link active" data-scroll-target="#timetk.ts_features">ts_features</a>
+  <ul class="collapse">
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  </ul></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/is_holiday.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/ts_features.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">is_holiday</h1>
-</div>
 
 
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-</header>
-
-<p><code>is_holiday(idx, country_name='UnitedStates', country=None)</code></p>
-<p>Check if a given list of dates are holidays for a specified country.</p>
-<p>Note: This function requires the <code>holidays</code> package to be installed.</p>
+<section id="timetk.ts_features" class="level1">
+<h1>ts_features</h1>
+<p><code>ts_features(data, date_column, value_column, features=None, freq=None, scale=True, threads=None)</code></p>
+<p>Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the <code>tsfeatures</code> package.</p>
+<p>Note: Requires the <code>tsfeatures</code> package to be installed.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 7%">
-<col style="width: 37%">
-<col style="width: 47%">
-<col style="width: 7%">
+<col style="width: 2%">
+<col style="width: 10%">
+<col style="width: 84%">
+<col style="width: 2%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -299,81 +288,104 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>idx</code></td>
-<td>Union[str, datetime, List[Union[str, datetime]], pd.DatetimeIndex, pd.Series]</td>
-<td>The dates to check for holiday status.</td>
+<td><code>data</code></td>
+<td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
+<td>The <code>data</code> parameter is the input data that can be either a Pandas DataFrame or a grouped DataFrame. It contains the time series data that you want to extract features from.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>country_name</code></td>
+<td><code>date_column</code></td>
 <td>str</td>
-<td>The name of the country for which to check the holiday status. Defaults to ‘UnitedStates’ if not specified.</td>
-<td><code>'UnitedStates'</code></td>
+<td>The <code>date_column</code> parameter is the name of the column in the input data that contains the dates or timestamps of the time series data.</td>
+<td><em>required</em></td>
 </tr>
 <tr class="odd">
-<td><code>country</code></td>
+<td><code>value_column</code></td>
 <td>str</td>
-<td>An alternative parameter to specify the country for holiday checking, overriding country_name.</td>
+<td>The <code>value_column</code> parameter is the name of the column in the DataFrame that contains the time series values.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td><code>features</code></td>
+<td>list</td>
+<td>The <code>features</code> parameter is a list of functions that represent the time series features to be extracted. Each function should take a time series as input and return a scalar value as output. When <code>None</code>, uses the default list of features: - acf_features - arch_stat - crossing_points - entropy - flat_spots - heterogeneity - holt_parameters - lumpiness - nonlinearity - pacf_features - stl_features - stability - hw_parameters - unitroot_kpss - unitroot_pp - series_length - hurst</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td><code>freq</code></td>
+<td>str</td>
+<td>The <code>freq</code> parameter specifies the frequency of the time series data. It is used to calculate features that are dependent on the frequency, such as seasonal features. - The frequency can be specified as a string, such as ‘D’ for daily, ‘W’ for weekly, ‘M’ for monthly. - The frequency can be a numeric value representing the number of observations per year, such as 365 for daily, 52 for weekly, 12 for monthly.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td><code>scale</code></td>
+<td>bool</td>
+<td>The <code>scale</code> parameter in the <code>ts_features</code> function determines whether or not to scale the extracted features. - If <code>scale</code> is set to <code>True</code>, the features will be scaled using z-score normalization. - If <code>scale</code> is set to <code>False</code>, the features will not be scaled.</td>
+<td><code>True</code></td>
+</tr>
+<tr class="odd">
+<td><code>threads</code></td>
+<td>Optional[int]</td>
+<td>The <code>threads</code> parameter is an optional parameter that specifies the number of threads to use for parallel processing. If not specified, the function will use the default number of threads available on the system.</td>
 <td><code>None</code></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="returns" class="level2">
-<h2 class="anchored" data-anchor-id="returns">Returns:</h2>
-<p>pd.Series: Series containing True if the date is a holiday, False otherwise.</p>
-</section>
-<section id="raises" class="level2">
-<h2 class="anchored" data-anchor-id="raises">Raises:</h2>
-<p>ValueError: If the specified country is not found in the holidays package.</p>
+<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<table class="table">
+<colgroup>
+<col style="width: 87%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>The function <code>ts_features</code> returns a pandas DataFrame containing the extracted time series features.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples:</h2>
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timetk <span class="im">as</span> tk</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>tk.is_holiday(<span class="st">'2023-01-01'</span>, country_name<span class="op">=</span><span class="st">'UnitedStates'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>0    True
-Name: is_holiday, dtype: bool</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># List of dates</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tk.is_holiday([<span class="st">'2023-01-01'</span>, <span class="st">'2023-01-02'</span>, <span class="st">'2023-01-03'</span>], country_name<span class="op">=</span><span class="st">'UnitedStates'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<pre><code>0     True
-1     True
-2    False
-Name: is_holiday, dtype: bool</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DatetimeIndex</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>tk.is_holiday(pd.date_range(<span class="st">"2023-01-01"</span>, <span class="st">"2023-01-03"</span>), country_name<span class="op">=</span><span class="st">'UnitedStates'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>0     True
-1     True
-2    False
-Name: is_holiday, dtype: bool</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pandas Series Method</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>( </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    pd.Series(pd.date_range(<span class="st">"2023-01-01"</span>, <span class="st">"2023-01-03"</span>))</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        .is_holiday(country_name<span class="op">=</span><span class="st">'UnitedStates'</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<pre><code>0     True
-1     True
-2    False
-Name: is_holiday, dtype: bool</code></pre>
-</div>
-</div>
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># REQUIRES tsfeatures: pip install tsfeatures</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timetk <span class="im">as</span> tk</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># tsfeatures comes with these features:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tsfeatures <span class="im">import</span> (</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    acf_features, arch_stat, crossing_points,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    entropy, flat_spots, heterogeneity,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    holt_parameters, lumpiness, nonlinearity,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    pacf_features, stl_features, stability,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    hw_parameters, unitroot_kpss, unitroot_pp,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    series_length, hurst</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'m4_daily'</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Feature Extraction</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>feature_df <span class="op">=</span> (</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        .ts_features(    </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            features     <span class="op">=</span> [acf_features, hurst],</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="dv">7</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>) </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>feature_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

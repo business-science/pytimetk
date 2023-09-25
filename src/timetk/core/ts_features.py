@@ -64,7 +64,9 @@ def ts_features(
     freq : str
         The `freq` parameter specifies the frequency of the time series data. It is used to calculate features that are dependent on the frequency, such as seasonal features. 
         
-        The frequency can be specified as a string, such as 'D' for daily, 'W' for weekly, 'M' for monthly
+        - The frequency can be specified as a string, such as 'D' for daily, 'W' for weekly, 'M' for monthly.
+        
+        - The frequency can be a numeric value representing the number of observations per year, such as 365 for daily, 52 for weekly, 12 for monthly.
     scale : bool, optional
         The `scale` parameter in the `ts_features` function determines whether or not to scale the extracted features. 
         - If `scale` is set to `True`, the features will be scaled using z-score normalization. 
@@ -79,7 +81,7 @@ def ts_features(
     Examples
     --------
     ```python
-    # REQUIRES: pip install tsfeatures
+    # REQUIRES tsfeatures: pip install tsfeatures
     import pandas as pd
     import timetk as tk
     

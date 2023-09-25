@@ -11,8 +11,12 @@ website:
       - reference/augment_timeseries_signature.qmd
       - reference/augment_holiday_signature.qmd
       - reference/augment_lags.qmd
+      - reference/augment_leads.qmd
       - reference/augment_rolling.qmd
       section: "\U0001F3D7\uFE0F Adding Features to Time Series DataFrames (Augmenting)"
+    - contents:
+      - reference/ts_features.qmd
+      section: TS Features
     - contents:
       - reference/make_future_timeseries.qmd
       - reference/make_weekday_sequence.qmd

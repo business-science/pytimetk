@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>timetk for Python – is_holiday</title>
+<title>timetk for Python – augment_leads</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -104,6 +104,9 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', '330861489', { 'anonymize_ip': true});
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -134,7 +137,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">is_holiday</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">augment_leads</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -251,18 +254,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
    
   <ul>
   <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
-  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns:</a></li>
-  <li><a href="#raises" id="toc-raises" class="nav-link" data-scroll-target="#raises">Raises:</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples:</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/is_holiday.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_leads.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">is_holiday</h1>
+<h1 class="title">augment_leads</h1>
 </div>
 
 
@@ -277,17 +279,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>is_holiday(idx, country_name='UnitedStates', country=None)</code></p>
-<p>Check if a given list of dates are holidays for a specified country.</p>
-<p>Note: This function requires the <code>holidays</code> package to be installed.</p>
+<p><code>augment_leads(data, date_column, value_column, leads=1)</code></p>
+<p>Adds leads to a Pandas DataFrame or DataFrameGroupBy object.</p>
+<p>The <code>augment_leads</code> function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a lead or list of leads, and adds leaded versions of the value columns to the DataFrame.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 7%">
-<col style="width: 37%">
-<col style="width: 47%">
-<col style="width: 7%">
+<col style="width: 3%">
+<col style="width: 11%">
+<col style="width: 82%">
+<col style="width: 2%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -299,77 +301,472 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>idx</code></td>
-<td>Union[str, datetime, List[Union[str, datetime]], pd.DatetimeIndex, pd.Series]</td>
-<td>The dates to check for holiday status.</td>
+<td><code>data</code></td>
+<td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
+<td>The <code>data</code> parameter is the input DataFrame or DataFrameGroupBy object that you want to add leaded columns to.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>country_name</code></td>
+<td><code>date_column</code></td>
 <td>str</td>
-<td>The name of the country for which to check the holiday status. Defaults to ‘UnitedStates’ if not specified.</td>
-<td><code>'UnitedStates'</code></td>
+<td>The <code>date_column</code> parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the leaded values.</td>
+<td><em>required</em></td>
 </tr>
 <tr class="odd">
-<td><code>country</code></td>
-<td>str</td>
-<td>An alternative parameter to specify the country for holiday checking, overriding country_name.</td>
-<td><code>None</code></td>
+<td><code>value_column</code></td>
+<td>str or list</td>
+<td>The <code>value_column</code> parameter is the column(s) in the DataFrame that you want to add leaded values for. It can be either a single column name (string) or a list of column names.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td><code>leads</code></td>
+<td>int or tuple or list</td>
+<td>The <code>leads</code> parameter is an integer, tuple, or list that specifies the number of leaded values to add to the DataFrame. If it is an integer, the function will add that number of leaded values for each column specified in the <code>value_column</code> parameter. If it is a tuple, it will generate leads from the first to the second value (inclusive). If it is a list, it will generate leads based on the values in the list.</td>
+<td><code>1</code></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="returns" class="level2">
-<h2 class="anchored" data-anchor-id="returns">Returns:</h2>
-<p>pd.Series: Series containing True if the date is a holiday, False otherwise.</p>
-</section>
-<section id="raises" class="level2">
-<h2 class="anchored" data-anchor-id="raises">Raises:</h2>
-<p>ValueError: If the specified country is not found in the holidays package.</p>
+<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>pd.DataFrame</td>
+<td>A Pandas DataFrame with leaded columns added to it.</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples:</h2>
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timetk <span class="im">as</span> tk</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>tk.is_holiday(<span class="st">'2023-01-01'</span>, country_name<span class="op">=</span><span class="st">'UnitedStates'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>0    True
-Name: is_holiday, dtype: bool</code></pre>
-</div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'m4_daily'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># List of dates</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tk.is_holiday([<span class="st">'2023-01-01'</span>, <span class="st">'2023-01-02'</span>, <span class="st">'2023-01-03'</span>], country_name<span class="op">=</span><span class="st">'UnitedStates'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a leaded value of 2 for each grouped time series</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>leaded_df <span class="op">=</span> (</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        .augment_leads(</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            leads<span class="op">=</span><span class="dv">2</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>leaded_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
-<pre><code>0     True
-1     True
-2    False
-Name: is_holiday, dtype: bool</code></pre>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+<th data-quarto-table-cell-role="th">value_lead_2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>D10</td>
+<td>2014-07-03</td>
+<td>2076.2</td>
+<td>2048.7</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>D10</td>
+<td>2014-07-04</td>
+<td>2073.4</td>
+<td>2048.9</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>D10</td>
+<td>2014-07-05</td>
+<td>2048.7</td>
+<td>2006.4</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>D10</td>
+<td>2014-07-06</td>
+<td>2048.9</td>
+<td>2017.6</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>D10</td>
+<td>2014-07-07</td>
+<td>2006.4</td>
+<td>2019.1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9738</td>
+<td>D500</td>
+<td>2012-09-19</td>
+<td>9418.8</td>
+<td>9445.9</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9739</td>
+<td>D500</td>
+<td>2012-09-20</td>
+<td>9365.7</td>
+<td>9497.9</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9740</td>
+<td>D500</td>
+<td>2012-09-21</td>
+<td>9445.9</td>
+<td>9545.3</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9741</td>
+<td>D500</td>
+<td>2012-09-22</td>
+<td>9497.9</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9742</td>
+<td>D500</td>
+<td>2012-09-23</td>
+<td>9545.3</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>9743 rows × 4 columns</p>
+</div>
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DatetimeIndex</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>tk.is_holiday(pd.date_range(<span class="st">"2023-01-01"</span>, <span class="st">"2023-01-03"</span>), country_name<span class="op">=</span><span class="st">'UnitedStates'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add 7 leaded values for a single time series</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>leaded_df_single <span class="op">=</span> (</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'id == "D10"'</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .augment_leads(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            leads<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">7</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>leaded_df_single </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>0     True
-1     True
-2    False
-Name: is_holiday, dtype: bool</code></pre>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+<th data-quarto-table-cell-role="th">value_lead_1</th>
+<th data-quarto-table-cell-role="th">value_lead_2</th>
+<th data-quarto-table-cell-role="th">value_lead_3</th>
+<th data-quarto-table-cell-role="th">value_lead_4</th>
+<th data-quarto-table-cell-role="th">value_lead_5</th>
+<th data-quarto-table-cell-role="th">value_lead_6</th>
+<th data-quarto-table-cell-role="th">value_lead_7</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>D10</td>
+<td>2014-07-03</td>
+<td>2076.2</td>
+<td>2073.4</td>
+<td>2048.7</td>
+<td>2048.9</td>
+<td>2006.4</td>
+<td>2017.6</td>
+<td>2019.1</td>
+<td>2007.4</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>D10</td>
+<td>2014-07-04</td>
+<td>2073.4</td>
+<td>2048.7</td>
+<td>2048.9</td>
+<td>2006.4</td>
+<td>2017.6</td>
+<td>2019.1</td>
+<td>2007.4</td>
+<td>2010.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>D10</td>
+<td>2014-07-05</td>
+<td>2048.7</td>
+<td>2048.9</td>
+<td>2006.4</td>
+<td>2017.6</td>
+<td>2019.1</td>
+<td>2007.4</td>
+<td>2010.0</td>
+<td>2001.5</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>D10</td>
+<td>2014-07-06</td>
+<td>2048.9</td>
+<td>2006.4</td>
+<td>2017.6</td>
+<td>2019.1</td>
+<td>2007.4</td>
+<td>2010.0</td>
+<td>2001.5</td>
+<td>1978.8</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>D10</td>
+<td>2014-07-07</td>
+<td>2006.4</td>
+<td>2017.6</td>
+<td>2019.1</td>
+<td>2007.4</td>
+<td>2010.0</td>
+<td>2001.5</td>
+<td>1978.8</td>
+<td>1988.3</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">669</td>
+<td>D10</td>
+<td>2016-05-02</td>
+<td>2630.7</td>
+<td>2649.3</td>
+<td>2631.8</td>
+<td>2622.5</td>
+<td>2620.1</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">670</td>
+<td>D10</td>
+<td>2016-05-03</td>
+<td>2649.3</td>
+<td>2631.8</td>
+<td>2622.5</td>
+<td>2620.1</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">671</td>
+<td>D10</td>
+<td>2016-05-04</td>
+<td>2631.8</td>
+<td>2622.5</td>
+<td>2620.1</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">672</td>
+<td>D10</td>
+<td>2016-05-05</td>
+<td>2622.5</td>
+<td>2620.1</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">673</td>
+<td>D10</td>
+<td>2016-05-06</td>
+<td>2620.1</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>674 rows × 10 columns</p>
+</div>
 </div>
 </div>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pandas Series Method</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>( </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    pd.Series(pd.date_range(<span class="st">"2023-01-01"</span>, <span class="st">"2023-01-03"</span>))</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        .is_holiday(country_name<span class="op">=</span><span class="st">'UnitedStates'</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add 2 leaded values, 2 and 4, for a single time series</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>leaded_df_single_two <span class="op">=</span> (</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'id == "D10"'</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .augment_leads(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            leads<span class="op">=</span>[<span class="dv">2</span>, <span class="dv">4</span>]</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>leaded_df_single_two</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
-<pre><code>0     True
-1     True
-2    False
-Name: is_holiday, dtype: bool</code></pre>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+<th data-quarto-table-cell-role="th">value_lead_2</th>
+<th data-quarto-table-cell-role="th">value_lead_4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>D10</td>
+<td>2014-07-03</td>
+<td>2076.2</td>
+<td>2048.7</td>
+<td>2006.4</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>D10</td>
+<td>2014-07-04</td>
+<td>2073.4</td>
+<td>2048.9</td>
+<td>2017.6</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>D10</td>
+<td>2014-07-05</td>
+<td>2048.7</td>
+<td>2006.4</td>
+<td>2019.1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>D10</td>
+<td>2014-07-06</td>
+<td>2048.9</td>
+<td>2017.6</td>
+<td>2007.4</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>D10</td>
+<td>2014-07-07</td>
+<td>2006.4</td>
+<td>2019.1</td>
+<td>2010.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">669</td>
+<td>D10</td>
+<td>2016-05-02</td>
+<td>2630.7</td>
+<td>2631.8</td>
+<td>2620.1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">670</td>
+<td>D10</td>
+<td>2016-05-03</td>
+<td>2649.3</td>
+<td>2622.5</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">671</td>
+<td>D10</td>
+<td>2016-05-04</td>
+<td>2631.8</td>
+<td>2620.1</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">672</td>
+<td>D10</td>
+<td>2016-05-05</td>
+<td>2622.5</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">673</td>
+<td>D10</td>
+<td>2016-05-06</td>
+<td>2620.1</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>674 rows × 5 columns</p>
+</div>
 </div>
 </div>
 
