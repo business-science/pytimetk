@@ -63,6 +63,10 @@ from .utils.memory_helpers import (
     reduce_memory_usage
 )
 
+from .plot.plot_time_series import (
+    plot_time_series
+)
+
 
 __version__ = '0.0.0.9000'
 __author__ = 'Matt Dancho (Business Science)'
