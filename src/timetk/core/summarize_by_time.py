@@ -1,7 +1,9 @@
 import pandas as pd
 import pandas_flavor as pf
+
 from timetk.utils.pandas_helpers import flatten_multiindex_column_names
 
+import re 
 from itertools import cycle
 
 @pf.register_dataframe_method
@@ -217,7 +219,8 @@ def summarize_by_time(
         
         names_iter = cycle(unique_first_elements)
         
-        new_columns = [col.replace('<lambda>', next(names_iter)) if '<lambda>' in col else col for col in columns]
+        # new_columns = [col.replace('<lambda>', next(names_iter)) if '<lambda>' in col else col for col in columns]
+        new_columns = [re.sub(pattern=r"<lambda.*?>",repl=next(names_iter), string=col) if '<lambda' in col else col for col in columns]
         
         data.columns = new_columns
     # **** END FIX BUG WITH GROUPBY RESAMPLED OBJECTS (PART 2)

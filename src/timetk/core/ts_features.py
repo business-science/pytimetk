@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import pandas_flavor as pf
 
 from typing import List, Callable, Optional
 
@@ -17,7 +18,7 @@ except ImportError:
     pass 
 
 
-
+@pf.register_dataframe_method
 def ts_features(
     data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
     date_column: str,
