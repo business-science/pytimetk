@@ -61,16 +61,29 @@ def plot_timeseries(
     
     df = tk.load_dataset('m4_monthly', parse_dates = ['date'])
     
-    # Plotnine Object
+    # Plotnine Object: Single Time Series
     fig = (
         df
-            # .groupby('id')
             .query('id == "M1"')
+            .plot_timeseries(
+                'date', 'value', 
+                facet_ncol = 2,
+                x_axis_date_labels = "%Y",
+                engine = 'plotnine'
+            )
+    )
+    fig
+    
+    # Plotnine Object: Grouped Time Series
+    fig = (
+        df
+            .groupby('id')
             .plot_timeseries(
                 'date', 'value', 
                 color_column = 'id',
                 facet_ncol = 2,
-                x_axis_date_labels = "%Y"
+                x_axis_date_labels = "%Y",
+                engine = 'plotnine'
             )
     )
     fig
@@ -89,8 +102,6 @@ def plot_timeseries(
     )
     fig
     
-    
-    
     ```
     
     '''
@@ -103,6 +114,7 @@ def plot_timeseries(
     # Handle DataFrames
     if isinstance(data, pd.DataFrame):
         
+        group_names = None
         data = data.copy()
         
         # Handle smoother
@@ -111,7 +123,6 @@ def plot_timeseries(
         
     
     # Handle GroupBy objects
-    group_names = None 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
 
         group_names = data.grouper.names
@@ -135,10 +146,8 @@ def plot_timeseries(
             
                
     # print(data.head())  
-        
     
-        
-    
+    # Engine
     if engine in ['plotnine', 'matplotlib']:
         fig = _plot_timeseries_plotnine(
             data = data,
@@ -215,7 +224,6 @@ def _plot_timeseries_plotnine(
     
     smooth = None,
     smooth_color = "#3366FF",
-    smooth_span = 0.75,
     smooth_size = 0.3,
     smooth_alpha = 1,
     
@@ -227,6 +235,8 @@ def _plot_timeseries_plotnine(
     x_axis_date_labels = "%b %Y",
     base_size = 11,
 ):
+    """This is an internal function not meant to be called by the user directly.
+    """
     
     # Plot setup
     g = ggplot(
@@ -321,6 +331,6 @@ def _plot_timeseries_plotnine(
     
     return g
     
-    
+
     
     
