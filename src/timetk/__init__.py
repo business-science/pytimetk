@@ -2,6 +2,7 @@
 # *** Import everything to make timetk a standalone package ***
 
 from .plot.plot_timeseries import *
+from .plot.theme import *
 
 from .core.summarize_by_time import *
 from .core.timeseries_signature import *
