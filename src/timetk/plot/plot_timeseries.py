@@ -1,10 +1,15 @@
 from plotnine import *
 import pandas as pd
+import numpy as np
 import pandas_flavor as pf
+
 from mizani.breaks import date_breaks
 from mizani.formatters import date_format
 
+from statsmodels.nonparametric.smoothers_lowess import lowess
+
 from timetk.plot.theme import theme_tq, palette_light
+
 
     
 @pf.register_dataframe_method
@@ -21,7 +26,7 @@ def plot_timeseries(
     facet_dir = "h",
 
     line_color = "#2c3e50",
-    line_size = 0.3,
+    line_size = 0.5,
     line_type = 'solid',
     line_alpha = 1,
     
@@ -32,7 +37,9 @@ def plot_timeseries(
     
     smooth = True,
     smooth_color = "#3366FF",
-    smooth_span = 0.75,
+    smooth_frac = 0.2,
+    smooth_size = 0.65,
+    smooth_alpha = 1,
     
     title = "Time Series Plot",
     x_lab = "",
@@ -54,15 +61,11 @@ def plot_timeseries(
     
     df = tk.load_dataset('m4_monthly', parse_dates = ['date'])
     
-    (
+    # Plotnine Object
+    fig = (
         df
-            .groupby('id')
-            .plot_timeseries('date', 'value', x_axis_date_labels = "%Y")
-    )
-    
-    (
-        df
-            .groupby('id')
+            # .groupby('id')
+            .query('id == "M1"')
             .plot_timeseries(
                 'date', 'value', 
                 color_column = 'id',
@@ -70,6 +73,22 @@ def plot_timeseries(
                 x_axis_date_labels = "%Y"
             )
     )
+    fig
+    
+    # Matplotlib object
+    fig = (
+        df
+            .groupby('id')
+            .plot_timeseries(
+                'date', 'value', 
+                color_column = 'id',
+                facet_ncol = 2,
+                x_axis_date_labels = "%Y",
+                engine = 'matplotlib'
+            )
+    )
+    fig
+    
     
     
     ```
@@ -80,12 +99,45 @@ def plot_timeseries(
     if not isinstance(data, pd.DataFrame):
         if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
             raise TypeError("`data` is not a Pandas DataFrame.")
+        
+    # Handle DataFrames
+    if isinstance(data, pd.DataFrame):
+        
+        data = data.copy()
+        
+        # Handle smoother
+        if smooth:
+            data['__smooth'] = lowess(data[value_column], data[date_column], frac=smooth_frac, return_sorted=False)
+        
     
-    
+    # Handle GroupBy objects
     group_names = None 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+
         group_names = data.grouper.names
-        data = data.obj
+        data = data.obj.copy()
+        
+        # Handle smoother
+        if smooth:
+            
+            data['__smooth'] = np.nan
+            
+            for name, group in data.groupby(group_names):
+                
+                sorted_group = group.sort_values(by=date_column)
+                x = np.arange(len(sorted_group))
+                y = sorted_group[value_column].to_numpy()
+                
+                smoothed = lowess(y, x, frac=smooth_frac)  # Adjust frac as needed
+                
+                # Updating the original DataFrame with smoothed values
+                data.loc[sorted_group.index, '__smooth'] = smoothed[:, 1]
+            
+               
+    # print(data.head())  
+        
+    
+        
     
     if engine in ['plotnine', 'matplotlib']:
         fig = _plot_timeseries_plotnine(
@@ -112,7 +164,8 @@ def plot_timeseries(
 
             smooth = smooth,
             smooth_color = smooth_color,
-            smooth_span = smooth_span,
+            smooth_size = smooth_size,
+            smooth_alpha = smooth_alpha,
 
             title = title,
             x_lab = x_lab,
@@ -160,9 +213,11 @@ def _plot_timeseries_plotnine(
     x_intercept = None,
     x_intercept_color = "#2c3e50",
     
-    smooth = True,
+    smooth = None,
     smooth_color = "#3366FF",
     smooth_span = 0.75,
+    smooth_size = 0.3,
+    smooth_alpha = 1,
     
     title = "Time Series Plot",
     x_lab = "",
@@ -237,6 +292,28 @@ def _plot_timeseries_plotnine(
             dir = facet_dir, 
             shrink = True
         )
+       
+    # Add smoother
+    if smooth:
+        if color_column is None:
+            g = g + geom_line(
+                aes(
+                    y = '__smooth'
+                ),
+                color = smooth_color,
+                size = smooth_size,
+                alpha = smooth_alpha
+            )
+        else:
+            g = g + geom_line(
+                aes(
+                    y = '__smooth',
+                    group = color_column
+                ),
+                color = smooth_color,
+                size = smooth_size,
+                alpha = smooth_alpha
+            )
 
     # Add theme
     g = g + \
