@@ -4,6 +4,8 @@ import pandas_flavor as pf
 from mizani.breaks import date_breaks
 from mizani.formatters import date_format
 
+from timetk.plot.theme import theme_tq, palette_light
+
     
 @pf.register_dataframe_method
 def plot_timeseries(
@@ -30,7 +32,7 @@ def plot_timeseries(
     
     smooth = True,
     smooth_color = "#3366FF",
-    
+    smooth_span = 0.75,
     
     title = "Time Series Plot",
     x_lab = "",
@@ -40,7 +42,7 @@ def plot_timeseries(
     x_axis_date_labels = "%b %Y",
     base_size = 11,
 
-    interactive = True
+    engine = 'plotnine'
 
 ):   
     '''
@@ -48,7 +50,6 @@ def plot_timeseries(
     Examples
     --------
     ```{python}
-    import pandas as pd
     import timetk as tk
     
     df = tk.load_dataset('m4_monthly', parse_dates = ['date'])
@@ -85,6 +86,92 @@ def plot_timeseries(
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
         data = data.obj
+    
+    if engine in ['plotnine', 'matplotlib']:
+        fig = _plot_timeseries_plotnine(
+            data = data,
+            date_column = date_column,
+            value_column = value_column,
+            color_column = color_column,
+            group_names = group_names,
+
+            facet_ncol = facet_ncol,
+            facet_nrow = facet_nrow,
+            facet_scales = facet_scales,
+            facet_dir = facet_dir,
+
+            line_color = line_color,
+            line_size = line_size,
+            line_type = line_type,
+            line_alpha = line_alpha,
+
+            y_intercept = y_intercept,
+            y_intercept_color = y_intercept_color,
+            x_intercept = x_intercept,
+            x_intercept_color = x_intercept_color,
+
+            smooth = smooth,
+            smooth_color = smooth_color,
+            smooth_span = smooth_span,
+
+            title = title,
+            x_lab = x_lab,
+            y_lab = y_lab,
+            color_lab = color_lab,
+
+            x_axis_date_labels = x_axis_date_labels,
+            base_size = base_size,
+        )
+        
+        if engine == 'matplotlib':
+            fig = fig.draw()
+        
+    elif engine == 'plotly':
+        1+1
+
+    
+    return fig
+
+# Monkey patch the method to pandas groupby objects
+pd.core.groupby.generic.DataFrameGroupBy.plot_timeseries = plot_timeseries
+
+
+
+def _plot_timeseries_plotnine(
+    data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
+    date_column,
+    value_column,
+    
+    color_column = None,
+    group_names = None,
+
+    facet_ncol = 1,
+    facet_nrow = None,
+    facet_scales = "free_y",
+    facet_dir = "h",
+
+    line_color = "#2c3e50",
+    line_size = 0.3,
+    line_type = 'solid',
+    line_alpha = 1,
+    
+    y_intercept = None,
+    y_intercept_color = "#2c3e50",
+    x_intercept = None,
+    x_intercept_color = "#2c3e50",
+    
+    smooth = True,
+    smooth_color = "#3366FF",
+    smooth_span = 0.75,
+    
+    title = "Time Series Plot",
+    x_lab = "",
+    y_lab = "",
+    color_lab = "Legend",
+    
+    x_axis_date_labels = "%b %Y",
+    base_size = 11,
+):
     
     # Plot setup
     g = ggplot(
@@ -156,10 +243,7 @@ def plot_timeseries(
         theme_tq(base_size=base_size) 
     
     return g
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.plot_timeseries = plot_timeseries
-
-
+    
+    
     
     
