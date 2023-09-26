@@ -33,6 +33,8 @@ def plot_timeseries(
     y_intercept_color = "#2c3e50",
     x_intercept = None,
     x_intercept_color = "#2c3e50",
+    
+    x_axis_date_labels = "%b %Y",
 
     interactive = True
 
@@ -136,9 +138,8 @@ def plot_timeseries(
     import timetk as tk
     
     df = tk.load_dataset('m4_monthly', parse_dates = ['date'])
-    df
     
-    df.groupby('id').plot_timeseries('date', 'value')
+    df.groupby('id').plot_timeseries('date', 'value', x_axis_date_labels = "%Y")
     
     ```
     
@@ -187,7 +188,7 @@ def plot_timeseries(
     g = g + labs(x = x_lab, y = y_lab, title = title, color = color_lab)
 
     # Add scale to X
-    g = g + scale_x_datetime(date_labels = "%b %Y")
+    g = g + scale_x_datetime(date_labels = x_axis_date_labels)
 
     # Add facets
     if group_names is not None:
@@ -196,7 +197,61 @@ def plot_timeseries(
             ncol = 2, scales = "free", shrink = True
         )
 
+    g = g + \
+        theme_tq() 
+    
     return g
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.plot_timeseries = plot_timeseries
+
+
+def theme_tq(base_size = 11, base_family = ['Arial', 'Helvetica', 'sans-serif'], dpi = 100):
+    
+    # Tidyquant colors
+    blue  = "#2c3e50"
+    green = "#18BC9C"
+    white = "#FFFFFF"
+    grey  = "#cccccc"
+    
+    return theme(
+        
+        # Base Inherited Elements
+        line = element_line(color = blue, size = 0.5,  lineend="butt"),
+        rect = element_rect(fill = white, colour = blue, size = 0.5),
+        text = element_text(family = base_family, face = "plain", color = blue, size = base_size, lineheight = 0.9, hjust = 0.5, vjust = 0.5, angle = 0,  margin = dict()),
+        
+        # Axes
+        axis_line=element_blank(),
+        axis_text=element_text(size=base_size * 0.6),
+        axis_ticks=element_line(color=grey, size=0.5),
+        axis_title=element_text(size=base_size*1),
+        
+        axis_text_y=element_text(ha='center', margin=dict(r=25, l=0)),
+        
+        # Panel
+        panel_background=element_rect(fill = white, color = None),
+        panel_border=element_rect(fill = None, color = blue, size = 0.5),
+        panel_grid_major=element_line(color = grey, size = 0.33),
+        panel_grid_minor=element_line(color = grey, size = 0.33),
+        panel_grid_minor_x=element_blank(),
+        panel_spacing=0.005,
+        
+        # Legend
+        legend_key=element_rect(fill = white, color = None),
+        legend_position="bottom",
+        
+        # Strip
+        strip_background=element_rect(fill = blue, color = blue),
+        strip_text=element_text(size=base_size*0.8, color = white, margin=dict(t=5, b=5)),
+        
+        # Plot
+        plot_title=element_text(size=base_size*1.2, color = blue, margin=dict(t = 0, r = 0, b = 4, l = 0), face="bold"),
+        plot_subtitle=element_text(size=base_size*0.9, color = blue, margin=dict(t = 0, r = 0, b = 3, l = 0)),
+        plot_margin=0.025,
+        
+        dpi=dpi,
+        # complete=True
+    )
+    
+    
