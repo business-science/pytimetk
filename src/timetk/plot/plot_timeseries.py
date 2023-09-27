@@ -15,6 +15,7 @@ from mizani.formatters import date_format
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
 from timetk.plot.theme import theme_tq, palette_light
+from timetk.utils.plot_helpers import hex_to_rgba
 
 
     
@@ -77,7 +78,7 @@ def plot_timeseries(
                 'date', 'value', 
                 facet_ncol = 1,
                 x_axis_date_labels = "%Y",
-                engine = 'plotly'
+                engine = 'plotly',
             )
     )
     fig
@@ -88,18 +89,33 @@ def plot_timeseries(
             .groupby('id')
             .plot_timeseries(
                 'date', 'value', 
-                color_column = 'id',
-                facet_ncol = 2,
-                facet_scales = "free",
+                # color_column = 'id',
+                facet_ncol = 1,
+                facet_scales = "free_y",
+                smooth_frac = 0.2,
+                smooth_size = 2.0,
                 y_intercept = None,
                 x_axis_date_labels = "%Y",
                 engine = 'plotly',
-                # width = 700,
-                # height = 500,
+                width = 600,
+                height = 600,
             )
     )
     fig
     
+    # Plotly Object: Color Column
+    fig = (
+        df
+            .plot_timeseries(
+                'date', 'value', 
+                color_column = 'id',
+                smooth = False,
+                y_intercept = 0,
+                x_axis_date_labels = "%Y",
+                engine = 'plotly',
+            )
+    )
+    fig
     
     
     # Plotnine Object: Single Time Series
@@ -123,8 +139,23 @@ def plot_timeseries(
                 color_column = 'id',
                 facet_ncol = 2,
                 facet_scales = "free",
+                line_size = 0.35,
                 x_axis_date_labels = "%Y",
                 engine = 'plotnine'
+            )
+    )
+    fig
+    
+    # Plotly Object: Color Column
+    fig = (
+        df
+            .plot_timeseries(
+                'date', 'value', 
+                color_column = 'id',
+                smooth = False,
+                y_intercept = 0,
+                x_axis_date_labels = "%Y",
+                engine = 'plotnine',
             )
     )
     fig
@@ -160,7 +191,20 @@ def plot_timeseries(
         
         # Handle smoother
         if smooth:
-            data['__smooth'] = lowess(data[value_column], data[date_column], frac=smooth_frac, return_sorted=False)
+            if color_column is None:
+                data['__smooth'] = lowess(data[value_column], data[date_column], frac=smooth_frac, return_sorted=False)
+            else:
+                data['__smooth'] = np.nan
+                
+                for name, group in data.groupby(color_column):
+                    
+                    sorted_group = group.sort_values(by=date_column)
+                    x = np.arange(len(sorted_group))
+                    y = sorted_group[value_column].to_numpy()
+                    
+                    smoothed = lowess(y, x, frac=smooth_frac)
+                    
+                    data.loc[sorted_group.index, '__smooth'] = smoothed[:, 1]
         
     
     # Handle GroupBy objects
@@ -323,17 +367,20 @@ def _plot_timeseries_plotly(
     width = None,
     height = None,
 ):
+    
     subplot_titles = []
     if group_names is not None:
         grouped = data.groupby(group_names, sort = False, group_keys = False)
         num_groups = len(grouped)
         facet_nrow = -(-num_groups // facet_ncol)  # Ceil division
         subplot_titles = [" | ".join(map(str, name)) if isinstance(name, tuple) else str(name) for name in grouped.groups.keys()]
+        
         if color_column is not None:
             colors = list(palette_light().values()) * 10_000
             colors = colors[:num_groups]
-        else:
+        else: 
             colors = [line_color] * num_groups
+        
         
         # print(colors)
         # print(subplot_titles)
@@ -359,27 +406,31 @@ def _plot_timeseries_plotly(
             col = i % facet_ncol + 1
             
             # BUG in plotly with "v" direction
+            
             # if facet_dir == "h":
             #     row = i // facet_ncol + 1
             #     col = i % facet_ncol + 1
             # else:
             #     col = i // facet_ncol + 1
             #     row = i % facet_ncol + 1
-            
-            
-            
-            
+
+            # BUG - Need to fix color mapping when color_column is not same as group_names
             if color_column is not None:
-                trace = go.Scatter(x=group[date_column], y=group[value_column], mode='lines', line=dict(color=colors[i], width=line_size), name=name[0])
+                trace = go.Scatter(
+                    x=group[date_column], 
+                    y=group[value_column], 
+                    mode='lines',
+                    line=dict(color=hex_to_rgba(colors[i], alpha=line_alpha), width=line_size), name=name[0]
+                )
                 fig.add_trace(trace, row=row, col=col)
                 
             else:
-                trace = go.Scatter(x=group[date_column], y=group[value_column], mode='lines', line=dict(color=line_color, width=line_size), showlegend=False)
+                trace = go.Scatter(x=group[date_column], y=group[value_column], mode='lines', line=dict(color=hex_to_rgba(line_color, alpha=line_alpha), width=line_size), showlegend=False, name=name[0])
                 fig.add_trace(trace, row=row, col=col)
             
             
             if smooth:
-                trace = go.Scatter(x=group[date_column], y=group['__smooth'], mode='lines', line=dict(color=smooth_color, width=smooth_size), showlegend=False)
+                trace = go.Scatter(x=group[date_column], y=group['__smooth'], mode='lines', line=dict(color=hex_to_rgba(smooth_color, alpha=smooth_alpha), width=smooth_size), showlegend=False, name="Smoother")
                 fig.add_trace(trace, row=row, col=col)
             
             if y_intercept is not None:
@@ -389,33 +440,72 @@ def _plot_timeseries_plotly(
                 
             # fig.layout.annotations[i].update(text=name[0])
     else:
-        trace = go.Scatter(x=data[date_column], y=data[value_column], mode='lines', line=dict(color=line_color, width=line_size), showlegend=False)
-        fig.add_trace(trace)
         
-        if smooth:
-            trace = go.Scatter(x=data[date_column], y=data['__smooth'], mode='lines', line=dict(color=smooth_color, width=smooth_size), showlegend=False)
+        if color_column is not None:
+            
+            grouped = data.groupby(color_column, sort = False, group_keys = False)
+            num_groups = len(grouped)
+            
+            colors = list(palette_light().values()) * 10_000
+            colors = colors[:num_groups]
+            
+            for i, (name, group) in enumerate(grouped):
+                
+                trace = go.Scatter(
+                    x=group[date_column], 
+                    y=group[value_column], 
+                    mode='lines',
+                    line=dict(color=hex_to_rgba(colors[i], alpha=line_alpha), width=line_size), name=name[0]
+                )
+                fig.add_trace(trace)
+                
+                if smooth:
+                    trace = go.Scatter(x=group[date_column], y=group['__smooth'], mode='lines', line=dict(color=hex_to_rgba(smooth_color, alpha=smooth_alpha), width=smooth_size), showlegend=False, name="Smoother")
+                    fig.add_trace(trace)
+                
+                if y_intercept is not None:
+                    fig.add_shape(go.layout.Shape(type="line", y0=y_intercept, y1=y_intercept, x0=group[date_column].min(), x1=group[date_column].max(), line=dict(color=y_intercept_color)))
+                if x_intercept is not None:
+                    fig.add_shape(go.layout.Shape(type="line", x0=x_intercept, x1=x_intercept, y0=group[value_column].min(), y1=group[value_column].max(), line=dict(color=x_intercept_color)))
+            
+            
+        else:
+            trace = go.Scatter(x=data[date_column], y=data[value_column], mode='lines', line=dict(color=hex_to_rgba(line_color, alpha=line_alpha), width=line_size), showlegend=False, name="Time Series")
             fig.add_trace(trace)
         
-        if y_intercept is not None:
-            fig.add_shape(go.layout.Shape(type="line", y0=y_intercept, y1=y_intercept, x0=data[date_column].min(), x1=data[date_column].max(), line=dict(color=y_intercept_color)))
-        if x_intercept is not None:
-            fig.add_shape(go.layout.Shape(type="line", x0=x_intercept, x1=x_intercept, y0=data[value_column].min(), y1=data[value_column].max(), line=dict(color=x_intercept_color)))
+            if smooth:
+                trace = go.Scatter(x=data[date_column], y=data['__smooth'], mode='lines', line=dict(color=hex_to_rgba(smooth_color, alpha=smooth_alpha), width=smooth_size), showlegend=False, name="Smoother")
+                fig.add_trace(trace)
+            
+            if y_intercept is not None:
+                fig.add_shape(go.layout.Shape(type="line", y0=y_intercept, y1=y_intercept, x0=data[date_column].min(), x1=data[date_column].max(), line=dict(color=y_intercept_color)))
+            if x_intercept is not None:
+                fig.add_shape(go.layout.Shape(type="line", x0=x_intercept, x1=x_intercept, y0=data[value_column].min(), y1=data[value_column].max(), line=dict(color=x_intercept_color)))
 
     fig.update_layout(
         title=title,
         xaxis_title=x_lab,
         yaxis_title=y_lab,
+        legend_title_text = color_lab,
         xaxis=dict(tickformat=x_axis_date_labels),
     )
     
-    fig.update_xaxes(matches=None, showticklabels=True, visible=True)
+    fig.update_xaxes(
+        matches=None, showticklabels=True, visible=True, 
+        # showline=True, linecolor = '#2c3e50', gridcolor = 'lightgrey', mirror=True,
+    )
+    # fig.update_yaxes(showline=True, linecolor = '#2c3e50', gridcolor = 'lightgrey', mirror=True,)
+    
     fig.update_layout(margin=dict(l=10, r=10, t=40, b=40))
     fig.update_layout(
         template="plotly_white", 
-        font=dict(size=base_size)
+        font=dict(size=base_size),
+        title_font=dict(size=base_size*1.2),
+        legend_title_font=dict(size=base_size*0.8),
+        legend_font=dict(size=base_size*0.8),
     )
-    fig.update_xaxes(tickfont=dict(size=base_size*0.6))
-    fig.update_yaxes(tickfont=dict(size=base_size*0.6))
+    fig.update_xaxes(tickfont=dict(size=base_size*0.8))
+    fig.update_yaxes(tickfont=dict(size=base_size*0.8))
     fig.update_annotations(font_size=base_size*0.8)
     fig.update_layout(
         autosize=True, 
@@ -424,8 +514,9 @@ def _plot_timeseries_plotly(
         # height=200 * num_groups / facet_ncol
     )
     # Update subplot titles (strip) background color to blue
-    for annot in fig.layout.annotations:
-        annot.update(bgcolor="#2C3E50", font=dict(color='white'))
+    # for annot in fig.layout.annotations:
+    #     annot.update(bgcolor="#2C3E50", font=dict(color='white'))
+     
         
     return fig
 

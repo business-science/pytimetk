@@ -11,10 +11,11 @@ def theme_tq(base_size = 11, base_family = ['Arial', 'Helvetica', 'sans-serif'],
     
     return theme(
         
-        # Base Inherited Elements
-        line = element_line(color = blue, size = 0.5,  lineend="butt"),
+        # # Base Inherited Elements
+        line = element_line(color = blue, size = 0.5),
         rect = element_rect(fill = white, colour = blue, size = 0.5),
-        text = element_text(family = base_family, face = "plain", color = blue, size = base_size, lineheight = 0.9, hjust = 0.5, vjust = 0.5, angle = 0,  margin = dict()),
+       
+        # text = element_text(family = base_family, face = "plain", color = blue, size = base_size, lineheight = 0.9, hjust = 0.5, vjust = 0.5, angle = 0,  margin = dict()),
         
         # Axes
         axis_line=element_blank(),
@@ -22,12 +23,12 @@ def theme_tq(base_size = 11, base_family = ['Arial', 'Helvetica', 'sans-serif'],
         axis_ticks=element_line(color=grey, size=0.5),
         axis_title=element_text(size=base_size*1),
         
-        axis_text_y=element_text(ha='center', margin=dict(r=25, l=0)),
+        axis_text_y=element_text(margin=dict(r=5)),
         
         # Panel
         panel_background=element_rect(fill = white, color = None),
-        # panel_border=element_rect(fill = None, color = blue, size = 0.5),
-        panel_border=element_blank(),
+        panel_border=element_rect(fill = None, color = blue, size = 0.5),
+        # panel_border=element_blank(),
         panel_grid_major=element_line(color = grey, size = 0.33),
         panel_grid_minor=element_line(color = grey, size = 0.33),
         panel_grid_minor_x=element_blank(),
@@ -48,13 +49,13 @@ def theme_tq(base_size = 11, base_family = ['Arial', 'Helvetica', 'sans-serif'],
         strip_text=element_text(size=base_size*0.8, color = white, margin=dict(t=5, b=5)),
         
         # Plot
-        plot_title=element_text(size=base_size*1.2, color = blue, margin=dict(t = 0, r = 0, b = 4, l = 0), face="bold"),
+        plot_title=element_text(size=base_size*1.2, color = blue, margin=dict(t = 0, r = 0, b = 4, l = 0), hjust=0),
         plot_subtitle=element_text(size=base_size*0.9, color = blue, margin=dict(t = 0, r = 0, b = 3, l = 0)),
         plot_margin=0.025,
         
         dpi=dpi,
         figure_size=(width/100 if width is not None else 7, height/100 if height is not None else 5),
-        # complete=True
+        
     )
     
     

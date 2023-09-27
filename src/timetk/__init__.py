@@ -21,6 +21,7 @@ from .datasets.get_datasets import *
 from .utils.datetime_helpers import *
 from .utils.pandas_helpers import *
 from .utils.memory_helpers import *
+from .utils.plot_helpers import *
 
 # *** Needed for quartodoc build important functions ***
 from .plot.plot_timeseries import (
