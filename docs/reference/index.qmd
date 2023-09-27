@@ -1,5 +1,13 @@
 # Function reference
 
+## Data Visualization
+
+Visualize time series data with one line of code.
+
+| | |
+| --- | --- |
+| [plot_timeseries](plot_timeseries.qmd#timetk.plot_timeseries) | Creates time series plots using different plotting engines such as Plotnine, Matplotlib, and Plotly. |
+
 ## 🔥 Wrangling Pandas Time Series DataFrames
 
 Bend time series data to your will.

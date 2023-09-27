@@ -86,6 +86,11 @@ quartodoc:
   package: timetk
   sidebar: _sidebar.yml
   sections:
+    - title: 🚀 Data Visualization
+      desc: Visualize time series data with one line of code.
+      package: timetk
+      contents:
+      - plot_timeseries
     - title: 🔥 Wrangling Pandas Time Series DataFrames
       desc: Bend time series data to your will.
       package: timetk

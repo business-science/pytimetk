@@ -62,7 +62,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/index.html</loc>
-    <lastmod>2023-09-25T23:44:43.982Z</lastmod>
+    <lastmod>2023-09-27T05:18:46.364Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/getting-started/02_quick_start.html</loc>
@@ -86,7 +86,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2023-09-25T23:46:21.995Z</lastmod>
+    <lastmod>2023-09-27T05:18:49.960Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/week_of_month.html</loc>
@@ -115,5 +115,9 @@
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/floor_date.html</loc>
     <lastmod>2023-09-25T23:48:32.192Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/plot_timeseries.html</loc>
+    <lastmod>2023-09-27T05:18:53.094Z</lastmod>
   </url>
 </urlset>

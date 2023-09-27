@@ -3,6 +3,9 @@ website:
   - contents:
     - reference/index.qmd
     - contents:
+      - reference/plot_timeseries.qmd
+      section: Data Visualization
+    - contents:
       - reference/summarize_by_time.qmd
       - reference/pad_by_time.qmd
       - reference/future_frame.qmd
