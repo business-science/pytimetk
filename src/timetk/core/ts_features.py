@@ -105,10 +105,7 @@ def ts_features(
     )
     
     df = tk.load_dataset('m4_daily', parse_dates = ['date'])
-    df
-    ```
     
-    ```python
     # Feature Extraction
     feature_df = (
         df
@@ -121,7 +118,7 @@ def ts_features(
                 threads      = 1
             )
     ) 
-    feature_df
+    print(feature_df)
     ```
     '''
     

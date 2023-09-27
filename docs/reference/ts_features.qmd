@@ -1,6 +1,6 @@
 # ts_features { #timetk.ts_features }
 
-`ts_features(data, date_column, value_column, features=None, freq=None, scale=True, threads=None)`
+`ts_features(data, date_column, value_column, features=None, freq=None, scale=True, threads=1)`
 
 Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the `tsfeatures` package.
 
@@ -16,7 +16,7 @@ Note: Requires the `tsfeatures` package to be installed.
 | `features`     | list                                                     | The `features` parameter is a list of functions that represent the time series features to be extracted. Each function should take a time series as input and return a scalar value as output.   When `None`, uses the default list of features: - acf_features - arch_stat  - crossing_points - entropy - flat_spots - heterogeneity - holt_parameters - lumpiness - nonlinearity - pacf_features - stl_features - stability - hw_parameters - unitroot_kpss - unitroot_pp - series_length - hurst | `None`     |
 | `freq`         | str                                                      | The `freq` parameter specifies the frequency of the time series data. It is used to calculate features that are dependent on the frequency, such as seasonal features.   - The frequency can be specified as a string, such as 'D' for daily, 'W' for weekly, 'M' for monthly.  - The frequency can be a numeric value representing the number of observations per year, such as 365 for daily, 52 for weekly, 12 for monthly.                                                                      | `None`     |
 | `scale`        | bool                                                     | The `scale` parameter in the `ts_features` function determines whether or not to scale the extracted features.  - If `scale` is set to `True`, the features will be scaled using z-score normalization.  - If `scale` is set to `False`, the features will not be scaled.                                                                                                                                                                                                                           | `True`     |
-| `threads`      | Optional\[int\]                                          | The `threads` parameter is an optional parameter that specifies the number of threads to use for parallel processing. If not specified, the function will use the default number of threads available on the system.                                                                                                                                                                                                                                                                                | `None`     |
+| `threads`      | Optional\[int\]                                          | The `threads` parameter is an optional parameter that specifies the number of threads to use for parallel processing. If is `None`, the function will use the default number of threads available on the system.                                                                                                                                                                                                                                                                                    | `1`        |
 
 ## Returns
 
@@ -42,10 +42,7 @@ from tsfeatures import (
 )
 
 df = tk.load_dataset('m4_daily', parse_dates = ['date'])
-df
-```
 
-```python
 # Feature Extraction
 feature_df = (
     df
@@ -54,8 +51,9 @@ feature_df = (
             date_column  = 'date', 
             value_column = 'value',
             features     = [acf_features, hurst],
-            freq         = 7
+            freq         = 7,
+            threads      = 1
         )
 ) 
-feature_df
+print(feature_df)
 ```
