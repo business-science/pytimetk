@@ -7,15 +7,6 @@ number-sections: true
 number-depth: 2
 ---
 
----
-title: 'Data Wrangling'
-jupyter: python3
-toc: true
-toc-depth: 3
-number-sections: true
-number-depth: 2
----
-
 This section will cover data wrangling for timeseries using pytimetk. We'll show examples for the following functions:
 
 * `summarize_by_time()`
@@ -188,8 +179,107 @@ grouped_summarized_df[['id', 'date', 'value_sum']] \
 ```
 
 
-
 # Pad by Time
+
 `pad_by_time()` can be used to add rows where timestamps are missing. For example, when working with sales data that may have missing values on weekends or holidays.
 
+::: {.callout-tip collapse="false"}
+## Help Doc Info: `pad_by_time()`
+
+Use `help(tk.pad_by_time)` to review additional helpful documentation.
+
+:::
+
 ## Basic Example
+Let's start with a basic example to see how `pad_by_time()` works. We'll create some sample data with missing timestamps:
+
+```{python}
+
+# libraries
+import timetk as tk
+import pandas as pd
+import numpy as np
+
+# sample quarterly data with missing timestamp for Q3
+dates = pd.to_datetime(["2021-01-01", "2021-04-01", "2021-10-01"])
+value = range(len(dates))
+
+df = pd.DataFrame({
+    'date': dates,
+    'value': range(len(dates))
+})
+
+df
+
+```
+
+Now we can use `pad_by_time()` to fill in the missing timestamp:
+
+```{python}
+
+# pad by time
+df \
+	.pad_by_time(
+		date_column = 'date',
+		freq        = 'QS' # specifying quarter start frequency
+	)
+
+```
+
+We can also specify shorter time frequency:
+
+```{python}
+
+# pad by time with shorter frequency
+df \
+	.pad_by_time(
+		date_column = 'date',
+		freq        = 'MS' # specifying month start frequency
+	) \
+	.assign(value = lambda x: x['value'].fillna(0)) # replace NaN with 0
+
+```
+
+## Pad by Time with Grouped Time Series
+`pad_by_time()` can also be used with grouped time series. Let's use the `stocks_daily` dataset to showcase an example:
+
+```{python}
+
+# load dataset
+stocks_df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
+
+# pad by time
+stocks_df \
+	.groupby('symbol') \
+	.pad_by_time(
+		date_column = 'date',
+		freq        = 'D'
+	) \
+	.assign(id = lambda x: x['symbol'].ffill())
+```
+
+
+To replace NaN with 0 in a dataframe with multiple columns:
+
+```{python}
+
+from functools import partial
+
+# columns to replace NaN with 0
+cols_to_fill = ['open', 'high', 'low', 'close', 'volume', 'adjusted']
+
+# define a function to fillna
+def fill_na_col(df, col):
+    return df[col].fillna(0)
+
+# pad by time and replace NaN with 0
+stocks_df \
+	.groupby('symbol') \
+	.pad_by_time(
+		date_column = 'date',
+		freq        = 'D'
+	) \
+	.assign(id = lambda x: x['symbol'].ffill()) \
+	.assign(**{col: partial(fill_na_col, col=col) for col in cols_to_fill})
+```
+
