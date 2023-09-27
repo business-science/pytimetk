@@ -1,8 +1,10 @@
 import pandas as pd
-import numpy as np
 import pandas_flavor as pf
 
-from typing import List, Callable, Optional
+from functools import partial
+from multiprocessing import Pool
+
+from typing import Optional
 
 try:
     import tsfeatures as tsf
@@ -14,9 +16,15 @@ try:
         hw_parameters, unitroot_kpss, unitroot_pp,
         series_length, hurst
     )
+    from tsfeatures.tsfeatures import _get_feats
 except ImportError:
     pass 
 
+dict_freqs = {
+    'H': 24, 'D': 1,
+    'M': 12, 'Q': 4,
+    'W': 1, 'Y': 1
+}
 
 @pf.register_dataframe_method
 def ts_features(
@@ -26,7 +34,7 @@ def ts_features(
     features: list = None,
     freq: str = None,
     scale: bool = True,
-    threads: Optional[int] = None,
+    threads: Optional[int] = 1,
 ) -> pd.DataFrame:
     '''Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the `tsfeatures` package.
     
@@ -73,7 +81,7 @@ def ts_features(
         - If `scale` is set to `True`, the features will be scaled using z-score normalization. 
         - If `scale` is set to `False`, the features will not be scaled.
     threads : Optional[int]
-        The `threads` parameter is an optional parameter that specifies the number of threads to use for parallel processing. If not specified, the function will use the default number of threads available on the system.
+        The `threads` parameter is an optional parameter that specifies the number of threads to use for parallel processing. If is `None`, the function will use the default number of threads available on the system.
     
     Returns
     -------
@@ -109,7 +117,8 @@ def ts_features(
                 date_column  = 'date', 
                 value_column = 'value',
                 features     = [acf_features, hurst],
-                freq         = 7
+                freq         = 7,
+                threads      = 1
             )
     ) 
     feature_df
@@ -175,9 +184,38 @@ def ts_features(
     construct_df['y'] = df[value_column]
     
     # Run tsfeatures
-    features_df = tsf.tsfeatures(construct_df, features=features, freq=freq, scale=scale, threads=threads)
+    # features_df = tsf.tsfeatures(construct_df, features=features, freq=freq, scale=scale, threads=threads)
     
-    return features_df
+    # Replicate tsfeatures without threads
+    # https://github.com/Nixtla/tsfeatures/blob/fe4f6e63b8883f84922354b7a57056cf534aa4ae/tsfeatures/tsfeatures.py#L967
+    partial_get_feats = partial(
+        _get_feats, 
+        freq=freq, 
+        scale=scale,
+        features=features, 
+        dict_freqs=dict_freqs
+    )
+    
+    if threads != 1:
+        with Pool(threads) as pool:
+            ts_features = pool.starmap(
+                partial_get_feats, 
+                construct_df.groupby('unique_id')
+            )
+            
+            # print(ts_features)
+            
+    else:
+        ts_features = []
+        for name, group in construct_df.groupby('unique_id'):
+            result = partial_get_feats(name, group)
+            ts_features.append(result)
+            
+        
+    ts_features = pd.concat(ts_features).rename_axis('unique_id')
+    ts_features = ts_features.reset_index()
+    
+    return ts_features
     
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.ts_features = ts_features
