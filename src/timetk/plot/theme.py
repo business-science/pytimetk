@@ -1,7 +1,7 @@
 from plotnine import *
 
 
-def theme_tq(base_size = 11, base_family = ['Arial', 'Helvetica', 'sans-serif'], dpi = 100):
+def theme_tq(base_size = 11, base_family = ['Arial', 'Helvetica', 'sans-serif'], dpi = 100, width = None, height = None):
     
     # Tidyquant colors
     blue  = "#2c3e50"
@@ -26,7 +26,8 @@ def theme_tq(base_size = 11, base_family = ['Arial', 'Helvetica', 'sans-serif'],
         
         # Panel
         panel_background=element_rect(fill = white, color = None),
-        panel_border=element_rect(fill = None, color = blue, size = 0.5),
+        # panel_border=element_rect(fill = None, color = blue, size = 0.5),
+        panel_border=element_blank(),
         panel_grid_major=element_line(color = grey, size = 0.33),
         panel_grid_minor=element_line(color = grey, size = 0.33),
         panel_grid_minor_x=element_blank(),
@@ -52,6 +53,7 @@ def theme_tq(base_size = 11, base_family = ['Arial', 'Helvetica', 'sans-serif'],
         plot_margin=0.025,
         
         dpi=dpi,
+        figure_size=(width/100 if width is not None else 7, height/100 if height is not None else 5),
         # complete=True
     )
     
