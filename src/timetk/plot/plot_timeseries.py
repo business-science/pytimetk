@@ -1,7 +1,13 @@
-from plotnine import *
+
 import pandas as pd
 import numpy as np
 import pandas_flavor as pf
+
+from plotnine import *
+
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 from mizani.breaks import date_breaks
 from mizani.formatters import date_format
@@ -48,6 +54,8 @@ def plot_timeseries(
     
     x_axis_date_labels = "%b %Y",
     base_size = 11,
+    width = None,
+    height = None,
 
     engine = 'plotnine'
 
@@ -61,13 +69,45 @@ def plot_timeseries(
     
     df = tk.load_dataset('m4_monthly', parse_dates = ['date'])
     
+    # Plotly Object: Single Time Series
+    fig = (
+        df
+            .query('id == "M1"')
+            .plot_timeseries(
+                'date', 'value', 
+                facet_ncol = 1,
+                x_axis_date_labels = "%Y",
+                engine = 'plotly'
+            )
+    )
+    fig
+    
+    # Plotly Object: Grouped Time Series
+    fig = (
+        df
+            .groupby('id')
+            .plot_timeseries(
+                'date', 'value', 
+                color_column = 'id',
+                facet_ncol = 2,
+                facet_scales = "free",
+                y_intercept = None,
+                x_axis_date_labels = "%Y",
+                engine = 'plotly',
+                # width = 700,
+                # height = 500,
+            )
+    )
+    fig
+    
+    
+    
     # Plotnine Object: Single Time Series
     fig = (
         df
             .query('id == "M1"')
             .plot_timeseries(
                 'date', 'value', 
-                facet_ncol = 2,
                 x_axis_date_labels = "%Y",
                 engine = 'plotnine'
             )
@@ -82,6 +122,7 @@ def plot_timeseries(
                 'date', 'value', 
                 color_column = 'id',
                 facet_ncol = 2,
+                facet_scales = "free",
                 x_axis_date_labels = "%Y",
                 engine = 'plotnine'
             )
@@ -183,13 +224,54 @@ def plot_timeseries(
 
             x_axis_date_labels = x_axis_date_labels,
             base_size = base_size,
+            
+            width = width,
+            height = height,
         )
         
         if engine == 'matplotlib':
             fig = fig.draw()
         
     elif engine == 'plotly':
-        1+1
+        
+        fig = _plot_timeseries_plotly(
+            data = data,
+            date_column = date_column,
+            value_column = value_column,
+            color_column = color_column,
+            group_names = group_names,
+
+            facet_ncol = facet_ncol,
+            facet_nrow = facet_nrow,
+            facet_scales = facet_scales,
+            facet_dir = facet_dir,
+
+            line_color = line_color,
+            line_size = line_size,
+            line_type = line_type,
+            line_alpha = line_alpha,
+
+            y_intercept = y_intercept,
+            y_intercept_color = y_intercept_color,
+            x_intercept = x_intercept,
+            x_intercept_color = x_intercept_color,
+
+            smooth = smooth,
+            smooth_color = smooth_color,
+            smooth_size = smooth_size,
+            smooth_alpha = smooth_alpha,
+
+            title = title,
+            x_lab = x_lab,
+            y_lab = y_lab,
+            color_lab = color_lab,
+
+            x_axis_date_labels = x_axis_date_labels,
+            base_size = base_size,
+            
+            width = width,
+            height = height,
+        )
 
     
     return fig
@@ -198,9 +280,12 @@ def plot_timeseries(
 pd.core.groupby.generic.DataFrameGroupBy.plot_timeseries = plot_timeseries
 
 
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import pandas as pd
 
-def _plot_timeseries_plotnine(
-    data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
+def _plot_timeseries_plotly(
+    data,
     date_column,
     value_column,
     
@@ -234,6 +319,128 @@ def _plot_timeseries_plotnine(
     
     x_axis_date_labels = "%b %Y",
     base_size = 11,
+    
+    width = None,
+    height = None,
+):
+    subplot_titles = []
+    if group_names is not None:
+        grouped = data.groupby(group_names)
+        num_groups = len(grouped)
+        facet_nrow = -(-num_groups // facet_ncol)  # Ceil division
+        subplot_titles = [" | ".join(map(str, name)) if isinstance(name, tuple) else str(name) for name in grouped.groups.keys()]
+        
+    else:
+        facet_nrow = 1
+        num_groups = 1
+    
+    fig = make_subplots(
+        rows=facet_nrow, 
+        cols=facet_ncol, 
+        subplot_titles=subplot_titles,
+        
+        # Shared Axes if facet_scales is "free" or "free_x" or "free_y"
+        shared_xaxes=True if facet_scales == "free_y" else False,
+        shared_yaxes=True if facet_scales == "free_x" else False,
+    )
+
+    if group_names is not None:
+        for i, (name, group) in enumerate(grouped):
+            
+            row = i // facet_ncol + 1
+            col = i % facet_ncol + 1
+            
+            # print(i)
+            # print(name)
+            # print(group)
+            
+            trace = go.Scatter(x=group[date_column], y=group[value_column], mode='lines', line=dict(color=line_color, width=line_size), name=name[0])
+            fig.add_trace(trace, row=row, col=col)
+            
+            if smooth:
+                trace = go.Scatter(x=group[date_column], y=group['__smooth'], mode='lines', line=dict(color=smooth_color, width=smooth_size), showlegend=False)
+                fig.add_trace(trace, row=row, col=col)
+            
+            if y_intercept is not None:
+                fig.add_shape(go.layout.Shape(type="line", y0=y_intercept, y1=y_intercept, x0=group[date_column].min(), x1=group[date_column].max(), line=dict(color=y_intercept_color)), row=row, col=col)
+            if x_intercept is not None:
+                fig.add_shape(go.layout.Shape(type="line", x0=x_intercept, x1=x_intercept, y0=group[value_column].min(), y1=group[value_column].max(), line=dict(color=x_intercept_color)), row=row, col=col)
+    else:
+        trace = go.Scatter(x=data[date_column], y=data[value_column], mode='lines', line=dict(color=line_color, width=line_size), showlegend=False)
+        fig.add_trace(trace)
+        
+        if smooth:
+            trace = go.Scatter(x=data[date_column], y=data['__smooth'], mode='lines', line=dict(color=smooth_color, width=smooth_size), showlegend=False)
+            fig.add_trace(trace)
+        
+        if y_intercept is not None:
+            fig.add_shape(go.layout.Shape(type="line", y0=y_intercept, y1=y_intercept, x0=data[date_column].min(), x1=data[date_column].max(), line=dict(color=y_intercept_color)))
+        if x_intercept is not None:
+            fig.add_shape(go.layout.Shape(type="line", x0=x_intercept, x1=x_intercept, y0=data[value_column].min(), y1=data[value_column].max(), line=dict(color=x_intercept_color)))
+
+    fig.update_layout(
+        title=title,
+        xaxis_title=x_lab,
+        yaxis_title=y_lab,
+        xaxis=dict(tickformat=x_axis_date_labels),
+    )
+    
+    fig.update_xaxes(matches=None, showticklabels=True, visible=True)
+    # fig.update_layout(margin=dict(l=60, r=10, t=20, b=50))
+    fig.update_layout(template="plotly_white", font=dict(size=base_size))
+    fig.update_annotations(font_size=base_size*0.8)
+    fig.update_layout(
+        autosize=True, 
+        width=width,
+        height=height,
+        # height=200 * num_groups / facet_ncol
+    )
+    
+    return fig
+
+
+
+
+
+def _plot_timeseries_plotnine(
+    data: pd.DataFrame,
+    date_column,
+    value_column,
+    
+    color_column = None,
+    group_names = None,
+
+    facet_ncol = 1,
+    facet_nrow = None,
+    facet_scales = "free_y",
+    facet_dir = "h",
+
+    line_color = "#2c3e50",
+    line_size = 0.3,
+    line_type = 'solid',
+    line_alpha = 1,
+    
+    y_intercept = None,
+    y_intercept_color = "#2c3e50",
+    x_intercept = None,
+    x_intercept_color = "#2c3e50",
+    
+    smooth = None,
+    smooth_color = "#3366FF",
+    smooth_size = 0.3,
+    smooth_alpha = 1,
+    
+    title = "Time Series Plot",
+    x_lab = "",
+    y_lab = "",
+    color_lab = "Legend",
+    
+    x_axis_date_labels = "%b %Y",
+    base_size = 11,
+    
+    
+    width = None,
+    height = None,
 ):
     """This is an internal function not meant to be called by the user directly.
     """
@@ -327,10 +534,15 @@ def _plot_timeseries_plotnine(
 
     # Add theme
     g = g + \
-        theme_tq(base_size=base_size) 
+        theme_tq(base_size=base_size) + \
+        theme(figure_size=(width/100 if width is not None else 7, height/100 if height is not None else 5))
     
     return g
     
 
+    
+    
+    
+    
     
     
