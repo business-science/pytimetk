@@ -283,3 +283,4 @@ stocks_df \
 	.assign(**{col: partial(fill_na_col, col=col) for col in cols_to_fill})
 ```
 
+
