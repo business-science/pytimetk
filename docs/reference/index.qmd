@@ -1,6 +1,6 @@
 # Function reference
 
-## Data Visualization
+## 🚀 Data Visualization
 
 Visualize time series data with one line of code.
 

@@ -4,7 +4,7 @@ website:
     - reference/index.qmd
     - contents:
       - reference/plot_timeseries.qmd
-      section: Data Visualization
+      section: "\U0001F680 Data Visualization"
     - contents:
       - reference/summarize_by_time.qmd
       - reference/pad_by_time.qmd

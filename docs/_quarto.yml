@@ -15,6 +15,9 @@ project:
   type: website
   output-dir: _site
 
+execute:
+  freeze: auto  # re-render only when source changes
+
 # tell quarto to read the generated sidebar
 metadata-files:
   - _sidebar.yml

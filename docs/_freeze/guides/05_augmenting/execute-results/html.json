@@ -1,0 +1,11 @@
+{
+  "hash": "ecc1ddfaa212ab13024813f94530f72c",
+  "result": {
+    "markdown": "---\ntitle: Adding Features (Augmenting)\ntoc: true\ntoc-depth: 3\nnumber-sections: true\nnumber-depth: 2\n---\n\nComing soon...\n\n",
+    "supporting": [
+      "05_augmenting_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}
