@@ -11,8 +11,7 @@ from timetk.utils.datetime_helpers import get_pandas_frequency
 def pad_by_time(
     data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
     date_column: str,  
-    freq: str = 'auto',
-    force_regular: bool = True,
+    freq: str = 'D',
 ) -> pd.DataFrame:
     '''
     Make irregular time series regular by padding with missing dates.
@@ -27,12 +26,7 @@ def pad_by_time(
     date_column : str
         The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to determine the minimum and maximum dates in theDataFrame, and to generate the regular date range for padding.
     freq : str, optional
-        The `freq` parameter specifies the frequency at which the missing timestamps should be generated. It accepts a string representing a pandas frequency alias. 
-        
-        Automatic Frequency Detection:
-        - `"auto"`: Automatically detect the frequency of the data. This will default allow regular frequencies (i.e. no business days). This is the default value. This can be changed with the `force_regular` parameter.
-        
-        You can override this with a pandas frequency alias. Some common frequency aliases include:
+        The `freq` parameter specifies the frequency at which the missing timestamps should be generated. It accepts a string representing a pandas frequency alias. Some common frequency aliases include:
         
         - S: secondly frequency
         - min: minute frequency
@@ -48,10 +42,7 @@ def pad_by_time(
         - Y: year end frequency
         - YS: year start frequency
         
-    force_regular : bool, optional
-        The `force_regular` parameter is a boolean that specifies whether the frequency should be forced to be regular. This parameter is only used when the `freq` parameter is set to `"auto"`. It has a default value of `True`.
-        
-        If `force_regular` is `True`, then the `freq` parameter will be forced to be a regular frequency. If `force_regular` is `False`, then the `freq` parameter will be allowed to be irregular (i.e. business calendars can be used).
+    
     
     Returns
     -------
@@ -67,21 +58,7 @@ def pad_by_time(
     df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
     df
     ```
-    
-    ```{python}
-    # Pad Single Time Series: Fill missing dates
-    padded_df = (
-        df
-            .query('symbol == "AAPL"')
-            .pad_by_time(
-                date_column = 'date',
-                freq        = 'auto'
-            )
-            .assign(id = lambda x: x['symbol'].ffill())
-    )
-    padded_df 
-    ```
-    
+       
     ```{python}
     # Pad Single Time Series: Fill missing dates
     padded_df = (
@@ -123,8 +100,8 @@ def pad_by_time(
         
         df.sort_values(by=[date_column], inplace=True)
         
-        if freq == 'auto':
-            freq = get_pandas_frequency(df[date_column], force_regular=force_regular)
+        # if freq == 'auto':
+        #     freq = get_pandas_frequency(df[date_column], force_regular=force_regular)
 
         min_date = df[date_column].min()
         max_date = df[date_column].max()
@@ -153,9 +130,6 @@ def pad_by_time(
         
         df = data.copy()
         df.sort_values(by=[*group_names, date_column], inplace=True)
-        
-        if freq == 'auto':
-            freq = get_pandas_frequency(df[date_column], force_regular=force_regular)
 
         # Get unique group combinations
         groups = df[group_names].drop_duplicates()
@@ -164,6 +138,9 @@ def pad_by_time(
         for idx, group in groups.iterrows():
             mask = (df[group_names] == group).all(axis=1)
             group_df = df[mask]
+            
+            # if freq == 'auto':
+            #     freq = get_pandas_frequency(group_df[date_column], force_regular=force_regular)
             
             min_date = group_df[date_column].min()
             max_date = group_df[date_column].max()

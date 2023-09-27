@@ -279,16 +279,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>pad_by_time(data, date_column, freq='auto', force_regular=True)</code></p>
+<p><code>pad_by_time(data, date_column, freq='D')</code></p>
 <p>Make irregular time series regular by padding with missing dates.</p>
 <p>The <code>pad_by_time</code> function inserts missing dates into a Pandas DataFrame or DataFrameGroupBy object, through the process making an irregularly spaced time series regularly spaced.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 1%">
-<col style="width: 6%">
-<col style="width: 90%">
+<col style="width: 2%">
+<col style="width: 9%">
+<col style="width: 86%">
 <col style="width: 1%">
 </colgroup>
 <thead>
@@ -315,14 +315,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td><code>freq</code></td>
 <td>str</td>
-<td>The <code>freq</code> parameter specifies the frequency at which the missing timestamps should be generated. It accepts a string representing a pandas frequency alias. Automatic Frequency Detection: - <code>"auto"</code>: Automatically detect the frequency of the data. This will default allow regular frequencies (i.e.&nbsp;no business days). This is the default value. This can be changed with the <code>force_regular</code> parameter. You can override this with a pandas frequency alias. Some common frequency aliases include: - S: secondly frequency - min: minute frequency - H: hourly frequency - B: business day frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - BMS: Business month start - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency</td>
-<td><code>'auto'</code></td>
-</tr>
-<tr class="even">
-<td><code>force_regular</code></td>
-<td>bool</td>
-<td>The <code>force_regular</code> parameter is a boolean that specifies whether the frequency should be forced to be regular. This parameter is only used when the <code>freq</code> parameter is set to <code>"auto"</code>. It has a default value of <code>True</code>. If <code>force_regular</code> is <code>True</code>, then the <code>freq</code> parameter will be forced to be a regular frequency. If <code>force_regular</code> is <code>False</code>, then the <code>freq</code> parameter will be allowed to be irregular (i.e.&nbsp;business calendars can be used).</td>
-<td><code>True</code></td>
+<td>The <code>freq</code> parameter specifies the frequency at which the missing timestamps should be generated. It accepts a string representing a pandas frequency alias. Some common frequency aliases include: - S: secondly frequency - min: minute frequency - H: hourly frequency - B: business day frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - BMS: Business month start - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency</td>
+<td><code>'D'</code></td>
 </tr>
 </tbody>
 </table>
@@ -510,7 +504,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'symbol == "AAPL"'</span>)</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        .pad_by_time(</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            freq        <span class="op">=</span> <span class="st">'auto'</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            freq        <span class="op">=</span> <span class="st">'D'</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        .assign(<span class="bu">id</span> <span class="op">=</span> <span class="kw">lambda</span> x: x[<span class="st">'symbol'</span>].ffill())</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span>
@@ -675,188 +669,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pad Single Time Series: Fill missing dates</span></span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pad by Group: Pad each group with missing dates</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>padded_df <span class="op">=</span> (</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'symbol == "AAPL"'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .pad_by_time(</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            freq        <span class="op">=</span> <span class="st">'D'</span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        .assign(<span class="bu">id</span> <span class="op">=</span> <span class="kw">lambda</span> x: x[<span class="st">'symbol'</span>].ffill())</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>padded_df </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>padded_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-<th data-quarto-table-cell-role="th">id</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>2013-01-02</td>
-<td>AAPL</td>
-<td>19.779285</td>
-<td>19.821428</td>
-<td>19.343929</td>
-<td>19.608213</td>
-<td>560518000.0</td>
-<td>16.791180</td>
-<td>AAPL</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>2013-01-03</td>
-<td>AAPL</td>
-<td>19.567142</td>
-<td>19.631071</td>
-<td>19.321428</td>
-<td>19.360714</td>
-<td>352965200.0</td>
-<td>16.579241</td>
-<td>AAPL</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2013-01-04</td>
-<td>AAPL</td>
-<td>19.177500</td>
-<td>19.236786</td>
-<td>18.779642</td>
-<td>18.821428</td>
-<td>594333600.0</td>
-<td>16.117437</td>
-<td>AAPL</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>2013-01-05</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>AAPL</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>2013-01-06</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>AAPL</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">3910</td>
-<td>2023-09-17</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>AAPL</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3911</td>
-<td>2023-09-18</td>
-<td>AAPL</td>
-<td>176.479996</td>
-<td>179.380005</td>
-<td>176.169998</td>
-<td>177.970001</td>
-<td>67257600.0</td>
-<td>177.970001</td>
-<td>AAPL</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">3912</td>
-<td>2023-09-19</td>
-<td>AAPL</td>
-<td>177.520004</td>
-<td>179.630005</td>
-<td>177.130005</td>
-<td>179.070007</td>
-<td>51826900.0</td>
-<td>179.070007</td>
-<td>AAPL</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3913</td>
-<td>2023-09-20</td>
-<td>AAPL</td>
-<td>179.259995</td>
-<td>179.699997</td>
-<td>175.399994</td>
-<td>175.490005</td>
-<td>58436200.0</td>
-<td>175.490005</td>
-<td>AAPL</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">3914</td>
-<td>2023-09-21</td>
-<td>AAPL</td>
-<td>174.550003</td>
-<td>176.300003</td>
-<td>173.860001</td>
-<td>173.929993</td>
-<td>63047900.0</td>
-<td>173.929993</td>
-<td>AAPL</td>
-</tr>
-</tbody>
-</table>
-
-<p>3915 rows × 9 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pad by Group: Pad each group with missing dates</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>padded_df <span class="op">=</span> (</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .pad_by_time(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            freq        <span class="op">=</span> <span class="st">'D'</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>padded_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 

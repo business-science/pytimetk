@@ -1,6 +1,6 @@
 # pad_by_time { #timetk.pad_by_time }
 
-`pad_by_time(data, date_column, freq='auto', force_regular=True)`
+`pad_by_time(data, date_column, freq='D')`
 
 Make irregular time series regular by padding with missing dates.
 
@@ -9,12 +9,11 @@ The `pad_by_time` function inserts missing dates into a Pandas DataFrame or Data
 
 ## Parameters
 
-| Name            | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Default    |
-|-----------------|----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `data`          | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | The `data` parameter can be either a Pandas DataFrame or a Pandas DataFrameGroupBy object. It represents the data that you want to pad with missing dates.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | _required_ |
-| `date_column`   | str                                                      | The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to determine the minimum and maximum dates in theDataFrame, and to generate the regular date range for padding.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | _required_ |
-| `freq`          | str                                                      | The `freq` parameter specifies the frequency at which the missing timestamps should be generated. It accepts a string representing a pandas frequency alias.   Automatic Frequency Detection: - `"auto"`: Automatically detect the frequency of the data. This will default allow regular frequencies (i.e. no business days). This is the default value. This can be changed with the `force_regular` parameter.  You can override this with a pandas frequency alias. Some common frequency aliases include:  - S: secondly frequency - min: minute frequency - H: hourly frequency - B: business day frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - BMS: Business month start - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency | `'auto'`   |
-| `force_regular` | bool                                                     | The `force_regular` parameter is a boolean that specifies whether the frequency should be forced to be regular. This parameter is only used when the `freq` parameter is set to `"auto"`. It has a default value of `True`.  If `force_regular` is `True`, then the `freq` parameter will be forced to be a regular frequency. If `force_regular` is `False`, then the `freq` parameter will be allowed to be irregular (i.e. business calendars can be used).                                                                                                                                                                                                                                                                                                                                                                                            | `True`     |
+| Name          | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Default    |
+|---------------|----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `data`        | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | The `data` parameter can be either a Pandas DataFrame or a Pandas DataFrameGroupBy object. It represents the data that you want to pad with missing dates.                                                                                                                                                                                                                                                                                                                                                                                     | _required_ |
+| `date_column` | str                                                      | The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to determine the minimum and maximum dates in theDataFrame, and to generate the regular date range for padding.                                                                                                                                                                                                                                                                               | _required_ |
+| `freq`        | str                                                      | The `freq` parameter specifies the frequency at which the missing timestamps should be generated. It accepts a string representing a pandas frequency alias. Some common frequency aliases include:  - S: secondly frequency - min: minute frequency - H: hourly frequency - B: business day frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - BMS: Business month start - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency | `'D'`      |
 
 ## Returns
 
@@ -31,21 +30,7 @@ import timetk as tk
 df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
 df
 ```
-
-```{python}
-# Pad Single Time Series: Fill missing dates
-padded_df = (
-    df
-        .query('symbol == "AAPL"')
-        .pad_by_time(
-            date_column = 'date',
-            freq        = 'auto'
-        )
-        .assign(id = lambda x: x['symbol'].ffill())
-)
-padded_df 
-```
-
+   
 ```{python}
 # Pad Single Time Series: Fill missing dates
 padded_df = (
