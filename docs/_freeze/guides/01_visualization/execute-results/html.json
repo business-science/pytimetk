@@ -1,9 +1,9 @@
 {
-  "hash": "18cc71a8b77510ec0143e6ffa2a3e1b5",
+  "hash": "92850dbb8bfde6b36c5868a81d9acab3",
   "result": {
     "markdown": "---\ntitle: Data Visualization\ntoc: true\ntoc-depth: 3\nnumber-sections: true\nnumber-depth: 2\n---\n\nComing soon...\n\n",
     "supporting": [
-      "01_visualization_files"
+      "01_visualization_files\\figure-html"
     ],
     "filters": [],
     "includes": {}

@@ -7,5 +7,6 @@
 },
 "docwriter.style": "NumPy",
 "docwriter.progress.trackFunctions": true,
-"notebook.output.scrolling": true
+"notebook.output.scrolling": true,
+"jupyter.interactiveWindow.textEditor.executeSelection": true,
 }
