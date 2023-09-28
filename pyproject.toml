@@ -20,6 +20,11 @@ tsfeatures = "^0.4.5"
 ipykernel = "^6.25.2"
 pytest = "^7.4.2"
 
+
+[tool.poetry.group.docs.dependencies]
+quarto = "^0.1.0"
+quartodoc = "^0.6.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
