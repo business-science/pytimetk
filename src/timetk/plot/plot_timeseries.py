@@ -470,7 +470,7 @@ def _plot_timeseries_plotly(
         subplot_titles = [" | ".join(map(str, name)) if isinstance(name, tuple) else str(name) for name in grouped.groups.keys()]
         
         if color_column is not None:
-            colors = list(palette_light().values()) * 10_000
+            colors = list(palette_light().values()) * 1_000_000
             colors = colors[:num_groups]
         else: 
             colors = [line_color] * num_groups
@@ -540,7 +540,7 @@ def _plot_timeseries_plotly(
             grouped = data.groupby(color_column, sort = False, group_keys = False)
             num_groups = len(grouped)
             
-            colors = list(palette_light().values()) * 10_000
+            colors = list(palette_light().values()) * 1_000_000
             colors = colors[:num_groups]
             
             for i, (name, group) in enumerate(grouped):
@@ -549,8 +549,9 @@ def _plot_timeseries_plotly(
                     x=group[date_column], 
                     y=group[value_column], 
                     mode='lines',
-                    line=dict(color=hex_to_rgba(colors[i], alpha=line_alpha), width=line_size), name=name[0]
+                    line=dict(color=hex_to_rgba(colors[i], alpha=line_alpha), width=line_size), name=name
                 )
+                                
                 fig.add_trace(trace)
                 
                 if smooth:
