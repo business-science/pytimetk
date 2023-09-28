@@ -183,7 +183,7 @@ def plot_timeseries(
                 y_intercept = None,
                 x_axis_date_labels = "%Y",
                 engine = 'plotly',
-                width = 800,
+                width = 600,
                 height = 500,
             )
     )
@@ -227,7 +227,6 @@ def plot_timeseries(
             .groupby('id')
             .plot_timeseries(
                 'date', 'value', 
-                color_column = 'id',
                 facet_ncol = 2,
                 facet_scales = "free",
                 line_size = 0.35,

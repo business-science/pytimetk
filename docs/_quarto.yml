@@ -115,6 +115,7 @@ quartodoc:
       package: timetk
       contents:
         - ts_features
+        - ts_summary
     - title: 🐼 Time Series for Pandas Series
       desc: Time series functions that generate / manipulate Pandas Series.
       package: timetk
@@ -122,16 +123,20 @@ quartodoc:
         - make_future_timeseries
         - make_weekday_sequence
         - make_weekend_sequence
+        - get_date_summary
+        - get_frequency_summary
+        - get_diff_summary
+        - get_pandas_frequency
+        - get_timeseries_signature
+        - get_holiday_signature 
     - title: 🛠️ Utilities
       desc: Helper functions to make your life easier.
       package: timetk
-      contents:
-        - get_pandas_frequency
-        - get_timeseries_signature
-        - get_holiday_signature     
+      contents:    
         - floor_date
         - is_holiday
         - week_of_month
+        - timeseries_unit_frequency_table
     - title: 💾 12 Datasets
       package: timetk.datasets.get_datasets
       desc: Practice `timetk` with 12 complementary time series datasets.

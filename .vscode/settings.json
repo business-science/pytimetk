@@ -4,9 +4,10 @@
     ],
     "files.exclude": {
         "**/.git": false
-},
-"docwriter.style": "NumPy",
-"docwriter.progress.trackFunctions": true,
-"notebook.output.scrolling": true,
-"jupyter.interactiveWindow.textEditor.executeSelection": true,
+    },
+    "docwriter.style": "NumPy",
+    "docwriter.progress.trackFunctions": true,
+    "notebook.output.scrolling": true,
+    "jupyter.interactiveWindow.textEditor.executeSelection": true,
+    "jupyter.notebookFileRoot": "${workspaceFolder}",
 }

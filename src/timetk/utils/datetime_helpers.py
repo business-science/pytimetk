@@ -48,8 +48,8 @@ def get_pandas_frequency(idx: pd.Series or pd.DatetimeIndex, force_regular: bool
     
     freq = dt_index.inferred_freq
     
-    if freq is None:
-            raise ValueError("The frequency could not be detectied.")
+    # if freq is None:
+    #         raise ValueError("The frequency could not be detectied.")
     
     if force_regular:
         if freq == 'B':
@@ -272,7 +272,21 @@ def is_holiday(
     
     return ret
 
-
+def timeseries_unit_frequency_table():
+    '''The function `timeseries_unit_frequency_table` returns a pandas DataFrame with units of time and
+    their corresponding frequencies in seconds.
+    
+    Returns
+    -------
+    pd.DataFrame
+        a pandas DataFrame that contains two columns: "unit" and "freq". The "unit" column contains the units of time (seconds, minutes, hours, etc.), and the "freq" column contains the corresponding frequencies in seconds for each unit.
+    
+    '''
+    
+    return pd.DataFrame({
+        "unit" : ["sec", "min", "hour", "day", "week", "month", "quarter", "year"],
+        "freq" : [0, 60, 3600, 86400, 604800, 2678400, 7948800, 31795200]
+    })
 
 def is_datetime_string(x: str or pd.Series or pd.DatetimeIndex) -> bool:
     
