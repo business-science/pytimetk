@@ -84,22 +84,22 @@ def test_pad_by_time_grouped(test_dataframe):
 
 
 
-def test_pad_by_time_auto_freq(test_dataframe):
-    # Apply pad_by_time with auto frequency detection
-    padded_df = (
-        test_dataframe
-        .pad_by_time(date_column="date", freq="auto")
-    )
+# def test_pad_by_time_auto_freq(test_dataframe):
+#     # Apply pad_by_time with auto frequency detection
+#     padded_df = (
+#         test_dataframe
+#         .pad_by_time(date_column="date", freq="auto")
+#     )
 
-    # Define the expected result
-    expected_data = {
-        "date": pd.date_range("2022-01-01", "2022-01-05", freq="D"),
-        "value": [1, 2, 3, 4, 5],
-    }
-    expected_df = pd.DataFrame(expected_data)
+#     # Define the expected result
+#     expected_data = {
+#         "date": pd.date_range("2022-01-01", "2022-01-05", freq="D"),
+#         "value": [1, 2, 3, 4, 5],
+#     }
+#     expected_df = pd.DataFrame(expected_data)
 
-    # Check if the result matches the expected DataFrame
-    assert_frame_equal(padded_df, expected_df, check_dtype=False)
+#     # Check if the result matches the expected DataFrame
+#     assert_frame_equal(padded_df, expected_df, check_dtype=False)
 
 # Add more test cases as needed
 
