@@ -23,6 +23,7 @@ def ts_summary(
     -------
     pd.DataFrame
         The `ts_summary` function returns a summary of time series data. The summary includes the following statistics:
+        - If grouped data is provided, the returned data will contain the grouping columns first.
         - `date_n`: The number of observations in the time series.
         - `date_tz`: The time zone of the time series.
         - `date_start`: The first date in the time series.
@@ -43,6 +44,8 @@ def ts_summary(
         - `diff_mean_seconds`: The mean time difference between consecutive observations in the time series in seconds.
         - `diff_q75_seconds`: The 75th percentile of the time difference between consecutive observations in the time series in seconds.
         - `diff_max_seconds`: The maximum time difference between consecutive observations in the time series in seconds.
+        
+        
         
     
     Examples
@@ -113,7 +116,12 @@ def ts_summary(
         for idx, group in groups.iterrows():
             mask = (df[group_names] == group).all(axis=1)
             group_df = df[mask]
+
             
+            # Get group columns
+            id_df = pd.DataFrame(group).T.reset_index(drop=True)
+            # print(id_df)
+
             date = group_df[date_column]
             
             # Compute summary statistics
@@ -125,7 +133,7 @@ def ts_summary(
             unique_id = ' | '.join(group.values)
             
             # Combine summary statistics into a single DataFrame
-            summary_df = pd.concat([pd.Series(unique_id, name="unique_id"),date_summary, frequency_summary, diff_summary, diff_summary_num], axis = 1)
+            summary_df = pd.concat([id_df, date_summary, frequency_summary, diff_summary, diff_summary_num], axis = 1)
             
             # Append to list of summary DataFrames
             summary_dfs.append(summary_df)

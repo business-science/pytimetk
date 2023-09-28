@@ -2,7 +2,9 @@ import pandas as pd
 import pandas_flavor as pf
 
 from functools import partial
-from multiprocessing import Pool
+
+from multiprocessing import cpu_count
+from concurrent.futures import ThreadPoolExecutor
 
 from typing import Optional
 
@@ -81,11 +83,14 @@ def ts_features(
         - If `scale` is set to `True`, the features will be scaled using z-score normalization. 
         - If `scale` is set to `False`, the features will not be scaled.
     threads : Optional[int]
-        The `threads` parameter is an optional parameter that specifies the number of threads to use for parallel processing. If is `None`, the function will use the default number of threads available on the system.
+        The `threads` parameter is an optional parameter that specifies the number of threads to use for parallel processing. 
+        - If is `None`, tthe function will use all available threads on the system.
+        - If is -1, the function will use all available threads on the system.
     
     Returns
     -------
-        The function `ts_features` returns a pandas DataFrame containing the extracted time series features.
+    pd.DataFrame
+        The function `ts_features` returns a pandas DataFrame containing the extracted time series features. If grouped data is provided, the DataFrame will contain the grouping columns as well.
         
     Examples
     --------
@@ -194,13 +199,22 @@ def ts_features(
     )
     
     if threads != 1:
-        with Pool(threads) as pool:
-            ts_features = pool.starmap(
-                partial_get_feats, 
-                construct_df.groupby('unique_id')
-            )
+        
+        if threads is None: threads = cpu_count()
+        if threads == -1: threads = cpu_count()
+        
+        # with Pool(threads) as pool:
+        #     ts_features = pool.starmap(
+        #         partial_get_feats, 
+        #         construct_df.groupby('unique_id')
+        #     )
+        
+        # Switch to concurrent.futures for better performance
+        # multiprocessing.Pool is slower than concurrent.futures.ThreadPoolExecutor
+        with ThreadPoolExecutor(threads) as executor:
+            futures = [executor.submit(partial_get_feats, *args) for args in construct_df.groupby('unique_id')]
             
-            # print(ts_features)
+            ts_features = [future.result() for future in futures]
             
     else:
         ts_features = []
@@ -211,6 +225,12 @@ def ts_features(
         
     ts_features = pd.concat(ts_features).rename_axis('unique_id')
     ts_features = ts_features.reset_index()
+    
+    # Finalize id or grouping columns
+    if group_names is not None:
+        id_df = df[group_names].drop_duplicates().reset_index(drop=True)   
+    ts_features = pd.concat([id_df, ts_features], axis=1)
+    ts_features.drop(columns=['unique_id'], inplace=True)
     
     return ts_features
     
