@@ -23,8 +23,8 @@ def ts_summary(
     -------
     pd.DataFrame
         The `ts_summary` function returns a summary of time series data. The summary includes the following statistics:
-        - `n`: The number of observations in the time series.
-        - `tz`: The time zone of the time series.
+        - `date_n`: The number of observations in the time series.
+        - `date_tz`: The time zone of the time series.
         - `date_start`: The first date in the time series.
         - `date_end`: The last date in the time series.
         - `freq_inferred_unit`: The inferred frequency of the time series from `pandas`.
@@ -122,8 +122,10 @@ def ts_summary(
             diff_summary = get_diff_summary(date)
             diff_summary_num = get_diff_summary(date, numeric = True)
             
+            unique_id = ' | '.join(group.values)
+            
             # Combine summary statistics into a single DataFrame
-            summary_df = pd.concat([pd.Series(group.values[0], name="unique_id"),date_summary, frequency_summary, diff_summary, diff_summary_num], axis = 1)
+            summary_df = pd.concat([pd.Series(unique_id, name="unique_id"),date_summary, frequency_summary, diff_summary, diff_summary_num], axis = 1)
             
             # Append to list of summary DataFrames
             summary_dfs.append(summary_df)
@@ -217,8 +219,8 @@ def get_date_summary(idx: pd.Series or pd.DateTimeIndex):
     -------
     pd.DataFrame
         A pandas DataFrame with the following columns: 
-        - `n`: The number of dates in the index.
-        - `tz`: The time zone of the dates in the index.
+        - `date_n`: The number of dates in the index.
+        - `date_tz`: The time zone of the dates in the index.
         - `date_start`: The first date in the index.
         - `date_end`: The last date in the index.
     
@@ -234,8 +236,8 @@ def get_date_summary(idx: pd.Series or pd.DateTimeIndex):
     _date_end = idx.max()
     
     return pd.DataFrame({
-        "n": [_n], 
-        "tz": [_tz], # "America/New_York
+        "date_n": [_n], 
+        "date_tz": [_tz], # "America/New_York
         "date_start": [_date_start],
         "date_end": [_date_end],
     })  
