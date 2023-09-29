@@ -7,4 +7,90 @@ number-sections: true
 number-depth: 2
 ---
 
-Coming soon...
+This tutorial focuses on, [plot_timeseries()](https://business-science.github.io/pytimetk/reference/plot_timeseries.html#timetk.plot_timeseries), a workhorse time-series plotting function that:
+
+* Generates interactive plotly plots (great for exploring & streamlit/shiny apps)
+* Consolidates 20+ lines of plotnine/matpotlib & plotly code
+* Scales well to many time series
+* Can be converted from interactive plotly to static plotnine/matplotlib plots
+
+# Libraries
+
+Run the following code to setup for this tutorial.
+
+```{python}
+# Import packages
+import timetk as tk
+import pandas as pd
+```
+
+# Plotting Time Series
+
+Let’s start with a popular time series, `taylor_30_min`, which includes energy demand in megawatts at a sampling interval of 30-minutes. This is a single time series.
+
+```{python}
+# Import a Time Series Data Set
+taylor_30_min = tk.load_dataset("taylor_30_min", parse_dates = ['date'])
+taylor_30_min
+```
+
+The [plot_timeseries()](https://business-science.github.io/pytimetk/reference/plot_timeseries.html#timetk.plot_timeseries) function generates an interactive plotly chart by default.
+
+* Simply provide the date variable (time-based column, date_column) and the numeric variable (value_column) that changes over time as the first 2 arguments.
+* By default, the plotting engine is plotly, which is interactive and excellent for data exploration and apps. However, if you require static plots for reports, you can set the engine to engine = 'plotnine' or engine = 'matplotlib'.
+
+Interactive plot
+```{python}
+taylor_30_min.plot_timeseries('date', 'value')
+```
+
+Static plot
+```{python}
+taylor_30_min.plot_timeseries(
+    'date', 'value',
+     engine = 'plotnine'
+)
+```
+
+## Plotting Groups
+
+Next, let’s move on to a dataset with time series groups, m4_monthly, which is a sample of 4 time series from the M4 competition that are sampled at a monthly frequency.
+
+```{python}
+# Import a Time Series Data Set
+m4_monthly = tk.load_dataset("m4_monthly", parse_dates = ['date'])
+m4_monthly
+```
+
+Visualizing grouped data is as simple as grouping the data set with `groupby()` before run it into the `plot_timeseries()` function. Here are the key points:
+
+* Groups can be added using the pandas `groupby()`.
+* These groups are then converted into facets.
+* Using `facet_ncol = 2` returns a 2-column faceted plot.
+* Setting `facet_scales = "free"` allows the x and y-axes of each plot to scale independently of the other plots.
+
+```{python}
+m4_monthly.groupby('id').plot_timeseries(
+    'date', 'value', 
+    facet_ncol = 2, 
+    facet_scales = "free"
+)
+```
+
+
+The groups can also be vizualized in the same plot using `color_column` paramenter. Let's come back to `taylor_30_min` dataframe.
+
+```{python}
+# load data
+taylor_30_min = tk.load_dataset("taylor_30_min", parse_dates = ['date'])
+
+# extract the month using pandas
+taylor_30_min['month'] = pd.to_datetime(taylor_30_min['date']).dt.month
+
+# plot groups
+taylor_30_min.plot_timeseries(
+    'date', 'value', 
+    color_column = 'month'
+)
+```
+
