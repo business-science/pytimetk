@@ -17,11 +17,11 @@ Make sure to Fork the GitHub Repo. Clone your fork. Then use poetry to install t
 
 To contribute, you'll need to have a GitHub account. Then:
 
-## 1. Fork our pytimetk repository
+#### 1. Fork our pytimetk repository
 
 [Head to our GitHub Repo](https://github.com/business-science/pytimetk) and select "fork". This makes a copied version of `timetk` for your personal use. 
 
-## 2. Clone your forked version
+#### 2. Clone your forked version
 
 Cloning will put your own personal version of `timetk` on your local machine. Make sure to replace `[your_user_name]` with your user name. 
 
