@@ -28,6 +28,9 @@ from .utils.plot_helpers import *
 from .plot.plot_timeseries import (
     plot_timeseries
 )
+from .plot.theme import (
+    theme_timetk, palette_timetk
+)
 from .core.summarize_by_time import (
     summarize_by_time
 )

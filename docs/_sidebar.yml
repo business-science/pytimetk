@@ -37,7 +37,11 @@ website:
       - reference/is_holiday.qmd
       - reference/week_of_month.qmd
       - reference/timeseries_unit_frequency_table.qmd
-      section: "\U0001F6E0\uFE0F Utilities"
+      section: "\U0001F6E0\uFE0F Date Utilities"
+    - contents:
+      - reference/theme_timetk.qmd
+      - reference/palette_timetk.qmd
+      section: "\U0001F6E0\uFE0F Visualization Utilities"
     - contents:
       - reference/get_available_datasets.qmd
       - reference/load_dataset.qmd

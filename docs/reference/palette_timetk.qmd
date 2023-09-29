@@ -1,0 +1,32 @@
+# palette_timetk { #timetk.palette_timetk }
+
+`palette_timetk()`
+
+The function `palette_timetk` returns a dictionary of color codes for various colors in the timetk theme.
+    
+- blue         = "#2c3e50", # blue
+- red          = "#e31a1c", # red
+- green        = "#18BC9C", # green
+- yellow       = "#CCBE93", # yellow
+- steel_blue   = "#a6cee3", # steel_blue
+- navy_blue    = "#1f78b4", # navy_blue
+- light_green  = "#b2df8a", # light_green
+- pink         = "#fb9a99", # pink
+- light_orange = "#fdbf6f", # light_orange
+- orange       = "#ff7f00", # orange
+- light_purple = "#cab2d6", # light_purple
+- purple       = "#6a3d9a"  # purple
+
+## Returns
+
+| Type                                                                                                                                         | Description   |
+|----------------------------------------------------------------------------------------------------------------------------------------------|---------------|
+| The function `palette_timetk` returns a dictionary containing color names as keys and their corresponding hexadecimal color codes as values: |               |
+
+## Examples
+
+```{python}
+import timetk as tk
+
+tk.palette_timetk()
+```

@@ -55,7 +55,7 @@ Time series functions that generate / manipulate Pandas Series.
 | [get_timeseries_signature](get_timeseries_signature.qmd#timetk.get_timeseries_signature) | Convert a timestamp to a set of 29 time series features. |
 | [get_holiday_signature](get_holiday_signature.qmd#timetk.get_holiday_signature) | Engineers 4 different holiday features from a single datetime for 80+ countries. |
 
-## 🛠️ Utilities
+## 🛠️ Date Utilities
 
 Helper functions to make your life easier.
 
@@ -65,6 +65,15 @@ Helper functions to make your life easier.
 | [is_holiday](is_holiday.qmd#timetk.is_holiday) | Check if a given list of dates are holidays for a specified country. |
 | [week_of_month](week_of_month.qmd#timetk.week_of_month) | The "week_of_month" function calculates the week number of a given date within its month. |
 | [timeseries_unit_frequency_table](timeseries_unit_frequency_table.qmd#timetk.timeseries_unit_frequency_table) | The function `timeseries_unit_frequency_table` returns a pandas DataFrame with units of time and |
+
+## 🛠️ Visualization Utilities
+
+Helper functions to make your life easier.
+
+| | |
+| --- | --- |
+| [theme_timetk](theme_timetk.qmd#timetk.theme_timetk) | Returns a `plotnine` theme with timetk styles applied, allowing for customization of the appearance of plots in Python. |
+| [palette_timetk](palette_timetk.qmd#timetk.palette_timetk) | The function `palette_timetk` returns a dictionary of color codes for various colors in the timetk theme. |
 
 ## 💾 12 Datasets
 

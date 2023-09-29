@@ -142,7 +142,7 @@ quartodoc:
         - get_pandas_frequency
         - get_timeseries_signature
         - get_holiday_signature 
-    - title: 🛠️ Utilities
+    - title: 🛠️ Date Utilities
       desc: Helper functions to make your life easier.
       package: timetk
       contents:    
@@ -150,6 +150,12 @@ quartodoc:
         - is_holiday
         - week_of_month
         - timeseries_unit_frequency_table
+    - title: 🛠️ Visualization Utilities
+      desc: Helper functions to make your life easier.
+      package: timetk
+      contents:    
+        - theme_timetk
+        - palette_timetk
     - title: 💾 12 Datasets
       package: timetk.datasets.get_datasets
       desc: Practice `timetk` with 12 complementary time series datasets.
