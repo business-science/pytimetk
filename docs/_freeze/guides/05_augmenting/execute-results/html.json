@@ -1,9 +1,9 @@
 {
-  "hash": "5023ebe642a6bcef074e4b0f8c719cf9",
+  "hash": "ecc1ddfaa212ab13024813f94530f72c",
   "result": {
     "markdown": "---\ntitle: Adding Features (Augmenting)\ntoc: true\ntoc-depth: 3\nnumber-sections: true\nnumber-depth: 2\n---\n\nComing soon...\n\n",
     "supporting": [
-      "05_augmenting_files\\figure-html"
+      "05_augmenting_files/figure-html"
     ],
     "filters": [],
     "includes": {}
