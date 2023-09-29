@@ -4,6 +4,8 @@
 
 This library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0.
 
+**Please ⭐ us on GitHub (it takes 2-seconds and means a lot).**
+
 # Install Dev Version
 
 ```bash
@@ -15,19 +17,18 @@ pip install git+https://github.com/business-science/pytimetk.git
 This is a simple code to test the function `summarize_by_time`:
 
 ```python
-import timetk
+import timetk as tk
 import pandas as pd
 
-df = timetk.datasets.load_dataset('bike_sales_sample')
+df = tk.datasets.load_dataset('bike_sales_sample')
 df['order_date'] = pd.to_datetime(df['order_date'])
 
 df \
+    .groupby("category_2")
     .summarize_by_time(
         date_column='order_date', 
         value_column= 'total_price',
-        groups = "category_2",
-        freq = "M",
-        kind = 'timestamp',
+        freq = "MS",
         agg_func = ['mean', 'sum']
     )
 ```

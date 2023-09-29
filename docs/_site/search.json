@@ -515,7 +515,7 @@
     "href": "guides/01_visualization.html",
     "title": "Data Visualization",
     "section": "",
-    "text": "Coming soon…"
+    "text": "This tutorial focuses on, plot_timeseries(), a workhorse time-series plotting function that:"
   },
   {
     "objectID": "guides/04_wrangling.html",
@@ -936,5 +936,12 @@
     "title": "floor_date",
     "section": "Examples",
     "text": "Examples\n\nimport timetk as tk\nimport pandas as pd\n\ndates = pd.date_range(\"2020-01-01\", \"2020-01-10\", freq=\"1H\")\ndates\n\nDatetimeIndex(['2020-01-01 00:00:00', '2020-01-01 01:00:00',\n               '2020-01-01 02:00:00', '2020-01-01 03:00:00',\n               '2020-01-01 04:00:00', '2020-01-01 05:00:00',\n               '2020-01-01 06:00:00', '2020-01-01 07:00:00',\n               '2020-01-01 08:00:00', '2020-01-01 09:00:00',\n               ...\n               '2020-01-09 15:00:00', '2020-01-09 16:00:00',\n               '2020-01-09 17:00:00', '2020-01-09 18:00:00',\n               '2020-01-09 19:00:00', '2020-01-09 20:00:00',\n               '2020-01-09 21:00:00', '2020-01-09 22:00:00',\n               '2020-01-09 23:00:00', '2020-01-10 00:00:00'],\n              dtype='datetime64[ns]', length=217, freq='H')\n\n\n\n# Works on DateTimeIndex\ntk.floor_date(dates, unit=\"D\")\n\n0     2020-01-01\n1     2020-01-01\n2     2020-01-01\n3     2020-01-01\n4     2020-01-01\n         ...    \n212   2020-01-09\n213   2020-01-09\n214   2020-01-09\n215   2020-01-09\n216   2020-01-10\nName: idx, Length: 217, dtype: datetime64[ns]\n\n\n\n# Works on Pandas Series\ndates.to_series().floor_date(unit=\"D\")\n\n2020-01-01 00:00:00   2020-01-01\n2020-01-01 01:00:00   2020-01-01\n2020-01-01 02:00:00   2020-01-01\n2020-01-01 03:00:00   2020-01-01\n2020-01-01 04:00:00   2020-01-01\n                         ...    \n2020-01-09 20:00:00   2020-01-09\n2020-01-09 21:00:00   2020-01-09\n2020-01-09 22:00:00   2020-01-09\n2020-01-09 23:00:00   2020-01-09\n2020-01-10 00:00:00   2020-01-10\nFreq: H, Length: 217, dtype: datetime64[ns]"
+  },
+  {
+    "objectID": "guides/01_visualization.html#plotting-groups",
+    "href": "guides/01_visualization.html#plotting-groups",
+    "title": "Data Visualization",
+    "section": "2.1 Plotting Groups",
+    "text": "2.1 Plotting Groups\nNext, let’s move on to a dataset with time series groups, m4_monthly, which is a sample of 4 time series from the M4 competition that are sampled at a monthly frequency.\n\n# Import a Time Series Data Set\nm4_monthly = tk.load_dataset(\"m4_monthly\", parse_dates = ['date'])\nm4_monthly\n\n\n\n\n\n\n\n\nid\ndate\nvalue\n\n\n\n\n0\nM1\n1976-06-01\n8000\n\n\n1\nM1\n1976-07-01\n8350\n\n\n2\nM1\n1976-08-01\n8570\n\n\n3\nM1\n1976-09-01\n7700\n\n\n4\nM1\n1976-10-01\n7080\n\n\n...\n...\n...\n...\n\n\n1569\nM1000\n2015-02-01\n880\n\n\n1570\nM1000\n2015-03-01\n800\n\n\n1571\nM1000\n2015-04-01\n1140\n\n\n1572\nM1000\n2015-05-01\n970\n\n\n1573\nM1000\n2015-06-01\n1430\n\n\n\n\n1574 rows × 3 columns\n\n\n\nVisualizing grouped data is as simple as grouping the data set with groupby() before run it into the plot_timeseries() function. Here are the key points:\n\nGroups can be added using the pandas groupby().\nThese groups are then converted into facets.\nUsing facet_ncol = 2 returns a 2-column faceted plot.\nSetting facet_scales = \"free\" allows the x and y-axes of each plot to scale independently of the other plots.\n\n\nm4_monthly.groupby('id').plot_timeseries(\n    'date', 'value', \n    facet_ncol = 2, \n    facet_scales = \"free\"\n)\n\n\n                                                \n\n\nThe groups can also be vizualized in the same plot using color_column paramenter. Let’s come back to taylor_30_min dataframe.\n\n# load data\ntaylor_30_min = tk.load_dataset(\"taylor_30_min\", parse_dates = ['date'])\n\n# extract the month using pandas\ntaylor_30_min['month'] = pd.to_datetime(taylor_30_min['date']).dt.month\n\n# plot groups\ntaylor_30_min.plot_timeseries(\n    'date', 'value', \n    color_column = 'month'\n)"
   }
 ]

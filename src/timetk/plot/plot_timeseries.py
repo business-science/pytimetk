@@ -474,11 +474,15 @@ def _plot_timeseries_plotly(
     height = None,
 ):
     
+    data = data.copy()
+    
     # Assign colors to groups
     if color_column is not None:
         
         if not isinstance(color_column, list):
             color_column = [color_column]
+        
+        data[color_column] = data[color_column].astype(str)
         
         color_df = data[color_column].drop_duplicates().reset_index(drop=True)
         
