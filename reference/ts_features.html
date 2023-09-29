@@ -104,6 +104,9 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', '330861489', { 'anonymize_ip': true});
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -134,7 +137,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">ts_features</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -217,10 +220,54 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </li>
       </ul>
   </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+ <span class="menu-text">📘 Applied Tutorials:</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/01_sales_crm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sales CRM Database Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/02_finance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Finance Investment Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/03_anomaly_detection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Anomaly Detection</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📄 API Reference</span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://github.com/business-science/pytimetk" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">⭐ Timetk on Github</span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../contributing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🍻 Contributing</span></a>
   </div>
 </li>
         <li class="px-0"><hr class="sidebar-divider hi "></li>
@@ -232,6 +279,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <div class="sidebar-item-container"> 
   <a href="https://www.business-science.io/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Business Science</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://www.quantscience.io/" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quant Science</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -250,22 +303,32 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#timetk.ts_features" id="toc-timetk.ts_features" class="nav-link active" data-scroll-target="#timetk.ts_features">ts_features</a>
-  <ul class="collapse">
-  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
-  </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/ts_features.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">ts_features</h1>
+</div>
 
 
-<section id="timetk.ts_features" class="level1">
-<h1>ts_features</h1>
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
 <p><code>ts_features(data, date_column, value_column, features=None, freq=None, scale=True, threads=1)</code></p>
 <p>Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the <code>tsfeatures</code> package.</p>
 <p>Note: Requires the <code>tsfeatures</code> package to be installed.</p>
@@ -326,7 +389,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td><code>threads</code></td>
 <td>Optional[int]</td>
-<td>The <code>threads</code> parameter is an optional parameter that specifies the number of threads to use for parallel processing. If is <code>None</code>, the function will use the default number of threads available on the system.</td>
+<td>The <code>threads</code> parameter is an optional parameter that specifies the number of threads to use for parallel processing. - If is <code>None</code>, tthe function will use all available threads on the system. - If is -1, the function will use all available threads on the system.</td>
 <td><code>1</code></td>
 </tr>
 </tbody>
@@ -336,8 +399,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 87%">
-<col style="width: 12%">
+<col style="width: 6%">
+<col style="width: 93%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -347,15 +410,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td>The function <code>ts_features</code> returns a pandas DataFrame containing the extracted time series features.</td>
-<td></td>
+<td>pd.DataFrame</td>
+<td>The function <code>ts_features</code> returns a pandas DataFrame containing the extracted time series features. If grouped data is provided, the DataFrame will contain the grouping columns as well.</td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="examples" class="level2">
 <h2 class="anchored" data-anchor-id="examples">Examples</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># REQUIRES tsfeatures: pip install tsfeatures</span></span>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># REQUIRES tsfeatures: pip install tsfeatures</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timetk <span class="im">as</span> tk</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -383,10 +447,83 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>            threads      <span class="op">=</span> <span class="dv">1</span></span>
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>) </span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(feature_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>feature_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<div>
 
 
-</section>
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">hurst</th>
+<th data-quarto-table-cell-role="th">x_acf1</th>
+<th data-quarto-table-cell-role="th">x_acf10</th>
+<th data-quarto-table-cell-role="th">diff1_acf1</th>
+<th data-quarto-table-cell-role="th">diff1_acf10</th>
+<th data-quarto-table-cell-role="th">diff2_acf1</th>
+<th data-quarto-table-cell-role="th">diff2_acf10</th>
+<th data-quarto-table-cell-role="th">seas_acf1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>D10</td>
+<td>0.966295</td>
+<td>0.984991</td>
+<td>8.366800</td>
+<td>0.002487</td>
+<td>0.020569</td>
+<td>-0.517569</td>
+<td>0.293474</td>
+<td>0.889696</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>D160</td>
+<td>NaN</td>
+<td>0.999208</td>
+<td>9.913240</td>
+<td>0.025369</td>
+<td>0.012643</td>
+<td>-0.473298</td>
+<td>0.246242</td>
+<td>0.994513</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>D410</td>
+<td>1.005350</td>
+<td>0.993756</td>
+<td>9.314835</td>
+<td>0.102720</td>
+<td>0.032648</td>
+<td>-0.437454</td>
+<td>0.256661</td>
+<td>0.956028</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>D500</td>
+<td>0.926306</td>
+<td>0.998401</td>
+<td>9.839732</td>
+<td>0.004199</td>
+<td>0.005579</td>
+<td>-0.488000</td>
+<td>0.241043</td>
+<td>0.989937</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->

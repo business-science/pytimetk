@@ -29,7 +29,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../guides/05_augmenting.html" rel="prev">
 <link href="../favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -184,10 +183,54 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </li>
       </ul>
   </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+ <span class="menu-text">📘 Applied Tutorials:</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/01_sales_crm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sales CRM Database Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/02_finance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Finance Investment Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/03_anomaly_detection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Anomaly Detection</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reference/index.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">📄 API Reference</span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://github.com/business-science/pytimetk" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">⭐ Timetk on Github</span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../contributing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🍻 Contributing</span></a>
   </div>
 </li>
         <li class="px-0"><hr class="sidebar-divider hi "></li>
@@ -199,6 +242,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <div class="sidebar-item-container"> 
   <a href="https://www.business-science.io/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Business Science</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://www.quantscience.io/" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quant Science</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -306,6 +355,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><a href="../reference/ts_features.html#timetk.ts_features">ts_features</a></td>
 <td>Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the <code>tsfeatures</code> package.</td>
 </tr>
+<tr class="even">
+<td><a href="../reference/ts_summary.html#timetk.ts_summary">ts_summary</a></td>
+<td>Computes summary statistics for a time series data, either for the entire dataset or grouped by a specific column.</td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -326,14 +379,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><a href="../reference/make_weekend_sequence.html#timetk.make_weekend_sequence">make_weekend_sequence</a></td>
 <td>Generate a sequence of weekend dates within a specified date range, optionally excluding holidays.</td>
 </tr>
-</tbody>
-</table>
-</section>
-<section id="utilities" class="level2">
-<h2 class="anchored" data-anchor-id="utilities">🛠️ Utilities</h2>
-<p>Helper functions to make your life easier.</p>
-<table class="table">
-<tbody>
+<tr class="even">
+<td><a href="../reference/get_date_summary.html#timetk.get_date_summary">get_date_summary</a></td>
+<td>Returns a summary of the date-related information, including the number of dates, the time zone, the start</td>
+</tr>
+<tr class="odd">
+<td><a href="../reference/get_frequency_summary.html#timetk.get_frequency_summary">get_frequency_summary</a></td>
+<td>Returns a summary including the inferred frequency, median time difference, scale, and unit.</td>
+</tr>
+<tr class="even">
+<td><a href="../reference/get_diff_summary.html#timetk.get_diff_summary">get_diff_summary</a></td>
+<td>Calculates summary statistics of the time differences between consecutive values in a datetime index.</td>
+</tr>
 <tr class="odd">
 <td><a href="../reference/get_pandas_frequency.html#timetk.get_pandas_frequency">get_pandas_frequency</a></td>
 <td>Get the frequency of a pandas Series or DatetimeIndex.</td>
@@ -346,17 +403,29 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><a href="../reference/get_holiday_signature.html#timetk.get_holiday_signature">get_holiday_signature</a></td>
 <td>Engineers 4 different holiday features from a single datetime for 80+ countries.</td>
 </tr>
-<tr class="even">
+</tbody>
+</table>
+</section>
+<section id="utilities" class="level2">
+<h2 class="anchored" data-anchor-id="utilities">🛠️ Utilities</h2>
+<p>Helper functions to make your life easier.</p>
+<table class="table">
+<tbody>
+<tr class="odd">
 <td><a href="../reference/floor_date.html#timetk.floor_date">floor_date</a></td>
 <td>Round a date down to the specified unit (e.g.&nbsp;Flooring).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="../reference/is_holiday.html#timetk.is_holiday">is_holiday</a></td>
 <td>Check if a given list of dates are holidays for a specified country.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="../reference/week_of_month.html#timetk.week_of_month">week_of_month</a></td>
 <td>The “week_of_month” function calculates the week number of a given date within its month.</td>
+</tr>
+<tr class="even">
+<td><a href="../reference/timeseries_unit_frequency_table.html#timetk.timeseries_unit_frequency_table">timeseries_unit_frequency_table</a></td>
+<td>The function <code>timeseries_unit_frequency_table</code> returns a pandas DataFrame with units of time and</td>
 </tr>
 </tbody>
 </table>
@@ -730,15 +799,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-      <a href="../guides/05_augmenting.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Adding Features (Augmenting)</span>
-      </a>          
-  </div>
-  <div class="nav-page nav-page-next">
-  </div>
-</nav>
 </div> <!-- /content -->
 
 
