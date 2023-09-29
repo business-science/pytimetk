@@ -217,6 +217,7 @@ def ts_features(
             ts_features = [future.result() for future in futures]
             
     else:
+        # Don't parallel process
         ts_features = []
         for name, group in construct_df.groupby('unique_id'):
             result = partial_get_feats(name, group)

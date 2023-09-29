@@ -461,11 +461,29 @@ def _plot_timeseries_plotly(
     height = None,
 ):
     
+    # Assign colors to groups
+    if color_column is not None:
+        
+        if not isinstance(color_column, list):
+            color_column = [color_column]
+        
+        color_df = data[color_column].drop_duplicates().reset_index(drop=True)
+        
+        color_df["_color"] = (list(palette_light().values()) * 1_000_000)[:len(color_df)]  
+        
+        color_df["_color_group_names"] =  color_df[color_column].agg(" | ".join, axis=1)
+        
+        # print(color_df)
+        
+    # SETUP SUBPLOTS ----
+    
     subplot_titles = []
     if group_names is not None:
         grouped = data.groupby(group_names, sort = False, group_keys = False)
+        
         num_groups = len(grouped)
         facet_nrow = -(-num_groups // facet_ncol)  # Ceil division
+        
         subplot_titles = [" | ".join(map(str, name)) if isinstance(name, tuple) else str(name) for name in grouped.groups.keys()]
         
         if color_column is not None:
@@ -491,6 +509,8 @@ def _plot_timeseries_plotly(
         shared_xaxes=True if facet_scales == "free_y" else False,
         shared_yaxes=True if facet_scales == "free_x" else False,
     )
+    
+    # ADD TRACES -----
 
     if group_names is not None:
         for i, (name, group) in enumerate(grouped):
@@ -509,13 +529,39 @@ def _plot_timeseries_plotly(
 
             # BUG - Need to fix color mapping when color_column is not same as group_names
             if color_column is not None:
-                trace = go.Scatter(
-                    x=group[date_column], 
-                    y=group[value_column], 
-                    mode='lines',
-                    line=dict(color=hex_to_rgba(colors[i], alpha=line_alpha), width=line_size), name=name[0]
-                )
-                fig.add_trace(trace, row=row, col=col)
+                
+                color_group = group.merge(color_df, on=color_column, how="left")
+                
+                for j, (name, color_group) in enumerate(color_group.groupby("_color")):
+                    
+                    # print(color_group)
+                    
+                    color = color_group['_color'].unique()[0]
+                    
+                    name = color_group['_color_group_names'].unique()[0]
+                    
+                    # print(color)
+                    # print(name)
+                    # print(j)
+                    
+                    trace = go.Scatter(
+                        x=color_group[date_column], 
+                        y=color_group[value_column], 
+                        mode='lines',
+                        line=dict(color=hex_to_rgba(color, alpha=line_alpha), width=line_size), 
+                        name=name, 
+                        legendgroup=name,
+                    )
+                    fig.add_trace(trace, row=row, col=col)
+                
+                # Remove duplicate legends in each legend group
+                seen_legendgroups = set()
+                for trace in fig.data:
+                    legendgroup = trace.legendgroup
+                    if legendgroup in seen_legendgroups:
+                        trace.showlegend = False
+                    else:
+                        seen_legendgroups.add(legendgroup)
                 
             else:
                 trace = go.Scatter(x=group[date_column], y=group[value_column], mode='lines', line=dict(color=hex_to_rgba(line_color, alpha=line_alpha), width=line_size), showlegend=False, name=name[0])
@@ -536,45 +582,52 @@ def _plot_timeseries_plotly(
         
         if color_column is not None:
             
-            grouped = data.groupby(color_column, sort = False, group_keys = False)
-            num_groups = len(grouped)
-            
-            colors = list(palette_light().values()) * 1_000_000
-            colors = colors[:num_groups]
-            
-            for i, (name, group) in enumerate(grouped):
+            color_group = data.merge(color_df, on=color_column, how="left")
+                    
+            for j, (name, color_group) in enumerate(color_group.groupby("_color")):
+                
+                # print(color_group)
+                
+                color = color_group['_color'].unique()[0]
+                
+                name = color_group['_color_group_names'].unique()[0]
+                
+                # print(color)
+                # print(name)
+                # print(j)
                 
                 trace = go.Scatter(
-                    x=group[date_column], 
-                    y=group[value_column], 
+                    x=color_group[date_column], 
+                    y=color_group[value_column], 
                     mode='lines',
-                    line=dict(color=hex_to_rgba(colors[i], alpha=line_alpha), width=line_size), name=name
+                    line=dict(color=hex_to_rgba(color, alpha=line_alpha), width=line_size), 
+                    name=name, 
+                    legendgroup=name,
                 )
-                                
                 fig.add_trace(trace)
-                
-                if smooth:
-                    trace = go.Scatter(x=group[date_column], y=group['__smooth'], mode='lines', line=dict(color=hex_to_rgba(smooth_color, alpha=smooth_alpha), width=smooth_size), showlegend=False, name="Smoother")
-                    fig.add_trace(trace)
-                
-                if y_intercept is not None:
-                    fig.add_shape(go.layout.Shape(type="line", y0=y_intercept, y1=y_intercept, x0=group[date_column].min(), x1=group[date_column].max(), line=dict(color=y_intercept_color)))
-                if x_intercept is not None:
-                    fig.add_shape(go.layout.Shape(type="line", x0=x_intercept, x1=x_intercept, y0=group[value_column].min(), y1=group[value_column].max(), line=dict(color=x_intercept_color)))
+            
+            # Remove duplicate legends in each legend group
+            seen_legendgroups = set()
+            for trace in fig.data:
+                legendgroup = trace.legendgroup
+                if legendgroup in seen_legendgroups:
+                    trace.showlegend = False
+                else:
+                    seen_legendgroups.add(legendgroup)
             
             
         else:
             trace = go.Scatter(x=data[date_column], y=data[value_column], mode='lines', line=dict(color=hex_to_rgba(line_color, alpha=line_alpha), width=line_size), showlegend=False, name="Time Series")
             fig.add_trace(trace)
         
-            if smooth:
-                trace = go.Scatter(x=data[date_column], y=data['__smooth'], mode='lines', line=dict(color=hex_to_rgba(smooth_color, alpha=smooth_alpha), width=smooth_size), showlegend=False, name="Smoother")
-                fig.add_trace(trace)
-            
-            if y_intercept is not None:
-                fig.add_shape(go.layout.Shape(type="line", y0=y_intercept, y1=y_intercept, x0=data[date_column].min(), x1=data[date_column].max(), line=dict(color=y_intercept_color)))
-            if x_intercept is not None:
-                fig.add_shape(go.layout.Shape(type="line", x0=x_intercept, x1=x_intercept, y0=data[value_column].min(), y1=data[value_column].max(), line=dict(color=x_intercept_color)))
+        if smooth:
+            trace = go.Scatter(x=data[date_column], y=data['__smooth'], mode='lines', line=dict(color=hex_to_rgba(smooth_color, alpha=smooth_alpha), width=smooth_size), showlegend=False, name="Smoother")
+            fig.add_trace(trace)
+        
+        if y_intercept is not None:
+            fig.add_shape(go.layout.Shape(type="line", y0=y_intercept, y1=y_intercept, x0=data[date_column].min(), x1=data[date_column].max(), line=dict(color=y_intercept_color)))
+        if x_intercept is not None:
+            fig.add_shape(go.layout.Shape(type="line", x0=x_intercept, x1=x_intercept, y0=data[value_column].min(), y1=data[value_column].max(), line=dict(color=x_intercept_color)))
 
     fig.update_layout(
         title=title,
