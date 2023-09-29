@@ -196,7 +196,7 @@ def summarize_by_time(
     
     
     # Unstack the grouped columns if wide_format is True and groups is not None
-    if wide_format and group_names:
+    if wide_format and group_names is not None:
         data = data.unstack(group_names)
     
     # Fill missing values with the specified fillna value
