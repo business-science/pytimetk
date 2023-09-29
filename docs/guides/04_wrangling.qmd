@@ -283,10 +283,14 @@ stocks_df \
 	.assign(**{col: partial(fill_na_col, col=col) for col in cols_to_fill})
 ```
 
+# Next Steps
+
+Check out the [Adding Features (Augmenting) Time Series Data Guide next.](/guides/05_augmenting.html)
+
 # More Coming Soon...
 
 We are in the early stages of development. But it's obvious the potential for `timetk` now in Python. 🐍
 
-- Please ⭐ us on GitHub (it takes 2-seconds and means a lot). 
+- Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). 
 - To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 
 - Want to contribute? [See our contributing guide here.](/contributing.html) 

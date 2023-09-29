@@ -86,6 +86,14 @@ summary_category_1_df \
     )
 ```
 
-# More coming soon...
+# Next steps
 
-There's a lot more coming in `timetk` for Python. You can check out our [Project Roadmap here](https://github.com/business-science/pytimetk/issues/2). 
+Check out the [Data Visualization Guide Next.](/guides/01_visualization.html)
+
+# More Coming Soon...
+
+We are in the early stages of development. But it's obvious the potential for `timetk` now in Python. 🐍
+
+- Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). 
+- To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 
+- Want to contribute? [See our contributing guide here.](/contributing.html) 

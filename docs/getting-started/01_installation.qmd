@@ -13,10 +13,22 @@ number-depth: 2
 This library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0. 
 :::
 
-## Quick Install
+# Quick Install
 
 Let's get you up and running with `timetk` fast. You can install from GitHub with this code. 
 
 ```bash
 pip install git+https://github.com/business-science/pytimetk.git
 ```
+
+# Next steps
+
+Check out the [Quick Start Guide Next.](/getting-started/02_quick_start.html)
+
+# More Coming Soon...
+
+We are in the early stages of development. But it's obvious the potential for `timetk` now in Python. 🐍
+
+- Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). 
+- To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 
+- Want to contribute? [See our contributing guide here.](/contributing.html) 
