@@ -7,8 +7,11 @@
     font-size: 14.4px;
     font-weight: 400;
 }
-  
-  
+
+.sidebar code:not(.sourceCode) {
+    font-size: 11px !important;
+}
+
 .sidebar-item-container .text-start {
   font-weight: 600;
   font-size: 14.4px !important;

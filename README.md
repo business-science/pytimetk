@@ -4,7 +4,37 @@
 
 This library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0.
 
-## Installation
+# Install Dev Version
+
+```bash
+pip install git+https://github.com/business-science/pytimetk.git
+```
+
+# Quickstart:
+
+This is a simple code to test the function `summarize_by_time`:
+
+```python
+import timetk
+import pandas as pd
+
+df = timetk.datasets.load_dataset('bike_sales_sample')
+df['order_date'] = pd.to_datetime(df['order_date'])
+
+df \
+    .summarize_by_time(
+        date_column='order_date', 
+        value_column= 'total_price',
+        groups = "category_2",
+        freq = "M",
+        kind = 'timestamp',
+        agg_func = ['mean', 'sum']
+    )
+```
+
+
+
+## Developers (Contributors): Installation
 
 To install `timetk` using [Poetry](https://python-poetry.org/), follow these steps:
 
@@ -37,26 +67,4 @@ or you can create a virtualenv with poetry and install the dependencies
 ```bash
 poetry shell
 poetry install
-```
-
-# Usage
-
-This is a simple code to test the function `summarize_by_time`:
-
-```python
-import timetk
-import pandas as pd
-
-df = timetk.datasets.load_dataset('bike_sales_sample')
-df['order_date'] = pd.to_datetime(df['order_date'])
-
-df \
-    .summarize_by_time(
-        date_column='order_date', 
-        value_column= 'total_price',
-        groups = "category_2",
-        freq = "M",
-        kind = 'timestamp',
-        agg_func = ['mean', 'sum']
-    )
 ```

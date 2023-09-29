@@ -94,7 +94,7 @@ def ts_features(
         
     Examples
     --------
-    ```python
+    ```{python}
     # REQUIRES tsfeatures: pip install tsfeatures
     import pandas as pd
     import timetk as tk
@@ -123,7 +123,7 @@ def ts_features(
                 threads      = 1
             )
     ) 
-    print(feature_df)
+    feature_df
     ```
     '''
     

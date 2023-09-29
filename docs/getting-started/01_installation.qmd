@@ -1,6 +1,10 @@
 ---
 title: "Install"
 jupyter: python3
+toc: true
+toc-depth: 3
+number-sections: true
+number-depth: 2
 ---
 
 ::: {.callout-warning collapse="false"}
@@ -9,38 +13,10 @@ jupyter: python3
 This library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0. 
 :::
 
+## Quick Install
 
-## Installation
+Let's get you up and running with `timetk` fast. You can install from GitHub with this code. 
 
-To install `timetk` using [Poetry](https://python-poetry.org/), follow these steps:
-
-### 1. Prerequisites
-
-Make sure you have Python 3.9 or later installed on your system.
-
-### 2. Install Poetry
-
-To install Poetry, you can use the [official installer](https://python-poetry.org/docs/#installing-with-the-official-installer)  provided by Poetry. Do not use pip.
-
-### 3. Clone the Repository
-
-Clone the `timetk` repository from GitHub:
-
-```
-git clone https://github.com/business-science/pytimetk
-```
-
-### 4. Install Dependencies
-
-Use Poetry to install the package and its dependencies:
-
-```
-poetry install
-```
-
-or you can create a virtualenv with poetry and install the dependencies
-
-```
-poetry shell
-poetry install
+```bash
+pip install git+https://github.com/business-science/pytimetk.git
 ```

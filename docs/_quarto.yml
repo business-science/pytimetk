@@ -59,12 +59,25 @@ website:
         contents: getting-started/*
       - section: "🗺️ Guides:"
         contents: guides/*
+      - section: "📘 Applied Tutorials:"
+        contents: tutorials/*
+      - text: "---"
       - text: 📄 API Reference
         file: reference/index.qmd
+      - text: "---"
+      - text: ⭐ Timetk on Github
+        file: https://github.com/business-science/pytimetk
+        external: true
+      - text: "---"
+      - text: 🍻 Contributing
+        file: contributing.qmd
       - text: "---"
       - section: "More References:"
       - text: Business Science
         file: https://www.business-science.io/index.html
+        external: true
+      - text: Quant Science
+        file: https://www.quantscience.io/
         external: true
       - text: Timetk (R Version)
         file: https://business-science.github.io/timetk/

@@ -1,0 +1,48 @@
+# ts_summary { #timetk.ts_summary }
+
+`ts_summary(data, date_column)`
+
+Computes summary statistics for a time series data, either for the entire dataset or grouped by a specific column.
+
+## Parameters
+
+| Name          | Type                                                     | Description                                                                                                                                                                                              | Default    |
+|---------------|----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `data`        | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | The `data` parameter can be either a Pandas DataFrame or a Pandas DataFrameGroupBy object. It represents the data that you want to summarize.                                                            | _required_ |
+| `date_column` | str                                                      | The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to compute summary statistics for the time series data. | _required_ |
+
+## Returns
+
+| Type         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| pd.DataFrame | The `ts_summary` function returns a summary of time series data. The summary includes the following statistics: - If grouped data is provided, the returned data will contain the grouping columns first. - `date_n`: The number of observations in the time series. - `date_tz`: The time zone of the time series. - `date_start`: The first date in the time series. - `date_end`: The last date in the time series. - `freq_inferred_unit`: The inferred frequency of the time series from `pandas`. - `freq_median_timedelta`: The median time difference between consecutive observations in the time series. - `freq_median_scale`: The median time difference between consecutive observations in the time series, scaled to a common unit. - `freq_median_unit`: The unit of the median time difference between consecutive observations in the time series. - `diff_min`: The minimum time difference between consecutive observations in the time series as a timedelta. - `diff_q25`: The 25th percentile of the time difference between consecutive observations in the time series as a timedelta. - `diff_median`: The median time difference between consecutive observations in the time series as a timedelta. - `diff_mean`: The mean time difference between consecutive observations in the time series as a timedelta. - `diff_q75`: The 75th percentile of the time difference between consecutive observations in the time series as a timedelta. - `diff_max`: The maximum time difference between consecutive observations in the time series as a timedelta. - `diff_min_seconds`: The minimum time difference between consecutive observations in the time series in seconds. - `diff_q25_seconds`: The 25th percentile of the time difference between consecutive observations in the time series in seconds. - `diff_median_seconds`: The median time difference between consecutive observations in the time series in seconds. - `diff_mean_seconds`: The mean time difference between consecutive observations in the time series in seconds. - `diff_q75_seconds`: The 75th percentile of the time difference between consecutive observations in the time series in seconds. - `diff_max_seconds`: The maximum time difference between consecutive observations in the time series in seconds. |
+
+## Examples
+
+```{python}
+import timetk as tk
+import pandas as pd
+
+dates = pd.to_datetime(["2023-10-02", "2023-10-03", "2023-10-04", "2023-10-05", "2023-10-06", "2023-10-09", "2023-10-10"])
+df = pd.DataFrame(dates, columns = ["date"])
+
+df.ts_summary(date_column = 'date')
+```
+
+```{python}
+df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
+ 
+df.groupby('symbol').ts_summary(date_column = 'date') 
+```
+
+```{python}
+# See also:
+tk.get_date_summary(df['date'])
+
+tk.get_frequency_summary(df['date'])
+
+tk.get_diff_summary(df['date'])
+
+tk.get_diff_summary(df['date'], numeric = True)
+
+```

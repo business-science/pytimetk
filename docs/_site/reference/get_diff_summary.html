@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>timetk for Python - Install</title>
+<title>timetk for Python – get_diff_summary</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,40 +20,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -63,7 +29,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../getting-started/02_quick_start.html" rel="next">
 <link href="../favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -107,12 +72,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </script>
 
 
-<meta property="og:title" content="timetk for Python - Install">
-<meta property="og:description" content="">
-<meta property="og:site-name" content="timetk for Python">
-<meta name="twitter:title" content="timetk for Python - Install">
-<meta name="twitter:description" content="">
-<meta name="twitter:card" content="summary">
 </head>
 
 <body class="nav-sidebar floating nav-fixed">
@@ -141,7 +100,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../getting-started/01_installation.html">🏁 Getting Started:</a></li><li class="breadcrumb-item"><a href="../getting-started/01_installation.html">Install</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -162,16 +121,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
  <span class="menu-text">🏁 Getting Started:</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../getting-started/01_installation.html" class="sidebar-item-text sidebar-link active">
+  <a href="../getting-started/01_installation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Install</span></a>
   </div>
 </li>
@@ -224,54 +183,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </li>
       </ul>
   </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
- <span class="menu-text">📘 Applied Tutorials:</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tutorials/01_sales_crm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Sales CRM Database Analysis</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tutorials/02_finance.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Finance Investment Analysis</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../tutorials/03_anomaly_detection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Anomaly Detection</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📄 API Reference</span></a>
-  </div>
-</li>
-        <li class="px-0"><hr class="sidebar-divider hi "></li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="https://github.com/business-science/pytimetk" class="sidebar-item-text sidebar-link">
- <span class="menu-text">⭐ Timetk on Github</span></a>
-  </div>
-</li>
-        <li class="px-0"><hr class="sidebar-divider hi "></li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../contributing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">🍻 Contributing</span></a>
   </div>
 </li>
         <li class="px-0"><hr class="sidebar-divider hi "></li>
@@ -283,12 +198,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <div class="sidebar-item-container"> 
   <a href="https://www.business-science.io/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Business Science</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="https://www.quantscience.io/" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quant Science</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -307,52 +216,79 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#quick-install" id="toc-quick-install" class="nav-link active" data-scroll-target="#quick-install"><span class="header-section-number">1</span> Quick Install</a></li>
+  <li><a href="#timetk.get_diff_summary" id="toc-timetk.get_diff_summary" class="nav-link active" data-scroll-target="#timetk.get_diff_summary">get_diff_summary</a>
+  <ul class="collapse">
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  </ul></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/getting-started/01_installation.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/get_diff_summary.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Install</h1>
-</div>
 
 
+<section id="timetk.get_diff_summary" class="level1">
+<h1>get_diff_summary</h1>
+<p><code>get_diff_summary(idx, numeric=False)</code></p>
+<p>Calculates summary statistics of the time differences between consecutive values in a datetime index.</p>
+<section id="parameters" class="level2">
+<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<table class="table">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 6%">
+<col style="width: 88%">
+<col style="width: 2%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>idx</code></td>
+<td>pd.Series or pd.DateTimeIndex</td>
+<td>The <code>idx</code> parameter can be either a pandas Series or a pandas DateTimeIndex. It represents the index values for which you want to calculate the difference summary.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td><code>numeric</code></td>
+<td>bool</td>
+<td>The <code>numeric</code> parameter is a boolean flag that indicates whether the input index should be treated as numeric or not. - If <code>numeric</code> is set to <code>True</code>, the index values are converted to integers representing the number of seconds since the Unix epoch (January 1, 1970). - If <code>numeric</code> is set to <code>False</code>, the index values are treated as datetime values. The default value of <code>numeric</code> is <code>False</code>.</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns" class="level2">
+<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<table class="table">
+<colgroup>
+<col style="width: 0%">
+<col style="width: 99%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>pd.DataFrame</td>
+<td>The function <code>get_diff_summary</code> returns a pandas DataFrame containing summary statistics including: If <code>numeric</code> is set to <code>False</code>, the column names are: - <code>diff_min</code>: The minimum time difference between consecutive observations in the time series as a timedelta. - <code>diff_q25</code>: The 25th percentile of the time difference between consecutive observations in the time series as a timedelta. - <code>diff_median</code>: The median time difference between consecutive observations in the time series as a timedelta. - <code>diff_mean</code>: The mean time difference between consecutive observations in the time series as a timedelta. - <code>diff_q75</code>: The 75th percentile of the time difference between consecutive observations in the time series as a timedelta. - <code>diff_max</code>: The maximum time difference between consecutive observations in the time series as a timedelta. If <code>numeric</code> is set to <code>True</code>, the column names are: - <code>diff_min_seconds</code>: The minimum time difference between consecutive observations in the time series in seconds. - <code>diff_q25_seconds</code>: The 25th percentile of the time difference between consecutive observations in the time series in seconds. - <code>diff_median_seconds</code>: The median time difference between consecutive observations in the time series in seconds. - <code>diff_mean_seconds</code>: The mean time difference between consecutive observations in the time series in seconds. - <code>diff_q75_seconds</code>: The 75th percentile of the time difference between consecutive observations in the time series in seconds. - <code>diff_max_seconds</code>: The maximum time difference between consecutive observations in the time series in seconds.</td>
+</tr>
+</tbody>
+</table>
 
-<div class="quarto-title-meta">
 
-    
-  
-    
-  </div>
-  
-
-</header>
-
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Under Development
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
-<div class="callout-body-container callout-body">
-<p>This library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0.</p>
-</div>
-</div>
-</div>
-<section id="quick-install" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="quick-install"><span class="header-section-number">1</span> Quick Install</h2>
-<p>Let’s get you up and running with <code>timetk</code> fast. You can install from GitHub with this code.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install git+https://github.com/business-science/pytimetk.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -704,15 +640,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-  </div>
-  <div class="nav-page nav-page-next">
-      <a href="../getting-started/02_quick_start.html" class="pagination-link">
-        <span class="nav-page-text">Quick Start</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
-  </div>
-</nav>
 </div> <!-- /content -->
 
 

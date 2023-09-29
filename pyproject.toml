@@ -14,6 +14,7 @@ plotnine = "^0.12.3"
 plotly = "^5.17.0"
 holidays = "^0.33"
 tsfeatures = "^0.4.5"
+statsmodels = "^0.14.0"
 
 
 [tool.poetry.group.dev.dependencies]

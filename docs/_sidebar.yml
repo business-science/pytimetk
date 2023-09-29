@@ -19,19 +19,24 @@ website:
       section: "\U0001F3D7\uFE0F Adding Features to Time Series DataFrames (Augmenting)"
     - contents:
       - reference/ts_features.qmd
+      - reference/ts_summary.qmd
       section: TS Features
     - contents:
       - reference/make_future_timeseries.qmd
       - reference/make_weekday_sequence.qmd
       - reference/make_weekend_sequence.qmd
-      section: "\U0001F43C Time Series for Pandas Series"
-    - contents:
+      - reference/get_date_summary.qmd
+      - reference/get_frequency_summary.qmd
+      - reference/get_diff_summary.qmd
       - reference/get_pandas_frequency.qmd
       - reference/get_timeseries_signature.qmd
       - reference/get_holiday_signature.qmd
+      section: "\U0001F43C Time Series for Pandas Series"
+    - contents:
       - reference/floor_date.qmd
       - reference/is_holiday.qmd
       - reference/week_of_month.qmd
+      - reference/timeseries_unit_frequency_table.qmd
       section: "\U0001F6E0\uFE0F Utilities"
     - contents:
       - reference/get_available_datasets.qmd

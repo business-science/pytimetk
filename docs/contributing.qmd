@@ -1,0 +1,89 @@
+---
+title: "Contributing (Developer Setup)"
+jupyter: python3
+toc: true
+toc-depth: 3
+number-sections: true
+number-depth: 2
+---
+
+::: {.callout-note collapse="false"}
+## Interested in contributing?
+
+Make sure to Fork the GitHub Repo. Clone your fork. Then use poetry to install the `timetk` package. 
+:::
+
+# GitHub
+
+To contribute, you'll need to have a GitHub account. Then:
+
+## 1. Fork our pytimetk repository
+
+[Head to our GitHub Repo](https://github.com/business-science/pytimetk) and select "fork". This makes a copied version of `timetk` for your personal use. 
+
+## 2. Clone your forked version
+
+Cloning will put your own personal version of `timetk` on your local machine. Make sure to replace `[your_user_name]` with your user name. 
+
+``` bash
+git clone https://github.com/[your_user_name]/pytimetk
+```
+
+# Poetry Environment Setup
+
+To install `timetk` using [Poetry](https://python-poetry.org/), follow these steps:
+
+#### 1. Prerequisites
+
+Make sure you have Python 3.9 or later installed on your system.
+
+#### 2. Install Poetry
+
+To install Poetry, you can use the [official installer](https://python-poetry.org/docs/#installing-with-the-official-installer)  provided by Poetry. Do not use pip.
+
+
+#### 3. Install Dependencies
+
+Use Poetry to install the package and its dependencies:
+
+``` bash
+poetry install
+```
+
+or you can create a virtualenv with poetry and install the dependencies
+
+``` bash
+poetry shell
+poetry install
+```
+
+# Submit a Pull Request
+
+#### 1. Make changes on a Branch
+
+Make changes in your local version on a branch where  `my-feature-branch` is a branch you'd like to create that contains modifications. 
+
+``` bash
+git checkout -b my-feature-branch
+```
+
+#### 2. Push to your forked version of pytimetk
+
+``` bash
+git push origin my-feature-branch
+```
+
+#### 3. Create a Pull Request
+
+- Go to your forked repository on GitHub and switch to your branch. 
+- Click on “New pull request” and compare the changes you made with the original repository. 
+- Fill out the pull request template with the necessary information, explaining your changes, the reason for them, and any other relevant information.
+
+#### 4. Submit the Pull Request
+   
+- Review your changes and submit the pull request.
+
+# Next Steps 🍻
+
+We will review your PR. If all goes well, we'll merge! And then you've just helped the community. 🍻
+

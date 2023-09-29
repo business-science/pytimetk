@@ -68,7 +68,8 @@ from .datasets.get_datasets import (
     load_dataset, get_available_datasets
 )
 from .utils.datetime_helpers import (
-    floor_date, week_of_month, get_pandas_frequency, is_holiday
+    floor_date, week_of_month, get_pandas_frequency, is_holiday, timeseries_unit_frequency_table
+
 )
 from .utils.memory_helpers import (
     reduce_memory_usage

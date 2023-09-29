@@ -1,5 +1,9 @@
 ---
 jupyter: python3
+toc: true
+toc-depth: 3
+number-sections: true
+number-depth: 2
 ---
 
 # timetk for Python <img src="logo-timetk.png" align="right" height="138" />
@@ -14,7 +18,13 @@ jupyter: python3
 This library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0. 
 :::
 
-## Quick Start: A Monthly Sales Analysis
+# Install GitHub Version
+
+```bash
+pip install git+https://github.com/business-science/pytimetk.git
+```
+
+# Quick Start: A Monthly Sales Analysis
 
 This is a simple exercise to showcase the power of [`summarize_by_time()`](/reference/summarize_by_time.html):
 
@@ -43,7 +53,7 @@ df
 Your company might be interested in sales patterns for various categories of bicycles. We can obtain a grouped monthly sales aggregation by `category_1` in two lines of code:
 
 1. First use pandas's `groupby()` method to group the DataFrame on `category_1`
-2. Next, use timetk's `summarize_by_time()` method to apply the sum function my month start ("MS") and use `wide_format` to return the dataframe in wide format. 
+2. Next, use timetk's `summarize_by_time()` method to apply the sum function my month start ("MS") and use `wide_format = 'False'` to return the dataframe in a long format (Note long format is the default). 
 
 The result is the total revenue for Mountain and Road bikes by month. 
 
@@ -55,10 +65,11 @@ summary_category_1_df = df \
         value_column = 'total_price',
         freq         = "MS",
         agg_func     = 'sum',
-        wide_format  = True
+        wide_format  = False
     )
 
-summary_category_1_df
+# First 5 rows shown
+summary_category_1_df.head()
 ```
 
 
@@ -66,61 +77,26 @@ summary_category_1_df
 ### Visualizing Sales Patterns
 
 ::: {.callout-note collapse="false"}
-## Coming soon: `plot_timeseries()`.
+## Now available: `plot_timeseries()`.
 
-We are working on an even easier and more attractive plotting solution specifically designed for Time Series Analysis. It's coming soon. 
+Plot time series is a quick and easy way to visualize time series and make professional time series plots. 
 :::
 
-We can visualize with `plotly`. 
-
-
+With the data summarized by time, we can visualize with `plot_timeseries()`. `timetk` functions are `groupby()` aware meaning they understand if your data is grouped to do things by group. This is useful in time series where we often deal with 100s of time series groups. 
 
 ```{python}
-#| warning: false
-import plotly.express as px
-
-px.line(
-    summary_category_1_df, 
-    x = 'order_date', 
-    y = ['total_price_Mountain', 'total_price_Road'],
-    template = "plotly_dark",    
-    title = "Monthly Sales of Mountain and Road Bicycles",
-    width = 900
-)
+summary_category_1_df \
+    .groupby('category_1') \
+    .plot_timeseries(
+        date_column  = 'order_date',
+        value_column = 'total_price',
+        smooth_frac  = 0.8
+    )
 ```
 
-## Installation
+# Contributing
 
-To install `timetk` using [Poetry](https://python-poetry.org/), follow these steps:
+Interested in helping us make this the best Python package for time series analysis? We'd love your help. 
 
-### 1. Prerequisites
-
-Make sure you have Python 3.9 or later installed on your system.
-
-### 2. Install Poetry
-
-To install Poetry, you can use the [official installer](https://python-poetry.org/docs/#installing-with-the-official-installer)  provided by Poetry. Do not use pip.
-
-### 3. Clone the Repository
-
-Clone the `timetk` repository from GitHub:
-
-```
-git clone https://github.com/business-science/pytimetk
-```
-
-### 4. Install Dependencies
-
-Use Poetry to install the package and its dependencies:
-
-```
-poetry install
-```
-
-or you can create a virtualenv with poetry and install the dependencies
-
-```
-poetry shell
-poetry install
-```
+[Follow these instructions to Contribute.](/contributing.html)
 

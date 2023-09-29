@@ -37,6 +37,7 @@ Python implementation of the R package `tsfeatures`.
 | | |
 | --- | --- |
 | [ts_features](ts_features.qmd#timetk.ts_features) | Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the `tsfeatures` package. |
+| [ts_summary](ts_summary.qmd#timetk.ts_summary) | Computes summary statistics for a time series data, either for the entire dataset or grouped by a specific column. |
 
 ## 🐼 Time Series for Pandas Series
 
@@ -47,6 +48,12 @@ Time series functions that generate / manipulate Pandas Series.
 | [make_future_timeseries](make_future_timeseries.qmd#timetk.make_future_timeseries) | Make future dates for a time series. |
 | [make_weekday_sequence](make_weekday_sequence.qmd#timetk.make_weekday_sequence) | Generate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays. |
 | [make_weekend_sequence](make_weekend_sequence.qmd#timetk.make_weekend_sequence) | Generate a sequence of weekend dates within a specified date range, optionally excluding holidays. |
+| [get_date_summary](get_date_summary.qmd#timetk.get_date_summary) | Returns a summary of the date-related information, including the number of dates, the time zone, the start |
+| [get_frequency_summary](get_frequency_summary.qmd#timetk.get_frequency_summary) | Returns a summary including the inferred frequency, median time difference, scale, and unit. |
+| [get_diff_summary](get_diff_summary.qmd#timetk.get_diff_summary) | Calculates summary statistics of the time differences between consecutive values in a datetime index. |
+| [get_pandas_frequency](get_pandas_frequency.qmd#timetk.get_pandas_frequency) | Get the frequency of a pandas Series or DatetimeIndex. |
+| [get_timeseries_signature](get_timeseries_signature.qmd#timetk.get_timeseries_signature) | Convert a timestamp to a set of 29 time series features. |
+| [get_holiday_signature](get_holiday_signature.qmd#timetk.get_holiday_signature) | Engineers 4 different holiday features from a single datetime for 80+ countries. |
 
 ## 🛠️ Utilities
 
@@ -54,12 +61,10 @@ Helper functions to make your life easier.
 
 | | |
 | --- | --- |
-| [get_pandas_frequency](get_pandas_frequency.qmd#timetk.get_pandas_frequency) | Get the frequency of a pandas Series or DatetimeIndex. |
-| [get_timeseries_signature](get_timeseries_signature.qmd#timetk.get_timeseries_signature) | Convert a timestamp to a set of 29 time series features. |
-| [get_holiday_signature](get_holiday_signature.qmd#timetk.get_holiday_signature) | Engineers 4 different holiday features from a single datetime for 80+ countries. |
 | [floor_date](floor_date.qmd#timetk.floor_date) | Round a date down to the specified unit (e.g. Flooring). |
 | [is_holiday](is_holiday.qmd#timetk.is_holiday) | Check if a given list of dates are holidays for a specified country. |
 | [week_of_month](week_of_month.qmd#timetk.week_of_month) | The "week_of_month" function calculates the week number of a given date within its month. |
+| [timeseries_unit_frequency_table](timeseries_unit_frequency_table.qmd#timetk.timeseries_unit_frequency_table) | The function `timeseries_unit_frequency_table` returns a pandas DataFrame with units of time and |
 
 ## 💾 12 Datasets
 

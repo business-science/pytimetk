@@ -1,0 +1,17 @@
+# get_frequency_summary { #timetk.get_frequency_summary }
+
+`get_frequency_summary(idx)`
+
+Returns a summary including the inferred frequency, median time difference, scale, and unit.
+
+## Parameters
+
+| Name   | Type                          | Description                                                                                                                                                   | Default    |
+|--------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `idx`  | pd.Series or pd.DateTimeIndex | The `idx` parameter is either a `pd.Series` or a `pd.DateTimeIndex`. It represents the index of a pandas DataFrame or Series, which contains datetime values. | _required_ |
+
+## Returns
+
+| Type         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| pd.DataFrame | A pandas DataFrame with the following columns: - `freq_inferred_unit`: The inferred frequency of the time series from `pandas`. - `freq_median_timedelta`: The median time difference between consecutive observations in the time series. - `freq_median_scale`: The median time difference between consecutive observations in the time series, scaled to a common unit. - `freq_median_unit`: The unit of the median time difference between consecutive observations in the time series. |

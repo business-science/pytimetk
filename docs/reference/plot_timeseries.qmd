@@ -1,6 +1,6 @@
 # plot_timeseries { #timetk.plot_timeseries }
 
-`plot_timeseries(data, date_column, value_column, color_column=None, facet_ncol=1, facet_nrow=None, facet_scales='free_y', facet_dir='h', line_color='#2c3e50', line_size=0.65, line_type='solid', line_alpha=1.0, y_intercept=None, y_intercept_color='#2c3e50', x_intercept=None, x_intercept_color='#2c3e50', smooth=True, smooth_color='#3366FF', smooth_frac=0.2, smooth_size=1.0, smooth_alpha=1.0, title='Time Series Plot', x_lab='', y_lab='', color_lab='Legend', x_axis_date_labels='%b %Y', base_size=11, width=None, height=None, engine='plotly')`
+`plot_timeseries(data, date_column, value_column, color_column=None, facet_ncol=1, facet_nrow=None, facet_scales='free_y', facet_dir='h', line_color='#2c3e50', line_size=0.65, line_type='solid', line_alpha=1.0, y_intercept=None, y_intercept_color='#2c3e50', x_intercept=None, x_intercept_color='#2c3e50', smooth=True, smooth_color='#3366FF', smooth_frac=0.2, smooth_size=1.0, smooth_alpha=1.0, legend_show=True, title='Time Series Plot', x_lab='', y_lab='', color_lab='Legend', x_axis_date_labels='%b %Y', base_size=11, width=None, height=None, engine='plotly')`
 
 Creates time series plots using different plotting engines such as Plotnine, Matplotlib, and Plotly.
 
@@ -29,6 +29,7 @@ Creates time series plots using different plotting engines such as Plotnine, Mat
 | `smooth_frac`        | float                                                    | The `smooth_frac` parameter is used to control the fraction of data points used for smoothing the time series. It determines the degree of smoothing applied to the data. A smaller value of `smooth_frac` will result in more smoothing, while a larger value will result in less smoothing. The default value is 0.2.                                                                                                                                                      | `0.2`                |
 | `smooth_size`        | float                                                    | The `smooth_size` parameter is used to specify the size of the line used to plot the smoothed values in the time series plot. It is a numeric value that controls the thickness of the line. A larger value will result in a thicker line, while a smaller value will result in a thinner line                                                                                                                                                                               | `1.0`                |
 | `smooth_alpha`       | float                                                    | The `smooth_alpha` parameter controls the transparency of the smoothed line in the plot. It accepts a value between 0 and 1, where 0 means completely transparent and 1 means completely opaque.                                                                                                                                                                                                                                                                             | `1.0`                |
+| `legend_show`        | bool                                                     | The `legend_show` parameter is a boolean indicating whether or not to show the legend in the plot. If set to True, the legend will be displayed. The default value is True.                                                                                                                                                                                                                                                                                                  | `True`               |
 | `title`              | str                                                      | The title of the plot.                                                                                                                                                                                                                                                                                                                                                                                                                                                       | `'Time Series Plot'` |
 | `x_lab`              | str                                                      | The `x_lab` parameter is used to specify the label for the x-axis in the plot. It is a string that represents the label text.                                                                                                                                                                                                                                                                                                                                                | `''`                 |
 | `y_lab`              | str                                                      | The `y_lab` parameter is used to specify the label for the y-axis in the plot. It is a string that represents the label for the y-axis.                                                                                                                                                                                                                                                                                                                                      | `''`                 |
@@ -80,7 +81,7 @@ fig = (
             y_intercept = None,
             x_axis_date_labels = "%Y",
             engine = 'plotly',
-            width = 800,
+            width = 600,
             height = 500,
         )
 )
@@ -124,7 +125,6 @@ fig = (
         .groupby('id')
         .plot_timeseries(
             'date', 'value', 
-            color_column = 'id',
             facet_ncol = 2,
             facet_scales = "free",
             line_size = 0.35,

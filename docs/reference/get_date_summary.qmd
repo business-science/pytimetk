@@ -1,0 +1,18 @@
+# get_date_summary { #timetk.get_date_summary }
+
+`get_date_summary(idx)`
+
+Returns a summary of the date-related information, including the number of dates, the time zone, the start
+date, and the end date.
+
+## Parameters
+
+| Name   | Type                          | Description                                                                                                                                                 | Default    |
+|--------|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `idx`  | pd.Series or pd.DateTimeIndex | The parameter `idx` can be either a pandas Series or a pandas DateTimeIndex. It represents the dates or timestamps for which we want to generate a summary. | _required_ |
+
+## Returns
+
+| Type         | Description                                                                                                                                                                                                                                |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| pd.DataFrame | A pandas DataFrame with the following columns:  - `date_n`: The number of dates in the index. - `date_tz`: The time zone of the dates in the index. - `date_start`: The first date in the index. - `date_end`: The last date in the index. |
