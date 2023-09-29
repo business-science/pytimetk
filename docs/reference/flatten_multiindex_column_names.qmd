@@ -1,0 +1,39 @@
+# flatten_multiindex_column_names { #timetk.flatten_multiindex_column_names }
+
+`flatten_multiindex_column_names(data, sep='_')`
+
+Takes a DataFrame as input and flattens the column
+names if they are in a multi-index format.
+
+## Parameters
+
+| Name   | Type         | Description                                                       | Default    |
+|--------|--------------|-------------------------------------------------------------------|------------|
+| `data` | pd.DataFrame | The parameter "data" is expected to be a pandas DataFrame object. | _required_ |
+
+## Returns
+
+| Type         | Description                                            |
+|--------------|--------------------------------------------------------|
+| pd.DataFrame | The input data with flattened multiindex column names. |
+
+## Examples
+
+```{python}
+import pandas as pd
+import timetk as tk
+
+date_rng = pd.date_range(start='2023-01-01', end='2023-01-03', freq='D')
+
+data = {
+    'date': date_rng,
+    ('values', 'value1'): [1, 4, 7],
+    ('values', 'value2'): [2, 5, 8],
+    ('metrics', 'metric1'): [3, 6, 9],
+    ('metrics', 'metric2'): [3, 6, 9],
+}
+df = pd.DataFrame(data)
+
+df.flatten_multiindex_column_names()
+
+```

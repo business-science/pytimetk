@@ -1,0 +1,24 @@
+# glimpse { #timetk.glimpse }
+
+`glimpse(data, max_width=76)`
+
+Takes a pandas DataFrame and prints a summary of
+its dimensions, column names, data types, and the first few values of each column.
+
+## Parameters
+
+| Name        | Type         | Description                                                                                                                                                                                   | Default    |
+|-------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `data`      | pd.DataFrame | The `data` parameter is a pandas DataFrame that contains the data you want to glimpse at. It is the main input to the `glimpse` function.                                                     | _required_ |
+| `max_width` | int          | The `max_width` parameter is an optional parameter that specifies the maximum width of each line when printing the glimpse of the DataFrame. If not provided, the default value is set to 76. | `76`       |
+
+## Examples
+
+```{python}
+import timetk as tk
+import pandas as pd
+
+df = tk.load_dataset('walmart_sales_weekly', parse_dates=['Date'])
+
+df.glimpse()
+```

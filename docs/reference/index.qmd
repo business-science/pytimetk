@@ -75,6 +75,13 @@ Helper functions to make your life easier.
 | [theme_timetk](theme_timetk.qmd#timetk.theme_timetk) | Returns a `plotnine` theme with timetk styles applied, allowing for customization of the appearance of plots in Python. |
 | [palette_timetk](palette_timetk.qmd#timetk.palette_timetk) | The function `palette_timetk` returns a dictionary of color codes for various colors in the timetk theme. |
 
+## Extra Pandas Helpers (That Help Beyond Just Time Series)
+
+| | |
+| --- | --- |
+| [glimpse](glimpse.qmd#timetk.glimpse) | Takes a pandas DataFrame and prints a summary of |
+| [flatten_multiindex_column_names](flatten_multiindex_column_names.qmd#timetk.flatten_multiindex_column_names) | Takes a DataFrame as input and flattens the column |
+
 ## 💾 12 Datasets
 
 Practice `timetk` with 12 complementary time series datasets.

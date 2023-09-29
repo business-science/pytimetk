@@ -156,6 +156,11 @@ quartodoc:
       contents:    
         - theme_timetk
         - palette_timetk
+    - title: Extra Pandas Helpers (That Help Beyond Just Time Series)
+      package: timetk
+      contents:
+      - glimpse
+      - flatten_multiindex_column_names
     - title: 💾 12 Datasets
       package: timetk.datasets.get_datasets
       desc: Practice `timetk` with 12 complementary time series datasets.

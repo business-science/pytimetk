@@ -77,9 +77,12 @@ from .utils.datetime_helpers import (
 from .utils.memory_helpers import (
     reduce_memory_usage
 )
+from .utils.pandas_helpers import (
+    flatten_multiindex_column_names, glimpse
+)
 
 
 
-
-__version__ = '0.0.0.9000'
+from importlib.metadata import version
+__version__ = version('timetk')
 __author__ = 'Matt Dancho (Business Science)'
