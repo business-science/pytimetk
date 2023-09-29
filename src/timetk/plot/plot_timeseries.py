@@ -14,7 +14,7 @@ from mizani.formatters import date_format
 
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
-from timetk.plot.theme import theme_tq, palette_light
+from timetk.plot.theme import theme_timetk, palette_timetk
 from timetk.utils.plot_helpers import hex_to_rgba
 
 
@@ -486,7 +486,7 @@ def _plot_timeseries_plotly(
         
         color_df = data[color_column].drop_duplicates().reset_index(drop=True)
         
-        color_df["_color"] = (list(palette_light().values()) * 1_000_000)[:len(color_df)]  
+        color_df["_color"] = (list(palette_timetk().values()) * 1_000_000)[:len(color_df)]  
         
         color_df["_color_group_names"] =  color_df[color_column].agg(" | ".join, axis=1)
         
@@ -504,7 +504,7 @@ def _plot_timeseries_plotly(
         subplot_titles = [" | ".join(map(str, name)) if isinstance(name, tuple) else str(name) for name in grouped.groups.keys()]
         
         if color_column is not None:
-            colors = list(palette_light().values()) * 1_000_000
+            colors = list(palette_timetk().values()) * 1_000_000
             colors = colors[:num_groups]
         else: 
             colors = [line_color] * num_groups
@@ -781,7 +781,7 @@ def _plot_timeseries_plotnine(
                     alpha    = line_alpha
                 ) \
             + scale_color_manual(
-                values=list(palette_light().values())
+                values=list(palette_timetk().values())
             )
     
     # Add a Y-Intercept if desired
@@ -841,7 +841,7 @@ def _plot_timeseries_plotnine(
 
     # Add theme
     g = g + \
-        theme_tq(base_size=base_size, width = width, height = height)
+        theme_timetk(base_size=base_size, width = width, height = height)
         
     if not legend_show:
         g = g + theme(legend_position='none')
