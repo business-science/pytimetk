@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>timetk for Python – index</title>
+<title>timetk for Python – glimpse</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -100,7 +134,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reference/index.html">📄 API Reference</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">glimpse</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -227,7 +261,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/index.html" class="sidebar-item-text sidebar-link active">
+  <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📄 API Reference</span></a>
   </div>
 </li>
@@ -278,221 +312,98 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#function-reference" id="toc-function-reference" class="nav-link active" data-scroll-target="#function-reference">Function reference</a>
-  <ul class="collapse">
-  <li><a href="#data-visualization" id="toc-data-visualization" class="nav-link" data-scroll-target="#data-visualization">🚀 Data Visualization</a></li>
-  <li><a href="#wrangling-pandas-time-series-dataframes" id="toc-wrangling-pandas-time-series-dataframes" class="nav-link" data-scroll-target="#wrangling-pandas-time-series-dataframes">🔥 Wrangling Pandas Time Series DataFrames</a></li>
-  <li><a href="#adding-features-to-time-series-dataframes-augmenting" id="toc-adding-features-to-time-series-dataframes-augmenting" class="nav-link" data-scroll-target="#adding-features-to-time-series-dataframes-augmenting">🏗️ Adding Features to Time Series DataFrames (Augmenting)</a></li>
-  <li><a href="#ts-features" id="toc-ts-features" class="nav-link" data-scroll-target="#ts-features">TS Features</a></li>
-  <li><a href="#time-series-for-pandas-series" id="toc-time-series-for-pandas-series" class="nav-link" data-scroll-target="#time-series-for-pandas-series">🐼 Time Series for Pandas Series</a></li>
-  <li><a href="#date-utilities" id="toc-date-utilities" class="nav-link" data-scroll-target="#date-utilities">🛠️ Date Utilities</a></li>
-  <li><a href="#visualization-utilities" id="toc-visualization-utilities" class="nav-link" data-scroll-target="#visualization-utilities">🛠️ Visualization Utilities</a></li>
-  <li><a href="#extra-pandas-helpers-that-help-beyond-just-time-series" id="toc-extra-pandas-helpers-that-help-beyond-just-time-series" class="nav-link" data-scroll-target="#extra-pandas-helpers-that-help-beyond-just-time-series">Extra Pandas Helpers (That Help Beyond Just Time Series)</a></li>
-  <li><a href="#datasets" id="toc-datasets" class="nav-link" data-scroll-target="#datasets">💾 12 Datasets</a></li>
-  </ul></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/index.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/glimpse.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">glimpse</h1>
+</div>
 
 
-<section id="function-reference" class="level1">
-<h1>Function reference</h1>
-<section id="data-visualization" class="level2">
-<h2 class="anchored" data-anchor-id="data-visualization">🚀 Data Visualization</h2>
-<p>Visualize time series data with one line of code.</p>
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p><code>glimpse(data, max_width=76)</code></p>
+<p>Takes a pandas DataFrame and prints a summary of its dimensions, column names, data types, and the first few values of each column.</p>
+<section id="parameters" class="level2">
+<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 83%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td><a href="../reference/plot_timeseries.html#timetk.plot_timeseries">plot_timeseries</a></td>
-<td>Creates time series plots using different plotting engines such as Plotnine, Matplotlib, and Plotly.</td>
+<td><code>data</code></td>
+<td>pd.DataFrame</td>
+<td>The <code>data</code> parameter is a pandas DataFrame that contains the data you want to glimpse at. It is the main input to the <code>glimpse</code> function.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td><code>max_width</code></td>
+<td>int</td>
+<td>The <code>max_width</code> parameter is an optional parameter that specifies the maximum width of each line when printing the glimpse of the DataFrame. If not provided, the default value is set to 76.</td>
+<td><code>76</code></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="wrangling-pandas-time-series-dataframes" class="level2">
-<h2 class="anchored" data-anchor-id="wrangling-pandas-time-series-dataframes">🔥 Wrangling Pandas Time Series DataFrames</h2>
-<p>Bend time series data to your will.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/summarize_by_time.html#timetk.summarize_by_time">summarize_by_time</a></td>
-<td>Summarize a DataFrame or GroupBy object by time.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/pad_by_time.html#timetk.pad_by_time">pad_by_time</a></td>
-<td>Make irregular time series regular by padding with missing dates.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/future_frame.html#timetk.future_frame">future_frame</a></td>
-<td>Extend a DataFrame or GroupBy object with future dates.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="adding-features-to-time-series-dataframes-augmenting" class="level2">
-<h2 class="anchored" data-anchor-id="adding-features-to-time-series-dataframes-augmenting">🏗️ Adding Features to Time Series DataFrames (Augmenting)</h2>
-<p>Add one or more feature columns to time series data.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/augment_timeseries_signature.html#timetk.augment_timeseries_signature">augment_timeseries_signature</a></td>
-<td>Add 29 time series features to a DataFrame.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_holiday_signature.html#timetk.augment_holiday_signature">augment_holiday_signature</a></td>
-<td>Engineers 4 different holiday features from a single datetime for 80+ countries.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_lags.html#timetk.augment_lags">augment_lags</a></td>
-<td>Adds lags to a Pandas DataFrame or DataFrameGroupBy object.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_leads.html#timetk.augment_leads">augment_leads</a></td>
-<td>Adds leads to a Pandas DataFrame or DataFrameGroupBy object.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_rolling.html#timetk.augment_rolling">augment_rolling</a></td>
-<td>Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="ts-features" class="level2">
-<h2 class="anchored" data-anchor-id="ts-features">TS Features</h2>
-<p>Python implementation of the R package <code>tsfeatures</code>.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/ts_features.html#timetk.ts_features">ts_features</a></td>
-<td>Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the <code>tsfeatures</code> package.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/ts_summary.html#timetk.ts_summary">ts_summary</a></td>
-<td>Computes summary statistics for a time series data, either for the entire dataset or grouped by a specific column.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="time-series-for-pandas-series" class="level2">
-<h2 class="anchored" data-anchor-id="time-series-for-pandas-series">🐼 Time Series for Pandas Series</h2>
-<p>Time series functions that generate / manipulate Pandas Series.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/make_future_timeseries.html#timetk.make_future_timeseries">make_future_timeseries</a></td>
-<td>Make future dates for a time series.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/make_weekday_sequence.html#timetk.make_weekday_sequence">make_weekday_sequence</a></td>
-<td>Generate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/make_weekend_sequence.html#timetk.make_weekend_sequence">make_weekend_sequence</a></td>
-<td>Generate a sequence of weekend dates within a specified date range, optionally excluding holidays.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/get_date_summary.html#timetk.get_date_summary">get_date_summary</a></td>
-<td>Returns a summary of the date-related information, including the number of dates, the time zone, the start</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/get_frequency_summary.html#timetk.get_frequency_summary">get_frequency_summary</a></td>
-<td>Returns a summary including the inferred frequency, median time difference, scale, and unit.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/get_diff_summary.html#timetk.get_diff_summary">get_diff_summary</a></td>
-<td>Calculates summary statistics of the time differences between consecutive values in a datetime index.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/get_pandas_frequency.html#timetk.get_pandas_frequency">get_pandas_frequency</a></td>
-<td>Get the frequency of a pandas Series or DatetimeIndex.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/get_timeseries_signature.html#timetk.get_timeseries_signature">get_timeseries_signature</a></td>
-<td>Convert a timestamp to a set of 29 time series features.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/get_holiday_signature.html#timetk.get_holiday_signature">get_holiday_signature</a></td>
-<td>Engineers 4 different holiday features from a single datetime for 80+ countries.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="date-utilities" class="level2">
-<h2 class="anchored" data-anchor-id="date-utilities">🛠️ Date Utilities</h2>
-<p>Helper functions to make your life easier.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/floor_date.html#timetk.floor_date">floor_date</a></td>
-<td>Round a date down to the specified unit (e.g.&nbsp;Flooring).</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/is_holiday.html#timetk.is_holiday">is_holiday</a></td>
-<td>Check if a given list of dates are holidays for a specified country.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/week_of_month.html#timetk.week_of_month">week_of_month</a></td>
-<td>The “week_of_month” function calculates the week number of a given date within its month.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/timeseries_unit_frequency_table.html#timetk.timeseries_unit_frequency_table">timeseries_unit_frequency_table</a></td>
-<td>The function <code>timeseries_unit_frequency_table</code> returns a pandas DataFrame with units of time and</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="visualization-utilities" class="level2">
-<h2 class="anchored" data-anchor-id="visualization-utilities">🛠️ Visualization Utilities</h2>
-<p>Helper functions to make your life easier.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/theme_timetk.html#timetk.theme_timetk">theme_timetk</a></td>
-<td>Returns a <code>plotnine</code> theme with timetk styles applied, allowing for customization of the appearance of plots in Python.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/palette_timetk.html#timetk.palette_timetk">palette_timetk</a></td>
-<td>The function <code>palette_timetk</code> returns a dictionary of color codes for various colors in the timetk theme.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="extra-pandas-helpers-that-help-beyond-just-time-series" class="level2">
-<h2 class="anchored" data-anchor-id="extra-pandas-helpers-that-help-beyond-just-time-series">Extra Pandas Helpers (That Help Beyond Just Time Series)</h2>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/glimpse.html#timetk.glimpse">glimpse</a></td>
-<td>Takes a pandas DataFrame and prints a summary of</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/flatten_multiindex_column_names.html#timetk.flatten_multiindex_column_names">flatten_multiindex_column_names</a></td>
-<td>Takes a DataFrame as input and flattens the column</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="datasets" class="level2">
-<h2 class="anchored" data-anchor-id="datasets">💾 12 Datasets</h2>
-<p>Practice <code>timetk</code> with 12 complementary time series datasets.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/get_available_datasets.html#timetk.datasets.get_datasets.get_available_datasets">get_available_datasets</a></td>
-<td>Get a list of 12 datasets that can be loaded with <code>timetk.load_dataset</code>.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/load_dataset.html#timetk.datasets.get_datasets.load_dataset">load_dataset</a></td>
-<td>Load one of 12 Time Series Datasets.</td>
-</tr>
-</tbody>
-</table>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timetk <span class="im">as</span> tk</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'walmart_sales_weekly'</span>, parse_dates<span class="op">=</span>[<span class="st">'Date'</span>])</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 1001 rows of 17 columns
+id:            object           ['1_1', '1_1', '1_1', '1_1', '1_1', '1_1 ...
+Store:         int64            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
+Dept:          int64            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
+Date:          datetime64[ns]   [Timestamp('2010-02-05 00:00:00'), Times ...
+Weekly_Sales:  float64          [24924.5, 46039.49, 41595.55, 19403.54,  ...
+IsHoliday:     bool             [False, True, False, False, False, False ...
+Type:          object           ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', ...
+Size:          int64            [151315, 151315, 151315, 151315, 151315, ...
+Temperature:   float64          [42.31, 38.51, 39.93, 46.63, 46.5, 57.79 ...
+Fuel_Price:    float64          [2.572, 2.548, 2.514, 2.561, 2.625, 2.66 ...
+MarkDown1:     float64          [nan, nan, nan, nan, nan, nan, nan, nan, ...
+MarkDown2:     float64          [nan, nan, nan, nan, nan, nan, nan, nan, ...
+MarkDown3:     float64          [nan, nan, nan, nan, nan, nan, nan, nan, ...
+MarkDown4:     float64          [nan, nan, nan, nan, nan, nan, nan, nan, ...
+MarkDown5:     float64          [nan, nan, nan, nan, nan, nan, nan, nan, ...
+CPI:           float64          [211.0963582, 211.2421698, 211.2891429,  ...
+Unemployment:  float64          [8.106, 8.106, 8.106, 8.106, 8.106, 8.10 ...</code></pre>
+</div>
+</div>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
