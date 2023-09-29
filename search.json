@@ -455,9 +455,16 @@
     "text": "Examples\n\nimport timetk as tk\nimport pandas as pd\n\ndf = tk.load_dataset(\"m4_daily\", parse_dates = ['date'])\ndf\n\n\n\n\n\n\n\n\nid\ndate\nvalue\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\n\n\n1\nD10\n2014-07-04\n2073.4\n\n\n2\nD10\n2014-07-05\n2048.7\n\n\n3\nD10\n2014-07-06\n2048.9\n\n\n4\nD10\n2014-07-07\n2006.4\n\n\n...\n...\n...\n...\n\n\n9738\nD500\n2012-09-19\n9418.8\n\n\n9739\nD500\n2012-09-20\n9365.7\n\n\n9740\nD500\n2012-09-21\n9445.9\n\n\n9741\nD500\n2012-09-22\n9497.9\n\n\n9742\nD500\n2012-09-23\n9545.3\n\n\n\n\n9743 rows × 3 columns\n\n\n\n\n# window = [2,7] yields only 2 and 7\nrolled_df = (\n    df\n        .groupby('id')\n        .augment_rolling(\n            date_column = 'date', \n            value_column = 'value', \n            window = [2,7], \n            window_func = ['mean', ('std', lambda x: x.std())]\n        )\n)\nrolled_df\n\n\n\n\n\n\n\n\nid\ndate\nvalue\nvalue_rolling_mean_win_2\nvalue_rolling_std_win_2\nvalue_rolling_mean_win_7\nvalue_rolling_std_win_7\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\n2076.20\n0.00\n2076.200000\n0.000000\n\n\n1\nD10\n2014-07-04\n2073.4\n2074.80\n1.40\n2074.800000\n1.400000\n\n\n2\nD10\n2014-07-05\n2048.7\n2061.05\n12.35\n2066.100000\n12.356645\n\n\n3\nD10\n2014-07-06\n2048.9\n2048.80\n0.10\n2061.800000\n13.037830\n\n\n4\nD10\n2014-07-07\n2006.4\n2027.65\n21.25\n2050.720000\n25.041038\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n9738\nD500\n2012-09-19\n9418.8\n9425.35\n6.55\n9382.071429\n74.335988\n\n\n9739\nD500\n2012-09-20\n9365.7\n9392.25\n26.55\n9396.400000\n58.431303\n\n\n9740\nD500\n2012-09-21\n9445.9\n9405.80\n40.10\n9419.114286\n39.184451\n\n\n9741\nD500\n2012-09-22\n9497.9\n9471.90\n26.00\n9438.928571\n38.945336\n\n\n9742\nD500\n2012-09-23\n9545.3\n9521.60\n23.70\n9449.028571\n53.379416\n\n\n\n\n9743 rows × 7 columns\n\n\n\n\n# window = (1,3) yields 1, 2, and 3\nrolled_df = (\n    df\n        .groupby('id')\n        .augment_rolling(\n            date_column = 'date', \n            value_column = 'value', \n            window = (1,3), \n            window_func = ['mean', ('std', lambda x: x.std())]\n        )\n)\nrolled_df \n\n\n\n\n\n\n\n\nid\ndate\nvalue\nvalue_rolling_mean_win_1\nvalue_rolling_std_win_1\nvalue_rolling_mean_win_2\nvalue_rolling_std_win_2\nvalue_rolling_mean_win_3\nvalue_rolling_std_win_3\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\n2076.2\n0.0\n2076.20\n0.00\n2076.200000\n0.000000\n\n\n1\nD10\n2014-07-04\n2073.4\n2073.4\n0.0\n2074.80\n1.40\n2074.800000\n1.400000\n\n\n2\nD10\n2014-07-05\n2048.7\n2048.7\n0.0\n2061.05\n12.35\n2066.100000\n12.356645\n\n\n3\nD10\n2014-07-06\n2048.9\n2048.9\n0.0\n2048.80\n0.10\n2057.000000\n11.596839\n\n\n4\nD10\n2014-07-07\n2006.4\n2006.4\n0.0\n2027.65\n21.25\n2034.666667\n19.987718\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n9738\nD500\n2012-09-19\n9418.8\n9418.8\n0.0\n9425.35\n6.55\n9429.466667\n7.905413\n\n\n9739\nD500\n2012-09-20\n9365.7\n9365.7\n0.0\n9392.25\n26.55\n9405.466667\n28.623339\n\n\n9740\nD500\n2012-09-21\n9445.9\n9445.9\n0.0\n9405.80\n40.10\n9410.133333\n33.310092\n\n\n9741\nD500\n2012-09-22\n9497.9\n9497.9\n0.0\n9471.90\n26.00\n9436.500000\n54.378182\n\n\n9742\nD500\n2012-09-23\n9545.3\n9545.3\n0.0\n9521.60\n23.70\n9496.366667\n40.594362\n\n\n\n\n9743 rows × 9 columns"
   },
   {
-    "objectID": "tutorials/02_finance.html",
-    "href": "tutorials/02_finance.html",
-    "title": "Finance Investment Analysis",
+    "objectID": "tutorials/01_sales_crm.html",
+    "href": "tutorials/01_sales_crm.html",
+    "title": "Sales CRM Database Analysis",
+    "section": "",
+    "text": "Coming soon…"
+  },
+  {
+    "objectID": "tutorials/05_clustering.html",
+    "href": "tutorials/05_clustering.html",
+    "title": "Clustering",
     "section": "",
     "text": "Coming soon…"
   },
@@ -630,16 +637,23 @@
     "text": "3.2 Pad by Time with Grouped Time Series\npad_by_time() can also be used with grouped time series. Let’s use the stocks_daily dataset to showcase an example:\n\n# load dataset\nstocks_df = tk.load_dataset('stocks_daily', parse_dates = ['date'])\n\n# pad by time\nstocks_df \\\n    .groupby('symbol') \\\n    .pad_by_time(\n        date_column = 'date',\n        freq        = 'D'\n    ) \\\n    .assign(id = lambda x: x['symbol'].ffill())\n\n\n\n\n\n\n\n\ndate\nsymbol\nopen\nhigh\nlow\nclose\nvolume\nadjusted\nid\n\n\n\n\n0\n2013-01-02\nAAPL\n19.779285\n19.821428\n19.343929\n19.608213\n560518000.0\n16.791180\nAAPL\n\n\n1\n2013-01-03\nAAPL\n19.567142\n19.631071\n19.321428\n19.360714\n352965200.0\n16.579241\nAAPL\n\n\n2\n2013-01-04\nAAPL\n19.177500\n19.236786\n18.779642\n18.821428\n594333600.0\n16.117437\nAAPL\n\n\n3\n2013-01-05\nAAPL\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nAAPL\n\n\n4\n2013-01-06\nAAPL\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nAAPL\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n23485\n2023-09-17\nNVDA\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nNVDA\n\n\n23486\n2023-09-18\nNVDA\n427.480011\n442.420013\n420.000000\n439.660004\n50027100.0\n439.660004\nNVDA\n\n\n23487\n2023-09-19\nNVDA\n438.329987\n439.660004\n430.019989\n435.200012\n37306400.0\n435.200012\nNVDA\n\n\n23488\n2023-09-20\nNVDA\n436.000000\n439.029999\n422.230011\n422.390015\n36710800.0\n422.390015\nNVDA\n\n\n23489\n2023-09-21\nNVDA\n415.829987\n421.000000\n409.799988\n410.170013\n44893000.0\n410.170013\nNVDA\n\n\n\n\n23490 rows × 9 columns\n\n\n\nTo replace NaN with 0 in a dataframe with multiple columns:\n\nfrom functools import partial\n\n# columns to replace NaN with 0\ncols_to_fill = ['open', 'high', 'low', 'close', 'volume', 'adjusted']\n\n# define a function to fillna\ndef fill_na_col(df, col):\n    return df[col].fillna(0)\n\n# pad by time and replace NaN with 0\nstocks_df \\\n    .groupby('symbol') \\\n    .pad_by_time(\n        date_column = 'date',\n        freq        = 'D'\n    ) \\\n    .assign(id = lambda x: x['symbol'].ffill()) \\\n    .assign(**{col: partial(fill_na_col, col=col) for col in cols_to_fill})\n\n\n\n\n\n\n\n\ndate\nsymbol\nopen\nhigh\nlow\nclose\nvolume\nadjusted\nid\n\n\n\n\n0\n2013-01-02\nAAPL\n19.779285\n19.821428\n19.343929\n19.608213\n560518000.0\n16.791180\nAAPL\n\n\n1\n2013-01-03\nAAPL\n19.567142\n19.631071\n19.321428\n19.360714\n352965200.0\n16.579241\nAAPL\n\n\n2\n2013-01-04\nAAPL\n19.177500\n19.236786\n18.779642\n18.821428\n594333600.0\n16.117437\nAAPL\n\n\n3\n2013-01-05\nAAPL\n0.000000\n0.000000\n0.000000\n0.000000\n0.0\n0.000000\nAAPL\n\n\n4\n2013-01-06\nAAPL\n0.000000\n0.000000\n0.000000\n0.000000\n0.0\n0.000000\nAAPL\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n23485\n2023-09-17\nNVDA\n0.000000\n0.000000\n0.000000\n0.000000\n0.0\n0.000000\nNVDA\n\n\n23486\n2023-09-18\nNVDA\n427.480011\n442.420013\n420.000000\n439.660004\n50027100.0\n439.660004\nNVDA\n\n\n23487\n2023-09-19\nNVDA\n438.329987\n439.660004\n430.019989\n435.200012\n37306400.0\n435.200012\nNVDA\n\n\n23488\n2023-09-20\nNVDA\n436.000000\n439.029999\n422.230011\n422.390015\n36710800.0\n422.390015\nNVDA\n\n\n23489\n2023-09-21\nNVDA\n415.829987\n421.000000\n409.799988\n410.170013\n44893000.0\n410.170013\nNVDA\n\n\n\n\n23490 rows × 9 columns"
   },
   {
-    "objectID": "tutorials/01_sales_crm.html",
-    "href": "tutorials/01_sales_crm.html",
-    "title": "Sales CRM Database Analysis",
+    "objectID": "tutorials/04_anomaly_detection.html",
+    "href": "tutorials/04_anomaly_detection.html",
+    "title": "Anomaly Detection",
     "section": "",
     "text": "Coming soon…"
   },
   {
-    "objectID": "tutorials/03_anomaly_detection.html",
-    "href": "tutorials/03_anomaly_detection.html",
-    "title": "Anomaly Detection",
+    "objectID": "tutorials/03_demand_forecasting.html",
+    "href": "tutorials/03_demand_forecasting.html",
+    "title": "Demand Forecasting",
+    "section": "",
+    "text": "Coming soon…"
+  },
+  {
+    "objectID": "tutorials/02_finance.html",
+    "href": "tutorials/02_finance.html",
+    "title": "Finance Investment Analysis",
     "section": "",
     "text": "Coming soon…"
   },
