@@ -668,15 +668,12 @@ def _plot_timeseries_plotly(
         autosize=True, 
         width=width,
         height=height,
-        # height=200 * num_groups / facet_ncol
     )
+    fig.update_traces(hoverlabel=dict(font_size=base_size*0.8))
     
     if not legend_show:
         fig.update_layout(showlegend=False)
-    
-    # Update subplot titles (strip) background color to blue
-    # for annot in fig.layout.annotations:
-    #     annot.update(bgcolor="#2C3E50", font=dict(color='white'))
+
      
         
     return fig
