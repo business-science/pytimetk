@@ -50,6 +50,8 @@ def plot_timeseries(
     smooth_size: float = 1.0,
     smooth_alpha: float = 1.0,
     
+    legend_show: bool = True,
+    
     title: str = "Time Series Plot",
     x_lab: str = "",
     y_lab: str = "",
@@ -117,6 +119,8 @@ def plot_timeseries(
         The `smooth_size` parameter is used to specify the size of the line used to plot the smoothed values in the time series plot. It is a numeric value that controls the thickness of the line. A larger value will result in a thicker line, while a smaller value will result in a thinner line
     smooth_alpha : float
         The `smooth_alpha` parameter controls the transparency of the smoothed line in the plot. It accepts a value between 0 and 1, where 0 means completely transparent and 1 means completely opaque.
+    legend_show : bool, optional
+        The `legend_show` parameter is a boolean indicating whether or not to show the legend in the plot. If set to True, the legend will be displayed. The default value is True.
     title : str, optional
         The title of the plot.
     x_lab : str
@@ -353,6 +357,8 @@ def plot_timeseries(
             smooth_color = smooth_color,
             smooth_size = smooth_size,
             smooth_alpha = smooth_alpha,
+            
+            legend_show = legend_show,
 
             title = title,
             x_lab = x_lab,
@@ -397,6 +403,8 @@ def plot_timeseries(
             smooth_color = smooth_color,
             smooth_size = smooth_size,
             smooth_alpha = smooth_alpha,
+            
+            legend_show = legend_show,
 
             title = title,
             x_lab = x_lab,
@@ -448,6 +456,8 @@ def _plot_timeseries_plotly(
     smooth_color = "#3366FF",
     smooth_size = 0.3,
     smooth_alpha = 1,
+    
+    legend_show = True,
     
     title = "Time Series Plot",
     x_lab = "",
@@ -660,6 +670,10 @@ def _plot_timeseries_plotly(
         height=height,
         # height=200 * num_groups / facet_ncol
     )
+    
+    if not legend_show:
+        fig.update_layout(showlegend=False)
+    
     # Update subplot titles (strip) background color to blue
     # for annot in fig.layout.annotations:
     #     annot.update(bgcolor="#2C3E50", font=dict(color='white'))
@@ -698,6 +712,8 @@ def _plot_timeseries_plotnine(
     smooth_color = "#3366FF",
     smooth_size = 0.3,
     smooth_alpha = 1,
+    
+    legend_show = True,
     
     title = "Time Series Plot",
     x_lab = "",
@@ -803,7 +819,10 @@ def _plot_timeseries_plotnine(
 
     # Add theme
     g = g + \
-        theme_tq(base_size=base_size, width = width, height = height) 
+        theme_tq(base_size=base_size, width = width, height = height)
+        
+    if not legend_show:
+        g = g + theme(legend_position='none')
     
     return g
     
