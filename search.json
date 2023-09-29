@@ -536,21 +536,7 @@
     "href": "contributing.html",
     "title": "Contributing (Developer Setup)",
     "section": "",
-    "text": "Interested in contributing?\n\n\n\n\n\nMake sure to Fork the GitHub Repo. Clone your fork. Then use poetry to install the timetk package."
-  },
-  {
-    "objectID": "contributing.html#fork-our-pytimetk-repository",
-    "href": "contributing.html#fork-our-pytimetk-repository",
-    "title": "Contributing (Developer Setup)",
-    "section": "1.1 1. Fork our pytimetk repository",
-    "text": "1.1 1. Fork our pytimetk repository\nHead to our GitHub Repo and select “fork”. This makes a copied version of timetk for your personal use."
-  },
-  {
-    "objectID": "contributing.html#clone-your-forked-version",
-    "href": "contributing.html#clone-your-forked-version",
-    "title": "Contributing (Developer Setup)",
-    "section": "1.2 2. Clone your forked version",
-    "text": "1.2 2. Clone your forked version\nCloning will put your own personal version of timetk on your local machine. Make sure to replace [your_user_name] with your user name.\ngit clone https://github.com/[your_user_name]/pytimetk"
+    "text": "Interested in contributing?\n\n\n\n\n\nMake sure to Fork the GitHub Repo. Clone your fork. Then use poetry to install the timetk package.\n\n\n\n\n1 GitHub\nTo contribute, you’ll need to have a GitHub account. Then:\n\n1. Fork our pytimetk repository\nHead to our GitHub Repo and select “fork”. This makes a copied version of timetk for your personal use.\n\n\n2. Clone your forked version\nCloning will put your own personal version of timetk on your local machine. Make sure to replace [your_user_name] with your user name.\ngit clone https://github.com/[your_user_name]/pytimetk\n\n\n\n2 Poetry Environment Setup\nTo install timetk using Poetry, follow these steps:\n\n1. Prerequisites\nMake sure you have Python 3.9 or later installed on your system.\n\n\n2. Install Poetry\nTo install Poetry, you can use the official installer provided by Poetry. Do not use pip.\n\n\n3. Install Dependencies\nUse Poetry to install the package and its dependencies:\npoetry install\nor you can create a virtualenv with poetry and install the dependencies\npoetry shell\npoetry install\n\n\n\n3 Submit a Pull Request\n\n1. Make changes on a Branch\nMake changes in your local version on a branch where my-feature-branch is a branch you’d like to create that contains modifications.\ngit checkout -b my-feature-branch\n\n\n2. Push to your forked version of pytimetk\ngit push origin my-feature-branch\n\n\n3. Create a Pull Request\n\nGo to your forked repository on GitHub and switch to your branch.\nClick on “New pull request” and compare the changes you made with the original repository.\nFill out the pull request template with the necessary information, explaining your changes, the reason for them, and any other relevant information.\n\n\n\n4. Submit the Pull Request\n\nReview your changes and submit the pull request.\n\n\n\n\n4 Next Steps 🍻\nWe will review your PR. If all goes well, we’ll merge! And then you’ve just helped the community. 🍻"
   },
   {
     "objectID": "getting-started/01_installation.html",
