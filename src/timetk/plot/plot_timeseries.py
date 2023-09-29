@@ -350,6 +350,7 @@ def plot_timeseries(
 
             y_intercept = y_intercept,
             y_intercept_color = y_intercept_color,
+            
             x_intercept = x_intercept,
             x_intercept_color = x_intercept_color,
 
@@ -396,6 +397,7 @@ def plot_timeseries(
 
             y_intercept = y_intercept,
             y_intercept_color = y_intercept_color,
+            
             x_intercept = x_intercept,
             x_intercept_color = x_intercept_color,
 
@@ -449,6 +451,7 @@ def _plot_timeseries_plotly(
     
     y_intercept = None,
     y_intercept_color = "#2c3e50",
+    
     x_intercept = None,
     x_intercept_color = "#2c3e50",
     
@@ -583,9 +586,18 @@ def _plot_timeseries_plotly(
                 fig.add_trace(trace, row=row, col=col)
             
             if y_intercept is not None:
-                fig.add_shape(go.layout.Shape(type="line", y0=y_intercept, y1=y_intercept, x0=group[date_column].min(), x1=group[date_column].max(), line=dict(color=y_intercept_color)), row=row, col=col)
+                if not isinstance(y_intercept, list):
+                    y_intercept = [y_intercept]
+                for y in y_intercept:
+                    fig.add_shape(go.layout.Shape(type="line", y0=y, y1=y, x0=group[date_column].min(), x1=group[date_column].max(), line=dict(color=y_intercept_color, width=1)), row=row, col=col)
+                
+    
+            
             if x_intercept is not None:
-                fig.add_shape(go.layout.Shape(type="line", x0=x_intercept, x1=x_intercept, y0=group[value_column].min(), y1=group[value_column].max(), line=dict(color=x_intercept_color)), row=row, col=col)
+                if not isinstance(x_intercept, list):
+                    x_intercept = [x_intercept]
+                for x in x_intercept:
+                    fig.add_shape(go.layout.Shape(type="line", x0=x, x1=x, y0=group[value_column].min(), y1=group[value_column].max(), line=dict(color=x_intercept_color, width=1)), row=row, col=col)
                 
             # fig.layout.annotations[i].update(text=name[0])
     else:
@@ -635,10 +647,21 @@ def _plot_timeseries_plotly(
             fig.add_trace(trace)
         
         if y_intercept is not None:
-            fig.add_shape(go.layout.Shape(type="line", y0=y_intercept, y1=y_intercept, x0=data[date_column].min(), x1=data[date_column].max(), line=dict(color=y_intercept_color)))
-        if x_intercept is not None:
-            fig.add_shape(go.layout.Shape(type="line", x0=x_intercept, x1=x_intercept, y0=data[value_column].min(), y1=data[value_column].max(), line=dict(color=x_intercept_color)))
+            if not isinstance(y_intercept, list):
+                y_intercept = [y_intercept]
+            for y in y_intercept:
+                fig.add_shape(go.layout.Shape(type="line", y0=y, y1=y, x0=data[date_column].min(), x1=data[date_column].max(), line=dict(color=y_intercept_color, width=1)))
+            
 
+        
+        if x_intercept is not None:
+            if not isinstance(x_intercept, list):
+                x_intercept = [x_intercept]
+            for x in x_intercept:
+                fig.add_shape(go.layout.Shape(type="line", x0=x, x1=x, y0=data[value_column].min(), y1=data[value_column].max(), line=dict(color=x_intercept_color, width=1)))
+
+    # Finalize the plotly plot
+    
     fig.update_layout(
         title=title,
         xaxis_title=x_lab,
@@ -649,9 +672,7 @@ def _plot_timeseries_plotly(
     
     fig.update_xaxes(
         matches=None, showticklabels=True, visible=True, 
-        # showline=True, linecolor = '#2c3e50', gridcolor = 'lightgrey', mirror=True,
     )
-    # fig.update_yaxes(showline=True, linecolor = '#2c3e50', gridcolor = 'lightgrey', mirror=True,)
     
     fig.update_layout(margin=dict(l=10, r=10, t=40, b=40))
     fig.update_layout(
