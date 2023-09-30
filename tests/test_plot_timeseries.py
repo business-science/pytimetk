@@ -63,16 +63,7 @@ def test_groupby_handling():
     fig = group.plot_timeseries(date_column="date", value_column="value", engine="plotly")
     assert isinstance(fig, type(timetk.make_subplots())), "Figure type doesn't match expected type"
 
-# Test for selection of plotting engine
-# def test_plotting_engine():
-#     with pytest.raises(ValueError):
-#         data.plot_timeseries(date_column="date", value_column="value")
 
-# Test plotting with different color columns and group names
-# Removing this test for now.  There is a known bug in the code when group_names != color_names
-# def test_plot_with_color_and_groups():
-#     fig = data.plot_timeseries(date_column="date", value_column="value", color_column="id", group_names="id", engine="plotly")
-#     assert len(fig.data) == 2 , "Number of traces doesn't match number of groups"
 
 
 # Additional tests can be added based on other functionalities or edge cases
