@@ -12,7 +12,8 @@ def pad_by_time(
     data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
     date_column: str,  
     freq: str = 'D',
-    global_group_max: str = 'Y',
+    start_date: str = None,
+    end_date: str = None,
 ) -> pd.DataFrame:
     '''
     Make irregular time series regular by padding with missing dates.
@@ -42,11 +43,11 @@ def pad_by_time(
         - QS: quarter start frequency
         - Y: year end frequency
         - YS: year start frequency
-    global_group_max : str, optional
-        The 'global_group_max' parameter allows you to determine the end behavior of padding when using grouped data.  
+    start_date : str, optional
+        Specifies the start of the padded series.  If NULL, it will use the lowest value of the input variable. In the case of groups, it will use the lowest value by group.
         
-        - Y: The max date of global population will be used to pad.
-        - N: The max_date will be the max date for the specific group.  
+    end_date  : str, optional;
+        Specifies the end of the padded series.  If NULL, it will use the highest value of the input variable.  In the case of groups, it will use the highest value by group.
     
     
     Returns
@@ -108,8 +109,15 @@ def pad_by_time(
         # if freq == 'auto':
         #     freq = get_pandas_frequency(df[date_column], force_regular=force_regular)
 
-        min_date = df[date_column].min()
-        max_date = df[date_column].max()
+        if start_date == None:
+            min_date = df[date_column].min()
+        else:
+            min_date = pd.to_datetime(start_date)
+
+        if end_date == None:
+            max_date = df[date_column].max()
+        else:
+            max_date = pd.to_datetime(end_date)
 
         # Generate regular date range for the entire DataFrame
         date_range = pd.date_range(start=min_date, end=max_date, freq=freq)
@@ -139,9 +147,6 @@ def pad_by_time(
         # Get unique group combinations
         groups = df[group_names].drop_duplicates()
         padded_dfs = []
-        
-        #uses global max date to pad rather than local.  
-        global_max_date = df[date_column].max()
 
         for idx, group in groups.iterrows():
             mask = (df[group_names] == group).all(axis=1)
@@ -150,11 +155,14 @@ def pad_by_time(
             # if freq == 'auto':
             #     freq = get_pandas_frequency(group_df[date_column], force_regular=force_regular)
             
-            min_date = group_df[date_column].min()
-            if global_group_max == 'Y':
-                max_date = global_max_date
-            if global_group_max == 'N':
+            if start_date == None:
+                min_date = group_df[date_column].min()
+            else:
+                min_date = pd.to_datetime(start_date)
+            if end_date == None:
                 max_date = group_df[date_column].max()
+            else:
+                max_date = pd.to_datetime(end_date)
             
 
             # Generate regular date range for each group
