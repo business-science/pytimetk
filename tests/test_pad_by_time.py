@@ -64,7 +64,7 @@ def test_pad_by_time_grouped(test_dataframe):
     # Apply pad_by_time to the grouped DataFrame
     padded_df = (
         grouped_df.groupby('group')
-        .pad_by_time(date_column="date", freq="D")
+        .pad_by_time(date_column="date", freq="D",global_group_max='N')
     )
 
     # Define the expected result for each group
@@ -82,6 +82,32 @@ def test_pad_by_time_grouped(test_dataframe):
     # Check if the result matches the expected DataFrame
     assert_frame_equal(padded_df, expected_df, check_dtype=False)
 
+def test_pad_by_time_grouped_global(test_dataframe):
+    # Create a grouped DataFrame for testing
+    #grouped_df = test_dataframe.copy()
+    grouped_df["group"] = ["A", "B","A", "B", "B", "A"]
+    #grouped_df = grouped_df.groupby("group")
+
+    # Apply pad_by_time to the grouped DataFrame
+    padded_df = (
+        grouped_df.groupby('group')
+        .pad_by_time(date_column="date", freq="D",global_group_max='Y')
+    )
+
+    # Define the expected result for each group
+    expected_data = {
+        "date": ['2022-01-01','2022-01-02','2022-01-03','2022-01-04',\
+                '2022-01-05','2022-01-06','2022-01-02','2022-01-03',\
+                '2022-01-04','2022-01-05','2022-01-06'],
+                
+        "group": ["A", "A", "A", "A", "A","A",'B','B','B','B','B'],
+        "value": [1, np.nan, 3, np.nan,np.nan, 6,2,np.nan,4, 5,np.nan],
+        
+    }
+    expected_df = pd.DataFrame(expected_data)
+    expected_df['date'] = pd.to_datetime(expected_df['date'])
+    # Check if the result matches the expected DataFrame
+    assert_frame_equal(padded_df, expected_df, check_dtype=False)
 
 
 # def test_pad_by_time_auto_freq(test_dataframe):
