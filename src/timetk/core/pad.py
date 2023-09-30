@@ -151,7 +151,7 @@ def pad_by_time(
         for idx, group in groups.iterrows():
             mask = (df[group_names] == group).all(axis=1)
             group_df = df[mask]
-            
+             
             # if freq == 'auto':
             #     freq = get_pandas_frequency(group_df[date_column], force_regular=force_regular)
             

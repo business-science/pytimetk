@@ -52,7 +52,7 @@ data2 = {
 df2 = pd.DataFrame(data2)
 grouped_df = df2.copy()
 grouped_df["group"] = ["A", "B","A", "B", "B", "A"]
-
+ 
 
 # Apply pad_by_time to the grouped DataFrame
 def test_pad_by_time_grouped(test_dataframe):
