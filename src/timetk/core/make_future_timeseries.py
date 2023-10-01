@@ -1,12 +1,13 @@
 import pandas as pd
 import numpy as np
 import pandas_flavor as pf
+from typing import Union
 
 from timetk.utils.datetime_helpers import get_pandas_frequency
 
 @pf.register_series_method
 def make_future_timeseries(
-    idx: pd.Series or pd.DateTimeIndex,
+    idx: Union[pd.Series, pd.DatetimeIndex],
     length_out: int,
     force_regular: bool = False,
 ) -> pd.Series:
@@ -115,7 +116,7 @@ def make_future_timeseries(
 
 @pf.register_dataframe_method
 def future_frame(
-    data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str, 
     length_out: int, 
     force_regular: bool = False,

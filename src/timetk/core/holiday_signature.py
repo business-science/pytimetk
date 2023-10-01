@@ -14,7 +14,7 @@ except ImportError:
 
 @pf.register_dataframe_method
 def augment_holiday_signature(
-    data: pd.DataFrame,
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
     country_name: str = 'UnitedStates'
 ) -> pd.DataFrame:
@@ -152,6 +152,14 @@ def augment_holiday_signature(
         import holidays
     except ImportError:
         raise ImportError("The 'holidays' package is not installed. Please install it by running 'pip install holidays'.")
+    
+    # Check if data is a Pandas DataFrame or GroupBy object
+    if not isinstance(data, pd.DataFrame):
+        if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+            raise TypeError("`data` is not a Pandas DataFrame or GroupBy object.")
+        
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        data = data.obj
 
     # Ensure the date column exists in the DataFrame
     if date_column not in data.columns:
@@ -219,9 +227,12 @@ def augment_holiday_signature(
     
     return ret
 
+# Monkey patch the method to pandas groupby objects
+pd.core.groupby.generic.DataFrameGroupBy.augment_holiday_signature = augment_holiday_signature
+
 @pf.register_series_method
 def get_holiday_signature(
-    idx: pd.DatetimeIndex or pd.Series,
+    idx: Union[pd.DatetimeIndex, pd.Series],
     country_name: str = 'UnitedStates'
 ) -> pd.DataFrame:
     """
@@ -371,3 +382,4 @@ def get_holiday_signature(
     ret = df.pipe(augment_holiday_signature, date_column = df.columns[0], country_name = country_name)
 
     return ret
+
