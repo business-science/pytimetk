@@ -6,7 +6,7 @@ from functools import partial
 from multiprocessing import cpu_count
 from concurrent.futures import ThreadPoolExecutor
 
-from typing import Optional
+from typing import Optional, Union
 
 try:
     import tsfeatures as tsf
@@ -30,11 +30,11 @@ dict_freqs = {
 
 @pf.register_dataframe_method
 def ts_features(
-    data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
     value_column: str,
-    features: list = None,
-    freq: str = None,
+    features: Optional[list] = None,
+    freq: Optional[str] = None,
     scale: bool = True,
     threads: Optional[int] = 1,
 ) -> pd.DataFrame:

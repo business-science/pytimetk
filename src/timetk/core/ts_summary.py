@@ -2,12 +2,14 @@ import pandas as pd
 import pandas_flavor as pf
 import numpy as np
 
+from typing import Union
+
 from timetk.utils import get_pandas_frequency
 
     
 @pf.register_dataframe_method
 def ts_summary(
-    data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
 ):
     '''Computes summary statistics for a time series data, either for the entire dataset or grouped by a specific column.
@@ -145,7 +147,7 @@ pd.core.groupby.generic.DataFrameGroupBy.ts_summary = ts_summary
         
   
     
-def get_diff_summary(idx: pd.Series or pd.DateTimeIndex, numeric: bool = False):
+def get_diff_summary(idx: Union[pd.Series, pd.DatetimeIndex], numeric: bool = False):
     '''Calculates summary statistics of the time differences between consecutive values in a datetime index.
     
     Parameters
@@ -214,7 +216,7 @@ def get_diff_summary(idx: pd.Series or pd.DateTimeIndex, numeric: bool = False):
     return ret
     
     
-def get_date_summary(idx: pd.Series or pd.DateTimeIndex):
+def get_date_summary(idx: Union[pd.Series, pd.DatetimeIndex]):
     '''Returns a summary of the date-related information, including the number of dates, the time zone, the start
     date, and the end date.
     
@@ -252,7 +254,7 @@ def get_date_summary(idx: pd.Series or pd.DateTimeIndex):
    
     
     
-def get_frequency_summary(idx: pd.Series or pd.DateTimeIndex):  
+def get_frequency_summary(idx: Union[pd.Series, pd.DatetimeIndex]):  
     '''Returns a summary including the inferred frequency, median time difference, scale, and unit.
     
     Parameters
