@@ -2,13 +2,14 @@
 import pandas as pd
 import numpy as np
 import pandas_flavor as pf
+from typing import Union
 
 from timetk.utils.datetime_helpers import week_of_month
 
 
  
 @pf.register_series_method
-def get_timeseries_signature(idx: pd.Series or pd.DatetimeIndex) -> pd.DataFrame:
+def get_timeseries_signature(idx: Union[pd.Series, pd.DatetimeIndex]) -> pd.DataFrame:
     '''Convert a timestamp to a set of 29 time series features.
     
     The function `tk_get_timeseries_signature` engineers **29 different date and time based features** from a single datetime index `idx`: 
@@ -158,7 +159,7 @@ def get_timeseries_signature(idx: pd.Series or pd.DatetimeIndex) -> pd.DataFrame
 
 @pf.register_dataframe_method
 def augment_timeseries_signature(
-    data: pd.DataFrame, 
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
 ) -> pd.DataFrame:
     ''' 
@@ -225,6 +226,14 @@ def augment_timeseries_signature(
     
     '''
     
+    # Check if data is a Pandas DataFrame or GroupBy object
+    if not isinstance(data, pd.DataFrame):
+        if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+            raise TypeError("`data` is not a Pandas DataFrame or GroupBy object.")
+        
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        data = data.obj
+    
     idx = data[date_column]
     
     ts_signature_df = idx.get_timeseries_signature()
@@ -236,4 +245,7 @@ def augment_timeseries_signature(
     ret = pd.concat([data, ts_signature_df], axis = 1)
     
     return ret
+
+# Monkey patch the method to pandas groupby objects
+pd.core.groupby.generic.DataFrameGroupBy.augment_timeseries_signature = augment_timeseries_signature
     

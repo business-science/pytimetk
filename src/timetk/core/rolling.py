@@ -1,14 +1,15 @@
 import pandas as pd
 import pandas_flavor as pf
 
+from typing import Union
     
 @pf.register_dataframe_method
 def augment_rolling(
-    data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy, 
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str, 
-    value_column: str or list, 
-    window: int or tuple or list, 
-    window_func: str or list = 'mean',
+    value_column: Union[str, list], 
+    window: Union[int, tuple, list], 
+    window_func: Union[str, list] = 'mean',
     center: bool = False,
     **kwargs,
 ) -> pd.DataFrame:

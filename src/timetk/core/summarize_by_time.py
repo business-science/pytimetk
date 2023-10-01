@@ -1,16 +1,18 @@
 import pandas as pd
 import pandas_flavor as pf
 
-from timetk.utils.pandas_helpers import flatten_multiindex_column_names
-
+from typing import Union
 import re 
 from itertools import cycle
 
+from timetk.utils.pandas_helpers import flatten_multiindex_column_names
+
+
 @pf.register_dataframe_method
 def summarize_by_time(
-    data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
-    value_column: str or list,
+    value_column: Union[str, list],
     freq: str = "D",
     agg_func: list = 'sum',
     kind: str = "timestamp",
