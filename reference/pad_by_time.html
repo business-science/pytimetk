@@ -318,6 +318,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#pad-with-end-dates-specified" id="toc-pad-with-end-dates-specified" class="nav-link" data-scroll-target="#pad-with-end-dates-specified">Pad with end dates specified</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/pad_by_time.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -341,7 +342,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>pad_by_time(data, date_column, freq='D')</code></p>
+<p><code>pad_by_time(data, date_column, freq='D', start_date=None, end_date=None)</code></p>
 <p>Make irregular time series regular by padding with missing dates.</p>
 <p>The <code>pad_by_time</code> function inserts missing dates into a Pandas DataFrame or DataFrameGroupBy object, through the process making an irregularly spaced time series regularly spaced.</p>
 <section id="parameters" class="level2">
@@ -379,6 +380,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>str</td>
 <td>The <code>freq</code> parameter specifies the frequency at which the missing timestamps should be generated. It accepts a string representing a pandas frequency alias. Some common frequency aliases include: - S: secondly frequency - min: minute frequency - H: hourly frequency - B: business day frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - BMS: Business month start - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency</td>
 <td><code>'D'</code></td>
+</tr>
+<tr class="even">
+<td><code>start_date</code></td>
+<td>str</td>
+<td>Specifies the start of the padded series. If NULL, it will use the lowest value of the input variable. In the case of groups, it will use the lowest value by group.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td><code>end_date</code></td>
+<td>str</td>
+<td>Specifies the end of the padded series. If NULL, it will use the highest value of the input variable. In the case of groups, it will use the highest value by group.</td>
+<td><code>None</code></td>
 </tr>
 </tbody>
 </table>
@@ -888,6 +901,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 </div>
+</section>
+<section id="pad-with-end-dates-specified" class="level1">
+<h1>Pad with end dates specified</h1>
+<p>padded_df = ( df .groupby(‘symbol’) .pad_by_time( date_column = ‘date’, freq = ‘D’, start_date = ‘2013-01-01’, end_date = ‘2023-09-21’ ) ) padded_df</p>
 
 
 </section>
