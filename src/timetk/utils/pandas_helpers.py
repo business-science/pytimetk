@@ -3,7 +3,9 @@ import pandas_flavor as pf
 
 
 @pf.register_dataframe_method
-def glimpse(data: pd.DataFrame, max_width: int = 76):
+def glimpse(
+    data: pd.DataFrame, max_width: int = 76
+):
     '''Takes a pandas DataFrame and prints a summary of
     its dimensions, column names, data types, and the first few values of each column.
     

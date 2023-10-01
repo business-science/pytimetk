@@ -17,20 +17,21 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 from timetk.plot.theme import theme_timetk, palette_timetk
 from timetk.utils.plot_helpers import hex_to_rgba
 
+from typing import Union, Optional
 
     
         
     
 @pf.register_dataframe_method
 def plot_timeseries(
-    data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
     value_column: str,
     
-    color_column: str = None,
+    color_column: Optional[str] = None,
 
     facet_ncol: int = 1,
-    facet_nrow: int = None,
+    facet_nrow: Optional[int] = None,
     facet_scales: str = "free_y",
     facet_dir: str = "h", 
 
@@ -39,9 +40,9 @@ def plot_timeseries(
     line_type: str = 'solid',
     line_alpha: float = 1.0,
     
-    y_intercept: float = None,
+    y_intercept: Optional[float] = None,
     y_intercept_color: str = "#2c3e50",
-    x_intercept: str = None,
+    x_intercept: Optional[str] = None,
     x_intercept_color: str = "#2c3e50",
     
     smooth: bool = True,
@@ -59,8 +60,8 @@ def plot_timeseries(
     
     x_axis_date_labels: str = "%b %Y",
     base_size: float = 11,
-    width: int = None,
-    height: int = None,
+    width: Optional[int] = None,
+    height: Optional[int] = None,
 
     engine: str = 'plotly'
 

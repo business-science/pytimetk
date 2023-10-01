@@ -16,7 +16,7 @@ except ImportError:
     pass
 
 @pf.register_series_method
-def get_pandas_frequency(idx: pd.Series or pd.DatetimeIndex, force_regular: bool = False) -> str:
+def get_pandas_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool = False) -> str:
     '''
     Get the frequency of a pandas Series or DatetimeIndex.
     
@@ -76,7 +76,7 @@ def get_pandas_frequency(idx: pd.Series or pd.DatetimeIndex, force_regular: bool
 
 @pf.register_series_method
 def floor_date(
-    idx: pd.Series or pd.DatetimeIndex, 
+    idx: Union[pd.Series, pd.DatetimeIndex], 
     unit: str = "D",
 ) -> pd.Series:
     '''Round a date down to the specified unit (e.g. Flooring).
@@ -136,7 +136,7 @@ def floor_date(
     return date
 
 @pf.register_series_method
-def week_of_month(idx: pd.Series or pd.DatetimeIndex,) -> pd.Series:
+def week_of_month(idx: Union[pd.Series, pd.DatetimeIndex]) -> pd.Series:
     '''The "week_of_month" function calculates the week number of a given date within its month.
     
     Parameters
@@ -288,7 +288,7 @@ def timeseries_unit_frequency_table():
         "freq" : [0, 60, 3600, 86400, 604800, 2678400, 7948800, 31795200]
     })
 
-def is_datetime_string(x: str or pd.Series or pd.DatetimeIndex) -> bool:
+def is_datetime_string(x: Union[str, pd.Series, pd.DatetimeIndex]) -> bool:
     
     if isinstance(x, pd.Series):
         x = x.values[0]
