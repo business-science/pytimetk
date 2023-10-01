@@ -1,8 +1,8 @@
 
 import pandas as pd
-from importlib.resources import open_text
-from importlib.resources import contents
-
+#from importlib.resources import open_text
+#from importlib.resources import contents
+from importlib.resources import files
     
 def load_dataset(
     name: str = "m4_daily", 
@@ -84,9 +84,12 @@ def load_dataset(
         raise ValueError(f"Dataset {name} not found. Please choose from the following: \n{dataset_list}")
     
     # Load the dataset
-    with open_text("timetk.datasets", f"{name}.csv") as f:
+    package_path = files('timetk')
+    # Reference to the a file within the package
+    text_path = f"{package_path}/datasets/{name}.csv"
+    with open(text_path, 'r', encoding='utf-8') as f:
         df = pd.read_csv(f, **kwargs)
-        
+
     return df
 
     
@@ -112,7 +115,8 @@ def get_available_datasets():
     
     '''
     
-    file_names   = list(contents("timetk.datasets"))
+    pathlist   = list(files("timetk.datasets").iterdir())
+    file_names = [path.name for path in pathlist]
     dataset_list = [item for item in file_names if item.endswith(".csv")]
     dataset_list = [name.rstrip('.csv') for name in dataset_list]
     dataset_list = sorted(dataset_list)
