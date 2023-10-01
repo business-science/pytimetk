@@ -2,14 +2,11 @@
 
 import pandas as pd
 import pandas_flavor as pf
-
-from itertools import product
-
-from timetk.utils.datetime_helpers import get_pandas_frequency
+from typing import Union
 
 @pf.register_dataframe_method
 def pad_by_time(
-    data: pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy,
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,  
     freq: str = 'D',
     start_date: str = None,
@@ -91,99 +88,85 @@ def pad_by_time(
     )
     padded_df
     ```
+    
+    ```{python}
+    # Pad with end dates specified
+    padded_df = (
+        df
+            .groupby('symbol')
+            .pad_by_time(
+                date_column = 'date',
+                freq        = 'D',
+                start_date  = '2013-01-01',
+                end_date    = '2023-09-21'
+            )
+    )
+    padded_df
     '''
-    
-    # Check if data is a Pandas DataFrame or GroupBy object
-    if not isinstance(data, pd.DataFrame):
-        if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-            raise TypeError("`data` is not a Pandas DataFrame.")
-    
-    # DATAFRAME EXTENSION - If data is a Pandas DataFrame, extend with future dates
-    
+        
+    if not isinstance(data, (pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy)):
+        raise TypeError("`data` must be a Pandas DataFrame or DataFrameGroupBy object.")
+
+    if start_date is not None:
+        start_date = pd.Timestamp(start_date)
+    if end_date is not None:
+        end_date = pd.Timestamp(end_date)
+
+    if start_date and end_date:
+        if start_date > end_date:
+            raise ValueError("Start date cannot be greater than end date.")
+
+    # Handling DataFrame
     if isinstance(data, pd.DataFrame):
-        
         df = data.copy()
-        
+        df[date_column] = pd.to_datetime(df[date_column])
         df.sort_values(by=[date_column], inplace=True)
         
-        # if freq == 'auto':
-        #     freq = get_pandas_frequency(df[date_column], force_regular=force_regular)
-
-        if start_date == None:
-            min_date = df[date_column].min()
-        else:
-            min_date = pd.to_datetime(start_date)
-
-        if end_date == None:
-            max_date = df[date_column].max()
-        else:
-            max_date = pd.to_datetime(end_date)
-
-        # Generate regular date range for the entire DataFrame
-        date_range = pd.date_range(start=min_date, end=max_date, freq=freq)
-
-        # Create new DataFrame from the date range
-        padded_df = pd.DataFrame({date_column: date_range})
+        min_date = start_date if start_date else df[date_column].min()
+        max_date = end_date if end_date else df[date_column].max()
         
-        # Merge with the original DataFrame to include other columns
+        date_range = pd.date_range(start=min_date, end=max_date, freq=freq)
+        padded_df = pd.DataFrame({date_column: date_range})
         padded_df = padded_df.merge(df, on=[date_column], how='left')
         
         padded_df.sort_values(by=[date_column], inplace=True)
-        
         padded_df.reset_index(drop=True, inplace=True)
         
+        return padded_df
     
-    # GROUPED EXTENSION - If data is a GroupBy object, extend with future dates by group
-    
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        
-        # Get the group names and original ungrouped data
+    # Handling DataFrameGroupBy
+    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
         data = data.obj
-        
         df = data.copy()
+        df[date_column] = pd.to_datetime(df[date_column])
         df.sort_values(by=[*group_names, date_column], inplace=True)
-
-        # Get unique group combinations
+        
         groups = df[group_names].drop_duplicates()
         padded_dfs = []
-
-        for idx, group in groups.iterrows():
+        
+        for _, group in groups.iterrows():
             mask = (df[group_names] == group).all(axis=1)
             group_df = df[mask]
-             
-            # if freq == 'auto':
-            #     freq = get_pandas_frequency(group_df[date_column], force_regular=force_regular)
             
-            if start_date == None:
-                min_date = group_df[date_column].min()
-            else:
-                min_date = pd.to_datetime(start_date)
-            if end_date == None:
-                max_date = group_df[date_column].max()
-            else:
-                max_date = pd.to_datetime(end_date)
+            min_date = start_date if start_date else group_df[date_column].min()
+            max_date = end_date if end_date else group_df[date_column].max()
             
-
-            # Generate regular date range for each group
             date_range = pd.date_range(start=min_date, end=max_date, freq=freq)
+            new_df = pd.DataFrame({date_column: date_range})
             
-            # Create new DataFrame from all combinations
-            new_df = pd.DataFrame(date_range, columns=[date_column])
-            
-            for col, value in group.items():  # Changed iteritems to items
+            for col, value in group.items():
                 new_df[col] = value
                 
             new_df = new_df.merge(group_df, on=[*group_names, date_column], how='left')
             padded_dfs.append(new_df)
-
+            
         padded_df = pd.concat(padded_dfs, ignore_index=True)
-        
         padded_df.sort_values(by=[*group_names, date_column], inplace=True)
-        
         padded_df.reset_index(drop=True, inplace=True)
+        
+        return padded_df
 
-    return padded_df
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.pad_by_time = pad_by_time
