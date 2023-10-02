@@ -97,28 +97,20 @@ def augment_rolling(
         'id': [1, 1, 1, 2, 2, 2],
         'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),
         'value1': [10, 20, 29, 42, 53, 59],
-        'value2': [5, 16, 24, 35, 45, 58],
+        'value2': [2, 16, 20, 40, 41, 50],
     })
-    
-    def correlation(df, y, X):
-    
-        print(df)
-        
-        X = df[X]  # Extract X values (independent variable)
-        y = df[y]  # Extract y values (dependent variable)
-        
-        return [y.corr(X['value2'])]
     
     result_df = (
         df.groupby('id')
         .augment_rolling(
             date_column='date',
             value_column='value1',
-            independent_variable_columns=['value2'],
+            independent_variable_columns='value2',
             window=2,
-            window_func=[('corr', correlation)]
+            window_func=[('corr', lambda df: df['value1'].corr(df['value2']))]
         )
     )
+    result_df
     
     ```
     
@@ -127,16 +119,6 @@ def augment_rolling(
     # Requires: scikit-learn
     from sklearn.linear_model import LinearRegression
 
-    def regression(df, y, X):
-    
-        model = LinearRegression()
-        X = df[X]  # Extract X values (independent variables)
-        y = df[y]  # Extract y values (dependent variable)
-        model.fit(X, y)
-        ret = pd.Series([model.intercept_, model.coef_[0]], index=['Intercept', 'Slope'])
-        
-        return [ret] # Return a list of multiple values
-        
     df = pd.DataFrame({
         'id': [1, 1, 1, 2, 2, 2],
         'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),
@@ -144,6 +126,18 @@ def augment_rolling(
         'value2': [5, 16, 24, 35, 45, 58],
         'value3': [2, 3, 6, 9, 10, 13]
     })
+    
+    # Define Regression Function
+    def regression(df):
+    
+        model = LinearRegression()
+        X = df[['value2', 'value3']]  # Extract X values (independent variables)
+        y = df['value1']  # Extract y values (dependent variable)
+        model.fit(X, y)
+        ret = pd.Series([model.intercept_, model.coef_[0]], index=['Intercept', 'Slope'])
+        
+        return [ret] # Return a list containing intercept and slope
+        
 
     # Example to call the function
     result_df = (
@@ -173,12 +167,12 @@ def augment_rolling(
         return result
     
     
-    def rolling_apply_2(func, df, *args):
+    def rolling_apply_2(func, df):
         
         results = []
         for start in range(len(df) - window_size + 1):
             window_df = df.iloc[start:start + window_size]
-            result = func(window_df, *args, **kwargs)
+            result = func(window_df)
             results.append(result)
         
         ret = pd.DataFrame(results, index=df.index[window_size - 1:])
@@ -191,7 +185,10 @@ def augment_rolling(
         
     if isinstance(value_column, str):
         value_column = [value_column]
-        
+    
+    if not isinstance(window, (int, tuple, list)):
+        raise TypeError("`window` must be an integer, tuple, or list.")
+    
     if isinstance(window, int):
         window = [window]
     elif isinstance(window, tuple):
@@ -225,7 +222,7 @@ def augment_rolling(
                             # Here, pass window of rows to the custom function
                             independent_vars = group_df[independent_variable_columns]
                             
-                            group_df[new_column_name] = rolling_apply_2(func, group_df, value_col, independent_variable_columns)
+                            group_df[new_column_name] = rolling_apply_2(func, group_df)
                         else:
                             group_df[new_column_name] = rolling_apply(func, group_df[value_col])
                             

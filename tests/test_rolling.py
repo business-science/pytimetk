@@ -1,5 +1,6 @@
 import pytest
 import pandas as pd
+import numpy as np
 from timetk import augment_rolling  
 
 # Sample data for testing
@@ -27,7 +28,7 @@ def test_augment_rolling_custom_func():
     #custom_func = ('custom', lambda x: x.max() - x.min())
     result = df.augment_rolling(date_column='date', value_column='value', window=2, window_func=[('custom', lambda x: x.max() - x.min())])
     expected = df.copy()
-    expected['value_rolling_custom_win_2'] = [0.0, 1.0, 1.0]
+    expected['value_rolling_custom_win_2'] = [np.NaN, 1.0, 1.0]
     pd.testing.assert_frame_equal(result, expected)
 
 def test_augment_rolling_invalid_data_type():
