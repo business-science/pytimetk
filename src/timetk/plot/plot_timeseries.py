@@ -583,7 +583,7 @@ def _plot_timeseries_plotly(
                 
                 color_group = group.merge(color_df, on=color_column, how="left")
                 
-                for j, (name, color_group) in enumerate(color_group.groupby("_color")):
+                for j, (name, color_group) in enumerate(color_group.groupby("_color_group_names")):
                     
                     # print(color_group)
                     
