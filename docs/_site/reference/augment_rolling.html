@@ -341,16 +341,15 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_rolling(data, date_column, value_column, window, window_func='mean', center=False, **kwargs)</code></p>
+<p><code>augment_rolling(data, date_column, value_column, use_independent_variables=False, window=2, window_func='mean', center=False, **kwargs)</code></p>
 <p>Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.</p>
-<p>The <code>augment_rolling</code> function applies multiple rolling window functions with varying window sizes to specified columns of a DataFrame, considering grouping columns and a datetime column for sorting within each group.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 2%">
-<col style="width: 7%">
-<col style="width: 88%">
+<col style="width: 3%">
+<col style="width: 8%">
+<col style="width: 86%">
 <col style="width: 1%">
 </colgroup>
 <thead>
@@ -364,8 +363,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td><code>data</code></td>
-<td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
-<td>The input DataFrame or GroupBy object.</td>
+<td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
+<td>The <code>data</code> parameter is the input DataFrame or GroupBy object that contains the data to be processed. It can be either a Pandas DataFrame or a GroupBy object.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
@@ -376,33 +375,33 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="odd">
 <td><code>value_column</code></td>
-<td>str or list</td>
+<td>Union[str, list]</td>
 <td>The <code>value_column</code> parameter is the name of the column(s) in the DataFrame to which the rolling window function(s) should be applied. It can be a single column name or a list of column names.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>window</code></td>
-<td>int or tuple or list</td>
-<td>The <code>window</code> parameter in the <code>augment_rolling</code> function is used to specify the size of the rolling windows. It can be either an integer or a list of integers. - If it is an integer, the same window size will be applied to all columns specified in the <code>value_column</code>. - If it is a tuple, it will generate windows from the first to the second value (inclusive). - If it is a list of integers, each integer in the list will be used as the window size for the corresponding column in the <code>value_column</code> list.</td>
-<td><em>required</em></td>
-</tr>
-<tr class="odd">
-<td><code>window_func</code></td>
-<td>str or list</td>
-<td>The <code>window_func</code> parameter in the <code>augment_rolling</code> function is used to specify the function(s) to be applied to the rolling windows. It can be a string or a list of strings, where each string represents the name of the function to be applied. Alternatively, it can be a list of tuples, where each tuple contains the name of the function to be applied and the function itself. - If it is a string or a list of strings, the same function will be applied to all columns specified in the <code>value_column</code>. - If it is a list of tuples, each tuple in the list will be used as the function to be applied to the corresponding column in the <code>value_column</code> list.</td>
-<td><code>'mean'</code></td>
-</tr>
-<tr class="even">
-<td><code>center</code></td>
+<td><code>use_independent_variables</code></td>
 <td>bool</td>
-<td>The <code>center</code> parameter in the <code>augment_rolling</code> function determines whether the rolling window is centered or not. If <code>center</code> is set to <code>True</code>, the rolling window will be centered, meaning that the alue at the center of the window will be used as the result. If <code>False</code>, the rolling window will not be centered, meaning that the value at the end of the window will be used as the result. The default value is <code>False</code>.</td>
+<td>The <code>use_independent_variables</code> parameter is an optional parameter that specifies whether the rolling function(s) require independent variables, such as rolling correlation or rolling regression. (See Examples below.)</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
-<td><code>**kwargs</code></td>
-<td>optional</td>
-<td>Additional keyword arguments to be passed to the <code>pandas.DataFrame.rolling</code> function.</td>
-<td><code>{}</code></td>
+<td><code>window</code></td>
+<td>Union[int, tuple, list]</td>
+<td>The <code>window</code> parameter in the <code>augment_rolling</code> function is used to specify the size of the rolling windows. It can be either an integer or a list of integers. - If it is an integer, the same window size will be applied to all columns specified in the <code>value_column</code>. - If it is a tuple, it will generate windows from the first to the second value (inclusive). - If it is a list of integers, each integer in the list will be used as the window size for the corresponding column in the <code>value_column</code> list.</td>
+<td><code>2</code></td>
+</tr>
+<tr class="even">
+<td><code>window_func</code></td>
+<td>Union[str, list, Tuple[str, Callable]]</td>
+<td>The <code>window_func</code> parameter in the <code>augment_rolling</code> function is used to specify the function(s) to be applied to the rolling windows. 1. It can be a string or a list of strings, where each string represents the name of the function to be applied. 2. Alternatively, it can be a list of tuples, where each tuple contains the name of the function to be applied and the function itself. The function is applied as a Pandas Series. (See Examples below.) 3. If the function requires independent variables, the <code>use_independent_variables</code> parameter must be specified. The independent variables will be passed to the function as a DataFrame containing the window of rows. (See Examples below.)</td>
+<td><code>'mean'</code></td>
+</tr>
+<tr class="odd">
+<td><code>center</code></td>
+<td>bool</td>
+<td>The <code>center</code> parameter in the <code>augment_rolling</code> function determines whether the rolling window is centered or not. If <code>center</code> is set to <code>True</code>, the rolling window will be centered, meaning that the value at the center of the window will be used as the result. If <code>|</code>False`</td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -423,7 +422,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>pd.DataFrame</td>
-<td>The function <code>augment_rolling</code> returns a DataFrame with new columns for each applied function, window size, and value column.</td>
+<td>The <code>augment_rolling</code> function returns a DataFrame with new columns for each applied function, window size, and value column.</td>
 </tr>
 </tbody>
 </table>
@@ -433,109 +432,24 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> timetk <span class="im">as</span> tk</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"m4_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">id</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>D10</td>
-<td>2014-07-03</td>
-<td>2076.2</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>D10</td>
-<td>2014-07-04</td>
-<td>2073.4</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>D10</td>
-<td>2014-07-05</td>
-<td>2048.7</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>D10</td>
-<td>2014-07-06</td>
-<td>2048.9</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>D10</td>
-<td>2014-07-07</td>
-<td>2006.4</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9738</td>
-<td>D500</td>
-<td>2012-09-19</td>
-<td>9418.8</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9739</td>
-<td>D500</td>
-<td>2012-09-20</td>
-<td>9365.7</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9740</td>
-<td>D500</td>
-<td>2012-09-21</td>
-<td>9445.9</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9741</td>
-<td>D500</td>
-<td>2012-09-22</td>
-<td>9497.9</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9742</td>
-<td>D500</td>
-<td>2012-09-23</td>
-<td>9545.3</td>
-</tr>
-</tbody>
-</table>
-
-<p>9743 rows × 3 columns</p>
-</div>
-</div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"m4_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># window = [2,7] yields only 2 and 7</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>rolled_df <span class="op">=</span> (</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        .augment_rolling(</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            window <span class="op">=</span> [<span class="dv">2</span>,<span class="dv">7</span>], </span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [<span class="st">'mean'</span>, (<span class="st">'std'</span>, <span class="kw">lambda</span> x: x.std())]</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>rolled_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># String Function Name and Series Lambda Function (no independent variables)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># window = [2,7] yields only 2 and 7</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>rolled_df <span class="op">=</span> (</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        .augment_rolling(</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            window <span class="op">=</span> [<span class="dv">2</span>,<span class="dv">7</span>], </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [<span class="st">'mean'</span>, (<span class="st">'std'</span>, <span class="kw">lambda</span> x: x.std())]</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>rolled_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
@@ -560,9 +474,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-03</td>
 <td>2076.2</td>
 <td>2076.20</td>
-<td>0.00</td>
+<td>NaN</td>
 <td>2076.200000</td>
-<td>0.000000</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
@@ -570,9 +484,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-04</td>
 <td>2073.4</td>
 <td>2074.80</td>
-<td>1.40</td>
+<td>1.979899</td>
 <td>2074.800000</td>
-<td>1.400000</td>
+<td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
@@ -580,9 +494,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-05</td>
 <td>2048.7</td>
 <td>2061.05</td>
-<td>12.35</td>
+<td>17.465537</td>
 <td>2066.100000</td>
-<td>12.356645</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
@@ -590,9 +504,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-06</td>
 <td>2048.9</td>
 <td>2048.80</td>
-<td>0.10</td>
+<td>0.141421</td>
 <td>2061.800000</td>
-<td>13.037830</td>
+<td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
@@ -600,9 +514,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-07</td>
 <td>2006.4</td>
 <td>2027.65</td>
-<td>21.25</td>
+<td>30.052038</td>
 <td>2050.720000</td>
-<td>25.041038</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -620,9 +534,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-19</td>
 <td>9418.8</td>
 <td>9425.35</td>
-<td>6.55</td>
+<td>9.263099</td>
 <td>9382.071429</td>
-<td>74.335988</td>
+<td>80.292044</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9739</td>
@@ -630,9 +544,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-20</td>
 <td>9365.7</td>
 <td>9392.25</td>
-<td>26.55</td>
+<td>37.547370</td>
 <td>9396.400000</td>
-<td>58.431303</td>
+<td>63.113020</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9740</td>
@@ -640,9 +554,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-21</td>
 <td>9445.9</td>
 <td>9405.80</td>
-<td>40.10</td>
+<td>56.709964</td>
 <td>9419.114286</td>
-<td>39.184451</td>
+<td>42.324045</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9741</td>
@@ -650,9 +564,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-22</td>
 <td>9497.9</td>
 <td>9471.90</td>
-<td>26.00</td>
+<td>36.769553</td>
 <td>9438.928571</td>
-<td>38.945336</td>
+<td>42.065770</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9742</td>
@@ -660,9 +574,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-23</td>
 <td>9545.3</td>
 <td>9521.60</td>
-<td>23.70</td>
+<td>33.516861</td>
 <td>9449.028571</td>
-<td>53.379416</td>
+<td>57.656359</td>
 </tr>
 </tbody>
 </table>
@@ -672,18 +586,19 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># window = (1,3) yields 1, 2, and 3</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>rolled_df <span class="op">=</span> (</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .augment_rolling(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            window <span class="op">=</span> (<span class="dv">1</span>,<span class="dv">3</span>), </span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [<span class="st">'mean'</span>, (<span class="st">'std'</span>, <span class="kw">lambda</span> x: x.std())]</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>rolled_df </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># String Function Name and Series Lambda Function (no independent variables)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># window = (1,3) yields 1, 2, and 3</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>rolled_df <span class="op">=</span> (</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        .augment_rolling(</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            window <span class="op">=</span> (<span class="dv">1</span>,<span class="dv">3</span>), </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [<span class="st">'mean'</span>, (<span class="st">'std'</span>, <span class="kw">lambda</span> x: x.std())]</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>rolled_df </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
@@ -710,11 +625,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-03</td>
 <td>2076.2</td>
 <td>2076.2</td>
-<td>0.0</td>
+<td>NaN</td>
 <td>2076.20</td>
-<td>0.00</td>
+<td>NaN</td>
 <td>2076.200000</td>
-<td>0.000000</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
@@ -722,11 +637,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-04</td>
 <td>2073.4</td>
 <td>2073.4</td>
-<td>0.0</td>
+<td>NaN</td>
 <td>2074.80</td>
-<td>1.40</td>
+<td>1.979899</td>
 <td>2074.800000</td>
-<td>1.400000</td>
+<td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
@@ -734,11 +649,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-05</td>
 <td>2048.7</td>
 <td>2048.7</td>
-<td>0.0</td>
+<td>NaN</td>
 <td>2061.05</td>
-<td>12.35</td>
+<td>17.465537</td>
 <td>2066.100000</td>
-<td>12.356645</td>
+<td>15.133737</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
@@ -746,11 +661,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-06</td>
 <td>2048.9</td>
 <td>2048.9</td>
-<td>0.0</td>
+<td>NaN</td>
 <td>2048.80</td>
-<td>0.10</td>
+<td>0.141421</td>
 <td>2057.000000</td>
-<td>11.596839</td>
+<td>14.203169</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
@@ -758,11 +673,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-07</td>
 <td>2006.4</td>
 <td>2006.4</td>
-<td>0.0</td>
+<td>NaN</td>
 <td>2027.65</td>
-<td>21.25</td>
+<td>30.052038</td>
 <td>2034.666667</td>
-<td>19.987718</td>
+<td>24.479856</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -782,11 +697,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-19</td>
 <td>9418.8</td>
 <td>9418.8</td>
-<td>0.0</td>
+<td>NaN</td>
 <td>9425.35</td>
-<td>6.55</td>
+<td>9.263099</td>
 <td>9429.466667</td>
-<td>7.905413</td>
+<td>9.682114</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9739</td>
@@ -794,11 +709,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-20</td>
 <td>9365.7</td>
 <td>9365.7</td>
-<td>0.0</td>
+<td>NaN</td>
 <td>9392.25</td>
-<td>26.55</td>
+<td>37.547370</td>
 <td>9405.466667</td>
-<td>28.623339</td>
+<td>35.056288</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9740</td>
@@ -806,11 +721,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-21</td>
 <td>9445.9</td>
 <td>9445.9</td>
-<td>0.0</td>
+<td>NaN</td>
 <td>9405.80</td>
-<td>40.10</td>
+<td>56.709964</td>
 <td>9410.133333</td>
-<td>33.310092</td>
+<td>40.796364</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9741</td>
@@ -818,11 +733,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-22</td>
 <td>9497.9</td>
 <td>9497.9</td>
-<td>0.0</td>
+<td>NaN</td>
 <td>9471.90</td>
-<td>26.00</td>
+<td>36.769553</td>
 <td>9436.500000</td>
-<td>54.378182</td>
+<td>66.599399</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9742</td>
@@ -830,16 +745,221 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-23</td>
 <td>9545.3</td>
 <td>9545.3</td>
-<td>0.0</td>
+<td>NaN</td>
 <td>9521.60</td>
-<td>23.70</td>
+<td>33.516861</td>
 <td>9496.366667</td>
-<td>40.594362</td>
+<td>49.717737</td>
 </tr>
 </tbody>
 </table>
 
 <p>9743 rows × 9 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rolling Correlation: Uses independent variables (value2)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'id'</span>: [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>],</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'date'</span>: pd.to_datetime([<span class="st">'2023-01-01'</span>, <span class="st">'2023-01-02'</span>, <span class="st">'2023-01-03'</span>, <span class="st">'2023-01-04'</span>, <span class="st">'2023-01-05'</span>, <span class="st">'2023-01-06'</span>]),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'value1'</span>: [<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">29</span>, <span class="dv">42</span>, <span class="dv">53</span>, <span class="dv">59</span>],</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'value2'</span>: [<span class="dv">2</span>, <span class="dv">16</span>, <span class="dv">20</span>, <span class="dv">40</span>, <span class="dv">41</span>, <span class="dv">50</span>],</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>result_df <span class="op">=</span> (</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">'id'</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    .augment_rolling(</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        value_column<span class="op">=</span><span class="st">'value1'</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        use_independent_variables<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        window_func<span class="op">=</span>[(<span class="st">'corr'</span>, <span class="kw">lambda</span> df: df[<span class="st">'value1'</span>].corr(df[<span class="st">'value2'</span>]))]</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>result_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value1</th>
+<th data-quarto-table-cell-role="th">value2</th>
+<th data-quarto-table-cell-role="th">value1_rolling_corr_win_2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>2023-01-01</td>
+<td>10</td>
+<td>2</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>2023-01-02</td>
+<td>20</td>
+<td>16</td>
+<td>1.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1</td>
+<td>2023-01-03</td>
+<td>29</td>
+<td>20</td>
+<td>1.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2</td>
+<td>2023-01-04</td>
+<td>42</td>
+<td>40</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2</td>
+<td>2023-01-05</td>
+<td>53</td>
+<td>41</td>
+<td>1.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>2</td>
+<td>2023-01-06</td>
+<td>59</td>
+<td>50</td>
+<td>1.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rolling Regression: Using independent variables (value2 and value3)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Requires: scikit-learn</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'id'</span>: [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>],</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'date'</span>: pd.to_datetime([<span class="st">'2023-01-01'</span>, <span class="st">'2023-01-02'</span>, <span class="st">'2023-01-03'</span>, <span class="st">'2023-01-04'</span>, <span class="st">'2023-01-05'</span>, <span class="st">'2023-01-06'</span>]),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'value1'</span>: [<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">29</span>, <span class="dv">42</span>, <span class="dv">53</span>, <span class="dv">59</span>],</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'value2'</span>: [<span class="dv">5</span>, <span class="dv">16</span>, <span class="dv">24</span>, <span class="dv">35</span>, <span class="dv">45</span>, <span class="dv">58</span>],</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">'value3'</span>: [<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">9</span>, <span class="dv">10</span>, <span class="dv">13</span>]</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Define Regression Function</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> regression(df):</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> LinearRegression()</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> df[[<span class="st">'value2'</span>, <span class="st">'value3'</span>]]  <span class="co"># Extract X values (independent variables)</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> df[<span class="st">'value1'</span>]  <span class="co"># Extract y values (dependent variable)</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    model.fit(X, y)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    ret <span class="op">=</span> pd.Series([model.intercept_, model.coef_[<span class="dv">0</span>]], index<span class="op">=</span>[<span class="st">'Intercept'</span>, <span class="st">'Slope'</span>])</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [ret] <span class="co"># Return a list containing intercept and slope</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Example to call the function</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>result_df <span class="op">=</span> (</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">'id'</span>)</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    .augment_rolling(</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>        value_column<span class="op">=</span><span class="st">'value1'</span>,</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        use_independent_variables<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>        window_func<span class="op">=</span>[(<span class="st">'regression'</span>, regression)]</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    .dropna()</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Display Results in Wide Format since returning multiple values</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>regression_wide_df <span class="op">=</span> pd.concat(result_df[<span class="st">'value1_rolling_regression_win_2'</span>].to_list(), axis<span class="op">=</span><span class="dv">1</span>).T</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>regression_wide_df <span class="op">=</span> pd.concat([result_df.reset_index(drop <span class="op">=</span> <span class="va">True</span>), regression_wide_df], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>regression_wide_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value1</th>
+<th data-quarto-table-cell-role="th">value2</th>
+<th data-quarto-table-cell-role="th">value3</th>
+<th data-quarto-table-cell-role="th">value1_rolling_regression_win_2</th>
+<th data-quarto-table-cell-role="th">Intercept</th>
+<th data-quarto-table-cell-role="th">Slope</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>2023-01-02</td>
+<td>20</td>
+<td>16</td>
+<td>3</td>
+<td>Intercept 5.327869 Slope 0.901639 dt...</td>
+<td>5.327869</td>
+<td>0.901639</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>2023-01-03</td>
+<td>29</td>
+<td>24</td>
+<td>6</td>
+<td>Intercept 3.109589 Slope 0.986301 dt...</td>
+<td>3.109589</td>
+<td>0.986301</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2</td>
+<td>2023-01-05</td>
+<td>53</td>
+<td>45</td>
+<td>10</td>
+<td>Intercept 2.900990 Slope 1.089109 dt...</td>
+<td>2.900990</td>
+<td>1.089109</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2</td>
+<td>2023-01-06</td>
+<td>59</td>
+<td>58</td>
+<td>13</td>
+<td>Intercept 32.269663 Slope 0.438202 ...</td>
+<td>32.269663</td>
+<td>0.438202</td>
+</tr>
+</tbody>
+</table>
+
 </div>
 </div>
 </div>

@@ -8,3 +8,67 @@ number-depth: 2
 ---
 
 Coming soon...
+
+
+
+```{python}
+import timetk as tk
+import pandas as pd
+```
+
+
+```{python}
+# Import Stock Data
+stocks_df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
+
+# Visualize
+stocks_df \
+    .groupby('symbol') \
+    .plot_timeseries(
+        'date', 'adjusted',
+        facet_ncol = 2,
+        width = 900,
+        height = 700
+    )
+```
+
+# Moving Averages at Scale
+
+`help(tk.augment_rolling)`
+
+```{python}
+# Add 2 moving averages (10-day and 50-Day)
+sma_df = stocks_df[['symbol', 'date', 'adjusted']] \
+    .groupby('symbol') \
+    .augment_rolling(
+        date_column = 'date',
+        value_column = 'adjusted',
+        window = [10, 50],
+        window_func = ['mean'],
+        center = False
+    )
+
+# Visualize 
+sma_df \
+    .query('date >= "2023-01-01"') \
+    .melt(
+        id_vars = ['symbol', 'date'],
+        value_vars = ["adjusted", "adjusted_rolling_mean_win_10", "adjusted_rolling_mean_win_50"]
+    ) \
+    .assign(variable = lambda x: pd.Categorical(x['variable'])) \
+    .groupby("symbol") \
+    .plot_timeseries(
+        date_column = 'date',
+        value_column = 'value',
+        color_column = 'variable',
+        smooth = False, 
+        facet_ncol = 2,
+        width = 900,
+        height = 700
+    )
+
+```
+
+# Exponential Moving Averages
+
+(Coming soon... `tk.augment_ewm`)

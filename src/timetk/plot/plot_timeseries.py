@@ -556,7 +556,6 @@ def _plot_timeseries_plotly(
             #     col = i // facet_ncol + 1
             #     row = i % facet_ncol + 1
 
-            # BUG - Need to fix color mapping when color_column is not same as group_names
             if color_column is not None:
                 
                 color_group = group.merge(color_df, on=color_column, how="left")
