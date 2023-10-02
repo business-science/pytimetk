@@ -1,5 +1,6 @@
 import pandas as pd
 import pandas_flavor as pf
+import numpy as np
 
 from typing import Union, Optional, Callable, Tuple, List
 
@@ -109,8 +110,9 @@ def augment_rolling(
             date_column='date',
             value_column='value1',
             use_independent_variables=True,
-            window=2,
-            window_func=[('corr', lambda df: df['value1'].corr(df['value2']))]
+            window=3,
+            window_func=[('corr', lambda df: df['value1'].corr(df['value2']))],
+            center = False
         )
     )
     result_df
@@ -140,7 +142,7 @@ def augment_rolling(
         model.fit(X, y)
         ret = pd.Series([model.intercept_, model.coef_[0]], index=['Intercept', 'Slope'])
         
-        return [ret] # Return a list containing intercept and slope
+        return ret # Return intercept and slope as a Series
         
 
     # Example to call the function
@@ -150,14 +152,14 @@ def augment_rolling(
             date_column='date',
             value_column='value1',
             use_independent_variables=True,
-            window=2,
+            window=3,
             window_func=[('regression', regression)]
         )
         .dropna()
     )
 
     # Display Results in Wide Format since returning multiple values
-    regression_wide_df = pd.concat(result_df['value1_rolling_regression_win_2'].to_list(), axis=1).T
+    regression_wide_df = pd.concat(result_df['value1_rolling_regression_win_3'].to_list(), axis=1).T
     
     regression_wide_df = pd.concat([result_df.reset_index(drop = True), regression_wide_df], axis=1)
     
@@ -166,22 +168,42 @@ def augment_rolling(
     '''
     
     
-    def rolling_apply(func, series, *args):        
-        result = series.rolling(window=window_size, min_periods=window_size, center=center, **kwargs).apply(lambda x: func(x, *args), raw=False)
-        return result
-    
-    
-    def rolling_apply_2(func, df):
+    def rolling_apply_2(func, df, window_size, min_periods, center):
+        results = [np.nan] * len(df)
+        adjusted_window = window_size // 2 if center else window_size - 1  # determine the offset for centering
         
-        results = []
-        for start in range(len(df) - window_size + 1):
-            window_df = df.iloc[start:start + window_size]
-            result = func(window_df)
-            results.append(result)
+        for center_point in range(len(df)):
+            if center:
+                start = max(0, center_point - adjusted_window)
+                end = min(len(df), center_point + adjusted_window + 1)
+            else:
+                start = max(0, center_point - adjusted_window)
+                end = min(len(df), start + window_size)
+            
+            window_df = df.iloc[start:end]
+            
+            if len(window_df) >= min_periods:
+                results[center_point if center else end - 1] = func(window_df)
         
-        ret = pd.DataFrame(results, index=df.index[window_size - 1:])
+        return pd.DataFrame(results, columns=['result'], index=df.index)
 
-        return ret
+    
+    
+    # def rolling_apply(func, series, *args):        
+    #     result = series.rolling(window=window_size, center=center, **kwargs).apply(lambda x: func(x, *args), raw=False)
+    #     return result
+    
+    # def rolling_apply_2(func, df):
+        
+    #     results = []
+    #     for start in range(len(df) - window_size + 1):
+    #         window_df = df.iloc[start:start + window_size]
+    #         result = func(window_df)
+    #         results.append(result)
+        
+    #     ret = pd.DataFrame(results, index=df.index[window_size - 1:])
+
+    #     return ret
     
     
     if not isinstance(data, (pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy)):
@@ -220,9 +242,11 @@ def augment_rolling(
                         new_column_name = f"{value_col}_rolling_{func_name}_win_{window_size}"
                         
                         if use_independent_variables:                           
-                            group_df[new_column_name] = rolling_apply_2(func, group_df)
+                            group_df[new_column_name] = rolling_apply_2(func, group_df, window_size, min_periods=1, center=center)
                         else:
-                            group_df[new_column_name] = rolling_apply(func, group_df[value_col])
+                            # group_df[new_column_name] = rolling_apply(func, group_df[value_col])
+                            group_df[new_column_name] = group_df[value_col].rolling(window=window_size, min_periods=1,center=center, **kwargs).apply(func, raw=True)
+                    
                             
                     elif isinstance(func, str):
                         new_column_name = f"{value_col}_rolling_{func}_win_{window_size}"
