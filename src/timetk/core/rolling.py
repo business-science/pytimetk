@@ -12,6 +12,7 @@ def augment_rolling(
     use_independent_variables: bool = False,
     window: Union[int, tuple, list] = 2, 
     window_func: Union[str, list, Tuple[str, Callable]] = 'mean',
+    min_periods: Optional[int] = None,
     center: bool = False,
     **kwargs,
 ) -> pd.DataFrame:
@@ -236,21 +237,26 @@ def augment_rolling(
     for _, group_df in grouped:
         for value_col in value_column:
             for window_size in window:
+                
+                if min_periods is None:
+                    min_periods = window_size
+                
                 for func in window_func:
                     if isinstance(func, tuple):
                         func_name, func = func
                         new_column_name = f"{value_col}_rolling_{func_name}_win_{window_size}"
                         
                         if use_independent_variables:                           
-                            group_df[new_column_name] = rolling_apply_2(func, group_df, window_size, min_periods=1, center=center)
+                            group_df[new_column_name] = rolling_apply_2(func, group_df, window_size, min_periods=min_periods, center=center)
                         else:
                             # group_df[new_column_name] = rolling_apply(func, group_df[value_col])
-                            group_df[new_column_name] = group_df[value_col].rolling(window=window_size, min_periods=1,center=center, **kwargs).apply(func, raw=True)
+                            group_df[new_column_name] = group_df[value_col].rolling(window=window_size, min_periods=min_periods,center=center, **kwargs).apply(func, raw=True)
                     
                             
                     elif isinstance(func, str):
                         new_column_name = f"{value_col}_rolling_{func}_win_{window_size}"
-                        rolling_method = getattr(group_df[value_col].rolling(window=window_size, min_periods=1, center=center, **kwargs), func, None)
+                        
+                        rolling_method = getattr(group_df[value_col].rolling(window=window_size, min_periods=min_periods, center=center, **kwargs), func, None)
                         
                         if rolling_method:
                             group_df[new_column_name] = rolling_method()
