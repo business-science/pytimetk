@@ -271,7 +271,7 @@ def plot_timeseries(
                 color_column = 'id',
                 facet_ncol = 2,
                 x_axis_date_labels = "%Y",
-                engine = 'matplotlib'
+                engine = 'matplotlib',
             )
     )
     fig
@@ -402,7 +402,7 @@ def plot_timeseries(
                 height_size = 600 # in pixels for compat with plotly
             else:
                 height_size = height
-            fig = fig + theme(figure_size=(width_size, height_size)) # setting default figure size to prevent matplotlib sizing error
+            fig = fig + theme_timetk(height=height_size, width=width_size) # setting default figure size to prevent matplotlib sizing error
             fig = fig.draw()
 
         
@@ -814,6 +814,27 @@ def _plot_timeseries_plotnine(
     """This is an internal function not meant to be called by the user directly.
     """
     
+    # Data Setup
+    
+    if color_column is not None:
+        
+        if not isinstance(color_column, list):
+            color_column = [color_column]
+        
+        data[color_column] = data[color_column].astype(str) 
+        
+        data["_color_group_names"] =  data[color_column].agg(" | ".join, axis=1)
+        
+    if group_names is not None:
+        
+        if not isinstance(group_names, list):
+            group_names = [group_names]
+        
+        data[group_names] = data[group_names].astype(str) 
+        
+        data["_group_names"] =  data[group_names].agg(" | ".join, axis=1)
+    
+    
     # Plot setup
     if group_names is not None:
         if color_column is not None:
@@ -822,8 +843,8 @@ def _plot_timeseries_plotnine(
                 mapping = aes(
                     x = date_column,
                     y = value_column,
-                    group = color_column,
-                    color = color_column
+                    group = "_color_group_names",
+                    color = "_color_group_names"
                 )
             )
         else:
@@ -832,7 +853,7 @@ def _plot_timeseries_plotnine(
                 mapping = aes(
                     x = date_column,
                     y = value_column,
-                    group = group_names,
+                    group = "_group_names",
                 )
             )
     else:
@@ -860,7 +881,7 @@ def _plot_timeseries_plotnine(
         g = g \
             + geom_line(
                     aes(
-                        color = color_column
+                        color = "_color_group_names"
                     ),
                     size     = line_size,
                     linetype = line_type,
@@ -895,7 +916,7 @@ def _plot_timeseries_plotnine(
     # Add facets
     if group_names is not None:
        g = g + facet_wrap(
-            group_names,
+            "_group_names",
             ncol = facet_ncol,
             nrow = facet_nrow, 
             scales = facet_scales, 
@@ -918,7 +939,7 @@ def _plot_timeseries_plotnine(
             g = g + geom_line(
                 aes(
                     y = '__smooth',
-                    group = color_column
+                    group = "_color_group_names",
                 ),
                 color = smooth_color,
                 size = smooth_size,
