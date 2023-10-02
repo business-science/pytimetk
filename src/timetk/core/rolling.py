@@ -8,7 +8,7 @@ def augment_rolling(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str, 
     value_column: Union[str, list], 
-    independent_variable_columns: Optional[Union[str, list]] = None,
+    use_independent_variables: bool = False,
     window: Union[int, tuple, list] = 2, 
     window_func: Union[str, list, Tuple[str, Callable]] = 'mean',
     center: bool = False,
@@ -16,17 +16,17 @@ def augment_rolling(
 ) -> pd.DataFrame:
     '''Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.
     
-    The `augment_rolling` function applies multiple rolling window functions with varying window sizes to specified columns of a DataFrame, considering grouping columns and a datetime column for sorting within each group.
-    
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The input DataFrame or GroupBy object.
+    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+        The `data` parameter is the input DataFrame or GroupBy object that contains the data to be processed. It can be either a Pandas DataFrame or a GroupBy object.
     date_column : str
         The `date_column` parameter is the name of the datetime column in the DataFrame by which the data should be sorted within each group.
-    value_column : str or list
+    value_column : Union[str, list]
         The `value_column` parameter is the name of the column(s) in the DataFrame to which the rolling window function(s) should be applied. It can be a single column name or a list of column names.
-    window : int or tuple or list
+    use_independent_variables : bool
+        The `use_independent_variables` parameter is an optional parameter that specifies whether the rolling function(s) require independent variables, such as rolling correlation or rolling regression. (See Examples below.)
+    window : Union[int, tuple, list], optional
         The `window` parameter in the `augment_rolling` function is used to specify the size of the rolling windows. It can be either an integer or a list of integers. 
         
         - If it is an integer, the same window size will be applied to all columns specified in the `value_column`. 
@@ -34,21 +34,22 @@ def augment_rolling(
         - If it is a tuple, it will generate windows from the first to the second value (inclusive).
         
         - If it is a list of integers, each integer in the list will be used as the window size for the corresponding column in the `value_column` list.
-    window_func : str or list, optional
-        The `window_func` parameter in the `augment_rolling` function is used to specify the function(s) to be applied to the rolling windows. It can be a string or a list of strings, where each string represents the name of the function to be applied. Alternatively, it can be a list of tuples, where each tuple contains the name of the function to be applied and the function itself. 
+    window_func : Union[str, list, Tuple[str, Callable]], optional
+        The `window_func` parameter in the `augment_rolling` function is used to specify the function(s) to be applied to the rolling windows. 
         
-        - If it is a string or a list of strings, the same function will be applied to all columns specified in the `value_column`. 
+        1. It can be a string or a list of strings, where each string represents the name of the function to be applied. 
         
-        - If it is a list of tuples, each tuple in the list will be used as the function to be applied to the corresponding column in the `value_column` list.
+        2. Alternatively, it can be a list of tuples, where each tuple contains the name of the function to be applied and the function itself. The function is applied as a Pandas Series. (See Examples below.)
+        
+        3. If the function requires independent variables, the `use_independent_variables` parameter must be specified. The independent variables will be passed to the function as a DataFrame containing the window of rows. (See Examples below.)
+        
     center : bool, optional
-        The `center` parameter in the `augment_rolling` function determines whether the rolling window is centered or not. If `center` is set to `True`, the rolling window will be centered, meaning that the alue at the center of the window will be used as the result. If `False`, the rolling window will not be centered, meaning that the value at the end of the window will be used as the result. The default value is `False`.
-    **kwargs : optional
-        Additional keyword arguments to be passed to the `pandas.DataFrame.rolling` function.
+        The `center` parameter in the `augment_rolling` function determines whether the rolling window is centered or not. If `center` is set to `True`, the rolling window will be centered, meaning that the value at the center of the window will be used as the result. If `
     
     Returns
     -------
     pd.DataFrame
-        The function `augment_rolling` returns a DataFrame with new columns for each applied function, window size, and value column.
+        The `augment_rolling` function returns a DataFrame with new columns for each applied function, window size, and value column.
     
     Examples
     --------
@@ -58,10 +59,10 @@ def augment_rolling(
     import numpy as np
     
     df = tk.load_dataset("m4_daily", parse_dates = ['date'])
-    df
     ```
     
     ```{python}
+    # String Function Name and Series Lambda Function (no independent variables)
     # window = [2,7] yields only 2 and 7
     rolled_df = (
         df
@@ -77,6 +78,7 @@ def augment_rolling(
     ```
     
     ```{python}
+    # String Function Name and Series Lambda Function (no independent variables)
     # window = (1,3) yields 1, 2, and 3
     rolled_df = (
         df
@@ -92,7 +94,8 @@ def augment_rolling(
     ```
     
     ```{python}
-    # Rolling Correlation: Using independent variables
+    # Rolling Correlation: Uses independent variables (value2)
+    
     df = pd.DataFrame({
         'id': [1, 1, 1, 2, 2, 2],
         'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),
@@ -105,7 +108,7 @@ def augment_rolling(
         .augment_rolling(
             date_column='date',
             value_column='value1',
-            independent_variable_columns='value2',
+            use_independent_variables=True,
             window=2,
             window_func=[('corr', lambda df: df['value1'].corr(df['value2']))]
         )
@@ -115,7 +118,8 @@ def augment_rolling(
     ```
     
     ```{python}
-    # Rolling Regression: Using independent variables
+    # Rolling Regression: Using independent variables (value2 and value3)
+    
     # Requires: scikit-learn
     from sklearn.linear_model import LinearRegression
 
@@ -145,7 +149,7 @@ def augment_rolling(
         .augment_rolling(
             date_column='date',
             value_column='value1',
-            independent_variable_columns=['value2', 'value3'],
+            use_independent_variables=True,
             window=2,
             window_func=[('regression', regression)]
         )
@@ -155,7 +159,7 @@ def augment_rolling(
     # Display Results in Wide Format since returning multiple values
     regression_wide_df = pd.concat(result_df['value1_rolling_regression_win_2'].to_list(), axis=1).T
     
-    regression_wide_df = pd.concat([result_df.reset_index(), regression_wide_df], axis=1)
+    regression_wide_df = pd.concat([result_df.reset_index(drop = True), regression_wide_df], axis=1)
     
     regression_wide_df
     ```
@@ -215,13 +219,7 @@ def augment_rolling(
                         func_name, func = func
                         new_column_name = f"{value_col}_rolling_{func_name}_win_{window_size}"
                         
-                        if independent_variable_columns:
-                            if isinstance(independent_variable_columns, str):
-                                independent_variable_columns = [independent_variable_columns]
-                            
-                            # Here, pass window of rows to the custom function
-                            independent_vars = group_df[independent_variable_columns]
-                            
+                        if use_independent_variables:                           
                             group_df[new_column_name] = rolling_apply_2(func, group_df)
                         else:
                             group_df[new_column_name] = rolling_apply(func, group_df[value_col])
