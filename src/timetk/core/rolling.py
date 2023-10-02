@@ -55,6 +55,7 @@ def augment_rolling(
     ```{python}
     import timetk as tk
     import pandas as pd
+    import numpy as np
     
     df = tk.load_dataset("m4_daily", parse_dates = ['date'])
     df
@@ -91,26 +92,57 @@ def augment_rolling(
     ```
     
     ```{python}
+    # Rolling Correlation: Using independent variables
+    df = pd.DataFrame({
+        'id': [1, 1, 1, 2, 2, 2],
+        'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),
+        'value1': [10, 20, 29, 42, 53, 59],
+        'value2': [5, 16, 24, 35, 45, 58],
+    })
+    
+    def correlation(df, y, X):
+    
+        print(df)
+        
+        X = df[X]  # Extract X values (independent variable)
+        y = df[y]  # Extract y values (dependent variable)
+        
+        return [y.corr(X['value2'])]
+    
+    result_df = (
+        df.groupby('id')
+        .augment_rolling(
+            date_column='date',
+            value_column='value1',
+            independent_variable_columns=['value2'],
+            window=2,
+            window_func=[('corr', correlation)]
+        )
+    )
+    
+    ```
+    
+    ```{python}
     # Rolling Regression: Using independent variables
     # Requires: scikit-learn
     from sklearn.linear_model import LinearRegression
 
-    def rolling_regression(df, y, X):
+    def regression(df, y, X):
     
         model = LinearRegression()
-        X = df[X]  # Extract x values
-        y = df[y]  # Extract y values
+        X = df[X]  # Extract X values (independent variables)
+        y = df[y]  # Extract y values (dependent variable)
         model.fit(X, y)
         ret = pd.Series([model.intercept_, model.coef_[0]], index=['Intercept', 'Slope'])
         
-        return [ret]
+        return [ret] # Return a list of multiple values
         
     df = pd.DataFrame({
         'id': [1, 1, 1, 2, 2, 2],
         'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),
-        'value1': [10, 20, 30, 40, 50, 60],
-        'value2': [5, 15, 25, 35, 45, 55],
-        'value3': [2, 4, 6, 8, 10, 12]
+        'value1': [10, 20, 29, 42, 53, 59],
+        'value2': [5, 16, 24, 35, 45, 58],
+        'value3': [2, 3, 6, 9, 10, 13]
     })
 
     # Example to call the function
@@ -121,13 +153,17 @@ def augment_rolling(
             value_column='value1',
             independent_variable_columns=['value2', 'value3'],
             window=2,
-            window_func=[('regression', rolling_regression)]
+            window_func=[('regression', regression)]
         )
+        .dropna()
     )
 
-    result_df
-
-
+    # Display Results in Wide Format since returning multiple values
+    regression_wide_df = pd.concat(result_df['value1_rolling_regression_win_2'].to_list(), axis=1).T
+    
+    regression_wide_df = pd.concat([result_df.reset_index(), regression_wide_df], axis=1)
+    
+    regression_wide_df
     ```
     '''
     
@@ -135,6 +171,7 @@ def augment_rolling(
     def rolling_apply(func, series, *args):        
         result = series.rolling(window=window_size, min_periods=window_size, center=center, **kwargs).apply(lambda x: func(x, *args), raw=False)
         return result
+    
     
     def rolling_apply_2(func, df, *args):
         
