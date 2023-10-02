@@ -531,6 +531,19 @@ def _plot_timeseries_plotly(
     
     subplot_titles = []
     if group_names is not None:
+        
+        # NEW ----
+        if not isinstance(group_names, list):
+            group_names = [group_names]
+        
+        data[group_names] = data[group_names].astype(str)
+         
+        group_lookup_df = data[group_names].drop_duplicates().reset_index(drop=True)
+        
+        group_lookup_df["_group_names"] =  group_lookup_df[group_names].agg(" | ".join, axis=1)
+        
+        # OLD ----
+        
         grouped = data.groupby(group_names, sort = False, group_keys = False)
         
         num_groups = len(grouped)
@@ -555,6 +568,7 @@ def _plot_timeseries_plotly(
     fig = make_subplots(
         rows=facet_nrow, 
         cols=facet_ncol, 
+        
         subplot_titles=subplot_titles,
         
         # Shared Axes if facet_scales is "free" or "free_x" or "free_y"
@@ -583,11 +597,15 @@ def _plot_timeseries_plotly(
                 
                 color_group = group.merge(color_df, on=color_column, how="left")
                 
+                color_group = color_group.merge(group_lookup_df, on=group_names, how="left")
+                
                 for j, (name, color_group) in enumerate(color_group.groupby("_color_group_names")):
                     
                     # print(color_group)
                     
                     color = color_group['_color'].unique()[0]
+                    
+                    grp_nm = color_group['_group_names'].unique()[0]
                     
                     name = color_group['_color_group_names'].unique()[0]
                     
@@ -604,6 +622,9 @@ def _plot_timeseries_plotly(
                         legendgroup=name,
                     )
                     fig.add_trace(trace, row=row, col=col)
+                    
+                    fig.layout.annotations[i].update(text=grp_nm)
+                    
                 
                 # Remove duplicate legends in each legend group
                 seen_legendgroups = set()
@@ -615,8 +636,18 @@ def _plot_timeseries_plotly(
                         seen_legendgroups.add(legendgroup)
                 
             else:
-                trace = go.Scatter(x=group[date_column], y=group[value_column], mode='lines', line=dict(color=hex_to_rgba(line_color, alpha=line_alpha), width=line_size), showlegend=False, name=name[0])
+                
+                group_group = group.merge(group_lookup_df, on=group_names, how="left")
+                
+                # print(group_group)
+                
+                grp_nm = group_group['_group_names'].unique()[0]
+                
+                trace = go.Scatter(x=group_group[date_column], y=group_group[value_column], mode='lines', line=dict(color=hex_to_rgba(line_color, alpha=line_alpha), width=line_size), showlegend=False, name=name[0])
                 fig.add_trace(trace, row=row, col=col)
+                
+                
+                fig.layout.annotations[i].update(text=grp_nm)
             
             
             if smooth:
@@ -629,15 +660,12 @@ def _plot_timeseries_plotly(
                 for y in y_intercept:
                     fig.add_shape(go.layout.Shape(type="line", y0=y, y1=y, x0=group[date_column].min(), x1=group[date_column].max(), line=dict(color=y_intercept_color, width=1)), row=row, col=col)
                 
-    
-            
             if x_intercept is not None:
                 if not isinstance(x_intercept, list):
                     x_intercept = [x_intercept]
                 for x in x_intercept:
                     fig.add_shape(go.layout.Shape(type="line", x0=x, x1=x, y0=group[value_column].min(), y1=group[value_column].max(), line=dict(color=x_intercept_color, width=1)), row=row, col=col)
-                
-            # fig.layout.annotations[i].update(text=name[0])
+            
     else:
         
         if color_column is not None:
@@ -689,9 +717,7 @@ def _plot_timeseries_plotly(
                 y_intercept = [y_intercept]
             for y in y_intercept:
                 fig.add_shape(go.layout.Shape(type="line", y0=y, y1=y, x0=data[date_column].min(), x1=data[date_column].max(), line=dict(color=y_intercept_color, width=1)))
-            
-
-        
+                   
         if x_intercept is not None:
             if not isinstance(x_intercept, list):
                 x_intercept = [x_intercept]
