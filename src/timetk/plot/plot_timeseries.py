@@ -234,7 +234,7 @@ def plot_timeseries(
         df
             .groupby('id')
             .plot_timeseries(
-                'date', 'value', 
+                'date', 'value',
                 facet_ncol = 2,
                 facet_scales = "free",
                 line_size = 0.35,
@@ -394,12 +394,12 @@ def plot_timeseries(
         
         if engine == 'matplotlib':
             if width == None:
-                width_size = 8
+                width_size = 800 # in pixels for compat with plotly
             else: 
                 width_size = width
 
             if height == None:
-                height_size = 6
+                height_size = 600 # in pixels for compat with plotly
             else:
                 height_size = height
             fig = fig + theme(figure_size=(width_size, height_size)) # setting default figure size to prevent matplotlib sizing error
@@ -790,14 +790,25 @@ def _plot_timeseries_plotnine(
     
     # Plot setup
     if group_names is not None:
-        g = ggplot(
-            data = data,
-            mapping = aes(
-                x = date_column,
-                y = value_column,
-                group = group_names,
+        if color_column is not None:
+            g = ggplot(
+                data = data,
+                mapping = aes(
+                    x = date_column,
+                    y = value_column,
+                    group = color_column,
+                    color = color_column
+                )
             )
-        )
+        else:
+            g = ggplot(
+                data = data,
+                mapping = aes(
+                    x = date_column,
+                    y = value_column,
+                    group = group_names,
+                )
+            )
     else:
         g = ggplot(
             data = data,
