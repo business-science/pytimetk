@@ -375,7 +375,18 @@ def plot_timeseries(
         )
         
         if engine == 'matplotlib':
+            if width == None:
+                width_size = 8
+            else: 
+                width_size = width
+
+            if height == None:
+                height_size = 6
+            else:
+                height_size = height
+            fig = fig + theme(figure_size=(width_size, height_size)) # setting default figure size to prevent matplotlib sizing error
             fig = fig.draw()
+
         
     elif engine == 'plotly':
         
