@@ -120,7 +120,7 @@ def theme_timetk(base_size: int = 11, base_family: list = ['Arial', 'Helvetica',
         plot_margin=0.025,
         
         dpi=dpi,
-        figure_size=(width/100 if width is not None else 700, height/100 if height is not None else 500),
+        figure_size=(width/100 if width is not None else 7, height/100 if height is not None else 5),
         
     )
     
