@@ -29,6 +29,7 @@ def plot_timeseries(
     value_column: str,
     
     color_column: Optional[str] = None,
+    color_palette: Optional[Union[dict, list, str]] = None,
 
     facet_ncol: int = 1,
     facet_nrow: Optional[int] = None,
@@ -78,6 +79,8 @@ def plot_timeseries(
         The `value_column` parameter is used to specify the name of the column in the DataFrame that contains the values for the time series data. This column will be plotted on the y-axis of the time series plot.
     color_column : str
         The `color_column` parameter is an optional parameter that specifies the column in the DataFrame that will be used to assign colors to the different time series. If this parameter is not provided, all time series will have the same color.
+    color_palette : list, optional
+        The `color_palette` parameter is used to specify the colors to be used for the different time series. It accepts a list of color codes or names. If the `color_column` parameter is not provided, the `tk.palette_timetk()` color palette will be used.
     facet_ncol : int, optional
         The `facet_ncol` parameter determines the number of columns in the facet grid. It specifies how many subplots will be arranged horizontally in the plot.
     facet_nrow : int
@@ -327,7 +330,19 @@ def plot_timeseries(
                 # Updating the original DataFrame with smoothed values
                 data.loc[sorted_group.index, '__smooth'] = smoothed[:, 1]
             
-               
+    # Handle color palette
+    if color_palette is None:
+        color_palette = list(palette_timetk().values())
+    else:
+        if isinstance(color_palette, dict):
+            color_palette = list(palette_timetk(color_palette).values())
+        elif isinstance(color_palette, list):
+            color_palette = color_palette
+        elif isinstance(color_palette, str):
+            color_palette = [color_palette]
+        else:
+            ValueError("Invalid `color_palette` parameter. It must be a dictionary, list, or string.")
+    
     # print(data.head())  
     
     # Engine
@@ -336,7 +351,10 @@ def plot_timeseries(
             data = data,
             date_column = date_column,
             value_column = value_column,
+            
             color_column = color_column,
+            color_palette = color_palette,
+            
             group_names = group_names,
 
             facet_ncol = facet_ncol,
@@ -394,7 +412,10 @@ def plot_timeseries(
             data = data,
             date_column = date_column,
             value_column = value_column,
+            
             color_column = color_column,
+            color_palette = color_palette,
+            
             group_names = group_names,
 
             facet_ncol = facet_ncol,
@@ -449,6 +470,8 @@ def _plot_timeseries_plotly(
     value_column,
     
     color_column = None,
+    color_palette = None, 
+    
     group_names = None,
 
     facet_ncol = 1,
@@ -498,7 +521,7 @@ def _plot_timeseries_plotly(
         
         color_df = data[color_column].drop_duplicates().reset_index(drop=True)
         
-        color_df["_color"] = (list(palette_timetk().values()) * 1_000_000)[:len(color_df)]  
+        color_df["_color"] = (color_palette * 1_000_000)[:len(color_df)]  
         
         color_df["_color_group_names"] =  color_df[color_column].agg(" | ".join, axis=1)
         
@@ -516,7 +539,7 @@ def _plot_timeseries_plotly(
         subplot_titles = [" | ".join(map(str, name)) if isinstance(name, tuple) else str(name) for name in grouped.groups.keys()]
         
         if color_column is not None:
-            colors = list(palette_timetk().values()) * 1_000_000
+            colors = color_palette * 1_000_000
             colors = colors[:num_groups]
         else: 
             colors = [line_color] * num_groups
@@ -724,6 +747,8 @@ def _plot_timeseries_plotnine(
     value_column,
     
     color_column = None,
+    color_palette = None,
+    
     group_names = None,
 
     facet_ncol = 1,
@@ -764,14 +789,23 @@ def _plot_timeseries_plotnine(
     """
     
     # Plot setup
-    g = ggplot(
-        data = data,
-        mapping = aes(
-            x = date_column,
-            y = value_column,
-            group = group_names if group_names is not None else None,
+    if group_names is not None:
+        g = ggplot(
+            data = data,
+            mapping = aes(
+                x = date_column,
+                y = value_column,
+                group = group_names,
+            )
         )
-    )
+    else:
+        g = ggplot(
+            data = data,
+            mapping = aes(
+                x = date_column,
+                y = value_column,
+            )
+        )
     
     
 
@@ -785,6 +819,7 @@ def _plot_timeseries_plotnine(
                     alpha    = line_alpha
                 )
     else:
+        
         g = g \
             + geom_line(
                     aes(
@@ -795,7 +830,7 @@ def _plot_timeseries_plotnine(
                     alpha    = line_alpha
                 ) \
             + scale_color_manual(
-                values=list(palette_timetk().values())
+                values=color_palette
             )
     
     # Add a Y-Intercept if desired
