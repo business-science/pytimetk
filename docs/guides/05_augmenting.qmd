@@ -14,7 +14,7 @@ This section will cover the `augment` set of functions, use to add many addition
 * `augment_leads()`
 * `augment_rolling()`
 * `augment_time_series_signature()`
-* `augment_holiday()`
+* `augment_holiday_signature()`
 * `augment_fourier()`
 
 # Augment Lags / Leads
@@ -260,6 +260,66 @@ m4_daily_df \
 
 ```
 
+
 # Augment Time Series Signature
 
-Coming soon...
+`augment_timeseries_signature()` is designed to assist in generating additional features
+from a given date column.
+
+::: {.callout-tip collapse="false"}
+## Help Doc Info: `augment_timeseries_signature()`
+
+Use `help(tk.augment_timeseries_signature)` to review additional helpful documentation.
+
+:::
+
+## Basic Example
+
+We'll showcase an example using the `m4_daily_df` dataset by generating 29 additional features from the `date` column:
+
+```{python}
+# augment time series signature
+m4_daily_df \
+    .query('id == "D10"') \
+	.augment_timeseries_signature(
+		date_column = 'date'
+	) \
+    .head()
+
+```
+
+
+# Augment Holiday Signature
+
+`augment_holiday_signature()` is used to flag holidays from a date column based on date and country.
+
+::: {.callout-tip collapse="false"}
+## Help Doc Info: `augment_holiday_signature()`
+
+Use `help(tk.augment_holiday_signature)` to review additional helpful documentation.
+
+:::
+
+## Basic Example
+
+We'll showcase an example using some sample data:
+
+```{python}
+# create sample data
+dates = pd.date_range(start = '2022-12-25', end = '2023-01-05')
+
+df = pd.DataFrame({'date': dates})
+
+# augment time series signature: USA
+df \
+    .augment_holiday_signature(
+		date_column  = 'date',
+		country_name = 'UnitedStates'
+	)
+
+```
+
+
+# Augment Fourier
+
+Coming soon ....
