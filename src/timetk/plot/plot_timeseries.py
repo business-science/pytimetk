@@ -768,9 +768,12 @@ def _plot_timeseries_plotnine(
         data = data,
         mapping = aes(
             x = date_column,
-            y = value_column
+            y = value_column,
+            group = group_names if group_names is not None else None,
         )
     )
+    
+    
 
     # Add line
     if color_column is None:
