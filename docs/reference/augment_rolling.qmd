@@ -1,6 +1,6 @@
 # augment_rolling { #timetk.augment_rolling }
 
-`augment_rolling(data, date_column, value_column, use_independent_variables=False, window=2, window_func='mean', center=False, **kwargs)`
+`augment_rolling(data, date_column, value_column, use_independent_variables=False, window=2, window_func='mean', min_periods=None, center=False, **kwargs)`
 
 Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.
 
@@ -80,8 +80,9 @@ result_df = (
         date_column='date',
         value_column='value1',
         use_independent_variables=True,
-        window=2,
-        window_func=[('corr', lambda df: df['value1'].corr(df['value2']))]
+        window=3,
+        window_func=[('corr', lambda df: df['value1'].corr(df['value2']))],
+        center = False
     )
 )
 result_df
@@ -111,7 +112,7 @@ def regression(df):
     model.fit(X, y)
     ret = pd.Series([model.intercept_, model.coef_[0]], index=['Intercept', 'Slope'])
     
-    return [ret] # Return a list containing intercept and slope
+    return ret # Return intercept and slope as a Series
     
 
 # Example to call the function
@@ -121,14 +122,14 @@ result_df = (
         date_column='date',
         value_column='value1',
         use_independent_variables=True,
-        window=2,
+        window=3,
         window_func=[('regression', regression)]
     )
     .dropna()
 )
 
 # Display Results in Wide Format since returning multiple values
-regression_wide_df = pd.concat(result_df['value1_rolling_regression_win_2'].to_list(), axis=1).T
+regression_wide_df = pd.concat(result_df['value1_rolling_regression_win_3'].to_list(), axis=1).T
 
 regression_wide_df = pd.concat([result_df.reset_index(drop = True), regression_wide_df], axis=1)
 

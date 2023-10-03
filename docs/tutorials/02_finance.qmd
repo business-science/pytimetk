@@ -1,42 +1,155 @@
 ---
-title: "Finance Investment Analysis"
+title: "Finance and Investment Analysis"
 jupyter: python3
 toc: true
 toc-depth: 3
 number-sections: true
 number-depth: 2
+code-fold: true
 ---
 
-Coming soon...
 
+Timetk is designed to work with any time series domain. **Arguably the most important is Finance.** This tutorial showcases how you can perform Financial Investment and Stock Analysis at scale with `timetk`. This applied tutorial covers financial analysis with:
 
+- `tk.plot_timeseries()`: Visualizing financial data
+- `tk.augment_rolling()`: Moving averages, rolling regressions
+
+Load the following packages before proceeding with this tutorial. 
 
 ```{python}
 import timetk as tk
 import pandas as pd
+import numpy as np
 ```
 
 
-```{python}
-# Import Stock Data
-stocks_df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
+# 3 Core Properties: Financial Data 
 
-# Visualize
+Financial data from sources like `openbb` or `yfinance` come in OHLCV format and typically include an "adjusted" price (adjusted for stock splits). This data has the 3 core properties of time series:
+
+1. Timestamp: daily, hourly frequencies
+2. Value: A price (or returns)
+3. Groups: Stock symbols
+
+Let's take a look with the `tk.glimpse()` function. 
+
+
+```{python}
+stocks_df = tk.load_dataset("stocks_daily", parse_dates = True)
+
+stocks_df.glimpse()
+```
+
+# Visualizing Financial Data
+
+Visualizing financial data is critical for:
+
+1. Quick Insights
+2. Enhanced Decision Making
+3. Performance Monitoring
+4. Ease of Reporting
+
+
+
+We can visualize financial data over time with `tk.plot_timeseries()`:
+
+- An interactive `plotly` plot is returned by default. A static plot can be returned by setting `engine = "plotnine"`.
+- A blue smoother is added by default. The smoother can be removed with `smooth = False`. 
+
+::: {.callout-note collapse="true"}
+## Getting More Info: `tk.plot_timeseries()`
+
+- Click here to see our [Data Visualization Guide](/guides/01_visualization.html)
+- Use `help(tk.plot_timeseries)` to review additional helpful documentation.  
+
+:::
+
+:::{.panel-tabset groups="visualize-plotly-plotnine"}
+
+## Plotly
+
+An interactive `plotly` plot is returned by default. Interactive is useful for fast data exploration and for use in web apps (e.g. `streamlit`, `shiny`, `dash`), **Click to expand code template.**  
+
+```{python}
+# | code-fold: true
+
+# plotly engine
 stocks_df \
     .groupby('symbol') \
     .plot_timeseries(
         'date', 'adjusted',
         facet_ncol = 2,
+        smooth = True,
+        smooth_frac = 0.10,
         width = 900,
-        height = 700
+        height = 700,
+        engine = 'plotly',
     )
 ```
 
-# Moving Averages at Scale
+## Plotnine
 
-`help(tk.augment_rolling)`
+You can quickly change to a static plot using the `plotnine` or `matplotlib` engines. This returns a professional facetted stock chart useful for financial reports. **Click to expand code template.**  
 
 ```{python}
+# | code-fold: true
+
+# plotnine engine
+stocks_df \
+    .groupby('symbol') \
+    .plot_timeseries(
+        'date', 'adjusted',
+        facet_ncol = 2,
+        smooth = True,
+        smooth_frac = 0.10,
+        width = 900,
+        height = 700,
+        engine = 'plotnine'
+    )
+```
+
+:::
+
+# Technical Indicators
+
+Technical indicators are mathematical calculations based on the price, volume, or open interest of a security or contract used by traders who follow technical analysis. Technical analysis is a method of forecasting the direction of financial market prices through the study of past market data, primarily price, and volume. Technical indicators are most extensively used in the context of the stock market but are also used in other financial markets like forex, commodities, and cryptocurrencies.
+
+### Types of Technical Indicators:
+
+1. **Trend Indicators:**
+   - **Moving Averages:** Helps smooth out price data to form a single flowing line, identifying the direction of the trend.
+   - **Moving Average Convergence Divergence (MACD):** Shows the relationship between two moving averages of a security's price.
+   - **Average True Range (ATR):** Measures market volatility.
+
+2. **Momentum Indicators:**
+   - **Relative Strength Index (RSI):** Measures the speed and change of price movements, typically on a scale of 1 to 100.
+   - **Stochastic Oscillator:** Compares a security's closing price to its price range over a specific period.
+
+3. **Volume Indicators:**
+   - **On-Balance Volume (OBV):** Uses volume flow to predict changes in stock price.
+   - **Accumulation/Distribution Line:** Looks at the proximity of closing prices to their highs or lows to determine if accumulation or distribution is occurring in the market.
+
+4. **Volatility Indicators:**
+   - **Bollinger Bands:** Consist of a middle band being an N-period simple moving average (SMA), an upper band at K times an N-period standard deviation above the middle band, and a lower band at K times an N-period standard deviation below the middle band.
+   - **Average True Range (ATR):** Provides a measure of a market's volatility.
+
+5. **Market Strength Indicators:**
+   - **Advance/Decline Line:** Represents the number of advancing stocks divided by the number of declining stocks over a given period.
+   - **Market Breadth:** Measures the number of securities that have advanced and declined in a specific market or index, giving traders a feel for the market's overall mood.
+
+Let's see a few examples of technical indicators in `timetk`. 
+
+## Application: Moving Averages, 10-Day and 50-Day
+
+This **code template** can be used to make and visualize the 10-day and 50-Day moving average of a group of stock symbols. Click to expand the code. 
+
+:::{.panel-tabset groups="mavg-plotly-plotnine"}
+
+## Plotly
+
+```{python}
+# | code-fold: true
+
 # Add 2 moving averages (10-day and 50-Day)
 sma_df = stocks_df[['symbol', 'date', 'adjusted']] \
     .groupby('symbol') \
@@ -49,14 +162,19 @@ sma_df = stocks_df[['symbol', 'date', 'adjusted']] \
     )
 
 # Visualize 
-sma_df \
-    .query('date >= "2023-01-01"') \
+(sma_df 
+
+    # zoom in on dates
+    .query('date >= "2023-01-01"') 
+
+    # Convert to long format
     .melt(
         id_vars = ['symbol', 'date'],
         value_vars = ["adjusted", "adjusted_rolling_mean_win_10", "adjusted_rolling_mean_win_50"]
-    ) \
-    .assign(variable = lambda x: pd.Categorical(x['variable'])) \
-    .groupby("symbol") \
+    ) 
+
+    # Group on symbol and visualize
+    .groupby("symbol") 
     .plot_timeseries(
         date_column = 'date',
         value_column = 'value',
@@ -64,11 +182,611 @@ sma_df \
         smooth = False, 
         facet_ncol = 2,
         width = 900,
-        height = 700
+        height = 700,
+        engine = "plotly"
     )
+)
+```
+
+
+## Plotnine
+
+```{python}
+# | code-fold: true
+
+# Add 2 moving averages (10-day and 50-Day)
+sma_df = stocks_df[['symbol', 'date', 'adjusted']] \
+    .groupby('symbol') \
+    .augment_rolling(
+        date_column = 'date',
+        value_column = 'adjusted',
+        window = [10, 50],
+        window_func = ['mean'],
+        center = False
+    )
+
+# Visualize 
+(sma_df 
+
+    # zoom in on dates
+    .query('date >= "2023-01-01"') 
+
+    # Convert to long format
+    .melt(
+        id_vars = ['symbol', 'date'],
+        value_vars = ["adjusted", "adjusted_rolling_mean_win_10", "adjusted_rolling_mean_win_50"]
+    ) 
+
+    # Group on symbol and visualize
+    .groupby("symbol") 
+    .plot_timeseries(
+        date_column = 'date',
+        value_column = 'value',
+        color_column = 'variable',
+        smooth = False, 
+        facet_ncol = 2,
+        width = 900,
+        height = 700,
+        engine = "plotnine"
+    )
+)
+```
+
+:::
+
+## Application: Bollinger Bands
+
+Bollinger Bands are a volatility indicator commonly used in financial trading. They consist of three lines:
+
+1. The middle band, which is a simple moving average (usually over 20 periods).
+2. The upper band, calculated as the middle band plus k times the standard deviation of the price (typically, k=2).
+3. The lower band, calculated as the middle band minus k times the standard deviation of the price.
+
+Here's how you can calculate and plot Bollinger Bands with `timetk` using **this code template (click to expand)**:
+
+:::{.panel-tabset groups="bbands-plotly-plotnine"}
+
+## Plotly
+
+```{python}
+# | code-fold: true
+
+# Bollinger Bands
+bollinger_df = stocks_df[['symbol', 'date', 'adjusted']] \
+    .groupby('symbol') \
+    .augment_rolling(
+        date_column = 'date',
+        value_column = 'adjusted',
+        window = 20,
+        window_func = ['mean', 'std'],
+        center = False
+    ) \
+    .assign(
+        upper_band = lambda x: x['adjusted_rolling_mean_win_20'] + 2*x['adjusted_rolling_std_win_20'],
+        lower_band = lambda x: x['adjusted_rolling_mean_win_20'] - 2*x['adjusted_rolling_std_win_20']
+    )
+
+
+# Visualize
+(bollinger_df
+
+    # zoom in on dates
+    .query('date >= "2023-01-01"') 
+
+    # Convert to long format
+    .melt(
+        id_vars = ['symbol', 'date'],
+        value_vars = ["adjusted", "adjusted_rolling_mean_win_20", "upper_band", "lower_band"]
+    ) 
+
+    # Group on symbol and visualize
+    .groupby("symbol") 
+    .plot_timeseries(
+        date_column = 'date',
+        value_column = 'value',
+        color_column = 'variable',
+        # Adjust colors for Bollinger Bands
+        color_palette =["#2C3E50", "#E31A1C", '#18BC9C', '#18BC9C'],
+        smooth = False, 
+        facet_ncol = 2,
+        width = 900,
+        height = 700,
+        engine = "plotly" 
+    )
+)
 
 ```
 
-# Exponential Moving Averages
+## Plotnine
 
-(Coming soon... `tk.augment_ewm`)
+```{python}
+# | code-fold: true
+
+# Bollinger Bands
+bollinger_df = stocks_df[['symbol', 'date', 'adjusted']] \
+    .groupby('symbol') \
+    .augment_rolling(
+        date_column = 'date',
+        value_column = 'adjusted',
+        window = 20,
+        window_func = ['mean', 'std'],
+        center = False
+    ) \
+    .assign(
+        upper_band = lambda x: x['adjusted_rolling_mean_win_20'] + 2*x['adjusted_rolling_std_win_20'],
+        lower_band = lambda x: x['adjusted_rolling_mean_win_20'] - 2*x['adjusted_rolling_std_win_20']
+    )
+
+
+# Visualize
+(bollinger_df
+
+    # zoom in on dates
+    .query('date >= "2023-01-01"') 
+
+    # Convert to long format
+    .melt(
+        id_vars = ['symbol', 'date'],
+        value_vars = ["adjusted", "adjusted_rolling_mean_win_20", "upper_band", "lower_band"]
+    ) 
+
+    # Group on symbol and visualize
+    .groupby("symbol") 
+    .plot_timeseries(
+        date_column = 'date',
+        value_column = 'value',
+        color_column = 'variable',
+        # Adjust colors for Bollinger Bands
+        color_palette =["#2C3E50", "#E31A1C", '#18BC9C', '#18BC9C'],
+        smooth = False, 
+        facet_ncol = 2,
+        width = 900,
+        height = 700,
+        engine = "plotnine"
+    )
+)
+
+```
+
+:::
+
+
+# Returns Analysis 
+
+In finance, **returns analysis** involves evaluating the gains or losses made on an investment relative to the amount of money invested. It’s a critical aspect of investment and portfolio management:
+
+- **Performance:** Returns analysis determines the performance and the risk-reward profile of financial assets, portfolios, or investment strategies. 
+- **Informed Decision Making:** Returns analysis allows investors, analysts, and portfolio managers to make informed decisions regarding asset allocation, risk management, and investment strategy.
+
+## Returns Analysis By Time
+
+::: {.callout-tip collapse="false"}
+## Returns are NOT static (so analyze them by time)
+
+1. We can use rolling window calculations with `tk.augment_rolling()` to compute many rolling features at scale such as rolling mean, std, range (spread).
+2. We can expand our `tk.augment_rolling()` rolling calculations to Rolling Correlation and Rolling Regression (to make comparisons over time)
+
+:::
+
+### Application: Descriptive Statistic Analysis 
+
+Many traders compute descriptive statistics like mean, median, mode, skewness, kurtosis, and standard deviation to understand the central tendency, spread, and shape of the return distribution. 
+
+
+<!-- :::{.panel-tabset groups="stats-returns-"} -->
+
+#### Step 1: Returns
+
+Use this code to get the `pct_change()` in wide format. **Click expand to get the code.** 
+
+```{python}
+# | code-fold: true
+returns_wide_df = stocks_df[['symbol', 'date', 'adjusted']] \
+    .pivot(index = 'date', columns = 'symbol', values = 'adjusted') \
+    .pct_change() \
+    .reset_index() \
+    [1:]
+
+returns_wide_df
+```
+
+#### Step 2: Descriptive Stats
+
+Use this code to get standard statistics with the `describe()` method. **Click expand to get the code.**
+
+```{python}
+# | code-fold: true
+returns_wide_df.describe()
+```
+
+#### Step 3: Correlation
+
+And run a correlation with `corr()`. **Click expand to get the code.**
+
+```{python}
+# | code-fold: true
+corr_table_df = returns_wide_df.drop('date', axis=1).corr()
+corr_table_df
+```
+
+<!-- ::: -->
+
+The problem is that the stock market is constantly changing. And these descriptive statistics aren't representative of the most recent fluctuations. This is where `timetk` comes into play with rolling descriptive statistics. 
+
+### Application: 90-Day Rolling Descriptive Statistics Analysis
+
+Let's compute and visualize the 90-day rolling statistics. 
+
+
+::: {.callout-note collapse="true"}
+## Getting More Info: `tk.augment_rolling()`
+
+- Click here to see our [Augmenting Guide](/guides/05_augmenting.html)
+- Use `help(tk.augment_rolling)` to review additional helpful documentation.  
+
+:::
+
+#### Step 1: Long Format Pt.1
+
+Use this code to get the date `melt()` into long format. **Click expand to get the code.** 
+
+```{python}
+# | code-fold: true
+returns_long_df = returns_wide_df \
+    .melt(id_vars='date', value_name='returns') 
+
+returns_long_df
+```
+
+
+#### Step 2: Augment Rolling Statistic
+
+Let's add multiple columns of rolling statistics. **Click to expand the code.** 
+
+```{python}
+# | code-fold: true
+rolling_stats_df = returns_long_df \
+    .groupby('symbol') \
+    .augment_rolling(
+        date_column = 'date',
+        value_column = 'returns',
+        window = [90],
+        window_func = [
+            'mean', 
+            'std', 
+            'min',
+            ('q25', lambda x: np.quantile(x, 0.25)),
+            'median',
+            ('q75', lambda x: np.quantile(x, 0.75)),
+            'max'
+        ]
+    ) \
+    .dropna()
+
+rolling_stats_df
+```
+
+#### Step 3: Long Format Pt.2 
+
+Finally, we can `.melt()` each of the rolling statistics for a Long Format Analysis. **Click to expand the code.** 
+
+```{python}
+# | code-fold: true
+rolling_stats_long_df = rolling_stats_df \
+    .melt(
+        id_vars = ["symbol", "date"],
+        var_name = "statistic_type"
+    )
+
+rolling_stats_long_df
+```
+
+
+With the data formatted properly we can evaluate the 90-Day Rolling Statistics using `.plot_timeseries()`.
+
+:::{.panel-tabset groups="rolling-stats-plots"}
+
+## Plotly
+
+```{python}
+# | code-fold: true
+rolling_stats_long_df \
+    .groupby(['symbol', 'statistic_type']) \
+    .plot_timeseries(
+        date_column = 'date',
+        value_column = 'value',
+        facet_ncol = 6,
+        width = 1500,
+        height = 1000,
+        title = "90-Day Rolling Statistics"
+    )
+```
+
+## Plotnine
+
+```{python}
+# | code-fold: true
+rolling_stats_long_df \
+    .groupby(['symbol', 'statistic_type']) \
+    .plot_timeseries(
+        date_column = 'date',
+        value_column = 'value',
+        facet_ncol = 6,
+        facet_dir = 'v',
+        width = 1500,
+        height = 1000,
+        title = "90-Day Rolling Statistics",
+        engine = "plotnine"
+    )
+```
+
+:::
+
+# Rolling Correlation and Regressions
+
+One final evaluation is to understand relationships to other stocks and the overall market index over time. For that we can use two techniques:
+
+1. Rolling Correlations
+2. Rolling Regressions
+
+## About: Rolling Correlation
+
+Rolling correlation calculates the correlation between two time series over a rolling window of a specified size, moving one period at a time. In stock analysis, this is often used to assess:
+
+- **Diversification:** Helps in identifying how different stocks move in relation to each other, aiding in the creation of a diversified portfolio.
+
+- **Market Dependency:** Measures how a particular stock or sector is correlated with a broader market index.
+
+- **Risk Management:** Helps in identifying changes in correlation structures over time which is crucial for risk assessment and management.
+
+For example, if the rolling correlation between two stocks starts increasing, it might suggest that they are being influenced by similar factors or market conditions.
+
+## Application: Rolling Correlation
+
+Let's revisit the returns wide and long format. We can combine these two using the `merge()` method.
+
+
+### Step 1: Create the `return_combinations_long_df`
+
+Perform data wrangling to get the pairwise combinations in long format:
+
+- We first `.merge()` to join the long returns with the wide returns by date. 
+- We then `.melt()` to get the wide data into long format. 
+
+```{python}
+# | code-fold: true
+return_combinations_long_df = returns_long_df \
+    .merge(returns_wide_df, how='left', on = 'date') \
+    .melt(
+        id_vars = ['date', 'symbol', 'returns'],
+        var_name = "comp",
+        value_name = "returns_comp"
+    )
+return_combinations_long_df
+```
+
+
+### Step 2: Add Rolling Correlations with `tk.augment_rolling()`
+
+Next, let's add rolling correlations. 
+
+- We first `.groupby()` on the combination of our target assets "symbol" and our comparison asset "comp". 
+- Then we use the familiar `tk.augment_rolling()`.
+
+::: {.callout-warning collapse="false"}
+## Use Independent Variables
+
+When performing rolling calculations that require independent variables such as rolling correlations and rolling regressions, set `use_independent_variables = True`. This instructs the rolling operation to give you access to all columns in the data frame rather than just the value column as a series. This allows you to do more complex calculations that depend on more than just a target `value_column`. 
+:::
+
+```{python}
+return_corr_df = return_combinations_long_df \
+    .groupby(["symbol", "comp"]) \
+    .augment_rolling(
+        date_column = "date",
+        value_column = "returns",
+        # IMPORTANT: INCLUDE INDEPENDENT VARIABLES
+        use_independent_variables = True,
+        window = 90,
+        window_func = [('corr', lambda df: df['returns'].corr(df['returns_comp']))]
+    )
+
+return_corr_df
+```
+
+
+### Step 3: Visualize the Rolling Correlation
+
+We can use `tk.plot_timeseries()` to visualize the 90-day rolling correlation. It's interesting to see that stock combinations such as AAPL | AMZN returns have a high positive correlation of 0.80, but this relationship actually was much lower 0.25 prior to 2015. 
+
+- The blue smoother can help us detect trends
+- The y_intercept is useful in this case to draw lines at -1, 0, and 1
+
+:::{.panel-tabset groups="bbands-plotly-plotnine"}
+
+## Plotly
+
+```{python}
+return_corr_df \
+    .dropna() \
+    .groupby(['symbol', 'comp']) \
+    .plot_timeseries(
+        date_column = "date",
+        value_column = "returns_rolling_corr_win_90",
+        facet_ncol = 6,
+        y_intercept = [-1,0,1],
+        y_intercept_color = tk.palette_timetk()['steel_blue'],
+        width = 1500,
+        height = 1000,
+        title = "90-Day Rolling Correlation",
+        engine = "plotly"
+    )
+```
+
+
+## Plotnine
+
+```{python}
+return_corr_df \
+    .dropna() \
+    .groupby(['symbol', 'comp']) \
+    .plot_timeseries(
+        date_column = "date",
+        value_column = "returns_rolling_corr_win_90",
+        facet_ncol = 6,
+        y_intercept = [-1,0,1],
+        y_intercept_color = tk.palette_timetk()['steel_blue'],
+        width = 1500,
+        height = 1000,
+        title = "90-Day Rolling Correlation",
+        engine = "plotnine"
+    )
+```
+
+:::
+
+For comparison, we can examine the `corr_table_df` from the Descriptive Statistics Analysis:
+
+```{python}
+corr_table_df
+```
+
+## About: Rolling Regression
+
+Rolling regression involves running regression analyses over rolling windows of data points to assess the relationship between a dependent and one or more independent variables. In the context of stock analysis, it can be used to:
+
+- **Beta Estimation:** It can be used to estimate the beta of a stock (a measure of market risk) against a market index over different time periods. A higher beta indicates higher market-related risk.
+  
+- **Market Timing:** It can be useful in identifying changing relationships between stocks and market indicators, helping traders to adjust their positions accordingly.
+
+- **Hedge Ratio Determination:** It helps in determining the appropriate hedge ratios for pairs trading or other hedging strategies.
+
+
+## Application: 90-Day Rolling Regression
+
+::: {.callout-warning collapse="false"}
+## This Application Requires Scikit Learn
+
+We need to make a regression function that returns the Slope and Intercept. Scikit Learn has an easy to use modeling interface. You may need to `pip install scikit-learn` to use this applied tutorial.  
+
+:::
+
+### Step 1: Get Market Returns
+
+For our purposes, we assume the market is the average returns of the 6 technology stocks. 
+
+- We calculate an equal-weight portfolio as the "market returns".
+- Then we merge the market returns into the returns long data.  
+
+```{python}
+# Assume Market Returns = Equal Weight Portfolio
+market_returns_df = returns_wide_df \
+    .set_index("date") \
+    .assign(returns_market = lambda df: df.sum(axis = 1) * (1 / df.shape[1])) \
+    .reset_index() \
+    [['date', 'returns_market']]
+
+# Merge with returns long
+returns_long_market_df = returns_long_df \
+    .merge(market_returns_df, how='left', on='date')
+
+returns_long_market_df
+```
+
+### Step 2: Run a Rolling Regression
+
+Next, run the following code to perform a rolling regression:
+
+- Use a custom regression function that will return the slope and intercept as a pandas series.
+- Run the rolling regression with `tk.augment_rolling()`.
+
+```{python}
+from sklearn.linear_model import LinearRegression
+
+def regression(df):
+    
+    model = LinearRegression()
+    X = df[['returns_market']]  # Extract X values (independent variables)
+    y = df['returns']  # Extract y values (dependent variable)
+    model.fit(X, y)
+    ret = pd.Series([model.intercept_, model.coef_[0]], index=['Intercept', 'Slope'])
+    
+    return ret # Return intercept and slope as a Series
+
+return_regression_df = returns_long_market_df \
+    .groupby('symbol') \
+    .augment_rolling(
+        date_column = "date",
+        value_column = "returns",
+        use_independent_variables = True,
+        window = 90,
+        window_func = [('regression', regression)]
+        
+    ) \
+    .dropna()
+
+return_regression_df
+```
+
+### Step 3: Extract the Slope Coefficient (Beta)
+
+This is more of a hack than anything to extract the beta (slope) of the rolling regression.
+
+```{python}
+intercept_slope_df = pd.concat(return_regression_df['returns_rolling_regression_win_90'].to_list(), axis=1).T 
+
+intercept_slope_df.index = return_regression_df.index
+
+return_beta_df = pd.concat([return_regression_df, intercept_slope_df], axis=1)
+
+return_beta_df
+```
+
+### Step 4: Visualize the Rolling Beta
+
+:::{.panel-tabset groups="bbands-plotly-plotnine"}
+
+## Plotly
+
+```{python}
+return_beta_df \
+    .groupby('symbol') \
+    .plot_timeseries(
+        date_column = "date",
+        value_column = "Slope",
+        facet_ncol = 2,
+        facet_scales = "free_x",
+        y_intercept = [0, 3],
+        y_intercept_color = tk.palette_timetk()['steel_blue'],
+        width = 800,
+        height = 600,
+        title = "90-Day Rolling Regression",
+        engine = "plotly",
+    )
+```
+
+## Plotnine
+
+```{python}
+return_beta_df \
+    .groupby('symbol') \
+    .plot_timeseries(
+        date_column = "date",
+        value_column = "Slope",
+        facet_ncol = 2,
+        facet_scales = "free_x",
+        y_intercept = [0, 3],
+        y_intercept_color = tk.palette_timetk()['steel_blue'],
+        width = 800,
+        height = 600,
+        title = "90-Day Rolling Regression",
+        engine = "plotnine",
+    )
+```
+
+:::
+
+# Conclusions
+
+The `timetk` package offers a wide range of versatile time series functions, many of which can help improve Financial, Stock, Portfolio, and Investment Analysis in Python. 
+

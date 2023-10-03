@@ -1,6 +1,6 @@
 # plot_timeseries { #timetk.plot_timeseries }
 
-`plot_timeseries(data, date_column, value_column, color_column=None, facet_ncol=1, facet_nrow=None, facet_scales='free_y', facet_dir='h', line_color='#2c3e50', line_size=0.65, line_type='solid', line_alpha=1.0, y_intercept=None, y_intercept_color='#2c3e50', x_intercept=None, x_intercept_color='#2c3e50', smooth=True, smooth_color='#3366FF', smooth_frac=0.2, smooth_size=1.0, smooth_alpha=1.0, legend_show=True, title='Time Series Plot', x_lab='', y_lab='', color_lab='Legend', x_axis_date_labels='%b %Y', base_size=11, width=None, height=None, engine='plotly')`
+`plot_timeseries(data, date_column, value_column, color_column=None, color_palette=None, facet_ncol=1, facet_nrow=None, facet_scales='free_y', facet_dir='h', line_color='#2c3e50', line_size=0.65, line_type='solid', line_alpha=1.0, y_intercept=None, y_intercept_color='#2c3e50', x_intercept=None, x_intercept_color='#2c3e50', smooth=True, smooth_color='#3366FF', smooth_frac=0.2, smooth_size=1.0, smooth_alpha=1.0, legend_show=True, title='Time Series Plot', x_lab='', y_lab='', color_lab='Legend', x_axis_date_labels='%b %Y', base_size=11, width=None, height=None, engine='plotly')`
 
 Creates time series plots using different plotting engines such as Plotnine, Matplotlib, and Plotly.
 
@@ -12,6 +12,7 @@ Creates time series plots using different plotting engines such as Plotnine, Mat
 | `date_column`        | str                                                      | The name of the column in the DataFrame that contains the dates for the time series data.                                                                                                                                                                                                                                                                                                                                                                                    | _required_           |
 | `value_column`       | str                                                      | The `value_column` parameter is used to specify the name of the column in the DataFrame that contains the values for the time series data. This column will be plotted on the y-axis of the time series plot.                                                                                                                                                                                                                                                                | _required_           |
 | `color_column`       | str                                                      | The `color_column` parameter is an optional parameter that specifies the column in the DataFrame that will be used to assign colors to the different time series. If this parameter is not provided, all time series will have the same color.                                                                                                                                                                                                                               | `None`               |
+| `color_palette`      | list                                                     | The `color_palette` parameter is used to specify the colors to be used for the different time series. It accepts a list of color codes or names. If the `color_column` parameter is not provided, the `tk.palette_timetk()` color palette will be used.                                                                                                                                                                                                                      | `None`               |
 | `facet_ncol`         | int                                                      | The `facet_ncol` parameter determines the number of columns in the facet grid. It specifies how many subplots will be arranged horizontally in the plot.                                                                                                                                                                                                                                                                                                                     | `1`                  |
 | `facet_nrow`         | int                                                      | The `facet_nrow` parameter determines the number of rows in the facet grid. It specifies how many subplots will be arranged vertically in the grid.                                                                                                                                                                                                                                                                                                                          | `None`               |
 | `facet_scales`       | str                                                      | The `facet_scales` parameter determines the scaling of the y-axis in the facetted plots. It can take the following values: - "free_y": The y-axis scale will be free for each facet, but the x-axis scale will be fixed for all facets. This is the default value. - "free_x": The y-axis scale will be free for each facet, but the x-axis scale will be fixed for all facets. - "free": The y-axis scale will be free for each facet (subplot). This is the default value. | `'free_y'`           |
@@ -124,7 +125,7 @@ fig = (
     df
         .groupby('id')
         .plot_timeseries(
-            'date', 'value', 
+            'date', 'value',
             facet_ncol = 2,
             facet_scales = "free",
             line_size = 0.35,
@@ -161,7 +162,7 @@ fig = (
             color_column = 'id',
             facet_ncol = 2,
             x_axis_date_labels = "%Y",
-            engine = 'matplotlib'
+            engine = 'matplotlib',
         )
 )
 fig

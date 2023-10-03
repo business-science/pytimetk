@@ -24,7 +24,7 @@ df = tk.datasets.load_dataset('bike_sales_sample')
 df['order_date'] = pd.to_datetime(df['order_date'])
 
 df \
-    .groupby("category_2")
+    .groupby("category_2") \
     .summarize_by_time(
         date_column='order_date', 
         value_column= 'total_price',

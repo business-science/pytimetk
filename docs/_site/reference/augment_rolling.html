@@ -341,7 +341,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_rolling(data, date_column, value_column, use_independent_variables=False, window=2, window_func='mean', center=False, **kwargs)</code></p>
+<p><code>augment_rolling(data, date_column, value_column, use_independent_variables=False, window=2, window_func='mean', min_periods=None, center=False, **kwargs)</code></p>
 <p>Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
@@ -473,9 +473,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>D10</td>
 <td>2014-07-03</td>
 <td>2076.2</td>
-<td>2076.20</td>
 <td>NaN</td>
-<td>2076.200000</td>
+<td>NaN</td>
+<td>NaN</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
@@ -484,9 +484,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-04</td>
 <td>2073.4</td>
 <td>2074.80</td>
-<td>1.979899</td>
+<td>1.40</td>
 <td>2074.800000</td>
-<td>NaN</td>
+<td>1.400000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
@@ -494,9 +494,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-05</td>
 <td>2048.7</td>
 <td>2061.05</td>
-<td>17.465537</td>
+<td>12.35</td>
 <td>2066.100000</td>
-<td>NaN</td>
+<td>12.356645</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
@@ -504,9 +504,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-06</td>
 <td>2048.9</td>
 <td>2048.80</td>
-<td>0.141421</td>
+<td>0.10</td>
 <td>2061.800000</td>
-<td>NaN</td>
+<td>13.037830</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
@@ -514,9 +514,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-07</td>
 <td>2006.4</td>
 <td>2027.65</td>
-<td>30.052038</td>
+<td>21.25</td>
 <td>2050.720000</td>
-<td>NaN</td>
+<td>25.041038</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -534,9 +534,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-19</td>
 <td>9418.8</td>
 <td>9425.35</td>
-<td>9.263099</td>
+<td>6.55</td>
 <td>9382.071429</td>
-<td>80.292044</td>
+<td>74.335988</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9739</td>
@@ -544,9 +544,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-20</td>
 <td>9365.7</td>
 <td>9392.25</td>
-<td>37.547370</td>
+<td>26.55</td>
 <td>9396.400000</td>
-<td>63.113020</td>
+<td>58.431303</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9740</td>
@@ -554,9 +554,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-21</td>
 <td>9445.9</td>
 <td>9405.80</td>
-<td>56.709964</td>
+<td>40.10</td>
 <td>9419.114286</td>
-<td>42.324045</td>
+<td>39.184451</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9741</td>
@@ -564,9 +564,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-22</td>
 <td>9497.9</td>
 <td>9471.90</td>
-<td>36.769553</td>
+<td>26.00</td>
 <td>9438.928571</td>
-<td>42.065770</td>
+<td>38.945336</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9742</td>
@@ -574,9 +574,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-23</td>
 <td>9545.3</td>
 <td>9521.60</td>
-<td>33.516861</td>
+<td>23.70</td>
 <td>9449.028571</td>
-<td>57.656359</td>
+<td>53.379416</td>
 </tr>
 </tbody>
 </table>
@@ -625,11 +625,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-03</td>
 <td>2076.2</td>
 <td>2076.2</td>
-<td>NaN</td>
+<td>0.0</td>
 <td>2076.20</td>
-<td>NaN</td>
+<td>0.00</td>
 <td>2076.200000</td>
-<td>NaN</td>
+<td>0.000000</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
@@ -637,11 +637,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-04</td>
 <td>2073.4</td>
 <td>2073.4</td>
-<td>NaN</td>
+<td>0.0</td>
 <td>2074.80</td>
-<td>1.979899</td>
+<td>1.40</td>
 <td>2074.800000</td>
-<td>NaN</td>
+<td>1.400000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
@@ -649,11 +649,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-05</td>
 <td>2048.7</td>
 <td>2048.7</td>
-<td>NaN</td>
+<td>0.0</td>
 <td>2061.05</td>
-<td>17.465537</td>
+<td>12.35</td>
 <td>2066.100000</td>
-<td>15.133737</td>
+<td>12.356645</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
@@ -661,11 +661,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-06</td>
 <td>2048.9</td>
 <td>2048.9</td>
-<td>NaN</td>
+<td>0.0</td>
 <td>2048.80</td>
-<td>0.141421</td>
+<td>0.10</td>
 <td>2057.000000</td>
-<td>14.203169</td>
+<td>11.596839</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
@@ -673,11 +673,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-07</td>
 <td>2006.4</td>
 <td>2006.4</td>
-<td>NaN</td>
+<td>0.0</td>
 <td>2027.65</td>
-<td>30.052038</td>
+<td>21.25</td>
 <td>2034.666667</td>
-<td>24.479856</td>
+<td>19.987718</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -697,11 +697,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-19</td>
 <td>9418.8</td>
 <td>9418.8</td>
-<td>NaN</td>
+<td>0.0</td>
 <td>9425.35</td>
-<td>9.263099</td>
+<td>6.55</td>
 <td>9429.466667</td>
-<td>9.682114</td>
+<td>7.905413</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9739</td>
@@ -709,11 +709,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-20</td>
 <td>9365.7</td>
 <td>9365.7</td>
-<td>NaN</td>
+<td>0.0</td>
 <td>9392.25</td>
-<td>37.547370</td>
+<td>26.55</td>
 <td>9405.466667</td>
-<td>35.056288</td>
+<td>28.623339</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9740</td>
@@ -721,11 +721,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-21</td>
 <td>9445.9</td>
 <td>9445.9</td>
-<td>NaN</td>
+<td>0.0</td>
 <td>9405.80</td>
-<td>56.709964</td>
+<td>40.10</td>
 <td>9410.133333</td>
-<td>40.796364</td>
+<td>33.310092</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9741</td>
@@ -733,11 +733,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-22</td>
 <td>9497.9</td>
 <td>9497.9</td>
-<td>NaN</td>
+<td>0.0</td>
 <td>9471.90</td>
-<td>36.769553</td>
+<td>26.00</td>
 <td>9436.500000</td>
-<td>66.599399</td>
+<td>54.378182</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9742</td>
@@ -745,11 +745,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-23</td>
 <td>9545.3</td>
 <td>9545.3</td>
-<td>NaN</td>
+<td>0.0</td>
 <td>9521.60</td>
-<td>33.516861</td>
+<td>23.70</td>
 <td>9496.366667</td>
-<td>49.717737</td>
+<td>40.594362</td>
 </tr>
 </tbody>
 </table>
@@ -774,11 +774,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        value_column<span class="op">=</span><span class="st">'value1'</span>,</span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        use_independent_variables<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span><span class="dv">2</span>,</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        window_func<span class="op">=</span>[(<span class="st">'corr'</span>, <span class="kw">lambda</span> df: df[<span class="st">'value1'</span>].corr(df[<span class="st">'value2'</span>]))]</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>result_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        window_func<span class="op">=</span>[(<span class="st">'corr'</span>, <span class="kw">lambda</span> df: df[<span class="st">'value1'</span>].corr(df[<span class="st">'value2'</span>]))],</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        center <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>result_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
@@ -791,7 +792,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <th data-quarto-table-cell-role="th">date</th>
 <th data-quarto-table-cell-role="th">value1</th>
 <th data-quarto-table-cell-role="th">value2</th>
-<th data-quarto-table-cell-role="th">value1_rolling_corr_win_2</th>
+<th data-quarto-table-cell-role="th">value1_rolling_corr_win_3</th>
 </tr>
 </thead>
 <tbody>
@@ -809,7 +810,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2023-01-02</td>
 <td>20</td>
 <td>16</td>
-<td>1.0</td>
+<td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
@@ -817,7 +818,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2023-01-03</td>
 <td>29</td>
 <td>20</td>
-<td>1.0</td>
+<td>0.961054</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
@@ -833,7 +834,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2023-01-05</td>
 <td>53</td>
 <td>41</td>
-<td>1.0</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
@@ -841,7 +842,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2023-01-06</td>
 <td>59</td>
 <td>50</td>
-<td>1.0</td>
+<td>0.824831</td>
 </tr>
 </tbody>
 </table>
@@ -872,7 +873,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    model.fit(X, y)</span>
 <span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    ret <span class="op">=</span> pd.Series([model.intercept_, model.coef_[<span class="dv">0</span>]], index<span class="op">=</span>[<span class="st">'Intercept'</span>, <span class="st">'Slope'</span>])</span>
 <span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [ret] <span class="co"># Return a list containing intercept and slope</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ret <span class="co"># Return intercept and slope as a Series</span></span>
 <span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Example to call the function</span></span>
@@ -882,14 +883,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
 <span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>        value_column<span class="op">=</span><span class="st">'value1'</span>,</span>
 <span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        use_independent_variables<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span><span class="dv">3</span>,</span>
 <span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>        window_func<span class="op">=</span>[(<span class="st">'regression'</span>, regression)]</span>
 <span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    .dropna()</span>
 <span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Display Results in Wide Format since returning multiple values</span></span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>regression_wide_df <span class="op">=</span> pd.concat(result_df[<span class="st">'value1_rolling_regression_win_2'</span>].to_list(), axis<span class="op">=</span><span class="dv">1</span>).T</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>regression_wide_df <span class="op">=</span> pd.concat(result_df[<span class="st">'value1_rolling_regression_win_3'</span>].to_list(), axis<span class="op">=</span><span class="dv">1</span>).T</span>
 <span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>regression_wide_df <span class="op">=</span> pd.concat([result_df.reset_index(drop <span class="op">=</span> <span class="va">True</span>), regression_wide_df], axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a></span>
@@ -907,7 +908,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <th data-quarto-table-cell-role="th">value1</th>
 <th data-quarto-table-cell-role="th">value2</th>
 <th data-quarto-table-cell-role="th">value3</th>
-<th data-quarto-table-cell-role="th">value1_rolling_regression_win_2</th>
+<th data-quarto-table-cell-role="th">value1_rolling_regression_win_3</th>
 <th data-quarto-table-cell-role="th">Intercept</th>
 <th data-quarto-table-cell-role="th">Slope</th>
 </tr>
@@ -916,46 +917,24 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>1</td>
-<td>2023-01-02</td>
-<td>20</td>
-<td>16</td>
-<td>3</td>
-<td>Intercept 5.327869 Slope 0.901639 dt...</td>
-<td>5.327869</td>
-<td>0.901639</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>1</td>
 <td>2023-01-03</td>
 <td>29</td>
 <td>24</td>
 <td>6</td>
-<td>Intercept 3.109589 Slope 0.986301 dt...</td>
-<td>3.109589</td>
-<td>0.986301</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2</td>
-<td>2023-01-05</td>
-<td>53</td>
-<td>45</td>
-<td>10</td>
-<td>Intercept 2.900990 Slope 1.089109 dt...</td>
-<td>2.900990</td>
-<td>1.089109</td>
+<td>Intercept 4.28 Slope 0.84 dtype: flo...</td>
+<td>4.280000</td>
+<td>0.840000</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
+<td data-quarto-table-cell-role="th">1</td>
 <td>2</td>
 <td>2023-01-06</td>
 <td>59</td>
 <td>58</td>
 <td>13</td>
-<td>Intercept 32.269663 Slope 0.438202 ...</td>
-<td>32.269663</td>
-<td>0.438202</td>
+<td>Intercept 30.352941 Slope 1.588235 ...</td>
+<td>30.352941</td>
+<td>1.588235</td>
 </tr>
 </tbody>
 </table>
