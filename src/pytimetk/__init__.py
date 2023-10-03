@@ -58,6 +58,9 @@ from .core.pad import (
 from .core.rolling import (
     augment_rolling
 )
+from .core.expanding import (
+    augment_expanding
+)
 from .core.fourier import (
     augment_fourier
 )
