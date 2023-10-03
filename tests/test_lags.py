@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 # Ensure the function and dependencies are imported
-from timetk import augment_lags
+from pytimetk import augment_lags
 
 # Sample data for testing
 df_sample = pd.DataFrame({

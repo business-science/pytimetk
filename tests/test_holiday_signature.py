@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime
 
 # Assuming the provided code is in a module named 'holidays_module'
-import timetk
+import pytimetk
 
 
 def test_augment_holiday_signature_us():
@@ -33,7 +33,7 @@ def test_augment_holiday_signature_invalid_country():
 
 def test_get_holiday_signature():
     dates = pd.date_range(start="2023-01-01", end="2023-01-10")
-    signature_df = timetk.get_holiday_signature(dates, 'UnitedStates')
+    signature_df = pytimetk.get_holiday_signature(dates, 'UnitedStates')
 
     assert 'is_holiday' in signature_df.columns
     assert 'before_holiday' in signature_df.columns

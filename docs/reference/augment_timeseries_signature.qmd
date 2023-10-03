@@ -53,7 +53,7 @@ The function `augment_timeseries_signature` takes a DataFrame and a date column 
 
 ```{python}
 import pandas as pd
-import timetk as tk
+import pytimetk as tk
 
 pd.set_option('display.max_columns', None)
 

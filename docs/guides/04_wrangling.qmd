@@ -27,7 +27,7 @@ Before proceeding, be sure to review the Timetk Basics section if you haven't al
 **Load Libraries & Data**
 ```{python}
 # import libraries
-import timetk as tk
+import pytimetk as tk
 import pandas as pd
 import numpy as np
 
@@ -196,7 +196,7 @@ Let's start with a basic example to see how `pad_by_time()` works. We'll create 
 ```{python}
 
 # libraries
-import timetk as tk
+import pytimetk as tk
 import pandas as pd
 import numpy as np
 
@@ -289,7 +289,7 @@ Check out the [Adding Features (Augmenting) Time Series Data Guide next.](/guide
 
 # More Coming Soon...
 
-We are in the early stages of development. But it's obvious the potential for `timetk` now in Python. 🐍
+We are in the early stages of development. But it's obvious the potential for `pytimetk` now in Python. 🐍
 
 - Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). 
 - To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 

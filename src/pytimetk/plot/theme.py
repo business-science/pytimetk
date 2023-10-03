@@ -26,7 +26,7 @@ def theme_timetk(base_size: int = 11, base_family: list = ['Arial', 'Helvetica',
     Examples
     --------
     ```{python}
-    import timetk as tk
+    import pytimetk as tk
     import pandas as pd
     
     from plotnine import ggplot, aes, geom_line, labs, scale_x_date, facet_wrap
@@ -150,7 +150,7 @@ def palette_timetk():
     --------
     
     ```{python}
-    import timetk as tk
+    import pytimetk as tk
     
     tk.palette_timetk()
     ```

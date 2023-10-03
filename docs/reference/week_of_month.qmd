@@ -19,7 +19,7 @@ The "week_of_month" function calculates the week number of a given date within i
 ## Examples
 
 ```{python}
-import timetk as tk
+import pytimetk as tk
 import pandas as pd
 
 dates = pd.date_range("2020-01-01", "2020-02-28", freq="1D")

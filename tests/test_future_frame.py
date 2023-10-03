@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import pytest
 from pandas.testing import assert_series_equal, assert_frame_equal
-import timetk
+import pytimetk
 
 # Creates a sample DataFrame for testing
 data = {
@@ -23,13 +23,13 @@ df_irr = pd.DataFrame(data_irr)
 # Test make_future_timeseries function
 def test_make_future_timeseries():
     # Test with regular frequency
-    future_dates = timetk.make_future_timeseries(df['date'], 5)
+    future_dates = pytimetk.make_future_timeseries(df['date'], 5)
     expected_dates = pd.Series(pd.date_range('2022-01-07', periods=5, freq='D'))
 
     assert_series_equal(future_dates, expected_dates, check_freq=False)
 
     # Test with irregular frequency (business days)
-    future_dates_irregular = timetk.make_future_timeseries(df_irr['date'], 6, force_regular=False)
+    future_dates_irregular = pytimetk.make_future_timeseries(df_irr['date'], 6, force_regular=False)
     expected_dates_irregular = pd.Series(pd.to_datetime(['2022-01-17', '2022-01-18', '2022-01-19','2022-01-20',\
                                                         '2022-01-21','2022-01-24']))
     assert_series_equal(future_dates_irregular, expected_dates_irregular, check_freq=False)

@@ -3,7 +3,7 @@ import numpy as np
 import pandas_flavor as pf
 from typing import Union
 
-from timetk.utils.datetime_helpers import get_pandas_frequency
+from pytimetk.utils.datetime_helpers import get_pandas_frequency
 
 @pf.register_series_method
 def make_future_timeseries(
@@ -34,7 +34,7 @@ def make_future_timeseries(
     
     ```{python}
     import pandas as pd
-    import timetk as tk
+    import pytimetk as tk
     
     dates = pd.Series(pd.to_datetime(['2022-01-01', '2022-01-02', '2022-01-03', '2022-01-04']))
     dates
@@ -152,7 +152,7 @@ def future_frame(
     --------
     ```{python}
     import pandas as pd
-    import timetk as tk
+    import pytimetk as tk
     
     df = tk.load_dataset('m4_hourly', parse_dates = ['date'])
     df

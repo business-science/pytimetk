@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
-from timetk.utils import get_pandas_frequency
-from timetk import ts_summary  # Adjust the module name accordingly
+from pytimetk.utils import get_pandas_frequency
+from pytimetk import ts_summary  # Adjust the module name accordingly
 
 # Sample test data
 dates = pd.to_datetime(["2023-10-02", "2023-10-03", "2023-10-04", "2023-10-05", "2023-10-06", "2023-10-09", "2023-10-10"])
@@ -36,7 +36,7 @@ def test_ts_summary_invalid_data_type():
 
 # Test get_diff_summary for numeric flag
 def test_get_diff_summary_numeric_flag():
-    from timetk import get_diff_summary  # Adjust the module name accordingly
+    from pytimetk import get_diff_summary  # Adjust the module name accordingly
     result = get_diff_summary(df_sample['date'], numeric=True)
     
     # Checking columns for numeric flag
@@ -45,7 +45,7 @@ def test_get_diff_summary_numeric_flag():
 
 # Test get_date_summary for basic output
 def test_get_date_summary():
-    from timetk import get_date_summary  # Adjust the module name accordingly
+    from pytimetk import get_date_summary  # Adjust the module name accordingly
     result = get_date_summary(df_sample['date'])
     
     # Basic checks
@@ -54,7 +54,7 @@ def test_get_date_summary():
 
 # Test get_frequency_summary for basic output
 def test_get_frequency_summary():
-    from timetk import get_frequency_summary  # Adjust the module name accordingly
+    from pytimetk import get_frequency_summary  # Adjust the module name accordingly
     result = get_frequency_summary(df_sample['date'])
     
     # Basic checks

@@ -2,7 +2,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 import pandas_flavor as pf
 
-from timetk.utils.datetime_helpers import is_holiday
+from pytimetk.utils.datetime_helpers import is_holiday
 from typing import Union
 
 @pf.register_series_method
@@ -39,7 +39,7 @@ def make_weekday_sequence(
     --------
     ```{python}
     import pandas as pd
-    import timetk as tk
+    import pytimetk as tk
     
     # United States has Monday to Friday as weekdays (excluding Saturday and Sunday and holidays)
     tk.make_weekday_sequence("2023-01-01", "2023-01-15", sunday_to_thursday=False, remove_holidays=True, country='UnitedStates')
@@ -113,7 +113,7 @@ def make_weekend_sequence(
     --------
     ```{python}
     import pandas as pd
-    import timetk as tk
+    import pytimetk as tk
 
     # United States has Saturday and Sunday as weekends
     tk.make_weekend_sequence("2023-01-01", "2023-01-31", friday_saturday=False, remove_holidays=True, country='UnitedStates')

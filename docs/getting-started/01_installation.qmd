@@ -15,7 +15,7 @@ This library is currently under development and is not intended for general usag
 
 # Quick Install
 
-Let's get you up and running with `timetk` fast. You can install from GitHub with this code. 
+Let's get you up and running with `pytimetk` fast. You can install from GitHub with this code. 
 
 ```bash
 pip install git+https://github.com/business-science/pytimetk.git
@@ -27,7 +27,7 @@ Check out the [Quick Start Guide Next.](/getting-started/02_quick_start.html)
 
 # More Coming Soon...
 
-We are in the early stages of development. But it's obvious the potential for `timetk` now in Python. 🐍
+We are in the early stages of development. But it's obvious the potential for `pytimetk` now in Python. 🐍
 
 - Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). 
 - To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 

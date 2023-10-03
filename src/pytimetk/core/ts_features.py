@@ -97,7 +97,7 @@ def ts_features(
     ```{python}
     # REQUIRES tsfeatures: pip install tsfeatures
     import pandas as pd
-    import timetk as tk
+    import pytimetk as tk
     
     # tsfeatures comes with these features:
     from tsfeatures import (

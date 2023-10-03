@@ -9,7 +9,7 @@ code-fold: true
 ---
 
 
-Timetk is designed to work with any time series domain. **Arguably the most important is Finance.** This tutorial showcases how you can perform Financial Investment and Stock Analysis at scale with `timetk`. This applied tutorial covers financial analysis with:
+Timetk is designed to work with any time series domain. **Arguably the most important is Finance.** This tutorial showcases how you can perform Financial Investment and Stock Analysis at scale with `pytimetk`. This applied tutorial covers financial analysis with:
 
 - `tk.plot_timeseries()`: Visualizing financial data
 - `tk.augment_rolling()`: Moving averages, rolling regressions
@@ -17,7 +17,7 @@ Timetk is designed to work with any time series domain. **Arguably the most impo
 Load the following packages before proceeding with this tutorial. 
 
 ```{python}
-import timetk as tk
+import pytimetk as tk
 import pandas as pd
 import numpy as np
 ```
@@ -137,7 +137,7 @@ Technical indicators are mathematical calculations based on the price, volume, o
    - **Advance/Decline Line:** Represents the number of advancing stocks divided by the number of declining stocks over a given period.
    - **Market Breadth:** Measures the number of securities that have advanced and declined in a specific market or index, giving traders a feel for the market's overall mood.
 
-Let's see a few examples of technical indicators in `timetk`. 
+Let's see a few examples of technical indicators in `pytimetk`. 
 
 ## Application: Moving Averages, 10-Day and 50-Day
 
@@ -242,7 +242,7 @@ Bollinger Bands are a volatility indicator commonly used in financial trading. T
 2. The upper band, calculated as the middle band plus k times the standard deviation of the price (typically, k=2).
 3. The lower band, calculated as the middle band minus k times the standard deviation of the price.
 
-Here's how you can calculate and plot Bollinger Bands with `timetk` using **this code template (click to expand)**:
+Here's how you can calculate and plot Bollinger Bands with `pytimetk` using **this code template (click to expand)**:
 
 :::{.panel-tabset groups="bbands-plotly-plotnine"}
 
@@ -411,7 +411,7 @@ corr_table_df
 
 <!-- ::: -->
 
-The problem is that the stock market is constantly changing. And these descriptive statistics aren't representative of the most recent fluctuations. This is where `timetk` comes into play with rolling descriptive statistics. 
+The problem is that the stock market is constantly changing. And these descriptive statistics aren't representative of the most recent fluctuations. This is where `pytimetk` comes into play with rolling descriptive statistics. 
 
 ### Application: 90-Day Rolling Descriptive Statistics Analysis
 
@@ -788,5 +788,5 @@ return_beta_df \
 
 # Conclusions
 
-The `timetk` package offers a wide range of versatile time series functions, many of which can help improve Financial, Stock, Portfolio, and Investment Analysis in Python. 
+The `pytimetk` package offers a wide range of versatile time series functions, many of which can help improve Financial, Stock, Portfolio, and Investment Analysis in Python. 
 

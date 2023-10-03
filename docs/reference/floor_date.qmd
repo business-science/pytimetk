@@ -22,7 +22,7 @@ The `floor_date` function takes a pandas Series of dates and returns a new Serie
 ## Examples
 
 ```{python}
-import timetk as tk
+import pytimetk as tk
 import pandas as pd
 
 dates = pd.date_range("2020-01-01", "2020-01-10", freq="1H")

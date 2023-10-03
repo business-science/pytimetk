@@ -84,9 +84,9 @@ Helper functions to make your life easier.
 
 ## 💾 12 Datasets
 
-Practice `timetk` with 12 complementary time series datasets.
+Practice `pytimetk` with 12 complementary time series datasets.
 
 | | |
 | --- | --- |
-| [get_available_datasets](get_available_datasets.qmd#timetk.datasets.get_datasets.get_available_datasets) | Get a list of 12 datasets that can be loaded with `timetk.load_dataset`. |
+| [get_available_datasets](get_available_datasets.qmd#timetk.datasets.get_datasets.get_available_datasets) | Get a list of 12 datasets that can be loaded with `pytimetk.load_dataset`. |
 | [load_dataset](load_dataset.qmd#timetk.datasets.get_datasets.load_dataset) | Load one of 12 Time Series Datasets. |

@@ -52,7 +52,7 @@ The function `tk_get_timeseries_signature` engineers **29 different date and tim
 
 ```{python}
 import pandas as pd
-import timetk as tk
+import pytimetk as tk
 
 pd.set_option('display.max_columns', None)
 

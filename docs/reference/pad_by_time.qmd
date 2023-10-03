@@ -27,7 +27,7 @@ The `pad_by_time` function inserts missing dates into a Pandas DataFrame or Data
 
 ```{python}
 import pandas as pd
-import timetk as tk
+import pytimetk as tk
 
 df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
 df

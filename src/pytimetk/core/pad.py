@@ -56,7 +56,7 @@ def pad_by_time(
     --------
     ```{python}
     import pandas as pd
-    import timetk as tk
+    import pytimetk as tk
     
     df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
     df

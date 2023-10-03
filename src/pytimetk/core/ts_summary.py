@@ -4,7 +4,7 @@ import numpy as np
 
 from typing import Union
 
-from timetk.utils import get_pandas_frequency
+from pytimetk.utils import get_pandas_frequency
 
     
 @pf.register_dataframe_method
@@ -53,7 +53,7 @@ def ts_summary(
     Examples
     --------
     ```{python}
-    import timetk as tk
+    import pytimetk as tk
     import pandas as pd
     
     dates = pd.to_datetime(["2023-10-02", "2023-10-03", "2023-10-04", "2023-10-05", "2023-10-06", "2023-10-09", "2023-10-10"])

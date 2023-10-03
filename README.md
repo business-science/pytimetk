@@ -1,4 +1,4 @@
-# TimeTK
+# pytimetk
 
 > The time series toolkit for Python
 
@@ -17,7 +17,7 @@ pip install git+https://github.com/business-science/pytimetk.git
 This is a simple code to test the function `summarize_by_time`:
 
 ```python
-import timetk as tk
+import pytimetk as tk
 import pandas as pd
 
 df = tk.datasets.load_dataset('bike_sales_sample')
@@ -37,7 +37,7 @@ df \
 
 ## Developers (Contributors): Installation
 
-To install `timetk` using [Poetry](https://python-poetry.org/), follow these steps:
+To install `pytimetk` using [Poetry](https://python-poetry.org/), follow these steps:
 
 ### 1. Prerequisites
 
@@ -49,7 +49,7 @@ To install Poetry, you can use the [official installer](https://python-poetry.or
 
 ### 3. Clone the Repository
 
-Clone the `timetk` repository from GitHub:
+Clone the `pytimetk` repository from GitHub:
 
 ```bash
 git clone https://github.com/business-science/pytimetk

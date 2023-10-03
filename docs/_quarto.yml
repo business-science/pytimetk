@@ -163,7 +163,7 @@ quartodoc:
       - flatten_multiindex_column_names
     - title: 💾 12 Datasets
       package: timetk.datasets.get_datasets
-      desc: Practice `timetk` with 12 complementary time series datasets.
+      desc: Practice `pytimetk` with 12 complementary time series datasets.
       contents:
         - get_available_datasets
         - load_dataset

@@ -20,7 +20,7 @@ Run the following code to setup for this tutorial.
 
 ```{python}
 # Import packages
-import timetk as tk
+import pytimetk as tk
 import pandas as pd
 ```
 
@@ -97,7 +97,7 @@ taylor_30_min.plot_timeseries(
 
 # More Coming Soon...
 
-We are in the early stages of development. But it's obvious the potential for `timetk` now in Python. 🐍
+We are in the early stages of development. But it's obvious the potential for `pytimetk` now in Python. 🐍
 
 - Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). 
 - To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 

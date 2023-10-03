@@ -20,7 +20,7 @@ Computes summary statistics for a time series data, either for the entire datase
 ## Examples
 
 ```{python}
-import timetk as tk
+import pytimetk as tk
 import pandas as pd
 
 dates = pd.to_datetime(["2023-10-02", "2023-10-03", "2023-10-04", "2023-10-05", "2023-10-06", "2023-10-09", "2023-10-10"])

@@ -35,7 +35,7 @@ def augment_leads(
     --------
     ```{python}
     import pandas as pd
-    import timetk as tk
+    import pytimetk as tk
 
     df = tk.load_dataset('m4_daily', parse_dates=['date'])
     ```

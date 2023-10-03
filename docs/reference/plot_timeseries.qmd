@@ -50,7 +50,7 @@ Creates time series plots using different plotting engines such as Plotnine, Mat
 ## Examples
 
 ```{python}
-import timetk as tk
+import pytimetk as tk
 
 df = tk.load_dataset('m4_monthly', parse_dates = ['date'])
 

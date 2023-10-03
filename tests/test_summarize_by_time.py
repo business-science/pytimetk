@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-import timetk
+import pytimetk
 
 @pytest.fixture
 def summarize_by_time_data_test():

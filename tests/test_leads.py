@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 import numpy as np
-from timetk import augment_leads  
+from pytimetk import augment_leads  
 
 # Sample Data for testing
 data = {

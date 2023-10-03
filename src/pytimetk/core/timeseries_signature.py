@@ -4,7 +4,7 @@ import numpy as np
 import pandas_flavor as pf
 from typing import Union
 
-from timetk.utils.datetime_helpers import week_of_month
+from pytimetk.utils.datetime_helpers import week_of_month
 
 
  
@@ -57,7 +57,7 @@ def get_timeseries_signature(idx: Union[pd.Series, pd.DatetimeIndex]) -> pd.Data
     --------
     ```{python}
     import pandas as pd
-    import timetk as tk
+    import pytimetk as tk
     
     pd.set_option('display.max_columns', None)
     
@@ -212,7 +212,7 @@ def augment_timeseries_signature(
     --------
     ```{python}
     import pandas as pd
-    import timetk as tk
+    import pytimetk as tk
     
     pd.set_option('display.max_columns', None)
     

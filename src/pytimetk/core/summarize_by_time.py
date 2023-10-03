@@ -5,7 +5,7 @@ from typing import Union
 import re 
 from itertools import cycle
 
-from timetk.utils.pandas_helpers import flatten_multiindex_column_names
+from pytimetk.utils.pandas_helpers import flatten_multiindex_column_names
 
 
 @pf.register_dataframe_method
@@ -85,7 +85,7 @@ def summarize_by_time(
     Examples
     --------
     ```{python}
-    import timetk as tk
+    import pytimetk as tk
     import pandas as pd
     
     df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])

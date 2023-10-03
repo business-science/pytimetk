@@ -131,7 +131,7 @@ def augment_holiday_signature(
     -------
     ```{python}
     import pandas as pd
-    import timetk as tk
+    import pytimetk as tk
     
     # Make a DataFrame with a date column
     start_date = '2023-01-01'
@@ -346,7 +346,7 @@ def get_holiday_signature(
     -------
     ```{python}
     import pandas as pd
-    import timetk as tk
+    import pytimetk as tk
     
     # Make a DataFrame with a date column
     start_date = '2023-01-01'

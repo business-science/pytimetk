@@ -27,7 +27,7 @@ The `summarize_by_time` function aggregates data by a specified time period and 
 ## Examples
 
 ```{python}
-import timetk as tk
+import pytimetk as tk
 import pandas as pd
 
 df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])

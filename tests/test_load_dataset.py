@@ -1,13 +1,13 @@
 import numpy as np
 import pandas as pd
 import pytest
-import timetk
+import pytimetk
 
 def test_load_dataset_wrong_name():
     """Test if load_dataset raises an error when the name is wrong"""
         
     with pytest.raises(ValueError):
-        timetk.load_dataset("wrong_name")
+        pytimetk.load_dataset("wrong_name")
 
 def test_load_dataset():
     """Test if load_dataset is working"""
@@ -15,7 +15,7 @@ def test_load_dataset():
     # Options: ['bike_sales_sample', 'bike_sharing_daily', 'm4_daily', 'm4_hourly', 'm4_monthly', 'm4_quarterly', 'm4_weekly', 'm4_yearly', 'taylor_30_min', 'walmart_sales_weekly', 'wikipedia_traffic_daily']
     
     # m4_daily
-    data = timetk.load_dataset("m4_daily")
+    data = pytimetk.load_dataset("m4_daily")
     
     assert isinstance(data, pd.DataFrame), \
         'The dataset is not a pandas DataFrame!'
@@ -28,7 +28,7 @@ def test_load_dataset():
         
     # m4_hourly
     
-    data = timetk.load_dataset("m4_hourly")
+    data = pytimetk.load_dataset("m4_hourly")
     
     assert isinstance(data, pd.DataFrame), \
         'The dataset is not a pandas DataFrame!'
@@ -41,7 +41,7 @@ def test_load_dataset():
         
     # m4_weekly
     
-    data = timetk.load_dataset("m4_weekly")
+    data = pytimetk.load_dataset("m4_weekly")
     
     assert isinstance(data, pd.DataFrame), \
         'The dataset is not a pandas DataFrame!'
@@ -54,7 +54,7 @@ def test_load_dataset():
         
     # m4_monthly
     
-    data = timetk.load_dataset("m4_monthly")
+    data = pytimetk.load_dataset("m4_monthly")
     
     assert data.shape == (1574, 3), \
         'The dataset has the wrong shape!'
@@ -64,7 +64,7 @@ def test_load_dataset():
 
     # m4_quarterly
     
-    data = timetk.load_dataset("m4_quarterly")
+    data = pytimetk.load_dataset("m4_quarterly")
     
     assert data.shape == (196, 3), \
         'The dataset has the wrong shape!'
@@ -74,7 +74,7 @@ def test_load_dataset():
 
     # m4_yearly
     
-    data = timetk.load_dataset("m4_yearly")
+    data = pytimetk.load_dataset("m4_yearly")
     
     assert data.shape == (135, 3), \
         'The dataset has the wrong shape!'
@@ -84,7 +84,7 @@ def test_load_dataset():
     
     # bike_sales_sample
     
-    data = timetk.load_dataset("bike_sales_sample")
+    data = pytimetk.load_dataset("bike_sales_sample")
     
     assert data.shape == (2466, 13), \
         'The dataset has the wrong shape!'
@@ -96,7 +96,7 @@ def test_load_dataset():
 
     # bike_sharing_daily
     
-    data = timetk.load_dataset("bike_sharing_daily")
+    data = pytimetk.load_dataset("bike_sharing_daily")
     
     assert data.shape == (731, 16), \
         'The dataset has the wrong shape!'
@@ -108,7 +108,7 @@ def test_load_dataset():
 
     # taylor_30_min
     
-    data = timetk.load_dataset("taylor_30_min")
+    data = pytimetk.load_dataset("taylor_30_min")
     
     assert data.shape == (4032, 2), \
         'The dataset has the wrong shape!'
@@ -118,7 +118,7 @@ def test_load_dataset():
 
     # walmart_sales_weekly
     
-    data = timetk.load_dataset("walmart_sales_weekly")
+    data = pytimetk.load_dataset("walmart_sales_weekly")
     
     assert data.shape == (1001, 17), \
         'The dataset has the wrong shape!'
@@ -131,7 +131,7 @@ def test_load_dataset():
 
     # wikipedia_traffic_daily
     
-    data = timetk.load_dataset("wikipedia_traffic_daily")
+    data = pytimetk.load_dataset("wikipedia_traffic_daily")
     
     assert data.shape == (5500, 3), \
         'The dataset has the wrong shape!'

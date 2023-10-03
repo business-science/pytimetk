@@ -24,7 +24,7 @@ Generate a sequence of weekend dates within a specified date range, optionally e
 
 ```{python}
 import pandas as pd
-import timetk as tk
+import pytimetk as tk
 
 # United States has Saturday and Sunday as weekends
 tk.make_weekend_sequence("2023-01-01", "2023-01-31", friday_saturday=False, remove_holidays=True, country='UnitedStates')

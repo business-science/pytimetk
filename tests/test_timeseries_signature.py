@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from timetk import get_timeseries_signature, augment_timeseries_signature  
+from pytimetk import get_timeseries_signature, augment_timeseries_signature  
 
 def test_get_timeseries_signature():
 

@@ -7,12 +7,12 @@ number-sections: true
 number-depth: 2
 ---
 
-> *Timetk has one mission:* To make time series analysis simpler, easier, and faster in Python. This goal requires some opinionated ways of treating time series in Python. We will conceptually lay out how `timetk` can help. 
+> *Timetk has one mission:* To make time series analysis simpler, easier, and faster in Python. This goal requires some opinionated ways of treating time series in Python. We will conceptually lay out how `pytimetk` can help. 
 
 ::: {.callout-note collapse="false"}
 ## How this guide benefits you
 
-This guide covers how to use `timetk` conceptually. Once you understand key concepts, you can go from basic to advanced time series analysis very fast. 
+This guide covers how to use `pytimetk` conceptually. Once you understand key concepts, you can go from basic to advanced time series analysis very fast. 
 :::
 
 
@@ -31,7 +31,7 @@ In practice here's what this looks like using the "m4_daily" dataset:
 
 ```{python}
 # Import packages
-import timetk as tk
+import pytimetk as tk
 import pandas as pd
 import numpy as np
 
@@ -53,7 +53,7 @@ We can see that the `m4_daily` dataset has:
 ::: {.callout-important collapse="false"}
 ## Missing any of the 3 Core Properties of Time Series Data
 
-If your data is not formatted properly for `timetk`, meaning it's missing columns containing datetime, numeric values, or grouping columns, this can impact your ability to use `timetk` for time series anlysis. 
+If your data is not formatted properly for `pytimetk`, meaning it's missing columns containing datetime, numeric values, or grouping columns, this can impact your ability to use `pytimetk` for time series anlysis. 
 :::
 
 ::: {.callout-important collapse="false"}
@@ -81,24 +81,24 @@ Timetk contains a number of functions designed to make time series analysis oper
    
    - *Numeric Operations:* Are designed for *Numeric Values*. You will see `x` as the first parameter for these functions. 
 
-Let's take a look at how to use the different types of Time Series Analysis functions in `timetk`. We'll start with Type 1: Pandas `DataFrame` Operations. 
+Let's take a look at how to use the different types of Time Series Analysis functions in `pytimetk`. We'll start with Type 1: Pandas `DataFrame` Operations. 
 
 ## Type 1: Pandas DataFrame Operations
 
-Before we start using `timetk`, let's make sure our data is set up properly. 
+Before we start using `pytimetk`, let's make sure our data is set up properly. 
 
 ### Timetk Data Format Compliance
 
 ::: {.callout-important collapse="false"}
 ## 3 Core Properties Must Be Upheald
 
-A `Timetk`-Compliant Pandas `DataFrame` must have:
+A `pytimetk`-Compliant Pandas `DataFrame` must have:
 
 1. *Time Series Index:* A Time Stamp column containing `datetime64` values
 2. *Value Column(s):* The value column(s) containing `float` or `int` values
 3. *Group Column(s):* Optionally for grouped time series analysis, one or more columns containg `str` or `categorical` values (shown as an object)
 
-If these are NOT upheld, this will impact your ability to use `timetk` DataFrame operations. 
+If these are NOT upheld, this will impact your ability to use `pytimetk` DataFrame operations. 
 :::
 
 ::: {.callout-tip collapse="false"}
@@ -349,7 +349,7 @@ Of course for this operation, we can do it faster with `summarize_by_time()` (an
 )
 ```
 
-And that's the core idea behind `timetk`, writing less code and getting more. 
+And that's the core idea behind `pytimetk`, writing less code and getting more. 
 
 
 
@@ -400,7 +400,7 @@ Check out the [Pandas Frequency Guide next.](/guides/03_pandas_frequency.html)
 
 # More Coming Soon...
 
-We are in the early stages of development. But it's obvious the potential for `timetk` now in Python. 🐍
+We are in the early stages of development. But it's obvious the potential for `pytimetk` now in Python. 🐍
 
 - Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). 
 - To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 

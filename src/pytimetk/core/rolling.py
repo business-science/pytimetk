@@ -56,7 +56,7 @@ def augment_rolling(
     Examples
     --------
     ```{python}
-    import timetk as tk
+    import pytimetk as tk
     import pandas as pd
     import numpy as np
     

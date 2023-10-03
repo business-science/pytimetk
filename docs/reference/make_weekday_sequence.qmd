@@ -24,7 +24,7 @@ Generate a sequence of weekday dates within a specified date range, optionally e
 
 ```{python}
 import pandas as pd
-import timetk as tk
+import pytimetk as tk
 
 # United States has Monday to Friday as weekdays (excluding Saturday and Sunday and holidays)
 tk.make_weekday_sequence("2023-01-01", "2023-01-15", sunday_to_thursday=False, remove_holidays=True, country='UnitedStates')

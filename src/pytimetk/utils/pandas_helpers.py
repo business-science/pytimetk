@@ -19,7 +19,7 @@ def glimpse(
     Examples
     --------
     ```{python}
-    import timetk as tk
+    import pytimetk as tk
     import pandas as pd
     
     df = tk.load_dataset('walmart_sales_weekly', parse_dates=['Date'])
@@ -76,7 +76,7 @@ def flatten_multiindex_column_names(data: pd.DataFrame, sep = '_'):
     --------
     ```{python}
     import pandas as pd
-    import timetk as tk
+    import pytimetk as tk
     
     date_rng = pd.date_range(start='2023-01-01', end='2023-01-03', freq='D')
 

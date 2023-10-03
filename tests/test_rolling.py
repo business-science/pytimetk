@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 import numpy as np
-from timetk import augment_rolling  
+from pytimetk import augment_rolling  
 
 # Sample data for testing
 df = pd.DataFrame({

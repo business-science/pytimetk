@@ -10,7 +10,7 @@ number-depth: 2
 ::: {.callout-note collapse="false"}
 ## How this guide benefits you
 
-This guide covers how to use the `pandas` frequency strings within `timetk`. Once you understand key frequencies, you can apply them to manipulate time series data like a pro. 
+This guide covers how to use the `pandas` frequency strings within `pytimetk`. Once you understand key frequencies, you can apply them to manipulate time series data like a pro. 
 :::
 
 # Pandas Frequencies
@@ -73,11 +73,11 @@ These frequency strings help in resampling, creating date ranges, and handling t
 
 # Timetk Incorporates Pandas Frequencies
 
-Now that you've seen pandas frequencies, you'll see them pop up in many of the `timetk` functions. 
+Now that you've seen pandas frequencies, you'll see them pop up in many of the `pytimetk` functions. 
 
 ### Example: Padding Dates
 
-This example shows how to use Pandas frequencies inside of `timetk` functions. 
+This example shows how to use Pandas frequencies inside of `pytimetk` functions. 
 
 We'll use `pad_by_time` to show how to use freq to fill in missing dates. 
 
@@ -99,7 +99,7 @@ df
 We can resample to fill in the missing day using `pad_by_time` with `freq = 'D'`.
 
 ```{python}
-import timetk as tk
+import pytimetk as tk
 
 df.pad_by_time('datetime', freq = 'D')
 ```
@@ -107,12 +107,12 @@ df.pad_by_time('datetime', freq = 'D')
 What about resampling every 12 hours? Just set `freq = '12H'.
 
 ```{python}
-import timetk as tk
+import pytimetk as tk
 
 df.pad_by_time('datetime', freq = '12H')
 ```
 
-You'll see these pandas frequencies come up as the parameter `freq` in many `timetk` functions. 
+You'll see these pandas frequencies come up as the parameter `freq` in many `pytimetk` functions. 
 
 # Next Steps
 
@@ -120,7 +120,7 @@ Check out the [Data Wrangling Guide next.](/guides/04_wrangling.html)
 
 # More Coming Soon...
 
-We are in the early stages of development. But it's obvious the potential for `timetk` now in Python. 🐍
+We are in the early stages of development. But it's obvious the potential for `pytimetk` now in Python. 🐍
 
 - Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). 
 - To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 

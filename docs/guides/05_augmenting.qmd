@@ -34,7 +34,7 @@ Add 1 or more lags / leads to a dataset:
 ```{python}
 
 # import libraries
-import timetk as tk
+import pytimetk as tk
 import pandas as pd
 import numpy as np
 import random

@@ -27,7 +27,7 @@ def load_dataset(
     - `wikipedia_traffic_daily`: The Wikipedia traffic daily dataset
     - `stocks_daily`: The MAANNG stocks dataset
     
-    The datasets can be loaded with `timetk.load_dataset(name)`, where `name` is the name of the dataset that you want to load. The default value is set to "m4_daily", which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned above.
+    The datasets can be loaded with `pytimetk.load_dataset(name)`, where `name` is the name of the dataset that you want to load. The default value is set to "m4_daily", which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned above.
     
     Parameters
     ----------
@@ -47,7 +47,7 @@ def load_dataset(
     Examples
     --------
     ```{python}
-    import timetk as tk
+    import pytimetk as tk
     import pandas as pd
     ```
     
@@ -84,7 +84,7 @@ def load_dataset(
         raise ValueError(f"Dataset {name} not found. Please choose from the following: \n{dataset_list}")
     
     # Load the dataset
-    package_path = files('timetk')
+    package_path = files('pytimetk')
     # Reference to the a file within the package
     text_path = f"{package_path}/datasets/{name}.csv"
     with open(text_path, 'r', encoding='utf-8') as f:
@@ -94,28 +94,28 @@ def load_dataset(
 
     
 def get_available_datasets():
-    '''Get a list of 12 datasets that can be loaded with `timetk.load_dataset`.
+    '''Get a list of 12 datasets that can be loaded with `pytimetk.load_dataset`.
     
-    The `get_available_datasets` function returns a sorted list of available dataset names from the `timetk.datasets` module. The available datasets are:
+    The `get_available_datasets` function returns a sorted list of available dataset names from the `pytimetk.datasets` module. The available datasets are:
     
     
     
     Returns
     -------
     list
-        The function `get_available_datasets` returns a sorted list of available dataset names from the `timetk.datasets` module.
+        The function `get_available_datasets` returns a sorted list of available dataset names from the `pytimetk.datasets` module.
     
     Examples
     --------
     ```{python}
-    import timetk as tk
+    import pytimetk as tk
     
     tk.get_available_datasets()
     ```
     
     '''
     
-    pathlist   = list(files("timetk.datasets").iterdir())
+    pathlist   = list(files("pytimetk.datasets").iterdir())
     file_names = [path.name for path in pathlist]
     dataset_list = [item for item in file_names if item.endswith(".csv")]
     dataset_list = [name.rstrip('.csv') for name in dataset_list]

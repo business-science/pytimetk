@@ -21,7 +21,7 @@ names if they are in a multi-index format.
 
 ```{python}
 import pandas as pd
-import timetk as tk
+import pytimetk as tk
 
 date_rng = pd.date_range(start='2023-01-01', end='2023-01-03', freq='D')
 

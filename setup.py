@@ -18,9 +18,9 @@ extras_require = {
 }
 
 setup(
-    name="timetk",
+    name="pytimetk",
     version="0.1.0",
-    description="TimeTK - The time series toolkit for Python.",
+    description="pytimetk - The time series toolkit for Python.",
     long_description=readme(),
     long_description_content_type="text/markdown",
     url="https://github.com/business-science/pytimetk",

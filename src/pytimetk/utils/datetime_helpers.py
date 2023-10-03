@@ -98,7 +98,7 @@ def floor_date(
     Examples
     --------
     ```{python}
-    import timetk as tk
+    import pytimetk as tk
     import pandas as pd
     
     dates = pd.date_range("2020-01-01", "2020-01-10", freq="1H")
@@ -152,7 +152,7 @@ def week_of_month(idx: Union[pd.Series, pd.DatetimeIndex]) -> pd.Series:
     Examples
     --------
     ```{python}
-    import timetk as tk
+    import pytimetk as tk
     import pandas as pd
     
     dates = pd.date_range("2020-01-01", "2020-02-28", freq="1D")
@@ -222,7 +222,7 @@ def is_holiday(
     --------
     ```{python}
     import pandas as pd
-    import timetk as tk
+    import pytimetk as tk
     
     tk.is_holiday('2023-01-01', country_name='UnitedStates')
     ```

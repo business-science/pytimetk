@@ -30,7 +30,7 @@ make_future_timeseries: Generate future dates for a time series.
 
 ```{python}
 import pandas as pd
-import timetk as tk
+import pytimetk as tk
 
 df = tk.load_dataset('m4_hourly', parse_dates = ['date'])
 df

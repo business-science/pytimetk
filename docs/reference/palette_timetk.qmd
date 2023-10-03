@@ -26,7 +26,7 @@ The function `palette_timetk` returns a dictionary of color codes for various co
 ## Examples
 
 ```{python}
-import timetk as tk
+import pytimetk as tk
 
 tk.palette_timetk()
 ```

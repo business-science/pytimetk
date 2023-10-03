@@ -24,7 +24,7 @@ The function `make_future_timeseries` takes a pandas Series or DateTimeIndex and
 
 ```{python}
 import pandas as pd
-import timetk as tk
+import pytimetk as tk
 
 dates = pd.Series(pd.to_datetime(['2022-01-01', '2022-01-02', '2022-01-03', '2022-01-04']))
 dates

@@ -84,5 +84,5 @@ from .utils.pandas_helpers import (
 
 
 from importlib.metadata import version
-__version__ = version('timetk')
+__version__ = version('pytimetk')
 __author__ = 'Matt Dancho (Business Science)'

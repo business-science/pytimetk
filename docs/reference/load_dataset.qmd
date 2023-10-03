@@ -19,7 +19,7 @@ The `load_dataset` function is used to load various time series datasets by name
 - `wikipedia_traffic_daily`: The Wikipedia traffic daily dataset
 - `stocks_daily`: The MAANNG stocks dataset
 
-The datasets can be loaded with `timetk.load_dataset(name)`, where `name` is the name of the dataset that you want to load. The default value is set to "m4_daily", which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned above.
+The datasets can be loaded with `pytimetk.load_dataset(name)`, where `name` is the name of the dataset that you want to load. The default value is set to "m4_daily", which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned above.
 
 ## Parameters
 
@@ -38,7 +38,7 @@ The datasets can be loaded with `timetk.load_dataset(name)`, where `name` is the
 ## Examples
 
 ```{python}
-import timetk as tk
+import pytimetk as tk
 import pandas as pd
 ```
 

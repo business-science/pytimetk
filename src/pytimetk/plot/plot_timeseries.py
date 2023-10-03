@@ -14,8 +14,8 @@ from mizani.formatters import date_format
 
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
-from timetk.plot.theme import theme_timetk, palette_timetk
-from timetk.utils.plot_helpers import hex_to_rgba
+from pytimetk.plot.theme import theme_timetk, palette_timetk
+from pytimetk.utils.plot_helpers import hex_to_rgba
 
 from typing import Union, Optional
 
@@ -159,7 +159,7 @@ def plot_timeseries(
     Examples
     --------
     ```{python}
-    import timetk as tk
+    import pytimetk as tk
     
     df = tk.load_dataset('m4_monthly', parse_dates = ['date'])
     

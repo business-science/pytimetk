@@ -4,7 +4,7 @@ import numpy as np
 from pandas.testing import assert_frame_equal
 
 # Import the pad_by_time function from your module
-from timetk import pad_by_time
+from pytimetk import pad_by_time
 
 data = {
     "date": pd.date_range("2022-01-01", periods=5, freq="D"),

@@ -22,7 +22,7 @@ This is a simple exercise to showcase the power of our 2 most popular function:
 
 ## Import Libraries & Data
 
-First, `import timetk as tk`. This gets you access to the most important functions. Use `tk.load_dataset()` to load the "bike_sales_sample" dataset.
+First, `import pytimetk as tk`. This gets you access to the most important functions. Use `tk.load_dataset()` to load the "bike_sales_sample" dataset.
 
 ::: {.callout-note collapse="false"}
 ## About the Bike Sales Sample Dataset
@@ -31,7 +31,7 @@ This dataset contains "orderlines" for orders recieved. The `order_date` column 
 :::
 
 ```{python}
-import timetk as tk
+import pytimetk as tk
 import pandas as pd
 
 df = tk.load_dataset('bike_sales_sample')
@@ -74,7 +74,7 @@ summary_category_1_df.head()
 Plot time series is a quick and easy way to visualize time series and make professional time series plots. 
 :::
 
-With the data summarized by time, we can visualize with `plot_timeseries()`. `timetk` functions are `groupby()` aware meaning they understand if your data is grouped to do things by group. This is useful in time series where we often deal with 100s of time series groups. 
+With the data summarized by time, we can visualize with `plot_timeseries()`. `pytimetk` functions are `groupby()` aware meaning they understand if your data is grouped to do things by group. This is useful in time series where we often deal with 100s of time series groups. 
 
 ```{python}
 summary_category_1_df \
@@ -92,7 +92,7 @@ Check out the [Data Visualization Guide Next.](/guides/01_visualization.html)
 
 # More Coming Soon...
 
-We are in the early stages of development. But it's obvious the potential for `timetk` now in Python. 🐍
+We are in the early stages of development. But it's obvious the potential for `pytimetk` now in Python. 🐍
 
 - Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). 
 - To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 

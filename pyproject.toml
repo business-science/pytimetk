@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "timetk"
+name = "pytimetk"
 version = "0.1.0"
 description = "The time series toolkit for Python."
 authors = ["Matt Dancho <mdancho@business-science.io>"]

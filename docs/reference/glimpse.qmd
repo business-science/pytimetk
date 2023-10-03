@@ -15,7 +15,7 @@ its dimensions, column names, data types, and the first few values of each colum
 ## Examples
 
 ```{python}
-import timetk as tk
+import pytimetk as tk
 import pandas as pd
 
 df = tk.load_dataset('walmart_sales_weekly', parse_dates=['Date'])

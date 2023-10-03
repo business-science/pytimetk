@@ -23,7 +23,7 @@ Returns a `plotnine` theme with timetk styles applied, allowing for customizatio
 ## Examples
 
 ```{python}
-import timetk as tk
+import pytimetk as tk
 import pandas as pd
 
 from plotnine import ggplot, aes, geom_line, labs, scale_x_date, facet_wrap

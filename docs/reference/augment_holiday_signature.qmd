@@ -24,7 +24,7 @@ Note: Requires the `holidays` package to be installed. See https://pypi.org/proj
 
 ```{python}
 import pandas as pd
-import timetk as tk
+import pytimetk as tk
 
 # Make a DataFrame with a date column
 start_date = '2023-01-01'

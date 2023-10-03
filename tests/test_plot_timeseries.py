@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 import numpy as np
-import timetk
+import pytimetk
 
 
 # Prepare a sample dataframe for testing
@@ -61,7 +61,7 @@ def test_smooth():
 def test_groupby_handling():
     group = data.groupby('id')
     fig = group.plot_timeseries(date_column="date", value_column="value", engine="plotly")
-    assert isinstance(fig, type(timetk.make_subplots())), "Figure type doesn't match expected type"
+    assert isinstance(fig, type(pytimetk.make_subplots())), "Figure type doesn't match expected type"
 
 
 
