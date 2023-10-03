@@ -1,4 +1,4 @@
-# is_holiday { #timetk.is_holiday }
+# is_holiday { #pytimetk.is_holiday }
 
 `is_holiday(idx, country_name='UnitedStates', country=None)`
 

@@ -1,4 +1,4 @@
-# floor_date { #timetk.floor_date }
+# floor_date { #pytimetk.floor_date }
 
 `floor_date(idx, unit='D')`
 

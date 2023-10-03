@@ -1,4 +1,4 @@
-# get_frequency_summary { #timetk.get_frequency_summary }
+# get_frequency_summary { #pytimetk.get_frequency_summary }
 
 `get_frequency_summary(idx)`
 

@@ -1,4 +1,4 @@
-# ts_features { #timetk.ts_features }
+# ts_features { #pytimetk.ts_features }
 
 `ts_features(data, date_column, value_column, features=None, freq=None, scale=True, threads=1)`
 

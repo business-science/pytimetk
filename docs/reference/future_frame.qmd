@@ -1,4 +1,4 @@
-# future_frame { #timetk.future_frame }
+# future_frame { #pytimetk.future_frame }
 
 `future_frame(data, date_column, length_out, force_regular=False, bind_data=True)`
 

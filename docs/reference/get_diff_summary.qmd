@@ -1,4 +1,4 @@
-# get_diff_summary { #timetk.get_diff_summary }
+# get_diff_summary { #pytimetk.get_diff_summary }
 
 `get_diff_summary(idx, numeric=False)`
 

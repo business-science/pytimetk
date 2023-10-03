@@ -6,7 +6,7 @@ Visualize time series data with one line of code.
 
 | | |
 | --- | --- |
-| [plot_timeseries](plot_timeseries.qmd#timetk.plot_timeseries) | Creates time series plots using different plotting engines such as Plotnine, Matplotlib, and Plotly. |
+| [plot_timeseries](plot_timeseries.qmd#pytimetk.plot_timeseries) | Creates time series plots using different plotting engines such as Plotnine, Matplotlib, and Plotly. |
 
 ## 🔥 Wrangling Pandas Time Series DataFrames
 
@@ -14,9 +14,9 @@ Bend time series data to your will.
 
 | | |
 | --- | --- |
-| [summarize_by_time](summarize_by_time.qmd#timetk.summarize_by_time) | Summarize a DataFrame or GroupBy object by time. |
-| [pad_by_time](pad_by_time.qmd#timetk.pad_by_time) | Make irregular time series regular by padding with missing dates. |
-| [future_frame](future_frame.qmd#timetk.future_frame) | Extend a DataFrame or GroupBy object with future dates. |
+| [summarize_by_time](summarize_by_time.qmd#pytimetk.summarize_by_time) | Summarize a DataFrame or GroupBy object by time. |
+| [pad_by_time](pad_by_time.qmd#pytimetk.pad_by_time) | Make irregular time series regular by padding with missing dates. |
+| [future_frame](future_frame.qmd#pytimetk.future_frame) | Extend a DataFrame or GroupBy object with future dates. |
 
 ## 🏗️ Adding Features to Time Series DataFrames (Augmenting)
 
@@ -24,11 +24,11 @@ Add one or more feature columns to time series data.
 
 | | |
 | --- | --- |
-| [augment_timeseries_signature](augment_timeseries_signature.qmd#timetk.augment_timeseries_signature) | Add 29 time series features to a DataFrame. |
-| [augment_holiday_signature](augment_holiday_signature.qmd#timetk.augment_holiday_signature) | Engineers 4 different holiday features from a single datetime for 80+ countries. |
-| [augment_lags](augment_lags.qmd#timetk.augment_lags) | Adds lags to a Pandas DataFrame or DataFrameGroupBy object. |
-| [augment_leads](augment_leads.qmd#timetk.augment_leads) | Adds leads to a Pandas DataFrame or DataFrameGroupBy object. |
-| [augment_rolling](augment_rolling.qmd#timetk.augment_rolling) | Apply one or more rolling functions and window sizes to one or more columns of a DataFrame. |
+| [augment_timeseries_signature](augment_timeseries_signature.qmd#pytimetk.augment_timeseries_signature) | Add 29 time series features to a DataFrame. |
+| [augment_holiday_signature](augment_holiday_signature.qmd#pytimetk.augment_holiday_signature) | Engineers 4 different holiday features from a single datetime for 80+ countries. |
+| [augment_lags](augment_lags.qmd#pytimetk.augment_lags) | Adds lags to a Pandas DataFrame or DataFrameGroupBy object. |
+| [augment_leads](augment_leads.qmd#pytimetk.augment_leads) | Adds leads to a Pandas DataFrame or DataFrameGroupBy object. |
+| [augment_rolling](augment_rolling.qmd#pytimetk.augment_rolling) | Apply one or more rolling functions and window sizes to one or more columns of a DataFrame. |
 
 ## TS Features
 
@@ -36,8 +36,8 @@ Python implementation of the R package `tsfeatures`.
 
 | | |
 | --- | --- |
-| [ts_features](ts_features.qmd#timetk.ts_features) | Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the `tsfeatures` package. |
-| [ts_summary](ts_summary.qmd#timetk.ts_summary) | Computes summary statistics for a time series data, either for the entire dataset or grouped by a specific column. |
+| [ts_features](ts_features.qmd#pytimetk.ts_features) | Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the `tsfeatures` package. |
+| [ts_summary](ts_summary.qmd#pytimetk.ts_summary) | Computes summary statistics for a time series data, either for the entire dataset or grouped by a specific column. |
 
 ## 🐼 Time Series for Pandas Series
 
@@ -45,15 +45,15 @@ Time series functions that generate / manipulate Pandas Series.
 
 | | |
 | --- | --- |
-| [make_future_timeseries](make_future_timeseries.qmd#timetk.make_future_timeseries) | Make future dates for a time series. |
-| [make_weekday_sequence](make_weekday_sequence.qmd#timetk.make_weekday_sequence) | Generate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays. |
-| [make_weekend_sequence](make_weekend_sequence.qmd#timetk.make_weekend_sequence) | Generate a sequence of weekend dates within a specified date range, optionally excluding holidays. |
-| [get_date_summary](get_date_summary.qmd#timetk.get_date_summary) | Returns a summary of the date-related information, including the number of dates, the time zone, the start |
-| [get_frequency_summary](get_frequency_summary.qmd#timetk.get_frequency_summary) | Returns a summary including the inferred frequency, median time difference, scale, and unit. |
-| [get_diff_summary](get_diff_summary.qmd#timetk.get_diff_summary) | Calculates summary statistics of the time differences between consecutive values in a datetime index. |
-| [get_pandas_frequency](get_pandas_frequency.qmd#timetk.get_pandas_frequency) | Get the frequency of a pandas Series or DatetimeIndex. |
-| [get_timeseries_signature](get_timeseries_signature.qmd#timetk.get_timeseries_signature) | Convert a timestamp to a set of 29 time series features. |
-| [get_holiday_signature](get_holiday_signature.qmd#timetk.get_holiday_signature) | Engineers 4 different holiday features from a single datetime for 80+ countries. |
+| [make_future_timeseries](make_future_timeseries.qmd#pytimetk.make_future_timeseries) | Make future dates for a time series. |
+| [make_weekday_sequence](make_weekday_sequence.qmd#pytimetk.make_weekday_sequence) | Generate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays. |
+| [make_weekend_sequence](make_weekend_sequence.qmd#pytimetk.make_weekend_sequence) | Generate a sequence of weekend dates within a specified date range, optionally excluding holidays. |
+| [get_date_summary](get_date_summary.qmd#pytimetk.get_date_summary) | Returns a summary of the date-related information, including the number of dates, the time zone, the start |
+| [get_frequency_summary](get_frequency_summary.qmd#pytimetk.get_frequency_summary) | Returns a summary including the inferred frequency, median time difference, scale, and unit. |
+| [get_diff_summary](get_diff_summary.qmd#pytimetk.get_diff_summary) | Calculates summary statistics of the time differences between consecutive values in a datetime index. |
+| [get_pandas_frequency](get_pandas_frequency.qmd#pytimetk.get_pandas_frequency) | Get the frequency of a pandas Series or DatetimeIndex. |
+| [get_timeseries_signature](get_timeseries_signature.qmd#pytimetk.get_timeseries_signature) | Convert a timestamp to a set of 29 time series features. |
+| [get_holiday_signature](get_holiday_signature.qmd#pytimetk.get_holiday_signature) | Engineers 4 different holiday features from a single datetime for 80+ countries. |
 
 ## 🛠️ Date Utilities
 
@@ -61,10 +61,10 @@ Helper functions to make your life easier.
 
 | | |
 | --- | --- |
-| [floor_date](floor_date.qmd#timetk.floor_date) | Round a date down to the specified unit (e.g. Flooring). |
-| [is_holiday](is_holiday.qmd#timetk.is_holiday) | Check if a given list of dates are holidays for a specified country. |
-| [week_of_month](week_of_month.qmd#timetk.week_of_month) | The "week_of_month" function calculates the week number of a given date within its month. |
-| [timeseries_unit_frequency_table](timeseries_unit_frequency_table.qmd#timetk.timeseries_unit_frequency_table) | The function `timeseries_unit_frequency_table` returns a pandas DataFrame with units of time and |
+| [floor_date](floor_date.qmd#pytimetk.floor_date) | Round a date down to the specified unit (e.g. Flooring). |
+| [is_holiday](is_holiday.qmd#pytimetk.is_holiday) | Check if a given list of dates are holidays for a specified country. |
+| [week_of_month](week_of_month.qmd#pytimetk.week_of_month) | The "week_of_month" function calculates the week number of a given date within its month. |
+| [timeseries_unit_frequency_table](timeseries_unit_frequency_table.qmd#pytimetk.timeseries_unit_frequency_table) | The function `timeseries_unit_frequency_table` returns a pandas DataFrame with units of time and |
 
 ## 🛠️ Visualization Utilities
 
@@ -72,15 +72,15 @@ Helper functions to make your life easier.
 
 | | |
 | --- | --- |
-| [theme_timetk](theme_timetk.qmd#timetk.theme_timetk) | Returns a `plotnine` theme with timetk styles applied, allowing for customization of the appearance of plots in Python. |
-| [palette_timetk](palette_timetk.qmd#timetk.palette_timetk) | The function `palette_timetk` returns a dictionary of color codes for various colors in the timetk theme. |
+| [theme_timetk](theme_timetk.qmd#pytimetk.theme_timetk) | Returns a `plotnine` theme with timetk styles applied, allowing for customization of the appearance of plots in Python. |
+| [palette_timetk](palette_timetk.qmd#pytimetk.palette_timetk) | The function `palette_timetk` returns a dictionary of color codes for various colors in the timetk theme. |
 
 ## Extra Pandas Helpers (That Help Beyond Just Time Series)
 
 | | |
 | --- | --- |
-| [glimpse](glimpse.qmd#timetk.glimpse) | Takes a pandas DataFrame and prints a summary of |
-| [flatten_multiindex_column_names](flatten_multiindex_column_names.qmd#timetk.flatten_multiindex_column_names) | Takes a DataFrame as input and flattens the column |
+| [glimpse](glimpse.qmd#pytimetk.glimpse) | Takes a pandas DataFrame and prints a summary of |
+| [flatten_multiindex_column_names](flatten_multiindex_column_names.qmd#pytimetk.flatten_multiindex_column_names) | Takes a DataFrame as input and flattens the column |
 
 ## 💾 12 Datasets
 
@@ -88,5 +88,5 @@ Practice `pytimetk` with 12 complementary time series datasets.
 
 | | |
 | --- | --- |
-| [get_available_datasets](get_available_datasets.qmd#timetk.datasets.get_datasets.get_available_datasets) | Get a list of 12 datasets that can be loaded with `pytimetk.load_dataset`. |
-| [load_dataset](load_dataset.qmd#timetk.datasets.get_datasets.load_dataset) | Load one of 12 Time Series Datasets. |
+| [get_available_datasets](get_available_datasets.qmd#pytimetk.datasets.get_datasets.get_available_datasets) | Get a list of 12 datasets that can be loaded with `pytimetk.load_dataset`. |
+| [load_dataset](load_dataset.qmd#pytimetk.datasets.get_datasets.load_dataset) | Load one of 12 Time Series Datasets. |

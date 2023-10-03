@@ -1,4 +1,4 @@
-# get_pandas_frequency { #timetk.get_pandas_frequency }
+# get_pandas_frequency { #pytimetk.get_pandas_frequency }
 
 `get_pandas_frequency(idx, force_regular=False)`
 

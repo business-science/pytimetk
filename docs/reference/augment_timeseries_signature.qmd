@@ -1,4 +1,4 @@
-# augment_timeseries_signature { #timetk.augment_timeseries_signature }
+# augment_timeseries_signature { #pytimetk.augment_timeseries_signature }
 
 `augment_timeseries_signature(data, date_column)`
 

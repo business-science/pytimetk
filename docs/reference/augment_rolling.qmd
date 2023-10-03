@@ -1,4 +1,4 @@
-# augment_rolling { #timetk.augment_rolling }
+# augment_rolling { #pytimetk.augment_rolling }
 
 `augment_rolling(data, date_column, value_column, use_independent_variables=False, window=2, window_func='mean', min_periods=None, center=False, **kwargs)`
 

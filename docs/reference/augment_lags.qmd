@@ -1,4 +1,4 @@
-# augment_lags { #timetk.augment_lags }
+# augment_lags { #pytimetk.augment_lags }
 
 `augment_lags(data, date_column, value_column, lags=1)`
 

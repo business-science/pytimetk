@@ -7,15 +7,21 @@ number-sections: true
 number-depth: 2
 ---
 
-::: {.callout-warning collapse="false"}
+<!-- ::: {.callout-warning collapse="false"}
 ## Under Development
 
 This library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0. 
-:::
+::: -->
 
 # Quick Install
 
-Let's get you up and running with `pytimetk` fast. You can install from GitHub with this code. 
+Let's get you up and running with `pytimetk` fast with the latest stable release. 
+
+```bash
+pip install pytimetk
+```
+
+You can install from GitHub with this code. 
 
 ```bash
 pip install git+https://github.com/business-science/pytimetk.git

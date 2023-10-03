@@ -1,4 +1,4 @@
-# augment_holiday_signature { #timetk.augment_holiday_signature }
+# augment_holiday_signature { #pytimetk.augment_holiday_signature }
 
 `augment_holiday_signature(data, date_column, country_name='UnitedStates')`
 

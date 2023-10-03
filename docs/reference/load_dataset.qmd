@@ -1,4 +1,4 @@
-# load_dataset { #timetk.datasets.get_datasets.load_dataset }
+# load_dataset { #pytimetk.datasets.get_datasets.load_dataset }
 
 `datasets.get_datasets.load_dataset(name='m4_daily', verbose=False, **kwargs)`
 

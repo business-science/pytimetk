@@ -2,11 +2,17 @@
 
 > The time series toolkit for Python
 
-This library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0.
-
 **Please ⭐ us on GitHub (it takes 2-seconds and means a lot).**
 
-# Install Dev Version
+# Installation
+
+Install the latest stable version of `pytimetk` using `pip`:
+
+```bash
+pip install pytimetk
+```
+
+Alternatively you can install the development version:
 
 ```bash
 pip install git+https://github.com/business-science/pytimetk.git

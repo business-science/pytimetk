@@ -1,4 +1,4 @@
-# week_of_month { #timetk.week_of_month }
+# week_of_month { #pytimetk.week_of_month }
 
 `week_of_month(idx)`
 

@@ -6,19 +6,27 @@ number-sections: true
 number-depth: 2
 ---
 
-# timetk for Python <img src="logo-timetk.png" align="right" height="138" />
+# PyTimeTK <img src="logo-timetk.png" align="right" height="138" />
 
 > The Time Series Toolkit for Python
 
-**Timetk's Mission:** To make time series analysis easier, faster, and more enjoyable in Python.
+**PyTimetk's Mission:** To make time series analysis easier, faster, and more enjoyable in Python.
 
-::: {.callout-warning collapse="false"}
+<!-- ::: {.callout-warning collapse="false"}
 ## Under Development
 
 This library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0. 
-:::
+::: -->
 
-# Install GitHub Version
+# Installation
+
+Install the Latest Stable Version:
+
+``` bash
+pip install pytimetk
+```
+
+Alternatively, install the Development GitHub Version:
 
 ```bash
 pip install git+https://github.com/business-science/pytimetk.git
@@ -99,4 +107,12 @@ summary_category_1_df \
 Interested in helping us make this the best Python package for time series analysis? We'd love your help. 
 
 [Follow these instructions to Contribute.](/contributing.html)
+
+# More Coming Soon...
+
+We are in the early stages of development. But it's obvious the potential for `pytimetk` now in Python. 🐍
+
+- Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). 
+- To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 
+- Want to contribute? [See our contributing guide here.](/contributing.html) 
 

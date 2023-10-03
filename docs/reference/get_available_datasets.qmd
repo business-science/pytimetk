@@ -1,4 +1,4 @@
-# get_available_datasets { #timetk.datasets.get_datasets.get_available_datasets }
+# get_available_datasets { #pytimetk.datasets.get_datasets.get_available_datasets }
 
 `datasets.get_datasets.get_available_datasets()`
 
@@ -8,8 +8,8 @@ The `get_available_datasets` function returns a sorted list of available dataset
 
 ## Returns
 
-| Type   | Description                                                                                                               |
-|--------|---------------------------------------------------------------------------------------------------------------------------|
+| Type   | Description                                                                                                                 |
+|--------|-----------------------------------------------------------------------------------------------------------------------------|
 | list   | The function `get_available_datasets` returns a sorted list of available dataset names from the `pytimetk.datasets` module. |
 
 ## Examples

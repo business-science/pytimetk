@@ -1,4 +1,4 @@
-# plot_timeseries { #timetk.plot_timeseries }
+# plot_timeseries { #pytimetk.plot_timeseries }
 
 `plot_timeseries(data, date_column, value_column, color_column=None, color_palette=None, facet_ncol=1, facet_nrow=None, facet_scales='free_y', facet_dir='h', line_color='#2c3e50', line_size=0.65, line_type='solid', line_alpha=1.0, y_intercept=None, y_intercept_color='#2c3e50', x_intercept=None, x_intercept_color='#2c3e50', smooth=True, smooth_color='#3366FF', smooth_frac=0.2, smooth_size=1.0, smooth_alpha=1.0, legend_show=True, title='Time Series Plot', x_lab='', y_lab='', color_lab='Legend', x_axis_date_labels='%b %Y', base_size=11, width=None, height=None, engine='plotly')`
 

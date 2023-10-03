@@ -1,4 +1,4 @@
-# palette_timetk { #timetk.palette_timetk }
+# palette_timetk { #pytimetk.palette_timetk }
 
 `palette_timetk()`
 

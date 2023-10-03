@@ -1,4 +1,4 @@
-# ts_summary { #timetk.ts_summary }
+# ts_summary { #pytimetk.ts_summary }
 
 `ts_summary(data, date_column)`
 
