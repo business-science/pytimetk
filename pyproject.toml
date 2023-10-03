@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "timetk"
-version = "0.0.0.9000"
+version = "0.1.0"
 description = "The time series toolkit for Python."
 authors = ["Matt Dancho <mdancho@business-science.io>"]
 readme = "README.md"

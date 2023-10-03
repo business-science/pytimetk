@@ -19,7 +19,7 @@ extras_require = {
 
 setup(
     name="timetk",
-    version="0.0.0.9000",
+    version="0.1.0",
     description="TimeTK - The time series toolkit for Python.",
     long_description=readme(),
     long_description_content_type="text/markdown",
