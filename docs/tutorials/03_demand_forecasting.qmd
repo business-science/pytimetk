@@ -7,4 +7,89 @@ number-sections: true
 number-depth: 2
 ---
 
-Coming soon...
+Timetk enables to generate features from the timestamps in your data very fast. This tutorial showcases how easy it is to perform time series forecasting with `pytimetk`. This applied tutorial showcases the use of:
+
+- `tk.augment_timeseries_signature()`: Add 29 time series features to a DataFrame.
+
+Load the following packages before proceeding with this tutorial. 
+
+```{python}
+import pytimetk as tk
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+```
+
+The first thing we want to do is to load a sample dataset. We will use the m4_daily dataset for this tutorial. This dataset can be used for forecasting a `value` for each `id`, given a daily timestamp.  
+```{python}
+dset = tk.load_dataset('m4_daily', parse_dates = ['date'])
+dset.head()
+```
+
+In the following cell, we create a regular timestamp so that each id has a value per day. If it does not have data for a particular day, the value is set to NaN.
+```{python}
+value_df = dset \
+    .groupby(['id']) \
+    .summarize_by_time(
+        date_column  = 'date',
+        value_column = 'value',
+        freq         = "MS",
+        agg_func     = 'sum',
+        wide_format  = False
+    )
+
+# For this example we shall use only years 2014 and 2015, so that we have just enough data for creating a train and a test set.
+value_df = value_df[value_df.date.dt.year.isin([2014, 2015])]
+value_df.head()
+```
+
+Let us now reshape the DataFrame so that it has one column per id. This DataFrame represents our target variable y. We call it Y as it is in fact a stack of target variables, one for each id.
+```{python}
+Y = value_df.set_index(['id', 'date']).sort_index().unstack(['id'])
+Y[('value','D10')].plot()  # plots the target variable for id D10
+```
+
+Now that we have our target, we want to produce the features that will help us predict the target. We only have the time feature for now, and we would like to extract some useful information from it, to be able to train a regressor on this data. Such useful data would include the year or the quarter at prediction time for example. This is where `tk.augment_timeseries_signature` comes handy. It will generate 29 useful time series features from our timestamps.
+```{python}
+X = value_df.drop_duplicates(subset=['date']).drop(columns=['id', 'value']).augment_timeseries_signature(date_column = 'date').drop(columns=['date'])
+
+# some features that have been created are categorical. We cannot use them directly to fit a regressor. That is why we produce dummies out of them:
+X = pd.get_dummies(X, columns=['date_year', 'date_year_iso', 'date_quarteryear', 'date_month_lbl', 'date_wday_lbl', 'date_am_pm'], drop_first=True)
+
+# inspect our resulting features
+X.head()
+```
+
+The preprocessing work have been done, we shall now train a basic regressor model. We choose a random forests regressor here, as it is pretty good at handling both numerical and categorical data.
+```{python}
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+
+Y = Y.fillna(method='ffill').fillna(method='bfill')
+X['date_yweek'] = X['date_yweek'].astype(int)
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, shuffle=False, train_size=.5)
+
+model = RandomForestRegressor()
+model = model.fit(X_train, Y_train)
+```
+
+We can inspect how the training went, by looking at the predictions on the train set. We can see that the random forests worked pretty well and was able to get close to the ground truth.
+```{python}
+import matplotlib.pyplot as plt
+Y_train[('value','D10')].plot(label='ground truth')
+pd.DataFrame(model.predict(X_train), index=Y_train.index, columns=Y_train.columns)[('value','D10')].plot(label='predictions')
+plt.legend()
+plt.show()
+```
+
+We can now see how well it performs on the test set:
+```{python}
+import matplotlib.pyplot as plt
+Y_test[('value','D10')].plot(label='ground truth')
+pd.DataFrame(model.predict(X_test), index=Y_test.index, columns=Y_test.columns)[('value','D10')].plot(label='predictions')
+plt.legend()
+plt.show()
+```
+
+In this tutorial, we showed how the `tk.augment_timeseries_signature()` function can be used to effortlessly extract useful features from the date index. The features have proved to be relevant, as we can directly use them to train a regression model and get correct results for the task of time series forecasting. Note that we only used some months of data for the training set and did not change any hyperparameter of the random forests. That shows how meaningful the time features produced are.
