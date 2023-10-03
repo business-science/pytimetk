@@ -1,4 +1,4 @@
-# get_holiday_signature { #timetk.get_holiday_signature }
+# get_holiday_signature { #pytimetk.get_holiday_signature }
 
 `get_holiday_signature(idx, country_name='UnitedStates')`
 

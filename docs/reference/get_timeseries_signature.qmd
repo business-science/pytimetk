@@ -1,4 +1,4 @@
-# get_timeseries_signature { #timetk.get_timeseries_signature }
+# get_timeseries_signature { #pytimetk.get_timeseries_signature }
 
 `get_timeseries_signature(idx)`
 

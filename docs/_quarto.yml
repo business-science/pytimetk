@@ -23,7 +23,7 @@ metadata-files:
   - _sidebar.yml
 
 website:
-  title: "timetk for Python"
+  title: "pytimetk"
   description: "Your toolkit for time series in Python."
   favicon: "favicon.ico"
   google-analytics: "330861489"
@@ -52,7 +52,7 @@ website:
   sidebar: 
     collapse-level: 1
     contents: 
-      - text: Timetk for Python📈
+      - text: "PyTimeTK 📈"
         file: index.qmd
       - text: "---"
       - section: "🏁 Getting Started:"
@@ -65,7 +65,7 @@ website:
       - text: 📄 API Reference
         file: reference/index.qmd
       - text: "---"
-      - text: ⭐ Timetk on Github
+      - text: ⭐ PyTimeTK on Github
         file: https://github.com/business-science/pytimetk
         external: true
       - text: "---"
@@ -99,24 +99,24 @@ format:
 
 
 quartodoc:
-  package: timetk
+  package: pytimetk
   sidebar: _sidebar.yml
   sections:
     - title: 🚀 Data Visualization
       desc: Visualize time series data with one line of code.
-      package: timetk
+      package: pytimetk
       contents:
       - plot_timeseries
     - title: 🔥 Wrangling Pandas Time Series DataFrames
       desc: Bend time series data to your will.
-      package: timetk
+      package: pytimetk
       contents:
         - summarize_by_time
         - pad_by_time
         - future_frame
     - title: 🏗️ Adding Features to Time Series DataFrames (Augmenting)
       desc: Add one or more feature columns to time series data.
-      package: timetk
+      package: pytimetk
       contents:
         - augment_timeseries_signature
         - augment_holiday_signature
@@ -125,13 +125,13 @@ quartodoc:
         - augment_rolling
     - title: TS Features
       desc: Python implementation of the R package `tsfeatures`.
-      package: timetk
+      package: pytimetk
       contents:
         - ts_features
         - ts_summary
     - title: 🐼 Time Series for Pandas Series
       desc: Time series functions that generate / manipulate Pandas Series.
-      package: timetk
+      package: pytimetk
       contents:        
         - make_future_timeseries
         - make_weekday_sequence
@@ -144,7 +144,7 @@ quartodoc:
         - get_holiday_signature 
     - title: 🛠️ Date Utilities
       desc: Helper functions to make your life easier.
-      package: timetk
+      package: pytimetk
       contents:    
         - floor_date
         - is_holiday
@@ -152,17 +152,17 @@ quartodoc:
         - timeseries_unit_frequency_table
     - title: 🛠️ Visualization Utilities
       desc: Helper functions to make your life easier.
-      package: timetk
+      package: pytimetk
       contents:    
         - theme_timetk
         - palette_timetk
     - title: Extra Pandas Helpers (That Help Beyond Just Time Series)
-      package: timetk
+      package: pytimetk
       contents:
       - glimpse
       - flatten_multiindex_column_names
     - title: 💾 12 Datasets
-      package: timetk.datasets.get_datasets
+      package: pytimetk.datasets.get_datasets
       desc: Practice `pytimetk` with 12 complementary time series datasets.
       contents:
         - get_available_datasets

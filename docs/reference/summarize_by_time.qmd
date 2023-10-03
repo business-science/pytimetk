@@ -1,4 +1,4 @@
-# summarize_by_time { #timetk.summarize_by_time }
+# summarize_by_time { #pytimetk.summarize_by_time }
 
 `summarize_by_time(data, date_column, value_column, freq='D', agg_func='sum', kind='timestamp', wide_format=False, fillna=0, *args, **kwargs)`
 

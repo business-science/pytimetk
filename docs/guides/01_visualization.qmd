@@ -7,6 +7,12 @@ number-sections: true
 number-depth: 2
 ---
 
+::: {.callout-note collapse="false"}
+## How this guide benefits you
+
+This guide covers how to use the `plot_timeseries()` for data visualization. Once you understand how it works, you can apply explore time series data easier than ever. 
+:::
+
 This tutorial focuses on, [plot_timeseries()](https://business-science.github.io/pytimetk/reference/plot_timeseries.html#timetk.plot_timeseries), a workhorse time-series plotting function that:
 
 * Generates interactive plotly plots (great for exploring & streamlit/shiny apps)
@@ -94,6 +100,10 @@ taylor_30_min.plot_timeseries(
 )
 ```
 
+
+# Next steps
+
+Check out the [Pytimetk Basics Guide next.](/guides/02_timetk_concepts.html)
 
 # More Coming Soon...
 

@@ -1,5 +1,5 @@
 
-# *** Import everything to make timetk a standalone package ***
+# *** Import everything to make pytimetk a standalone package ***
 
 from .plot.plot_timeseries import *
 from .plot.theme import *

@@ -1,4 +1,4 @@
-# make_weekday_sequence { #timetk.make_weekday_sequence }
+# make_weekday_sequence { #pytimetk.make_weekday_sequence }
 
 `make_weekday_sequence(start_date, end_date, sunday_to_thursday=False, remove_holidays=False, country=None)`
 

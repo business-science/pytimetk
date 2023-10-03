@@ -1,4 +1,4 @@
-# augment_leads { #timetk.augment_leads }
+# augment_leads { #pytimetk.augment_leads }
 
 `augment_leads(data, date_column, value_column, leads=1)`
 

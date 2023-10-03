@@ -1,4 +1,4 @@
-# get_date_summary { #timetk.get_date_summary }
+# get_date_summary { #pytimetk.get_date_summary }
 
 `get_date_summary(idx)`
 

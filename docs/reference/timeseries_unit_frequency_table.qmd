@@ -1,4 +1,4 @@
-# timeseries_unit_frequency_table { #timetk.timeseries_unit_frequency_table }
+# timeseries_unit_frequency_table { #pytimetk.timeseries_unit_frequency_table }
 
 `timeseries_unit_frequency_table()`
 

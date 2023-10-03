@@ -1,4 +1,4 @@
-# pad_by_time { #timetk.pad_by_time }
+# pad_by_time { #pytimetk.pad_by_time }
 
 `pad_by_time(data, date_column, freq='D', start_date=None, end_date=None)`
 

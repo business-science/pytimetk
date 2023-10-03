@@ -1,5 +1,5 @@
 ---
-title: "Timetk Basics"
+title: "PyTimeTK Basics"
 jupyter: python3
 toc: true
 toc-depth: 3
@@ -7,7 +7,7 @@ number-sections: true
 number-depth: 2
 ---
 
-> *Timetk has one mission:* To make time series analysis simpler, easier, and faster in Python. This goal requires some opinionated ways of treating time series in Python. We will conceptually lay out how `pytimetk` can help. 
+> *PyTimeTK has one mission:* To make time series analysis simpler, easier, and faster in Python. This goal requires some opinionated ways of treating time series in Python. We will conceptually lay out how `pytimetk` can help. 
 
 ::: {.callout-note collapse="false"}
 ## How this guide benefits you

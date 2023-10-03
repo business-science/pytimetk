@@ -1,4 +1,4 @@
-# make_future_timeseries { #timetk.make_future_timeseries }
+# make_future_timeseries { #pytimetk.make_future_timeseries }
 
 `make_future_timeseries(idx, length_out, force_regular=False)`
 

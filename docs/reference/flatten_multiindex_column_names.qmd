@@ -1,4 +1,4 @@
-# flatten_multiindex_column_names { #timetk.flatten_multiindex_column_names }
+# flatten_multiindex_column_names { #pytimetk.flatten_multiindex_column_names }
 
 `flatten_multiindex_column_names(data, sep='_')`
 

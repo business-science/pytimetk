@@ -1,4 +1,4 @@
-# glimpse { #timetk.glimpse }
+# glimpse { #pytimetk.glimpse }
 
 `glimpse(data, max_width=76)`
 

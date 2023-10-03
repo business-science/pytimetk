@@ -1,4 +1,4 @@
-# theme_timetk { #timetk.theme_timetk }
+# theme_timetk { #pytimetk.theme_timetk }
 
 `theme_timetk(base_size=11, base_family=['Arial', 'Helvetica', 'sans-serif'], dpi=100, width=700, height=500)`
 
