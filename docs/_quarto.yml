@@ -72,7 +72,7 @@ website:
       - text: 🍻 Contributing
         file: contributing.qmd
       - text: "---"
-      - section: "More References:"
+      - section: "📚 More References:"
       - text: Business Science
         file: https://www.business-science.io/index.html
         external: true

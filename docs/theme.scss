@@ -3,6 +3,12 @@
 
 /* sidebar formatting */
 
+.sidebar-menu-container>ul>li:first-child>.sidebar-item-container>a>span {
+    font-weight: 600 !important;
+    font-size: 1.1rem  !important;
+    color: var(--secondary);
+}
+
 .sidebar a.nav-link {
     font-size: 14.4px;
     font-weight: 400;
@@ -14,13 +20,13 @@
 
 .sidebar-item-container .text-start {
   font-weight: 600;
-  font-size: 14.4px !important;
+  // font-size: 14.4px !important;
 }
 
 .sidebar-item-text {
   /*color: rgba(60, 60, 60, 0.7);*/
   font-weight: 500;
-  font-size: 14px;
+  // font-size: 14px;
   line-height: 22px;
 }
 
@@ -422,6 +428,10 @@ td:first-child, td:last-child {
   #quarto-sidebar.show {
     max-width: calc(100vw - 32px);
     width: 320px !important;
+  }
+
+  .quarto-page-breadcrumbs {
+    font-size: 12px;
   }
 }
 
