@@ -246,7 +246,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../tutorials/02_finance.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Finance Investment Analysis</span></a>
+ <span class="menu-text">Finance and Investment Analysis</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -334,7 +334,15 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#augment-rolling-with-multiple-windows-and-window-functions" id="toc-augment-rolling-with-multiple-windows-and-window-functions" class="nav-link" data-scroll-target="#augment-rolling-with-multiple-windows-and-window-functions"><span class="header-section-number">2.2</span> Augment Rolling with Multiple Windows and Window Functions</a></li>
   <li><a href="#augment-rolling-with-grouped-time-series" id="toc-augment-rolling-with-grouped-time-series" class="nav-link" data-scroll-target="#augment-rolling-with-grouped-time-series"><span class="header-section-number">2.3</span> Augment Rolling with Grouped Time Series</a></li>
   </ul></li>
-  <li><a href="#augment-time-series-signature" id="toc-augment-time-series-signature" class="nav-link" data-scroll-target="#augment-time-series-signature"><span class="header-section-number">3</span> Augment Time Series Signature</a></li>
+  <li><a href="#augment-time-series-signature" id="toc-augment-time-series-signature" class="nav-link" data-scroll-target="#augment-time-series-signature"><span class="header-section-number">3</span> Augment Time Series Signature</a>
+  <ul class="collapse">
+  <li><a href="#basic-example" id="toc-basic-example" class="nav-link" data-scroll-target="#basic-example"><span class="header-section-number">3.1</span> Basic Example</a></li>
+  </ul></li>
+  <li><a href="#augment-holiday-signature" id="toc-augment-holiday-signature" class="nav-link" data-scroll-target="#augment-holiday-signature"><span class="header-section-number">4</span> Augment Holiday Signature</a>
+  <ul class="collapse">
+  <li><a href="#basic-example-1" id="toc-basic-example-1" class="nav-link" data-scroll-target="#basic-example-1"><span class="header-section-number">4.1</span> Basic Example</a></li>
+  </ul></li>
+  <li><a href="#augment-fourier" id="toc-augment-fourier" class="nav-link" data-scroll-target="#augment-fourier"><span class="header-section-number">5</span> Augment Fourier</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/guides/05_augmenting.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -364,7 +372,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <li><code>augment_leads()</code></li>
 <li><code>augment_rolling()</code></li>
 <li><code>augment_time_series_signature()</code></li>
-<li><code>augment_holiday()</code></li>
+<li><code>augment_holiday_signature()</code></li>
 <li><code>augment_fourier()</code></li>
 </ul>
 <section id="augment-lags-leads" class="level1" data-number="1">
@@ -422,37 +430,37 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2023-09-18</td>
-<td>17</td>
+<td>43</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2023-09-19</td>
-<td>36</td>
+<td>43</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2023-09-20</td>
-<td>11</td>
+<td>41</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2023-09-21</td>
-<td>10</td>
+<td>16</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2023-09-22</td>
-<td>12</td>
+<td>34</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2023-09-23</td>
-<td>33</td>
+<td>30</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2023-09-24</td>
-<td>15</td>
+<td>34</td>
 </tr>
 </tbody>
 </table>
@@ -490,44 +498,44 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2023-09-18</td>
-<td>17</td>
+<td>43</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2023-09-19</td>
-<td>36</td>
+<td>43</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2023-09-20</td>
-<td>11</td>
+<td>41</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2023-09-21</td>
-<td>10</td>
-<td>17.0</td>
+<td>16</td>
+<td>43.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2023-09-22</td>
-<td>12</td>
-<td>36.0</td>
+<td>34</td>
+<td>43.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2023-09-23</td>
-<td>33</td>
-<td>11.0</td>
+<td>30</td>
+<td>41.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2023-09-24</td>
-<td>15</td>
-<td>10.0</td>
+<td>34</td>
+<td>16.0</td>
 </tr>
 </tbody>
 </table>
@@ -562,43 +570,43 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2023-09-18</td>
-<td>17</td>
-<td>10.0</td>
+<td>43</td>
+<td>16.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2023-09-19</td>
-<td>36</td>
-<td>12.0</td>
+<td>43</td>
+<td>34.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2023-09-20</td>
-<td>11</td>
-<td>33.0</td>
+<td>41</td>
+<td>30.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2023-09-21</td>
-<td>10</td>
-<td>15.0</td>
+<td>16</td>
+<td>34.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2023-09-22</td>
-<td>12</td>
+<td>34</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2023-09-23</td>
-<td>33</td>
+<td>30</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2023-09-24</td>
-<td>15</td>
+<td>34</td>
 <td>NaN</td>
 </tr>
 </tbody>
@@ -642,7 +650,7 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2023-09-18</td>
-<td>17</td>
+<td>43</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -650,50 +658,50 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2023-09-19</td>
-<td>36</td>
-<td>17.0</td>
+<td>43</td>
+<td>43.0</td>
 <td>NaN</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2023-09-20</td>
-<td>11</td>
-<td>36.0</td>
-<td>17.0</td>
+<td>41</td>
+<td>43.0</td>
+<td>43.0</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2023-09-21</td>
-<td>10</td>
-<td>11.0</td>
-<td>36.0</td>
-<td>17.0</td>
+<td>16</td>
+<td>41.0</td>
+<td>43.0</td>
+<td>43.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2023-09-22</td>
-<td>12</td>
-<td>10.0</td>
-<td>11.0</td>
-<td>36.0</td>
+<td>34</td>
+<td>16.0</td>
+<td>41.0</td>
+<td>43.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2023-09-23</td>
-<td>33</td>
-<td>12.0</td>
-<td>10.0</td>
-<td>11.0</td>
+<td>30</td>
+<td>34.0</td>
+<td>16.0</td>
+<td>41.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2023-09-24</td>
-<td>15</td>
-<td>33.0</td>
-<td>12.0</td>
-<td>10.0</td>
+<td>34</td>
+<td>30.0</td>
+<td>34.0</td>
+<td>16.0</td>
 </tr>
 </tbody>
 </table>
@@ -730,55 +738,55 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2023-09-18</td>
-<td>17</td>
-<td>36.0</td>
-<td>11.0</td>
-<td>10.0</td>
+<td>43</td>
+<td>43.0</td>
+<td>41.0</td>
+<td>16.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2023-09-19</td>
-<td>36</td>
-<td>11.0</td>
-<td>10.0</td>
-<td>12.0</td>
+<td>43</td>
+<td>41.0</td>
+<td>16.0</td>
+<td>34.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2023-09-20</td>
-<td>11</td>
-<td>10.0</td>
-<td>12.0</td>
-<td>33.0</td>
+<td>41</td>
+<td>16.0</td>
+<td>34.0</td>
+<td>30.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2023-09-21</td>
-<td>10</td>
-<td>12.0</td>
-<td>33.0</td>
-<td>15.0</td>
+<td>16</td>
+<td>34.0</td>
+<td>30.0</td>
+<td>34.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2023-09-22</td>
-<td>12</td>
-<td>33.0</td>
-<td>15.0</td>
+<td>34</td>
+<td>30.0</td>
+<td>34.0</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2023-09-23</td>
-<td>33</td>
-<td>15.0</td>
+<td>30</td>
+<td>34.0</td>
 <td>NaN</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2023-09-24</td>
-<td>15</td>
+<td>34</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -1221,44 +1229,44 @@ Help Doc Info: <code>augment_rolling()</code>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2023-09-18</td>
-<td>17</td>
-<td>17.000000</td>
+<td>43</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2023-09-19</td>
-<td>36</td>
-<td>26.500000</td>
+<td>43</td>
+<td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2023-09-20</td>
-<td>11</td>
-<td>21.333333</td>
+<td>41</td>
+<td>42.333333</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2023-09-21</td>
-<td>10</td>
-<td>19.000000</td>
+<td>16</td>
+<td>33.333333</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2023-09-22</td>
-<td>12</td>
-<td>11.000000</td>
+<td>34</td>
+<td>30.333333</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2023-09-23</td>
-<td>33</td>
-<td>18.333333</td>
+<td>30</td>
+<td>26.666667</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2023-09-24</td>
-<td>15</td>
-<td>20.000000</td>
+<td>34</td>
+<td>32.666667</td>
 </tr>
 </tbody>
 </table>
@@ -1315,44 +1323,44 @@ Help Doc Info: <code>augment_rolling()</code>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2023-09-18</td>
-<td>17</td>
-<td>26.500000</td>
+<td>43</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2023-09-19</td>
-<td>36</td>
-<td>21.333333</td>
+<td>43</td>
+<td>42.333333</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2023-09-20</td>
-<td>11</td>
-<td>19.000000</td>
+<td>41</td>
+<td>33.333333</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2023-09-21</td>
-<td>10</td>
-<td>11.000000</td>
+<td>16</td>
+<td>30.333333</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2023-09-22</td>
-<td>12</td>
-<td>18.333333</td>
+<td>34</td>
+<td>26.666667</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2023-09-23</td>
-<td>33</td>
-<td>20.000000</td>
+<td>30</td>
+<td>32.666667</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2023-09-24</td>
-<td>15</td>
-<td>24.000000</td>
+<td>34</td>
+<td>NaN</td>
 </tr>
 </tbody>
 </table>
@@ -1390,44 +1398,44 @@ Help Doc Info: <code>augment_rolling()</code>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2023-09-18</td>
-<td>17</td>
-<td>26.500000</td>
+<td>43</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2023-09-19</td>
-<td>36</td>
-<td>21.333333</td>
+<td>43</td>
+<td>42.333333</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2023-09-20</td>
-<td>11</td>
-<td>19.000000</td>
+<td>41</td>
+<td>33.333333</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2023-09-21</td>
-<td>10</td>
-<td>11.000000</td>
+<td>16</td>
+<td>30.333333</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2023-09-22</td>
-<td>12</td>
-<td>18.333333</td>
+<td>34</td>
+<td>26.666667</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2023-09-23</td>
-<td>33</td>
-<td>20.000000</td>
+<td>30</td>
+<td>32.666667</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2023-09-24</td>
-<td>15</td>
-<td>24.000000</td>
+<td>34</td>
+<td>NaN</td>
 </tr>
 </tbody>
 </table>
@@ -1476,10 +1484,10 @@ Help Doc Info: <code>augment_rolling()</code>
 <td>D10</td>
 <td>2014-07-03</td>
 <td>2076.2</td>
-<td>2076.20</td>
-<td>0.00</td>
-<td>2076.200000</td>
-<td>0.000000</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
@@ -1625,10 +1633,10 @@ Help Doc Info: <code>augment_rolling()</code>
 <td>D10</td>
 <td>2014-07-03</td>
 <td>2076.2</td>
-<td>2076.20</td>
-<td>0.00</td>
-<td>2076.200000</td>
-<td>0.000000</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
@@ -1741,7 +1749,352 @@ Help Doc Info: <code>augment_rolling()</code>
 </section>
 <section id="augment-time-series-signature" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Augment Time Series Signature</h1>
-<p>Coming soon…</p>
+<p><code>augment_timeseries_signature()</code> is designed to assist in generating additional features from a given date column.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Help Doc Info: <code>augment_timeseries_signature()</code>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Use <code>help(tk.augment_timeseries_signature)</code> to review additional helpful documentation.</p>
+</div>
+</div>
+</div>
+<section id="basic-example" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="basic-example"><span class="header-section-number">3.1</span> Basic Example</h2>
+<p>We’ll showcase an example using the <code>m4_daily_df</code> dataset by generating 29 additional features from the <code>date</code> column:</p>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># augment time series signature</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df <span class="op">\</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">'id == "D10"'</span>) <span class="op">\</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    .augment_timeseries_signature(</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>        date_column <span class="op">=</span> <span class="st">'date'</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">\</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    .head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+<th data-quarto-table-cell-role="th">date_index_num</th>
+<th data-quarto-table-cell-role="th">date_year</th>
+<th data-quarto-table-cell-role="th">date_year_iso</th>
+<th data-quarto-table-cell-role="th">date_yearstart</th>
+<th data-quarto-table-cell-role="th">date_yearend</th>
+<th data-quarto-table-cell-role="th">date_leapyear</th>
+<th data-quarto-table-cell-role="th">date_half</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">date_mday</th>
+<th data-quarto-table-cell-role="th">date_qday</th>
+<th data-quarto-table-cell-role="th">date_yday</th>
+<th data-quarto-table-cell-role="th">date_weekend</th>
+<th data-quarto-table-cell-role="th">date_hour</th>
+<th data-quarto-table-cell-role="th">date_minute</th>
+<th data-quarto-table-cell-role="th">date_second</th>
+<th data-quarto-table-cell-role="th">date_msecond</th>
+<th data-quarto-table-cell-role="th">date_nsecond</th>
+<th data-quarto-table-cell-role="th">date_am_pm</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>D10</td>
+<td>2014-07-03</td>
+<td>2076.2</td>
+<td>1404345600</td>
+<td>2014</td>
+<td>2014</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>...</td>
+<td>3</td>
+<td>3</td>
+<td>184</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>am</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>D10</td>
+<td>2014-07-04</td>
+<td>2073.4</td>
+<td>1404432000</td>
+<td>2014</td>
+<td>2014</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>...</td>
+<td>4</td>
+<td>4</td>
+<td>185</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>am</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>D10</td>
+<td>2014-07-05</td>
+<td>2048.7</td>
+<td>1404518400</td>
+<td>2014</td>
+<td>2014</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>...</td>
+<td>5</td>
+<td>5</td>
+<td>186</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>am</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>D10</td>
+<td>2014-07-06</td>
+<td>2048.9</td>
+<td>1404604800</td>
+<td>2014</td>
+<td>2014</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>...</td>
+<td>6</td>
+<td>6</td>
+<td>187</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>am</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>D10</td>
+<td>2014-07-07</td>
+<td>2006.4</td>
+<td>1404691200</td>
+<td>2014</td>
+<td>2014</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>...</td>
+<td>7</td>
+<td>7</td>
+<td>188</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>am</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 32 columns</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="augment-holiday-signature" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Augment Holiday Signature</h1>
+<p><code>augment_holiday_signature()</code> is used to flag holidays from a date column based on date and country.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Help Doc Info: <code>augment_holiday_signature()</code>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Use <code>help(tk.augment_holiday_signature)</code> to review additional helpful documentation.</p>
+</div>
+</div>
+</div>
+<section id="basic-example-1" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="basic-example-1"><span class="header-section-number">4.1</span> Basic Example</h2>
+<p>We’ll showcase an example using some sample data:</p>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create sample data</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.date_range(start <span class="op">=</span> <span class="st">'2022-12-25'</span>, end <span class="op">=</span> <span class="st">'2023-01-05'</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({<span class="st">'date'</span>: dates})</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co"># augment time series signature: USA</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">\</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    .augment_holiday_signature(</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        date_column  <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>        country_name <span class="op">=</span> <span class="st">'UnitedStates'</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">is_holiday</th>
+<th data-quarto-table-cell-role="th">before_holiday</th>
+<th data-quarto-table-cell-role="th">after_holiday</th>
+<th data-quarto-table-cell-role="th">holiday_name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2022-12-25</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>Christmas Day</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2022-12-26</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>Christmas Day (Observed)</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2022-12-27</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2022-12-28</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2022-12-29</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>2022-12-30</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>2022-12-31</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>2023-01-01</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>New Year's Day</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>2023-01-02</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>New Year's Day (Observed)</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>2023-01-03</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>2023-01-04</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>2023-01-05</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="augment-fourier" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Augment Fourier</h1>
+<p>Coming soon ….</p>
 
 
 </section>
