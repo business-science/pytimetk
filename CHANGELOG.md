@@ -2,6 +2,11 @@
 
 ## pytimetk version 0.1.0.9000 (in development)
 
+New Functions:
+
+- `augment_expanding()`
+- `get_frequency()` 
+
 ## pytimetk version 0.1.0 (2023-10-02)
 
 Initial release. This release includes the following features:
