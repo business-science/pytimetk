@@ -13,6 +13,7 @@ from .core.lags import *
 from .core.leads import *
 from .core.pad import *
 from .core.rolling import *
+from .core.expanding import *
 from .core.fourier import *
 from .core.ts_features import *
 from .core.ts_summary import *

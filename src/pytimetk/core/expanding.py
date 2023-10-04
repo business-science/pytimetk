@@ -2,7 +2,7 @@ import pandas as pd
 import pandas_flavor as pf
 import numpy as np
 
-from typing import Union, Optional, Callable, Tuple, List
+from typing import Union, Optional, Callable, Tuple
 
 @pf.register_dataframe_method
 def augment_expanding(
@@ -14,7 +14,7 @@ def augment_expanding(
     min_periods: Optional[int] = None,
     **kwargs,
 ) -> pd.DataFrame:
-    '''Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.
+    '''Apply one or more expanding functions and window sizes to one or more columns of a DataFrame.
     
     Parameters
     ----------
@@ -23,11 +23,11 @@ def augment_expanding(
     date_column : str
         The `date_column` parameter is the name of the datetime column in the DataFrame by which the data should be sorted within each group.
     value_column : Union[str, list]
-        The `value_column` parameter is the name of the column(s) in the DataFrame to which the rolling window function(s) should be applied. It can be a single column name or a list of column names.
+        The `value_column` parameter is the name of the column(s) in the DataFrame to which the expanding window function(s) should be applied. It can be a single column name or a list of column names.
     use_independent_variables : bool
-        The `use_independent_variables` parameter is an optional parameter that specifies whether the rolling function(s) require independent variables, such as rolling correlation or rolling regression. (See Examples below.)
+        The `use_independent_variables` parameter is an optional parameter that specifies whether the expanding function(s) require independent variables, such as expanding correlation or expanding regression. (See Examples below.)
     window_func : Union[str, list, Tuple[str, Callable]], optional
-        The `window_func` parameter in the `augment_rolling` function is used to specify the function(s) to be applied to the rolling windows. 
+        The `window_func` parameter in the `augment_expanding` function is used to specify the function(s) to be applied to the expanding windows. 
         
         1. It can be a string or a list of strings, where each string represents the name of the function to be applied. 
         
@@ -38,7 +38,7 @@ def augment_expanding(
     Returns
     -------
     pd.DataFrame
-        The `augment_rolling` function returns a DataFrame with new columns for each applied function, window size, and value column.
+        The `augment_expanding` function returns a DataFrame with new columns for each applied function, window size, and value column.
     
     Examples
     --------
