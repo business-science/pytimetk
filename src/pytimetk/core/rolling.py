@@ -175,11 +175,15 @@ def augment_rolling(
         
         for center_point in range(len(df)):
             if center:
-                start = max(0, center_point - adjusted_window)
-                end = min(len(df), center_point + adjusted_window + 1)
+                if window_size % 2 == 0:  # left biased window if window size is even
+                    start = max(0, center_point - adjusted_window)
+                    end = min(len(df), center_point + adjusted_window)
+                else:
+                    start = max(0, center_point - adjusted_window)
+                    end = min(len(df), center_point + adjusted_window + 1)
             else:
                 start = max(0, center_point - adjusted_window)
-                end = min(len(df), start + window_size)
+                end = center_point + 1
             
             window_df = df.iloc[start:end]
             
