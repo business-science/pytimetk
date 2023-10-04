@@ -181,14 +181,11 @@ def augment_expanding(
                         try:   
                             group_df[new_column_name] = group_df[value_col].expanding(min_periods=min_periods, **kwargs).apply(func, raw=True)
                         except Exception as e:
-                            specific_error_msg = "only integers, slices (`:`), ellipsis (`...`), numpy.newaxis (`None`) and integer or boolean arrays are valid indices"
-                            if str(e) == specific_error_msg:
                                 try: # try independent variables incase user mistakenly did not set to True
                                     group_df[new_column_name] = expanding_apply(func, group_df, min_periods=min_periods)
                                 except:
-                                    raise
-                            else:
-                                raise
+                                    raise e
+                                
                 elif isinstance(func, str):
                     new_column_name = f"{value_col}_expanding_{func}"
                     
