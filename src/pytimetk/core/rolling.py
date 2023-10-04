@@ -253,9 +253,13 @@ def augment_rolling(
                         if use_independent_variables:                           
                             group_df[new_column_name] = rolling_apply_2(func, group_df, window_size, min_periods=min_periods, center=center)
                         else:
-                            # group_df[new_column_name] = rolling_apply(func, group_df[value_col])
-                            group_df[new_column_name] = group_df[value_col].rolling(window=window_size, min_periods=min_periods,center=center, **kwargs).apply(func, raw=True)
-                    
+                            try:   
+                                group_df[new_column_name] = group_df[value_col].rolling(window=window_size, min_periods=min_periods, center=center, **kwargs).apply(func, raw=True)
+                            except Exception as e:
+                                    try: # try independent variables incase user mistakenly did not set to True
+                                        group_df[new_column_name] = rolling_apply_2(func, group_df, window_size, min_periods=min_periods, center=center)
+                                    except:
+                                        raise e
                             
                     elif isinstance(func, str):
                         new_column_name = f"{value_col}_rolling_{func}_win_{window_size}"
