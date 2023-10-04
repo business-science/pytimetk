@@ -10,86 +10,186 @@ number-depth: 2
 Timetk enables to generate features from the timestamps in your data very fast. This tutorial showcases how easy it is to perform time series forecasting with `pytimetk`. This applied tutorial showcases the use of:
 
 - `tk.augment_timeseries_signature()`: Add 29 time series features to a DataFrame.
+- `tk.plot_timeseries()`: Plots a time series.
 
 Load the following packages before proceeding with this tutorial. 
 
+# Data preprocessing
+
 ```{python}
-import pytimetk as tk
 import pandas as pd
+import pytimetk as tk
 import matplotlib.pyplot as plt
+
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score
+from sklearn.preprocessing import RobustScaler
+from sklearn.feature_selection import SelectKBest, mutual_info_regression
 ```
 
-The first thing we want to do is to load a sample dataset. We will use the m4_daily dataset for this tutorial. This dataset can be used for forecasting a `value` for each `id`, given a daily timestamp.  
+The first thing we want to do is to load a sample dataset.
 ```{python}
-dset = tk.load_dataset('m4_daily', parse_dates = ['date'])
+# We start by loading the dataset
+# You can get more insights about the dataset by following this link: https://business-science.github.io/timetk/reference/walmart_sales_weekly.html
+dset = tk.load_dataset('walmart_sales_weekly', parse_dates = ['Date'])
+
+# We also remove markdowns as it is not very useful for the sake of the tutorial
+dset = dset.drop(columns=[
+    'id', # This column can be removed as it is equivalent to 'Dept'
+    'Store', # This column has only one possible value
+    'Type', # This column has only one possible value
+    'Size', # This column has only one possible value
+    'MarkDown1', 'MarkDown2', 'MarkDown3', 'MarkDown4', 'MarkDown5'])
+
 dset.head()
 ```
 
-In the following cell, we create a regular timestamp so that each id has a value per day. If it does not have data for a particular day, the value is set to NaN.
+We can plot the values of one Dept to get an idea of how the data looks like, using the `plot_timeseries` method.
 ```{python}
-value_df = dset \
-    .groupby(['id']) \
-    .summarize_by_time(
-        date_column  = 'date',
-        value_column = 'value',
-        freq         = "MS",
-        agg_func     = 'sum',
-        wide_format  = False
-    )
-
-# For this example we shall use only years 2014 and 2015, so that we have just enough data for creating a train and a test set.
-value_df = value_df[value_df.date.dt.year.isin([2014, 2015])]
-value_df.head()
+sales_df = dset
+fig = sales_df[sales_df['Dept']==1].plot_timeseries(
+    date_column='Date',
+    value_column='Weekly_Sales',
+    facet_ncol = 1,
+    x_axis_date_labels = "%Y",
+    engine = 'plotly')
+fig
 ```
 
-Let us now reshape the DataFrame so that it has one column per id. This DataFrame represents our target variable y. We call it Y as it is in fact a stack of target variables, one for each id.
+Let us now reshape the DataFrame so that it has one column per Dept. This DataFrame represents our target variable y. We call it Y as it is in fact a stack of target variables, one for each Dept.
 ```{python}
-Y = value_df.set_index(['id', 'date']).sort_index().unstack(['id'])
-Y[('value','D10')].plot()  # plots the target variable for id D10
+Y = sales_df[['Dept', 'Date', 'Weekly_Sales']].set_index(['Dept', 'Date']).sort_index().unstack(['Dept'])
+Y.head()
 ```
 
-Now that we have our target, we want to produce the features that will help us predict the target. We only have the time feature for now, and we would like to extract some useful information from it, to be able to train a regressor on this data. Such useful data would include the year or the quarter at prediction time for example. This is where `tk.augment_timeseries_signature` comes handy. It will generate 29 useful time series features from our timestamps.
+Now that we have our target, we want to produce the features that will help us predict the target. 
+
 ```{python}
-X = value_df.drop_duplicates(subset=['date']).drop(columns=['id', 'value']).augment_timeseries_signature(date_column = 'date').drop(columns=['date'])
-
-# some features that have been created are categorical. We cannot use them directly to fit a regressor. That is why we produce dummies out of them:
-X = pd.get_dummies(X, columns=['date_year', 'date_year_iso', 'date_quarteryear', 'date_month_lbl', 'date_wday_lbl', 'date_am_pm'], drop_first=True)
-
-# inspect our resulting features
+X = sales_df.drop_duplicates(subset=['Date']).drop(columns=['Dept', 'Date', 'Weekly_Sales'])
 X.head()
 ```
 
-The preprocessing work have been done, we shall now train a basic regressor model. We choose a random forests regressor here, as it is pretty good at handling both numerical and categorical data.
 ```{python}
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
+def dummify(X_time, date_col = 'Date'):
+  X_time = pd.get_dummies(X_time, columns=[
+      f'{date_col}_year',
+      f'{date_col}_year_iso',
+      f'{date_col}_quarteryear',
+      f'{date_col}_month_lbl',
+      f'{date_col}_wday_lbl',
+      f'{date_col}_am_pm'], drop_first=True)
+  return X_time
 
-Y = Y.fillna(method='ffill').fillna(method='bfill')
-X['date_yweek'] = X['date_yweek'].astype(int)
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, shuffle=False, train_size=.5)
-
-model = RandomForestRegressor()
-model = model.fit(X_train, Y_train)
+date_col = 'Date'
+X_time = sales_df[['Date']].drop_duplicates(subset=[date_col]).augment_timeseries_signature(date_column = date_col).drop(columns=[date_col])
+X_time = dummify(X_time, date_col='Date')
+X_time
 ```
 
-We can inspect how the training went, by looking at the predictions on the train set. We can see that the random forests worked pretty well and was able to get close to the ground truth.
+# Modeling
+
 ```{python}
-import matplotlib.pyplot as plt
-Y_train[('value','D10')].plot(label='ground truth')
-pd.DataFrame(model.predict(X_train), index=Y_train.index, columns=Y_train.columns)[('value','D10')].plot(label='predictions')
-plt.legend()
-plt.show()
+def train(X, Y, k=None):
+  """ Trains a RandomForests model on the input data. """
+
+  Y = Y.fillna(method='ffill').fillna(method='bfill')
+  X_train, X_test, Y_train, Y_test = train_test_split(X, Y, shuffle=False, train_size=.5)
+
+  # scale numerical features
+  features_to_scale = [ c for c in ['Temperature', 'Fuel_Price', 'CPI', 'Unemployment'] if c in X.columns]
+  if len(features_to_scale):
+    scaler = RobustScaler()
+    X_train[features_to_scale] = scaler.fit_transform(X_train[features_to_scale])
+    X_test[features_to_scale] = scaler.transform(X_test[features_to_scale])
+
+  # select best features to remove noise
+  if k is not None:
+    selector = SelectKBest(mutual_info_regression, k=k)
+    X_train = selector.fit_transform(X_train, Y_train.iloc[:,1])
+    X_test = selector.transform(X_test)
+
+  # train the model
+  model = RandomForestRegressor(random_state=123456, n_estimators=300)
+  model = model.fit(X_train, Y_train)
+  preds_train = model.predict(X_train)
+
+  # test the model
+  preds_test = model.predict(X_test)
+  print(f'R2 score: {r2_score(Y_test, preds_test)}')
+
+  return Y_train, Y_test, preds_train, preds_test
 ```
 
-We can now see how well it performs on the test set:
 ```{python}
-import matplotlib.pyplot as plt
-Y_test[('value','D10')].plot(label='ground truth')
-pd.DataFrame(model.predict(X_test), index=Y_test.index, columns=Y_test.columns)[('value','D10')].plot(label='predictions')
-plt.legend()
-plt.show()
+def plot_result(dept_idx, Y, Y_train, Y_test, preds_train, preds_test):
+  """ Plots the predictions for a given Department. """
+  import numpy as np
+
+  data = pd.DataFrame({
+      'Weekly_Sales': pd.concat([
+          Y.iloc[:, dept_idx],
+          pd.Series(preds_train[:,dept_idx], index=Y_train.index),
+          pd.Series(preds_test[:,dept_idx], index=Y_test.index)])
+  })
+  data['Labels'] = ""
+  data['Labels'].iloc[:len(Y)] = 'Ground truth'
+  data['Labels'].iloc[len(Y):len(Y)+len(Y_train)] = 'Predictions on train set'
+  data['Labels'].iloc[len(Y)+len(Y_train):] = 'Predictions on test set'
+
+  fig = data.reset_index().plot_timeseries(
+    date_column='Date',
+    value_column='Weekly_Sales',
+    color_column='Labels',
+    facet_ncol = 1,
+    smooth=False,
+    x_axis_date_labels = "%Y",
+    engine = 'plotly')
+  fig.show()
 ```
+
+```{python}
+Y_train, Y_test, preds_train, preds_test = train(X, Y)
+plot_result(1, Y, Y_train, Y_test, preds_train, preds_test)
+```
+R2 score: -0.16
+
+```{python}
+Y_train, Y_test, preds_train, preds_test = train(X_time, Y)
+plot_result(1, Y, Y_train, Y_test, preds_train, preds_test)
+```
+R2 score: 0.23
+
+```
+from sklearn.feature_selection import mutual_info_regression
+
+def compute_MI(X, Y):
+  Y = Y.fillna(method='ffill').fillna(method='bfill')
+  X_train, X_test, Y_train, Y_test = train_test_split(X, Y, shuffle=False, train_size=.5)
+  features_to_scale = [ c for c in ['Temperature', 'Fuel_Price', 'CPI', 'Unemployment'] if c in X.columns]
+  scaler = RobustScaler()
+  X_train[features_to_scale] = scaler.fit_transform(X_train[features_to_scale])
+
+  print(pd.DataFrame({'feature': X_train.columns, 'MI': mutual_info_regression(X_train, Y_train.iloc[:,0])}).sort_values(by='MI', ascending=False))
+
+compute_MI(X, Y)
+```
+
+        feature        MI
+1   Temperature  0.277781
+4  Unemployment  0.213034
+2    Fuel_Price  0.080510
+0     IsHoliday  0.004462
+3           CPI  0.003706
+
+```
+X_concat = pd.concat([X_time, X[['Temperature', 'Unemployment']]], axis=1)
+Y_train, Y_test, preds_train, preds_test = train(X_concat, Y, k=30)
+plot_result(1, Y, Y_train, Y_test, preds_train, preds_test)
+```
+
+R2 score: 0.239
+
+# Conclusion
 
 In this tutorial, we showed how the `tk.augment_timeseries_signature()` function can be used to effortlessly extract useful features from the date index. The features have proved to be relevant, as we can directly use them to train a regression model and get correct results for the task of time series forecasting. Note that we only used some months of data for the training set and did not change any hyperparameter of the random forests. That shows how meaningful the time features produced are.
