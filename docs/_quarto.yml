@@ -140,7 +140,7 @@ quartodoc:
         - get_date_summary
         - get_frequency_summary
         - get_diff_summary
-        - get_pandas_frequency
+        - get_frequency
         - get_timeseries_signature
         - get_holiday_signature 
     - title: 🛠️ Date Utilities

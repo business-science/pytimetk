@@ -15,64 +15,6 @@ try:
 except ImportError:
     pass
 
-@pf.register_series_method
-def get_pandas_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool = False) -> str:
-    '''
-    Get the frequency of a pandas Series or DatetimeIndex.
-    
-    The function `get_pandas_frequency` takes a Pandas Series or DatetimeIndex as input and returns the inferred frequency of the index, with an option to force regular frequency.
-    
-    Parameters
-    ----------
-    idx : pd.Series or pd.DatetimeIndex
-        The `idx` parameter can be either a `pd.Series` or a `pd.DatetimeIndex`. It represents the index or the time series data for which we want to determine the frequency.
-    force_regular : bool, optional
-        The `force_regular` parameter is a boolean flag that determines whether to force the frequency to be regular. If set to `True`, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is 'B' (business days), it will be converted to 'D' (calendar days). The default value is `False`.
-    
-    Returns
-    -------
-    str
-        The frequency of the given pandas series or datetime index.
-    
-    '''
-   
-    
-    if isinstance(idx, pd.Series):
-        idx = idx.values
-        
-    _len = len(idx)
-    if _len > 10:
-        _len = 10
-    
-    dt_index = pd.DatetimeIndex(idx[0:_len])
-    
-    freq = dt_index.inferred_freq
-    
-    # if freq is None:
-    #         raise ValueError("The frequency could not be detectied.")
-    
-    if force_regular:
-        if freq == 'B':
-            freq = 'D'
-        if freq == 'BM':
-            freq = 'M'
-        if freq == 'BQ':
-            freq = 'Q'
-        if freq == 'BA':
-            freq = 'A'
-        if freq == 'BY':
-            freq = 'Y'
-        if freq == 'BMS':
-            freq = 'MS'
-        if freq == 'BQS':
-            freq = 'QS'
-        if freq == 'BYS':
-            freq = 'YS'
-        if freq == 'BAS':
-            freq = 'AS'
-        
-    
-    return freq
 
 @pf.register_series_method
 def floor_date(
@@ -272,21 +214,7 @@ def is_holiday(
     
     return ret
 
-def timeseries_unit_frequency_table():
-    '''The function `timeseries_unit_frequency_table` returns a pandas DataFrame with units of time and
-    their corresponding frequencies in seconds.
-    
-    Returns
-    -------
-    pd.DataFrame
-        a pandas DataFrame that contains two columns: "unit" and "freq". The "unit" column contains the units of time (seconds, minutes, hours, etc.), and the "freq" column contains the corresponding frequencies in seconds for each unit.
-    
-    '''
-    
-    return pd.DataFrame({
-        "unit" : ["sec", "min", "hour", "day", "week", "month", "quarter", "year"],
-        "freq" : [0, 60, 3600, 86400, 604800, 2678400, 7948800, 31795200]
-    })
+
 
 def is_datetime_string(x: Union[str, pd.Series, pd.DatetimeIndex]) -> bool:
     

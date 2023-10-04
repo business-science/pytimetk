@@ -3,7 +3,7 @@ import numpy as np
 import pandas_flavor as pf
 from typing import Union
 
-from pytimetk.utils.datetime_helpers import get_pandas_frequency
+from pytimetk.core.ts_summary import get_pandas_frequency
 
 @pf.register_series_method
 def make_future_timeseries(

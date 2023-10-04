@@ -1,7 +1,7 @@
 import pandas as pd
 import pandas_flavor as pf
 
-from typing import Union
+from typing import Union, Optional, Callable, Tuple
 import re 
 from itertools import cycle
 
@@ -14,7 +14,7 @@ def summarize_by_time(
     date_column: str,
     value_column: Union[str, list],
     freq: str = "D",
-    agg_func: list = 'sum',
+    agg_func: Union[str, list, Tuple[str, Callable]] = 'sum',
     kind: str = "timestamp",
     wide_format: bool = False,
     fillna: int = 0,
