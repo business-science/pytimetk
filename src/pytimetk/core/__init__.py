@@ -8,5 +8,6 @@ from .leads import *
 from .fourier import *
 from .pad import *
 from .rolling import *
+from .expanding import *
 from .ts_features import *
 from .ts_summary import *
