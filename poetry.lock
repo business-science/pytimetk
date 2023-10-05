@@ -1965,8 +1965,8 @@ griffe = "<=0.32.3"
 importlib-metadata = ">=5.1.0"
 importlib-resources = ">=5.10.2"
 plum-dispatch = [
-    {version = ">2.0.0", markers = "python_version >= \"3.10\""},
     {version = "<2.0.0", markers = "python_version < \"3.10\""},
+    {version = ">2.0.0", markers = "python_version >= \"3.10\""},
 ]
 pydantic = "<2.0"
 pyyaml = "*"
@@ -2303,8 +2303,8 @@ files = [
 
 [package.dependencies]
 numpy = [
-    {version = ">=1.22.3", markers = "python_version == \"3.10\" and platform_system == \"Windows\" and platform_python_implementation != \"PyPy\""},
     {version = ">=1.18", markers = "python_version != \"3.10\" or platform_system != \"Windows\" or platform_python_implementation == \"PyPy\""},
+    {version = ">=1.22.3", markers = "python_version == \"3.10\" and platform_system == \"Windows\" and platform_python_implementation != \"PyPy\""},
 ]
 packaging = ">=21.3"
 pandas = ">=1.0"
@@ -2558,4 +2558,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "454c7afe9db97040b6abcab8abc0dee7c3e49f3edeb818422cba212ddf509972"
+content-hash = "0bef2f84adcb5cdb9cd6955c1f5ed972faa4af955cfad7b76ede005b92388ac6"
