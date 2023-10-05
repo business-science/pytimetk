@@ -11,3 +11,4 @@ from .rolling import *
 from .expanding import *
 from .ts_features import *
 from .ts_summary import *
+from .anomaly import *
