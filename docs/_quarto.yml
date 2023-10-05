@@ -72,6 +72,9 @@ website:
       - text: 🍻 Contributing
         file: contributing.qmd
       - text: "---"
+      - text: 📧 Change Log
+        file: changelog.qmd
+      - text: "---"
       - section: "📚 More References:"
       - text: Business Science
         file: https://www.business-science.io/index.html
