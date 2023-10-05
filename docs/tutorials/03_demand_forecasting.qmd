@@ -190,6 +190,56 @@ plot_result(1, Y, Y_train, Y_test, preds_train, preds_test)
 
 R2 score: 0.239
 
+# Forecasting
+
+```{python}
+def train_final(X, Y):
+  """ Trains a RandomForests model on the input data. """
+
+  Y = Y.fillna(method='ffill').fillna(method='bfill')
+  X_train, Y_train = X, Y
+  model = RandomForestRegressor(random_state=123456, n_estimators=300)
+  model = model.fit(X_train, Y_train)
+
+  return model
+
+
+date_col= 'Date'
+
+X_time_future = sales_df.drop_duplicates(subset=['Date'])[['Date']]
+X_time_future = X_time_future.future_frame(
+    date_column = date_col,
+    length_out  = 60
+).augment_timeseries_signature(date_column = date_col).drop(columns=[date_col])
+X_time_future = dummify(X_time_future, date_col='Date')
+
+X_time_future.head()
+```
+
+```{python}
+Y_future = sales_df[['Dept', 'Date', 'Weekly_Sales']]
+Y_future = Y_future.groupby('Dept').future_frame(
+    date_column = date_col,
+    length_out  = 60
+)
+Y_future.head()
+```
+
+```{python}
+model = train_final(X_time_future.iloc[:len(Y)], Y)
+predictions = model.predict(X_time_future.iloc[len(Y):])
+```
+
+```{python}
+Y_future.loc[Y_future.Date > Y.index[-1], 'Weekly_Sales'] = predictions.T.ravel()
+Y_future['Label'] = 'History'
+Y_future.loc[Y_future.Date > Y.index[-1], 'Label'] = 'Predictions'
+```
+
+```{python}
+Y_future.query("Dept == 1").plot_timeseries(date_column='Date', value_column='Weekly_Sales', color_column='Label', smooth=False)
+```
+
 # Conclusion
 
 In this tutorial, we showed how the `tk.augment_timeseries_signature()` function can be used to effortlessly extract useful features from the date index. The features have proved to be relevant, as we can directly use them to train a regression model and get correct results for the task of time series forecasting. Note that we only used some months of data for the training set and did not change any hyperparameter of the random forests. That shows how meaningful the time features produced are.
