@@ -341,7 +341,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>datasets.get_datasets.load_dataset(name='m4_daily', verbose=False, **kwargs)</code></p>
+<p><code>load_dataset(name='m4_daily', verbose=False, **kwargs)</code></p>
 <p>Load one of 12 Time Series Datasets.</p>
 <p>The <code>load_dataset</code> function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to <code>pandas.read_csv</code>. The available datasets are:</p>
 <ul>
@@ -357,6 +357,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <li><code>walmart_sales_weekly</code>: The Walmart sales weekly dataset</li>
 <li><code>wikipedia_traffic_daily</code>: The Wikipedia traffic daily dataset</li>
 <li><code>stocks_daily</code>: The MAANNG stocks dataset</li>
+<li><code>expedia</code>: Expedia Hotel Time Series Dataset</li>
 </ul>
 <p>The datasets can be loaded with <code>pytimetk.load_dataset(name)</code>, where <code>name</code> is the name of the dataset that you want to load. The default value is set to “m4_daily”, which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned above.</p>
 <section id="parameters" class="level2">

@@ -1,6 +1,6 @@
-# load_dataset { #pytimetk.datasets.get_datasets.load_dataset }
+# load_dataset { #pytimetk.load_dataset }
 
-`datasets.get_datasets.load_dataset(name='m4_daily', verbose=False, **kwargs)`
+`load_dataset(name='m4_daily', verbose=False, **kwargs)`
 
 Load one of 12 Time Series Datasets.
 
@@ -18,6 +18,7 @@ The `load_dataset` function is used to load various time series datasets by name
 - `walmart_sales_weekly`: The Walmart sales weekly dataset
 - `wikipedia_traffic_daily`: The Wikipedia traffic daily dataset
 - `stocks_daily`: The MAANNG stocks dataset
+- `expedia`: Expedia Hotel Time Series Dataset
 
 The datasets can be loaded with `pytimetk.load_dataset(name)`, where `name` is the name of the dataset that you want to load. The default value is set to "m4_daily", which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned above.
 

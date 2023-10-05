@@ -16,6 +16,7 @@ website:
       - reference/augment_lags.qmd
       - reference/augment_leads.qmd
       - reference/augment_rolling.qmd
+      - reference/augment_expanding.qmd
       section: "\U0001F3D7\uFE0F Adding Features to Time Series DataFrames (Augmenting)"
     - contents:
       - reference/ts_features.qmd
@@ -28,7 +29,7 @@ website:
       - reference/get_date_summary.qmd
       - reference/get_frequency_summary.qmd
       - reference/get_diff_summary.qmd
-      - reference/get_pandas_frequency.qmd
+      - reference/get_frequency.qmd
       - reference/get_timeseries_signature.qmd
       - reference/get_holiday_signature.qmd
       section: "\U0001F43C Time Series for Pandas Series"
@@ -49,6 +50,6 @@ website:
     - contents:
       - reference/get_available_datasets.qmd
       - reference/load_dataset.qmd
-      section: "\U0001F4BE 12 Datasets"
+      section: "\U0001F4BE 13 Datasets"
     id: reference
   - id: dummy-sidebar

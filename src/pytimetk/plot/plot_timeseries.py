@@ -281,6 +281,7 @@ def plot_timeseries(
     '''
     
     # Common checks
+    # ensure_datetime64_date_column(data, date_column)
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
     check_value_column(data, value_column)

@@ -183,8 +183,6 @@ def is_holiday(
     )
     ```
     """
-    # Common checks
-    check_series_or_datetime(idx)
     
     # This function requires the holidays package to be installed
     try:

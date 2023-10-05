@@ -288,7 +288,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#date-utilities" id="toc-date-utilities" class="nav-link" data-scroll-target="#date-utilities">🛠️ Date Utilities</a></li>
   <li><a href="#visualization-utilities" id="toc-visualization-utilities" class="nav-link" data-scroll-target="#visualization-utilities">🛠️ Visualization Utilities</a></li>
   <li><a href="#extra-pandas-helpers-that-help-beyond-just-time-series" id="toc-extra-pandas-helpers-that-help-beyond-just-time-series" class="nav-link" data-scroll-target="#extra-pandas-helpers-that-help-beyond-just-time-series">Extra Pandas Helpers (That Help Beyond Just Time Series)</a></li>
-  <li><a href="#datasets" id="toc-datasets" class="nav-link" data-scroll-target="#datasets">💾 12 Datasets</a></li>
+  <li><a href="#datasets" id="toc-datasets" class="nav-link" data-scroll-target="#datasets">💾 13 Datasets</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/index.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
@@ -357,6 +357,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><a href="../reference/augment_rolling.html#pytimetk.augment_rolling">augment_rolling</a></td>
 <td>Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.</td>
 </tr>
+<tr class="even">
+<td><a href="../reference/augment_expanding.html#pytimetk.augment_expanding">augment_expanding</a></td>
+<td>Apply one or more expanding functions and window sizes to one or more columns of a DataFrame.</td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -399,14 +403,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="odd">
 <td><a href="../reference/get_frequency_summary.html#pytimetk.get_frequency_summary">get_frequency_summary</a></td>
-<td>Returns a summary including the inferred frequency, median time difference, scale, and unit.</td>
+<td>More robust version of pandas inferred frequency.</td>
 </tr>
 <tr class="even">
 <td><a href="../reference/get_diff_summary.html#pytimetk.get_diff_summary">get_diff_summary</a></td>
 <td>Calculates summary statistics of the time differences between consecutive values in a datetime index.</td>
 </tr>
 <tr class="odd">
-<td><a href="../reference/get_pandas_frequency.html#pytimetk.get_pandas_frequency">get_pandas_frequency</a></td>
+<td><a href="../reference/get_frequency.html#pytimetk.get_frequency">get_frequency</a></td>
 <td>Get the frequency of a pandas Series or DatetimeIndex.</td>
 </tr>
 <tr class="even">
@@ -476,16 +480,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </table>
 </section>
 <section id="datasets" class="level2">
-<h2 class="anchored" data-anchor-id="datasets">💾 12 Datasets</h2>
-<p>Practice <code>pytimetk</code> with 12 complementary time series datasets.</p>
+<h2 class="anchored" data-anchor-id="datasets">💾 13 Datasets</h2>
+<p>Practice <code>pytimetk</code> with 13 complementary time series datasets.</p>
 <table class="table">
 <tbody>
 <tr class="odd">
-<td><a href="../reference/get_available_datasets.html#pytimetk.datasets.get_datasets.get_available_datasets">get_available_datasets</a></td>
+<td><a href="../reference/get_available_datasets.html#pytimetk.get_available_datasets">get_available_datasets</a></td>
 <td>Get a list of 12 datasets that can be loaded with <code>pytimetk.load_dataset</code>.</td>
 </tr>
 <tr class="even">
-<td><a href="../reference/load_dataset.html#pytimetk.datasets.get_datasets.load_dataset">load_dataset</a></td>
+<td><a href="../reference/load_dataset.html#pytimetk.load_dataset">load_dataset</a></td>
 <td>Load one of 12 Time Series Datasets.</td>
 </tr>
 </tbody>

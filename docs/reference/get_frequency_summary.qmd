@@ -2,7 +2,7 @@
 
 `get_frequency_summary(idx)`
 
-Returns a summary including the inferred frequency, median time difference, scale, and unit.
+More robust version of pandas inferred frequency.
 
 ## Parameters
 
@@ -15,3 +15,26 @@ Returns a summary including the inferred frequency, median time difference, scal
 | Type         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 |--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | pd.DataFrame | A pandas DataFrame with the following columns: - `freq_inferred_unit`: The inferred frequency of the time series from `pandas`. - `freq_median_timedelta`: The median time difference between consecutive observations in the time series. - `freq_median_scale`: The median time difference between consecutive observations in the time series, scaled to a common unit. - `freq_median_unit`: The unit of the median time difference between consecutive observations in the time series. |
+
+## Examples
+
+```{python}
+import pytimetk as tk
+import pandas as pd
+
+dates = pd.date_range(start = '2020-01-01', end = '2020-01-10', freq = 'D')
+
+tk.get_frequency(dates)
+```
+
+```{python}
+# pandas inferred frequency fails
+dates = pd.to_datetime(["2021-01-01", "2021-02-01"])
+
+# Returns None
+tk.get_pandas_frequency(dates)
+
+# Returns '1MS'
+tk.get_frequency(dates)
+
+```

@@ -337,7 +337,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>datasets.get_datasets.get_available_datasets()</code></p>
+<p><code>get_available_datasets()</code></p>
 <p>Get a list of 12 datasets that can be loaded with <code>pytimetk.load_dataset</code>.</p>
 <p>The <code>get_available_datasets</code> function returns a sorted list of available dataset names from the <code>pytimetk.datasets</code> module. The available datasets are:</p>
 <section id="returns" class="level2">
@@ -367,9 +367,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>tk.get_available_datasets()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>['bike_sales_sample',
  'bike_sharing_daily',
+ 'expedia',
  'm4_daily',
  'm4_hourly',
  'm4_monthly',

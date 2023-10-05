@@ -20,9 +20,9 @@ def check_date_column(data: Union[pd.DataFrame, pd.core.groupby.generic.DataFram
     if date_column not in data.columns:
         raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
     
-    # Check if date_column is a datetime64[ns] dtype
-    if data[date_column].dtype != 'datetime64[ns]':
-        raise TypeError(f"`date_column` ({date_column}) is not a datetime64[ns] dtype.")
+    # Check if date_column is a datetime64[ns] dtype    
+    if not pd.api.types.is_datetime64_any_dtype(data[date_column]):
+        raise TypeError(f"`date_column` ({date_column}) is not a datetime64[ns] dtype. Dtype Found: {data[date_column].dtype}")
         
     return None
 
@@ -51,4 +51,23 @@ def check_series_or_datetime(data: Union[pd.Series, pd.DatetimeIndex]) -> None:
             raise TypeError("`data` is not a Pandas Series or DatetimeIndex.")
         
     return None
+
+# def ensure_datetime64_date_column(data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], date_column = str) -> Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]:
+    
+#     group_names = None
+#     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+#         group_names = list(data.groups.keys())
+#         data = data.obj
+    
+#     if not pd.api.types.is_datetime64_any_dtype(data[date_column]):
+#         try:
+#             data[date_column] = pd.to_datetime(data[date_column])
+#             return data
+#         except:
+#             raise ValueError("Failed to convert series to datetime64.")
+    
+#     if group_names is not None:
+#         data = data.groupby(group_names)    
+    
+#     return data
     
