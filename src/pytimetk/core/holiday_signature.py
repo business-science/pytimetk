@@ -6,6 +6,8 @@ import pandas_flavor as pf
 
 from typing import Union
 
+from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_series_or_datetime
+
 try: 
     import holidays
 except ImportError:
@@ -153,17 +155,12 @@ def augment_holiday_signature(
     except ImportError:
         raise ImportError("The 'holidays' package is not installed. Please install it by running 'pip install holidays'.")
     
-    # Check if data is a Pandas DataFrame or GroupBy object
-    if not isinstance(data, pd.DataFrame):
-        if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-            raise TypeError("`data` is not a Pandas DataFrame or GroupBy object.")
+    # Common checks
+    check_dataframe_or_groupby(data)
+    check_date_column(data, date_column)
         
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         data = data.obj
-
-    # Ensure the date column exists in the DataFrame
-    if date_column not in data.columns:
-        raise ValueError(f"'{date_column}' not found in DataFrame columns.")
     
     # Extract start and end years directly from the Series
     start_year = data[date_column].min().year
@@ -367,6 +364,8 @@ def get_holiday_signature(
     pd.Series(dates, name='dates').get_holiday_signature('UnitedStates')
     ```    
     """
+    # Common checks
+    check_series_or_datetime(idx)
     
     # This function requires the holidays package to be installed
     try:

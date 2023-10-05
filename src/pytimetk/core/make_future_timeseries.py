@@ -5,6 +5,8 @@ from typing import Union
 
 from pytimetk.core.ts_summary import get_pandas_frequency
 
+from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column, check_series_or_datetime
+
 @pf.register_series_method
 def make_future_timeseries(
     idx: Union[pd.Series, pd.DatetimeIndex],
@@ -88,13 +90,12 @@ def make_future_timeseries(
     ```
     '''
     
+    # Check if idx is a Series or DatetimeIndex
+    check_series_or_datetime(idx)
+    
     # If idx is a DatetimeIndex, convert to Series
     if isinstance(idx, pd.DatetimeIndex):
         idx = pd.Series(idx, name="idx")
-    
-    # Check if idx is a Series
-    if not isinstance(idx, pd.Series):
-        raise TypeError('idx must be a pandas Series or DatetimeIndex object')
     
     # Create a DatetimeIndex from the provided dates
     dt_index = pd.DatetimeIndex(pd.Series(idx).values)
@@ -236,10 +237,9 @@ def future_frame(
     ```
     '''
     
-    # Check if data is a Pandas DataFrame or GroupBy object
-    if not isinstance(data, pd.DataFrame):
-        if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-            raise TypeError("`data` is not a Pandas DataFrame.")
+    # Common checks
+    check_dataframe_or_groupby(data)
+    check_date_column(data, date_column)
     
     # DATAFRAME EXTENSION - If data is a Pandas DataFrame, extend with future dates
     

@@ -5,7 +5,7 @@ import pandas_flavor as pf
 from typing import Union
 
 from pytimetk.utils.datetime_helpers import week_of_month
-
+from pytimetk.utils.checks import check_series_or_datetime, check_dataframe_or_groupby, check_date_column
 
  
 @pf.register_series_method
@@ -67,6 +67,9 @@ def get_timeseries_signature(idx: Union[pd.Series, pd.DatetimeIndex]) -> pd.Data
     tk.get_timeseries_signature(dates).head()
     ```
     '''
+    
+    # common checks
+    check_series_or_datetime(idx)
     
     # If idx is a DatetimeIndex, convert to Series
     if isinstance(idx, pd.DatetimeIndex):
@@ -226,10 +229,10 @@ def augment_timeseries_signature(
     
     '''
     
-    # Check if data is a Pandas DataFrame or GroupBy object
-    if not isinstance(data, pd.DataFrame):
-        if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-            raise TypeError("`data` is not a Pandas DataFrame or GroupBy object.")
+    # Common checks
+    check_dataframe_or_groupby(data)
+    check_date_column(data, date_column)
+    
         
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         data = data.obj

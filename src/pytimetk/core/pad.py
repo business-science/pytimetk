@@ -1,8 +1,8 @@
-
-
 import pandas as pd
 import pandas_flavor as pf
 from typing import Union
+
+from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 
 @pf.register_dataframe_method
 def pad_by_time(
@@ -103,15 +103,17 @@ def pad_by_time(
     )
     padded_df
     '''
-        
-    if not isinstance(data, (pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy)):
-        raise TypeError("`data` must be a Pandas DataFrame or DataFrameGroupBy object.")
+    # Common checks
+    check_dataframe_or_groupby(data)
+    check_date_column(data, date_column)
 
+    # Prep Inputs
     if start_date is not None:
         start_date = pd.Timestamp(start_date)
     if end_date is not None:
         end_date = pd.Timestamp(end_date)
 
+    # Check if start_date is greater than end_date
     if start_date and end_date:
         if start_date > end_date:
             raise ValueError("Start date cannot be greater than end date.")

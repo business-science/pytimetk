@@ -17,6 +17,7 @@ from .core.expanding import *
 from .core.fourier import *
 from .core.ts_features import *
 from .core.ts_summary import *
+from .core.anomaly import *
 
 from .datasets.get_datasets import *
 
@@ -24,6 +25,7 @@ from .utils.datetime_helpers import *
 from .utils.pandas_helpers import *
 from .utils.memory_helpers import *
 from .utils.plot_helpers import *
+from .utils.checks import *
 
 # *** Needed for quartodoc build important functions ***
 from .plot.plot_timeseries import (

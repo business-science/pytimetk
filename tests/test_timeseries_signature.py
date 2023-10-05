@@ -41,7 +41,7 @@ def test_augment_timeseries_signature():
     assert all(df['value'] == augmented['value']), "Original data in the augmented dataframe has changed."
     
     # Test if the function raises KeyError for non-existent column
-    with pytest.raises(KeyError):
+    with pytest.raises(ValueError):
         df.augment_timeseries_signature(date_column='nonexistent_column')
 
 if __name__ == "__main__":

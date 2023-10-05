@@ -3,6 +3,7 @@ import pandas_flavor as pf
 import numpy as np
 
 from typing import Union, Optional, Callable, Tuple
+from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 
 @pf.register_dataframe_method
 def augment_expanding(
@@ -133,6 +134,12 @@ def augment_expanding(
     regression_wide_df
 ```
     '''
+    # Common checks
+    check_dataframe_or_groupby(data)
+    check_date_column(data, date_column)
+    check_value_column(data, value_column)
+    
+    # Expanding Apply Function for Functions that Require Independent Variables
     def expanding_apply(func, df, min_periods):
         n_rows = len(df)
         results = [np.nan] * n_rows
@@ -144,9 +151,6 @@ def augment_expanding(
 
         return pd.DataFrame({'result': results}, index=df.index)
 
-   
-    if not isinstance(data, (pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy)):
-        raise TypeError("`data` must be a Pandas DataFrame or GroupBy object.")
         
     if isinstance(value_column, str):
         value_column = [value_column]

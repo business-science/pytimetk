@@ -1,11 +1,13 @@
 import pandas as pd
 import pandas_flavor as pf
 
+from pytimetk.utils.checks import check_dataframe_or_groupby
+
 
 @pf.register_dataframe_method
 def glimpse(
     data: pd.DataFrame, max_width: int = 76
-):
+) -> None:
     '''Takes a pandas DataFrame and prints a summary of
     its dimensions, column names, data types, and the first few values of each column.
     
@@ -28,6 +30,8 @@ def glimpse(
     ```
     
     '''
+    # Common checks 
+    check_dataframe_or_groupby(data)
     
     df = data.copy()
 
@@ -54,11 +58,13 @@ def glimpse(
             output_combined = output_combined[0:(max_width-4)] + " ..."
         
         print(output_combined)
+    
+    return None
 
 
 
 @pf.register_dataframe_method
-def flatten_multiindex_column_names(data: pd.DataFrame, sep = '_'):
+def flatten_multiindex_column_names(data: pd.DataFrame, sep = '_') -> pd.DataFrame:
     '''Takes a DataFrame as input and flattens the column
     names if they are in a multi-index format.
     
@@ -93,6 +99,8 @@ def flatten_multiindex_column_names(data: pd.DataFrame, sep = '_'):
     
     ```
     '''
+    # Common checks
+    check_dataframe_or_groupby(data)
     
     # Check if data is a Pandas MultiIndex
     data.columns = [sep.join(col).strip() if isinstance(col, tuple) else col for col in data.columns.values]

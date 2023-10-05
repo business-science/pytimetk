@@ -6,6 +6,7 @@ import re
 from itertools import cycle
 
 from pytimetk.utils.pandas_helpers import flatten_multiindex_column_names
+from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 
 
 @pf.register_dataframe_method
@@ -152,10 +153,10 @@ def summarize_by_time(
     ```
     '''
     
-    # Check if data is a Pandas DataFrame
-    if not isinstance(data, pd.DataFrame):
-        if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-            raise TypeError("`data` is not a Pandas DataFrame.")
+    # Run common checks
+    check_dataframe_or_groupby(data)
+    check_value_column(data, value_column)
+    check_date_column(data, date_column)
     
     # Convert value_column to a list if it is not already
     if not isinstance(value_column, list):

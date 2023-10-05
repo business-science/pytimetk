@@ -1,13 +1,14 @@
 import pandas as pd
 import numpy as np
 import pandas_flavor as pf
-from typing import Union
+from typing import Union, List
+from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 
 @pf.register_dataframe_method
 def augment_fourier(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
-    value_column: str or list, 
+    value_column: Union[str, List[str]], 
     num_periods: int = 1,
     max_order: int = 1
 ) -> pd.DataFrame:
@@ -58,17 +59,13 @@ def augment_fourier(
 
     """
 
-    # Check if data is a Pandas DataFrame or GroupBy object
-    if not isinstance(data, pd.DataFrame):
-        if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-            raise TypeError("`data` is not a Pandas DataFrame or GroupBy object.")
+    # Common checks
+    check_dataframe_or_groupby(data)
+    check_date_column(data, date_column)
+    check_value_column(data, value_column)
 
     if isinstance(value_column, str):
         value_column = [value_column]
-
-    # Ensure the date column is of datetime type
-    # if not pd.api.types.is_datetime64_ns_dtype(data[date_column]):
-    #     data[date_column] = pd.to_datetime(data[date_column])
 
     # DATAFRAME EXTENSION - If data is a Pandas DataFrame, extend with Fourier transforms
     if isinstance(data, pd.DataFrame):

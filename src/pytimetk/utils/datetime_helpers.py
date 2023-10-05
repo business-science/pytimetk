@@ -1,14 +1,13 @@
-
 import pandas as pd
 import numpy as np
 import pandas_flavor as pf
 
 from datetime import datetime
-
 from dateutil import parser
 from warnings import warn
-
 from typing import Union, List
+
+from pytimetk.utils.checks import check_series_or_datetime
 
 try: 
     import holidays
@@ -57,14 +56,12 @@ def floor_date(
     dates.to_series().floor_date(unit="D")
     ```
     '''
+    # Common checks
+    check_series_or_datetime(idx)
     
     # If idx is a DatetimeIndex, convert to Series
     if isinstance(idx, pd.DatetimeIndex):
         idx = pd.Series(idx, name="idx")
-    
-    # Check if idx is a Series
-    if not isinstance(idx, pd.Series):
-        raise TypeError('idx must be a pandas Series or DatetimeIndex object')
     
     # Convert to period
     period = idx.dt.to_period(unit)
@@ -112,12 +109,11 @@ def week_of_month(idx: Union[pd.Series, pd.DatetimeIndex]) -> pd.Series:
     ```
     
     '''
+    # Common checks
+    check_series_or_datetime(idx)
     
     if isinstance(idx, pd.DatetimeIndex):
         idx = pd.Series(idx, name="idx")
-    
-    if not isinstance(idx, pd.Series):
-        raise TypeError('idx must be a pandas Series or DatetimeIndex object')
     
     ret = (idx.dt.day - 1) // 7 + 1
     
@@ -187,6 +183,9 @@ def is_holiday(
     )
     ```
     """
+    # Common checks
+    check_series_or_datetime(idx)
+    
     # This function requires the holidays package to be installed
     try:
         import holidays

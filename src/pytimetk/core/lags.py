@@ -1,14 +1,16 @@
 import pandas as pd
 import numpy as np
 import pandas_flavor as pf
-from typing import Union
+from typing import Union, List, Tuple
+
+from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 
 @pf.register_dataframe_method
 def augment_lags(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
-    value_column: str or list, 
-    lags: int or tuple or list = 1
+    value_column: Union[str, List[str]], 
+    lags: Union[int, Tuple[int, int], List[int]] = 1
 ) -> pd.DataFrame:
     """
     Adds lags to a Pandas DataFrame or DataFrameGroupBy object.
@@ -91,10 +93,10 @@ def augment_lags(
 
     """
 
-    # Check if data is a Pandas DataFrame or GroupBy object
-    if not isinstance(data, pd.DataFrame):
-        if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-            raise TypeError("`data` is not a Pandas DataFrame or GroupBy object.")
+    # Common checks
+    check_dataframe_or_groupby(data)
+    check_date_column(data, date_column)
+    check_value_column(data, value_column)
 
     if isinstance(value_column, str):
         value_column = [value_column]

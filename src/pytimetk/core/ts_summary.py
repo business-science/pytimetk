@@ -4,13 +4,15 @@ import numpy as np
 
 from typing import Union
 
+from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_series_or_datetime
+
 
     
 @pf.register_dataframe_method
 def ts_summary(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
-):
+) -> pd.DataFrame:
     '''Computes summary statistics for a time series data, either for the entire dataset or grouped by a specific column.
     
     Parameters
@@ -45,9 +47,6 @@ def ts_summary(
         - `diff_mean_seconds`: The mean time difference between consecutive observations in the time series in seconds.
         - `diff_q75_seconds`: The 75th percentile of the time difference between consecutive observations in the time series in seconds.
         - `diff_max_seconds`: The maximum time difference between consecutive observations in the time series in seconds.
-        
-        
-        
     
     Examples
     --------
@@ -80,10 +79,9 @@ def ts_summary(
     ```
     '''
     
-    # Check if data is a Pandas DataFrame
-    if not isinstance(data, pd.DataFrame):
-        if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-            raise TypeError("`data` is not a Pandas DataFrame.")
+    # Run common checks
+    check_dataframe_or_groupby(data)
+    check_date_column(data, date_column)
         
     if isinstance(data, pd.DataFrame):
         
@@ -183,6 +181,8 @@ def get_diff_summary(idx: Union[pd.Series, pd.DatetimeIndex], numeric: bool = Fa
 
     '''
     
+    # common checks
+    check_series_or_datetime(idx)
     
     # If idx is a DatetimeIndex, convert to Series
     if isinstance(idx, pd.DatetimeIndex):
@@ -254,7 +254,7 @@ def get_date_summary(idx: Union[pd.Series, pd.DatetimeIndex]):
     
     
 def get_frequency_summary(idx: Union[pd.Series, pd.DatetimeIndex]):  
-    '''Returns a summary including the inferred frequency, median time difference, scale, and unit.
+    '''More robust version of pandas inferred frequency.
     
     Parameters
     ----------
@@ -270,7 +270,33 @@ def get_frequency_summary(idx: Union[pd.Series, pd.DatetimeIndex]):
         - `freq_median_scale`: The median time difference between consecutive observations in the time series, scaled to a common unit.
         - `freq_median_unit`: The unit of the median time difference between consecutive observations in the time series.
     
+    Examples
+    --------
+    ```{python}
+    import pytimetk as tk
+    import pandas as pd
+    
+    dates = pd.date_range(start = '2020-01-01', end = '2020-01-10', freq = 'D')
+    
+    tk.get_frequency(dates)
+    ```
+    
+    ```{python}
+    # pandas inferred frequency fails
+    dates = pd.to_datetime(["2021-01-01", "2021-02-01"])
+    
+    # Returns None
+    tk.get_pandas_frequency(dates)
+    
+    # Returns '1MS'
+    tk.get_frequency(dates)
+    
+    ```
+    
     '''
+    
+    # common checks
+    check_series_or_datetime(idx)
     
     # If idx is a DatetimeIndex, convert to Series
     if isinstance(idx, pd.DatetimeIndex):
@@ -352,6 +378,8 @@ def get_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool =
         The frequency of the given pandas series or datetime index.
     
     '''
+    # common checks
+    check_series_or_datetime(idx)
     
     if isinstance(idx, pd.Series):
         idx = idx.values
@@ -365,6 +393,9 @@ def get_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool =
 
 @pf.register_series_method
 def get_manual_frequency(idx: Union[pd.Series, pd.DatetimeIndex]) -> str:
+    
+    # common checks
+    check_series_or_datetime(idx)
     
     freq_summary_df = get_frequency_summary(idx)
     
@@ -417,6 +448,9 @@ def get_pandas_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular:
         The frequency of the given pandas series or datetime index.
     
     '''
+    
+    # common checks
+    check_series_or_datetime(idx)
    
     if isinstance(idx, pd.Series):
         idx = idx.values

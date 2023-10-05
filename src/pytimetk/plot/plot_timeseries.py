@@ -1,4 +1,3 @@
-
 import pandas as pd
 import numpy as np
 import pandas_flavor as pf
@@ -18,6 +17,8 @@ from pytimetk.plot.theme import theme_timetk, palette_timetk
 from pytimetk.utils.plot_helpers import hex_to_rgba
 
 from typing import Union, Optional
+
+from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 
     
         
@@ -279,11 +280,11 @@ def plot_timeseries(
     
     '''
     
-    # Check if data is a Pandas DataFrame
-    if not isinstance(data, pd.DataFrame):
-        if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-            raise TypeError("`data` is not a Pandas DataFrame.")
-        
+    # Common checks
+    check_dataframe_or_groupby(data)
+    check_date_column(data, date_column)
+    check_value_column(data, value_column)
+    
     # Handle DataFrames
     if isinstance(data, pd.DataFrame):
         
@@ -508,6 +509,7 @@ def _plot_timeseries_plotly(
     width = None,
     height = None,
 ):
+    """This function is not intended to be called directly. It is used by the `plot_timeseries` function."""
     
     data = data.copy()
     
@@ -811,8 +813,7 @@ def _plot_timeseries_plotnine(
     width = None,
     height = None,
 ):
-    """This is an internal function not meant to be called by the user directly.
-    """
+    """This function is not intended to be called directly. It is used by the `plot_timeseries` function."""
     
     # Data Setup
     

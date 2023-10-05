@@ -4,6 +4,8 @@ import numpy as np
 
 from typing import Union, Optional, Callable, Tuple, List
 
+from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
+
 @pf.register_dataframe_method
 def augment_rolling(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
@@ -168,7 +170,39 @@ def augment_rolling(
     ```
     '''
     
+    # Common checks
+    check_dataframe_or_groupby(data)
+    check_date_column(data, date_column)
+    check_value_column(data, value_column)
     
+    # Specific checks
+    if isinstance(value_column, str):
+        value_column = [value_column]
+    
+    if not isinstance(window, (int, tuple, list)):
+        raise TypeError("`window` must be an integer, tuple, or list.")
+    
+    if isinstance(window, int):
+        window = [window]
+    elif isinstance(window, tuple):
+        window = list(range(window[0], window[1] + 1))
+        
+    if isinstance(window_func, (str, tuple)):
+        window_func = [window_func]
+    
+    # Copy Data
+    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
+    
+    # Format Data
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        group_names = data.grouper.names
+        grouped = data_copy.sort_values(by=[*group_names, date_column]).groupby(group_names)
+    else: 
+        group_names = None
+        grouped = [([], data_copy.sort_values(by=[date_column]))]
+    
+    
+    # Rolling Apply Function when independent variables are required
     def rolling_apply_2(func, df, window_size, min_periods, center):
         results = [np.nan] * len(df)
         adjusted_window = window_size // 2 if center else window_size - 1  # determine the offset for centering
@@ -191,52 +225,9 @@ def augment_rolling(
                 results[center_point if center else end - 1] = func(window_df)
         
         return pd.DataFrame(results, columns=['result'], index=df.index)
-
     
     
-    # def rolling_apply(func, series, *args):        
-    #     result = series.rolling(window=window_size, center=center, **kwargs).apply(lambda x: func(x, *args), raw=False)
-    #     return result
-    
-    # def rolling_apply_2(func, df):
-        
-    #     results = []
-    #     for start in range(len(df) - window_size + 1):
-    #         window_df = df.iloc[start:start + window_size]
-    #         result = func(window_df)
-    #         results.append(result)
-        
-    #     ret = pd.DataFrame(results, index=df.index[window_size - 1:])
-
-    #     return ret
-    
-    
-    if not isinstance(data, (pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy)):
-        raise TypeError("`data` must be a Pandas DataFrame or GroupBy object.")
-        
-    if isinstance(value_column, str):
-        value_column = [value_column]
-    
-    if not isinstance(window, (int, tuple, list)):
-        raise TypeError("`window` must be an integer, tuple, or list.")
-    
-    if isinstance(window, int):
-        window = [window]
-    elif isinstance(window, tuple):
-        window = list(range(window[0], window[1] + 1))
-        
-    if isinstance(window_func, (str, tuple)):
-        window_func = [window_func]
-    
-    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
-    
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
-        grouped = data_copy.sort_values(by=[*group_names, date_column]).groupby(group_names)
-    else: 
-        group_names = None
-        grouped = [([], data_copy.sort_values(by=[date_column]))]
-    
+    # Apply Rolling Functions
     result_dfs = []
     for _, group_df in grouped:
         for value_col in value_column:
