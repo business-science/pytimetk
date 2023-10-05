@@ -198,7 +198,7 @@ plot_result(1, Y, Y_train, Y_test, preds_train, preds_test)  # We inspect the pr
 
 Computing the mutual information score on these features, we realize that only two features are really useful. But using them alone does not improve the results. 
 
-```
+```{python}
 from sklearn.feature_selection import mutual_info_regression
 
 def compute_MI(X, Y):
@@ -215,7 +215,7 @@ compute_MI(X, Y)
 
 Output:
 
-```
+```{python}
         feature        MI
 1   Temperature  0.277781
 4  Unemployment  0.213034
@@ -233,7 +233,7 @@ plot_result(1, Y, Y_train, Y_test, preds_train, preds_test)
 
 Concatenating all the features together, we can get a little bit of improvement, but not a significant one (R2 score: 0.239).
 
-```
+```{python}
 X_concat = pd.concat([X_time, X[['Temperature', 'Unemployment']]], axis=1)
 Y_train, Y_test, preds_train, preds_test = train(X_concat, Y, k=30)
 plot_result(1, Y, Y_train, Y_test, preds_train, preds_test)
