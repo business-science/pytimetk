@@ -7,4 +7,303 @@ number-sections: true
 number-depth: 2
 ---
 
-Coming soon...
+Timetk enables to generate features from the time column of your data very easily. This tutorial showcases how easy it is to perform time series forecasting with `pytimetk`. The specific methods we will be using are:
+
+- `tk.augment_timeseries_signature()`: Add 29 time series features to a DataFrame.
+- `tk.plot_timeseries()`: Creates time series plots using different plotting engines such as Plotnine, Matplotlib, and Plotly.
+- `tk.future_frame()`: Extend a DataFrame or GroupBy object with future dates.
+
+Load the following packages before proceeding with this tutorial. 
+
+```{python}
+import pandas as pd
+import pytimetk as tk
+import matplotlib.pyplot as plt
+
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score
+from sklearn.preprocessing import RobustScaler
+from sklearn.feature_selection import SelectKBest, mutual_info_regression
+```
+
+The tutorial is divided into three parts: We will first have a look at the Wallmart dataset and perform some preprocessing. Secondly, we will create models based on different features, and see how the time features can be useful. Finally, we will solve the task of time series forecasting, using the features from augment_timeseries_signature only, in order to predict future sales.
+
+# Preprocessing the dataset
+
+The first thing we want to do is to load the dataset. It is a subset of the Wallmart sales prediction Kaggle competition. You can get more insights about the dataset by following this link: [walmart_sales_weekly](https://business-science.github.io/timetk/reference/walmart_sales_weekly.html). The most important things to know about the dataset is that you are provided with some features like the fuel price or whether the week contains Hollidays and you are expected to predict the weekly sales column for 7 different departments of a given store. Of course, you also have the date for each week, and that is what we can leverage to create additional features.
+
+Let us start by loading the dataset and cleaning it. Note that we also remove markdown columns as they are not very useful for the tutorial.
+
+```{python}
+# We start by loading the dataset
+# /walmart_sales_weekly.html
+dset = tk.load_dataset('walmart_sales_weekly', parse_dates = ['Date'])
+
+dset = dset.drop(columns=[
+    'id', # This column can be removed as it is equivalent to 'Dept'
+    'Store', # This column has only one possible value
+    'Type', # This column has only one possible value
+    'Size', # This column has only one possible value
+    'MarkDown1', 'MarkDown2', 'MarkDown3', 'MarkDown4', 'MarkDown5'])
+
+dset.head()
+```
+
+We can plot the values of one department to get an idea of how the data looks like, using the `plot_timeseries` method:
+
+```{python}
+sales_df = dset
+fig = sales_df[sales_df['Dept']==1].plot_timeseries(
+    date_column='Date',
+    value_column='Weekly_Sales',
+    facet_ncol = 1,
+    x_axis_date_labels = "%Y",
+    engine = 'plotly')
+fig
+```
+
+Let us now reshape the DataFrame so that it has one column per Dept. This DataFrame represents our target variable y. We call it Y as it is in fact a matrix, a stack of target variables, one for each Dept.
+```{python}
+Y = sales_df[['Dept', 'Date', 'Weekly_Sales']].set_index(['Dept', 'Date']).sort_index().unstack(['Dept'])
+Y.head()
+```
+
+Now that we have our target, we want to produce the features that will help us predict the target. We will create two sets of features, to show the differences between time features and the original features provided with the dataset. 
+
+`X` contains the features originally in the dataset:
+
+```{python}
+X = sales_df.drop_duplicates(subset=['Date']).drop(columns=['Dept', 'Date', 'Weekly_Sales'])
+X.head()
+```
+
+`X_time` contains the time features. To build it we first apply the `augment_timeseries_signature` method on the `Date` column. Then, we create dummy variables from the categorical features that have been created, so that they can be fed in a machine learning algorithm.
+
+```{python}
+def dummify(X_time: pd.DataFrame, date_col = 'Date'):
+  """ Creates dummy variables from the categorical date features that have been created. """
+
+  X_time = pd.get_dummies(X_time, columns=[
+      f'{date_col}_year',
+      f'{date_col}_year_iso',
+      f'{date_col}_quarteryear',
+      f'{date_col}_month_lbl',
+      f'{date_col}_wday_lbl',
+      f'{date_col}_am_pm'], drop_first=True)
+  return X_time
+
+date_col = 'Date'
+X_time = sales_df[['Date']].drop_duplicates(subset=[date_col]).augment_timeseries_signature(date_column = date_col).drop(columns=[date_col])
+X_time = dummify(X_time, date_col=date_col)
+X_time
+```
+
+Let us explain a little bit more what happened here. We select only the Date column with 
+
+```{python}
+sales_df[['Date']]
+```
+
+We then drop the duplicates, as the Date column contains all the dates 7 times (one for each Dept):
+
+```{python}
+drop_duplicates(subset=[date_col])
+```
+
+We can now augment the data using `tk.augment_timeseries_signature`, and drop the original Date column:
+
+```{python}
+.augment_timeseries_signature(date_column = date_col).drop(columns=[date_col])
+```
+
+# Modeling
+
+So far, we defined our target variables `Y`, and two different sets of features: `X` and `X_time`. We can now train a sales forecasting model. For this tutorial we will be using the RandomForestsRegressor, as it is a simple yet powerful model, that can handle multiple types of data. We build a train function that takes the features and the targets as input, and is composed of several steps:
+
+1. We divide the data into a train set and a test set. `train_size` is the percentage of the data that you want to keep for the train set, the rest will be used for the test set.
+2. We scale numerical features if any, so that the model learns better. The `RobustScaler` allows for better performances, as it scales the data using statistics that are robust to outliers.
+3. We added the `k` option so that we can select the k best features of our dataset using mutual information, hence reducing the noise of irrelevant features.
+4. We train and test the RandomForests model, measuring its performance with the R2 score function.
+
+The resulting training function is as follows:
+
+```{python}
+def train(X, Y, k=None):
+  """ Trains a RandomForests model on the input data. """
+
+  Y = Y.fillna(method='ffill').fillna(method='bfill')
+  X_train, X_test, Y_train, Y_test = train_test_split(X, Y, shuffle=False, train_size=.5)
+
+  # scale numerical features
+  features_to_scale = [ c for c in ['Temperature', 'Fuel_Price', 'CPI', 'Unemployment'] if c in X.columns]
+  if len(features_to_scale):
+    scaler = RobustScaler()
+    X_train[features_to_scale] = scaler.fit_transform(X_train[features_to_scale])
+    X_test[features_to_scale] = scaler.transform(X_test[features_to_scale])
+
+  # select best features to remove noise
+  if k is not None:
+    selector = SelectKBest(mutual_info_regression, k=k)
+    X_train = selector.fit_transform(X_train, Y_train.iloc[:,1])
+    X_test = selector.transform(X_test)
+
+  # train the model
+  model = RandomForestRegressor(random_state=123456, n_estimators=300)
+  model = model.fit(X_train, Y_train)
+  preds_train = model.predict(X_train)
+
+  # test the model
+  preds_test = model.predict(X_test)
+  print(f'R2 score: {r2_score(Y_test, preds_test)}')
+
+  return Y_train, Y_test, preds_train, preds_test  # returns data useful for the plot_result function below
+```
+
+In addition, we define a plot function based on `tk.plot_timeseries` that will enable us to compare the ground truth data to the model's predictions, for a given department.
+
+```{python}
+def plot_result(dept_idx, Y, Y_train, Y_test, preds_train, preds_test):
+  """ Plots the predictions for a given Department. """
+  import numpy as np
+
+  data = pd.DataFrame({
+      'Weekly_Sales': pd.concat([
+          Y.iloc[:, dept_idx],
+          pd.Series(preds_train[:,dept_idx], index=Y_train.index),
+          pd.Series(preds_test[:,dept_idx], index=Y_test.index)])
+  })
+  data['Labels'] = ""
+  data['Labels'].iloc[:len(Y)] = 'Ground truth'
+  data['Labels'].iloc[len(Y):len(Y)+len(Y_train)] = 'Predictions on train set'
+  data['Labels'].iloc[len(Y)+len(Y_train):] = 'Predictions on test set'
+
+  fig = data.reset_index().plot_timeseries(
+    date_column='Date',
+    value_column='Weekly_Sales',
+    color_column='Labels',
+    facet_ncol = 1,
+    smooth=False,
+    x_axis_date_labels = "%Y",
+    engine = 'plotly')
+  fig.show()
+```
+
+If we train using the `X` matrix of features (the features of the dataset) we get a poor result with a R2 score of -0.16.
+
+```{python}
+Y_train, Y_test, preds_train, preds_test = train(X, Y)
+plot_result(1, Y, Y_train, Y_test, preds_train, preds_test)  # We inspect the predictions for the first department
+```
+
+Computing the mutual information score on these features, we realize that only two features are really useful. But using them alone does not improve the results. 
+
+```{python}
+from sklearn.feature_selection import mutual_info_regression
+
+def compute_MI(X, Y):
+  Y = Y.fillna(method='ffill').fillna(method='bfill')
+  X_train, X_test, Y_train, Y_test = train_test_split(X, Y, shuffle=False, train_size=.5)
+  features_to_scale = [ c for c in ['Temperature', 'Fuel_Price', 'CPI', 'Unemployment'] if c in X.columns]
+  scaler = RobustScaler()
+  X_train[features_to_scale] = scaler.fit_transform(X_train[features_to_scale])
+
+  print(pd.DataFrame({'feature': X_train.columns, 'MI': mutual_info_regression(X_train, Y_train.iloc[:,0])}).sort_values(by='MI', ascending=False))
+
+compute_MI(X, Y)
+```
+
+Output:
+
+```{python}
+        feature        MI
+1   Temperature  0.277781
+4  Unemployment  0.213034
+2    Fuel_Price  0.080510
+0     IsHoliday  0.004462
+3           CPI  0.003706
+```
+
+Now if we create a model using our date-based features, the results are a lot better, with a R2 score of .23 !
+
+```{python}
+Y_train, Y_test, preds_train, preds_test = train(X_time, Y)
+plot_result(1, Y, Y_train, Y_test, preds_train, preds_test)
+```
+
+Concatenating all the features together, we can get a little bit of improvement, but not a significant one (R2 score: 0.239).
+
+```{python}
+X_concat = pd.concat([X_time, X[['Temperature', 'Unemployment']]], axis=1)
+Y_train, Y_test, preds_train, preds_test = train(X_concat, Y, k=30)
+plot_result(1, Y, Y_train, Y_test, preds_train, preds_test)
+```
+
+This section showed the relevance of the time features in time series forecasting. Now let us build our final forecasting engine, using only the time-based features.
+
+# Forecasting
+
+We want to use all of our data to create the final model. To that aim, we will use a very simplified version of our previous training function:
+
+```{python}
+def train_final(X, Y):
+  """ Trains a RandomForests model on the input data. """
+
+  Y = Y.fillna(method='ffill').fillna(method='bfill')
+  X_train, Y_train = X, Y
+  model = RandomForestRegressor(random_state=123456, n_estimators=300)
+  model = model.fit(X_train, Y_train)
+
+  return model
+```
+
+In order to perform the forecasting, we need time-based features for dates that are not in our dataset. Let us use the `tk.future_frame` method to add future dates to our dataset. We then apply the `augment_timeseries_signature` method on the resulting DataFrame, hence creating the time-based features for past and future dates:
+
+```{python}
+date_col= 'Date'
+
+X_time_future = sales_df.drop_duplicates(subset=['Date'])[['Date']]
+X_time_future = X_time_future.future_frame(
+    date_column = date_col,
+    length_out  = 60
+).augment_timeseries_signature(date_column = date_col).drop(columns=[date_col])
+X_time_future = dummify(X_time_future, date_col='Date')
+
+X_time_future.head()
+```
+
+The same way, we augment our target DataFrame by 60 weeks. A we don't know the sales in the future, the additional rows will be filled with nans. We will replace the nans by our predictions in the following of the tutorial.
+
+```{python}
+Y_future = sales_df[['Dept', 'Date', 'Weekly_Sales']]
+Y_future = Y_future.groupby('Dept').future_frame(
+    date_column = date_col,
+    length_out  = 60
+)
+Y_future.head()
+```
+
+We train the model and store its predictions on the future dates:
+
+```{python}
+model = train_final(X_time_future.iloc[:len(Y)], Y)
+predictions = model.predict(X_time_future.iloc[len(Y):])
+```
+
+We store the predictions in the Y DataFrame, and tag the prediction entries with the label 'Predictions'. Original entries are tagged with the label `History`.
+
+```{python}
+Y_future.loc[Y_future.Date > Y.index[-1], 'Weekly_Sales'] = predictions.T.ravel()
+Y_future['Label'] = 'History'
+Y_future.loc[Y_future.Date > Y.index[-1], 'Label'] = 'Predictions'
+```
+
+We can now plot the result very easily using the `plot_timeseries` method. Note how you can easily select a subset of the data (the data of a given department) using the `query` method:
+
+```{python}
+Y_future.query("Dept == 1").plot_timeseries(date_column='Date', value_column='Weekly_Sales', color_column='Label', smooth=False)
+```
+
+# Conclusion
+
+In this tutorial, we showed how the `tk.augment_timeseries_signature()` function can be used to effortlessly extract useful features from the date index and perform forecasting. 
