@@ -7,6 +7,12 @@ New Functions:
 - `augment_expanding()`
 - `get_frequency()` 
 
+New Data Sets:
+
+- `expedia` : Expedia hotel searches
+
+
+
 ## pytimetk version 0.1.0 (2023-10-02)
 
 Initial release. This release includes the following features:
