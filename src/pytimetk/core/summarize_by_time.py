@@ -64,7 +64,6 @@ def summarize_by_time(
         - "last": Last value in group
         - "count": Count of values
         - "nunique": Number of unique values
-        - "corr": Correlation between values
         
         Custom `lambda` aggregating functions can be used too. Here are several common examples:
         
