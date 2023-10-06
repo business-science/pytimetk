@@ -16,7 +16,6 @@ def summarize_by_time(
     value_column: Union[str, list],
     freq: str = "D",
     agg_func: Union[str, list, Tuple[str, Callable]] = 'sum',
-    kind: str = "timestamp",
     wide_format: bool = False,
     fillna: int = 0,
     *args,
@@ -175,7 +174,7 @@ def summarize_by_time(
     #     data = data.groupby(groups)
     
     # Resample data based on the specified freq and kind
-    data = data.resample(rule=freq, kind=kind)
+    data = data.resample(rule=freq, kind="timestamp")
     
     # Create a dictionary mapping each value column to the aggregating function(s)
     agg_dict = {col: agg_func for col in value_column}
