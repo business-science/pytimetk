@@ -1,3 +1,19 @@
+<div align="center">
+<img src="docs/logo-timetk.png" width="30%"/>
+</div>
+
+<div align="center">
+  <a href="https://github.com/business-science/pytimetk/actions">
+  <img alt="Github Actions" src="https://github.com/business-science/pytimetk/actions/workflows/timetk-checks.yaml/badge.svg"/>
+  </a>
+  <a href="https://pypi.python.org/pypi/pytimetk">
+  <img alt="PyPI Version" src="https://img.shields.io/pypi/v/pytimetk.svg"/>
+  </a>
+  <a href="https://business-science.github.io/pytimetk/contributing.html">
+  <img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"/>
+  </a>
+</div>
+
 # pytimetk
 
 > The time series toolkit for Python
@@ -39,9 +55,18 @@ df \
     )
 ```
 
+# Documentation
 
+Get started with the [pytimetk documentation](https://business-science.github.io/pytimetk/)
 
-## Developers (Contributors): Installation
+- [📈 Overview](https://business-science.github.io/pytimetk/)
+- [🏁 Getting Started](https://business-science.github.io/pytimetk/getting-started/02_quick_start.html)
+- [🗺️ Beginner Guides](https://business-science.github.io/pytimetk/guides/01_visualization.html)
+- [📘Applied Data Science Tutorials with PyTimeTK](https://business-science.github.io/pytimetk/tutorials/01_sales_crm.html)
+
+- [📄 API Reference](https://business-science.github.io/pytimetk/reference/)
+
+# Developers (Contributors): Installation
 
 To install `pytimetk` using [Poetry](https://python-poetry.org/), follow these steps:
 

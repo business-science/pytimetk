@@ -231,6 +231,36 @@ def summarize_by_time(
 pd.core.groupby.generic.DataFrameGroupBy.summarize_by_time = summarize_by_time
 
 
+'''The `apply_by_time` function applies custom aggregation functions to a time series data, either in a
+    wide or long format, and returns the result as a pandas DataFrame.
+    
+    Parameters
+    ----------
+    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+        The `data` parameter represents the data on which the apply operation will be performed. It can be
+    either a pandas DataFrame or a pandas DataFrameGroupBy object.
+    date_column : str
+        The `date_column` parameter is a string that represents the name of the column in the DataFrame
+    that contains the dates. This column will be used as the index for resampling the data.
+    freq : str, optional
+        The `freq` parameter specifies the frequency at which the data should be resampled. It accepts a
+    string representing a time frequency, such as "D" for daily, "W" for weekly, "M" for monthly, etc.
+    The default value is "D", which means the data will
+    wide_format : bool, optional
+        The `wide_format` parameter is a boolean flag that determines whether the output should be in wide
+    format or not. If `wide_format` is set to `True`, the output will have a multi-index column
+    structure, where the first level represents the original columns and the second level represents the
+    group names
+    fillna : int, optional
+        The `fillna` parameter is used to specify the value that will be used to fill missing values in the
+    resulting DataFrame. By default, it is set to 0.
+    
+    Returns
+    -------
+        The function `apply_by_time` returns a pandas DataFrame object.
+    
+    '''
+
 @pf.register_dataframe_method
 def apply_by_time(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -267,6 +297,16 @@ def apply_by_time(
         The `wide_format` parameter is a boolean flag that determines whether the output should be in wide format or not. If `wide_format` is set to `True`, the output will have a multi-index column structure, where the first level represents the original columns and the second level represents the group names
     fillna : int, optional
         The `fillna` parameter is used to specify the value that will be used to fill missing values in the resulting DataFrame. By default, it is set to 0.
+    **named_funcs
+        The `**named_funcs` parameter is used to specify one or more custom aggregation functions to apply to the data. It accepts named functions in the format:
+        
+        ``` python
+        name = lambda df: df['column1'].corr(df['column2']])
+        ```
+        
+        Where `name` is the name of the function and `df` is the DataFrame that will be passed to the function. The function must return a single value.
+        
+        
     
     Returns
     -------
@@ -292,8 +332,8 @@ def apply_by_time(
             .apply_by_time(
                 
                 # Named apply functions
-                price_quantity_sum = lambda group: (group['price'] * group['quantity']).sum(),
-                price_quantity_mean = lambda group: (group['price'] * group['quantity']).mean(),
+                price_quantity_sum = lambda df: (df['price'] * df['quantity']).sum(),
+                price_quantity_mean = lambda df: (df['price'] * df['quantity']).mean(),
                 
                 # Parameters
                 date_column  = 'order_date', 
@@ -311,8 +351,8 @@ def apply_by_time(
             .apply_by_time(
                 
                 # Named functions
-                price_quantity_sum = lambda group: (group['price'] * group['quantity']).sum(),
-                price_quantity_mean = lambda group: (group['price'] * group['quantity']).mean(),
+                price_quantity_sum = lambda df: (df['price'] * df['quantity']).sum(),
+                price_quantity_mean = lambda df: (df['price'] * df['quantity']).mean(),
                 
                 # Parameters
                 date_column  = 'order_date', 
@@ -329,7 +369,7 @@ def apply_by_time(
             .apply_by_time(
                 
                 # Named apply functions
-                complex_object = lambda group: [group],
+                complex_object = lambda df: [df],
                 
                 # Parameters
                 date_column  = 'order_date', 

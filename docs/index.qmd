@@ -6,19 +6,26 @@ number-sections: true
 number-depth: 2
 ---
 
+
+<div class="container-badges">
+  <a href="https://github.com/business-science/pytimetk/actions">
+  <img alt="Github Actions" src="https://github.com/business-science/pytimetk/actions/workflows/timetk-checks.yaml/badge.svg"/>
+  </a>
+  <a href="https://pypi.python.org/pypi/pytimetk">
+  <img alt="PyPI Version" src="https://img.shields.io/pypi/v/pytimetk.svg"/>
+  </a>
+  <a href="https://business-science.github.io/pytimetk/contributing.html">
+  <img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"/>
+  </a>
+</div>
+
 # PyTimeTK <img src="logo-timetk.png" align="right" height="138" />
 
 > The Time Series Toolkit for Python
 
 **PyTimetk's Mission:** To make time series analysis easier, faster, and more enjoyable in Python.
 
-<!-- ::: {.callout-warning collapse="false"}
-## Under Development
-
-This library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0. 
-::: -->
-
-# Installation
+# 🚀 Installation
 
 Install the Latest Stable Version:
 
@@ -32,7 +39,7 @@ Alternatively, install the Development GitHub Version:
 pip install git+https://github.com/business-science/pytimetk.git
 ```
 
-# Quick Start: A Monthly Sales Analysis
+# 🏁 Quick Start: A Monthly Sales Analysis
 
 This is a simple exercise to showcase the power of [`summarize_by_time()`](/reference/summarize_by_time.html):
 
@@ -82,7 +89,7 @@ summary_category_1_df.head()
 
 
 
-### Visualizing Sales Patterns
+### 📈 Visualizing Sales Patterns
 
 ::: {.callout-note collapse="false"}
 ## Now available: `plot_timeseries()`.
@@ -102,13 +109,24 @@ summary_category_1_df \
     )
 ```
 
-# Contributing
+# 📚 Documentation
+
+Next step? Learn more with the [pytimetk documentation](https://business-science.github.io/pytimetk/)
+
+- [📈 Overview](https://business-science.github.io/pytimetk/)
+- [🏁 Getting Started](https://business-science.github.io/pytimetk/getting-started/02_quick_start.html)
+- [🗺️ Beginner Guides](https://business-science.github.io/pytimetk/guides/01_visualization.html)
+- [📘Applied Data Science Tutorials with PyTimeTK](https://business-science.github.io/pytimetk/tutorials/01_sales_crm.html)
+
+- [📄 API Reference](https://business-science.github.io/pytimetk/reference/)
+
+# 🍻 Contributing
 
 Interested in helping us make this the best Python package for time series analysis? We'd love your help. 
 
 [Follow these instructions to Contribute.](/contributing.html)
 
-# More Coming Soon...
+# 🏆 More Coming Soon...
 
 We are in the early stages of development. But it's obvious the potential for `pytimetk` now in Python. 🐍
 

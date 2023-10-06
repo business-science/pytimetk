@@ -15,7 +15,8 @@ code-tools:
 Timetk is designed to work with any time series domain. **Arguably the most important is Finance.** This tutorial showcases how you can perform Financial Investment and Stock Analysis at scale with `pytimetk`. This applied tutorial covers financial analysis with:
 
 - `tk.plot_timeseries()`: Visualizing financial data
-- `tk.augment_rolling()`: Moving averages, rolling regressions
+- `tk.augment_rolling()`: Moving averages
+- `tk.augment_rolling_apply()`: Rolling correlations and rolling regressions
 
 Load the following packages before proceeding with this tutorial. 
 
@@ -367,7 +368,7 @@ In finance, **returns analysis** involves evaluating the gains or losses made on
 ## Returns are NOT static (so analyze them by time)
 
 1. We can use rolling window calculations with `tk.augment_rolling()` to compute many rolling features at scale such as rolling mean, std, range (spread).
-2. We can expand our `tk.augment_rolling()` rolling calculations to Rolling Correlation and Rolling Regression (to make comparisons over time)
+2. We can expand our `tk.augment_rolling_apply()` rolling calculations to Rolling Correlation and Rolling Regression (to make comparisons over time)
 
 :::
 
@@ -416,7 +417,7 @@ corr_table_df
 
 The problem is that the stock market is constantly changing. And these descriptive statistics aren't representative of the most recent fluctuations. This is where `pytimetk` comes into play with rolling descriptive statistics. 
 
-### Application: 90-Day Rolling Descriptive Statistics Analysis
+### Application: 90-Day Rolling Descriptive Statistics Analysis with `tk.augment_rolling()`
 
 Let's compute and visualize the 90-day rolling statistics. 
 
@@ -525,7 +526,7 @@ rolling_stats_long_df \
 
 :::
 
-# Rolling Correlation and Regressions
+# Rolling Correlation and Regressions with `tk.augment_rolling_apply()`
 
 One final evaluation is to understand relationships to other stocks and the overall market index over time. For that we can use two techniques:
 
@@ -569,29 +570,34 @@ return_combinations_long_df
 ```
 
 
-### Step 2: Add Rolling Correlations with `tk.augment_rolling()`
+### Step 2: Add Rolling Correlations with `tk.augment_rolling_apply()`
 
 Next, let's add rolling correlations. 
 
 - We first `.groupby()` on the combination of our target assets "symbol" and our comparison asset "comp". 
-- Then we use the familiar `tk.augment_rolling()`.
+- Then we use different function `tk.augment_rolling_apply()`.
 
 ::: {.callout-warning collapse="false"}
-## Use Independent Variables
+## `tk.augment_rolling()` vs `tk.augment_rolling_apply()`
 
-When performing rolling calculations that require independent variables such as rolling correlations and rolling regressions, set `use_independent_variables = True`. This instructs the rolling operation to give you access to all columns in the data frame rather than just the value column as a series. This allows you to do more complex calculations that depend on more than just a target `value_column`. 
+- For the vast majority of operations, `tk.augment_rolling()` will suffice. It's used on a single column where there is a simple rolling transformation applied to only the `value_column`. 
+- For more complex cases where other columns beyond a `value_column` are needed (e.g. rolling correlations, rolling regressions), the `tk.augment_rolling_apply()` comes to the rescue. 
+- `tk.augment_rolling_apply()` exposes the group's columns as a DataFrame to window function, thus allowing for multi-column analysis. 
+:::
+
+::: {.callout-important collapse="false"}
+## `tk.augment_rolling_apply()` has no `value_column`
+
+This is because the rolling apply passes a DataFrame containing all columns to the custom function. The custom function is then responsible for handling the columns internally. This is how you can select multiple columns to work with.  
 :::
 
 ```{python}
 return_corr_df = return_combinations_long_df \
     .groupby(["symbol", "comp"]) \
-    .augment_rolling(
+    .augment_rolling_apply(
         date_column = "date",
-        value_column = "returns",
-        # IMPORTANT: INCLUDE INDEPENDENT VARIABLES
-        use_independent_variables = True,
         window = 90,
-        window_func = [('corr', lambda df: df['returns'].corr(df['returns_comp']))]
+        window_func=[('corr', lambda x: x['returns'].corr(x['returns_comp']))]
     )
 
 return_corr_df
@@ -600,7 +606,7 @@ return_corr_df
 
 ### Step 3: Visualize the Rolling Correlation
 
-We can use `tk.plot_timeseries()` to visualize the 90-day rolling correlation. It's interesting to see that stock combinations such as AAPL | AMZN returns have a high positive correlation of 0.80, but this relationship actually was much lower 0.25 prior to 2015. 
+We can use `tk.plot_timeseries()` to visualize the 90-day rolling correlation. It's interesting to see that stock combinations such as AAPL | AMZN returns have a high positive correlation of 0.80, but this relationship was much lower 0.25 before 2015. 
 
 - The blue smoother can help us detect trends
 - The y_intercept is useful in this case to draw lines at -1, 0, and 1
@@ -615,7 +621,7 @@ return_corr_df \
     .groupby(['symbol', 'comp']) \
     .plot_timeseries(
         date_column = "date",
-        value_column = "returns_rolling_corr_win_90",
+        value_column = "rolling_corr_win_90",
         facet_ncol = 6,
         y_intercept = [-1,0,1],
         y_intercept_color = tk.palette_timetk()['steel_blue'],
@@ -635,7 +641,7 @@ return_corr_df \
     .groupby(['symbol', 'comp']) \
     .plot_timeseries(
         date_column = "date",
-        value_column = "returns_rolling_corr_win_90",
+        value_column = "rolling_corr_win_90",
         facet_ncol = 6,
         y_intercept = [-1,0,1],
         y_intercept_color = tk.palette_timetk()['steel_blue'],
@@ -649,6 +655,9 @@ return_corr_df \
 :::
 
 For comparison, we can examine the `corr_table_df` from the Descriptive Statistics Analysis:
+
+- Notice that the values tend not to match the most recent trends 
+- For example APPL | AMZN is correlated at 0.49 over the entire time period. But more recently this correlation has dropped to 0.17 in the 90-Day Rolling Correlation chart. 
 
 ```{python}
 corr_table_df
@@ -701,7 +710,7 @@ returns_long_market_df
 Next, run the following code to perform a rolling regression:
 
 - Use a custom regression function that will return the slope and intercept as a pandas series.
-- Run the rolling regression with `tk.augment_rolling()`.
+- Run the rolling regression with `tk.augment_rolling_apply()`.
 
 ```{python}
 from sklearn.linear_model import LinearRegression
@@ -718,13 +727,10 @@ def regression(df):
 
 return_regression_df = returns_long_market_df \
     .groupby('symbol') \
-    .augment_rolling(
+    .augment_rolling_apply(
         date_column = "date",
-        value_column = "returns",
-        use_independent_variables = True,
         window = 90,
         window_func = [('regression', regression)]
-        
     ) \
     .dropna()
 
@@ -736,7 +742,7 @@ return_regression_df
 This is more of a hack than anything to extract the beta (slope) of the rolling regression.
 
 ```{python}
-intercept_slope_df = pd.concat(return_regression_df['returns_rolling_regression_win_90'].to_list(), axis=1).T 
+intercept_slope_df = pd.concat(return_regression_df['rolling_regression_win_90'].to_list(), axis=1).T 
 
 intercept_slope_df.index = return_regression_df.index
 

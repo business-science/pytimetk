@@ -13,7 +13,8 @@ New Functions:
 
 - `apply_by_time()`
 - `augment_expanding()`
-- `get_frequency()` 
+- `augment_rolling_apply()`
+- `get_frequency()`: Infer a pandas-like frequency. More robust that `pandas.infer_freq`.
 
 New Data Sets:
 
