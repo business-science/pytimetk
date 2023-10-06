@@ -230,3 +230,134 @@ def summarize_by_time(
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.summarize_by_time = summarize_by_time
 
+
+@pf.register_dataframe_method
+def apply_by_time(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    date_column: str,
+    freq: str = "D",
+    wide_format: bool = False,
+    fillna: int = 0,
+    *aggs,
+    **named_aggs
+) -> pd.DataFrame:
+    '''
+    Apply by time.
+    
+    Examples
+    --------
+    ```{python}
+    import pytimetk as tk
+    import pandas as pd
+    
+    df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
+    
+    df.glimpse()
+    ```
+    
+    ```{python}    
+    # Apply by time with a DataFrame object
+    ( 
+        df 
+            .apply_by_time(
+                date_column  = 'order_date', 
+                freq         = "MS",
+                price_quantity_sum = lambda group: (group['price'] * group['quantity']).sum()
+            )
+    )
+    ```
+    
+    ```{python}
+    # Summarize by time with a GroupBy object (Long Format)
+    (
+        df 
+            .groupby('category_1') 
+            .summarize_by_time(
+                date_column  = 'order_date', 
+                value_column = 'total_price', 
+                freq         = 'MS',
+                agg_func     = 'sum',
+                wide_format  = False, 
+            )
+    )
+    ```
+    
+    ```{python}
+    # Summarize by time with a GroupBy object (Wide Format)
+    (
+        df 
+            .groupby('category_1') 
+            .summarize_by_time(
+                date_column  = 'order_date', 
+                value_column = 'total_price', 
+                freq         = 'MS',
+                agg_func     = 'sum',
+                wide_format  = True, 
+            )
+    )
+    ```
+    
+    ```{python}
+    # Summarize by time with a GroupBy object and multiple summaries (Wide Format)
+    (
+        df 
+            .groupby('category_1') 
+            .summarize_by_time(
+                date_column  = 'order_date', 
+                value_column = 'total_price', 
+                freq         = 'MS',
+                agg_func     = ['sum', 'mean', ('q25', lambda x: x.quantile(0.25)), ('q75', lambda x: x.quantile(0.75))],
+                wide_format  = True, 
+            )
+    )
+    ```
+    '''
+    
+    # Run common checks
+    check_dataframe_or_groupby(data)
+    check_date_column(data, date_column)
+    
+    # Create agg_dict based on passed *aggs and **named_aggs
+    agg_dict = {col: list(aggs) for col in data.columns if col != date_column}
+
+    # Update agg_dict with column-specific functions from **named_aggs
+    for col, func in named_aggs.items():
+        agg_dict[col] = func if isinstance(func, (list, tuple)) else [func]
+    
+    print(agg_dict)
+    
+    # Only now set the index of data to the date_column
+    if isinstance(data, pd.DataFrame):
+        data = data.set_index(date_column)
+    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        group_names = data.grouper.names
+        if date_column not in group_names:
+            data = data.obj.set_index(date_column).groupby(group_names)
+    
+    # Resample data based on the specified freq and kind
+    grouped = data.resample(rule=freq, kind="timestamp")
+    
+    # Apply custom aggregation functions using apply
+    def custom_agg(group):
+        return pd.Series({name: func(group) for name, func in named_aggs.items()})
+    
+    data = grouped.apply(custom_agg)
+     
+    
+    # Unstack the grouped columns if wide_format is True and group_names is not None
+    if wide_format and group_names is not None:
+        data = data.unstack(group_names)
+    
+    # Fill missing values with the specified fillna value
+    data = data.fillna(fillna)
+    
+    # Flatten the multiindex column names if needed
+    data = flatten_multiindex_column_names(data)
+    
+    # Reset the index of data   
+    data.reset_index(inplace=True)
+
+    return data 
+
+# Monkey patch the method to pandas groupby objects
+pd.core.groupby.generic.DataFrameGroupBy.apply_by_time = apply_by_time
