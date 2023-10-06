@@ -1,5 +1,5 @@
 <div align="center">
-<img src="docs/logo-timetk.png" width="40%"/>
+<img src="docs/logo-timetk.png" width="30%"/>
 </div>
 
 <div align="center">
