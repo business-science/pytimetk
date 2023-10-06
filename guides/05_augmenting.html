@@ -358,7 +358,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Adding Features (Augmenting)</h1>
+<div class="quarto-title-block"><div><h1 class="title">Adding Features (Augmenting)</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li></ul></div></div>
 </div>
 
 
@@ -405,6 +405,8 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <h2 data-number="1.1" class="anchored" data-anchor-id="basic-examples"><span class="header-section-number">1.1</span> Basic Examples</h2>
 <p>Add 1 or more lags / leads to a dataset:</p>
 <div class="cell" data-execution_count="1">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import libraries</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -421,6 +423,7 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -437,37 +440,37 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2023-09-18</td>
-<td>40</td>
+<td>32</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2023-09-19</td>
-<td>37</td>
+<td>33</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2023-09-20</td>
-<td>25</td>
+<td>12</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2023-09-21</td>
-<td>15</td>
+<td>39</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2023-09-22</td>
-<td>49</td>
+<td>18</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2023-09-23</td>
-<td>41</td>
+<td>25</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2023-09-24</td>
-<td>15</td>
+<td>10</td>
 </tr>
 </tbody>
 </table>
@@ -481,6 +484,8 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <div class="tab-content" data-groups="augment-leads-lags">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell" data-execution_count="2">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># augment lag</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">\</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    .augment_lags(</span>
@@ -488,6 +493,7 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span> <span class="st">'value'</span>,</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        lags         <span class="op">=</span> <span class="dv">3</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
@@ -505,44 +511,44 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2023-09-18</td>
-<td>40</td>
+<td>32</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2023-09-19</td>
-<td>37</td>
+<td>33</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2023-09-20</td>
-<td>25</td>
+<td>12</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2023-09-21</td>
-<td>15</td>
-<td>40.0</td>
+<td>39</td>
+<td>32.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2023-09-22</td>
-<td>49</td>
-<td>37.0</td>
+<td>18</td>
+<td>33.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2023-09-23</td>
-<td>41</td>
-<td>25.0</td>
+<td>25</td>
+<td>12.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2023-09-24</td>
-<td>15</td>
-<td>15.0</td>
+<td>10</td>
+<td>39.0</td>
 </tr>
 </tbody>
 </table>
@@ -553,6 +559,8 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="cell" data-execution_count="3">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># augment leads</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">\</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    .augment_leads(</span>
@@ -560,6 +568,7 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span> <span class="st">'value'</span>,</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        leads        <span class="op">=</span> <span class="dv">3</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
@@ -577,43 +586,43 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2023-09-18</td>
-<td>40</td>
-<td>15.0</td>
+<td>32</td>
+<td>39.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2023-09-19</td>
-<td>37</td>
-<td>49.0</td>
+<td>33</td>
+<td>18.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2023-09-20</td>
-<td>25</td>
-<td>41.0</td>
+<td>12</td>
+<td>25.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2023-09-21</td>
-<td>15</td>
-<td>15.0</td>
+<td>39</td>
+<td>10.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2023-09-22</td>
-<td>49</td>
+<td>18</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2023-09-23</td>
-<td>41</td>
+<td>25</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2023-09-24</td>
-<td>15</td>
+<td>10</td>
 <td>NaN</td>
 </tr>
 </tbody>
@@ -631,6 +640,8 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <div class="tab-content" data-groups="augment-leads-lags-multiple">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell" data-execution_count="4">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># multiple lagged values for a single time series</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">\</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    .augment_lags(</span>
@@ -638,6 +649,7 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span> <span class="st">'value'</span>,</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        lags         <span class="op">=</span> (<span class="dv">1</span>, <span class="dv">3</span>)</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
@@ -657,7 +669,7 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2023-09-18</td>
-<td>40</td>
+<td>32</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -665,50 +677,50 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2023-09-19</td>
-<td>37</td>
-<td>40.0</td>
+<td>33</td>
+<td>32.0</td>
 <td>NaN</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2023-09-20</td>
-<td>25</td>
-<td>37.0</td>
-<td>40.0</td>
+<td>12</td>
+<td>33.0</td>
+<td>32.0</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2023-09-21</td>
-<td>15</td>
-<td>25.0</td>
-<td>37.0</td>
-<td>40.0</td>
+<td>39</td>
+<td>12.0</td>
+<td>33.0</td>
+<td>32.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2023-09-22</td>
-<td>49</td>
-<td>15.0</td>
-<td>25.0</td>
-<td>37.0</td>
+<td>18</td>
+<td>39.0</td>
+<td>12.0</td>
+<td>33.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2023-09-23</td>
-<td>41</td>
-<td>49.0</td>
-<td>15.0</td>
-<td>25.0</td>
+<td>25</td>
+<td>18.0</td>
+<td>39.0</td>
+<td>12.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2023-09-24</td>
-<td>15</td>
-<td>41.0</td>
-<td>49.0</td>
-<td>15.0</td>
+<td>10</td>
+<td>25.0</td>
+<td>18.0</td>
+<td>39.0</td>
 </tr>
 </tbody>
 </table>
@@ -719,6 +731,8 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="cell" data-execution_count="5">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># multiple leads values for a single time series</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">\</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    .augment_leads(</span>
@@ -726,6 +740,7 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span> <span class="st">'value'</span>,</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        leads        <span class="op">=</span> (<span class="dv">1</span>, <span class="dv">3</span>)</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
@@ -745,55 +760,55 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2023-09-18</td>
-<td>40</td>
-<td>37.0</td>
-<td>25.0</td>
-<td>15.0</td>
+<td>32</td>
+<td>33.0</td>
+<td>12.0</td>
+<td>39.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2023-09-19</td>
-<td>37</td>
-<td>25.0</td>
-<td>15.0</td>
-<td>49.0</td>
+<td>33</td>
+<td>12.0</td>
+<td>39.0</td>
+<td>18.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2023-09-20</td>
-<td>25</td>
-<td>15.0</td>
-<td>49.0</td>
-<td>41.0</td>
+<td>12</td>
+<td>39.0</td>
+<td>18.0</td>
+<td>25.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2023-09-21</td>
-<td>15</td>
-<td>49.0</td>
-<td>41.0</td>
-<td>15.0</td>
+<td>39</td>
+<td>18.0</td>
+<td>25.0</td>
+<td>10.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2023-09-22</td>
-<td>49</td>
-<td>41.0</td>
-<td>15.0</td>
+<td>18</td>
+<td>25.0</td>
+<td>10.0</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2023-09-23</td>
-<td>41</td>
-<td>15.0</td>
+<td>25</td>
+<td>10.0</td>
 <td>NaN</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2023-09-24</td>
-<td>15</td>
+<td>10</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -812,14 +827,19 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <h2 data-number="1.2" class="anchored" data-anchor-id="augment-lags-leads-for-grouped-time-series"><span class="header-section-number">1.2</span> Augment Lags / Leads For Grouped Time Series</h2>
 <p><code>augment_lags()</code> and <code>augment_leads()</code> also works for grouped time series data. Lets use the <code>m4_daily_df</code> dataset to showcase examples:</p>
 <div class="cell" data-execution_count="6">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load m4_daily_df</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df <span class="op">=</span> tk.load_dataset(<span class="st">'m4_daily'</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="tabset-margin-container"></div><div class="panel-tabset" data-groups="augment-leads-lags-group">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Lag</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Lead</a></li></ul>
 <div class="tab-content" data-groups="augment-leads-lags-group">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <div class="cell" data-execution_count="7">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># agument lags for grouped time series</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df <span class="op">\</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"id"</span>) <span class="op">\</span></span>
@@ -828,6 +848,7 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span> <span class="st">'value'</span>,</span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        lags         <span class="op">=</span> (<span class="dv">1</span>, <span class="dv">7</span>)</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
@@ -1002,6 +1023,8 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 </div>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <div class="cell" data-execution_count="8">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># augment leads for grouped time series</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df <span class="op">\</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"id"</span>) <span class="op">\</span></span>
@@ -1010,6 +1033,7 @@ Help Doc Info: <code>augment_lag()</code>, <code>augment_leads()</code>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span> <span class="st">'value'</span>,</span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        leads        <span class="op">=</span> (<span class="dv">1</span>, <span class="dv">7</span>)</span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
@@ -1211,6 +1235,8 @@ Help Doc Info: <code>augment_rolling()</code>
 <h2 data-number="2.1" class="anchored" data-anchor-id="basic-examples-1"><span class="header-section-number">2.1</span> Basic Examples</h2>
 <p>We’ll continue with the use of our sample <code>df</code> created earlier:</p>
 <div class="cell" data-execution_count="9">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># window = 3 days, window function = mean</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">\</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    .augment_rolling(</span>
@@ -1219,6 +1245,7 @@ Help Doc Info: <code>augment_rolling()</code>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        window       <span class="op">=</span> <span class="dv">3</span>,</span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        window_func  <span class="op">=</span> <span class="st">'mean'</span></span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="9">
 <div>
 
@@ -1236,44 +1263,44 @@ Help Doc Info: <code>augment_rolling()</code>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2023-09-18</td>
-<td>40</td>
+<td>32</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2023-09-19</td>
-<td>37</td>
+<td>33</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2023-09-20</td>
-<td>25</td>
-<td>34.000000</td>
+<td>12</td>
+<td>25.666667</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2023-09-21</td>
-<td>15</td>
-<td>25.666667</td>
+<td>39</td>
+<td>28.000000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2023-09-22</td>
-<td>49</td>
-<td>29.666667</td>
+<td>18</td>
+<td>23.000000</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2023-09-23</td>
-<td>41</td>
-<td>35.000000</td>
+<td>25</td>
+<td>27.333333</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2023-09-24</td>
-<td>15</td>
-<td>35.000000</td>
+<td>10</td>
+<td>17.666667</td>
 </tr>
 </tbody>
 </table>
@@ -1304,6 +1331,8 @@ Help Doc Info: <code>augment_rolling()</code>
 <div class="tab-content" data-groups="augment-rolling">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <div class="cell" data-execution_count="10">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># agument rolling: center = true</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">\</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    .augment_rolling(</span>
@@ -1313,6 +1342,7 @@ Help Doc Info: <code>augment_rolling()</code>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        window_func  <span class="op">=</span> <span class="st">'mean'</span>,</span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        center       <span class="op">=</span> <span class="va">True</span></span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="10">
 <div>
 
@@ -1330,43 +1360,43 @@ Help Doc Info: <code>augment_rolling()</code>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2023-09-18</td>
-<td>40</td>
+<td>32</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2023-09-19</td>
-<td>37</td>
-<td>34.000000</td>
+<td>33</td>
+<td>25.666667</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2023-09-20</td>
-<td>25</td>
-<td>25.666667</td>
+<td>12</td>
+<td>28.000000</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2023-09-21</td>
-<td>15</td>
-<td>29.666667</td>
+<td>39</td>
+<td>23.000000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2023-09-22</td>
-<td>49</td>
-<td>35.000000</td>
+<td>18</td>
+<td>27.333333</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2023-09-23</td>
-<td>41</td>
-<td>35.000000</td>
+<td>25</td>
+<td>17.666667</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2023-09-24</td>
-<td>15</td>
+<td>10</td>
 <td>NaN</td>
 </tr>
 </tbody>
@@ -1379,6 +1409,8 @@ Help Doc Info: <code>augment_rolling()</code>
 </div>
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
 <div class="cell" data-execution_count="11">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># agument rolling: center = false</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">\</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    .augment_rolling(</span>
@@ -1388,6 +1420,7 @@ Help Doc Info: <code>augment_rolling()</code>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        window_func  <span class="op">=</span> <span class="st">'mean'</span>,</span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        center       <span class="op">=</span> <span class="va">True</span></span>
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="11">
 <div>
 
@@ -1405,43 +1438,43 @@ Help Doc Info: <code>augment_rolling()</code>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2023-09-18</td>
-<td>40</td>
+<td>32</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2023-09-19</td>
-<td>37</td>
-<td>34.000000</td>
+<td>33</td>
+<td>25.666667</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2023-09-20</td>
-<td>25</td>
-<td>25.666667</td>
+<td>12</td>
+<td>28.000000</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2023-09-21</td>
-<td>15</td>
-<td>29.666667</td>
+<td>39</td>
+<td>23.000000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2023-09-22</td>
-<td>49</td>
-<td>35.000000</td>
+<td>18</td>
+<td>27.333333</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2023-09-23</td>
-<td>41</td>
-<td>35.000000</td>
+<td>25</td>
+<td>17.666667</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2023-09-24</td>
-<td>15</td>
+<td>10</td>
 <td>NaN</td>
 </tr>
 </tbody>
@@ -1459,6 +1492,8 @@ Help Doc Info: <code>augment_rolling()</code>
 <h2 data-number="2.2" class="anchored" data-anchor-id="augment-rolling-with-multiple-windows-and-window-functions"><span class="header-section-number">2.2</span> Augment Rolling with Multiple Windows and Window Functions</h2>
 <p>Multiple window functions can be passed to the <code>window</code> and <code>window_func</code> parameters:</p>
 <div class="cell" data-execution_count="12">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># augment rolling: window of 2 &amp; 7 days, window_func of mean and standard deviation</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df <span class="op">\</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">'id == "D10"'</span>) <span class="op">\</span></span>
@@ -1468,6 +1503,7 @@ Help Doc Info: <code>augment_rolling()</code>
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                window <span class="op">=</span> [<span class="dv">2</span>,<span class="dv">7</span>],</span>
 <span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>                window_func <span class="op">=</span> [<span class="st">'mean'</span>, (<span class="st">'std'</span>, <span class="kw">lambda</span> x: x.std())]</span>
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>            )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="12">
 <div>
 
@@ -1608,6 +1644,8 @@ Help Doc Info: <code>augment_rolling()</code>
 <h2 data-number="2.3" class="anchored" data-anchor-id="augment-rolling-with-grouped-time-series"><span class="header-section-number">2.3</span> Augment Rolling with Grouped Time Series</h2>
 <p><code>agument_rolling</code> can be used on grouped time series data:</p>
 <div class="cell" data-execution_count="13">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">## augment rolling on grouped time series: window of 2 &amp; 7 days, window_func of mean and standard deviation</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df <span class="op">\</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'id'</span>) <span class="op">\</span></span>
@@ -1617,6 +1655,7 @@ Help Doc Info: <code>augment_rolling()</code>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                window <span class="op">=</span> [<span class="dv">2</span>,<span class="dv">7</span>],</span>
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>                window_func <span class="op">=</span> [<span class="st">'mean'</span>, (<span class="st">'std'</span>, <span class="kw">lambda</span> x: x.std())]</span>
 <span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>            )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
@@ -1777,6 +1816,8 @@ Help Doc Info: <code>augment_timeseries_signature()</code>
 <h2 data-number="3.1" class="anchored" data-anchor-id="basic-example"><span class="header-section-number">3.1</span> Basic Example</h2>
 <p>We’ll showcase an example using the <code>m4_daily_df</code> dataset by generating 29 additional features from the <code>date</code> column:</p>
 <div class="cell" data-execution_count="14">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># augment time series signature</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df <span class="op">\</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">'id == "D10"'</span>) <span class="op">\</span></span>
@@ -1784,6 +1825,7 @@ Help Doc Info: <code>augment_timeseries_signature()</code>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>        date_column <span class="op">=</span> <span class="st">'date'</span></span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">\</span></span>
 <span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    .head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
@@ -1968,6 +2010,8 @@ Help Doc Info: <code>augment_holiday_signature()</code>
 <h2 data-number="4.1" class="anchored" data-anchor-id="basic-example-1"><span class="header-section-number">4.1</span> Basic Example</h2>
 <p>We’ll showcase an example using some sample data:</p>
 <div class="cell" data-execution_count="15">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create sample data</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.date_range(start <span class="op">=</span> <span class="st">'2022-12-25'</span>, end <span class="op">=</span> <span class="st">'2023-01-05'</span>)</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1979,6 +2023,7 @@ Help Doc Info: <code>augment_holiday_signature()</code>
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        date_column  <span class="op">=</span> <span class="st">'date'</span>,</span>
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>        country_name <span class="op">=</span> <span class="st">'UnitedStates'</span></span>
 <span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="15">
 <div>
 
@@ -2301,6 +2346,57 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
   function tippyHover(el, contentFn) {
     const config = {
       allowHTML: true,

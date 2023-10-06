@@ -357,7 +357,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">PyTimeTK Basics</h1>
+<div class="quarto-title-block"><div><h1 class="title">PyTimeTK Basics</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li></ul></div></div>
 </div>
 
 
@@ -402,6 +402,8 @@ How this guide benefits you
 </ol>
 <p>In practice here’s what this looks like using the “m4_daily” dataset:</p>
 <div class="cell" data-execution_count="1">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Import packages</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -410,6 +412,7 @@ How this guide benefits you
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Import a Time Series Data Set</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>m4_daily_df <span class="op">=</span> tk.load_dataset(<span class="st">"m4_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>m4_daily_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -627,8 +630,11 @@ Inspect the DataFrame
 </div>
 <p>Using pandas <code>info()</code> method, we can see that we have a compliant data frame with a <code>date</code> column containing <code>datetime64</code> and a <code>value</code> column containing <code>float64</code>. For grouped analysis we have the <code>id</code> column containing <code>object</code> dtype.</p>
 <div class="cell" data-execution_count="2">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tip: Inspect for compliance with info()</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
 RangeIndex: 9743 entries, 0 to 9742
@@ -647,8 +653,11 @@ memory usage: 228.5+ KB</code></pre>
 <h3 class="anchored" data-anchor-id="grouped-time-series-analysis-with-summarize-by-time">Grouped Time Series Analysis with Summarize By Time</h3>
 <p>First, inspect how the <code>summarize_by_time</code> function works by calling <code>help()</code>.</p>
 <div class="cell" data-execution_count="3">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Review the summarize_by_time documentation (output not shown)</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">help</span>(tk.summarize_by_time)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="true" aria-label="Toggle callout">
@@ -671,6 +680,8 @@ Help Doc Info: <code>summarize_by_time()</code>
 </div>
 <p>Let’s test the <code>summarize_by_time()</code> DataFrame operation out using the grouped approach with method chaining. DataFrame operations can be used as Pandas methods with method-chaining, which allows us to more succinctly apply time series operations.</p>
 <div class="cell" data-execution_count="4">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Grouped Summarize By Time with Method Chaining</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_summarized <span class="op">=</span> (</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
@@ -692,6 +703,7 @@ Help Doc Info: <code>summarize_by_time()</code>
 <span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>df_summarized</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
@@ -876,6 +888,8 @@ Key Takeaways: <code>summarize_by_time()</code>
 <h3 class="anchored" data-anchor-id="another-dataframe-example-creating-29-engineered-features">Another DataFrame Example: Creating 29 Engineered Features</h3>
 <p>Let’s examine another <code>DataFrame</code> function, <code>tk.augment_timeseries_signature()</code>. Feel free to inspect the documentation with <code>help(tk.augment_timeseries_signature)</code>.</p>
 <div class="cell" data-execution_count="5">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating 29 engineered features from the date column</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Not run: help(tk.augment_timeseries_signature)</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>df_augmented <span class="op">=</span> (</span>
@@ -884,6 +898,7 @@ Key Takeaways: <code>summarize_by_time()</code>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>df_augmented.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
@@ -1067,6 +1082,8 @@ Key Takeaways: <code>augment_timeseries_signature()</code>
 <h3 class="anchored" data-anchor-id="making-future-dates-with-future-frame">Making Future Dates with Future Frame</h3>
 <p>A common time series task before forecasting with machine learning models is to make a future DataFrame some <code>length_out</code> into the future. You can do this with <code>tk.future_frame()</code>. Here’s how.</p>
 <div class="cell" data-execution_count="6">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preparing a time series data set for Machine Learning Forecasting</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>full_augmented_df <span class="op">=</span> (</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    m4_daily_df </span>
@@ -1075,6 +1092,7 @@ Key Takeaways: <code>augment_timeseries_signature()</code>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        .augment_timeseries_signature(<span class="st">'date'</span>)</span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>full_augmented_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
@@ -1380,12 +1398,15 @@ Key Takeaways: <code>augment_timeseries_signature()</code>
 </div>
 <p>We can then get the future data by keying in on the data with <code>value</code> column that is missing (<code>np.nan</code>).</p>
 <div class="cell" data-execution_count="7">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the future data (just the observations that haven't happened yet)</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>future_df <span class="op">=</span> (</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    full_augmented_df</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'value.isna()'</span>)</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>future_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
@@ -1705,9 +1726,12 @@ Key Takeaways: <code>augment_timeseries_signature()</code>
 <p>Say we have a monthly sequence of timestamps. What if we want to create a forecast where we predict 12 months into the future? Well, we will need to create 12 future timestamps. Here’s how.</p>
 <p>First create a <code>pd.date_range()</code> with dates starting at the beginning of each month.</p>
 <div class="cell" data-execution_count="8">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make a monthly date range</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>dates_dt <span class="op">=</span> pd.date_range(<span class="st">"2023-01"</span>, <span class="st">"2024-01"</span>, freq<span class="op">=</span><span class="st">"MS"</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>dates_dt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="8">
 <pre><code>DatetimeIndex(['2023-01-01', '2023-02-01', '2023-03-01', '2023-04-01',
                '2023-05-01', '2023-06-01', '2023-07-01', '2023-08-01',
@@ -1722,9 +1746,12 @@ Key Takeaways: <code>augment_timeseries_signature()</code>
 <div class="tab-content" data-group="future-dates">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell" data-execution_count="9">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pandas Series: Future Dates</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>future_series <span class="op">=</span> pd.Series(dates_dt).make_future_timeseries(<span class="dv">12</span>)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>future_series</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="9">
 <pre><code>0    2024-02-01
 1    2024-03-01
@@ -1744,12 +1771,15 @@ dtype: datetime64[ns]</code></pre>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="cell" data-execution_count="10">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DateTimeIndex: Future Dates</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>future_dt <span class="op">=</span> tk.make_future_timeseries(</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    idx      <span class="op">=</span> dates_dt,</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    length_out <span class="op">=</span> <span class="dv">12</span></span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>future_dt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>0    2024-02-01
 1    2024-03-01
@@ -1771,6 +1801,8 @@ dtype: datetime64[ns]</code></pre>
 </div>
 <p>We can combine the actual and future timestamps into one combined timeseries.</p>
 <div class="cell" data-execution_count="11">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combining the 2 series and resetting the index</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>combined_timeseries <span class="op">=</span> (</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    pd.concat(</span>
@@ -1781,6 +1813,7 @@ dtype: datetime64[ns]</code></pre>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>combined_timeseries</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="11">
 <pre><code>0    2023-01-01
 1    2023-02-01
@@ -1821,8 +1854,11 @@ dtype: datetime64[ns]</code></pre>
 <div class="tab-content" data-group="flooring">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell" data-execution_count="12">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Monthly flooring rounds dates down to 1st of the month</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df[<span class="st">'date'</span>].floor_date(unit <span class="op">=</span> <span class="st">"M"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="12">
 <pre><code>0      2014-07-01
 1      2014-07-01
@@ -1841,8 +1877,11 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="cell" data-execution_count="13">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Before Flooring</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df[<span class="st">'date'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="13">
 <pre><code>0      2014-07-03
 1      2014-07-04
@@ -1863,6 +1902,8 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 </div>
 <p>This “date flooring” operation can be useful for creating date groupings.</p>
 <div class="cell" data-execution_count="14">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adding a date group with floor_date()</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>dates_grouped_by_month <span class="op">=</span> (</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
@@ -1870,6 +1911,7 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 <span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>dates_grouped_by_month</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
@@ -1971,6 +2013,8 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 </div>
 <p>We can then do grouped operations.</p>
 <div class="cell" data-execution_count="15">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example of a grouped operation with floored dates</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>summary_df <span class="op">=</span> (</span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    dates_grouped_by_month</span>
@@ -1981,6 +2025,7 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 <span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>summary_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="15">
 <div>
 
@@ -2070,6 +2115,8 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 </div>
 <p>Of course for this operation, we can do it faster with <code>summarize_by_time()</code> (and it’s much more flexible).</p>
 <div class="cell" data-execution_count="16">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize by time is less code and more flexible</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>(</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    m4_daily_df </span>
@@ -2080,6 +2127,7 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 <span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>            agg_func <span class="op">=</span> [<span class="st">'mean'</span>, <span class="st">'median'</span>, <span class="st">'min'</span>, <span class="st">'max'</span>]</span>
 <span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="16">
 <div>
 
@@ -2211,8 +2259,11 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 <p>This function takes a pandas <code>Series</code> or <code>DateTimeIndex</code> and returns a <code>DataFrame</code> containing the 29 engineered features.</p>
 <p>Start with either a DateTimeIndex…</p>
 <div class="cell" data-execution_count="17">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>timestamps_dt <span class="op">=</span> pd.date_range(<span class="st">"2023"</span>, <span class="st">"2024"</span>, freq <span class="op">=</span> <span class="st">"D"</span>)</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>timestamps_dt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="17">
 <pre><code>DatetimeIndex(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04',
                '2023-01-05', '2023-01-06', '2023-01-07', '2023-01-08',
@@ -2226,8 +2277,11 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 </div>
 <p>… Or a Pandas Series.</p>
 <div class="cell" data-execution_count="18">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>timestamps_series <span class="op">=</span> pd.Series(timestamps_dt)</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>timestamps_series</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="18">
 <pre><code>0     2023-01-01
 1     2023-01-02
@@ -2249,8 +2303,11 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <div class="tab-content" data-group="get_timeseries_signature">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <div class="cell" data-execution_count="19">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pandas series: get_timeseries_signature</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>timestamps_series.get_timeseries_signature()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="19">
 <div>
 
@@ -2557,8 +2614,11 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </div>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <div class="cell" data-execution_count="20">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DateTimeIndex: get_timeseries_signature</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>tk.get_timeseries_signature(timestamps_dt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="20">
 <div>
 
@@ -3079,6 +3139,57 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
   function tippyHover(el, contentFn) {
     const config = {
       allowHTML: true,

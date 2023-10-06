@@ -356,7 +356,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Data Wrangling</h1>
+<div class="quarto-title-block"><div><h1 class="title">Data Wrangling</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li></ul></div></div>
 </div>
 
 
@@ -398,6 +398,8 @@ Perequisite
 <p><code>summarize_by_time()</code> aggregates time series data from lower frequency (time periods) to higher frequency.</p>
 <p><strong>Load Libraries &amp; Data</strong></p>
 <div class="cell" data-execution_count="1">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import libraries</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -408,6 +410,7 @@ Perequisite
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(m4_daily_df.head())</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="ch">\n</span><span class="st">Length of the full dataset:'</span>, <span class="bu">len</span>(m4_daily_df))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>    id       date   value
 0  D10 2014-07-03  2076.2
@@ -439,6 +442,8 @@ Help Doc Info: <code>summarize_by_time</code>
 <h2 data-number="1.1" class="anchored" data-anchor-id="basic-example"><span class="header-section-number">1.1</span> Basic Example</h2>
 <p>The <code>m4_daily</code> dataset has a <strong>daily</strong> frequency. Say we are interested in forecasting at the <strong>weekly</strong> level. We can use <code>summarize_by_time()</code> to aggregate to a weekly level</p>
 <div class="cell" data-execution_count="2">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># summarize by time: daily to weekly</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>summarized_df <span class="op">=</span> m4_daily_df <span class="op">\</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    .summarize_by_time(</span>
@@ -450,6 +455,7 @@ Help Doc Info: <code>summarize_by_time</code>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(summarized_df.head())</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="ch">\n</span><span class="st">Length of the full dataset:'</span>, <span class="bu">len</span>(summarized_df))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>        date     value
 0 1978-06-25  27328.12
@@ -467,6 +473,8 @@ Length of the full dataset: 1977</code></pre>
 <h2 data-number="1.2" class="anchored" data-anchor-id="additional-aggregate-functions"><span class="header-section-number">1.2</span> Additional Aggregate Functions</h2>
 <p><code>summarize_by_time()</code> can take additional aggregate functions in the <code>agg_func</code> argument.</p>
 <div class="cell" data-execution_count="3">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># summarize by time with additional aggregate functions</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>summarized_multiple_agg_df <span class="op">=</span> m4_daily_df <span class="op">\</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    .summarize_by_time(</span>
@@ -477,6 +485,7 @@ Length of the full dataset: 1977</code></pre>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>summarized_multiple_agg_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
@@ -538,6 +547,8 @@ Length of the full dataset: 1977</code></pre>
 <h2 data-number="1.3" class="anchored" data-anchor-id="summarize-by-time-with-grouped-time-series"><span class="header-section-number">1.3</span> Summarize by Time with Grouped Time Series</h2>
 <p><code>summarize_by_time()</code> also works with groups.</p>
 <div class="cell" data-execution_count="4">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># summarize by time with groups and additional aggregate functions</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>grouped_summarized_df <span class="op">=</span> (</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
@@ -558,6 +569,7 @@ Length of the full dataset: 1977</code></pre>
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>grouped_summarized_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
@@ -663,11 +675,14 @@ Help Doc Info: <code>future_frame()</code>
 <h2 data-number="2.1" class="anchored" data-anchor-id="basic-example-1"><span class="header-section-number">2.1</span> Basic Example</h2>
 <p>We’ll continue with our use of the <code>m4_daily_df</code> dataset. Recall we’ve alread aggregated at the <strong>weekly</strong> level (<code>summarized_df</code>). Lets checkout the last week in the <code>summarized_df</code>:</p>
 <div class="cell" data-execution_count="5">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># last week in dataset</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>summarized_df <span class="op">\</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    .sort_values(by <span class="op">=</span> <span class="st">'date'</span>, ascending <span class="op">=</span> <span class="va">True</span>) <span class="op">\</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    .iloc[: <span class="op">-</span><span class="dv">1</span>] <span class="op">\</span></span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    .tail(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
@@ -710,6 +725,8 @@ Help Doc Info: <code>future_frame()</code>
 </div>
 <p>We can see that the last week is the week of 2016-05-01. Now say we wanted to forecast the next 8 weeks. We can extend the dataset beyound the week of 2016-05-01:</p>
 <div class="cell" data-execution_count="6">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># extend dataset by 12 weeks</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>summarized_extended_df <span class="op">=</span> summarized_df <span class="op">\</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    .future_frame(</span>
@@ -718,6 +735,7 @@ Help Doc Info: <code>future_frame()</code>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>summarized_extended_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
@@ -795,9 +813,12 @@ Help Doc Info: <code>future_frame()</code>
 </div>
 <p>To get only the future data, we can filter the dataset for where <code>value</code> is missing (<code>np.nan</code>).</p>
 <div class="cell" data-execution_count="7">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get only future data</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>summarized_extended_df <span class="op">\</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">'value.isna()'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
@@ -862,6 +883,8 @@ Help Doc Info: <code>future_frame()</code>
 <h2 data-number="2.2" class="anchored" data-anchor-id="future-frame-with-grouped-time-series"><span class="header-section-number">2.2</span> Future Frame with Grouped Time Series</h2>
 <p><code>future_frame()</code> also works for grouped time series. We can see an example using our grouped summarized dataset (<code>grouped_summarized_df</code>) from earlier:</p>
 <div class="cell" data-execution_count="8">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># future frame with grouped time series</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>grouped_summarized_df[[<span class="st">'id'</span>, <span class="st">'date'</span>, <span class="st">'value_sum'</span>]] <span class="op">\</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'id'</span>) <span class="op">\</span></span>
@@ -870,6 +893,7 @@ Help Doc Info: <code>future_frame()</code>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        length_out  <span class="op">=</span> <span class="dv">8</span></span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">\</span></span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    .query(<span class="st">'value_sum.isna()'</span>) <span class="co"># filtering to return only the future data</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
@@ -1107,6 +1131,8 @@ Help Doc Info: <code>pad_by_time()</code>
 <h2 data-number="3.1" class="anchored" data-anchor-id="basic-example-2"><span class="header-section-number">3.1</span> Basic Example</h2>
 <p>Let’s start with a basic example to see how <code>pad_by_time()</code> works. We’ll create some sample data with missing timestamps:</p>
 <div class="cell" data-execution_count="9">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># libraries</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -1122,6 +1148,7 @@ Help Doc Info: <code>pad_by_time()</code>
 <span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="9">
 <div>
 
@@ -1158,12 +1185,15 @@ Help Doc Info: <code>pad_by_time()</code>
 </div>
 <p>Now we can use <code>pad_by_time()</code> to fill in the missing timestamp:</p>
 <div class="cell" data-execution_count="10">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pad by time</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">\</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    .pad_by_time(</span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>        date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        freq        <span class="op">=</span> <span class="st">'QS'</span> <span class="co"># specifying quarter start frequency</span></span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="10">
 <div>
 
@@ -1205,6 +1235,8 @@ Help Doc Info: <code>pad_by_time()</code>
 </div>
 <p>We can also specify shorter time frequency:</p>
 <div class="cell" data-execution_count="11">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pad by time with shorter frequency</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">\</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    .pad_by_time(</span>
@@ -1212,6 +1244,7 @@ Help Doc Info: <code>pad_by_time()</code>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        freq        <span class="op">=</span> <span class="st">'MS'</span> <span class="co"># specifying month start frequency</span></span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">\</span></span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    .assign(value <span class="op">=</span> <span class="kw">lambda</span> x: x[<span class="st">'value'</span>].fillna(<span class="dv">0</span>)) <span class="co"># replace NaN with 0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="11">
 <div>
 
@@ -1286,6 +1319,8 @@ Help Doc Info: <code>pad_by_time()</code>
 <h2 data-number="3.2" class="anchored" data-anchor-id="pad-by-time-with-grouped-time-series"><span class="header-section-number">3.2</span> Pad by Time with Grouped Time Series</h2>
 <p><code>pad_by_time()</code> can also be used with grouped time series. Let’s use the <code>stocks_daily</code> dataset to showcase an example:</p>
 <div class="cell" data-execution_count="12">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load dataset</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>stocks_df <span class="op">=</span> tk.load_dataset(<span class="st">'stocks_daily'</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1297,6 +1332,7 @@ Help Doc Info: <code>pad_by_time()</code>
 <span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        freq        <span class="op">=</span> <span class="st">'D'</span></span>
 <span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">\</span></span>
 <span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    .assign(<span class="bu">id</span> <span class="op">=</span> <span class="kw">lambda</span> x: x[<span class="st">'symbol'</span>].ffill())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="12">
 <div>
 
@@ -1458,6 +1494,8 @@ Help Doc Info: <code>pad_by_time()</code>
 </div>
 <p>To replace NaN with 0 in a dataframe with multiple columns:</p>
 <div class="cell" data-execution_count="13">
+<details open="">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> partial</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># columns to replace NaN with 0</span></span>
@@ -1476,6 +1514,7 @@ Help Doc Info: <code>pad_by_time()</code>
 <span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">\</span></span>
 <span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    .assign(<span class="bu">id</span> <span class="op">=</span> <span class="kw">lambda</span> x: x[<span class="st">'symbol'</span>].ffill()) <span class="op">\</span></span>
 <span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    .assign(<span class="op">**</span>{col: partial(fill_na_col, col<span class="op">=</span>col) <span class="cf">for</span> col <span class="kw">in</span> cols_to_fill})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
@@ -1848,6 +1887,57 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
   function tippyHover(el, contentFn) {
     const config = {
       allowHTML: true,
