@@ -238,11 +238,40 @@ def apply_by_time(
     freq: str = "D",
     wide_format: bool = False,
     fillna: int = 0,
-    *aggs,
-    **named_aggs
+    **named_funcs
 ) -> pd.DataFrame:
-    '''
-    Apply by time.
+    '''Apply for time series.
+    
+    Parameters
+    ----------
+    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+        The `data` parameter can be either a pandas DataFrame or a pandas DataFrameGroupBy object. It represents the data on which the apply operation will be performed.
+    date_column : str
+        The name of the column in the DataFrame that contains the dates.
+    freq : str, optional
+        The `freq` parameter specifies the frequency at which the data should be resampled. It accepts a string representing a time frequency, such as "D" for daily, "W" for weekly, "M" for monthly, etc. The default value is "D", which means the data will be resampled on a daily basis. Some common frequency aliases include:
+        
+        - S: secondly frequency
+        - min: minute frequency
+        - H: hourly frequency
+        - D: daily frequency
+        - W: weekly frequency
+        - M: month end frequency
+        - MS: month start frequency
+        - Q: quarter end frequency
+        - QS: quarter start frequency
+        - Y: year end frequency
+        - YS: year start frequency
+        
+    wide_format : bool, optional
+        The `wide_format` parameter is a boolean flag that determines whether the output should be in wide format or not. If `wide_format` is set to `True`, the output will have a multi-index column structure, where the first level represents the original columns and the second level represents the group names
+    fillna : int, optional
+        The `fillna` parameter is used to specify the value that will be used to fill missing values in the resulting DataFrame. By default, it is set to 0.
+    
+    Returns
+    -------
+    pd.DataFrame
+        The function `apply_by_time` returns a pandas DataFrame object.
     
     Examples
     --------
@@ -257,64 +286,102 @@ def apply_by_time(
     
     ```{python}    
     # Apply by time with a DataFrame object
+    # Allows access to multiple columns at once
     ( 
-        df 
+        df[['order_date', 'price', 'quantity']] 
             .apply_by_time(
+                
+                # Named apply functions
+                price_quantity_sum = lambda group: (group['price'] * group['quantity']).sum(),
+                price_quantity_mean = lambda group: (group['price'] * group['quantity']).mean(),
+                
+                # Parameters
                 date_column  = 'order_date', 
                 freq         = "MS",
-                price_quantity_sum = lambda group: (group['price'] * group['quantity']).sum()
+                
             )
     )
     ```
     
+    ```{python}    
+    # Apply by time with a GroupBy object
+    ( 
+        df[['category_1', 'order_date', 'price', 'quantity']] 
+            .groupby('category_1')
+            .apply_by_time(
+                
+                # Named functions
+                price_quantity_sum = lambda group: (group['price'] * group['quantity']).sum(),
+                price_quantity_mean = lambda group: (group['price'] * group['quantity']).mean(),
+                
+                # Parameters
+                date_column  = 'order_date', 
+                freq         = "MS",
+                
+            )
+    )
+    ```
     
+    ```{python}    
+    # Return complex objects
+    ( 
+        df[['order_date', 'price', 'quantity']] 
+            .apply_by_time(
+                
+                # Named apply functions
+                complex_object = lambda group: [group],
+                
+                # Parameters
+                date_column  = 'order_date', 
+                freq         = "MS",
+                
+            )
+    )
+    ```
     '''
     
     # Run common checks
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
-    
-    # Create agg_dict based on passed *aggs and **named_aggs
-    agg_dict = {col: list(aggs) for col in data.columns if col != date_column}
 
-    # Update agg_dict with column-specific functions from **named_aggs
-    for col, func in named_aggs.items():
-        agg_dict[col] = func if isinstance(func, (list, tuple)) else [func]
-    
-    print(agg_dict)
-    
-    # Only now set the index of data to the date_column
+    # Start by setting the index of data to the date_column
     if isinstance(data, pd.DataFrame):
         data = data.set_index(date_column)
     elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
         if date_column not in group_names:
             data = data.obj.set_index(date_column).groupby(group_names)
-    
+
     # Resample data based on the specified freq and kind
     grouped = data.resample(rule=freq, kind="timestamp")
-    
+
     # Apply custom aggregation functions using apply
     def custom_agg(group):
-        return pd.Series({name: func(group) for name, func in named_aggs.items()})
-    
+        agg_values = {}
+                
+        # Apply column-specific functions from **named_funcs
+        for name, func in named_funcs.items():
+            agg_values[name] = func(group)
+
+        return pd.Series(agg_values)
+
     data = grouped.apply(custom_agg)
-     
-    
+
     # Unstack the grouped columns if wide_format is True and group_names is not None
     if wide_format and group_names is not None:
         data = data.unstack(group_names)
-    
+
     # Fill missing values with the specified fillna value
     data = data.fillna(fillna)
-    
+
     # Flatten the multiindex column names if needed
     data = flatten_multiindex_column_names(data)
-    
+
     # Reset the index of data   
     data.reset_index(inplace=True)
 
-    return data 
+    return data
+
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.apply_by_time = apply_by_time

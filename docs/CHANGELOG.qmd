@@ -11,6 +11,7 @@ number-depth: 2
 
 New Functions:
 
+- `apply_by_time()`
 - `augment_expanding()`
 - `get_frequency()` 
 
@@ -24,6 +25,8 @@ New Applied Tutorials:
 2. Finance Analysis Tutorial
 3. Demand Forecasting Tutorial
 
+Deprecations:
+- `summarize_by_time()`: `kind = "period"`. This is being removed for consistency with `pytimetk`. "timestamp" is the default. 
 
 # pytimetk 0.1.0 (2023-10-02)
 

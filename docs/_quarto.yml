@@ -115,6 +115,7 @@ quartodoc:
       package: pytimetk
       contents:
         - summarize_by_time
+        - apply_by_time
         - pad_by_time
         - future_frame
     - title: 🏗️ Adding Features to Time Series DataFrames (Augmenting)
