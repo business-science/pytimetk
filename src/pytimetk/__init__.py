@@ -35,7 +35,7 @@ from .plot.theme import (
     theme_timetk, palette_timetk
 )
 from .core.summarize_by_time import (
-    summarize_by_time
+    summarize_by_time, apply_by_time
 )
 from .core.timeseries_signature import (
     get_timeseries_signature, augment_timeseries_signature
@@ -59,7 +59,7 @@ from .core.pad import (
     pad_by_time
 )
 from .core.rolling import (
-    augment_rolling
+    augment_rolling, augment_rolling_apply
 )
 from .core.expanding import (
     augment_expanding

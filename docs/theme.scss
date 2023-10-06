@@ -3,6 +3,8 @@
 
 /* sidebar formatting */
 
+
+
 #quarto-show-all-code {
   color: var(--bs-body-color);
   border-bottom: 0px;
@@ -454,4 +456,7 @@ td:first-child, td:last-child {
   }
 }
 
+.container-badges > p > a {
+  border-bottom: 0px !important;
+}
 

@@ -151,7 +151,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
- <span class="menu-text">🗺️ Guides:</span></a>
+ <span class="menu-text">🗺️ Beginner Guides:</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -324,8 +324,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h1 data-number="1"><span class="header-section-number">1</span> pytimetk 0.1.0.9000 (in development)</h1>
 <p>New Functions:</p>
 <ul>
+<li><code>apply_by_time()</code></li>
 <li><code>augment_expanding()</code></li>
-<li><code>get_frequency()</code></li>
+<li><code>augment_rolling_apply()</code></li>
+<li><code>get_frequency()</code>: Infer a pandas-like frequency. More robust that <code>pandas.infer_freq</code>.</li>
 </ul>
 <p>New Data Sets:</p>
 <ul>
@@ -337,6 +339,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <li>Finance Analysis Tutorial</li>
 <li>Demand Forecasting Tutorial</li>
 </ol>
+<p>Deprecations: - <code>summarize_by_time()</code>: <code>kind = "period"</code>. This is being removed for consistency with <code>pytimetk</code>. “timestamp” is the default.</p>
 </section>
 <section id="pytimetk-0.1.0-2023-10-02" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> pytimetk 0.1.0 (2023-10-02)</h1>

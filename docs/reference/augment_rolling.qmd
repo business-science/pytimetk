@@ -1,20 +1,20 @@
 # augment_rolling { #pytimetk.augment_rolling }
 
-`augment_rolling(data, date_column, value_column, use_independent_variables=False, window=2, window_func='mean', min_periods=None, center=False, **kwargs)`
+`augment_rolling(data, date_column, value_column, window_func='mean', window=2, min_periods=None, center=False, **kwargs)`
 
 Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.
 
 ## Parameters
 
-| Name                        | Type                                                            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Default    |
-|-----------------------------|-----------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `data`                      | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | The `data` parameter is the input DataFrame or GroupBy object that contains the data to be processed. It can be either a Pandas DataFrame or a GroupBy object.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | _required_ |
-| `date_column`               | str                                                             | The `date_column` parameter is the name of the datetime column in the DataFrame by which the data should be sorted within each group.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | _required_ |
-| `value_column`              | Union\[str, list\]                                              | The `value_column` parameter is the name of the column(s) in the DataFrame to which the rolling window function(s) should be applied. It can be a single column name or a list of column names.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | _required_ |
-| `use_independent_variables` | bool                                                            | The `use_independent_variables` parameter is an optional parameter that specifies whether the rolling function(s) require independent variables, such as rolling correlation or rolling regression. (See Examples below.)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `False`    |
-| `window`                    | Union\[int, tuple, list\]                                       | The `window` parameter in the `augment_rolling` function is used to specify the size of the rolling windows. It can be either an integer or a list of integers.   - If it is an integer, the same window size will be applied to all columns specified in the `value_column`.   - If it is a tuple, it will generate windows from the first to the second value (inclusive).  - If it is a list of integers, each integer in the list will be used as the window size for the corresponding column in the `value_column` list.                                                                                                                                                                                      | `2`        |
-| `window_func`               | Union\[str, list, Tuple\[str, Callable\]\]                      | The `window_func` parameter in the `augment_rolling` function is used to specify the function(s) to be applied to the rolling windows.   1. It can be a string or a list of strings, where each string represents the name of the function to be applied.   2. Alternatively, it can be a list of tuples, where each tuple contains the name of the function to be applied and the function itself. The function is applied as a Pandas Series. (See Examples below.)  3. If the function requires independent variables, the `use_independent_variables` parameter must be specified. The independent variables will be passed to the function as a DataFrame containing the window of rows. (See Examples below.) | `'mean'`   |
-| `center`                    | bool                                                            | The `center` parameter in the `augment_rolling` function determines whether the rolling window is centered or not. If `center` is set to `True`, the rolling window will be centered, meaning that the value at the center of the window will be used as the result. If `                                                                                                                                                                                                                                                                                                                                                                                                                                           | `False`    |
+| Name           | Type                                                            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Default    |
+|----------------|-----------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `data`         | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | Input data to be processed. Can be a Pandas DataFrame or a GroupBy object.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | _required_ |
+| `date_column`  | str                                                             | Name of the datetime column. Data is sorted by this column within each group.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | _required_ |
+| `value_column` | Union\[str, list\]                                              | Column(s) to which the rolling window functions should be applied. Can be a single column name or a list.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | _required_ |
+| `window_func`  | Union\[str, list, Tuple\[str, Callable\]\]                      | The `window_func` parameter in the `augment_rolling` function specifies the function(s) to be applied to the rolling windows of the value column(s).  1. It can be either:     - A string representing the name of a standard function (e.g., 'mean', 'sum').      2. For custom functions:     - Provide a list of tuples. Each tuple should contain a custom name for the function and the function itself.     - Each custom function should accept a Pandas Series as its input and operate on that series.       Example: ("range", lambda x: x.max() - x.min())  (See more Examples below.)  Note: If your function needs to operate on multiple columns (i.e., it requires access to a DataFrame rather than just a Series), consider using the `augment_rolling_apply` function in this library. | `'mean'`   |
+| `window`       | Union\[int, tuple, list\]                                       | Specifies the size of the rolling windows. - An integer applies the same window size to all columns in `value_column`. - A tuple generates windows from the first to the second value (inclusive). - A list of integers designates multiple window sizes for each respective column.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | `2`        |
+| `min_periods`  | int                                                             | Minimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `None`     |
+| `center`       | bool                                                            | If `True`, the rolling window will be centered on the current value. For even-sized windows, the window will be left-biased. Otherwise, it uses a trailing window.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | `False`    |
 
 ## Returns
 
@@ -33,105 +33,44 @@ df = tk.load_dataset("m4_daily", parse_dates = ['date'])
 ```
 
 ```{python}
-# String Function Name and Series Lambda Function (no independent variables)
-# window = [2,7] yields only 2 and 7
+# This example demonstrates the use of both string-named functions 
+# and lambda functions on a rolling window. 
+# We specify a list of window sizes: [2,7]. 
+# As a result, the output will have computations for both window sizes 2 and 7.
+
 rolled_df = (
     df
         .groupby('id')
         .augment_rolling(
             date_column = 'date', 
             value_column = 'value', 
-            window = [2,7], 
-            window_func = ['mean', ('std', lambda x: x.std())]
+            window = [2,7],  # Specifying multiple window sizes
+            window_func = [
+                'mean',  # Built-in mean function
+                ('std', lambda x: x.std())  # Lambda function to compute standard deviation
+            ]
         )
 )
-rolled_df
+display(rolled_df)
 ```
 
 ```{python}
-# String Function Name and Series Lambda Function (no independent variables)
-# window = (1,3) yields 1, 2, and 3
+# Example showcasing the use of string function names and lambda functions 
+# applied on rolling windows.
+# The `window` tuple (1,3) will generate window sizes of 1, 2, and 3.
+
 rolled_df = (
     df
         .groupby('id')
         .augment_rolling(
             date_column = 'date', 
             value_column = 'value', 
-            window = (1,3), 
-            window_func = ['mean', ('std', lambda x: x.std())]
+            window = (1,3),  # Specifying a range of window sizes
+            window_func = [
+                'mean',  # Using built-in mean function
+                ('std', lambda x: x.std())  # Lambda function for standard deviation
+            ]
         )
 )
-rolled_df 
-```
-
-```{python}
-# Rolling Correlation: Uses independent variables (value2)
-
-df = pd.DataFrame({
-    'id': [1, 1, 1, 2, 2, 2],
-    'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),
-    'value1': [10, 20, 29, 42, 53, 59],
-    'value2': [2, 16, 20, 40, 41, 50],
-})
-
-result_df = (
-    df.groupby('id')
-    .augment_rolling(
-        date_column='date',
-        value_column='value1',
-        use_independent_variables=True,
-        window=3,
-        window_func=[('corr', lambda df: df['value1'].corr(df['value2']))],
-        center = False
-    )
-)
-result_df
-
-```
-
-```{python}
-# Rolling Regression: Using independent variables (value2 and value3)
-
-# Requires: scikit-learn
-from sklearn.linear_model import LinearRegression
-
-df = pd.DataFrame({
-    'id': [1, 1, 1, 2, 2, 2],
-    'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),
-    'value1': [10, 20, 29, 42, 53, 59],
-    'value2': [5, 16, 24, 35, 45, 58],
-    'value3': [2, 3, 6, 9, 10, 13]
-})
-
-# Define Regression Function
-def regression(df):
-
-    model = LinearRegression()
-    X = df[['value2', 'value3']]  # Extract X values (independent variables)
-    y = df['value1']  # Extract y values (dependent variable)
-    model.fit(X, y)
-    ret = pd.Series([model.intercept_, model.coef_[0]], index=['Intercept', 'Slope'])
-    
-    return ret # Return intercept and slope as a Series
-    
-
-# Example to call the function
-result_df = (
-    df.groupby('id')
-    .augment_rolling(
-        date_column='date',
-        value_column='value1',
-        use_independent_variables=True,
-        window=3,
-        window_func=[('regression', regression)]
-    )
-    .dropna()
-)
-
-# Display Results in Wide Format since returning multiple values
-regression_wide_df = pd.concat(result_df['value1_rolling_regression_win_3'].to_list(), axis=1).T
-
-regression_wide_df = pd.concat([result_df.reset_index(drop = True), regression_wide_df], axis=1)
-
-regression_wide_df
+display(rolled_df) 
 ```

@@ -222,14 +222,11 @@ def augment_rolling_apply(
     
     Examples
     --------
-        ```{python}
+    ```{python}
     import pytimetk as tk
     import pandas as pd
     import numpy as np
     
-    ```
-    
-    ```{python}
     # Example showcasing the rolling correlation between two columns (`value1` and `value2`).
     # The correlation requires both columns as input.
     

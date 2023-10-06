@@ -15,6 +15,7 @@ Bend time series data to your will.
 | | |
 | --- | --- |
 | [summarize_by_time](summarize_by_time.qmd#pytimetk.summarize_by_time) | Summarize a DataFrame or GroupBy object by time. |
+| [apply_by_time](apply_by_time.qmd#pytimetk.apply_by_time) | Apply for time series. |
 | [pad_by_time](pad_by_time.qmd#pytimetk.pad_by_time) | Make irregular time series regular by padding with missing dates. |
 | [future_frame](future_frame.qmd#pytimetk.future_frame) | Extend a DataFrame or GroupBy object with future dates. |
 
@@ -29,6 +30,7 @@ Add one or more feature columns to time series data.
 | [augment_lags](augment_lags.qmd#pytimetk.augment_lags) | Adds lags to a Pandas DataFrame or DataFrameGroupBy object. |
 | [augment_leads](augment_leads.qmd#pytimetk.augment_leads) | Adds leads to a Pandas DataFrame or DataFrameGroupBy object. |
 | [augment_rolling](augment_rolling.qmd#pytimetk.augment_rolling) | Apply one or more rolling functions and window sizes to one or more columns of a DataFrame. |
+| [augment_rolling_apply](augment_rolling_apply.qmd#pytimetk.augment_rolling_apply) | Apply one or more rolling functions and window sizes to one or more columns of a DataFrame. |
 | [augment_expanding](augment_expanding.qmd#pytimetk.augment_expanding) | Apply one or more expanding functions and window sizes to one or more columns of a DataFrame. |
 
 ## TS Features
