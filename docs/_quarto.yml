@@ -127,6 +127,7 @@ quartodoc:
         - augment_lags
         - augment_leads
         - augment_rolling
+        - augment_rolling_apply
         - augment_expanding
     - title: TS Features
       desc: Python implementation of the R package `tsfeatures`.
