@@ -348,7 +348,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>summarize_by_time(data, date_column, value_column, freq='D', agg_func='sum', kind='timestamp', wide_format=False, fillna=0, *args, **kwargs)</code></p>
+<p><code>summarize_by_time(data, date_column, value_column, freq='D', agg_func='sum', wide_format=False, fillna=0, *args, **kwargs)</code></p>
 <p>Summarize a DataFrame or GroupBy object by time.</p>
 <p>The <code>summarize_by_time</code> function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the time-based aggregation.</p>
 <section id="parameters" class="level2">
@@ -396,7 +396,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td><code>agg_func</code></td>
 <td>list</td>
-<td>The <code>agg_func</code> parameter is used to specify one or more aggregating functions to apply to the value column(s) during the summarization process. It can be a single function or a list of functions. The default value is <code>"sum"</code>, which represents the sum function. Some common aggregating functions include: - “sum”: Sum of values - “mean”: Mean of values - “median”: Median of values - “min”: Minimum of values - “max”: Maximum of values - “std”: Standard deviation of values - “var”: Variance of values - “first”: First value in group - “last”: Last value in group - “count”: Count of values - “nunique”: Number of unique values - “corr”: Correlation between values Custom <code>lambda</code> aggregating functions can be used too. Here are several common examples: - (“q25”, lambda x: x.quantile(0.25)): 25th percentile of values - (“q75”, lambda x: x.quantile(0.75)): 75th percentile of values - (“iqr”, lambda x: x.quantile(0.75) - x.quantile(0.25)): Interquartile range of values - (“range”, lambda x: x.max() - x.min()): Range of values</td>
+<td>The <code>agg_func</code> parameter is used to specify one or more aggregating functions to apply to the value column(s) during the summarization process. It can be a single function or a list of functions. The default value is <code>"sum"</code>, which represents the sum function. Some common aggregating functions include: - “sum”: Sum of values - “mean”: Mean of values - “median”: Median of values - “min”: Minimum of values - “max”: Maximum of values - “std”: Standard deviation of values - “var”: Variance of values - “first”: First value in group - “last”: Last value in group - “count”: Count of values - “nunique”: Number of unique values Custom <code>lambda</code> aggregating functions can be used too. Here are several common examples: - (“q25”, lambda x: x.quantile(0.25)): 25th percentile of values - (“q75”, lambda x: x.quantile(0.75)): 75th percentile of values - (“iqr”, lambda x: x.quantile(0.75) - x.quantile(0.25)): Interquartile range of values - (“range”, lambda x: x.max() - x.min()): Range of values</td>
 <td><code>'sum'</code></td>
 </tr>
 <tr class="even">
