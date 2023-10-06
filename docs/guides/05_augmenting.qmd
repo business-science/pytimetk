@@ -6,7 +6,7 @@ toc-depth: 3
 number-sections: true
 number-depth: 2
 code-fold: show
-code-tools: 
+code-tools:
     source: false
     toggle: true
 ---
@@ -326,4 +326,129 @@ df \
 
 # Augment Fourier
 
-Coming soon ....
+`augment_fourier()` is used to add mutiple fourier series to time series data. Fourier transformation is often used as a feature engineering technique in time series forecasting as it helps detect hidden periodicities and cyclic patterns in the data. Capturing these hidden cyclic patterns can help improve predictive performance.
+
+::: {.callout-tip collapse="false"}
+## Help Doc Info: `augment_fourier()`
+
+Use `help(tk.augment_fourier)` to review additional helpful documentation.
+
+:::
+
+## Basic Example
+
+
+```{python}
+
+# augment fourier with 7 periods and max order of 1
+#m4_daily_df \
+#    .query('id == "D10"') \
+#    .augment_fourier(
+#		date_column  = 'date',
+#		value_column = 'value',
+#		num_periods  = 7,
+#		max_order    = 1
+#    ) \
+#	.head(20)
+
+```
+
+Notice the additional `value_fourier_1_1` to `value_fourier_1_7` colums that have been added to the data.
+
+
+## Augment Fourier with Grouped Time Series
+
+`augment_fourier` also works with grouped time series:
+
+```{python}
+# augment fourier with grouped time series
+m4_daily_df \
+    .groupby('id') \
+    .augment_fourier(
+		date_column  = 'date',
+		value_column = 'value',
+		num_periods  = 7,
+		max_order    = 1
+    ) \
+	.head(20)
+
+```
+
+
+## Visualizing Fourier Series
+
+We can use the `plot_timesries()` function to visualize a fourier series:
+
+::: {.callout-tip collapse="false"}
+## Help Doc Info: `plot_timeseries()`
+
+Use `plot_timeseries()` to visualize fourier transformations.
+
+:::
+
+### Visualize Single Fourier Series
+
+```{python}
+
+# augment fourier
+fourier_df = m4_daily_df \
+    .query('id == "D10"')\
+    .augment_fourier(
+		date_column  = 'date',
+		value_column = 'value',
+		num_periods  = 7,
+		max_order    = 1
+    ) \
+	.tail(100)
+
+# plot time series (plotnine)
+fourier_df \
+	.plot_timeseries(
+		date_column  = 'date',
+		value_column = 'value_fourier_1_1'
+
+	)
+```
+
+
+### Visualize Multiple Fourier Series
+
+With a little data transformation, we can visualize multiple fourier transformations:
+
+```{python}
+
+# augment fourier using 4 periods and max order of 1
+fourier_df = m4_daily_df \
+    .query('id == "D10"')\
+    .tail(100) \
+    .augment_fourier(
+		date_column  = 'date',
+		value_column = 'value',
+		num_periods  = 4,
+		max_order    = 1
+    )
+
+# transform data from wide to long
+id_vars = ['id', 'date']
+value_vars = [col for col in fourier_df.columns if col.startswith('value')]
+
+fourlier_long_df = fourier_df \
+    .melt(
+        id_vars    = id_vars,
+		value_vars = value_vars,
+		value_name = 'fourier_value',
+		var_name   = 'fourier_trans'
+
+	) \
+     .query(('fourier_trans != "value"')) # removing the original 'value' rows
+
+fourlier_long_df \
+    .groupby('fourier_trans') \
+    .plot_timeseries(
+		date_column  = 'date',
+		value_column = 'fourier_value',
+		facet_ncol   = 2,
+		facet_scales = 'free'
+	)
+
+```
