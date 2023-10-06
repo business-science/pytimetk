@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>pytimetk - Changelog for PyTimeTK</title>
+<title>pytimetk – augment_expanding_apply</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,27 +20,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<link href="./favicon.ico" rel="icon">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -70,12 +104,11 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', '330861489', { 'anonymize_ip': true});
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
-<meta property="og:title" content="pytimetk - Changelog for PyTimeTK">
-<meta property="og:site-name" content="pytimetk">
-<meta name="twitter:title" content="pytimetk - Changelog for PyTimeTK">
-<meta name="twitter:card" content="summary">
 </head>
 
 <body class="nav-sidebar floating nav-fixed">
@@ -85,10 +118,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
-    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
     <img src="https://www.business-science.io/img/business-science-logo.png" alt="" class="navbar-logo">
     </a>
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">pytimetk</span>
     </a>
   </div>
@@ -104,7 +137,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./changelog.html">📧 Change Log</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">augment_expanding_apply</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -118,7 +151,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">PyTimeTK 📈</span></a>
   </div>
 </li>
@@ -134,13 +167,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./getting-started/01_installation.html" class="sidebar-item-text sidebar-link">
+  <a href="../getting-started/01_installation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Install</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./getting-started/02_quick_start.html" class="sidebar-item-text sidebar-link">
+  <a href="../getting-started/02_quick_start.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Quick Start</span></a>
   </div>
 </li>
@@ -157,31 +190,31 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./guides/01_visualization.html" class="sidebar-item-text sidebar-link">
+  <a href="../guides/01_visualization.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Data Visualization</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./guides/02_timetk_concepts.html" class="sidebar-item-text sidebar-link">
+  <a href="../guides/02_timetk_concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">PyTimeTK Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./guides/03_pandas_frequency.html" class="sidebar-item-text sidebar-link">
+  <a href="../guides/03_pandas_frequency.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Pandas Frequencies</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./guides/04_wrangling.html" class="sidebar-item-text sidebar-link">
+  <a href="../guides/04_wrangling.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Data Wrangling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./guides/05_augmenting.html" class="sidebar-item-text sidebar-link">
+  <a href="../guides/05_augmenting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Adding Features (Augmenting)</span></a>
   </div>
 </li>
@@ -198,31 +231,31 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tutorials/01_sales_crm.html" class="sidebar-item-text sidebar-link">
+  <a href="../tutorials/01_sales_crm.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Sales Analysis</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tutorials/02_finance.html" class="sidebar-item-text sidebar-link">
+  <a href="../tutorials/02_finance.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Finance Analysis</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tutorials/03_demand_forecasting.html" class="sidebar-item-text sidebar-link">
+  <a href="../tutorials/03_demand_forecasting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Demand Forecasting</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tutorials/04_anomaly_detection.html" class="sidebar-item-text sidebar-link">
+  <a href="../tutorials/04_anomaly_detection.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Anomaly Detection</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tutorials/05_clustering.html" class="sidebar-item-text sidebar-link">
+  <a href="../tutorials/05_clustering.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Clustering</span></a>
   </div>
 </li>
@@ -231,7 +264,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reference/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📄 API Reference</span></a>
   </div>
 </li>
@@ -245,14 +278,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./contributing.html" class="sidebar-item-text sidebar-link">
+  <a href="../contributing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">🍻 Contributing</span></a>
   </div>
 </li>
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./changelog.html" class="sidebar-item-text sidebar-link active">
+  <a href="../changelog.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📧 Change Log</span></a>
   </div>
 </li>
@@ -289,27 +322,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#pytimetk-0.1.0.9000-in-development" id="toc-pytimetk-0.1.0.9000-in-development" class="nav-link active" data-scroll-target="#pytimetk-0.1.0.9000-in-development"><span class="header-section-number">1</span> pytimetk 0.1.0.9000 (in development)</a>
-  <ul class="collapse">
-  <li><a href="#new-functions" id="toc-new-functions" class="nav-link" data-scroll-target="#new-functions">New Functions:</a></li>
-  <li><a href="#new-data-sets" id="toc-new-data-sets" class="nav-link" data-scroll-target="#new-data-sets">New Data Sets:</a></li>
-  <li><a href="#new-applied-tutorials" id="toc-new-applied-tutorials" class="nav-link" data-scroll-target="#new-applied-tutorials">New Applied Tutorials:</a></li>
-  <li><a href="#deprecations" id="toc-deprecations" class="nav-link" data-scroll-target="#deprecations">Deprecations:</a></li>
-  </ul></li>
-  <li><a href="#pytimetk-0.1.0-2023-10-02" id="toc-pytimetk-0.1.0-2023-10-02" class="nav-link" data-scroll-target="#pytimetk-0.1.0-2023-10-02"><span class="header-section-number">2</span> pytimetk 0.1.0 (2023-10-02)</a>
-  <ul class="collapse">
-  <li><a href="#about-the-initial-release." id="toc-about-the-initial-release." class="nav-link" data-scroll-target="#about-the-initial-release.">About the Initial release.</a></li>
-  <li><a href="#the-pytimetk-website-comes-with" id="toc-the-pytimetk-website-comes-with" class="nav-link" data-scroll-target="#the-pytimetk-website-comes-with">The PyTimeTK website comes with:</a></li>
-  </ul></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/changelog.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_expanding_apply.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Changelog for PyTimeTK</h1>
+<h1 class="title">augment_expanding_apply</h1>
 </div>
 
 
@@ -324,67 +348,306 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<section id="pytimetk-0.1.0.9000-in-development" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> pytimetk 0.1.0.9000 (in development)</h1>
-<section id="new-functions" class="level3">
-<h3 class="anchored" data-anchor-id="new-functions">New Functions:</h3>
-<ul>
-<li><code>apply_by_time()</code></li>
-<li><code>augment_rolling_apply()</code></li>
-<li><code>augment_expanding()</code></li>
-<li><code>augment_expanding_apply()</code></li>
-<li><code>get_frequency()</code>: Infer a pandas-like frequency. More robust than <code>pandas.infer_freq</code>.</li>
-</ul>
+<p><code>augment_expanding_apply(data, date_column, window_func, min_periods=None)</code></p>
+<p>Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame.</p>
+<section id="parameters" class="level2">
+<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<table class="table">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 9%">
+<col style="width: 86%">
+<col style="width: 1%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>data</code></td>
+<td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
+<td>Input data to be processed. Can be a Pandas DataFrame or a GroupBy object.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td><code>date_column</code></td>
+<td>str</td>
+<td>Name of the datetime column. Data is sorted by this column within each group.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td><code>window_func</code></td>
+<td>Union[Tuple[str, Callable], List[Tuple[str, Callable]]]</td>
+<td>The <code>window_func</code> parameter in the <code>augment_expanding_apply</code> function specifies the function(s) that operate on a expanding window with the consideration of multiple columns. The specification can be: - A tuple where the first element is a string representing the function’s name and the second element is the callable function itself. - A list of such tuples for multiple functions. Note: For functions targeting only a single value column without the need for contextual data from other columns, consider using the <code>augment_expanding</code> function in this library.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td><code>min_periods</code></td>
+<td>int</td>
+<td>Minimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="new-data-sets" class="level3">
-<h3 class="anchored" data-anchor-id="new-data-sets">New Data Sets:</h3>
-<ul>
-<li><code>expedia</code>: Expedia hotel searches</li>
-</ul>
+<section id="returns" class="level2">
+<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<table class="table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 90%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>pd.DataFrame</td>
+<td>The <code>augment_expanding</code> function returns a DataFrame with new columns for each applied function, window size, and value column.</td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="new-applied-tutorials" class="level3">
-<h3 class="anchored" data-anchor-id="new-applied-tutorials">New Applied Tutorials:</h3>
-<ol type="1">
-<li>Sales Analysis Tutorial</li>
-<li>Finance Analysis Tutorial</li>
-<li>Demand Forecasting Tutorial</li>
-</ol>
-</section>
-<section id="deprecations" class="level3">
-<h3 class="anchored" data-anchor-id="deprecations">Deprecations:</h3>
-<ul>
-<li><code>summarize_by_time()</code>: <code>kind = "period"</code>. This is being removed for consistency with <code>pytimetk</code>. “timestamp” is the default.</li>
-<li><code>augment_rolling()</code>: <code>use_independent_variables</code>. This is being replaced by <code>augment_rolling_apply()</code>.</li>
-</ul>
-</section>
-</section>
-<section id="pytimetk-0.1.0-2023-10-02" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> pytimetk 0.1.0 (2023-10-02)</h1>
-<section id="about-the-initial-release." class="level3">
-<h3 class="anchored" data-anchor-id="about-the-initial-release.">About the Initial release.</h3>
-<p>This release includes the following features:</p>
-<ol type="1">
-<li>A workhorse plotting function called <code>plot_timeseries()</code> 💪</li>
-<li>Three (3) data wrangling functions that will simplify 90% of time series tasks 🙏</li>
-<li>Five (5) “augmentor” functions: These add hundreds of features to time series to help in predictive tasks 🧠</li>
-<li>Two (2) time series feature summarizes: identify key aspects of your time series 🔍</li>
-<li>Nine (9) pandas series and DatetimeIndex helpers (work more easily with these timestamp data structures) ⏲</li>
-<li>Four (4) date utility functions that fill in missing function gaps in pandas 🐼</li>
-<li>Two (2) Visualization utilities to help you customize your visualizations and make them look MORE professional 📈</li>
-<li>Two (2) Pandas helpers that help clean up and understand pandas data frames with time series 🎇</li>
-<li>Twelve (12) time series datasets that you can practice PyTimeTK time series analysis on 🔢</li>
-</ol>
-</section>
-<section id="the-pytimetk-website-comes-with" class="level3">
-<h3 class="anchored" data-anchor-id="the-pytimetk-website-comes-with">The PyTimeTK website comes with:</h3>
-<ol type="1">
-<li>Two (2) Getting started tutorials</li>
-<li>Five (5) Guides covering common tasks</li>
-<li>Coming Soon: Applied Tutorials in Sales, Finance, Demand Forecasting, Anomaly Detection, and more.</li>
-</ol>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example showcasing the expanding correlation between two columns (`value1` and `value2`).</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The correlation requires both columns as input.</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample DataFrame with id, date, value1, and value2 columns.</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'id'</span>: [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>],</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'date'</span>: pd.to_datetime([<span class="st">'2023-01-01'</span>, <span class="st">'2023-01-02'</span>, <span class="st">'2023-01-03'</span>, <span class="st">'2023-01-04'</span>, <span class="st">'2023-01-05'</span>, <span class="st">'2023-01-06'</span>]),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'value1'</span>: [<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">29</span>, <span class="dv">42</span>, <span class="dv">53</span>, <span class="dv">59</span>],</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'value2'</span>: [<span class="dv">2</span>, <span class="dv">16</span>, <span class="dv">20</span>, <span class="dv">40</span>, <span class="dv">41</span>, <span class="dv">50</span>],</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the expanding correlation for each group of 'id'</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>expanding_df <span class="op">=</span> (</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">'id'</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    .augment_expanding_apply(</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        window_func<span class="op">=</span>[(<span class="st">'corr'</span>, <span class="kw">lambda</span> x: x[<span class="st">'value1'</span>].corr(x[<span class="st">'value2'</span>]))],  <span class="co"># Lambda function for correlation</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>display(expanding_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
 
 
-</section>
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value1</th>
+<th data-quarto-table-cell-role="th">value2</th>
+<th data-quarto-table-cell-role="th">expanding_corr</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>2023-01-01</td>
+<td>10</td>
+<td>2</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>2023-01-02</td>
+<td>20</td>
+<td>16</td>
+<td>1.000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1</td>
+<td>2023-01-03</td>
+<td>29</td>
+<td>20</td>
+<td>0.961054</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2</td>
+<td>2023-01-04</td>
+<td>42</td>
+<td>40</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2</td>
+<td>2023-01-05</td>
+<td>53</td>
+<td>41</td>
+<td>1.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>2</td>
+<td>2023-01-06</td>
+<td>59</td>
+<td>50</td>
+<td>0.824831</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># expanding Regression Example: Using `value1` as the dependent variable and `value2` and `value3` as the independent variables.</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This example demonstrates how to perform a expanding regression using two independent variables.</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Required module (scikit-learn) for regression.</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample DataFrame with `id`, `date`, `value1`, `value2`, and `value3` columns.</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'id'</span>: [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>],</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'date'</span>: pd.to_datetime([<span class="st">'2023-01-01'</span>, <span class="st">'2023-01-02'</span>, <span class="st">'2023-01-03'</span>, <span class="st">'2023-01-04'</span>, <span class="st">'2023-01-05'</span>, <span class="st">'2023-01-06'</span>]),</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">'value1'</span>: [<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">29</span>, <span class="dv">42</span>, <span class="dv">53</span>, <span class="dv">59</span>],</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">'value2'</span>: [<span class="dv">5</span>, <span class="dv">16</span>, <span class="dv">24</span>, <span class="dv">35</span>, <span class="dv">45</span>, <span class="dv">58</span>],</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">'value3'</span>: [<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">9</span>, <span class="dv">10</span>, <span class="dv">13</span>]</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Define Regression Function to be applied on the expanding window.</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> regression(df):</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> LinearRegression()</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> df[[<span class="st">'value2'</span>, <span class="st">'value3'</span>]]  <span class="co"># Independent variables</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> df[<span class="st">'value1'</span>]  <span class="co"># Dependent variable</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    model.fit(X, y)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    ret <span class="op">=</span> pd.Series([model.intercept_, model.coef_[<span class="dv">0</span>]], index<span class="op">=</span>[<span class="st">'Intercept'</span>, <span class="st">'Slope'</span>])</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ret <span class="co"># Return intercept and slope as a Series</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the expanding regression for each group of `id`</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>result_df <span class="op">=</span> (</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">'id'</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    .augment_expanding_apply(</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>        window_func<span class="op">=</span>[(<span class="st">'regression'</span>, regression)]</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    .dropna()</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Format the results to have each regression output (slope and intercept) in separate columns.</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>regression_wide_df <span class="op">=</span> pd.concat(result_df[<span class="st">'expanding_regression'</span>].to_list(), axis<span class="op">=</span><span class="dv">1</span>).T</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>regression_wide_df <span class="op">=</span> pd.concat([result_df.reset_index(drop <span class="op">=</span> <span class="va">True</span>), regression_wide_df], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>display(regression_wide_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value1</th>
+<th data-quarto-table-cell-role="th">value2</th>
+<th data-quarto-table-cell-role="th">value3</th>
+<th data-quarto-table-cell-role="th">expanding_regression</th>
+<th data-quarto-table-cell-role="th">Intercept</th>
+<th data-quarto-table-cell-role="th">Slope</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>2023-01-01</td>
+<td>10</td>
+<td>5</td>
+<td>2</td>
+<td>Intercept 10.0 Slope 0.0 dtype: flo...</td>
+<td>10.000000</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>2023-01-02</td>
+<td>20</td>
+<td>16</td>
+<td>3</td>
+<td>Intercept 5.327869 Slope 0.901639 dt...</td>
+<td>5.327869</td>
+<td>0.901639</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1</td>
+<td>2023-01-03</td>
+<td>29</td>
+<td>24</td>
+<td>6</td>
+<td>Intercept 4.28 Slope 0.84 dtype: flo...</td>
+<td>4.280000</td>
+<td>0.840000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2</td>
+<td>2023-01-04</td>
+<td>42</td>
+<td>35</td>
+<td>9</td>
+<td>Intercept 42.0 Slope 0.0 dtype: flo...</td>
+<td>42.000000</td>
+<td>0.000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2</td>
+<td>2023-01-05</td>
+<td>53</td>
+<td>45</td>
+<td>10</td>
+<td>Intercept 2.900990 Slope 1.089109 dt...</td>
+<td>2.900990</td>
+<td>1.089109</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>2</td>
+<td>2023-01-06</td>
+<td>59</td>
+<td>58</td>
+<td>13</td>
+<td>Intercept 30.352941 Slope 1.588235 ...</td>
+<td>30.352941</td>
+<td>1.588235</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
