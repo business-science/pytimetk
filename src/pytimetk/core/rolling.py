@@ -17,7 +17,7 @@ def augment_rolling(
     center: bool = False,
     **kwargs,
 ) -> pd.DataFrame:
-    '''Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.
+    '''Apply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame.
     
     Parameters
     ----------
@@ -189,7 +189,7 @@ def augment_rolling_apply(
     min_periods: Optional[int] = None,
     center: bool = False,
 ) -> pd.DataFrame:
-    '''Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.
+    '''Apply one or more DataFrame-based rolling functions and window sizes to one or more columns of a DataFrame.
     
     Parameters
     ----------
@@ -203,6 +203,8 @@ def augment_rolling_apply(
         The specification can be:
         - A tuple where the first element is a string representing the function's name and the second element is the callable function itself.
         - A list of such tuples for multiple functions.
+        
+        (See more Examples below.)
 
         Note: For functions targeting only a single value column without the need for contextual data from other columns, consider using the `augment_rolling` function in this library.
     window : Union[int, tuple, list], optional
@@ -226,7 +228,7 @@ def augment_rolling_apply(
     import pytimetk as tk
     import pandas as pd
     import numpy as np
-    
+
     # Example showcasing the rolling correlation between two columns (`value1` and `value2`).
     # The correlation requires both columns as input.
     
@@ -240,7 +242,7 @@ def augment_rolling_apply(
     
     # Compute the rolling correlation for each group of 'id'
     # Using a rolling window of size 3 and a lambda function to calculate the correlation.
-    rolling_df = (
+    rolled_df = (
         df.groupby('id')
         .augment_rolling_apply(
             date_column='date',
@@ -249,8 +251,7 @@ def augment_rolling_apply(
             center = False  # Not centering the rolling window
         )
     )
-    display(rolling_df)
-    
+    display(rolled_df)
     ```
     
     ```{python}
@@ -282,7 +283,7 @@ def augment_rolling_apply(
         
     # Compute the rolling regression for each group of `id`
     # Using a rolling window of size 3 and the regression function.
-    result_df = (
+    rolled_df = (
         df.groupby('id')
         .augment_rolling_apply(
             date_column='date',
@@ -293,10 +294,9 @@ def augment_rolling_apply(
     )
 
     # Format the results to have each regression output (slope and intercept) in separate columns.
-    regression_wide_df = pd.concat(result_df['rolling_regression_win_3'].to_list(), axis=1).T
-    regression_wide_df = pd.concat([result_df.reset_index(drop = True), regression_wide_df], axis=1)
+    regression_wide_df = pd.concat(rolled_df['rolling_regression_win_3'].to_list(), axis=1).T
+    regression_wide_df = pd.concat([rolled_df.reset_index(drop = True), regression_wide_df], axis=1)
     display(regression_wide_df)
-    
     ```
     '''
     # Ensure data is a DataFrame or a GroupBy object
