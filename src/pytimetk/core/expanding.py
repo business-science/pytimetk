@@ -15,7 +15,7 @@ def augment_expanding(
     min_periods: Optional[int] = None,
     **kwargs,
 ) -> pd.DataFrame:
-    '''Apply one or more expanding functions and window sizes to one column (Series) of a DataFrame.
+    '''Apply one or more Series-based expanding functions and window sizes to one or more columns of a DataFrame.
     
     Parameters
     ----------
@@ -147,7 +147,7 @@ def augment_expanding_apply(
     window_func: Union[Tuple[str, Callable], List[Tuple[str, Callable]]], 
     min_periods: Optional[int] = None,
 ) -> pd.DataFrame:
-    '''Apply one or more expanding functions and window sizes to one or more columns of a DataFrame.
+    '''Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame.
     
     Parameters
     ----------

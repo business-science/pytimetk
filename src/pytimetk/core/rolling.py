@@ -17,7 +17,7 @@ def augment_rolling(
     center: bool = False,
     **kwargs,
 ) -> pd.DataFrame:
-    '''Apply one or more rolling functions and window sizes to one column (Series) of a DataFrame.
+    '''Apply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame.
     
     Parameters
     ----------
@@ -189,7 +189,7 @@ def augment_rolling_apply(
     min_periods: Optional[int] = None,
     center: bool = False,
 ) -> pd.DataFrame:
-    '''Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.
+    '''Apply one or more DataFrame-based rolling functions and window sizes to one or more columns of a DataFrame.
     
     Parameters
     ----------
