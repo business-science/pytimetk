@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -72,14 +106,39 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', '330861489', { 'anonymize_ip': true});
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.26.0.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
 
 
 <meta property="og:title" content="pytimetk - Sales CRM Database Analysis">
 <meta property="og:description" content="">
+<meta property="og:image" content="https://business-science.github.io/pytimetk/tutorials/01_sales_crm_files/figure-html/cell-8-output-1.png">
 <meta property="og:site-name" content="pytimetk">
+<meta property="og:image:height" content="1600">
+<meta property="og:image:width" content="2000">
 <meta name="twitter:title" content="pytimetk - Sales CRM Database Analysis">
 <meta name="twitter:description" content="">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://business-science.github.io/pytimetk/tutorials/01_sales_crm_files/figure-html/cell-8-output-1.png">
+<meta name="twitter:image-height" content="1600">
+<meta name="twitter:image-width" content="2000">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 
 <body class="nav-sidebar floating nav-fixed">
@@ -289,7 +348,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#load-packages." id="toc-load-packages." class="nav-link active" data-scroll-target="#load-packages."><span class="header-section-number">1</span> Load Packages.</a></li>
+  <li><a href="#load-inspect-dataset" id="toc-load-inspect-dataset" class="nav-link" data-scroll-target="#load-inspect-dataset"><span class="header-section-number">2</span> Load &amp; inspect dataset</a></li>
+  <li><a href="#preliminary-data-exploration" id="toc-preliminary-data-exploration" class="nav-link" data-scroll-target="#preliminary-data-exploration"><span class="header-section-number">3</span> Preliminary Data Exploration</a></li>
+  <li><a href="#plot-your-data" id="toc-plot-your-data" class="nav-link" data-scroll-target="#plot-your-data"><span class="header-section-number">4</span> Plot your data</a></li>
+  <li><a href="#create-forecast-model" id="toc-create-forecast-model" class="nav-link" data-scroll-target="#create-forecast-model"><span class="header-section-number">5</span> Create Forecast Model</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/tutorials/01_sales_crm.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -311,9 +380,2808 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p>Coming soon…</p>
+<p>In this tutorial, we will use pytimetk and its powerful functions to perform a time series analysis on a dataset representing bike sales. Our goal is to understand the patterns in the data and forecast future sales.</p>
+<section id="load-packages." class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="load-packages."><span class="header-section-number">1</span> Load Packages.</h2>
+<p>If you do not have pytimetk installed, you can install by using</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pip install pytimetk</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>or for the latest features and functionality, you can install the development version.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pip install git<span class="op">+</span>https:<span class="op">//</span>github.com<span class="op">/</span>business<span class="op">-</span>science<span class="op">/</span>pytimetk.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="1">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="load-inspect-dataset" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="load-inspect-dataset"><span class="header-section-number">2</span> Load &amp; inspect dataset</h2>
+<p>To kick off our analysis, we’ll begin by importing essential libraries and accessing the ‘bike_sales’ dataset available within pytimetk’s suite of built-in datasets.</p>
+<p>The Bike Sales dataset exemplifies what one might find in a CRM (Customer Relationship Management) system. CRM systems are pivotal for businesses, offering vital insights by tracking sales throughout the entire sales funnel. Such datasets are rich with transaction-level data, encompassing elements like order numbers, individual order lines, customer details, product information, and specific transaction data.</p>
+<p>Transactional data, such as this, inherently holds the essential components for time series analysis:</p>
+<p>Time Stamps Associated Values Distinct Groups or Categories Given these attributes, the Bike Sales dataset emerges as an ideal candidate for analysis using pytimetk.</p>
+<p>To get a preliminary understanding of our data, let’s utilize the <code>tk.glimpse()</code> function from pytimetk. This will provide us a snapshot of the available fields, their respective data types, and a sneak peek into the data entries.</p>
+<div class="cell" data-execution_count="2">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.datasets.load_dataset(<span class="st">'bike_sales_sample'</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'order_date'</span>] <span class="op">=</span> pd.to_datetime(df[<span class="st">'order_date'</span>])</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 2466 rows of 13 columns
+order_id:        int64            [1, 1, 2, 2, 3, 3, 3, 3, 3, 4, 5, 5, 5 ...
+order_line:      int64            [1, 2, 1, 2, 1, 2, 3, 4, 5, 1, 1, 2, 3 ...
+order_date:      datetime64[ns]   [Timestamp('2011-01-07 00:00:00'), Tim ...
+quantity:        int64            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1 ...
+price:           int64            [6070, 5970, 2770, 5970, 10660, 3200,  ...
+total_price:     int64            [6070, 5970, 2770, 5970, 10660, 3200,  ...
+model:           object           ['Jekyll Carbon 2', 'Trigger Carbon 2' ...
+category_1:      object           ['Mountain', 'Mountain', 'Mountain', ' ...
+category_2:      object           ['Over Mountain', 'Over Mountain', 'Tr ...
+frame_material:  object           ['Carbon', 'Carbon', 'Aluminum', 'Carb ...
+bikeshop_name:   object           ['Ithaca Mountain Climbers', 'Ithaca M ...
+city:            object           ['Ithaca', 'Ithaca', 'Kansas City', 'K ...
+state:           object           ['NY', 'NY', 'KS', 'KS', 'KY', 'KY', ' ...</code></pre>
+</div>
+</div>
+</section>
+<section id="preliminary-data-exploration" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="preliminary-data-exploration"><span class="header-section-number">3</span> Preliminary Data Exploration</h2>
+<p>CRM data is often bustling with activity, reflecting the myriad of transactions happening daily. Due to this high volume, the data can sometimes seem overwhelming or noisy. To derive meaningful insights, it’s essential to aggregate this data over specific time intervals. This is where tk.summarize_by_time() comes into play.</p>
+<p>The <code>tk.summarize_by_time()</code> function offers a streamlined approach to time-based data aggregation. By defining a desired frequency and an aggregation method, this function seamlessly organizes your data. The beauty of it is its versatility; from a broad array of built-in aggregation methods and frequencies to the flexibility of integrating a custom function, it caters to a range of requirements.</p>
+<p>Curious about the various options it provides? Dive into its documentation with:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">help</span>(tk.summarize_by_time)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And explore the plethora of possibilities!</p>
+<div class="cell" data-execution_count="3">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>weekly_totals <span class="op">=</span> df.summarize_by_time(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                        date_column <span class="op">=</span> <span class="st">'order_date'</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                        value_column <span class="op">=</span> <span class="st">'total_price'</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                        agg_func <span class="op">=</span> [<span class="st">'sum'</span>],</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                        freq <span class="op">=</span> <span class="st">'W'</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>weekly_totals.head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
 
 
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">total_price_sum</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2011-01-09</td>
+<td>12040</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2011-01-16</td>
+<td>151460</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2011-01-23</td>
+<td>143850</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2011-01-30</td>
+<td>175665</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2011-02-06</td>
+<td>105210</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>2011-02-13</td>
+<td>250390</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>2011-02-20</td>
+<td>410595</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>2011-02-27</td>
+<td>254045</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>2011-03-06</td>
+<td>308420</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>2011-03-13</td>
+<td>45450</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>To better understand your data, you might want to add groups to this summary. We can include a groupby before the summarize and then aggregate our data.</p>
+<div class="cell" data-execution_count="4">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a> sales_by_week <span class="op">=</span> df <span class="op">\</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'category_2'</span>) <span class="op">\</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    .summarize_by_time(</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                        date_column <span class="op">=</span> <span class="st">'order_date'</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                        value_column <span class="op">=</span> <span class="st">'total_price'</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                        agg_func <span class="op">=</span> [<span class="st">'sum'</span>],</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                        freq <span class="op">=</span> <span class="st">'W'</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>sales_by_week.head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">category_2</th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">total_price_sum</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Cross Country Race</td>
+<td>2011-01-16</td>
+<td>61750</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Cross Country Race</td>
+<td>2011-01-23</td>
+<td>25050</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Cross Country Race</td>
+<td>2011-01-30</td>
+<td>56860</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Cross Country Race</td>
+<td>2011-02-06</td>
+<td>8740</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Cross Country Race</td>
+<td>2011-02-13</td>
+<td>78070</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>Cross Country Race</td>
+<td>2011-02-20</td>
+<td>115010</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>Cross Country Race</td>
+<td>2011-02-27</td>
+<td>64290</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>Cross Country Race</td>
+<td>2011-03-06</td>
+<td>95070</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>Cross Country Race</td>
+<td>2011-03-13</td>
+<td>3200</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>Cross Country Race</td>
+<td>2011-03-20</td>
+<td>21170</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>This long format can be a little hard to compare the different group values visually, so instead of long format you might want to pivot wide to view the data.</p>
+<div class="cell" data-execution_count="5">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sales_by_week_wide <span class="op">=</span> df <span class="op">\</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'category_2'</span>) <span class="op">\</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    .summarize_by_time(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                        date_column <span class="op">=</span> <span class="st">'order_date'</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                        value_column <span class="op">=</span> <span class="st">'total_price'</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                        agg_func <span class="op">=</span> [<span class="st">'sum'</span>],</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>                        freq <span class="op">=</span> <span class="st">'W'</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>                        wide_format <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>sales_by_week_wide.head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">total_price_sum_Cross Country Race</th>
+<th data-quarto-table-cell-role="th">total_price_sum_Cyclocross</th>
+<th data-quarto-table-cell-role="th">total_price_sum_Elite Road</th>
+<th data-quarto-table-cell-role="th">total_price_sum_Endurance Road</th>
+<th data-quarto-table-cell-role="th">total_price_sum_Fat Bike</th>
+<th data-quarto-table-cell-role="th">total_price_sum_Over Mountain</th>
+<th data-quarto-table-cell-role="th">total_price_sum_Sport</th>
+<th data-quarto-table-cell-role="th">total_price_sum_Trail</th>
+<th data-quarto-table-cell-role="th">total_price_sum_Triathalon</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2011-01-09</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>12040.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2011-01-16</td>
+<td>61750.0</td>
+<td>1960.0</td>
+<td>49540.0</td>
+<td>11110.0</td>
+<td>0.0</td>
+<td>9170.0</td>
+<td>4030.0</td>
+<td>7450.0</td>
+<td>6450.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2011-01-23</td>
+<td>25050.0</td>
+<td>3500.0</td>
+<td>51330.0</td>
+<td>47930.0</td>
+<td>0.0</td>
+<td>3840.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>12200.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2011-01-30</td>
+<td>56860.0</td>
+<td>2450.0</td>
+<td>43895.0</td>
+<td>24160.0</td>
+<td>0.0</td>
+<td>10880.0</td>
+<td>3720.0</td>
+<td>26700.0</td>
+<td>7000.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2011-02-06</td>
+<td>8740.0</td>
+<td>7000.0</td>
+<td>35640.0</td>
+<td>22680.0</td>
+<td>3730.0</td>
+<td>14270.0</td>
+<td>980.0</td>
+<td>10220.0</td>
+<td>1950.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>2011-02-13</td>
+<td>78070.0</td>
+<td>0.0</td>
+<td>83780.0</td>
+<td>24820.0</td>
+<td>2130.0</td>
+<td>17160.0</td>
+<td>6810.0</td>
+<td>17120.0</td>
+<td>20500.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>2011-02-20</td>
+<td>115010.0</td>
+<td>7910.0</td>
+<td>79770.0</td>
+<td>27650.0</td>
+<td>26100.0</td>
+<td>37830.0</td>
+<td>10925.0</td>
+<td>96250.0</td>
+<td>9150.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>2011-02-27</td>
+<td>64290.0</td>
+<td>6650.0</td>
+<td>86900.0</td>
+<td>31900.0</td>
+<td>5860.0</td>
+<td>22070.0</td>
+<td>6165.0</td>
+<td>16410.0</td>
+<td>13800.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>2011-03-06</td>
+<td>95070.0</td>
+<td>2450.0</td>
+<td>31990.0</td>
+<td>47660.0</td>
+<td>5860.0</td>
+<td>82060.0</td>
+<td>9340.0</td>
+<td>26790.0</td>
+<td>7200.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>2011-03-13</td>
+<td>3200.0</td>
+<td>4200.0</td>
+<td>23110.0</td>
+<td>7260.0</td>
+<td>0.0</td>
+<td>5970.0</td>
+<td>1710.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>You can now observe the total sales for each product side by side. This streamlined view facilitates easy comparison between product sales.</p>
+</section>
+<section id="plot-your-data" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="plot-your-data"><span class="header-section-number">4</span> Plot your data</h2>
+<p>You can now visualize the summarized data to gain a clearer insight into the prevailing trends.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-groups="bbands-plotly-plotnine">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">Plotly</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Plotnine</a></li></ul>
+<div class="tab-content" data-groups="bbands-plotly-plotnine">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell" data-execution_count="6">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>sales_by_week <span class="op">\</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'category_2'</span>) <span class="op">\</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    .plot_timeseries(</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        date_column <span class="op">=</span> <span class="st">'order_date'</span>,  </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span> <span class="st">'total_price_sum'</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        title <span class="op">=</span> <span class="st">'Bike Sales by Category'</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        facet_scales <span class="op">=</span> <span class="st">"free_x"</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        y_intercept_color <span class="op">=</span> tk.palette_timetk()[<span class="st">'steel_blue'</span>],</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        width <span class="op">=</span> <span class="dv">1000</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>        height <span class="op">=</span> <span class="dv">800</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        y_lab <span class="op">=</span> <span class="st">'Total Sales'</span>, </span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        engine <span class="op">=</span> <span class="st">'plotly'</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+
+<div>                            <div id="0bbdc0e3-ba58-4c2b-8f16-5a773a14e091" class="plotly-graph-div" style="height:800px; width:1000px;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("0bbdc0e3-ba58-4c2b-8f16-5a773a14e091")) {                    Plotly.newPlot(                        "0bbdc0e3-ba58-4c2b-8f16-5a773a14e091",                        [{"line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"Cross Country Race","showlegend":false,"x":["2011-01-16T00:00:00","2011-01-23T00:00:00","2011-01-30T00:00:00","2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00","2012-01-01T00:00:00"],"y":[61750,25050,56860,8740,78070,115010,64290,95070,3200,21170,28990,51860,85910,138230,138350,136090,32110,139010,2060,26130,30360,88280,109470,107280,56430,62320,141620,75720,21240,11620,9730,22780,53680,38360,90290,7380,0,68630,59840,51820,62940,9060,15980,59180,132550,68430,29470,71080,9800,41620,2340],"type":"scatter","xaxis":"x","yaxis":"y","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(51, 102, 255, 1.0)","width":1.0},"mode":"lines","name":"Smoother","showlegend":false,"x":["2011-01-16T00:00:00","2011-01-23T00:00:00","2011-01-30T00:00:00","2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00","2012-01-01T00:00:00"],"y":[38382.64475062822,44638.843169875356,51095.11190467083,57309.983093907,63066.674216049054,64828.51176539599,62395.03118395181,57247.3259250009,51033.70762690619,48067.46513235643,53128.029535503665,66600.29655318348,84398.66928974458,97507.26324287987,104064.41838607145,99707.94478085455,86865.67663349096,71294.98704899162,60405.06183347504,56897.88080740619,60630.653541991145,66315.02096286195,74173.45372229055,82133.5815894191,84554.18579247493,77639.74815191151,65296.701862057715,53640.79972844027,44898.229291014635,36754.35835773855,31096.18572038713,32053.59069790124,34979.413608558134,36634.8618590388,39228.104181736206,42406.07970049925,43988.101903151095,44411.020733104095,44236.02330350809,44664.10657623569,45226.21380404725,47203.14974614625,50009.459334505686,51230.78875775085,53097.291012328584,55080.78183972656,53357.19628808946,43441.55536852784,32940.787045796766,22136.361719821492,11255.620438589895],"type":"scatter","xaxis":"x","yaxis":"y","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"Cyclocross","showlegend":false,"x":["2011-01-16T00:00:00","2011-01-23T00:00:00","2011-01-30T00:00:00","2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00"],"y":[1960,3500,2450,7000,0,7910,6650,2450,4200,0,17290,0,8400,12460,5950,25060,13650,13790,0,2450,22750,29750,1960,24360,11410,1960,10150,4200,0,5250,1960,0,29050,21000,8960,10080,0,1750,3500,7910,9380,7910,0,1750,9380,4410,0,10780,0,4200],"type":"scatter","xaxis":"x2","yaxis":"y2","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(51, 102, 255, 1.0)","width":1.0},"mode":"lines","name":"Smoother","showlegend":false,"x":["2011-01-16T00:00:00","2011-01-23T00:00:00","2011-01-30T00:00:00","2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00"],"y":[2417.801286984556,2948.66163420199,3465.5588305387523,3964.064035963144,4441.339695073869,4476.744524967209,4385.890987218628,4507.414001547581,4617.126674577872,4875.334673277194,5555.309357874187,6642.425523695857,8095.1223871340735,9646.263811348836,10865.611650161489,11365.151390511473,11152.987321447674,11377.67266219956,11801.864114147389,11720.656983463607,11994.165280584266,12225.759119056887,12707.637491228028,12403.35881794914,10623.687487193074,8617.601880474054,6818.600528640344,5085.43475863695,3785.67470964925,2998.305219081055,3751.2781231934605,5267.441473713987,6184.869937981339,6499.465682851918,7077.3151063709265,7355.367533442638,6191.115393222727,5510.337165395873,5339.586436177435,5225.810883242625,5323.902450884513,5541.8610399058925,5406.861294284596,4787.584266837181,4340.174119798005,4228.996091440367,4120.192156103746,3984.99748588695,3830.299614973106,3626.8345250646953],"type":"scatter","xaxis":"x2","yaxis":"y2","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"Elite Road","showlegend":false,"x":["2011-01-16T00:00:00","2011-01-23T00:00:00","2011-01-30T00:00:00","2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00"],"y":[49540,51330,43895,35640,83780,79770,86900,31990,23110,10230,86490,7170,135540,142615,26790,61110,34770,119745,31485,23860,72700,65940,49890,57315,98950,28410,107580,60920,40320,17760,39090,14730,56195,0,64500,90060,12790,31845,35575,24880,62150,25680,9110,24780,75460,42415,34605,50560,12270,21075],"type":"scatter","xaxis":"x3","yaxis":"y3","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(51, 102, 255, 1.0)","width":1.0},"mode":"lines","name":"Smoother","showlegend":false,"x":["2011-01-16T00:00:00","2011-01-23T00:00:00","2011-01-30T00:00:00","2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00"],"y":[44245.40918410986,48910.523446161016,53460.38253569372,57436.03541491694,60550.25727493292,58540.2534796927,55127.86420762545,51650.11437138042,46464.4984216946,45949.470874771476,52804.645228829504,57590.2620915546,59894.63185545462,62126.35679616701,63092.14058152784,60514.387541969576,53088.329543693835,49847.02734785048,51648.015838243366,52874.31933569271,53785.59298006238,56629.38953094816,60793.09192299351,64422.66168709211,65402.01605060973,63841.91267299772,59741.774491841934,53769.37599719863,46776.28303623634,40719.95359987405,34606.355058168,33589.97988441132,37363.32953068267,40178.03265730705,40460.488244985354,40363.938411806004,40059.05763503098,39427.725247751485,36113.64920852302,32475.767424995494,31601.925119332427,33442.97147748968,35628.0019929869,36751.65415629574,37446.52778287761,38393.80565170646,35561.13884718244,32279.904140345818,28364.73026892622,23729.15948462061],"type":"scatter","xaxis":"x3","yaxis":"y3","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"Endurance Road","showlegend":false,"x":["2011-01-16T00:00:00","2011-01-23T00:00:00","2011-01-30T00:00:00","2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00","2012-01-01T00:00:00"],"y":[11110,47930,24160,22680,24820,27650,31900,47660,7260,4230,55860,3730,93730,61240,16470,44920,14710,54910,14990,23850,44360,49020,12180,38540,50550,49770,53170,24750,14910,44940,25020,3090,37350,4800,75510,24230,9590,33330,11610,26660,57970,7910,11830,15080,104560,28760,49700,17830,7540,30750,7110],"type":"scatter","xaxis":"x4","yaxis":"y4","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(51, 102, 255, 1.0)","width":1.0},"mode":"lines","name":"Smoother","showlegend":false,"x":["2011-01-16T00:00:00","2011-01-23T00:00:00","2011-01-30T00:00:00","2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00","2012-01-01T00:00:00"],"y":[23545.389690019736,24664.430400265945,25987.828323666807,27494.803759825634,28649.62858871449,27842.624016311533,26590.259208702017,26631.058296028306,26602.3133312899,27767.07372215204,30714.359405970354,32945.703415808115,35443.01420119503,37197.40644167424,37634.18641944044,36384.97948055452,32893.97389311774,31425.756957074685,32531.203150937647,32849.89075921218,33272.891481348386,35053.36316424331,38547.85664712756,41046.7491331574,40854.58732299658,39664.41660342322,38822.86856868628,36270.30745181822,31633.913298330248,27263.10534289621,24428.374473408083,24176.647580515822,24044.27461443339,23008.693236428622,22912.875744862475,23335.833064764982,23537.831952141078,24307.65803226649,24024.867777921034,22869.522714539373,21634.0688042562,20406.0807469052,20987.478470358335,22382.59363523234,22749.45337468962,23536.41185121873,24917.439624466544,23090.237305080384,20338.10609085501,16981.018039759012,13350.957578464378],"type":"scatter","xaxis":"x4","yaxis":"y4","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"Fat Bike","showlegend":false,"x":["2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00"],"y":[3730,2130,26100,5860,5860,0,0,4260,3730,4260,11190,37300,36750,0,0,2130,0,0,3730,0,10120,2130,9590,10120,2130,0,0,2130,0,5860,3730,2130,0,2130,2130,2130,2130,0,0,0,2130,4260,4260,0,7460],"type":"scatter","xaxis":"x5","yaxis":"y5","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(51, 102, 255, 1.0)","width":1.0},"mode":"lines","name":"Smoother","showlegend":false,"x":["2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00"],"y":[3658.517142296387,3693.327973119099,3614.4260683715393,3467.035503890785,3651.179636301747,3216.7073342474087,2834.0943114839797,3032.890436953099,4531.583574480952,6640.134708394009,6043.527073244801,4394.347816161062,3778.204678413188,1849.7507616777177,444.53229949389066,609.0767475967808,980.6725430327572,1387.008136757516,2117.573627063776,3115.4739704574577,4510.853704039231,5558.972252277626,5643.538225200636,4809.429103514502,3699.916373310291,2270.955397563272,1239.0109574863234,1503.7957145126122,2191.3463789906123,2544.7960050284846,2552.9912137378583,2449.7306763860897,2067.8983251150817,1786.5701647933686,1753.3471597509526,1654.4648596203037,1294.5718761587448,926.9402114188723,886.8812468293006,1321.6292874658059,2041.430682145095,2836.9244119715736,3867.2028333669564,4875.856826413652,5840.724168740868],"type":"scatter","xaxis":"x5","yaxis":"y5","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"Over Mountain","showlegend":false,"x":["2011-01-09T00:00:00","2011-01-16T00:00:00","2011-01-23T00:00:00","2011-01-30T00:00:00","2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00"],"y":[12040,9170,3840,10880,14270,17160,37830,22070,82060,5970,3200,14270,57400,41780,39750,33250,56380,9170,39850,3200,21430,11190,33040,7040,61480,58700,40820,91020,48380,7990,36670,30370,7990,7990,11720,19290,6400,7990,54480,21310,7680,24300,8200,0,0,61620,24620,27720,9800,6400,59330],"type":"scatter","xaxis":"x6","yaxis":"y6","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(51, 102, 255, 1.0)","width":1.0},"mode":"lines","name":"Smoother","showlegend":false,"x":["2011-01-09T00:00:00","2011-01-16T00:00:00","2011-01-23T00:00:00","2011-01-30T00:00:00","2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00"],"y":[6295.397866666291,8497.307866123756,10926.447131029956,13468.637808003432,16155.012648301652,18980.74937300447,18955.136737103825,17463.1209456941,16698.85538768004,17125.053399192344,18473.23352110862,21523.76138974992,27230.473728165667,33138.74343647812,36588.6293108461,36477.332648378695,32865.45906857916,28839.611135683226,25289.03180050754,22519.69207378601,21059.515806093743,23761.743154277952,29085.068540666874,35109.00061942534,40660.69416768437,44251.60245232382,44787.75054847119,42926.54160571138,38867.25695832778,33762.74662321974,28471.618941906345,23010.56600693633,18993.29903254897,15922.735962199571,12988.260985173942,12212.323288033374,13535.178266205861,14426.859313298548,14905.909366585425,14932.527338739506,14555.91112256112,12481.785104306222,9574.950770072212,10256.318241372286,12196.986963532736,13099.412635549006,14939.179688266167,19378.39300479592,24349.484851600282,28980.755843803257,33443.836702285946],"type":"scatter","xaxis":"x6","yaxis":"y6","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"Sport","showlegend":false,"x":["2011-01-16T00:00:00","2011-01-23T00:00:00","2011-01-30T00:00:00","2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00"],"y":[4030,0,3720,980,6810,10925,6165,9340,1710,0,7575,2875,8385,13070,10120,20950,2710,24695,3920,8795,2000,4705,4880,11265,11480,6045,14640,7985,0,3770,5740,2150,3415,1065,8190,3940,1350,8800,1350,14320,5445,980,1630,2980,3825,7890,0,8320,0,14355],"type":"scatter","xaxis":"x7","yaxis":"y7","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(51, 102, 255, 1.0)","width":1.0},"mode":"lines","name":"Smoother","showlegend":false,"x":["2011-01-16T00:00:00","2011-01-23T00:00:00","2011-01-30T00:00:00","2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00"],"y":[1403.4904156630112,2427.313318834494,3460.037244109463,4457.163394421633,5419.701598527108,5938.578595385339,5971.995211176446,5781.858769532535,5350.757898400667,5118.6851953518,5530.702274312002,6592.815683894845,8133.428123012487,9075.826362609634,9056.395064061235,8472.040013749804,7936.241331503634,6871.1421067739375,5654.8789715189805,4953.830271291245,5368.818436289716,6238.602190152267,7004.834680174823,7853.823033511137,8601.29256446227,8563.850574220734,7832.9333958293555,6842.888131743032,5808.596981261145,4735.187457208923,3754.551384476683,3546.6453823443444,3743.1149392304374,3797.0643587197374,3940.011782683144,4285.753370128758,4826.79905120806,5137.236169016828,4938.675948058597,4593.660179331857,4295.926710169265,3960.1380564737274,3729.2944882184997,3517.020193961036,3727.8742220486038,4288.210021859277,5428.271684092979,6617.831633535563,7788.935760344337,8979.572656035934],"type":"scatter","xaxis":"x7","yaxis":"y7","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"Trail","showlegend":false,"x":["2011-01-16T00:00:00","2011-01-23T00:00:00","2011-01-30T00:00:00","2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00","2012-01-01T00:00:00"],"y":[7450,0,26700,10220,17120,96250,16410,26790,0,7460,21150,5330,49870,92770,36030,85540,11290,64960,2340,31510,14510,27140,10550,39990,48800,103480,45210,65570,7460,45780,39020,3200,47510,5330,22830,18990,0,37820,32620,19420,28620,2340,11080,12250,45820,29360,27120,5650,13030,24210,2660],"type":"scatter","xaxis":"x8","yaxis":"y8","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(51, 102, 255, 1.0)","width":1.0},"mode":"lines","name":"Smoother","showlegend":false,"x":["2011-01-16T00:00:00","2011-01-23T00:00:00","2011-01-30T00:00:00","2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00","2012-01-01T00:00:00"],"y":[7230.1246266403905,9546.831528571925,11685.092686834072,13782.718205822353,15899.781481747776,15970.978897868283,14936.444063257035,14475.162854969873,14391.93174977839,15865.865241419584,19479.3754397571,24728.247332710773,30247.457877870187,33673.09551976167,36182.706208734046,36411.33862604547,34060.37848093966,30413.798897296343,27391.542094045777,24640.028084266633,24137.502895526468,25934.669045962393,30178.881528494123,34851.127876389764,39786.71077809437,43050.72830118827,44698.55361611541,44357.555850868215,41732.11446129719,37602.54333617857,32908.51537410331,28606.71198621602,25022.07012001747,21450.878068699858,19881.988333834917,20588.966323526653,21458.864874049505,22413.557816474568,22330.080845010074,21432.47311922174,19973.780565388686,19026.78629460318,19581.409907198038,20519.448001038756,20855.865715295342,21490.408205895976,21570.74443244696,18700.548383217745,15231.33453477717,11623.70699614049,8062.697456109882],"type":"scatter","xaxis":"x8","yaxis":"y8","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"Triathalon","showlegend":false,"x":["2011-01-16T00:00:00","2011-01-23T00:00:00","2011-01-30T00:00:00","2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00"],"y":[6450,12200,7000,1950,20500,9150,13800,7200,0,9000,30000,4500,48300,30850,1950,25950,7000,9300,3200,0,13450,7850,3200,33400,28850,0,7350,23200,0,14350,21650,8100,0,0,12150,7850,0,5150,9600,4500,39000,4650,0,5900,39150,15350,3200,28350,2700,3900],"type":"scatter","xaxis":"x9","yaxis":"y9","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(51, 102, 255, 1.0)","width":1.0},"mode":"lines","name":"Smoother","showlegend":false,"x":["2011-01-16T00:00:00","2011-01-23T00:00:00","2011-01-30T00:00:00","2011-02-06T00:00:00","2011-02-13T00:00:00","2011-02-20T00:00:00","2011-02-27T00:00:00","2011-03-06T00:00:00","2011-03-13T00:00:00","2011-03-20T00:00:00","2011-03-27T00:00:00","2011-04-03T00:00:00","2011-04-10T00:00:00","2011-04-17T00:00:00","2011-04-24T00:00:00","2011-05-01T00:00:00","2011-05-08T00:00:00","2011-05-15T00:00:00","2011-05-22T00:00:00","2011-05-29T00:00:00","2011-06-05T00:00:00","2011-06-12T00:00:00","2011-06-19T00:00:00","2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00"],"y":[7574.333393056837,8270.723175239327,8964.591460553424,9566.497357532568,9954.779163375108,9591.634506905339,9592.618313607456,10150.815354245411,10479.171432648815,11800.606581599,14212.947290214759,16026.931530994823,17335.50513463201,17409.522471601922,16499.986558450426,14819.967437546415,11594.979205999387,9130.87580499433,7884.145015399177,7045.925623612849,8050.135542918949,10585.605934270428,12010.446910054028,12414.13409476685,12951.777555015078,13362.670012537024,13033.330747673092,11996.499986735036,11602.302084479406,11089.75030331183,9785.099299309812,8623.949215596107,7863.825641240547,6409.49773545269,5152.125391465926,5203.5755413055,5808.770036188028,5957.481466270692,5566.4618766338535,5145.538689850358,5129.848931705977,5521.56926180264,6301.269629366299,7185.756079700571,8632.46519647916,9552.696160728783,8999.706963291064,8371.98268987421,7564.782940693471,6487.597315322021],"type":"scatter","xaxis":"x9","yaxis":"y9","hoverlabel":{"font":{"size":8.8}}}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":""},"tickformat":"%b %Y","showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis":{"anchor":"x","domain":[0.9382716049382716,1.0],"title":{"text":"Total Sales"},"tickfont":{"size":8.8}},"xaxis2":{"anchor":"y2","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis2":{"anchor":"x2","domain":[0.8209876543209876,0.8827160493827161],"tickfont":{"size":8.8}},"xaxis3":{"anchor":"y3","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis3":{"anchor":"x3","domain":[0.7037037037037037,0.7654320987654322],"tickfont":{"size":8.8}},"xaxis4":{"anchor":"y4","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis4":{"anchor":"x4","domain":[0.5864197530864198,0.6481481481481483],"tickfont":{"size":8.8}},"xaxis5":{"anchor":"y5","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis5":{"anchor":"x5","domain":[0.4691358024691358,0.5308641975308642],"tickfont":{"size":8.8}},"xaxis6":{"anchor":"y6","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis6":{"anchor":"x6","domain":[0.35185185185185186,0.41358024691358025],"tickfont":{"size":8.8}},"xaxis7":{"anchor":"y7","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis7":{"anchor":"x7","domain":[0.2345679012345679,0.2962962962962963],"tickfont":{"size":8.8}},"xaxis8":{"anchor":"y8","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis8":{"anchor":"x8","domain":[0.11728395061728394,0.17901234567901234],"tickfont":{"size":8.8}},"xaxis9":{"anchor":"y9","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis9":{"anchor":"x9","domain":[0.0,0.0617283950617284],"tickfont":{"size":8.8}},"annotations":[{"font":{"size":8.8},"showarrow":false,"text":"Cross Country Race","x":0.5,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"Cyclocross","x":0.5,"xanchor":"center","xref":"paper","y":0.8827160493827161,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"Elite Road","x":0.5,"xanchor":"center","xref":"paper","y":0.7654320987654322,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"Endurance Road","x":0.5,"xanchor":"center","xref":"paper","y":0.6481481481481483,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"Fat Bike","x":0.5,"xanchor":"center","xref":"paper","y":0.5308641975308642,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"Over Mountain","x":0.5,"xanchor":"center","xref":"paper","y":0.41358024691358025,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"Sport","x":0.5,"xanchor":"center","xref":"paper","y":0.2962962962962963,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"Trail","x":0.5,"xanchor":"center","xref":"paper","y":0.17901234567901234,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"Triathalon","x":0.5,"xanchor":"center","xref":"paper","y":0.0617283950617284,"yanchor":"bottom","yref":"paper"}],"legend":{"title":{"text":"Legend","font":{"size":8.8}},"font":{"size":8.8}},"title":{"text":"Bike Sales by Category","font":{"size":13.2}},"margin":{"l":10,"r":10,"t":40,"b":40},"font":{"size":11},"autosize":true,"width":1000,"height":800},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('0bbdc0e3-ba58-4c2b-8f16-5a773a14e091');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell" data-execution_count="7">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>sales_by_week <span class="op">\</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'category_2'</span>) <span class="op">\</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    .plot_timeseries(</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        date_column <span class="op">=</span> <span class="st">'order_date'</span>,  </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span> <span class="st">'total_price_sum'</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        title <span class="op">=</span> <span class="st">'Bike Sales by Category'</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        facet_scales <span class="op">=</span> <span class="st">"free_x"</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        y_intercept_color <span class="op">=</span> tk.palette_timetk()[<span class="st">'steel_blue'</span>],</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        width <span class="op">=</span> <span class="dv">1000</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>        height <span class="op">=</span> <span class="dv">800</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        y_lab <span class="op">=</span> <span class="st">'Total Sales'</span>, </span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>        engine <span class="op">=</span> <span class="st">'plotnine'</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>        )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="01_sales_crm_files/figure-html/cell-8-output-1.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>&lt;Figure Size: (1000 x 800)&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The graph showcases a pronounced uptick in sales for most of the different bike products during the summer. It’s a natural trend, aligning with our understanding that people gravitate towards biking during the balmy summer days. Conversely, as the chill of winter sets in at the year’s start and end, we observe a corresponding dip in sales.</p>
+<p>It’s worth highlighting the elegance of the <code>plot_timeseries function</code>. Beyond just plotting raw data, it introduces a smoother, accentuating underlying trends and making them more discernible. This enhancement ensures we can effortlessly capture and comprehend the cyclical nature of bike sales throughout the year.</p>
+</section>
+<section id="create-forecast-model" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="create-forecast-model"><span class="header-section-number">5</span> Create Forecast Model</h2>
+<p>Forecasting future sales for bikes requires meticulous data preparation, and pytimetk streamlines this process for us. When crafting a Machine Learning model tailored for time series analysis, there are several pivotal steps to follow:</p>
+<ol type="1">
+<li><p><strong>Time Padding for Comprehensive Historical Data:</strong> It’s essential to ensure that our data captures every week, even those that witnessed zero sales. This padding becomes especially pertinent when integrating time series features, like lags.</p></li>
+<li><p><strong>Crafting the Future Frame:</strong> This step involves setting up a structure that accommodates the test data features, which will eventually be fed into our prediction function.</p></li>
+<li><p><strong>Infusing Time Series Lag Features:</strong> These features are critical for capturing patterns in time series data, and they need to be integrated into our future frame.</p></li>
+<li><p><strong>Feature / Date Augmentation:</strong> This step can involve adding contextual features that might influence sales, such as date features, holidays, promotional events, etc.</p></li>
+<li><p><strong>Model Training:</strong> Once the data is prepped, it’s time to train our Machine Learning model, refining it to understand historical patterns and predict future trends.</p></li>
+<li><p><strong>Making Predictions:</strong> After training, the model is ready to forecast sales for future periods based on the features of the new data.</p></li>
+</ol>
+<p>Kicking off our journey, we’ll utilize pytimetk’s <code>tk.pad_by_time()</code> function. For this, grouping by the ‘category_1’ variable is recommended. Moreover, it’s prudent to establish a definitive end date. This ensures that all groups are equipped with training data up to the most recent date, accommodating scenarios where certain categories might have seen no sales in the final training week. By doing so, we create a representative observation for every group, capturing the nuances of each category’s sales pattern.</p>
+<section id="time-padding" class="level4">
+<h4 class="anchored" data-anchor-id="time-padding">5.1 Time Padding</h4>
+<div class="cell" data-execution_count="8">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>sales_padded <span class="op">=</span> sales_by_week <span class="op">\</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'category_2'</span>) <span class="op">\</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    .pad_by_time(</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        date_column <span class="op">=</span> <span class="st">'order_date'</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        freq        <span class="op">=</span> <span class="st">'W'</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        end_date    <span class="op">=</span> sales_by_week.order_date.<span class="bu">max</span>()</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>sales_padded</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">category_2</th>
+<th data-quarto-table-cell-role="th">total_price_sum</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2011-01-16</td>
+<td>Cross Country Race</td>
+<td>61750.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2011-01-23</td>
+<td>Cross Country Race</td>
+<td>25050.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2011-01-30</td>
+<td>Cross Country Race</td>
+<td>56860.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2011-02-06</td>
+<td>Cross Country Race</td>
+<td>8740.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2011-02-13</td>
+<td>Cross Country Race</td>
+<td>78070.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">452</td>
+<td>2011-12-04</td>
+<td>Triathalon</td>
+<td>3200.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">453</td>
+<td>2011-12-11</td>
+<td>Triathalon</td>
+<td>28350.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">454</td>
+<td>2011-12-18</td>
+<td>Triathalon</td>
+<td>2700.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">455</td>
+<td>2011-12-25</td>
+<td>Triathalon</td>
+<td>3900.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">456</td>
+<td>2012-01-01</td>
+<td>Triathalon</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>457 rows × 3 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="future-frame" class="level4">
+<h4 class="anchored" data-anchor-id="future-frame">5.2 Future Frame</h4>
+<p>Moving on, let’s set up the future frame, which will serve as our test dataset. To achieve this, employ the <code>tk.future_frame()</code> method. This function allows for the specification of a grouping column and a forecast horizon.</p>
+<p>Upon invoking <code>tk.future_frame()</code>, you’ll observe that placeholders (null values) are added for each group, extending 12 weeks into the future.</p>
+<div class="cell" data-execution_count="9">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df_with_futureframe <span class="op">=</span> sales_padded.groupby(<span class="st">'category_2'</span>).future_frame(date_column <span class="op">=</span> <span class="st">'order_date'</span>,length_out <span class="op">=</span> <span class="dv">12</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>df_with_futureframe</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">category_2</th>
+<th data-quarto-table-cell-role="th">total_price_sum</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2011-01-16</td>
+<td>Cross Country Race</td>
+<td>61750.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2011-01-23</td>
+<td>Cross Country Race</td>
+<td>25050.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2011-01-30</td>
+<td>Cross Country Race</td>
+<td>56860.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2011-02-06</td>
+<td>Cross Country Race</td>
+<td>8740.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2011-02-13</td>
+<td>Cross Country Race</td>
+<td>78070.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">58</td>
+<td>2012-02-26</td>
+<td>Triathalon</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">59</td>
+<td>2012-03-04</td>
+<td>Triathalon</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">60</td>
+<td>2012-03-11</td>
+<td>Triathalon</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">61</td>
+<td>2012-03-18</td>
+<td>Triathalon</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">62</td>
+<td>2012-03-25</td>
+<td>Triathalon</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>565 rows × 3 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="lag-values" class="level4">
+<h4 class="anchored" data-anchor-id="lag-values">5.3 Lag Values</h4>
+<p>Crafting features from time series data can be intricate, but thanks to the suite of feature engineering tools in pytimetk, the process is streamlined and intuitive.</p>
+<p>In this guide, we’ll focus on the basics: introducing a few lag variables and incorporating some date-related features.</p>
+<p>Firstly, let’s dive into creating lag features.</p>
+<p>Given our forecasting objective of a 12-week horizon, to ensure we have lag data available for every future point, we should utilize a lag of 12 or more. The beauty of the toolkit is that it supports the addition of multiple lags simultaneously.</p>
+<p>Lag features play a pivotal role in machine learning for time series. Often, recent data offers valuable insights into future trends. To capture this recency effect, it’s crucial to integrate lag values. For this purpose, <code>tk.augment_lags()</code> comes in handy.</p>
+<div class="cell" data-execution_count="10">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df_with_lags <span class="op">=</span> df_with_futureframe.groupby(<span class="st">'category_2'</span>).augment_lags(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    date_column <span class="op">=</span> <span class="st">'order_date'</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    value_column <span class="op">=</span> <span class="st">'total_price_sum'</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    lags <span class="op">=</span> [<span class="dv">12</span>,<span class="dv">24</span>]</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>df_with_lags.head(<span class="dv">25</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">category_2</th>
+<th data-quarto-table-cell-role="th">total_price_sum</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_12</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_24</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2011-01-16</td>
+<td>Cross Country Race</td>
+<td>61750.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2011-01-23</td>
+<td>Cross Country Race</td>
+<td>25050.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2011-01-30</td>
+<td>Cross Country Race</td>
+<td>56860.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2011-02-06</td>
+<td>Cross Country Race</td>
+<td>8740.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2011-02-13</td>
+<td>Cross Country Race</td>
+<td>78070.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>2011-02-20</td>
+<td>Cross Country Race</td>
+<td>115010.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>2011-02-27</td>
+<td>Cross Country Race</td>
+<td>64290.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>2011-03-06</td>
+<td>Cross Country Race</td>
+<td>95070.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>2011-03-13</td>
+<td>Cross Country Race</td>
+<td>3200.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>2011-03-20</td>
+<td>Cross Country Race</td>
+<td>21170.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>2011-03-27</td>
+<td>Cross Country Race</td>
+<td>28990.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>2011-04-03</td>
+<td>Cross Country Race</td>
+<td>51860.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>2011-04-10</td>
+<td>Cross Country Race</td>
+<td>85910.0</td>
+<td>61750.0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>2011-04-17</td>
+<td>Cross Country Race</td>
+<td>138230.0</td>
+<td>25050.0</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>2011-04-24</td>
+<td>Cross Country Race</td>
+<td>138350.0</td>
+<td>56860.0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>2011-05-01</td>
+<td>Cross Country Race</td>
+<td>136090.0</td>
+<td>8740.0</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>2011-05-08</td>
+<td>Cross Country Race</td>
+<td>32110.0</td>
+<td>78070.0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>2011-05-15</td>
+<td>Cross Country Race</td>
+<td>139010.0</td>
+<td>115010.0</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>2011-05-22</td>
+<td>Cross Country Race</td>
+<td>2060.0</td>
+<td>64290.0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>2011-05-29</td>
+<td>Cross Country Race</td>
+<td>26130.0</td>
+<td>95070.0</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>2011-06-05</td>
+<td>Cross Country Race</td>
+<td>30360.0</td>
+<td>3200.0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>2011-06-12</td>
+<td>Cross Country Race</td>
+<td>88280.0</td>
+<td>21170.0</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>2011-06-19</td>
+<td>Cross Country Race</td>
+<td>109470.0</td>
+<td>28990.0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>2011-06-26</td>
+<td>Cross Country Race</td>
+<td>107280.0</td>
+<td>51860.0</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>2011-07-03</td>
+<td>Cross Country Race</td>
+<td>56430.0</td>
+<td>85910.0</td>
+<td>61750.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Observe that lag values of 12 and 24 introduce missing entries at the dataset’s outset. This occurs because there isn’t available data from 12 or 24 weeks prior. To address these gaps, you can adopt one of two strategies:</p>
+<ol type="1">
+<li><p>Discard the Affected Rows: This is a recommended approach if your dataset is sufficiently large. Removing a few initial rows might not significantly impact the training process.</p></li>
+<li><p>Backfill Missing Values: In situations with limited data, you might consider backfilling these nulls using the first available values from lag 12 and 24. However, the appropriateness of this technique hinges on your specific context and objectives.</p></li>
+</ol>
+<p>For the scope of this tutorial, we’ll opt to remove these rows. However, its worth pointing out that our dataset is actually quite smalll with limited historical data, so this might impact our model.</p>
+<div class="cell" data-execution_count="11">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>lag_columns <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> df_with_lags.columns <span class="cf">if</span> <span class="st">'lag'</span> <span class="kw">in</span> col]</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>df_no_nas <span class="op">=</span> df_with_lags.dropna(subset<span class="op">=</span>lag_columns, inplace<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>df_no_nas.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">category_2</th>
+<th data-quarto-table-cell-role="th">total_price_sum</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_12</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_24</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>2011-07-03</td>
+<td>Cross Country Race</td>
+<td>56430.0</td>
+<td>85910.0</td>
+<td>61750.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>2011-07-10</td>
+<td>Cross Country Race</td>
+<td>62320.0</td>
+<td>138230.0</td>
+<td>25050.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>2011-07-17</td>
+<td>Cross Country Race</td>
+<td>141620.0</td>
+<td>138350.0</td>
+<td>56860.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>2011-07-24</td>
+<td>Cross Country Race</td>
+<td>75720.0</td>
+<td>136090.0</td>
+<td>8740.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>2011-07-31</td>
+<td>Cross Country Race</td>
+<td>21240.0</td>
+<td>32110.0</td>
+<td>78070.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="date-features" class="level4">
+<h4 class="anchored" data-anchor-id="date-features">5.4 Date Features</h4>
+<p>Now, let’s enrich our dataset with date-related features.</p>
+<p>With the function <code>tk.augment_timeseries_signature()</code>, you can effortlessly append 29 date attributes to a timestamp. Given that our dataset captures weekly intervals, certain attributes like ‘hour’ may not be pertinent. Thus, it’s prudent to refine our columns, retaining only those that truly matter to our analysis.</p>
+<div class="cell" data-execution_count="12">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df_with_datefeatures <span class="op">=</span> df_no_nas.augment_timeseries_signature(date_column<span class="op">=</span><span class="st">'order_date'</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>df_with_datefeatures.head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">category_2</th>
+<th data-quarto-table-cell-role="th">total_price_sum</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_12</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_24</th>
+<th data-quarto-table-cell-role="th">order_date_index_num</th>
+<th data-quarto-table-cell-role="th">order_date_year</th>
+<th data-quarto-table-cell-role="th">order_date_year_iso</th>
+<th data-quarto-table-cell-role="th">order_date_yearstart</th>
+<th data-quarto-table-cell-role="th">order_date_yearend</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">order_date_mday</th>
+<th data-quarto-table-cell-role="th">order_date_qday</th>
+<th data-quarto-table-cell-role="th">order_date_yday</th>
+<th data-quarto-table-cell-role="th">order_date_weekend</th>
+<th data-quarto-table-cell-role="th">order_date_hour</th>
+<th data-quarto-table-cell-role="th">order_date_minute</th>
+<th data-quarto-table-cell-role="th">order_date_second</th>
+<th data-quarto-table-cell-role="th">order_date_msecond</th>
+<th data-quarto-table-cell-role="th">order_date_nsecond</th>
+<th data-quarto-table-cell-role="th">order_date_am_pm</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>2011-07-03</td>
+<td>Cross Country Race</td>
+<td>56430.0</td>
+<td>85910.0</td>
+<td>61750.0</td>
+<td>1309651200</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>...</td>
+<td>3</td>
+<td>3</td>
+<td>184</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>am</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>2011-07-10</td>
+<td>Cross Country Race</td>
+<td>62320.0</td>
+<td>138230.0</td>
+<td>25050.0</td>
+<td>1310256000</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>...</td>
+<td>10</td>
+<td>10</td>
+<td>191</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>am</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>2011-07-17</td>
+<td>Cross Country Race</td>
+<td>141620.0</td>
+<td>138350.0</td>
+<td>56860.0</td>
+<td>1310860800</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>...</td>
+<td>17</td>
+<td>17</td>
+<td>198</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>am</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>2011-07-24</td>
+<td>Cross Country Race</td>
+<td>75720.0</td>
+<td>136090.0</td>
+<td>8740.0</td>
+<td>1311465600</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>...</td>
+<td>24</td>
+<td>24</td>
+<td>205</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>am</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>2011-07-31</td>
+<td>Cross Country Race</td>
+<td>21240.0</td>
+<td>32110.0</td>
+<td>78070.0</td>
+<td>1312070400</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>...</td>
+<td>31</td>
+<td>31</td>
+<td>212</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>am</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29</td>
+<td>2011-08-07</td>
+<td>Cross Country Race</td>
+<td>11620.0</td>
+<td>139010.0</td>
+<td>115010.0</td>
+<td>1312675200</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>...</td>
+<td>7</td>
+<td>38</td>
+<td>219</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>am</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">30</td>
+<td>2011-08-14</td>
+<td>Cross Country Race</td>
+<td>9730.0</td>
+<td>2060.0</td>
+<td>64290.0</td>
+<td>1313280000</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>...</td>
+<td>14</td>
+<td>45</td>
+<td>226</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>am</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">31</td>
+<td>2011-08-21</td>
+<td>Cross Country Race</td>
+<td>22780.0</td>
+<td>26130.0</td>
+<td>95070.0</td>
+<td>1313884800</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>...</td>
+<td>21</td>
+<td>52</td>
+<td>233</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>am</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">32</td>
+<td>2011-08-28</td>
+<td>Cross Country Race</td>
+<td>53680.0</td>
+<td>30360.0</td>
+<td>3200.0</td>
+<td>1314489600</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>...</td>
+<td>28</td>
+<td>59</td>
+<td>240</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>am</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">33</td>
+<td>2011-09-04</td>
+<td>Cross Country Race</td>
+<td>38360.0</td>
+<td>88280.0</td>
+<td>21170.0</td>
+<td>1315094400</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>...</td>
+<td>4</td>
+<td>66</td>
+<td>247</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>am</td>
+</tr>
+</tbody>
+</table>
+
+<p>10 rows × 34 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="13">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df_with_datefeatures.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>Index(['order_date', 'category_2', 'total_price_sum', 'total_price_sum_lag_12',
+       'total_price_sum_lag_24', 'order_date_index_num', 'order_date_year',
+       'order_date_year_iso', 'order_date_yearstart', 'order_date_yearend',
+       'order_date_leapyear', 'order_date_half', 'order_date_quarter',
+       'order_date_quarteryear', 'order_date_quarterstart',
+       'order_date_quarterend', 'order_date_month', 'order_date_month_lbl',
+       'order_date_monthstart', 'order_date_monthend', 'order_date_yweek',
+       'order_date_mweek', 'order_date_wday', 'order_date_wday_lbl',
+       'order_date_mday', 'order_date_qday', 'order_date_yday',
+       'order_date_weekend', 'order_date_hour', 'order_date_minute',
+       'order_date_second', 'order_date_msecond', 'order_date_nsecond',
+       'order_date_am_pm'],
+      dtype='object')</code></pre>
+</div>
+</div>
+<p>Let’s subset to just a few of the relevant date features.</p>
+<div class="cell" data-execution_count="14">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>df_with_datefeatures_narrom <span class="op">=</span> df_with_datefeatures[[<span class="st">'order_date'</span>, <span class="st">'category_2'</span>, <span class="st">'total_price_sum'</span>, <span class="st">'total_price_sum_lag_12'</span>,</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>       <span class="st">'total_price_sum_lag_24'</span>,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>       <span class="st">'order_date_year'</span>,  <span class="st">'order_date_half'</span>, <span class="st">'order_date_quarter'</span>,      <span class="st">'order_date_month'</span>,<span class="st">'order_date_yweek'</span>]]</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>df_with_datefeatures_narrom.head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">category_2</th>
+<th data-quarto-table-cell-role="th">total_price_sum</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_12</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_24</th>
+<th data-quarto-table-cell-role="th">order_date_year</th>
+<th data-quarto-table-cell-role="th">order_date_half</th>
+<th data-quarto-table-cell-role="th">order_date_quarter</th>
+<th data-quarto-table-cell-role="th">order_date_month</th>
+<th data-quarto-table-cell-role="th">order_date_yweek</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>2011-07-03</td>
+<td>Cross Country Race</td>
+<td>56430.0</td>
+<td>85910.0</td>
+<td>61750.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>26</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>2011-07-10</td>
+<td>Cross Country Race</td>
+<td>62320.0</td>
+<td>138230.0</td>
+<td>25050.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>27</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>2011-07-17</td>
+<td>Cross Country Race</td>
+<td>141620.0</td>
+<td>138350.0</td>
+<td>56860.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>28</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>2011-07-24</td>
+<td>Cross Country Race</td>
+<td>75720.0</td>
+<td>136090.0</td>
+<td>8740.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>29</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>2011-07-31</td>
+<td>Cross Country Race</td>
+<td>21240.0</td>
+<td>32110.0</td>
+<td>78070.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>30</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29</td>
+<td>2011-08-07</td>
+<td>Cross Country Race</td>
+<td>11620.0</td>
+<td>139010.0</td>
+<td>115010.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>31</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">30</td>
+<td>2011-08-14</td>
+<td>Cross Country Race</td>
+<td>9730.0</td>
+<td>2060.0</td>
+<td>64290.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>32</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">31</td>
+<td>2011-08-21</td>
+<td>Cross Country Race</td>
+<td>22780.0</td>
+<td>26130.0</td>
+<td>95070.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>33</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">32</td>
+<td>2011-08-28</td>
+<td>Cross Country Race</td>
+<td>53680.0</td>
+<td>30360.0</td>
+<td>3200.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>34</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">33</td>
+<td>2011-09-04</td>
+<td>Cross Country Race</td>
+<td>38360.0</td>
+<td>88280.0</td>
+<td>21170.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>9</td>
+<td>35</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The final phase in our feature engineering journey is one-hot encoding our categorical variables. While certain machine learning models like CatBoost can natively handle categorical data, many cannot. Enter one-hot encoding, a technique that transforms each category within a column into its own separate column, marking its presence with a ‘1’ or absence with a ‘0’.</p>
+<p>For this transformation, the handy <code>pd.get_dummies()</code> function from pandas comes to the rescue.</p>
+<div class="cell" data-execution_count="15">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df_encoded <span class="op">=</span> pd.get_dummies(df_with_datefeatures_narrom, columns<span class="op">=</span>[<span class="st">'category_2'</span>])</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>df_encoded.head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">total_price_sum</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_12</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_24</th>
+<th data-quarto-table-cell-role="th">order_date_year</th>
+<th data-quarto-table-cell-role="th">order_date_half</th>
+<th data-quarto-table-cell-role="th">order_date_quarter</th>
+<th data-quarto-table-cell-role="th">order_date_month</th>
+<th data-quarto-table-cell-role="th">order_date_yweek</th>
+<th data-quarto-table-cell-role="th">category_2_Cross Country Race</th>
+<th data-quarto-table-cell-role="th">category_2_Cyclocross</th>
+<th data-quarto-table-cell-role="th">category_2_Elite Road</th>
+<th data-quarto-table-cell-role="th">category_2_Endurance Road</th>
+<th data-quarto-table-cell-role="th">category_2_Fat Bike</th>
+<th data-quarto-table-cell-role="th">category_2_Over Mountain</th>
+<th data-quarto-table-cell-role="th">category_2_Sport</th>
+<th data-quarto-table-cell-role="th">category_2_Trail</th>
+<th data-quarto-table-cell-role="th">category_2_Triathalon</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>2011-07-03</td>
+<td>56430.0</td>
+<td>85910.0</td>
+<td>61750.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>26</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>2011-07-10</td>
+<td>62320.0</td>
+<td>138230.0</td>
+<td>25050.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>27</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>2011-07-17</td>
+<td>141620.0</td>
+<td>138350.0</td>
+<td>56860.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>28</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>2011-07-24</td>
+<td>75720.0</td>
+<td>136090.0</td>
+<td>8740.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>29</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>2011-07-31</td>
+<td>21240.0</td>
+<td>32110.0</td>
+<td>78070.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>30</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29</td>
+<td>2011-08-07</td>
+<td>11620.0</td>
+<td>139010.0</td>
+<td>115010.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>31</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">30</td>
+<td>2011-08-14</td>
+<td>9730.0</td>
+<td>2060.0</td>
+<td>64290.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>32</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">31</td>
+<td>2011-08-21</td>
+<td>22780.0</td>
+<td>26130.0</td>
+<td>95070.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>33</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">32</td>
+<td>2011-08-28</td>
+<td>53680.0</td>
+<td>30360.0</td>
+<td>3200.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>34</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">33</td>
+<td>2011-09-04</td>
+<td>38360.0</td>
+<td>88280.0</td>
+<td>21170.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>9</td>
+<td>35</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Pytimetk offers an extensive array of feature engineering tools and augmentation functions, giving you a broad spectrum of possibilities. However, for the purposes of this tutorial, let’s shift our focus to modeling.</p>
+<p>Let’s proceed by segmenting our dataframe into training and future sets.</p>
+<div class="cell" data-execution_count="16">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>future <span class="op">=</span> df_encoded[df_encoded.total_price_sum.isnull()]</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>train <span class="op">=</span> df_encoded[df_encoded.total_price_sum.notnull()]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Let’s focus on the columns essential for training. You’ll observe that we’ve excluded the ‘order_date’ column. This is because numerous machine learning models struggle with date data types. This is precisely why we utilized the <code>tk.time_series_signature90</code> earlier—to transform date features into a format that’s compatible with ML models.</p>
+<div class="cell" data-execution_count="17">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>train.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<pre><code>Index(['order_date', 'total_price_sum', 'total_price_sum_lag_12',
+       'total_price_sum_lag_24', 'order_date_year', 'order_date_half',
+       'order_date_quarter', 'order_date_month', 'order_date_yweek',
+       'category_2_Cross Country Race', 'category_2_Cyclocross',
+       'category_2_Elite Road', 'category_2_Endurance Road',
+       'category_2_Fat Bike', 'category_2_Over Mountain', 'category_2_Sport',
+       'category_2_Trail', 'category_2_Triathalon'],
+      dtype='object')</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="18">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeRegressor</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>train_columns <span class="op">=</span> [ <span class="st">'total_price_sum_lag_12'</span>,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>       <span class="st">'total_price_sum_lag_24'</span>, <span class="st">'order_date_year'</span>, <span class="st">'order_date_half'</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>       <span class="st">'order_date_quarter'</span>, <span class="st">'order_date_month'</span>, <span class="st">'order_date_yweek'</span>,<span class="st">'category_2_Cross Country Race'</span>, <span class="st">'category_2_Cyclocross'</span>,</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>       <span class="st">'category_2_Elite Road'</span>, <span class="st">'category_2_Endurance Road'</span>,</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>       <span class="st">'category_2_Fat Bike'</span>, <span class="st">'category_2_Over Mountain'</span>, <span class="st">'category_2_Sport'</span>,</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>       <span class="st">'category_2_Trail'</span>, <span class="st">'category_2_Triathalon'</span>]</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> train[train_columns]</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> train[[<span class="st">'total_price_sum'</span>]]</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> DecisionTreeRegressor()</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> model.fit(X, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>We now have a fitted model, and can use this to predict sales from our future frame.</p>
+<div class="cell" data-execution_count="19">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>predicted_values <span class="op">=</span> model.predict(future[train_columns])</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>future[<span class="st">'y_pred'</span>] <span class="op">=</span> predicted_values</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>future.head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">total_price_sum</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_12</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_24</th>
+<th data-quarto-table-cell-role="th">order_date_year</th>
+<th data-quarto-table-cell-role="th">order_date_half</th>
+<th data-quarto-table-cell-role="th">order_date_quarter</th>
+<th data-quarto-table-cell-role="th">order_date_month</th>
+<th data-quarto-table-cell-role="th">order_date_yweek</th>
+<th data-quarto-table-cell-role="th">category_2_Cross Country Race</th>
+<th data-quarto-table-cell-role="th">category_2_Cyclocross</th>
+<th data-quarto-table-cell-role="th">category_2_Elite Road</th>
+<th data-quarto-table-cell-role="th">category_2_Endurance Road</th>
+<th data-quarto-table-cell-role="th">category_2_Fat Bike</th>
+<th data-quarto-table-cell-role="th">category_2_Over Mountain</th>
+<th data-quarto-table-cell-role="th">category_2_Sport</th>
+<th data-quarto-table-cell-role="th">category_2_Trail</th>
+<th data-quarto-table-cell-role="th">category_2_Triathalon</th>
+<th data-quarto-table-cell-role="th">y_pred</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">51</td>
+<td>2012-01-08</td>
+<td>NaN</td>
+<td>51820.0</td>
+<td>75720.0</td>
+<td>2012</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>56430.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">52</td>
+<td>2012-01-15</td>
+<td>NaN</td>
+<td>62940.0</td>
+<td>21240.0</td>
+<td>2012</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>62320.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">53</td>
+<td>2012-01-22</td>
+<td>NaN</td>
+<td>9060.0</td>
+<td>11620.0</td>
+<td>2012</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>3</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>53680.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">54</td>
+<td>2012-01-29</td>
+<td>NaN</td>
+<td>15980.0</td>
+<td>9730.0</td>
+<td>2012</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>4</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>53680.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">55</td>
+<td>2012-02-05</td>
+<td>NaN</td>
+<td>59180.0</td>
+<td>22780.0</td>
+<td>2012</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>5</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>62320.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">56</td>
+<td>2012-02-12</td>
+<td>NaN</td>
+<td>132550.0</td>
+<td>53680.0</td>
+<td>2012</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>6</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>56430.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">57</td>
+<td>2012-02-19</td>
+<td>NaN</td>
+<td>68430.0</td>
+<td>38360.0</td>
+<td>2012</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>7</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>62320.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">58</td>
+<td>2012-02-26</td>
+<td>NaN</td>
+<td>29470.0</td>
+<td>90290.0</td>
+<td>2012</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>8</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>53170.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">59</td>
+<td>2012-03-04</td>
+<td>NaN</td>
+<td>71080.0</td>
+<td>7380.0</td>
+<td>2012</td>
+<td>1</td>
+<td>1</td>
+<td>3</td>
+<td>9</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>62320.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">60</td>
+<td>2012-03-11</td>
+<td>NaN</td>
+<td>9800.0</td>
+<td>0.0</td>
+<td>2012</td>
+<td>1</td>
+<td>1</td>
+<td>3</td>
+<td>10</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>15980.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Now let us do a little clean up. For ease in plotting later, let’s add a column to track the actuals vs.&nbsp;the predicted values.</p>
+<div class="cell" data-execution_count="20">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>train[<span class="st">'type'</span>] <span class="op">=</span> <span class="st">'actuals'</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>future[<span class="st">'type'</span>] <span class="op">=</span> <span class="st">'prediction'</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>full_df <span class="op">=</span> pd.concat([train, future])</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>full_df.head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">total_price_sum</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_12</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_24</th>
+<th data-quarto-table-cell-role="th">order_date_year</th>
+<th data-quarto-table-cell-role="th">order_date_half</th>
+<th data-quarto-table-cell-role="th">order_date_quarter</th>
+<th data-quarto-table-cell-role="th">order_date_month</th>
+<th data-quarto-table-cell-role="th">order_date_yweek</th>
+<th data-quarto-table-cell-role="th">category_2_Cross Country Race</th>
+<th data-quarto-table-cell-role="th">category_2_Cyclocross</th>
+<th data-quarto-table-cell-role="th">category_2_Elite Road</th>
+<th data-quarto-table-cell-role="th">category_2_Endurance Road</th>
+<th data-quarto-table-cell-role="th">category_2_Fat Bike</th>
+<th data-quarto-table-cell-role="th">category_2_Over Mountain</th>
+<th data-quarto-table-cell-role="th">category_2_Sport</th>
+<th data-quarto-table-cell-role="th">category_2_Trail</th>
+<th data-quarto-table-cell-role="th">category_2_Triathalon</th>
+<th data-quarto-table-cell-role="th">type</th>
+<th data-quarto-table-cell-role="th">y_pred</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>2011-07-03</td>
+<td>56430.0</td>
+<td>85910.0</td>
+<td>61750.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>26</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>actuals</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>2011-07-10</td>
+<td>62320.0</td>
+<td>138230.0</td>
+<td>25050.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>27</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>actuals</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>2011-07-17</td>
+<td>141620.0</td>
+<td>138350.0</td>
+<td>56860.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>28</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>actuals</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>2011-07-24</td>
+<td>75720.0</td>
+<td>136090.0</td>
+<td>8740.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>29</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>actuals</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>2011-07-31</td>
+<td>21240.0</td>
+<td>32110.0</td>
+<td>78070.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>30</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>actuals</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29</td>
+<td>2011-08-07</td>
+<td>11620.0</td>
+<td>139010.0</td>
+<td>115010.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>31</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>actuals</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">30</td>
+<td>2011-08-14</td>
+<td>9730.0</td>
+<td>2060.0</td>
+<td>64290.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>32</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>actuals</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">31</td>
+<td>2011-08-21</td>
+<td>22780.0</td>
+<td>26130.0</td>
+<td>95070.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>33</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>actuals</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">32</td>
+<td>2011-08-28</td>
+<td>53680.0</td>
+<td>30360.0</td>
+<td>3200.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>34</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>actuals</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">33</td>
+<td>2011-09-04</td>
+<td>38360.0</td>
+<td>88280.0</td>
+<td>21170.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>9</td>
+<td>35</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>actuals</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>You can get the grouping category back from the one-hot encoding for easier plotting.<br>
+For simplicity, we will search for any column with ‘category’ in its name.</p>
+<div class="cell" data-execution_count="21">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract dummy columns</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>dummy_cols <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> full_df.columns <span class="cf">if</span> <span class="st">'category'</span> <span class="kw">in</span> col.lower() ]</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>full_df_reverted <span class="op">=</span> full_df.copy()</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert dummy columns back to categorical column</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>full_df_reverted[<span class="st">'category'</span>] <span class="op">=</span> full_df_reverted[dummy_cols].idxmax(axis<span class="op">=</span><span class="dv">1</span>).<span class="bu">str</span>.replace(<span class="st">"A_"</span>, <span class="st">""</span>)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop dummy columns</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>full_df_reverted <span class="op">=</span> full_df_reverted.drop(columns<span class="op">=</span>dummy_cols)</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>full_df_reverted.head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">total_price_sum</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_12</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_24</th>
+<th data-quarto-table-cell-role="th">order_date_year</th>
+<th data-quarto-table-cell-role="th">order_date_half</th>
+<th data-quarto-table-cell-role="th">order_date_quarter</th>
+<th data-quarto-table-cell-role="th">order_date_month</th>
+<th data-quarto-table-cell-role="th">order_date_yweek</th>
+<th data-quarto-table-cell-role="th">type</th>
+<th data-quarto-table-cell-role="th">y_pred</th>
+<th data-quarto-table-cell-role="th">category</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>2011-07-03</td>
+<td>56430.0</td>
+<td>85910.0</td>
+<td>61750.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>26</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>2011-07-10</td>
+<td>62320.0</td>
+<td>138230.0</td>
+<td>25050.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>27</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>2011-07-17</td>
+<td>141620.0</td>
+<td>138350.0</td>
+<td>56860.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>28</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>2011-07-24</td>
+<td>75720.0</td>
+<td>136090.0</td>
+<td>8740.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>29</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>2011-07-31</td>
+<td>21240.0</td>
+<td>32110.0</td>
+<td>78070.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>30</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29</td>
+<td>2011-08-07</td>
+<td>11620.0</td>
+<td>139010.0</td>
+<td>115010.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>31</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">30</td>
+<td>2011-08-14</td>
+<td>9730.0</td>
+<td>2060.0</td>
+<td>64290.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>32</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">31</td>
+<td>2011-08-21</td>
+<td>22780.0</td>
+<td>26130.0</td>
+<td>95070.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>33</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">32</td>
+<td>2011-08-28</td>
+<td>53680.0</td>
+<td>30360.0</td>
+<td>3200.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>34</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">33</td>
+<td>2011-09-04</td>
+<td>38360.0</td>
+<td>88280.0</td>
+<td>21170.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>9</td>
+<td>35</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Before we proceed to visualization, let’s streamline our dataset by aligning our predicted values with the actuals. This approach will simplify the plotting process. Given that our dataframe columns are already labeled as ‘actuals’ and ‘predictions’, a brief conditional check will allow us to consolidate the necessary values.</p>
+<div class="cell" data-execution_count="22">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>full_df_reverted[<span class="st">'total_price_sum'</span>] <span class="op">=</span> np.where(full_df_reverted.<span class="bu">type</span> <span class="op">==</span><span class="st">'actuals'</span>, full_df_reverted.total_price_sum, full_df_reverted.y_pred)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>full_df_reverted.head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">total_price_sum</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_12</th>
+<th data-quarto-table-cell-role="th">total_price_sum_lag_24</th>
+<th data-quarto-table-cell-role="th">order_date_year</th>
+<th data-quarto-table-cell-role="th">order_date_half</th>
+<th data-quarto-table-cell-role="th">order_date_quarter</th>
+<th data-quarto-table-cell-role="th">order_date_month</th>
+<th data-quarto-table-cell-role="th">order_date_yweek</th>
+<th data-quarto-table-cell-role="th">type</th>
+<th data-quarto-table-cell-role="th">y_pred</th>
+<th data-quarto-table-cell-role="th">category</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>2011-07-03</td>
+<td>56430.0</td>
+<td>85910.0</td>
+<td>61750.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>26</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>2011-07-10</td>
+<td>62320.0</td>
+<td>138230.0</td>
+<td>25050.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>27</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>2011-07-17</td>
+<td>141620.0</td>
+<td>138350.0</td>
+<td>56860.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>28</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>2011-07-24</td>
+<td>75720.0</td>
+<td>136090.0</td>
+<td>8740.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>29</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>2011-07-31</td>
+<td>21240.0</td>
+<td>32110.0</td>
+<td>78070.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>7</td>
+<td>30</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29</td>
+<td>2011-08-07</td>
+<td>11620.0</td>
+<td>139010.0</td>
+<td>115010.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>31</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">30</td>
+<td>2011-08-14</td>
+<td>9730.0</td>
+<td>2060.0</td>
+<td>64290.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>32</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">31</td>
+<td>2011-08-21</td>
+<td>22780.0</td>
+<td>26130.0</td>
+<td>95070.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>33</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">32</td>
+<td>2011-08-28</td>
+<td>53680.0</td>
+<td>30360.0</td>
+<td>3200.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>8</td>
+<td>34</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">33</td>
+<td>2011-09-04</td>
+<td>38360.0</td>
+<td>88280.0</td>
+<td>21170.0</td>
+<td>2011</td>
+<td>2</td>
+<td>3</td>
+<td>9</td>
+<td>35</td>
+<td>actuals</td>
+<td>NaN</td>
+<td>category_2_Cross Country Race</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-groups="bbands-plotly-plotnine">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Plotly</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Plotnine</a></li></ul>
+<div class="tab-content" data-groups="bbands-plotly-plotnine">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell" data-execution_count="23">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>full_df_reverted.groupby(<span class="st">'category'</span>).plot_timeseries(</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    date_column <span class="op">=</span> <span class="st">'order_date'</span>,</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    value_column <span class="op">=</span> <span class="st">'total_price_sum'</span>,</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    color_column <span class="op">=</span> <span class="st">'type'</span>,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    smooth <span class="op">=</span> <span class="va">False</span>,</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    smooth_alpha <span class="op">=</span> <span class="dv">0</span>,</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    facet_scales <span class="op">=</span> <span class="st">"free_x"</span>,</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    y_intercept_color <span class="op">=</span> tk.palette_timetk()[<span class="st">'steel_blue'</span>],</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    width <span class="op">=</span> <span class="dv">800</span>,</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>    height <span class="op">=</span> <span class="dv">600</span>,</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>    engine <span class="op">=</span> <span class="st">'plotly'</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+
+<div>                            <div id="fa529df2-c12c-4896-8067-c9802115c558" class="plotly-graph-div" style="height:600px; width:800px;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("fa529df2-c12c-4896-8067-c9802115c558")) {                    Plotly.newPlot(                        "fa529df2-c12c-4896-8067-c9802115c558",                        [{"legendgroup":"actuals","line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"actuals","x":["2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00","2012-01-01T00:00:00"],"y":[56430.0,62320.0,141620.0,75720.0,21240.0,11620.0,9730.0,22780.0,53680.0,38360.0,90290.0,7380.0,0.0,68630.0,59840.0,51820.0,62940.0,9060.0,15980.0,59180.0,132550.0,68430.0,29470.0,71080.0,9800.0,41620.0,2340.0],"type":"scatter","xaxis":"x","yaxis":"y","hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"prediction","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"prediction","x":["2012-01-08T00:00:00","2012-01-15T00:00:00","2012-01-22T00:00:00","2012-01-29T00:00:00","2012-02-05T00:00:00","2012-02-12T00:00:00","2012-02-19T00:00:00","2012-02-26T00:00:00","2012-03-04T00:00:00","2012-03-11T00:00:00","2012-03-18T00:00:00","2012-03-25T00:00:00"],"y":[56430.0,62320.0,53680.0,53680.0,62320.0,56430.0,62320.0,53170.0,62320.0,15980.0,56430.0,53170.0],"type":"scatter","xaxis":"x","yaxis":"y","hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"actuals","line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"actuals","x":["2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00"],"y":[11410.0,1960.0,10150.0,4200.0,0.0,5250.0,1960.0,0.0,29050.0,21000.0,8960.0,10080.0,0.0,1750.0,3500.0,7910.0,9380.0,7910.0,0.0,1750.0,9380.0,4410.0,0.0,10780.0,0.0,4200.0],"type":"scatter","xaxis":"x2","yaxis":"y2","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"prediction","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"prediction","x":["2012-01-01T00:00:00","2012-01-08T00:00:00","2012-01-15T00:00:00","2012-01-22T00:00:00","2012-01-29T00:00:00","2012-02-05T00:00:00","2012-02-12T00:00:00","2012-02-19T00:00:00","2012-02-26T00:00:00","2012-03-04T00:00:00","2012-03-11T00:00:00","2012-03-18T00:00:00"],"y":[4200.0,11480.0,14640.0,11480.0,10150.0,10150.0,53170.0,53170.0,10150.0,14640.0,10150.0,10150.0],"type":"scatter","xaxis":"x2","yaxis":"y2","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"actuals","line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"actuals","x":["2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00"],"y":[98950.0,28410.0,107580.0,60920.0,40320.0,17760.0,39090.0,14730.0,56195.0,0.0,64500.0,90060.0,12790.0,31845.0,35575.0,24880.0,62150.0,25680.0,9110.0,24780.0,75460.0,42415.0,34605.0,50560.0,12270.0,21075.0],"type":"scatter","xaxis":"x3","yaxis":"y3","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"prediction","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"prediction","x":["2012-01-01T00:00:00","2012-01-08T00:00:00","2012-01-15T00:00:00","2012-01-22T00:00:00","2012-01-29T00:00:00","2012-02-05T00:00:00","2012-02-12T00:00:00","2012-02-19T00:00:00","2012-02-26T00:00:00","2012-03-04T00:00:00","2012-03-11T00:00:00","2012-03-18T00:00:00"],"y":[2340.0,107580.0,98950.0,107580.0,107580.0,107580.0,98950.0,103480.0,98950.0,98950.0,1960.0,107580.0],"type":"scatter","xaxis":"x3","yaxis":"y3","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"actuals","line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"actuals","x":["2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00","2012-01-01T00:00:00"],"y":[50550.0,49770.0,53170.0,24750.0,14910.0,44940.0,25020.0,3090.0,37350.0,4800.0,75510.0,24230.0,9590.0,33330.0,11610.0,26660.0,57970.0,7910.0,11830.0,15080.0,104560.0,28760.0,49700.0,17830.0,7540.0,30750.0,7110.0],"type":"scatter","xaxis":"x4","yaxis":"y4","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"prediction","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"prediction","x":["2012-01-08T00:00:00","2012-01-15T00:00:00","2012-01-22T00:00:00","2012-01-29T00:00:00","2012-02-05T00:00:00","2012-02-12T00:00:00","2012-02-19T00:00:00","2012-02-26T00:00:00","2012-03-04T00:00:00","2012-03-11T00:00:00","2012-03-18T00:00:00","2012-03-25T00:00:00"],"y":[53170.0,49770.0,53170.0,53170.0,1960.0,50550.0,23200.0,49770.0,53170.0,11480.0,53170.0,10150.0],"type":"scatter","xaxis":"x4","yaxis":"y4","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"actuals","line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"actuals","x":["2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00"],"y":[2130.0,0.0,0.0,2130.0,0.0,5860.0,3730.0,2130.0,0.0,2130.0,2130.0,2130.0,2130.0,0.0,0.0,0.0,2130.0,4260.0,4260.0,0.0,7460.0],"type":"scatter","xaxis":"x5","yaxis":"y5","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"prediction","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"prediction","x":["2011-12-18T00:00:00","2011-12-25T00:00:00","2012-01-01T00:00:00","2012-01-08T00:00:00","2012-01-15T00:00:00","2012-01-22T00:00:00","2012-01-29T00:00:00","2012-02-05T00:00:00","2012-02-12T00:00:00","2012-02-19T00:00:00","2012-02-26T00:00:00","2012-03-04T00:00:00"],"y":[7460.0,4200.0,4200.0,10150.0,10150.0,10150.0,10150.0,10150.0,10150.0,10150.0,10150.0,11410.0],"type":"scatter","xaxis":"x5","yaxis":"y5","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"actuals","line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"actuals","x":["2011-06-26T00:00:00","2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00"],"y":[61480.0,58700.0,40820.0,91020.0,48380.0,7990.0,36670.0,30370.0,7990.0,7990.0,11720.0,19290.0,6400.0,7990.0,54480.0,21310.0,7680.0,24300.0,8200.0,0.0,0.0,61620.0,24620.0,27720.0,9800.0,6400.0,59330.0],"type":"scatter","xaxis":"x6","yaxis":"y6","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"prediction","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"prediction","x":["2012-01-01T00:00:00","2012-01-08T00:00:00","2012-01-15T00:00:00","2012-01-22T00:00:00","2012-01-29T00:00:00","2012-02-05T00:00:00","2012-02-12T00:00:00","2012-02-19T00:00:00","2012-02-26T00:00:00","2012-03-04T00:00:00","2012-03-11T00:00:00","2012-03-18T00:00:00"],"y":[7990.0,53170.0,27720.0,53170.0,53170.0,27720.0,61480.0,61620.0,53170.0,7990.0,27720.0,56430.0],"type":"scatter","xaxis":"x6","yaxis":"y6","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"actuals","line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"actuals","x":["2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00"],"y":[11480.0,6045.0,14640.0,7985.0,0.0,3770.0,5740.0,2150.0,3415.0,1065.0,8190.0,3940.0,1350.0,8800.0,1350.0,14320.0,5445.0,980.0,1630.0,2980.0,3825.0,7890.0,0.0,8320.0,0.0,14355.0],"type":"scatter","xaxis":"x7","yaxis":"y7","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"prediction","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"prediction","x":["2012-01-01T00:00:00","2012-01-08T00:00:00","2012-01-15T00:00:00","2012-01-22T00:00:00","2012-01-29T00:00:00","2012-02-05T00:00:00","2012-02-12T00:00:00","2012-02-19T00:00:00","2012-02-26T00:00:00","2012-03-04T00:00:00","2012-03-11T00:00:00","2012-03-18T00:00:00"],"y":[39150.0,6045.0,10150.0,10150.0,10150.0,10150.0,10150.0,11410.0,10150.0,11480.0,10150.0,6045.0],"type":"scatter","xaxis":"x7","yaxis":"y7","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"actuals","line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"actuals","x":["2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00","2012-01-01T00:00:00"],"y":[48800.0,103480.0,45210.0,65570.0,7460.0,45780.0,39020.0,3200.0,47510.0,5330.0,22830.0,18990.0,0.0,37820.0,32620.0,19420.0,28620.0,2340.0,11080.0,12250.0,45820.0,29360.0,27120.0,5650.0,13030.0,24210.0,2660.0],"type":"scatter","xaxis":"x8","yaxis":"y8","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"prediction","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"prediction","x":["2012-01-08T00:00:00","2012-01-15T00:00:00","2012-01-22T00:00:00","2012-01-29T00:00:00","2012-02-05T00:00:00","2012-02-12T00:00:00","2012-02-19T00:00:00","2012-02-26T00:00:00","2012-03-04T00:00:00","2012-03-11T00:00:00","2012-03-18T00:00:00","2012-03-25T00:00:00"],"y":[53170.0,5330.0,53170.0,53170.0,47510.0,48800.0,5330.0,53170.0,53170.0,47510.0,53170.0,53170.0],"type":"scatter","xaxis":"x8","yaxis":"y8","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"actuals","line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"actuals","x":["2011-07-03T00:00:00","2011-07-10T00:00:00","2011-07-17T00:00:00","2011-07-24T00:00:00","2011-07-31T00:00:00","2011-08-07T00:00:00","2011-08-14T00:00:00","2011-08-21T00:00:00","2011-08-28T00:00:00","2011-09-04T00:00:00","2011-09-11T00:00:00","2011-09-18T00:00:00","2011-09-25T00:00:00","2011-10-02T00:00:00","2011-10-09T00:00:00","2011-10-16T00:00:00","2011-10-23T00:00:00","2011-10-30T00:00:00","2011-11-06T00:00:00","2011-11-13T00:00:00","2011-11-20T00:00:00","2011-11-27T00:00:00","2011-12-04T00:00:00","2011-12-11T00:00:00","2011-12-18T00:00:00","2011-12-25T00:00:00"],"y":[28850.0,0.0,7350.0,23200.0,0.0,14350.0,21650.0,8100.0,0.0,0.0,12150.0,7850.0,0.0,5150.0,9600.0,4500.0,39000.0,4650.0,0.0,5900.0,39150.0,15350.0,3200.0,28350.0,2700.0,3900.0],"type":"scatter","xaxis":"x9","yaxis":"y9","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"prediction","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"prediction","x":["2012-01-01T00:00:00","2012-01-08T00:00:00","2012-01-15T00:00:00","2012-01-22T00:00:00","2012-01-29T00:00:00","2012-02-05T00:00:00","2012-02-12T00:00:00","2012-02-19T00:00:00","2012-02-26T00:00:00","2012-03-04T00:00:00","2012-03-11T00:00:00","2012-03-18T00:00:00"],"y":[0.0,53170.0,103480.0,53170.0,53170.0,7350.0,103480.0,7350.0,7350.0,0.0,7350.0,7350.0],"type":"scatter","xaxis":"x9","yaxis":"y9","showlegend":false,"hoverlabel":{"font":{"size":8.8}}}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":""},"tickformat":"%b %Y","showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis":{"anchor":"x","domain":[0.9382716049382716,1.0],"title":{"text":""},"tickfont":{"size":8.8}},"xaxis2":{"anchor":"y2","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis2":{"anchor":"x2","domain":[0.8209876543209876,0.8827160493827161],"tickfont":{"size":8.8}},"xaxis3":{"anchor":"y3","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis3":{"anchor":"x3","domain":[0.7037037037037037,0.7654320987654322],"tickfont":{"size":8.8}},"xaxis4":{"anchor":"y4","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis4":{"anchor":"x4","domain":[0.5864197530864198,0.6481481481481483],"tickfont":{"size":8.8}},"xaxis5":{"anchor":"y5","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis5":{"anchor":"x5","domain":[0.4691358024691358,0.5308641975308642],"tickfont":{"size":8.8}},"xaxis6":{"anchor":"y6","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis6":{"anchor":"x6","domain":[0.35185185185185186,0.41358024691358025],"tickfont":{"size":8.8}},"xaxis7":{"anchor":"y7","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis7":{"anchor":"x7","domain":[0.2345679012345679,0.2962962962962963],"tickfont":{"size":8.8}},"xaxis8":{"anchor":"y8","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis8":{"anchor":"x8","domain":[0.11728395061728394,0.17901234567901234],"tickfont":{"size":8.8}},"xaxis9":{"anchor":"y9","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis9":{"anchor":"x9","domain":[0.0,0.0617283950617284],"tickfont":{"size":8.8}},"annotations":[{"font":{"size":8.8},"showarrow":false,"text":"category_2_Cross Country Race","x":0.5,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"category_2_Cyclocross","x":0.5,"xanchor":"center","xref":"paper","y":0.8827160493827161,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"category_2_Elite Road","x":0.5,"xanchor":"center","xref":"paper","y":0.7654320987654322,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"category_2_Endurance Road","x":0.5,"xanchor":"center","xref":"paper","y":0.6481481481481483,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"category_2_Fat Bike","x":0.5,"xanchor":"center","xref":"paper","y":0.5308641975308642,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"category_2_Over Mountain","x":0.5,"xanchor":"center","xref":"paper","y":0.41358024691358025,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"category_2_Sport","x":0.5,"xanchor":"center","xref":"paper","y":0.2962962962962963,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"category_2_Trail","x":0.5,"xanchor":"center","xref":"paper","y":0.17901234567901234,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"category_2_Triathalon","x":0.5,"xanchor":"center","xref":"paper","y":0.0617283950617284,"yanchor":"bottom","yref":"paper"}],"legend":{"title":{"text":"Legend","font":{"size":8.8}},"font":{"size":8.8}},"title":{"text":"Time Series Plot","font":{"size":13.2}},"margin":{"l":10,"r":10,"t":40,"b":40},"font":{"size":11},"autosize":true,"width":800,"height":600},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('fa529df2-c12c-4896-8067-c9802115c558');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell" data-execution_count="24">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>full_df_reverted.groupby(<span class="st">'category'</span>).plot_timeseries(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    date_column <span class="op">=</span> <span class="st">'order_date'</span>,</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    value_column <span class="op">=</span> <span class="st">'total_price_sum'</span>,</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    color_column <span class="op">=</span> <span class="st">'type'</span>,</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    smooth <span class="op">=</span> <span class="va">False</span>,</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    smooth_alpha <span class="op">=</span> <span class="dv">0</span>,</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    facet_scales <span class="op">=</span> <span class="st">"free_x"</span>,</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    y_intercept_color <span class="op">=</span> tk.palette_timetk()[<span class="st">'steel_blue'</span>],</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    width <span class="op">=</span> <span class="dv">1000</span>,</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    height <span class="op">=</span> <span class="dv">800</span>,</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>    engine <span class="op">=</span> <span class="st">'plotnine'</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="01_sales_crm_files/figure-html/cell-25-output-1.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<pre><code>&lt;Figure Size: (1000 x 800)&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Upon examining the graph, it’s evident that our model’s performance was suboptimal. For effective time series forecasting, having multiple years of data is pivotal. This provides the model ample opportunities to recognize and adapt to seasonal variations. Given our dataset spanned less than a year, the model lacked the depth of historical context to discern such patterns. Although our feature engineering was kept basic to introduce various pytimetk capabilities, there’s room for enhancement.</p>
+<p>For a more refined analysis, consider experimenting with different machine learning models and diving deeper into feature engineering. Pytimetk’s <code>tk.augment_fourier()</code> might assist in discerning seasonal trends, but with the dataset’s limited historical scope, capturing intricate patterns could remain a challenge.</p>
+
+
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -680,4 +3548,4 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/tutorials/01_sales_crm.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></div></div></footer></body></html>
+</body></html>
