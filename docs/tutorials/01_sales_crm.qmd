@@ -1,11 +1,11 @@
 ---
-title: "Sales Customer Analysis"
+title: "Sales Analysis"
 jupyter: python3
 toc: true
 toc-depth: 3
 number-sections: true
 number-depth: 2
-code-fold: true
+code-fold: show
 code-tools: 
     source: false
     toggle: true
@@ -16,7 +16,8 @@ In this tutorial, we will use pytimetk and its powerful functions to perform a t
 
 - Examine ways to wrangle complex transactional data with `tk.summarize_by_time`
 - Discover how to visualize customer and product data with `tk.plot_timeseries`
-- Learn how to add many features with augment functions including `tk.augment_timeseries_signature` and `tk.agument_lags`
+- Using `tk.pad_by_time` and `tk.future_frame` to prepare data for modeling
+- Learn how to add many important time series features with augment functions including `tk.augment_timeseries_signature` and `tk.agument_lags`
 - Integrate these techniques into a sales forecast with `sklearn`
 
 # Tutorial Setup
@@ -38,6 +39,9 @@ pip install git+https://github.com/business-science/pytimetk.git
 import pytimetk as tk
 import pandas as pd
 import numpy as np
+
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
 ```
 
 ## Load & inspect dataset
@@ -145,6 +149,7 @@ You can now visualize the summarized data to gain a clearer insight into the pre
 ## Plotly
 
 ```{python}
+# | code-fold: true
 sales_by_week \
     .groupby('category_2') \
     .plot_timeseries(
@@ -163,6 +168,7 @@ sales_by_week \
 ## Plotnine
 
 ```{python}
+# | code-fold: true
 sales_by_week \
     .groupby('category_2') \
     .plot_timeseries(
@@ -285,11 +291,13 @@ df_with_datefeatures = df_no_nas \
 df_with_datefeatures.head(10)
 ```
 
+We can quickly get a sense of what features were just created using `tk.glimpse`.
+
 ```{python}
-df_with_datefeatures.columns
+df_with_datefeatures.glimpse()
 ```
 
-Let's subset to just a few of the relevant date features.
+Let's subset to just a few of the relevant date features. Let's use `tk.glimpse` again.
 
 ```{python}
 df_with_datefeatures_narrom = df_with_datefeatures[[
@@ -305,7 +313,7 @@ df_with_datefeatures_narrom = df_with_datefeatures[[
     'order_date_yweek'
 ]]
 
-df_with_datefeatures_narrom.head(10)
+df_with_datefeatures_narrom.glimpse()
 ```
 
 ### One-Hot Encoding
@@ -317,7 +325,7 @@ For this transformation, the handy `pd.get_dummies()` function from pandas comes
 ```{python}
 df_encoded = pd.get_dummies(df_with_datefeatures_narrom, columns=['category_2'])
 
-df_encoded.head(10)
+df_encoded.glimpse()
 ```
 
 ### Training and Future Feature Sets
@@ -349,9 +357,6 @@ Let's create a `RandomForestRegressor` to predict future sales patterns.
 
 ```{python}
 # | code-fold: false
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
-
 train_columns = [ 'total_price_sum_lag_12',
        'total_price_sum_lag_24', 'order_date_year', 'order_date_half',
        'order_date_quarter', 'order_date_month', 'order_date_yweek','category_2_Cross Country Race', 'category_2_Cyclocross',
@@ -424,6 +429,7 @@ Let's again use `tk.plot_timeseries()` to visually inspect the forecasts.
 ## Plotly
 
 ```{python}
+# | code-fold: true
 full_df_reverted \
     .groupby('category') \
     .plot_timeseries(
@@ -444,6 +450,7 @@ full_df_reverted \
 
 
 ```{python}
+# | code-fold: true
 full_df_reverted \
     .groupby('category') \
     .plot_timeseries(
@@ -477,4 +484,7 @@ This was a great example of how pytimetk can help Data Analysts and Data Scienti
 
 - We examined ways to wrangle complex transactional data with `tk.summarize_by_time`
 - We discovered how to visualize customer and product data with `tk.plot_timeseries`
+- We used `tk.pad_by_time` and `tk.future_frame` to prepare data for modeling
 - And, we learned how to add many features with augment functions including `tk.augment_timeseries_signature` ant `tk.agument_lags`
+
+All of these `pytimetk` skills and techniques were necessary to produce a good sales forecast with `sklearn`. 

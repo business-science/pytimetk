@@ -5,6 +5,10 @@ toc: true
 toc-depth: 3
 number-sections: true
 number-depth: 2
+code-fold: show
+code-tools: 
+    source: false
+    toggle: true
 ---
 
 > *PyTimeTK has one mission:* To make time series analysis simpler, easier, and faster in Python. This goal requires some opinionated ways of treating time series in Python. We will conceptually lay out how `pytimetk` can help. 

@@ -36,3 +36,15 @@ code {
     padding: 1rem !important;
     overflow-x: scroll !important;
 }
+
+.dropdown-menu {
+    background: #343a40 !important;
+}
+
+.dropdown-menu > li:hover {
+    background: #6a737d !important;
+}
+
+.dropdown-menu > li > a:hover {
+    background: #6a737d !important;
+}

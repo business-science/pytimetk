@@ -35,3 +35,11 @@ code {
     padding: 1rem !important;
     overflow-x: scroll !important;
 }
+
+.dropdown-menu > li:hover {
+    background: #c4d6ec !important;
+}
+
+.dropdown-menu > li > a:hover {
+    background: #c4d6ec !important;
+}
