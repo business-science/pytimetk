@@ -1,11 +1,14 @@
 ---
-title: "Finance and Investment Analysis"
+title: "Finance Analysis"
 jupyter: python3
 toc: true
 toc-depth: 3
 number-sections: true
 number-depth: 2
 code-fold: true
+code-tools: 
+    source: false
+    toggle: true
 ---
 
 
@@ -35,7 +38,7 @@ Let's take a look with the `tk.glimpse()` function.
 
 
 ```{python}
-stocks_df = tk.load_dataset("stocks_daily", parse_dates = True)
+stocks_df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
 
 stocks_df.glimpse()
 ```

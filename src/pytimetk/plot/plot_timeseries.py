@@ -38,7 +38,7 @@ def plot_timeseries(
     facet_dir: str = "h", 
 
     line_color: str = "#2c3e50",
-    line_size: float = 0.65,
+    line_size: float = None,
     line_type: str = 'solid',
     line_alpha: float = 1.0,
     
@@ -285,6 +285,15 @@ def plot_timeseries(
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
     check_value_column(data, value_column)
+    
+    # Handle line_size
+    if line_size is None:
+        if engine == 'plotnine':
+            line_size = 0.35
+        elif engine == 'matplotlib':
+            line_size = 0.35
+        elif engine == 'plotly':
+            line_size = 0.65
     
     # Handle DataFrames
     if isinstance(data, pd.DataFrame):

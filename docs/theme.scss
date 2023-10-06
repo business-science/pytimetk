@@ -3,6 +3,16 @@
 
 /* sidebar formatting */
 
+#quarto-show-all-code {
+  color: var(--bs-body-color);
+  border-bottom: 0px;
+}
+
+#quarto-hide-all-code {
+  color: var(--bs-body-color);
+  border-bottom: 0px;
+}
+
 .sidebar-menu-container>ul>li:first-child>.sidebar-item-container>a>span {
     font-weight: 600 !important;
     font-size: 1.1rem  !important;
@@ -194,6 +204,15 @@ a > code:hover {
 
 h1, h2, h3, h4, h5, h6 {
   margin-top: 3rem !important;
+}
+
+h1 > code:not(.sourceCode),
+h2 > code:not(.sourceCode),
+h3 > code:not(.sourceCode),
+h4 > code:not(.sourceCode),
+h5 > code:not(.sourceCode),
+h6 > code:not(.sourceCode) {
+  font-size: 1rem !important;
 }
 
 h1.title {

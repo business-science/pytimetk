@@ -1,9 +1,9 @@
 {
-  "hash": "2f2ffbe619aadc4e265ba920bfb7b9b6",
+  "hash": "f67ba1a2adfc794cdce793a18949cc40",
   "result": {
     "markdown": "---\ntitle: Install\ntoc: true\ntoc-depth: 3\nnumber-sections: true\nnumber-depth: 2\n---\n\n<!-- ::: {.callout-warning collapse=\"false\"}\n## Under Development\n\nThis library is currently under development and is not intended for general usage yet. Functionality is experimental until release 0.1.0. \n::: -->\n\n# Quick Install\n\nLet's get you up and running with `pytimetk` fast with the latest stable release. \n\n```bash\npip install pytimetk\n```\n\nYou can install from GitHub with this code. \n\n```bash\npip install git+https://github.com/business-science/pytimetk.git\n```\n\n# Next steps\n\nCheck out the [Quick Start Guide Next.](/getting-started/02_quick_start.html)\n\n# More Coming Soon...\n\nWe are in the early stages of development. But it's obvious the potential for `pytimetk` now in Python. 🐍\n\n- Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). \n- To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. \n- Want to contribute? [See our contributing guide here.](/contributing.html) \n\n",
     "supporting": [
-      "01_installation_files/figure-html"
+      "01_installation_files\\figure-html"
     ],
     "filters": [],
     "includes": {}

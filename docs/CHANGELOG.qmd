@@ -16,8 +16,13 @@ New Functions:
 
 New Data Sets:
 
-- `expedia` : Expedia hotel searches
+- `expedia`: Expedia hotel searches
 
+New Applied Tutorials:
+
+1. Sales Customer Relationship Management (CRM) Training
+2. Finance and Investment Analysis
+3. Demand Forecasting
 
 
 # pytimetk 0.1.0 (2023-10-02)
