@@ -267,50 +267,7 @@ def apply_by_time(
     )
     ```
     
-    ```{python}
-    # Summarize by time with a GroupBy object (Long Format)
-    (
-        df 
-            .groupby('category_1') 
-            .summarize_by_time(
-                date_column  = 'order_date', 
-                value_column = 'total_price', 
-                freq         = 'MS',
-                agg_func     = 'sum',
-                wide_format  = False, 
-            )
-    )
-    ```
     
-    ```{python}
-    # Summarize by time with a GroupBy object (Wide Format)
-    (
-        df 
-            .groupby('category_1') 
-            .summarize_by_time(
-                date_column  = 'order_date', 
-                value_column = 'total_price', 
-                freq         = 'MS',
-                agg_func     = 'sum',
-                wide_format  = True, 
-            )
-    )
-    ```
-    
-    ```{python}
-    # Summarize by time with a GroupBy object and multiple summaries (Wide Format)
-    (
-        df 
-            .groupby('category_1') 
-            .summarize_by_time(
-                date_column  = 'order_date', 
-                value_column = 'total_price', 
-                freq         = 'MS',
-                agg_func     = ['sum', 'mean', ('q25', lambda x: x.quantile(0.25)), ('q75', lambda x: x.quantile(0.75))],
-                wide_format  = True, 
-            )
-    )
-    ```
     '''
     
     # Run common checks
