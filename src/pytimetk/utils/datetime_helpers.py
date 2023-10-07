@@ -75,6 +75,59 @@ def floor_date(
     return date
 
 @pf.register_series_method
+def ceil_date(
+    idx: Union[pd.Series, pd.DatetimeIndex], 
+    unit: str = "D",
+) -> pd.Series:
+    '''Round a date up to the specified unit (e.g. Ceiling).
+    
+    The `ceil_date` function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit.
+    
+    Parameters
+    ----------
+    idx : pd.Series or pd.DatetimeIndex
+        The `idx` parameter is a pandas Series or pandas DatetimeIndex object that contains datetime values. It represents the dates that you want to round down.
+    unit : str, optional
+        The `unit` parameter in the `ceil_date` function is a string that specifies the time unit to which the dates in the `idx` series should be rounded down. It has a default value of "D", which stands for day. Other possible values for the `unit` parameter could be
+    
+    Returns
+    -------
+    pd.Series 
+        The `ceil_date` function returns a pandas Series object containing datetime64[ns] values.
+    
+    Examples
+    --------
+    ```{python}
+    import pytimetk as tk
+    import pandas as pd
+    
+    dates = pd.date_range("2020-01-01", "2020-01-10", freq="1H")
+    dates
+    ```
+    
+    ```{python}
+    # Works on DateTimeIndex
+    tk.ceil_date(dates, unit="D")
+    ```
+    
+    ```{python}
+    # Works on Pandas Series
+    dates.to_series().ceil_date(unit="D")
+    ```
+    '''
+    # Common checks
+    check_series_or_datetime(idx)
+    
+    # If idx is a DatetimeIndex, convert to Series
+    if isinstance(idx, pd.DatetimeIndex):
+        idx = pd.Series(idx, name="idx")
+    
+    # Convert to period
+    date = idx.dt.ceil(unit)
+
+    return date
+
+@pf.register_series_method
 def week_of_month(idx: Union[pd.Series, pd.DatetimeIndex]) -> pd.Series:
     '''The "week_of_month" function calculates the week number of a given date within its month.
     
