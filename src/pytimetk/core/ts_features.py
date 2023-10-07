@@ -137,22 +137,19 @@ def ts_features(
     if not isinstance(data, pd.DataFrame):
         if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
             raise TypeError("`data` is not a Pandas DataFrame.")
-    
+
+    group_names = None  
     if isinstance(data, pd.DataFrame):
         df = data.copy()        
         df.sort_values(by=[date_column], inplace=True)
         df['unique_id'] = "X1"
         df = df[['unique_id', date_column, value_column]]
         group_names = ['unique_id']
-    
-    group_names = None
+
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        data = data.obj
-        
-        df = data.copy()
+        df = data.obj.copy()
         df.sort_values(by=[*group_names, date_column], inplace=True)
-        
         df = df[[*group_names, date_column, value_column]]
     
     if features is None:
@@ -177,14 +174,19 @@ def ts_features(
         ]
     
     # Construct the DataFrame for tsfeatures
-    construct_df = df[group_names]    
-    for col in group_names:
-        construct_df[col] = df[col].astype(str)
-    construct_df['unique_id'] = construct_df[group_names].apply(lambda row: '_'.join(row), axis=1)
-    construct_df.drop(columns=group_names, inplace=True)
-    construct_df['ds'] = df[date_column]
-    construct_df['y'] = df[value_column]
-    
+    if isinstance(data, pd.DataFrame):
+        construct_df = df[group_names]
+        construct_df['ds'] = df[date_column]
+        construct_df['y'] = df[value_column]  
+    else: # grouped dataframe
+        construct_df = df[group_names]    
+        for col in group_names:
+            construct_df[col] = df[col].astype(str)
+        construct_df['unique_id'] = construct_df[group_names].apply(lambda row: '_'.join(row), axis=1)
+        construct_df.drop(columns=group_names, inplace=True)
+        construct_df['ds'] = df[date_column]
+        construct_df['y'] = df[value_column]
+ 
     # Run tsfeatures
     # features_df = tsf.tsfeatures(construct_df, features=features, freq=freq, scale=scale, threads=threads)
     
@@ -218,19 +220,25 @@ def ts_features(
             
     else:
         # Don't parallel process
-        ts_features = []
-        for name, group in construct_df.groupby('unique_id'):
-            result = partial_get_feats(name, group)
-            ts_features.append(result)
+
+        if isinstance(data, pd.DataFrame):
+            ts_features = tsf.tsfeatures(construct_df, features=features)
+            ts_features = ts_features.dropna(axis=1)
+        else: # grouped dataframe                
+            ts_features = []
+            for name, group in construct_df.groupby('unique_id'):
+                result = partial_get_feats(name, group, features = features)
+                ts_features.append(result)
             
-        
-    ts_features = pd.concat(ts_features).rename_axis('unique_id')
-    ts_features = ts_features.reset_index()
-    
-    # Finalize id or grouping columns
-    if group_names is not None:
-        id_df = df[group_names].drop_duplicates().reset_index(drop=True)   
-    ts_features = pd.concat([id_df, ts_features], axis=1)
+            ts_features = pd.concat(ts_features).rename_axis('unique_id')
+            ts_features = ts_features.reset_index() 
+
+            # Finalize id or grouping columns
+            if group_names is not None:
+                id_df = df[group_names].drop_duplicates().reset_index(drop=True)   
+            ts_features = pd.concat([id_df, ts_features], axis=1)
+
+    # drop unique_id column
     ts_features.drop(columns=['unique_id'], inplace=True)
     
     return ts_features
