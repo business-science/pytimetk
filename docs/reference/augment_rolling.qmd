@@ -2,7 +2,7 @@
 
 `augment_rolling(data, date_column, value_column, window_func='mean', window=2, min_periods=None, center=False, **kwargs)`
 
-Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.
+Apply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame.
 
 ## Parameters
 

@@ -89,7 +89,7 @@ summary_category_1_df.head()
 
 
 
-### 📈 Visualizing Sales Patterns
+### Visualizing Sales Patterns
 
 ::: {.callout-note collapse="false"}
 ## Now available: `plot_timeseries()`.

@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -251,7 +285,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../changelog.html" class="sidebar-item-text sidebar-link">
+  <a href="../changelog-news.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📧 Change Log</span></a>
   </div>
 </li>
@@ -284,7 +318,15 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_expanding.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -306,347 +348,220 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_expanding(data, date_column, value_column, use_independent_variables=False, window_func='mean', min_periods=None, **kwargs)</code></p>
-<p>Apply one or more expanding functions and window sizes to one or more columns of a DataFrame.</p>
-<pre><code>Parameters
-----------
-data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-    The `data` parameter is the input DataFrame or GroupBy object that contains the data to be processed. It can be either a Pandas DataFrame or a GroupBy object.
-date_column : str
-    The `date_column` parameter is the name of the datetime column in the DataFrame by which the data should be sorted within each group.
-value_column : Union[str, list]
-    The `value_column` parameter is the name of the column(s) in the DataFrame to which the expanding window function(s) should be applied. It can be a single column name or a list of column names.
-use_independent_variables : bool
-    The `use_independent_variables` parameter is an optional parameter that specifies whether the expanding function(s) require independent variables, such as expanding correlation or expanding regression. (See Examples below.)
-window_func : Union[str, list, Tuple[str, Callable]], optional
-    The `window_func` parameter in the `augment_expanding` function is used to specify the function(s) to be applied to the expanding windows. 
-    
-    1. It can be a string or a list of strings, where each string represents the name of the function to be applied. 
-    
-    2. Alternatively, it can be a list of tuples, where each tuple contains the name of the function to be applied and the function itself. The function is applied as a Pandas Series. (See Examples below.)
-    
-    3. If the function requires independent variables, the `use_independent_variables` parameter must be specified. The independent variables will be passed to the function as a DataFrame containing the window of rows. (See Examples below.)
-    
-Returns
--------
-pd.DataFrame
-    The `augment_expanding` function returns a DataFrame with new columns for each applied function, window size, and value column.
-
-Examples
---------
-
-
-
-::: {.cell execution_count=1}
-``` {.python .cell-code}
-import pytimetk as tk
-import pandas as pd
-import numpy as np
-
-df = tk.load_dataset("m4_daily", parse_dates = ['date'])
-```
-:::
-
-
-
-::: {.cell execution_count=2}
-``` {.python .cell-code}
-# String Function Name and Series Lambda Function (no independent variables)
-rolled_df = (
-    df
-        .groupby('id')
-        .augment_expanding(
-            date_column = 'date', 
-            value_column = 'value',  
-            window_func = ['mean', ('std', lambda x: x.std())]
-        )
-)
-rolled_df
-```
-
-::: {.cell-output .cell-output-display execution_count=2}
-
-```{=html}
-&lt;div&gt;
-&lt;style scoped&gt;
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-&lt;/style&gt;
-&lt;table border="1" class="dataframe"&gt;
-  &lt;thead&gt;
-    &lt;tr style="text-align: right;"&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;id&lt;/th&gt;
-      &lt;th&gt;date&lt;/th&gt;
-      &lt;th&gt;value&lt;/th&gt;
-      &lt;th&gt;value_expanding_mean&lt;/th&gt;
-      &lt;th&gt;value_expanding_std&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;th&gt;0&lt;/th&gt;
-      &lt;td&gt;D10&lt;/td&gt;
-      &lt;td&gt;2014-07-03&lt;/td&gt;
-      &lt;td&gt;2076.2&lt;/td&gt;
-      &lt;td&gt;2076.200000&lt;/td&gt;
-      &lt;td&gt;0.000000&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;1&lt;/th&gt;
-      &lt;td&gt;D10&lt;/td&gt;
-      &lt;td&gt;2014-07-04&lt;/td&gt;
-      &lt;td&gt;2073.4&lt;/td&gt;
-      &lt;td&gt;2074.800000&lt;/td&gt;
-      &lt;td&gt;1.400000&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;2&lt;/th&gt;
-      &lt;td&gt;D10&lt;/td&gt;
-      &lt;td&gt;2014-07-05&lt;/td&gt;
-      &lt;td&gt;2048.7&lt;/td&gt;
-      &lt;td&gt;2066.100000&lt;/td&gt;
-      &lt;td&gt;12.356645&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;3&lt;/th&gt;
-      &lt;td&gt;D10&lt;/td&gt;
-      &lt;td&gt;2014-07-06&lt;/td&gt;
-      &lt;td&gt;2048.9&lt;/td&gt;
-      &lt;td&gt;2061.800000&lt;/td&gt;
-      &lt;td&gt;13.037830&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;4&lt;/th&gt;
-      &lt;td&gt;D10&lt;/td&gt;
-      &lt;td&gt;2014-07-07&lt;/td&gt;
-      &lt;td&gt;2006.4&lt;/td&gt;
-      &lt;td&gt;2050.720000&lt;/td&gt;
-      &lt;td&gt;25.041038&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;...&lt;/th&gt;
-      &lt;td&gt;...&lt;/td&gt;
-      &lt;td&gt;...&lt;/td&gt;
-      &lt;td&gt;...&lt;/td&gt;
-      &lt;td&gt;...&lt;/td&gt;
-      &lt;td&gt;...&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;9738&lt;/th&gt;
-      &lt;td&gt;D500&lt;/td&gt;
-      &lt;td&gt;2012-09-19&lt;/td&gt;
-      &lt;td&gt;9418.8&lt;/td&gt;
-      &lt;td&gt;8286.606679&lt;/td&gt;
-      &lt;td&gt;2456.667418&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;9739&lt;/th&gt;
-      &lt;td&gt;D500&lt;/td&gt;
-      &lt;td&gt;2012-09-20&lt;/td&gt;
-      &lt;td&gt;9365.7&lt;/td&gt;
-      &lt;td&gt;8286.864035&lt;/td&gt;
-      &lt;td&gt;2456.430967&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;9740&lt;/th&gt;
-      &lt;td&gt;D500&lt;/td&gt;
-      &lt;td&gt;2012-09-21&lt;/td&gt;
-      &lt;td&gt;9445.9&lt;/td&gt;
-      &lt;td&gt;8287.140391&lt;/td&gt;
-      &lt;td&gt;2456.203287&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;9741&lt;/th&gt;
-      &lt;td&gt;D500&lt;/td&gt;
-      &lt;td&gt;2012-09-22&lt;/td&gt;
-      &lt;td&gt;9497.9&lt;/td&gt;
-      &lt;td&gt;8287.429011&lt;/td&gt;
-      &lt;td&gt;2455.981643&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;9742&lt;/th&gt;
-      &lt;td&gt;D500&lt;/td&gt;
-      &lt;td&gt;2012-09-23&lt;/td&gt;
-      &lt;td&gt;9545.3&lt;/td&gt;
-      &lt;td&gt;8287.728789&lt;/td&gt;
-      &lt;td&gt;2455.765726&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;9743 rows × 5 columns&lt;/p&gt;
-&lt;/div&gt;
-```
-
-:::
-:::
+<p><code>augment_expanding(data, date_column, value_column, window_func='mean', min_periods=None, **kwargs)</code></p>
+<p>Apply one or more Series-based expanding functions and window sizes to one or more columns of a DataFrame.</p>
+<section id="parameters" class="level2">
+<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<table class="table">
+<colgroup>
+<col style="width: 1%">
+<col style="width: 7%">
+<col style="width: 89%">
+<col style="width: 1%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>data</code></td>
+<td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
+<td>Input data to be processed. Can be a Pandas DataFrame or a GroupBy object.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td><code>date_column</code></td>
+<td>str</td>
+<td>Name of the datetime column. Data is sorted by this column within each group.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td><code>value_column</code></td>
+<td>Union[str, list]</td>
+<td>Column(s) to which the expanding window functions should be applied. Can be a single column name or a list.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td><code>window_func</code></td>
+<td>Union[str, list, Tuple[str, Callable]]</td>
+<td>The <code>window_func</code> parameter in the <code>augment_expanding</code> function specifies the function(s) to be applied to the expanding windows of the value column(s). 1. It can be either: - A string representing the name of a standard function (e.g., ‘mean’, ‘sum’). 2. For custom functions: - Provide a list of tuples. Each tuple should contain a custom name for the function and the function itself. - Each custom function should accept a Pandas Series as its input and operate on that series. Example: (“range”, lambda x: x.max() - x.min()) (See more Examples below.) Note: If your function needs to operate on multiple columns (i.e., it requires access to a DataFrame rather than just a Series), consider using the <code>augment_expanding_apply</code> function in this library.</td>
+<td><code>'mean'</code></td>
+</tr>
+<tr class="odd">
+<td><code>min_periods</code></td>
+<td>int</td>
+<td>Minimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns" class="level2">
+<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<table class="table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 90%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>pd.DataFrame</td>
+<td>The <code>augment_expanding</code> function returns a DataFrame with new columns for each applied function, window size, and value column.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"m4_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This example demonstrates the use of both string-named functions </span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># and lambda functions on an expanding window. </span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        .augment_expanding(</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'std'</span>, <span class="kw">lambda</span> x: x.std())  <span class="co"># Lambda function to compute standard deviation</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>            ]</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>display(expanded_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
 
 
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+<th data-quarto-table-cell-role="th">value_expanding_mean</th>
+<th data-quarto-table-cell-role="th">value_expanding_std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>D10</td>
+<td>2014-07-03</td>
+<td>2076.2</td>
+<td>2076.200000</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>D10</td>
+<td>2014-07-04</td>
+<td>2073.4</td>
+<td>2074.800000</td>
+<td>1.400000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>D10</td>
+<td>2014-07-05</td>
+<td>2048.7</td>
+<td>2066.100000</td>
+<td>12.356645</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>D10</td>
+<td>2014-07-06</td>
+<td>2048.9</td>
+<td>2061.800000</td>
+<td>13.037830</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>D10</td>
+<td>2014-07-07</td>
+<td>2006.4</td>
+<td>2050.720000</td>
+<td>25.041038</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9738</td>
+<td>D500</td>
+<td>2012-09-19</td>
+<td>9418.8</td>
+<td>8286.606679</td>
+<td>2456.667418</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9739</td>
+<td>D500</td>
+<td>2012-09-20</td>
+<td>9365.7</td>
+<td>8286.864035</td>
+<td>2456.430967</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9740</td>
+<td>D500</td>
+<td>2012-09-21</td>
+<td>9445.9</td>
+<td>8287.140391</td>
+<td>2456.203287</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9741</td>
+<td>D500</td>
+<td>2012-09-22</td>
+<td>9497.9</td>
+<td>8287.429011</td>
+<td>2455.981643</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9742</td>
+<td>D500</td>
+<td>2012-09-23</td>
+<td>9545.3</td>
+<td>8287.728789</td>
+<td>2455.765726</td>
+</tr>
+</tbody>
+</table>
 
-::: {.cell execution_count=3}
-``` {.python .cell-code}
-# Expanding Correlation: Uses independent variables (value2)
-
-df = pd.DataFrame({
-    'id': [1, 1, 1, 2, 2, 2],
-    'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),
-    'value1': [10, 20, 29, 42, 53, 59],
-    'value2': [2, 16, 20, 40, 41, 50],
-})
-
-result_df = (
-    df.groupby('id')
-    .augment_expanding(
-        date_column='date',
-        value_column='value1',
-        use_independent_variables=True,
-        window_func=[('corr', lambda df: df['value1'].corr(df['value2']))],
-    )
-)
-result_df
-```
-
-::: {.cell-output .cell-output-display execution_count=3}
-
-```{=html}
-&lt;div&gt;
-&lt;style scoped&gt;
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-&lt;/style&gt;
-&lt;table border="1" class="dataframe"&gt;
-  &lt;thead&gt;
-    &lt;tr style="text-align: right;"&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;id&lt;/th&gt;
-      &lt;th&gt;date&lt;/th&gt;
-      &lt;th&gt;value1&lt;/th&gt;
-      &lt;th&gt;value2&lt;/th&gt;
-      &lt;th&gt;value1_expanding_corr&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;th&gt;0&lt;/th&gt;
-      &lt;td&gt;1&lt;/td&gt;
-      &lt;td&gt;2023-01-01&lt;/td&gt;
-      &lt;td&gt;10&lt;/td&gt;
-      &lt;td&gt;2&lt;/td&gt;
-      &lt;td&gt;NaN&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;1&lt;/th&gt;
-      &lt;td&gt;1&lt;/td&gt;
-      &lt;td&gt;2023-01-02&lt;/td&gt;
-      &lt;td&gt;20&lt;/td&gt;
-      &lt;td&gt;16&lt;/td&gt;
-      &lt;td&gt;1.000000&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;2&lt;/th&gt;
-      &lt;td&gt;1&lt;/td&gt;
-      &lt;td&gt;2023-01-03&lt;/td&gt;
-      &lt;td&gt;29&lt;/td&gt;
-      &lt;td&gt;20&lt;/td&gt;
-      &lt;td&gt;0.961054&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;3&lt;/th&gt;
-      &lt;td&gt;2&lt;/td&gt;
-      &lt;td&gt;2023-01-04&lt;/td&gt;
-      &lt;td&gt;42&lt;/td&gt;
-      &lt;td&gt;40&lt;/td&gt;
-      &lt;td&gt;NaN&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;4&lt;/th&gt;
-      &lt;td&gt;2&lt;/td&gt;
-      &lt;td&gt;2023-01-05&lt;/td&gt;
-      &lt;td&gt;53&lt;/td&gt;
-      &lt;td&gt;41&lt;/td&gt;
-      &lt;td&gt;1.000000&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;5&lt;/th&gt;
-      &lt;td&gt;2&lt;/td&gt;
-      &lt;td&gt;2023-01-06&lt;/td&gt;
-      &lt;td&gt;59&lt;/td&gt;
-      &lt;td&gt;50&lt;/td&gt;
-      &lt;td&gt;0.824831&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-```
-
-:::
-:::
-
-
-# Expanding Regression: Using independent variables (value2 and value3)
-
-# Requires: scikit-learn
-from sklearn.linear_model import LinearRegression
-
-df = pd.DataFrame({
-    'id': [1, 1, 1, 2, 2, 2],
-    'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),
-    'value1': [10, 20, 29, 42, 53, 59],
-    'value2': [5, 16, 24, 35, 45, 58],
-    'value3': [2, 3, 6, 9, 10, 13]
-})
-
-# Define Regression Function
-def regression(df):
-
-    model = LinearRegression()
-    X = df[['value2', 'value3']]  # Extract X values (independent variables)
-    y = df['value1']  # Extract y values (dependent variable)
-    model.fit(X, y)
-    ret = pd.Series([model.intercept_, model.coef_[0]], index=['Intercept', 'Slope'])
-    return ret # Return intercept and slope as a Series
-    
-
-# Example to call the function
-result_df = (
-    df.groupby('id')
-    .augment_expanding(
-        date_column='date',
-        value_column='value1',
-        use_independent_variables=True,
-        window_func=[('regression', regression)]
-    )
-    .dropna()
-)
-result_df
-
-# Display Results in Wide Format since returning multiple values
-regression_wide_df = pd.concat(result_df['value1_expanding_regression'].to_list(), axis=1).T
-
-regression_wide_df = pd.concat([result_df.reset_index(drop = True), regression_wide_df], axis=1)
-
-regression_wide_df</code></pre>
-<p>```</p>
+<p>9743 rows × 5 columns</p>
+</div>
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1001,4 +916,4 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_expanding.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></div></div></footer></body></html>
+</body></html>

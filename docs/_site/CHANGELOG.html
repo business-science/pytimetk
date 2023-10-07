@@ -73,10 +73,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 
 <meta property="og:title" content="pytimetk - Changelog for PyTimeTK">
-<meta property="og:description" content="">
 <meta property="og:site-name" content="pytimetk">
 <meta name="twitter:title" content="pytimetk - Changelog for PyTimeTK">
-<meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
 
@@ -291,7 +289,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#pytimetk-0.1.0.9000-in-development" id="toc-pytimetk-0.1.0.9000-in-development" class="nav-link active" data-scroll-target="#pytimetk-0.1.0.9000-in-development"><span class="header-section-number">1</span> pytimetk 0.1.0.9000 (in development)</a></li>
+  <li><a href="#pytimetk-0.1.0.9000-in-development" id="toc-pytimetk-0.1.0.9000-in-development" class="nav-link active" data-scroll-target="#pytimetk-0.1.0.9000-in-development"><span class="header-section-number">1</span> pytimetk 0.1.0.9000 (in development)</a>
+  <ul class="collapse">
+  <li><a href="#new-functions" id="toc-new-functions" class="nav-link" data-scroll-target="#new-functions">New Functions:</a></li>
+  <li><a href="#new-data-sets" id="toc-new-data-sets" class="nav-link" data-scroll-target="#new-data-sets">New Data Sets:</a></li>
+  <li><a href="#new-applied-tutorials" id="toc-new-applied-tutorials" class="nav-link" data-scroll-target="#new-applied-tutorials">New Applied Tutorials:</a></li>
+  <li><a href="#deprecations" id="toc-deprecations" class="nav-link" data-scroll-target="#deprecations">Deprecations:</a></li>
+  </ul></li>
   <li><a href="#pytimetk-0.1.0-2023-10-02" id="toc-pytimetk-0.1.0-2023-10-02" class="nav-link" data-scroll-target="#pytimetk-0.1.0-2023-10-02"><span class="header-section-number">2</span> pytimetk 0.1.0 (2023-10-02)</a>
   <ul class="collapse">
   <li><a href="#about-the-initial-release." id="toc-about-the-initial-release." class="nav-link" data-scroll-target="#about-the-initial-release.">About the Initial release.</a></li>
@@ -322,24 +326,37 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <section id="pytimetk-0.1.0.9000-in-development" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> pytimetk 0.1.0.9000 (in development)</h1>
-<p>New Functions:</p>
+<section id="new-functions" class="level3">
+<h3 class="anchored" data-anchor-id="new-functions">New Functions:</h3>
 <ul>
 <li><code>apply_by_time()</code></li>
-<li><code>augment_expanding()</code></li>
 <li><code>augment_rolling_apply()</code></li>
-<li><code>get_frequency()</code>: Infer a pandas-like frequency. More robust that <code>pandas.infer_freq</code>.</li>
+<li><code>augment_expanding()</code></li>
+<li><code>augment_expanding_apply()</code></li>
+<li><code>get_frequency()</code>: Infer a pandas-like frequency. More robust than <code>pandas.infer_freq</code>.</li>
 </ul>
-<p>New Data Sets:</p>
+</section>
+<section id="new-data-sets" class="level3">
+<h3 class="anchored" data-anchor-id="new-data-sets">New Data Sets:</h3>
 <ul>
 <li><code>expedia</code>: Expedia hotel searches</li>
 </ul>
-<p>New Applied Tutorials:</p>
+</section>
+<section id="new-applied-tutorials" class="level3">
+<h3 class="anchored" data-anchor-id="new-applied-tutorials">New Applied Tutorials:</h3>
 <ol type="1">
 <li>Sales Analysis Tutorial</li>
 <li>Finance Analysis Tutorial</li>
 <li>Demand Forecasting Tutorial</li>
 </ol>
-<p>Deprecations: - <code>summarize_by_time()</code>: <code>kind = "period"</code>. This is being removed for consistency with <code>pytimetk</code>. “timestamp” is the default.</p>
+</section>
+<section id="deprecations" class="level3">
+<h3 class="anchored" data-anchor-id="deprecations">Deprecations:</h3>
+<ul>
+<li><code>summarize_by_time()</code>: <code>kind = "period"</code>. This is being removed for consistency with <code>pytimetk</code>. “timestamp” is the default.</li>
+<li><code>augment_rolling()</code>: <code>use_independent_variables</code>. This is being replaced by <code>augment_rolling_apply()</code>.</li>
+</ul>
+</section>
 </section>
 <section id="pytimetk-0.1.0-2023-10-02" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> pytimetk 0.1.0 (2023-10-02)</h1>

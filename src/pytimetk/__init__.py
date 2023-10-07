@@ -62,7 +62,7 @@ from .core.rolling import (
     augment_rolling, augment_rolling_apply
 )
 from .core.expanding import (
-    augment_expanding
+    augment_expanding, augment_expanding_apply
 )
 from .core.fourier import (
     augment_fourier

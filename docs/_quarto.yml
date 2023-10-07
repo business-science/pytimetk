@@ -73,7 +73,7 @@ website:
         file: contributing.qmd
       - text: "---"
       - text: 📧 Change Log
-        file: changelog.qmd
+        file: changelog-news.qmd
       - text: "---"
       - section: "📚 More References:"
       - text: Business Science
@@ -129,6 +129,7 @@ quartodoc:
         - augment_rolling
         - augment_rolling_apply
         - augment_expanding
+        - augment_expanding_apply
     - title: TS Features
       desc: Python implementation of the R package `tsfeatures`.
       package: pytimetk

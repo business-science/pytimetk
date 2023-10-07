@@ -285,7 +285,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../changelog.html" class="sidebar-item-text sidebar-link">
+  <a href="../changelog-news.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📧 Change Log</span></a>
   </div>
 </li>
@@ -349,14 +349,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </header>
 
 <p><code>augment_rolling_apply(data, date_column, window_func, window=2, min_periods=None, center=False)</code></p>
-<p>Apply one or more rolling functions and window sizes to one or more columns of a DataFrame.</p>
+<p>Apply one or more DataFrame-based rolling functions and window sizes to one or more columns of a DataFrame.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
 <col style="width: 2%">
 <col style="width: 9%">
-<col style="width: 85%">
+<col style="width: 86%">
 <col style="width: 1%">
 </colgroup>
 <thead>
@@ -383,7 +383,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td><code>window_func</code></td>
 <td>Union[Tuple[str, Callable], List[Tuple[str, Callable]]]</td>
-<td>The <code>window_func</code> parameter in the <code>augment_rolling_apply</code> function specifies the function(s) that operate on a rolling window with the consideration of multiple columns. The specification can be: - A tuple where the first element is a string representing the function’s name and the second element is the callable function itself. - A list of such tuples for multiple functions. Note: For functions targeting only a single value column without the need for contextual data from other columns, consider using the <code>augment_rolling</code> function in this library.</td>
+<td>The <code>window_func</code> parameter in the <code>augment_rolling_apply</code> function specifies the function(s) that operate on a rolling window with the consideration of multiple columns. The specification can be: - A tuple where the first element is a string representing the function’s name and the second element is the callable function itself. - A list of such tuples for multiple functions. (See more Examples below.) Note: For functions targeting only a single value column without the need for contextual data from other columns, consider using the <code>augment_rolling</code> function in this library.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
@@ -448,7 +448,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the rolling correlation for each group of 'id'</span></span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Using a rolling window of size 3 and a lambda function to calculate the correlation.</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>rolling_df <span class="op">=</span> (</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>rolled_df <span class="op">=</span> (</span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">'id'</span>)</span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    .augment_rolling_apply(</span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
@@ -457,7 +457,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>        center <span class="op">=</span> <span class="va">False</span>  <span class="co"># Not centering the rolling window</span></span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>display(rolling_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>display(rolled_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 
@@ -557,7 +557,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the rolling regression for each group of `id`</span></span>
 <span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Using a rolling window of size 3 and the regression function.</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>result_df <span class="op">=</span> (</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>rolled_df <span class="op">=</span> (</span>
 <span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">'id'</span>)</span>
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    .augment_rolling_apply(</span>
 <span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
@@ -568,8 +568,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Format the results to have each regression output (slope and intercept) in separate columns.</span></span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>regression_wide_df <span class="op">=</span> pd.concat(result_df[<span class="st">'rolling_regression_win_3'</span>].to_list(), axis<span class="op">=</span><span class="dv">1</span>).T</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>regression_wide_df <span class="op">=</span> pd.concat([result_df.reset_index(drop <span class="op">=</span> <span class="va">True</span>), regression_wide_df], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>regression_wide_df <span class="op">=</span> pd.concat(rolled_df[<span class="st">'rolling_regression_win_3'</span>].to_list(), axis<span class="op">=</span><span class="dv">1</span>).T</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>regression_wide_df <span class="op">=</span> pd.concat([rolled_df.reset_index(drop <span class="op">=</span> <span class="va">True</span>), regression_wide_df], axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>display(regression_wide_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>

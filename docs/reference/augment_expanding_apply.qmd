@@ -1,0 +1,94 @@
+# augment_expanding_apply { #pytimetk.augment_expanding_apply }
+
+`augment_expanding_apply(data, date_column, window_func, min_periods=None)`
+
+Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame.
+
+## Parameters
+
+| Name          | Type                                                            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Default    |
+|---------------|-----------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `data`        | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | Input data to be processed. Can be a Pandas DataFrame or a GroupBy object.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | _required_ |
+| `date_column` | str                                                             | Name of the datetime column. Data is sorted by this column within each group.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | _required_ |
+| `window_func` | Union\[Tuple\[str, Callable\], List\[Tuple\[str, Callable\]\]\] | The `window_func` parameter in the `augment_expanding_apply` function specifies the function(s) that operate on a expanding window with the consideration of multiple columns.  The specification can be: - A tuple where the first element is a string representing the function's name and the second element is the callable function itself. - A list of such tuples for multiple functions.  Note: For functions targeting only a single value column without the need for contextual data from other columns, consider using the `augment_expanding` function in this library. | _required_ |
+| `min_periods` | int                                                             | Minimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.                                                                                                                                                                                                                                                                                                                                                                                                       | `None`     |
+
+## Returns
+
+| Type         | Description                                                                                                                     |
+|--------------|---------------------------------------------------------------------------------------------------------------------------------|
+| pd.DataFrame | The `augment_expanding` function returns a DataFrame with new columns for each applied function, window size, and value column. |
+
+## Examples
+
+```{python}
+import pytimetk as tk
+import pandas as pd
+import numpy as np
+```
+
+```{python}
+# Example showcasing the expanding correlation between two columns (`value1` and `value2`).
+# The correlation requires both columns as input.
+
+# Sample DataFrame with id, date, value1, and value2 columns.
+df = pd.DataFrame({
+    'id': [1, 1, 1, 2, 2, 2],
+    'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),
+    'value1': [10, 20, 29, 42, 53, 59],
+    'value2': [2, 16, 20, 40, 41, 50],
+})
+
+# Compute the expanding correlation for each group of 'id'
+expanding_df = (
+    df.groupby('id')
+    .augment_expanding_apply(
+        date_column='date',
+        window_func=[('corr', lambda x: x['value1'].corr(x['value2']))],  # Lambda function for correlation
+    )
+)
+display(expanding_df)
+```
+
+```{python}
+# expanding Regression Example: Using `value1` as the dependent variable and `value2` and `value3` as the independent variables.
+# This example demonstrates how to perform a expanding regression using two independent variables.
+
+# Required module (scikit-learn) for regression.
+from sklearn.linear_model import LinearRegression
+
+# Sample DataFrame with `id`, `date`, `value1`, `value2`, and `value3` columns.
+df = pd.DataFrame({
+    'id': [1, 1, 1, 2, 2, 2],
+    'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),
+    'value1': [10, 20, 29, 42, 53, 59],
+    'value2': [5, 16, 24, 35, 45, 58],
+    'value3': [2, 3, 6, 9, 10, 13]
+})
+
+# Define Regression Function to be applied on the expanding window.
+def regression(df):
+
+    model = LinearRegression()
+    X = df[['value2', 'value3']]  # Independent variables
+    y = df['value1']  # Dependent variable
+    model.fit(X, y)
+    ret = pd.Series([model.intercept_, model.coef_[0]], index=['Intercept', 'Slope'])
+    
+    return ret # Return intercept and slope as a Series
+    
+# Compute the expanding regression for each group of `id`
+result_df = (
+    df.groupby('id')
+    .augment_expanding_apply(
+        date_column='date',
+        window_func=[('regression', regression)]
+    )
+    .dropna()
+)
+
+# Format the results to have each regression output (slope and intercept) in separate columns.
+regression_wide_df = pd.concat(result_df['expanding_regression'].to_list(), axis=1).T
+regression_wide_df = pd.concat([result_df.reset_index(drop = True), regression_wide_df], axis=1)
+display(regression_wide_df)
+```
