@@ -1,6 +1,8 @@
 import pytest
 import pandas as pd
-from pytimetk import ts_summary, get_frequency, get_manual_frequency  # Adjust the module name accordingly
+from pytimetk import ts_summary, get_frequency
+
+from pytimetk.core.frequency import _get_manual_frequency  # Adjust the module name accordingly
 
 # Sample test data
 dates = pd.to_datetime(["2023-10-02", "2023-10-03", "2023-10-04", "2023-10-05", "2023-10-06", "2023-10-09", "2023-10-10"])
@@ -77,7 +79,7 @@ def test_no_pandas_frequency():
     
     assert result == '1MS'
     
-    result = get_manual_frequency(dates)
+    result = _get_manual_frequency(dates)
     
     assert result == '1MS'
 
@@ -96,7 +98,7 @@ def test_minute():
     
     assert result == '12T'
     
-    result = get_manual_frequency(dates)
+    result = _get_manual_frequency(dates)
     
     assert result == '12T'
     
@@ -115,7 +117,7 @@ def test_hour():
     
     assert result == '3H'
     
-    result = get_manual_frequency(dates)
+    result = _get_manual_frequency(dates)
     
     assert result == '3H'
     
@@ -134,7 +136,7 @@ def test_day():
     
     assert result == '3D'
     
-    result = get_manual_frequency(dates)
+    result = _get_manual_frequency(dates)
     
     assert result == '3D'
     
@@ -153,7 +155,7 @@ def test_week():
     
     assert result == '2W'
     
-    result = get_manual_frequency(dates)
+    result = _get_manual_frequency(dates)
     
     assert result == '2W'
     
@@ -172,7 +174,7 @@ def test_month():
     
     assert result == '2M'
     
-    result = get_manual_frequency(dates)
+    result = _get_manual_frequency(dates)
     
     assert result == '2M'
 
@@ -191,7 +193,7 @@ def test_four_months():
     
     assert result == '4M'
     
-    result = get_manual_frequency(dates)
+    result = _get_manual_frequency(dates)
     
     assert result == '121D'
 
@@ -210,7 +212,7 @@ def test_quarter():
     
     assert result == '1QS'
     
-    result = get_manual_frequency(dates)
+    result = _get_manual_frequency(dates)
     
     assert result == '1QS'
     
@@ -230,7 +232,7 @@ def test_quarter_start():
     
     assert result == 'QS-OCT'
     
-    result = get_manual_frequency(dates)
+    result = _get_manual_frequency(dates)
     
     assert result == '1QS'
     
@@ -249,7 +251,7 @@ def test_quarter_end():
     
     assert result == 'Q-DEC'
     
-    result = get_manual_frequency(dates)
+    result = _get_manual_frequency(dates)
     
     assert result == '1Q'
     
@@ -268,7 +270,7 @@ def test_year():
     
     assert result == '2A-DEC'
     
-    result = get_manual_frequency(dates)
+    result = _get_manual_frequency(dates)
     
     assert result == '2Y'
     
@@ -293,7 +295,7 @@ def test_custom_offset():
     
     assert result == '9QS-OCT'
     
-    result = get_manual_frequency(dates)
+    result = _get_manual_frequency(dates)
     
     assert result == '821D' 
     

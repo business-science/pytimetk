@@ -18,6 +18,7 @@ from .core.fourier import *
 from .core.ts_features import *
 from .core.ts_summary import *
 from .core.anomaly import *
+from .core.frequency import *
 
 from .datasets.get_datasets import *
 
@@ -71,8 +72,10 @@ from .core.ts_features import (
     ts_features
 )
 from .core.ts_summary import (
-    ts_summary, get_diff_summary, get_date_summary, get_frequency_summary, get_pandas_frequency, get_manual_frequency, get_frequency,timeseries_unit_frequency_table
-    
+    ts_summary, get_diff_summary, get_date_summary,  
+)
+from .core.frequency import (
+    get_frequency_summary, get_frequency, get_seasonal_frequency, get_trend_frequency, timeseries_unit_frequency_table, time_scale_template
 )
 from .datasets.get_datasets import (
     load_dataset, get_available_datasets

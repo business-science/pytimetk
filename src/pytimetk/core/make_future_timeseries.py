@@ -3,7 +3,7 @@ import numpy as np
 import pandas_flavor as pf
 from typing import Union
 
-from pytimetk.core.ts_summary import get_pandas_frequency
+from pytimetk.core.frequency import get_frequency
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column, check_series_or_datetime
 
@@ -79,7 +79,7 @@ def make_future_timeseries(
     # Irregular Dates: Business Days
     dates = pd.to_datetime(["2021-01-01", "2021-01-04", "2021-01-05", "2021-01-06"])
     
-    tk.get_pandas_frequency(dates)
+    tk.get_frequency(dates)
     
     tk.make_future_timeseries(dates, 4)
     ```
@@ -101,7 +101,7 @@ def make_future_timeseries(
     dt_index = pd.DatetimeIndex(pd.Series(idx).values)
     
     # Determine the frequency
-    frequency = get_pandas_frequency(dt_index, force_regular=force_regular)  
+    frequency = get_frequency(dt_index, force_regular=force_regular)  
     
     # Generate the next four periods (dates)
     future_dates = pd.date_range(
