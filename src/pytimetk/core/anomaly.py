@@ -15,9 +15,12 @@ def anomalize(
     date_column: str,
     value_column: str,
     period: int = None,
-    seasonal_span: int = None,
-    trend_span: int = None,
-) -> None:
+    method: str = 'twitter',
+    iqr_alpha: float = 0.05,
+    max_anomalies: float = 0.2,
+    
+    
+) -> pd.DataFrame:
     """
     
     Examples
@@ -32,8 +35,8 @@ def anomalize(
 
     # Generate some random data with a few outliers
     np.random.seed(42)
-    data = np.random.randn(len(date_rng)) * 36 + 50  
-    data[3] = 200  # outlier
+    data = np.random.randn(len(date_rng)) * 10 + 25  
+    data[3] = 100  # outlier
 
     # Create a DataFrame
     df = pd.DataFrame(date_rng, columns=['date'])
@@ -43,12 +46,13 @@ def anomalize(
     df.plot_timeseries("date", "value")
     
     # Anomalize the data
-    anomalize_df = tk.anomalize(df, "date", "value", period = 12, seasonal_span=12, trend_span=12)
+    anomalize_df = tk.anomalize(df, "date", "value", method = "seasonal", iqr_alpha = 0.05)
     
-    anomalize_df \
+    anomalize_df.glimpse()
+    
+    anomalize_df[["date", "observed", "recomposed_l1", "recomposed_l2"]] \
         .melt(id_vars = "date", value_name='val') \
-        .groupby('variable') \
-        .plot_timeseries("date", "val", smooth = False)
+        .plot_timeseries("date", "val", color_column = "variable", smooth = False)
     ```
     """
     
@@ -58,31 +62,125 @@ def anomalize(
     
     
     # STEP 1: Decompose the time series
-    data_stl = stl_decompose(
-        data = data, 
-        date_column=date_column, 
-        value_column=value_column, 
-        period = period,
-        seasonal_span=seasonal_span, 
-        trend_span=trend_span,
-        robust = True,
-    )
-    data_stl = pd.concat([data, data_stl.drop(date_column, axis=1)], axis=1)
+    if method == 'twitter':
+        
+        median_span = len(data[value_column]) // 4
+        
+        result = _twitter_decompose(
+            data = data, 
+            date_column=date_column, 
+            value_column=value_column, 
+            period = period,
+            median_span=median_span,
+        )
+    else:
+        result = _seasonal_decompose(
+            data = data, 
+            date_column=date_column, 
+            value_column=value_column, 
+            period = period,
+            model='additive',
+            filt=None,
+            two_sided=True, 
+            extrapolate_trend = 'freq'
+        )
+    
+    result = pd.concat([data, result.drop(date_column, axis=1)], axis=1)
     
     
     # STEP 2: Identify the outliers
     
+    outlier_dict = _iqr(
+        data = result, 
+        target = 'remainder', 
+        alpha = iqr_alpha, 
+        max_anoms = max_anomalies
+    )
+    
+    limits = outlier_dict['critical_limits']
+    outliers = outlier_dict['outlier'].sort_index()
+    
+    result['remainder_l1'] = limits[0]
+    result['remainder_l2'] = limits[1]
+    
+    result['anomaly'] = outliers
     
     # STEP 3: Recompose the time series
     
-    ret = data_stl
+    result['recomposed_l1'] = result['seasonal'] + result['trend'] + result['remainder_l1']
+    
+    result['recomposed_l2'] = result['seasonal'] + result['trend'] + result['remainder_l2']
+    
    
-    return ret
+    return result
     
 
+def _seasonal_decompose(
+    data, 
+    date_column, 
+    value_column, 
+    model='additive',
+    period = None, 
+    filt=None,
+    two_sided=True, 
+    extrapolate_trend = 'freq'
+):
+    '''
+    This is an internal function that is not meant to be called directly by the user.
+    
+    Examples 
+    --------
+    ``` {python}
+    import pytimetk as tk
+    import pandas as pd
+    import numpy as np
+    
+    df = pd.DataFrame({
+        'date': pd.date_range(start='2023-01-01', periods=365),
+        'value': np.sin(np.linspace(0, 365, 365)) + np.random.normal(scale=0.5, size=365) + np.linspace(0, 5, 365)
+    })
+    
+    
+    ```
+    '''
+    
+    orig_index = data.index
+        
+    series = data.set_index(date_column)[value_column]
+     
+    
+    # Need to add freq, trend, and kwargs
+    result = seasonal_decompose(
+        series, 
+        model=model,
+        period = period,
+        filt=filt,
+        two_sided=two_sided,
+        extrapolate_trend = extrapolate_trend,
+    )
+    
+    # Construct TS Decomposition DataFrame
+    observed = series
+    
+    seasadj = series - result.seasonal
+    
+    trend = result.trend
+    
+    resid = seasadj - trend
+    
+    
+    result_df = pd.concat([observed, result.seasonal, seasadj, trend, resid], axis=1)
+    
+    result_df.columns = ['observed', 'seasonal', 'seasadj', 'trend', 'remainder']
+    
+    result_df.reset_index(inplace=True)
+    
+    result_df.index = orig_index
 
-@pf.register_dataframe_method
-def stl_decompose(data, date_column, value_column, period = None, seasonal_span = None, trend_span = None, robust = True, **kwargs):
+    
+    return result_df 
+
+def _stl_decompose(data, date_column, value_column, period = None, seasonal_span = None, trend_span = None, robust = True, **kwargs):
     '''
     This is an internal function that is not meant to be called directly by the user.
     
@@ -104,13 +202,13 @@ def stl_decompose(data, date_column, value_column, period = None, seasonal_span 
     
     orig_index = data.index
         
-    series = data.set_index(date_column, **kwargs)[value_column]
+    series = data.set_index(date_column)[value_column]
     
     def make_odd(n):
         return n + 1 if n % 2 == 0 else n   
     
     # Need to add freq, trend, and kwargs
-    result_stl = STL(
+    result = STL(
         series, 
         period = period, 
         seasonal = make_odd(seasonal_span), 
@@ -121,23 +219,77 @@ def stl_decompose(data, date_column, value_column, period = None, seasonal_span 
     # Construct TS Decomposition DataFrame
     observed = series
     
-    seasadj = series - result_stl.seasonal
+    seasadj = series - result.seasonal
     
-    stl_df = pd.concat([observed, result_stl.seasonal, seasadj, result_stl.trend, result_stl.resid], axis=1)
+    result_df = pd.concat([observed, result.seasonal, seasadj, result.trend, result.resid], axis=1)
     
-    stl_df.columns = ['observed', 'seasonal', 'seasadj', 'trend', 'remainder']
+    result_df.columns = ['observed', 'seasonal', 'seasadj', 'trend', 'remainder']
     
-    stl_df.reset_index(inplace=True)
+    result_df.reset_index(inplace=True)
     
-    stl_df.index = orig_index
+    result_df.index = orig_index
 
     
-    return stl_df 
+    return result_df 
+    
+def _twitter_decompose(
+    data, 
+    date_column, 
+    value_column, 
+    period = None, 
+    median_span = None,
+):
+    orig_index = data.index
+        
+    series = data.set_index(date_column)[value_column]
+     
+    
+    # Need to add freq, trend, and kwargs
+    result = seasonal_decompose(
+        series, 
+        period = period,
+    )
+    
+    # Construct TS Decomposition DataFrame
+    observed = series
+    
+    seasadj = series - result.seasonal
+    seasadj.name = 'seasadj'
+    
+    # Calculate median trend
+    
+    median_span = len(series) // 6
+    
+    def repeat_sequence(seq, length_out):
+        quotient, remainder = divmod(length_out, len(seq))
+        return seq * quotient + seq[:remainder]
+    
+    df = pd.DataFrame(seasadj)
+    
+    df['median_index'] = sorted(repeat_sequence(list(range(median_span)), len(seasadj)))
+    
+    trend = df.groupby('median_index')['seasadj'].transform('median')
+    
+    resid = seasadj - trend
+    
+    
+    result_df = pd.concat([observed, result.seasonal, seasadj, trend, resid], axis=1)
+    
+    result_df.columns = ['observed', 'seasonal', 'seasadj', 'trend', 'remainder']
+    
+    result_df.reset_index(inplace=True)
+    
+    result_df.index = orig_index
+
+    
+    return result_df 
+    
+    
+    
     
 
 
-@pf.register_dataframe_method
-def iqr(data, target, alpha=0.05, max_anoms=0.2):
+def _iqr(data, target, alpha=0.05, max_anoms=0.2):
     """
     This function is not intended for general use. It is used internally by the anomaly detection functions.
     
@@ -161,7 +313,7 @@ def iqr(data, target, alpha=0.05, max_anoms=0.2):
     # Compute the interquartile range
     q1, q3 = np.percentile(data[target], [25, 75])
     iq_range = q3 - q1
-    limits = [q1 - (0.15 / alpha) * iq_range, q3 + (0.15 / alpha) * iq_range]
+    limits = [-1*(q1 + (0.15 / alpha) * iq_range), q3 + (0.15 / alpha) * iq_range]
 
     # Identify the outliers
     outlier_idx = (data[target] < limits[0]) | (data[target] > limits[1])
@@ -178,7 +330,7 @@ def iqr(data, target, alpha=0.05, max_anoms=0.2):
     data_sorted['outlier_reported'] = outliers_reported
 
     # Direction of the outlier
-    data_sorted['direction'] = np.where(data_sorted[target] > limits[1], 'Up', np.where(data_sorted[target] < limits[0], 'Down', 'NA'))
+    data_sorted['direction'] = np.where(data_sorted[target] > limits[1], 'Up', np.where(data_sorted[target] < limits[0], 'Down', "Not Outlier"))
 
     
     return {
