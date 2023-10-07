@@ -17,6 +17,7 @@ def anomalize(
     period: int = None,
     method: str = 'twitter',
     decomp: str = 'additive',
+    clean: str = 'linear',
     iqr_alpha: float = 0.05,
     max_anomalies: float = 0.2,
     bind_data = False,
@@ -60,6 +61,13 @@ def anomalize(
     anomalize_df[["date", "observed", "recomposed_l1", "recomposed_l2"]] \
         .melt(id_vars = "date", value_name='val') \
         .plot_timeseries("date", "val", color_column = "variable", smooth = False)
+        
+    anomalize_df.query("anomaly=='Yes'")
+        
+    anomalize_df[["date", "observed", "observed_clean"]] \
+        .melt(id_vars = "date", value_name='val') \
+        .plot_timeseries("date", "val", color_column = "variable", smooth = False)
+    
     ```
     """
     
@@ -70,14 +78,12 @@ def anomalize(
     # STEP 1: Decompose the time series
     if method == 'twitter':
         
-        median_span = len(data[value_column]) // 4
-        
         result = _twitter_decompose(
             data = data, 
             date_column=date_column, 
             value_column=value_column, 
             period=period,
-            median_span=median_span,
+            median_span=None,
             model=decomp
         )
     else:
@@ -92,10 +98,6 @@ def anomalize(
             extrapolate_trend = 'freq'
         )
     
-    if bind_data:
-        result = pd.concat([data, result.drop(date_column, axis=1)], axis=1)
-    
-    
     # STEP 2: Identify the outliers
     
     outlier_df = _iqr(
@@ -103,19 +105,27 @@ def anomalize(
         target = 'remainder', 
         alpha = iqr_alpha, 
         max_anoms = max_anomalies
-    ).sort_index()
+    )
+    
+    # STEP 3: Recompose the time series
     
     result['anomaly'] = outlier_df['outlier_reported']
     result['anomaly_score'] = outlier_df['score']
     result['anomaly_direction'] = outlier_df['direction']
     
-    # STEP 3: Recompose the time series
-    
     result['recomposed_l1'] = result['seasonal'] + result['trend'] + outlier_df['remainder_l1']
     
-    result['recomposed_l2'] = result['seasonal'] + result['trend'] + outlier_df['remainder_l1']
+    result['recomposed_l2'] = result['seasonal'] + result['trend'] + outlier_df['remainder_l2']
     
-   
+    # STEP 4: Clean the Anomalies
+    result['observed_clean'] = result['observed'] \
+        .where(result['anomaly']=='No', np.nan) \
+        .interpolate(method=clean, limit_direction='both')
+    
+    # STEP 5: Bind the data
+    if bind_data:
+        result = pd.concat([data, result.drop(date_column, axis=1)], axis=1)
+    
     return result
     
 
@@ -252,7 +262,7 @@ def _twitter_decompose(
     # Need to add freq, trend, and kwargs
     result = seasonal_decompose(
         series, 
-        period = period,
+        period=period,
         model=model,
         extrapolate_trend='freq',
     )
@@ -265,7 +275,7 @@ def _twitter_decompose(
     
     # Calculate median trend
     if median_span is None:
-        median_span = len(series) // 6
+        median_span = 4
     
     def repeat_sequence(seq, length_out):
         quotient, remainder = divmod(length_out, len(seq))
@@ -317,6 +327,8 @@ def _iqr(data, target, alpha=0.05, max_anoms=0.2):
     ```
     """
     
+    data = data.copy()
+    
     # Compute the interquartile range
     q1, q3 = np.percentile(data[target], [25, 75])
     iq_range = q3 - q1
@@ -329,23 +341,18 @@ def _iqr(data, target, alpha=0.05, max_anoms=0.2):
     # Calculate the anomaly_score from the centerline
     centerline = sum(limits) / 2
     data['score'] = abs(data[target] - centerline)
-    data_sorted = data.sort_values(by='score', ascending=False)
 
     # Yes/No flag for outlier
-    n_outliers = int(max_anoms * len(data_sorted))
-    outliers_reported = ['No'] * len(data_sorted)
-    outliers_reported[:n_outliers] = ['Yes'] * n_outliers
-
-    data_sorted['outlier_reported'] = outliers_reported
+    data['outlier_reported'] = np.where(data[target] > limits[1], "Yes", np.where(data[target] < limits[0], "Yes", "No"))
 
     # Direction of the outlier
-    data_sorted['direction'] = np.where(data_sorted[target] > limits[1], 1, np.where(data_sorted[target] < limits[0], -1, 0))
+    data['direction'] = np.where(data[target] > limits[1], 1, np.where(data[target] < limits[0], -1, 0))
     
     # Remainder Limits
-    data_sorted['remainder_l1'] = limits[0]
-    data_sorted['remainder_l2'] = limits[1]
+    data['remainder_l1'] = limits[0]
+    data['remainder_l2'] = limits[1]
     
-    return data_sorted[['outlier_reported', 'direction', 'score', 'remainder_l1', 'remainder_l2']]
+    return data[['outlier_reported', 'direction', 'score', 'remainder_l1', 'remainder_l2']]
     
 
 
