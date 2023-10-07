@@ -165,7 +165,7 @@
     "href": "reference/make_future_timeseries.html#examples",
     "title": "make_future_timeseries",
     "section": "Examples",
-    "text": "Examples\n\nimport pandas as pd\nimport pytimetk as tk\n\ndates = pd.Series(pd.to_datetime(['2022-01-01', '2022-01-02', '2022-01-03', '2022-01-04']))\ndates\n\n0   2022-01-01\n1   2022-01-02\n2   2022-01-03\n3   2022-01-04\ndtype: datetime64[ns]\n\n\n\n# DateTimeIndex: Generate 5 future dates\nfuture_dates_dt = tk.make_future_timeseries(dates, 5)\nfuture_dates_dt\n\n0   2022-01-05\n1   2022-01-06\n2   2022-01-07\n3   2022-01-08\n4   2022-01-09\ndtype: datetime64[ns]\n\n\n\n# Series: Generate 5 future dates\npd.Series(future_dates_dt).make_future_timeseries(5)\n\n0   2022-01-10\n1   2022-01-11\n2   2022-01-12\n3   2022-01-13\n4   2022-01-14\ndtype: datetime64[ns]\n\n\n\ntimestamps = [\"2023-01-01 01:00\", \"2023-01-01 02:00\", \"2023-01-01 03:00\", \"2023-01-01 04:00\", \"2023-01-01 05:00\"]\n\ndates = pd.to_datetime(timestamps)\n\ntk.make_future_timeseries(dates, 5)\n\n0   2023-01-01 06:00:00\n1   2023-01-01 07:00:00\n2   2023-01-01 08:00:00\n3   2023-01-01 09:00:00\n4   2023-01-01 10:00:00\ndtype: datetime64[ns]\n\n\n\n# Monthly Frequency: Generate 4 future dates\ndates = pd.to_datetime([\"2021-01-01\", \"2021-02-01\", \"2021-03-01\", \"2021-04-01\"])\n\ntk.make_future_timeseries(dates, 4)\n\n0   2021-05-01\n1   2021-06-01\n2   2021-07-01\n3   2021-08-01\ndtype: datetime64[ns]\n\n\n\n# Quarterly Frequency: Generate 4 future dates\ndates = pd.to_datetime([\"2021-01-01\", \"2021-04-01\", \"2021-07-01\", \"2021-10-01\"])\n\ntk.make_future_timeseries(dates, 4)\n\n0   2022-01-01\n1   2022-04-01\n2   2022-07-01\n3   2022-10-01\ndtype: datetime64[ns]\n\n\n\n# Irregular Dates: Business Days\ndates = pd.to_datetime([\"2021-01-01\", \"2021-01-04\", \"2021-01-05\", \"2021-01-06\"])\n\ntk.get_pandas_frequency(dates)\n\ntk.make_future_timeseries(dates, 4)\n\n0   2021-01-07\n1   2021-01-08\n2   2021-01-11\n3   2021-01-12\ndtype: datetime64[ns]\n\n\n\n# Irregular Dates: Business Days (Force Regular)    \ntk.make_future_timeseries(dates, 4, force_regular=True)\n\n0   2021-01-07\n1   2021-01-08\n2   2021-01-09\n3   2021-01-10\ndtype: datetime64[ns]"
+    "text": "Examples\n\nimport pandas as pd\nimport pytimetk as tk\n\ndates = pd.Series(pd.to_datetime(['2022-01-01', '2022-01-02', '2022-01-03', '2022-01-04']))\ndates\n\n0   2022-01-01\n1   2022-01-02\n2   2022-01-03\n3   2022-01-04\ndtype: datetime64[ns]\n\n\n\n# DateTimeIndex: Generate 5 future dates\nfuture_dates_dt = tk.make_future_timeseries(dates, 5)\nfuture_dates_dt\n\n0   2022-01-05\n1   2022-01-06\n2   2022-01-07\n3   2022-01-08\n4   2022-01-09\ndtype: datetime64[ns]\n\n\n\n# Series: Generate 5 future dates\npd.Series(future_dates_dt).make_future_timeseries(5)\n\n0   2022-01-10\n1   2022-01-11\n2   2022-01-12\n3   2022-01-13\n4   2022-01-14\ndtype: datetime64[ns]\n\n\n\ntimestamps = [\"2023-01-01 01:00\", \"2023-01-01 02:00\", \"2023-01-01 03:00\", \"2023-01-01 04:00\", \"2023-01-01 05:00\"]\n\ndates = pd.to_datetime(timestamps)\n\ntk.make_future_timeseries(dates, 5)\n\n0   2023-01-01 06:00:00\n1   2023-01-01 07:00:00\n2   2023-01-01 08:00:00\n3   2023-01-01 09:00:00\n4   2023-01-01 10:00:00\ndtype: datetime64[ns]\n\n\n\n# Monthly Frequency: Generate 4 future dates\ndates = pd.to_datetime([\"2021-01-01\", \"2021-02-01\", \"2021-03-01\", \"2021-04-01\"])\n\ntk.make_future_timeseries(dates, 4)\n\n0   2021-05-01\n1   2021-06-01\n2   2021-07-01\n3   2021-08-01\ndtype: datetime64[ns]\n\n\n\n# Quarterly Frequency: Generate 4 future dates\ndates = pd.to_datetime([\"2021-01-01\", \"2021-04-01\", \"2021-07-01\", \"2021-10-01\"])\n\ntk.make_future_timeseries(dates, 4)\n\n0   2022-01-01\n1   2022-04-01\n2   2022-07-01\n3   2022-10-01\ndtype: datetime64[ns]\n\n\n\n# Irregular Dates: Business Days\ndates = pd.to_datetime([\"2021-01-01\", \"2021-01-04\", \"2021-01-05\", \"2021-01-06\"])\n\ntk.get_frequency(dates)\n\ntk.make_future_timeseries(dates, 4)\n\n0   2021-01-07\n1   2021-01-08\n2   2021-01-11\n3   2021-01-12\ndtype: datetime64[ns]\n\n\n\n# Irregular Dates: Business Days (Force Regular)    \ntk.make_future_timeseries(dates, 4, force_regular=True)\n\n0   2021-01-07\n1   2021-01-08\n2   2021-01-09\n3   2021-01-10\ndtype: datetime64[ns]"
   },
   {
     "objectID": "reference/load_dataset.html",
@@ -256,14 +256,14 @@
     "href": "reference/get_frequency.html",
     "title": "get_frequency",
     "section": "",
-    "text": "get_frequency(idx, force_regular=False)\nGet the frequency of a pandas Series or DatetimeIndex.\nThe function get_frequency first attempts to get a pandas inferred frequency. If the inferred frequency is None, it will attempt calculate the frequency manually. If the frequency cannot be determined, the function will raise a ValueError.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DatetimeIndex\nThe idx parameter can be either a pd.Series or a pd.DatetimeIndex. It represents the index or the time series data for which we want to determine the frequency.\nrequired\n\n\nforce_regular\nbool\nThe force_regular parameter is a boolean flag that determines whether to force the frequency to be regular. If set to True, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is ‘B’ (business days), it will be converted to ‘D’ (calendar days). The default value is False.\nFalse\n\n\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\nstr\nThe frequency of the given pandas series or datetime index."
+    "text": "get_frequency(idx, force_regular=False, numeric=False)\nGet the frequency of a pandas Series or DatetimeIndex.\nThe function get_frequency first attempts to get a pandas inferred frequency. If the inferred frequency is None, it will attempt calculate the frequency manually. If the frequency cannot be determined, the function will raise a ValueError.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DatetimeIndex\nThe idx parameter can be either a pd.Series or a pd.DatetimeIndex. It represents the index or the time series data for which we want to determine the frequency.\nrequired\n\n\nforce_regular\nbool\nThe force_regular parameter is a boolean flag that determines whether to force the frequency to be regular. If set to True, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is ‘B’ (business days), it will be converted to ‘D’ (calendar days). The default value is False.\nFalse\n\n\nnumeric\nbool\nThe numeric parameter is a boolean flag that indicates whether a numeric value for the median timestamps per pandas frequency or the pandas string frequency alias.\nFalse\n\n\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\nstr\nThe frequency of the given pandas series or datetime index."
   },
   {
     "objectID": "reference/get_frequency.html#parameters",
     "href": "reference/get_frequency.html#parameters",
     "title": "get_frequency",
     "section": "",
-    "text": "Name\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DatetimeIndex\nThe idx parameter can be either a pd.Series or a pd.DatetimeIndex. It represents the index or the time series data for which we want to determine the frequency.\nrequired\n\n\nforce_regular\nbool\nThe force_regular parameter is a boolean flag that determines whether to force the frequency to be regular. If set to True, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is ‘B’ (business days), it will be converted to ‘D’ (calendar days). The default value is False.\nFalse"
+    "text": "Name\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DatetimeIndex\nThe idx parameter can be either a pd.Series or a pd.DatetimeIndex. It represents the index or the time series data for which we want to determine the frequency.\nrequired\n\n\nforce_regular\nbool\nThe force_regular parameter is a boolean flag that determines whether to force the frequency to be regular. If set to True, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is ‘B’ (business days), it will be converted to ‘D’ (calendar days). The default value is False.\nFalse\n\n\nnumeric\nbool\nThe numeric parameter is a boolean flag that indicates whether a numeric value for the median timestamps per pandas frequency or the pandas string frequency alias.\nFalse"
   },
   {
     "objectID": "reference/get_frequency.html#returns",
@@ -273,172 +273,165 @@
     "text": "Type\nDescription\n\n\n\n\nstr\nThe frequency of the given pandas series or datetime index."
   },
   {
-    "objectID": "reference/week_of_month.html",
-    "href": "reference/week_of_month.html",
-    "title": "week_of_month",
+    "objectID": "reference/get_trend_frequency.html",
+    "href": "reference/get_trend_frequency.html",
+    "title": "get_trend_frequency",
     "section": "",
-    "text": "week_of_month(idx)\nThe “week_of_month” function calculates the week number of a given date within its month."
+    "text": "get_trend_frequency(idx, force_regular=False, numeric=False)\nThe get_trend_frequency function returns the trend period of a given time series or datetime index."
   },
   {
-    "objectID": "reference/week_of_month.html#parameters",
-    "href": "reference/week_of_month.html#parameters",
-    "title": "week_of_month",
+    "objectID": "reference/get_trend_frequency.html#parameters",
+    "href": "reference/get_trend_frequency.html#parameters",
+    "title": "get_trend_frequency",
     "section": "Parameters",
-    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DatetimeIndex\nThe parameter “idx” is a pandas Series object that represents a specific date for which you want to determine the week of the month.\nrequired"
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\nUnion[pd.Series, pd.DatetimeIndex]\nThe idx parameter can be either a pandas Series or a pandas DatetimeIndex. It represents the time index for which you want to calculate the trend frequency.\nrequired\n\n\nforce_regular\nbool\nforce_regular is a boolean parameter that determines whether to force the frequency to be regular. If set to True, the function will try to find a regular frequency even if the data is irregular. If set to False, the function will return the actual frequency of the data.\nFalse\n\n\nnumeric\nbool\nThe numeric parameter is a boolean flag that determines whether the output should be in numeric format or a string Pandas Frequency Alias. If numeric is set to True, the output will be a numeric representation of the trend period. If numeric is set to False (default), the output will\nFalse"
   },
   {
-    "objectID": "reference/week_of_month.html#returns",
-    "href": "reference/week_of_month.html#returns",
-    "title": "week_of_month",
+    "objectID": "reference/get_trend_frequency.html#returns",
+    "href": "reference/get_trend_frequency.html#returns",
+    "title": "get_trend_frequency",
     "section": "Returns",
-    "text": "Returns\n\n\n\nType\nDescription\n\n\n\n\npd.Series\nThe week of the month for a given date."
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\nThe function get_trend_frequency returns the trend period based on the input index. If the index is a pd.DatetimeIndex, it is converted to a pd.Series with the name “idx”. The function then calculates the summary frequency of the index using the get_frequency_summary function. It determines the scale and unit of the frequency and adjusts the unit if the scale is"
   },
   {
-    "objectID": "reference/week_of_month.html#examples",
-    "href": "reference/week_of_month.html#examples",
-    "title": "week_of_month",
+    "objectID": "reference/get_trend_frequency.html#examples",
+    "href": "reference/get_trend_frequency.html#examples",
+    "title": "get_trend_frequency",
     "section": "Examples",
-    "text": "Examples\n\nimport pytimetk as tk\nimport pandas as pd\n\ndates = pd.date_range(\"2020-01-01\", \"2020-02-28\", freq=\"1D\")\ndates\n\nDatetimeIndex(['2020-01-01', '2020-01-02', '2020-01-03', '2020-01-04',\n               '2020-01-05', '2020-01-06', '2020-01-07', '2020-01-08',\n               '2020-01-09', '2020-01-10', '2020-01-11', '2020-01-12',\n               '2020-01-13', '2020-01-14', '2020-01-15', '2020-01-16',\n               '2020-01-17', '2020-01-18', '2020-01-19', '2020-01-20',\n               '2020-01-21', '2020-01-22', '2020-01-23', '2020-01-24',\n               '2020-01-25', '2020-01-26', '2020-01-27', '2020-01-28',\n               '2020-01-29', '2020-01-30', '2020-01-31', '2020-02-01',\n               '2020-02-02', '2020-02-03', '2020-02-04', '2020-02-05',\n               '2020-02-06', '2020-02-07', '2020-02-08', '2020-02-09',\n               '2020-02-10', '2020-02-11', '2020-02-12', '2020-02-13',\n               '2020-02-14', '2020-02-15', '2020-02-16', '2020-02-17',\n               '2020-02-18', '2020-02-19', '2020-02-20', '2020-02-21',\n               '2020-02-22', '2020-02-23', '2020-02-24', '2020-02-25',\n               '2020-02-26', '2020-02-27', '2020-02-28'],\n              dtype='datetime64[ns]', freq='D')\n\n\n\n# Works on DateTimeIndex\ntk.week_of_month(dates)\n\n0     1\n1     1\n2     1\n3     1\n4     1\n5     1\n6     1\n7     2\n8     2\n9     2\n10    2\n11    2\n12    2\n13    2\n14    3\n15    3\n16    3\n17    3\n18    3\n19    3\n20    3\n21    4\n22    4\n23    4\n24    4\n25    4\n26    4\n27    4\n28    5\n29    5\n30    5\n31    1\n32    1\n33    1\n34    1\n35    1\n36    1\n37    1\n38    2\n39    2\n40    2\n41    2\n42    2\n43    2\n44    2\n45    3\n46    3\n47    3\n48    3\n49    3\n50    3\n51    3\n52    4\n53    4\n54    4\n55    4\n56    4\n57    4\n58    4\nName: week_of_month, dtype: int32\n\n\n\n# Works on Pandas Series\ndates.to_series().week_of_month()\n\n2020-01-01    1\n2020-01-02    1\n2020-01-03    1\n2020-01-04    1\n2020-01-05    1\n2020-01-06    1\n2020-01-07    1\n2020-01-08    2\n2020-01-09    2\n2020-01-10    2\n2020-01-11    2\n2020-01-12    2\n2020-01-13    2\n2020-01-14    2\n2020-01-15    3\n2020-01-16    3\n2020-01-17    3\n2020-01-18    3\n2020-01-19    3\n2020-01-20    3\n2020-01-21    3\n2020-01-22    4\n2020-01-23    4\n2020-01-24    4\n2020-01-25    4\n2020-01-26    4\n2020-01-27    4\n2020-01-28    4\n2020-01-29    5\n2020-01-30    5\n2020-01-31    5\n2020-02-01    1\n2020-02-02    1\n2020-02-03    1\n2020-02-04    1\n2020-02-05    1\n2020-02-06    1\n2020-02-07    1\n2020-02-08    2\n2020-02-09    2\n2020-02-10    2\n2020-02-11    2\n2020-02-12    2\n2020-02-13    2\n2020-02-14    2\n2020-02-15    3\n2020-02-16    3\n2020-02-17    3\n2020-02-18    3\n2020-02-19    3\n2020-02-20    3\n2020-02-21    3\n2020-02-22    4\n2020-02-23    4\n2020-02-24    4\n2020-02-25    4\n2020-02-26    4\n2020-02-27    4\n2020-02-28    4\nFreq: D, Name: week_of_month, dtype: int32"
+    "text": "Examples\n\nimport pytimetk as tk\nimport pandas as pd\n\ndates = pd.date_range(start='2021-01-01', end='2024-01-01', freq='MS')\n\ntk.get_trend_frequency(dates)\n\n'5Y'"
   },
   {
-    "objectID": "reference/summarize_by_time.html",
-    "href": "reference/summarize_by_time.html",
-    "title": "summarize_by_time",
+    "objectID": "reference/augment_expanding_apply.html",
+    "href": "reference/augment_expanding_apply.html",
+    "title": "augment_expanding_apply",
     "section": "",
-    "text": "summarize_by_time(data, date_column, value_column, freq='D', agg_func='sum', wide_format=False, fillna=0, *args, **kwargs)\nSummarize a DataFrame or GroupBy object by time.\nThe summarize_by_time function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the time-based aggregation."
+    "text": "augment_expanding_apply(data, date_column, window_func, min_periods=None)\nApply one or more DataFrame-based expanding functions to one or more columns of a DataFrame."
   },
   {
-    "objectID": "reference/summarize_by_time.html#parameters",
-    "href": "reference/summarize_by_time.html#parameters",
-    "title": "summarize_by_time",
+    "objectID": "reference/augment_expanding_apply.html#parameters",
+    "href": "reference/augment_expanding_apply.html#parameters",
+    "title": "augment_expanding_apply",
     "section": "Parameters",
-    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy\nA pandas DataFrame or a pandas GroupBy object. This is the data that you want to summarize by time.\nrequired\n\n\ndate_column\nstr\nThe name of the column in the data frame that contains the dates or timestamps to be aggregated by. This column must be of type datetime64.\nrequired\n\n\nvalue_column\nstr or list\nThe value_column parameter is the name of one or more columns in the DataFrame that you want to aggregate by. It can be either a string representing a single column name, or a list of strings representing multiple column names.\nrequired\n\n\nfreq\nstr\nThe freq parameter specifies the frequency at which the data should be aggregated. It accepts a string representing a pandas frequency offset, such as “D” for daily or “MS” for month start. The default value is “D”, which means the data will be aggregated on a daily basis. Some common frequency aliases include: - S: secondly frequency - min: minute frequency - H: hourly frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency\n'D'\n\n\nagg_func\nlist\nThe agg_func parameter is used to specify one or more aggregating functions to apply to the value column(s) during the summarization process. It can be a single function or a list of functions. The default value is \"sum\", which represents the sum function. Some common aggregating functions include: - “sum”: Sum of values - “mean”: Mean of values - “median”: Median of values - “min”: Minimum of values - “max”: Maximum of values - “std”: Standard deviation of values - “var”: Variance of values - “first”: First value in group - “last”: Last value in group - “count”: Count of values - “nunique”: Number of unique values Custom lambda aggregating functions can be used too. Here are several common examples: - (“q25”, lambda x: x.quantile(0.25)): 25th percentile of values - (“q75”, lambda x: x.quantile(0.75)): 75th percentile of values - (“iqr”, lambda x: x.quantile(0.75) - x.quantile(0.25)): Interquartile range of values - (“range”, lambda x: x.max() - x.min()): Range of values\n'sum'\n\n\nwide_format\nbool\nA boolean parameter that determines whether the output should be in “wide” or “long” format. If set to True, the output will be in wide format, where each group is represented by a separate column. If set to False, the output will be in long format, where each group is represented by a separate row. The default value is False.\nFalse\n\n\nfillna\nint\nThe fillna parameter is used to specify the value to fill missing data with. By default, it is set to 0. If you want to keep missing values as NaN, you can use np.nan as the value for fillna.\n0"
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\nUnion[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]\nInput data to be processed. Can be a Pandas DataFrame or a GroupBy object.\nrequired\n\n\ndate_column\nstr\nName of the datetime column. Data is sorted by this column within each group.\nrequired\n\n\nwindow_func\nUnion[Tuple[str, Callable], List[Tuple[str, Callable]]]\nThe window_func parameter in the augment_expanding_apply function specifies the function(s) that operate on a expanding window with the consideration of multiple columns. The specification can be: - A tuple where the first element is a string representing the function’s name and the second element is the callable function itself. - A list of such tuples for multiple functions. Note: For functions targeting only a single value column without the need for contextual data from other columns, consider using the augment_expanding function in this library.\nrequired\n\n\nmin_periods\nint\nMinimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.\nNone"
   },
   {
-    "objectID": "reference/summarize_by_time.html#returns",
-    "href": "reference/summarize_by_time.html#returns",
-    "title": "summarize_by_time",
+    "objectID": "reference/augment_expanding_apply.html#returns",
+    "href": "reference/augment_expanding_apply.html#returns",
+    "title": "augment_expanding_apply",
     "section": "Returns",
-    "text": "Returns\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\nA Pandas DataFrame that is summarized by time."
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\nThe augment_expanding function returns a DataFrame with new columns for each applied function, window size, and value column."
   },
   {
-    "objectID": "reference/summarize_by_time.html#examples",
-    "href": "reference/summarize_by_time.html#examples",
-    "title": "summarize_by_time",
+    "objectID": "reference/augment_expanding_apply.html#examples",
+    "href": "reference/augment_expanding_apply.html#examples",
+    "title": "augment_expanding_apply",
     "section": "Examples",
-    "text": "Examples\n\nimport pytimetk as tk\nimport pandas as pd\n\ndf = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])\n\ndf\n\n\n\n\n\n\n\n\norder_id\norder_line\norder_date\nquantity\nprice\ntotal_price\nmodel\ncategory_1\ncategory_2\nframe_material\nbikeshop_name\ncity\nstate\n\n\n\n\n0\n1\n1\n2011-01-07\n1\n6070\n6070\nJekyll Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n\n\n1\n1\n2\n2011-01-07\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n\n\n2\n2\n1\n2011-01-10\n1\n2770\n2770\nBeast of the East 1\nMountain\nTrail\nAluminum\nKansas City 29ers\nKansas City\nKS\n\n\n3\n2\n2\n2011-01-10\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nKansas City 29ers\nKansas City\nKS\n\n\n4\n3\n1\n2011-01-10\n1\n10660\n10660\nSupersix Evo Hi-Mod Team\nRoad\nElite Road\nCarbon\nLouisville Race Equipment\nLouisville\nKY\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n2461\n321\n3\n2011-12-22\n1\n1410\n1410\nCAAD8 105\nRoad\nElite Road\nAluminum\nMiami Race Equipment\nMiami\nFL\n\n\n2462\n322\n1\n2011-12-28\n1\n1250\n1250\nSynapse Disc Tiagra\nRoad\nEndurance Road\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2463\n322\n2\n2011-12-28\n1\n2660\n2660\nBad Habit 2\nMountain\nTrail\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2464\n322\n3\n2011-12-28\n1\n2340\n2340\nF-Si 1\nMountain\nCross Country Race\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2465\n322\n4\n2011-12-28\n1\n5860\n5860\nSynapse Hi-Mod Dura Ace\nRoad\nEndurance Road\nCarbon\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n\n\n2466 rows × 13 columns\n\n\n\n\n# Summarize by time with a DataFrame object\n( \n    df \n        .summarize_by_time(\n            date_column  = 'order_date', \n            value_column = 'total_price',\n            freq         = \"MS\",\n            agg_func     = ['mean', 'sum']\n        )\n)\n\n\n\n\n\n\n\n\norder_date\ntotal_price_mean\ntotal_price_sum\n\n\n\n\n0\n2011-01-01\n4600.142857\n483015\n\n\n1\n2011-02-01\n4611.408730\n1162075\n\n\n2\n2011-03-01\n5196.653543\n659975\n\n\n3\n2011-04-01\n4533.846154\n1827140\n\n\n4\n2011-05-01\n4097.912621\n844170\n\n\n5\n2011-06-01\n4544.839228\n1413445\n\n\n6\n2011-07-01\n4976.791667\n1194430\n\n\n7\n2011-08-01\n4961.970803\n679790\n\n\n8\n2011-09-01\n4682.298851\n814720\n\n\n9\n2011-10-01\n3930.053476\n734920\n\n\n10\n2011-11-01\n4768.175355\n1006085\n\n\n11\n2011-12-01\n4186.902655\n473120\n\n\n\n\n\n\n\n\n# Summarize by time with a GroupBy object (Long Format)\n(\n    df \n        .groupby('category_1') \n        .summarize_by_time(\n            date_column  = 'order_date', \n            value_column = 'total_price', \n            freq         = 'MS',\n            agg_func     = 'sum',\n            wide_format  = False, \n        )\n)\n\n\n\n\n\n\n\n\ncategory_1\norder_date\ntotal_price\n\n\n\n\n0\nMountain\n2011-01-01\n221490\n\n\n1\nMountain\n2011-02-01\n660555\n\n\n2\nMountain\n2011-03-01\n358855\n\n\n3\nMountain\n2011-04-01\n1075975\n\n\n4\nMountain\n2011-05-01\n450440\n\n\n5\nMountain\n2011-06-01\n723040\n\n\n6\nMountain\n2011-07-01\n767740\n\n\n7\nMountain\n2011-08-01\n361255\n\n\n8\nMountain\n2011-09-01\n401125\n\n\n9\nMountain\n2011-10-01\n377335\n\n\n10\nMountain\n2011-11-01\n549345\n\n\n11\nMountain\n2011-12-01\n276055\n\n\n12\nRoad\n2011-01-01\n261525\n\n\n13\nRoad\n2011-02-01\n501520\n\n\n14\nRoad\n2011-03-01\n301120\n\n\n15\nRoad\n2011-04-01\n751165\n\n\n16\nRoad\n2011-05-01\n393730\n\n\n17\nRoad\n2011-06-01\n690405\n\n\n18\nRoad\n2011-07-01\n426690\n\n\n19\nRoad\n2011-08-01\n318535\n\n\n20\nRoad\n2011-09-01\n413595\n\n\n21\nRoad\n2011-10-01\n357585\n\n\n22\nRoad\n2011-11-01\n456740\n\n\n23\nRoad\n2011-12-01\n197065\n\n\n\n\n\n\n\n\n# Summarize by time with a GroupBy object (Wide Format)\n(\n    df \n        .groupby('category_1') \n        .summarize_by_time(\n            date_column  = 'order_date', \n            value_column = 'total_price', \n            freq         = 'MS',\n            agg_func     = 'sum',\n            wide_format  = True, \n        )\n)\n\n\n\n\n\n\n\n\norder_date\ntotal_price_Mountain\ntotal_price_Road\n\n\n\n\n0\n2011-01-01\n221490\n261525\n\n\n1\n2011-02-01\n660555\n501520\n\n\n2\n2011-03-01\n358855\n301120\n\n\n3\n2011-04-01\n1075975\n751165\n\n\n4\n2011-05-01\n450440\n393730\n\n\n5\n2011-06-01\n723040\n690405\n\n\n6\n2011-07-01\n767740\n426690\n\n\n7\n2011-08-01\n361255\n318535\n\n\n8\n2011-09-01\n401125\n413595\n\n\n9\n2011-10-01\n377335\n357585\n\n\n10\n2011-11-01\n549345\n456740\n\n\n11\n2011-12-01\n276055\n197065\n\n\n\n\n\n\n\n\n# Summarize by time with a GroupBy object and multiple summaries (Wide Format)\n(\n    df \n        .groupby('category_1') \n        .summarize_by_time(\n            date_column  = 'order_date', \n            value_column = 'total_price', \n            freq         = 'MS',\n            agg_func     = ['sum', 'mean', ('q25', lambda x: x.quantile(0.25)), ('q75', lambda x: x.quantile(0.75))],\n            wide_format  = True, \n        )\n)\n\n\n\n\n\n\n\n\norder_date\ntotal_price_sum_Mountain\ntotal_price_sum_Road\ntotal_price_mean_Mountain\ntotal_price_mean_Road\ntotal_price_q25_Mountain\ntotal_price_q75_Road\ntotal_price_q25_Mountain\ntotal_price_q75_Road\n\n\n\n\n0\n2011-01-01\n221490\n261525\n4922.000000\n4358.750000\n2060.0\n1950.0\n6070.0\n5605.0\n\n\n1\n2011-02-01\n660555\n501520\n4374.536424\n4965.544554\n2060.0\n1950.0\n5330.0\n5860.0\n\n\n2\n2011-03-01\n358855\n301120\n5882.868852\n4562.424242\n2130.0\n2240.0\n6390.0\n5875.0\n\n\n3\n2011-04-01\n1075975\n751165\n4890.795455\n4104.726776\n2060.0\n1950.0\n5970.0\n4800.0\n\n\n4\n2011-05-01\n450440\n393730\n4549.898990\n3679.719626\n2010.0\n1570.0\n6020.0\n3500.0\n\n\n5\n2011-06-01\n723040\n690405\n5021.111111\n4134.161677\n1950.0\n1840.0\n5647.5\n4500.0\n\n\n6\n2011-07-01\n767740\n426690\n5444.964539\n4310.000000\n2130.0\n1895.0\n6400.0\n5330.0\n\n\n7\n2011-08-01\n361255\n318535\n5734.206349\n4304.527027\n2235.0\n1950.0\n6400.0\n4987.5\n\n\n8\n2011-09-01\n401125\n413595\n5077.531646\n4353.631579\n1620.0\n1950.0\n6390.0\n5330.0\n\n\n9\n2011-10-01\n377335\n357585\n4439.235294\n3505.735294\n2160.0\n1750.0\n6070.0\n4260.0\n\n\n10\n2011-11-01\n549345\n456740\n5282.163462\n4268.598131\n2340.0\n1950.0\n7460.0\n4370.0\n\n\n11\n2011-12-01\n276055\n197065\n5208.584906\n3284.416667\n2060.0\n1652.5\n6400.0\n3200.0"
+    "text": "Examples\n\nimport pytimetk as tk\nimport pandas as pd\nimport numpy as np\n\n\n# Example showcasing the expanding correlation between two columns (`value1` and `value2`).\n# The correlation requires both columns as input.\n\n# Sample DataFrame with id, date, value1, and value2 columns.\ndf = pd.DataFrame({\n    'id': [1, 1, 1, 2, 2, 2],\n    'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),\n    'value1': [10, 20, 29, 42, 53, 59],\n    'value2': [2, 16, 20, 40, 41, 50],\n})\n\n# Compute the expanding correlation for each group of 'id'\nexpanding_df = (\n    df.groupby('id')\n    .augment_expanding_apply(\n        date_column='date',\n        window_func=[('corr', lambda x: x['value1'].corr(x['value2']))],  # Lambda function for correlation\n    )\n)\ndisplay(expanding_df)\n\n\n\n\n\n\n\n\nid\ndate\nvalue1\nvalue2\nexpanding_corr\n\n\n\n\n0\n1\n2023-01-01\n10\n2\nNaN\n\n\n1\n1\n2023-01-02\n20\n16\n1.000000\n\n\n2\n1\n2023-01-03\n29\n20\n0.961054\n\n\n3\n2\n2023-01-04\n42\n40\nNaN\n\n\n4\n2\n2023-01-05\n53\n41\n1.000000\n\n\n5\n2\n2023-01-06\n59\n50\n0.824831\n\n\n\n\n\n\n\n\n# expanding Regression Example: Using `value1` as the dependent variable and `value2` and `value3` as the independent variables.\n# This example demonstrates how to perform a expanding regression using two independent variables.\n\n# Required module (scikit-learn) for regression.\nfrom sklearn.linear_model import LinearRegression\n\n# Sample DataFrame with `id`, `date`, `value1`, `value2`, and `value3` columns.\ndf = pd.DataFrame({\n    'id': [1, 1, 1, 2, 2, 2],\n    'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),\n    'value1': [10, 20, 29, 42, 53, 59],\n    'value2': [5, 16, 24, 35, 45, 58],\n    'value3': [2, 3, 6, 9, 10, 13]\n})\n\n# Define Regression Function to be applied on the expanding window.\ndef regression(df):\n\n    model = LinearRegression()\n    X = df[['value2', 'value3']]  # Independent variables\n    y = df['value1']  # Dependent variable\n    model.fit(X, y)\n    ret = pd.Series([model.intercept_, model.coef_[0]], index=['Intercept', 'Slope'])\n    \n    return ret # Return intercept and slope as a Series\n    \n# Compute the expanding regression for each group of `id`\nresult_df = (\n    df.groupby('id')\n    .augment_expanding_apply(\n        date_column='date',\n        window_func=[('regression', regression)]\n    )\n    .dropna()\n)\n\n# Format the results to have each regression output (slope and intercept) in separate columns.\nregression_wide_df = pd.concat(result_df['expanding_regression'].to_list(), axis=1).T\nregression_wide_df = pd.concat([result_df.reset_index(drop = True), regression_wide_df], axis=1)\ndisplay(regression_wide_df)\n\n\n\n\n\n\n\n\nid\ndate\nvalue1\nvalue2\nvalue3\nexpanding_regression\nIntercept\nSlope\n\n\n\n\n0\n1\n2023-01-01\n10\n5\n2\nIntercept 10.0 Slope 0.0 dtype: flo...\n10.000000\n0.000000\n\n\n1\n1\n2023-01-02\n20\n16\n3\nIntercept 5.327869 Slope 0.901639 dt...\n5.327869\n0.901639\n\n\n2\n1\n2023-01-03\n29\n24\n6\nIntercept 4.28 Slope 0.84 dtype: flo...\n4.280000\n0.840000\n\n\n3\n2\n2023-01-04\n42\n35\n9\nIntercept 42.0 Slope 0.0 dtype: flo...\n42.000000\n0.000000\n\n\n4\n2\n2023-01-05\n53\n45\n10\nIntercept 2.900990 Slope 1.089109 dt...\n2.900990\n1.089109\n\n\n5\n2\n2023-01-06\n59\n58\n13\nIntercept 30.352941 Slope 1.588235 ...\n30.352941\n1.588235"
   },
   {
-    "objectID": "reference/index.html",
-    "href": "reference/index.html",
-    "title": "Function reference",
+    "objectID": "reference/apply_by_time.html",
+    "href": "reference/apply_by_time.html",
+    "title": "apply_by_time",
     "section": "",
-    "text": "Visualize time series data with one line of code.\n\n\n\nplot_timeseries\nCreates time series plots using different plotting engines such as Plotnine, Matplotlib, and Plotly.\n\n\n\n\n\n\nBend time series data to your will.\n\n\n\nsummarize_by_time\nSummarize a DataFrame or GroupBy object by time.\n\n\napply_by_time\nApply for time series.\n\n\npad_by_time\nMake irregular time series regular by padding with missing dates.\n\n\nfuture_frame\nExtend a DataFrame or GroupBy object with future dates.\n\n\n\n\n\n\nAdd one or more feature columns to time series data.\n\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame.\n\n\naugment_holiday_signature\nEngineers 4 different holiday features from a single datetime for 80+ countries.\n\n\naugment_lags\nAdds lags to a Pandas DataFrame or DataFrameGroupBy object.\n\n\naugment_leads\nAdds leads to a Pandas DataFrame or DataFrameGroupBy object.\n\n\naugment_rolling\nApply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame.\n\n\naugment_rolling_apply\nApply one or more DataFrame-based rolling functions and window sizes to one or more columns of a DataFrame.\n\n\naugment_expanding\nApply one or more Series-based expanding functions and window sizes to one or more columns of a DataFrame.\n\n\naugment_expanding_apply\nApply one or more DataFrame-based expanding functions to one or more columns of a DataFrame.\n\n\n\n\n\n\nPython implementation of the R package tsfeatures.\n\n\n\nts_features\nExtracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the tsfeatures package.\n\n\nts_summary\nComputes summary statistics for a time series data, either for the entire dataset or grouped by a specific column.\n\n\n\n\n\n\nTime series functions that generate / manipulate Pandas Series.\n\n\n\nmake_future_timeseries\nMake future dates for a time series.\n\n\nmake_weekday_sequence\nGenerate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays.\n\n\nmake_weekend_sequence\nGenerate a sequence of weekend dates within a specified date range, optionally excluding holidays.\n\n\nget_date_summary\nReturns a summary of the date-related information, including the number of dates, the time zone, the start\n\n\nget_frequency_summary\nMore robust version of pandas inferred frequency.\n\n\nget_diff_summary\nCalculates summary statistics of the time differences between consecutive values in a datetime index.\n\n\nget_frequency\nGet the frequency of a pandas Series or DatetimeIndex.\n\n\nget_timeseries_signature\nConvert a timestamp to a set of 29 time series features.\n\n\nget_holiday_signature\nEngineers 4 different holiday features from a single datetime for 80+ countries.\n\n\n\n\n\n\nHelper functions to make your life easier.\n\n\n\nfloor_date\nRound a date down to the specified unit (e.g. Flooring).\n\n\nis_holiday\nCheck if a given list of dates are holidays for a specified country.\n\n\nweek_of_month\nThe “week_of_month” function calculates the week number of a given date within its month.\n\n\ntimeseries_unit_frequency_table\nThe function timeseries_unit_frequency_table returns a pandas DataFrame with units of time and\n\n\n\n\n\n\nHelper functions to make your life easier.\n\n\n\ntheme_timetk\nReturns a plotnine theme with timetk styles applied, allowing for customization of the appearance of plots in Python.\n\n\npalette_timetk\nThe function palette_timetk returns a dictionary of color codes for various colors in the timetk theme.\n\n\n\n\n\n\n\n\n\nglimpse\nTakes a pandas DataFrame and prints a summary of\n\n\nflatten_multiindex_column_names\nTakes a DataFrame as input and flattens the column\n\n\n\n\n\n\nPractice pytimetk with 13 complementary time series datasets.\n\n\n\nget_available_datasets\nGet a list of 12 datasets that can be loaded with pytimetk.load_dataset.\n\n\nload_dataset\nLoad one of 12 Time Series Datasets."
+    "text": "apply_by_time(data, date_column, freq='D', wide_format=False, fillna=0, **named_funcs)\nApply for time series."
   },
   {
-    "objectID": "reference/index.html#data-visualization",
-    "href": "reference/index.html#data-visualization",
-    "title": "Function reference",
-    "section": "",
-    "text": "Visualize time series data with one line of code.\n\n\n\nplot_timeseries\nCreates time series plots using different plotting engines such as Plotnine, Matplotlib, and Plotly."
+    "objectID": "reference/apply_by_time.html#parameters",
+    "href": "reference/apply_by_time.html#parameters",
+    "title": "apply_by_time",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\nUnion[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]\nThe data parameter can be either a pandas DataFrame or a pandas DataFrameGroupBy object. It represents the data on which the apply operation will be performed.\nrequired\n\n\ndate_column\nstr\nThe name of the column in the DataFrame that contains the dates.\nrequired\n\n\nfreq\nstr\nThe freq parameter specifies the frequency at which the data should be resampled. It accepts a string representing a time frequency, such as “D” for daily, “W” for weekly, “M” for monthly, etc. The default value is “D”, which means the data will be resampled on a daily basis. Some common frequency aliases include: - S: secondly frequency - min: minute frequency - H: hourly frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency\n'D'\n\n\nwide_format\nbool\nThe wide_format parameter is a boolean flag that determines whether the output should be in wide format or not. If wide_format is set to True, the output will have a multi-index column structure, where the first level represents the original columns and the second level represents the group names\nFalse\n\n\nfillna\nint\nThe fillna parameter is used to specify the value that will be used to fill missing values in the resulting DataFrame. By default, it is set to 0.\n0\n\n\n**named_funcs\n\nThe **named_funcs parameter is used to specify one or more custom aggregation functions to apply to the data. It accepts named functions in the format: python name = lambda df: df['column1'].corr(df['column2']]) Where name is the name of the function and df is the DataFrame that will be passed to the function. The function must return a single value.\n{}"
   },
   {
-    "objectID": "reference/index.html#wrangling-pandas-time-series-dataframes",
-    "href": "reference/index.html#wrangling-pandas-time-series-dataframes",
-    "title": "Function reference",
-    "section": "",
-    "text": "Bend time series data to your will.\n\n\n\nsummarize_by_time\nSummarize a DataFrame or GroupBy object by time.\n\n\napply_by_time\nApply for time series.\n\n\npad_by_time\nMake irregular time series regular by padding with missing dates.\n\n\nfuture_frame\nExtend a DataFrame or GroupBy object with future dates."
-  },
-  {
-    "objectID": "reference/index.html#adding-features-to-time-series-dataframes-augmenting",
-    "href": "reference/index.html#adding-features-to-time-series-dataframes-augmenting",
-    "title": "Function reference",
-    "section": "",
-    "text": "Add one or more feature columns to time series data.\n\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame.\n\n\naugment_holiday_signature\nEngineers 4 different holiday features from a single datetime for 80+ countries.\n\n\naugment_lags\nAdds lags to a Pandas DataFrame or DataFrameGroupBy object.\n\n\naugment_leads\nAdds leads to a Pandas DataFrame or DataFrameGroupBy object.\n\n\naugment_rolling\nApply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame.\n\n\naugment_rolling_apply\nApply one or more DataFrame-based rolling functions and window sizes to one or more columns of a DataFrame.\n\n\naugment_expanding\nApply one or more Series-based expanding functions and window sizes to one or more columns of a DataFrame.\n\n\naugment_expanding_apply\nApply one or more DataFrame-based expanding functions to one or more columns of a DataFrame."
-  },
-  {
-    "objectID": "reference/index.html#ts-features",
-    "href": "reference/index.html#ts-features",
-    "title": "Function reference",
-    "section": "",
-    "text": "Python implementation of the R package tsfeatures.\n\n\n\nts_features\nExtracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the tsfeatures package.\n\n\nts_summary\nComputes summary statistics for a time series data, either for the entire dataset or grouped by a specific column."
-  },
-  {
-    "objectID": "reference/index.html#time-series-for-pandas-series",
-    "href": "reference/index.html#time-series-for-pandas-series",
-    "title": "Function reference",
-    "section": "",
-    "text": "Time series functions that generate / manipulate Pandas Series.\n\n\n\nmake_future_timeseries\nMake future dates for a time series.\n\n\nmake_weekday_sequence\nGenerate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays.\n\n\nmake_weekend_sequence\nGenerate a sequence of weekend dates within a specified date range, optionally excluding holidays.\n\n\nget_date_summary\nReturns a summary of the date-related information, including the number of dates, the time zone, the start\n\n\nget_frequency_summary\nMore robust version of pandas inferred frequency.\n\n\nget_diff_summary\nCalculates summary statistics of the time differences between consecutive values in a datetime index.\n\n\nget_frequency\nGet the frequency of a pandas Series or DatetimeIndex.\n\n\nget_timeseries_signature\nConvert a timestamp to a set of 29 time series features.\n\n\nget_holiday_signature\nEngineers 4 different holiday features from a single datetime for 80+ countries."
-  },
-  {
-    "objectID": "reference/index.html#date-utilities",
-    "href": "reference/index.html#date-utilities",
-    "title": "Function reference",
-    "section": "",
-    "text": "Helper functions to make your life easier.\n\n\n\nfloor_date\nRound a date down to the specified unit (e.g. Flooring).\n\n\nis_holiday\nCheck if a given list of dates are holidays for a specified country.\n\n\nweek_of_month\nThe “week_of_month” function calculates the week number of a given date within its month.\n\n\ntimeseries_unit_frequency_table\nThe function timeseries_unit_frequency_table returns a pandas DataFrame with units of time and"
-  },
-  {
-    "objectID": "reference/index.html#visualization-utilities",
-    "href": "reference/index.html#visualization-utilities",
-    "title": "Function reference",
-    "section": "",
-    "text": "Helper functions to make your life easier.\n\n\n\ntheme_timetk\nReturns a plotnine theme with timetk styles applied, allowing for customization of the appearance of plots in Python.\n\n\npalette_timetk\nThe function palette_timetk returns a dictionary of color codes for various colors in the timetk theme."
-  },
-  {
-    "objectID": "reference/index.html#extra-pandas-helpers-that-help-beyond-just-time-series",
-    "href": "reference/index.html#extra-pandas-helpers-that-help-beyond-just-time-series",
-    "title": "Function reference",
-    "section": "",
-    "text": "glimpse\nTakes a pandas DataFrame and prints a summary of\n\n\nflatten_multiindex_column_names\nTakes a DataFrame as input and flattens the column"
-  },
-  {
-    "objectID": "reference/index.html#datasets",
-    "href": "reference/index.html#datasets",
-    "title": "Function reference",
-    "section": "",
-    "text": "Practice pytimetk with 13 complementary time series datasets.\n\n\n\nget_available_datasets\nGet a list of 12 datasets that can be loaded with pytimetk.load_dataset.\n\n\nload_dataset\nLoad one of 12 Time Series Datasets."
-  },
-  {
-    "objectID": "reference/palette_timetk.html",
-    "href": "reference/palette_timetk.html",
-    "title": "palette_timetk",
-    "section": "",
-    "text": "palette_timetk()\nThe function palette_timetk returns a dictionary of color codes for various colors in the timetk theme."
-  },
-  {
-    "objectID": "reference/palette_timetk.html#returns",
-    "href": "reference/palette_timetk.html#returns",
-    "title": "palette_timetk",
+    "objectID": "reference/apply_by_time.html#returns",
+    "href": "reference/apply_by_time.html#returns",
+    "title": "apply_by_time",
     "section": "Returns",
-    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\nThe function palette_timetk returns a dictionary containing color names as keys and their corresponding hexadecimal color codes as values:"
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\nThe function apply_by_time returns a pandas DataFrame object."
   },
   {
-    "objectID": "reference/palette_timetk.html#examples",
-    "href": "reference/palette_timetk.html#examples",
-    "title": "palette_timetk",
+    "objectID": "reference/apply_by_time.html#examples",
+    "href": "reference/apply_by_time.html#examples",
+    "title": "apply_by_time",
     "section": "Examples",
-    "text": "Examples\n\nimport pytimetk as tk\n\ntk.palette_timetk()\n\n{'blue': '#2c3e50',\n 'red': '#e31a1c',\n 'green': '#18BC9C',\n 'yellow': '#CCBE93',\n 'steel_blue': '#a6cee3',\n 'navy_blue': '#1f78b4',\n 'light_green': '#b2df8a',\n 'pink': '#fb9a99',\n 'light_orange': '#fdbf6f',\n 'orange': '#ff7f00',\n 'light_purple': '#cab2d6',\n 'purple': '#6a3d9a'}"
+    "text": "Examples\n\nimport pytimetk as tk\nimport pandas as pd\n\ndf = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])\n\ndf.glimpse()\n\n&lt;class 'pandas.core.frame.DataFrame'&gt;: 2466 rows of 13 columns\norder_id:        int64            [1, 1, 2, 2, 3, 3, 3, 3, 3, 4, 5, 5, 5 ...\norder_line:      int64            [1, 2, 1, 2, 1, 2, 3, 4, 5, 1, 1, 2, 3 ...\norder_date:      datetime64[ns]   [Timestamp('2011-01-07 00:00:00'), Tim ...\nquantity:        int64            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1 ...\nprice:           int64            [6070, 5970, 2770, 5970, 10660, 3200,  ...\ntotal_price:     int64            [6070, 5970, 2770, 5970, 10660, 3200,  ...\nmodel:           object           ['Jekyll Carbon 2', 'Trigger Carbon 2' ...\ncategory_1:      object           ['Mountain', 'Mountain', 'Mountain', ' ...\ncategory_2:      object           ['Over Mountain', 'Over Mountain', 'Tr ...\nframe_material:  object           ['Carbon', 'Carbon', 'Aluminum', 'Carb ...\nbikeshop_name:   object           ['Ithaca Mountain Climbers', 'Ithaca M ...\ncity:            object           ['Ithaca', 'Ithaca', 'Kansas City', 'K ...\nstate:           object           ['NY', 'NY', 'KS', 'KS', 'KY', 'KY', ' ...\n\n\n\n# Apply by time with a DataFrame object\n# Allows access to multiple columns at once\n( \n    df[['order_date', 'price', 'quantity']] \n        .apply_by_time(\n            \n            # Named apply functions\n            price_quantity_sum = lambda df: (df['price'] * df['quantity']).sum(),\n            price_quantity_mean = lambda df: (df['price'] * df['quantity']).mean(),\n            \n            # Parameters\n            date_column  = 'order_date', \n            freq         = \"MS\",\n            \n        )\n)\n\n\n\n\n\n\n\n\norder_date\nprice_quantity_sum\nprice_quantity_mean\n\n\n\n\n0\n2011-01-01\n483015.0\n4600.142857\n\n\n1\n2011-02-01\n1162075.0\n4611.408730\n\n\n2\n2011-03-01\n659975.0\n5196.653543\n\n\n3\n2011-04-01\n1827140.0\n4533.846154\n\n\n4\n2011-05-01\n844170.0\n4097.912621\n\n\n5\n2011-06-01\n1413445.0\n4544.839228\n\n\n6\n2011-07-01\n1194430.0\n4976.791667\n\n\n7\n2011-08-01\n679790.0\n4961.970803\n\n\n8\n2011-09-01\n814720.0\n4682.298851\n\n\n9\n2011-10-01\n734920.0\n3930.053476\n\n\n10\n2011-11-01\n1006085.0\n4768.175355\n\n\n11\n2011-12-01\n473120.0\n4186.902655\n\n\n\n\n\n\n\n\n# Apply by time with a GroupBy object\n( \n    df[['category_1', 'order_date', 'price', 'quantity']] \n        .groupby('category_1')\n        .apply_by_time(\n            \n            # Named functions\n            price_quantity_sum = lambda df: (df['price'] * df['quantity']).sum(),\n            price_quantity_mean = lambda df: (df['price'] * df['quantity']).mean(),\n            \n            # Parameters\n            date_column  = 'order_date', \n            freq         = \"MS\",\n            \n        )\n)\n\n\n\n\n\n\n\n\ncategory_1\norder_date\nprice_quantity_sum\nprice_quantity_mean\n\n\n\n\n0\nMountain\n2011-01-01\n221490.0\n4922.000000\n\n\n1\nMountain\n2011-02-01\n660555.0\n4374.536424\n\n\n2\nMountain\n2011-03-01\n358855.0\n5882.868852\n\n\n3\nMountain\n2011-04-01\n1075975.0\n4890.795455\n\n\n4\nMountain\n2011-05-01\n450440.0\n4549.898990\n\n\n5\nMountain\n2011-06-01\n723040.0\n5021.111111\n\n\n6\nMountain\n2011-07-01\n767740.0\n5444.964539\n\n\n7\nMountain\n2011-08-01\n361255.0\n5734.206349\n\n\n8\nMountain\n2011-09-01\n401125.0\n5077.531646\n\n\n9\nMountain\n2011-10-01\n377335.0\n4439.235294\n\n\n10\nMountain\n2011-11-01\n549345.0\n5282.163462\n\n\n11\nMountain\n2011-12-01\n276055.0\n5208.584906\n\n\n12\nRoad\n2011-01-01\n261525.0\n4358.750000\n\n\n13\nRoad\n2011-02-01\n501520.0\n4965.544554\n\n\n14\nRoad\n2011-03-01\n301120.0\n4562.424242\n\n\n15\nRoad\n2011-04-01\n751165.0\n4104.726776\n\n\n16\nRoad\n2011-05-01\n393730.0\n3679.719626\n\n\n17\nRoad\n2011-06-01\n690405.0\n4134.161677\n\n\n18\nRoad\n2011-07-01\n426690.0\n4310.000000\n\n\n19\nRoad\n2011-08-01\n318535.0\n4304.527027\n\n\n20\nRoad\n2011-09-01\n413595.0\n4353.631579\n\n\n21\nRoad\n2011-10-01\n357585.0\n3505.735294\n\n\n22\nRoad\n2011-11-01\n456740.0\n4268.598131\n\n\n23\nRoad\n2011-12-01\n197065.0\n3284.416667\n\n\n\n\n\n\n\n\n# Return complex objects\n( \n    df[['order_date', 'price', 'quantity']] \n        .apply_by_time(\n            \n            # Named apply functions\n            complex_object = lambda df: [df],\n            \n            # Parameters\n            date_column  = 'order_date', \n            freq         = \"MS\",\n            \n        )\n)\n\n\n\n\n\n\n\n\norder_date\nprice\nquantity\n\n\n\n\n0\n2011-01-01\n[[6070, 5970, 2770, 5970, 10660, 3200, 12790, ...\n[[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1,...\n\n\n1\n2011-02-01\n[[8200, 7990, 3200, 4800, 3200, 2130, 1030, 37...\n[[1, 4, 1, 1, 1, 2, 1, 1, 1, 3, 1, 2, 1, 1, 2,...\n\n\n2\n2011-03-01\n[[2660, 3200, 3200, 815, 8200, 9060, 815, 2130...\n[[1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1,...\n\n\n3\n2011-04-01\n[[5330, 4500, 585, 2660, 3200, 2770, 1030, 234...\n[[1, 1, 1, 3, 1, 1, 8, 1, 1, 1, 1, 1, 1, 1, 7,...\n\n\n4\n2011-05-01\n[[1840, 3200, 7000, 5860, 1030, 3200, 3500, 15...\n[[1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,...\n\n\n5\n2011-06-01\n[[7990, 4500, 1250, 3730, 1950, 2660, 2340, 19...\n[[1, 1, 1, 3, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 9,...\n\n\n6\n2011-07-01\n[[3200, 2880, 5330, 3200, 585, 5330, 4800, 111...\n[[2, 3, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 2, 1, 1,...\n\n\n7\n2011-08-01\n[[12250, 2130, 7000, 2660, 5860, 3500, 1950, 1...\n[[2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1,...\n\n\n8\n2011-09-01\n[[4800, 480, 12790, 6390, 7990, 3500, 3730, 63...\n[[1, 1, 1, 1, 1, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1,...\n\n\n9\n2011-10-01\n[[9060, 12250, 2880, 9060, 4480, 3200, 2340, 2...\n[[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,...\n\n\n10\n2011-11-01\n[[2240, 2660, 3200, 980, 2880, 1750, 2130, 224...\n[[1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 2, 1, 6,...\n\n\n11\n2011-12-01\n[[1030, 3200, 870, 1350, 4260, 7460, 2880, 270...\n[[1, 1, 2, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1,..."
   },
   {
-    "objectID": "reference/get_date_summary.html",
-    "href": "reference/get_date_summary.html",
-    "title": "get_date_summary",
+    "objectID": "reference/get_pandas_frequency.html",
+    "href": "reference/get_pandas_frequency.html",
+    "title": "get_pandas_frequency",
     "section": "",
-    "text": "get_date_summary(idx)\nReturns a summary of the date-related information, including the number of dates, the time zone, the start date, and the end date.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DateTimeIndex\nThe parameter idx can be either a pandas Series or a pandas DateTimeIndex. It represents the dates or timestamps for which we want to generate a summary.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\nA pandas DataFrame with the following columns: - date_n: The number of dates in the index. - date_tz: The time zone of the dates in the index. - date_start: The first date in the index. - date_end: The last date in the index."
+    "text": "get_pandas_frequency(idx, force_regular=False)\nGet the frequency of a pandas Series or DatetimeIndex.\nThe function get_pandas_frequency takes a Pandas Series or DatetimeIndex as input and returns the inferred frequency of the index, with an option to force regular frequency.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DatetimeIndex\nThe idx parameter can be either a pd.Series or a pd.DatetimeIndex. It represents the index or the time series data for which we want to determine the frequency.\nrequired\n\n\nforce_regular\nbool\nThe force_regular parameter is a boolean flag that determines whether to force the frequency to be regular. If set to True, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is ‘B’ (business days), it will be converted to ‘D’ (calendar days). The default value is False.\nFalse\n\n\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\nstr\nThe frequency of the given pandas series or datetime index."
   },
   {
-    "objectID": "reference/get_date_summary.html#parameters",
-    "href": "reference/get_date_summary.html#parameters",
-    "title": "get_date_summary",
+    "objectID": "reference/get_pandas_frequency.html#parameters",
+    "href": "reference/get_pandas_frequency.html#parameters",
+    "title": "get_pandas_frequency",
     "section": "",
-    "text": "Name\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DateTimeIndex\nThe parameter idx can be either a pandas Series or a pandas DateTimeIndex. It represents the dates or timestamps for which we want to generate a summary.\nrequired"
+    "text": "Name\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DatetimeIndex\nThe idx parameter can be either a pd.Series or a pd.DatetimeIndex. It represents the index or the time series data for which we want to determine the frequency.\nrequired\n\n\nforce_regular\nbool\nThe force_regular parameter is a boolean flag that determines whether to force the frequency to be regular. If set to True, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is ‘B’ (business days), it will be converted to ‘D’ (calendar days). The default value is False.\nFalse"
   },
   {
-    "objectID": "reference/get_date_summary.html#returns",
-    "href": "reference/get_date_summary.html#returns",
-    "title": "get_date_summary",
+    "objectID": "reference/get_pandas_frequency.html#returns",
+    "href": "reference/get_pandas_frequency.html#returns",
+    "title": "get_pandas_frequency",
     "section": "",
-    "text": "Type\nDescription\n\n\n\n\npd.DataFrame\nA pandas DataFrame with the following columns: - date_n: The number of dates in the index. - date_tz: The time zone of the dates in the index. - date_start: The first date in the index. - date_end: The last date in the index."
+    "text": "Type\nDescription\n\n\n\n\nstr\nThe frequency of the given pandas series or datetime index."
+  },
+  {
+    "objectID": "reference/glimpse.html",
+    "href": "reference/glimpse.html",
+    "title": "glimpse",
+    "section": "",
+    "text": "glimpse(data, max_width=76)\nTakes a pandas DataFrame and prints a summary of its dimensions, column names, data types, and the first few values of each column."
+  },
+  {
+    "objectID": "reference/glimpse.html#parameters",
+    "href": "reference/glimpse.html#parameters",
+    "title": "glimpse",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame\nThe data parameter is a pandas DataFrame that contains the data you want to glimpse at. It is the main input to the glimpse function.\nrequired\n\n\nmax_width\nint\nThe max_width parameter is an optional parameter that specifies the maximum width of each line when printing the glimpse of the DataFrame. If not provided, the default value is set to 76.\n76"
+  },
+  {
+    "objectID": "reference/glimpse.html#examples",
+    "href": "reference/glimpse.html#examples",
+    "title": "glimpse",
+    "section": "Examples",
+    "text": "Examples\n\nimport pytimetk as tk\nimport pandas as pd\n\ndf = tk.load_dataset('walmart_sales_weekly', parse_dates=['Date'])\n\ndf.glimpse()\n\n&lt;class 'pandas.core.frame.DataFrame'&gt;: 1001 rows of 17 columns\nid:            object           ['1_1', '1_1', '1_1', '1_1', '1_1', '1_1 ...\nStore:         int64            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  ...\nDept:          int64            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  ...\nDate:          datetime64[ns]   [Timestamp('2010-02-05 00:00:00'), Times ...\nWeekly_Sales:  float64          [24924.5, 46039.49, 41595.55, 19403.54,  ...\nIsHoliday:     bool             [False, True, False, False, False, False ...\nType:          object           ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', ...\nSize:          int64            [151315, 151315, 151315, 151315, 151315, ...\nTemperature:   float64          [42.31, 38.51, 39.93, 46.63, 46.5, 57.79 ...\nFuel_Price:    float64          [2.572, 2.548, 2.514, 2.561, 2.625, 2.66 ...\nMarkDown1:     float64          [nan, nan, nan, nan, nan, nan, nan, nan, ...\nMarkDown2:     float64          [nan, nan, nan, nan, nan, nan, nan, nan, ...\nMarkDown3:     float64          [nan, nan, nan, nan, nan, nan, nan, nan, ...\nMarkDown4:     float64          [nan, nan, nan, nan, nan, nan, nan, nan, ...\nMarkDown5:     float64          [nan, nan, nan, nan, nan, nan, nan, nan, ...\nCPI:           float64          [211.0963582, 211.2421698, 211.2891429,  ...\nUnemployment:  float64          [8.106, 8.106, 8.106, 8.106, 8.106, 8.10 ..."
+  },
+  {
+    "objectID": "reference/is_holiday.html",
+    "href": "reference/is_holiday.html",
+    "title": "is_holiday",
+    "section": "",
+    "text": "is_holiday(idx, country_name='UnitedStates', country=None)\nCheck if a given list of dates are holidays for a specified country.\nNote: This function requires the holidays package to be installed."
+  },
+  {
+    "objectID": "reference/is_holiday.html#parameters",
+    "href": "reference/is_holiday.html#parameters",
+    "title": "is_holiday",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\nUnion[str, datetime, List[Union[str, datetime]], pd.DatetimeIndex, pd.Series]\nThe dates to check for holiday status.\nrequired\n\n\ncountry_name\nstr\nThe name of the country for which to check the holiday status. Defaults to ‘UnitedStates’ if not specified.\n'UnitedStates'\n\n\ncountry\nstr\nAn alternative parameter to specify the country for holiday checking, overriding country_name.\nNone"
+  },
+  {
+    "objectID": "reference/is_holiday.html#returns",
+    "href": "reference/is_holiday.html#returns",
+    "title": "is_holiday",
+    "section": "Returns:",
+    "text": "Returns:\npd.Series: Series containing True if the date is a holiday, False otherwise."
+  },
+  {
+    "objectID": "reference/is_holiday.html#raises",
+    "href": "reference/is_holiday.html#raises",
+    "title": "is_holiday",
+    "section": "Raises:",
+    "text": "Raises:\nValueError: If the specified country is not found in the holidays package."
+  },
+  {
+    "objectID": "reference/is_holiday.html#examples",
+    "href": "reference/is_holiday.html#examples",
+    "title": "is_holiday",
+    "section": "Examples:",
+    "text": "Examples:\n\nimport pandas as pd\nimport pytimetk as tk\n\ntk.is_holiday('2023-01-01', country_name='UnitedStates')\n\n0    True\nName: is_holiday, dtype: bool\n\n\n\n# List of dates\ntk.is_holiday(['2023-01-01', '2023-01-02', '2023-01-03'], country_name='UnitedStates')\n\n0     True\n1     True\n2    False\nName: is_holiday, dtype: bool\n\n\n\n# DatetimeIndex\ntk.is_holiday(pd.date_range(\"2023-01-01\", \"2023-01-03\"), country_name='UnitedStates')\n\n0     True\n1     True\n2    False\nName: is_holiday, dtype: bool\n\n\n\n# Pandas Series Method\n( \n    pd.Series(pd.date_range(\"2023-01-01\", \"2023-01-03\"))\n        .is_holiday(country_name='UnitedStates')\n)\n\n0     True\n1     True\n2    False\nName: is_holiday, dtype: bool"
   },
   {
     "objectID": "reference/get_available_datasets.html",
@@ -490,6 +483,34 @@
     "text": "Examples\n\nimport pytimetk as tk\nimport pandas as pd\nimport numpy as np\n\ndf = tk.load_dataset(\"m4_daily\", parse_dates = ['date'])\n\n\n# This example demonstrates the use of both string-named functions \n# and lambda functions on an expanding window. \n\nexpanded_df = (\n    df\n        .groupby('id')\n        .augment_expanding(\n            date_column = 'date', \n            value_column = 'value', \n            window_func = [\n                'mean',  # Built-in mean function\n                ('std', lambda x: x.std())  # Lambda function to compute standard deviation\n            ]\n        )\n)\ndisplay(expanded_df)\n\n\n\n\n\n\n\n\nid\ndate\nvalue\nvalue_expanding_mean\nvalue_expanding_std\n\n\n\n\n0\nD10\n2014-07-03\n2076.2\n2076.200000\n0.000000\n\n\n1\nD10\n2014-07-04\n2073.4\n2074.800000\n1.400000\n\n\n2\nD10\n2014-07-05\n2048.7\n2066.100000\n12.356645\n\n\n3\nD10\n2014-07-06\n2048.9\n2061.800000\n13.037830\n\n\n4\nD10\n2014-07-07\n2006.4\n2050.720000\n25.041038\n\n\n...\n...\n...\n...\n...\n...\n\n\n9738\nD500\n2012-09-19\n9418.8\n8286.606679\n2456.667418\n\n\n9739\nD500\n2012-09-20\n9365.7\n8286.864035\n2456.430967\n\n\n9740\nD500\n2012-09-21\n9445.9\n8287.140391\n2456.203287\n\n\n9741\nD500\n2012-09-22\n9497.9\n8287.429011\n2455.981643\n\n\n9742\nD500\n2012-09-23\n9545.3\n8287.728789\n2455.765726\n\n\n\n\n9743 rows × 5 columns"
   },
   {
+    "objectID": "reference/ceil_date.html",
+    "href": "reference/ceil_date.html",
+    "title": "ceil_date",
+    "section": "",
+    "text": "ceil_date(idx, unit='D')\nRound a date up to the specified unit (e.g. Ceiling).\nThe ceil_date function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit."
+  },
+  {
+    "objectID": "reference/ceil_date.html#parameters",
+    "href": "reference/ceil_date.html#parameters",
+    "title": "ceil_date",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DatetimeIndex\nThe idx parameter is a pandas Series or pandas DatetimeIndex object that contains datetime values. It represents the dates that you want to round down.\nrequired\n\n\nunit\nstr\nThe unit parameter in the ceil_date function is a string that specifies the time unit to which the dates in the idx series should be rounded down. It has a default value of “D”, which stands for day. Other possible values for the unit parameter could be\n'D'"
+  },
+  {
+    "objectID": "reference/ceil_date.html#returns",
+    "href": "reference/ceil_date.html#returns",
+    "title": "ceil_date",
+    "section": "Returns",
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.Series\nThe ceil_date function returns a pandas Series object containing datetime64[ns] values."
+  },
+  {
+    "objectID": "reference/ceil_date.html#examples",
+    "href": "reference/ceil_date.html#examples",
+    "title": "ceil_date",
+    "section": "Examples",
+    "text": "Examples\n\nimport pytimetk as tk\nimport pandas as pd\n\ndates = pd.date_range(\"2020-01-01\", \"2020-01-10\", freq=\"1H\")\ndates\n\nDatetimeIndex(['2020-01-01 00:00:00', '2020-01-01 01:00:00',\n               '2020-01-01 02:00:00', '2020-01-01 03:00:00',\n               '2020-01-01 04:00:00', '2020-01-01 05:00:00',\n               '2020-01-01 06:00:00', '2020-01-01 07:00:00',\n               '2020-01-01 08:00:00', '2020-01-01 09:00:00',\n               ...\n               '2020-01-09 15:00:00', '2020-01-09 16:00:00',\n               '2020-01-09 17:00:00', '2020-01-09 18:00:00',\n               '2020-01-09 19:00:00', '2020-01-09 20:00:00',\n               '2020-01-09 21:00:00', '2020-01-09 22:00:00',\n               '2020-01-09 23:00:00', '2020-01-10 00:00:00'],\n              dtype='datetime64[ns]', length=217, freq='H')\n\n\n\n# Works on DateTimeIndex\ntk.ceil_date(dates, unit=\"D\")\n\n0     2020-01-01\n1     2020-01-02\n2     2020-01-02\n3     2020-01-02\n4     2020-01-02\n         ...    \n212   2020-01-10\n213   2020-01-10\n214   2020-01-10\n215   2020-01-10\n216   2020-01-10\nName: idx, Length: 217, dtype: datetime64[ns]\n\n\n\n# Works on Pandas Series\ndates.to_series().ceil_date(unit=\"D\")\n\n2020-01-01 00:00:00   2020-01-01\n2020-01-01 01:00:00   2020-01-02\n2020-01-01 02:00:00   2020-01-02\n2020-01-01 03:00:00   2020-01-02\n2020-01-01 04:00:00   2020-01-02\n                         ...    \n2020-01-09 20:00:00   2020-01-10\n2020-01-09 21:00:00   2020-01-10\n2020-01-09 22:00:00   2020-01-10\n2020-01-09 23:00:00   2020-01-10\n2020-01-10 00:00:00   2020-01-10\nFreq: H, Length: 217, dtype: datetime64[ns]"
+  },
+  {
     "objectID": "reference/plot_timeseries.html",
     "href": "reference/plot_timeseries.html",
     "title": "plot_timeseries",
@@ -522,7 +543,7 @@
     "href": "changelog-news.html",
     "title": "Changelog for PyTimeTK",
     "section": "",
-    "text": "1 pytimetk 0.1.0.9000 (in development)\n\nNew Functions:\n\napply_by_time()\naugment_rolling_apply()\naugment_expanding()\naugment_expanding_apply()\nget_frequency(): Infer a pandas-like frequency. More robust than pandas.infer_freq.\n\n\n\nNew Data Sets:\n\nexpedia: Expedia hotel searches\n\n\n\nNew Applied Tutorials:\n\nSales Analysis Tutorial\nFinance Analysis Tutorial\nDemand Forecasting Tutorial\n\n\n\nFinal Deprecations:\n\nsummarize_by_time(): kind = \"period\". This is being removed for consistency with pytimetk. “timestamp” is the default.\naugment_rolling(): use_independent_variables. This is being replaced by augment_rolling_apply().\n\n\n\n\n2 pytimetk 0.1.0 (2023-10-02)\n\nAbout the Initial release.\nThis release includes the following features:\n\nA workhorse plotting function called plot_timeseries() 💪\nThree (3) data wrangling functions that will simplify 90% of time series tasks 🙏\nFive (5) “augmentor” functions: These add hundreds of features to time series to help in predictive tasks 🧠\nTwo (2) time series feature summarizes: identify key aspects of your time series 🔍\nNine (9) pandas series and DatetimeIndex helpers (work more easily with these timestamp data structures) ⏲\nFour (4) date utility functions that fill in missing function gaps in pandas 🐼\nTwo (2) Visualization utilities to help you customize your visualizations and make them look MORE professional 📈\nTwo (2) Pandas helpers that help clean up and understand pandas data frames with time series 🎇\nTwelve (12) time series datasets that you can practice PyTimeTK time series analysis on 🔢\n\n\n\nThe PyTimeTK website comes with:\n\nTwo (2) Getting started tutorials\nFive (5) Guides covering common tasks\nComing Soon: Applied Tutorials in Sales, Finance, Demand Forecasting, Anomaly Detection, and more."
+    "text": "1 pytimetk 0.1.0.9000 (in development)\n\nNew Functions:\n\napply_by_time(): For complex apply-style aggregations by time.\naugment_rolling_apply(): For complex rolling operations using apply-style data frame functions.\n\naugment_expanding(): For expanding calculations with single-column functions (e.g. mean).\naugment_expanding_apply(): For complex expanding operations with apply-style data frame functions.\nget_frequency(): Infer a pandas-like frequency. More robust than pandas.infer_freq.\nget_seasonal_frequency(): Infer the pandas-like seasonal frequency (periodicity) for the time series.\nget_trend_frequency(): Infer the pandas-like trend for the time series.\n\n\n\nNew Data Sets:\n\nexpedia: Expedia hotel searches time series data set\n\n\n\nNew Applied Tutorials:\n\nSales Analysis Tutorial\nFinance Analysis Tutorial\nDemand Forecasting Tutorial\n\n\n\nFinal Deprecations:\n\nsummarize_by_time(): kind = \"period\". This is being removed for consistency with pytimetk. “timestamp” is the default.\naugment_rolling(): use_independent_variables. This is being replaced by augment_rolling_apply().\n\n\n\n\n2 pytimetk 0.1.0 (2023-10-02)\n\nAbout the Initial release.\nThis release includes the following features:\n\nA workhorse plotting function called plot_timeseries() 💪\nThree (3) data wrangling functions that will simplify 90% of time series tasks 🙏\nFive (5) “augmentor” functions: These add hundreds of features to time series to help in predictive tasks 🧠\nTwo (2) time series feature summarizes: identify key aspects of your time series 🔍\nNine (9) pandas series and DatetimeIndex helpers (work more easily with these timestamp data structures) ⏲\nFour (4) date utility functions that fill in missing function gaps in pandas 🐼\nTwo (2) Visualization utilities to help you customize your visualizations and make them look MORE professional 📈\nTwo (2) Pandas helpers that help clean up and understand pandas data frames with time series 🎇\nTwelve (12) time series datasets that you can practice PyTimeTK time series analysis on 🔢\n\n\n\nThe PyTimeTK website comes with:\n\nTwo (2) Getting started tutorials\nFive (5) Guides covering common tasks\nComing Soon: Applied Tutorials in Sales, Finance, Demand Forecasting, Anomaly Detection, and more."
   },
   {
     "objectID": "tutorials/01_sales_crm.html",
@@ -959,6 +980,34 @@
     "text": "Examples\n\nimport pytimetk as tk\nimport pandas as pd\nimport numpy as np\n\n# Example showcasing the rolling correlation between two columns (`value1` and `value2`).\n# The correlation requires both columns as input.\n\n# Sample DataFrame with id, date, value1, and value2 columns.\ndf = pd.DataFrame({\n    'id': [1, 1, 1, 2, 2, 2],\n    'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),\n    'value1': [10, 20, 29, 42, 53, 59],\n    'value2': [2, 16, 20, 40, 41, 50],\n})\n\n# Compute the rolling correlation for each group of 'id'\n# Using a rolling window of size 3 and a lambda function to calculate the correlation.\nrolled_df = (\n    df.groupby('id')\n    .augment_rolling_apply(\n        date_column='date',\n        window=3,\n        window_func=[('corr', lambda x: x['value1'].corr(x['value2']))],  # Lambda function for correlation\n        center = False  # Not centering the rolling window\n    )\n)\ndisplay(rolled_df)\n\n\n\n\n\n\n\n\nid\ndate\nvalue1\nvalue2\nrolling_corr_win_3\n\n\n\n\n0\n1\n2023-01-01\n10\n2\nNaN\n\n\n1\n1\n2023-01-02\n20\n16\nNaN\n\n\n2\n1\n2023-01-03\n29\n20\n0.961054\n\n\n3\n2\n2023-01-04\n42\n40\nNaN\n\n\n4\n2\n2023-01-05\n53\n41\nNaN\n\n\n5\n2\n2023-01-06\n59\n50\n0.824831\n\n\n\n\n\n\n\n\n# Rolling Regression Example: Using `value1` as the dependent variable and `value2` and `value3` as the independent variables.\n# This example demonstrates how to perform a rolling regression using two independent variables.\n\n# Required module (scikit-learn) for regression.\nfrom sklearn.linear_model import LinearRegression\n\n# Sample DataFrame with `id`, `date`, `value1`, `value2`, and `value3` columns.\ndf = pd.DataFrame({\n    'id': [1, 1, 1, 2, 2, 2],\n    'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),\n    'value1': [10, 20, 29, 42, 53, 59],\n    'value2': [5, 16, 24, 35, 45, 58],\n    'value3': [2, 3, 6, 9, 10, 13]\n})\n\n# Define Regression Function to be applied on the rolling window.\ndef regression(df):\n\n    model = LinearRegression()\n    X = df[['value2', 'value3']]  # Independent variables\n    y = df['value1']  # Dependent variable\n    model.fit(X, y)\n    ret = pd.Series([model.intercept_, model.coef_[0]], index=['Intercept', 'Slope'])\n    \n    return ret # Return intercept and slope as a Series\n    \n# Compute the rolling regression for each group of `id`\n# Using a rolling window of size 3 and the regression function.\nrolled_df = (\n    df.groupby('id')\n    .augment_rolling_apply(\n        date_column='date',\n        window=3,\n        window_func=[('regression', regression)]\n    )\n    .dropna()\n)\n\n# Format the results to have each regression output (slope and intercept) in separate columns.\nregression_wide_df = pd.concat(rolled_df['rolling_regression_win_3'].to_list(), axis=1).T\nregression_wide_df = pd.concat([rolled_df.reset_index(drop = True), regression_wide_df], axis=1)\ndisplay(regression_wide_df)\n\n\n\n\n\n\n\n\nid\ndate\nvalue1\nvalue2\nvalue3\nrolling_regression_win_3\nIntercept\nSlope\n\n\n\n\n0\n1\n2023-01-03\n29\n24\n6\nIntercept 4.28 Slope 0.84 dtype: flo...\n4.280000\n0.840000\n\n\n1\n2\n2023-01-06\n59\n58\n13\nIntercept 30.352941 Slope 1.588235 ...\n30.352941\n1.588235"
   },
   {
+    "objectID": "reference/time_scale_template.html",
+    "href": "reference/time_scale_template.html",
+    "title": "time_scale_template",
+    "section": "",
+    "text": "time_scale_template(wide_format=False)\nThe function time_scale_template returns a table with time scale information in either wide or long format."
+  },
+  {
+    "objectID": "reference/time_scale_template.html#parameters",
+    "href": "reference/time_scale_template.html#parameters",
+    "title": "time_scale_template",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nwide_format\nbool\nThe wide_format parameter determines the format of the output table. If wide_format is set to True, the table will be transposed with the median_unit column as the index. If wide_format is set to False (default), the table will have the median_unit column as a regular column.\nFalse"
+  },
+  {
+    "objectID": "reference/time_scale_template.html#returns",
+    "href": "reference/time_scale_template.html#returns",
+    "title": "time_scale_template",
+    "section": "Returns",
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\nA pandas DataFrame containing information about different time scales. If the wide_format parameter is set to True, the DataFrame is transposed with the ‘median_unit’ column as the index."
+  },
+  {
+    "objectID": "reference/time_scale_template.html#examples",
+    "href": "reference/time_scale_template.html#examples",
+    "title": "time_scale_template",
+    "section": "Examples",
+    "text": "Examples\n\nimport pytimetk as tk\n\ntk.time_scale_template()\n\n\n\n\n\n\n\n\nmedian_unit\nseasonal_period\ntrend_period\n\n\n\n\n0\nS\n1H\n12H\n\n\n1\nT\n1D\n14D\n\n\n2\nH\n1D\n1M\n\n\n3\nD\n1W\n3M\n\n\n4\nW\n1Q\n1Y\n\n\n5\nM\n1Y\n5Y\n\n\n6\nQ\n1Y\n10Y\n\n\n7\nY\n5Y\n30Y"
+  },
+  {
     "objectID": "reference/pad_by_time.html",
     "href": "reference/pad_by_time.html",
     "title": "pad_by_time",
@@ -987,137 +1036,200 @@
     "text": "Examples\n\nimport pandas as pd\nimport pytimetk as tk\n\ndf = tk.load_dataset('stocks_daily', parse_dates = ['date'])\ndf\n\n\n\n\n\n\n\n\nsymbol\ndate\nopen\nhigh\nlow\nclose\nvolume\nadjusted\n\n\n\n\n0\nMETA\n2013-01-02\n27.440001\n28.180000\n27.420000\n28.000000\n69846400\n28.000000\n\n\n1\nMETA\n2013-01-03\n27.879999\n28.469999\n27.590000\n27.770000\n63140600\n27.770000\n\n\n2\nMETA\n2013-01-04\n28.010000\n28.930000\n27.830000\n28.760000\n72715400\n28.760000\n\n\n3\nMETA\n2013-01-07\n28.690001\n29.790001\n28.650000\n29.420000\n83781800\n29.420000\n\n\n4\nMETA\n2013-01-08\n29.510000\n29.600000\n28.860001\n29.059999\n45871300\n29.059999\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n16189\nGOOG\n2023-09-15\n138.800003\n139.360001\n137.179993\n138.300003\n48947600\n138.300003\n\n\n16190\nGOOG\n2023-09-18\n137.630005\n139.929993\n137.630005\n138.960007\n16233600\n138.960007\n\n\n16191\nGOOG\n2023-09-19\n138.250000\n139.175003\n137.500000\n138.830002\n15479100\n138.830002\n\n\n16192\nGOOG\n2023-09-20\n138.830002\n138.839996\n134.520004\n134.589996\n21473500\n134.589996\n\n\n16193\nGOOG\n2023-09-21\n132.389999\n133.190002\n131.089996\n131.360001\n22042700\n131.360001\n\n\n\n\n16194 rows × 8 columns\n\n\n\n\n# Pad Single Time Series: Fill missing dates\npadded_df = (\n    df\n        .query('symbol == \"AAPL\"')\n        .pad_by_time(\n            date_column = 'date',\n            freq        = 'D'\n        )\n        .assign(id = lambda x: x['symbol'].ffill())\n)\npadded_df \n\n\n\n\n\n\n\n\ndate\nsymbol\nopen\nhigh\nlow\nclose\nvolume\nadjusted\nid\n\n\n\n\n0\n2013-01-02\nAAPL\n19.779285\n19.821428\n19.343929\n19.608213\n560518000.0\n16.791180\nAAPL\n\n\n1\n2013-01-03\nAAPL\n19.567142\n19.631071\n19.321428\n19.360714\n352965200.0\n16.579241\nAAPL\n\n\n2\n2013-01-04\nAAPL\n19.177500\n19.236786\n18.779642\n18.821428\n594333600.0\n16.117437\nAAPL\n\n\n3\n2013-01-05\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nAAPL\n\n\n4\n2013-01-06\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nAAPL\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n3910\n2023-09-17\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\nAAPL\n\n\n3911\n2023-09-18\nAAPL\n176.479996\n179.380005\n176.169998\n177.970001\n67257600.0\n177.970001\nAAPL\n\n\n3912\n2023-09-19\nAAPL\n177.520004\n179.630005\n177.130005\n179.070007\n51826900.0\n179.070007\nAAPL\n\n\n3913\n2023-09-20\nAAPL\n179.259995\n179.699997\n175.399994\n175.490005\n58436200.0\n175.490005\nAAPL\n\n\n3914\n2023-09-21\nAAPL\n174.550003\n176.300003\n173.860001\n173.929993\n63047900.0\n173.929993\nAAPL\n\n\n\n\n3915 rows × 9 columns\n\n\n\n\n# Pad by Group: Pad each group with missing dates\npadded_df = (\n    df\n        .groupby('symbol')\n        .pad_by_time(\n            date_column = 'date',\n            freq        = 'D'\n        )\n)\npadded_df\n\n\n\n\n\n\n\n\ndate\nsymbol\nopen\nhigh\nlow\nclose\nvolume\nadjusted\n\n\n\n\n0\n2013-01-02\nAAPL\n19.779285\n19.821428\n19.343929\n19.608213\n560518000.0\n16.791180\n\n\n1\n2013-01-03\nAAPL\n19.567142\n19.631071\n19.321428\n19.360714\n352965200.0\n16.579241\n\n\n2\n2013-01-04\nAAPL\n19.177500\n19.236786\n18.779642\n18.821428\n594333600.0\n16.117437\n\n\n3\n2013-01-05\nAAPL\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n4\n2013-01-06\nAAPL\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n23485\n2023-09-17\nNVDA\nNaN\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n23486\n2023-09-18\nNVDA\n427.480011\n442.420013\n420.000000\n439.660004\n50027100.0\n439.660004\n\n\n23487\n2023-09-19\nNVDA\n438.329987\n439.660004\n430.019989\n435.200012\n37306400.0\n435.200012\n\n\n23488\n2023-09-20\nNVDA\n436.000000\n439.029999\n422.230011\n422.390015\n36710800.0\n422.390015\n\n\n23489\n2023-09-21\nNVDA\n415.829987\n421.000000\n409.799988\n410.170013\n44893000.0\n410.170013\n\n\n\n\n23490 rows × 8 columns"
   },
   {
-    "objectID": "reference/is_holiday.html",
-    "href": "reference/is_holiday.html",
-    "title": "is_holiday",
+    "objectID": "reference/get_seasonal_frequency.html",
+    "href": "reference/get_seasonal_frequency.html",
+    "title": "get_seasonal_frequency",
     "section": "",
-    "text": "is_holiday(idx, country_name='UnitedStates', country=None)\nCheck if a given list of dates are holidays for a specified country.\nNote: This function requires the holidays package to be installed."
+    "text": "get_seasonal_frequency(idx, force_regular=False, numeric=False)\nThe get_seasonal_frequency function returns the seasonal period of a given time series or datetime index."
   },
   {
-    "objectID": "reference/is_holiday.html#parameters",
-    "href": "reference/is_holiday.html#parameters",
-    "title": "is_holiday",
+    "objectID": "reference/get_seasonal_frequency.html#parameters",
+    "href": "reference/get_seasonal_frequency.html#parameters",
+    "title": "get_seasonal_frequency",
     "section": "Parameters",
-    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\nUnion[str, datetime, List[Union[str, datetime]], pd.DatetimeIndex, pd.Series]\nThe dates to check for holiday status.\nrequired\n\n\ncountry_name\nstr\nThe name of the country for which to check the holiday status. Defaults to ‘UnitedStates’ if not specified.\n'UnitedStates'\n\n\ncountry\nstr\nAn alternative parameter to specify the country for holiday checking, overriding country_name.\nNone"
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\nUnion[pd.Series, pd.DatetimeIndex]\nThe idx parameter can be either a pandas Series or a pandas DatetimeIndex. It represents the time index for which you want to calculate the seasonal frequency.\nrequired\n\n\nforce_regular\nbool\nforce_regular is a boolean parameter that determines whether to force the frequency to be regular. If set to True, the function will try to find a regular frequency even if the data is irregular. If set to False, the function will return the actual frequency of the data.\nFalse\n\n\nnumeric\nbool\nThe numeric parameter is a boolean flag that determines whether the output should be in numeric format or a string Pandas Frequency Alias. If numeric is set to True, the output will be a numeric representation of the seasonal period. If numeric is set to False (default), the output will\nFalse"
   },
   {
-    "objectID": "reference/is_holiday.html#returns",
-    "href": "reference/is_holiday.html#returns",
-    "title": "is_holiday",
-    "section": "Returns:",
-    "text": "Returns:\npd.Series: Series containing True if the date is a holiday, False otherwise."
-  },
-  {
-    "objectID": "reference/is_holiday.html#raises",
-    "href": "reference/is_holiday.html#raises",
-    "title": "is_holiday",
-    "section": "Raises:",
-    "text": "Raises:\nValueError: If the specified country is not found in the holidays package."
-  },
-  {
-    "objectID": "reference/is_holiday.html#examples",
-    "href": "reference/is_holiday.html#examples",
-    "title": "is_holiday",
-    "section": "Examples:",
-    "text": "Examples:\n\nimport pandas as pd\nimport pytimetk as tk\n\ntk.is_holiday('2023-01-01', country_name='UnitedStates')\n\n0    True\nName: is_holiday, dtype: bool\n\n\n\n# List of dates\ntk.is_holiday(['2023-01-01', '2023-01-02', '2023-01-03'], country_name='UnitedStates')\n\n0     True\n1     True\n2    False\nName: is_holiday, dtype: bool\n\n\n\n# DatetimeIndex\ntk.is_holiday(pd.date_range(\"2023-01-01\", \"2023-01-03\"), country_name='UnitedStates')\n\n0     True\n1     True\n2    False\nName: is_holiday, dtype: bool\n\n\n\n# Pandas Series Method\n( \n    pd.Series(pd.date_range(\"2023-01-01\", \"2023-01-03\"))\n        .is_holiday(country_name='UnitedStates')\n)\n\n0     True\n1     True\n2    False\nName: is_holiday, dtype: bool"
-  },
-  {
-    "objectID": "reference/glimpse.html",
-    "href": "reference/glimpse.html",
-    "title": "glimpse",
-    "section": "",
-    "text": "glimpse(data, max_width=76)\nTakes a pandas DataFrame and prints a summary of its dimensions, column names, data types, and the first few values of each column."
-  },
-  {
-    "objectID": "reference/glimpse.html#parameters",
-    "href": "reference/glimpse.html#parameters",
-    "title": "glimpse",
-    "section": "Parameters",
-    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame\nThe data parameter is a pandas DataFrame that contains the data you want to glimpse at. It is the main input to the glimpse function.\nrequired\n\n\nmax_width\nint\nThe max_width parameter is an optional parameter that specifies the maximum width of each line when printing the glimpse of the DataFrame. If not provided, the default value is set to 76.\n76"
-  },
-  {
-    "objectID": "reference/glimpse.html#examples",
-    "href": "reference/glimpse.html#examples",
-    "title": "glimpse",
-    "section": "Examples",
-    "text": "Examples\n\nimport pytimetk as tk\nimport pandas as pd\n\ndf = tk.load_dataset('walmart_sales_weekly', parse_dates=['Date'])\n\ndf.glimpse()\n\n&lt;class 'pandas.core.frame.DataFrame'&gt;: 1001 rows of 17 columns\nid:            object           ['1_1', '1_1', '1_1', '1_1', '1_1', '1_1 ...\nStore:         int64            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  ...\nDept:          int64            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  ...\nDate:          datetime64[ns]   [Timestamp('2010-02-05 00:00:00'), Times ...\nWeekly_Sales:  float64          [24924.5, 46039.49, 41595.55, 19403.54,  ...\nIsHoliday:     bool             [False, True, False, False, False, False ...\nType:          object           ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', ...\nSize:          int64            [151315, 151315, 151315, 151315, 151315, ...\nTemperature:   float64          [42.31, 38.51, 39.93, 46.63, 46.5, 57.79 ...\nFuel_Price:    float64          [2.572, 2.548, 2.514, 2.561, 2.625, 2.66 ...\nMarkDown1:     float64          [nan, nan, nan, nan, nan, nan, nan, nan, ...\nMarkDown2:     float64          [nan, nan, nan, nan, nan, nan, nan, nan, ...\nMarkDown3:     float64          [nan, nan, nan, nan, nan, nan, nan, nan, ...\nMarkDown4:     float64          [nan, nan, nan, nan, nan, nan, nan, nan, ...\nMarkDown5:     float64          [nan, nan, nan, nan, nan, nan, nan, nan, ...\nCPI:           float64          [211.0963582, 211.2421698, 211.2891429,  ...\nUnemployment:  float64          [8.106, 8.106, 8.106, 8.106, 8.106, 8.10 ..."
-  },
-  {
-    "objectID": "reference/get_pandas_frequency.html",
-    "href": "reference/get_pandas_frequency.html",
-    "title": "get_pandas_frequency",
-    "section": "",
-    "text": "get_pandas_frequency(idx, force_regular=False)\nGet the frequency of a pandas Series or DatetimeIndex.\nThe function get_pandas_frequency takes a Pandas Series or DatetimeIndex as input and returns the inferred frequency of the index, with an option to force regular frequency.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DatetimeIndex\nThe idx parameter can be either a pd.Series or a pd.DatetimeIndex. It represents the index or the time series data for which we want to determine the frequency.\nrequired\n\n\nforce_regular\nbool\nThe force_regular parameter is a boolean flag that determines whether to force the frequency to be regular. If set to True, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is ‘B’ (business days), it will be converted to ‘D’ (calendar days). The default value is False.\nFalse\n\n\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\nstr\nThe frequency of the given pandas series or datetime index."
-  },
-  {
-    "objectID": "reference/get_pandas_frequency.html#parameters",
-    "href": "reference/get_pandas_frequency.html#parameters",
-    "title": "get_pandas_frequency",
-    "section": "",
-    "text": "Name\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DatetimeIndex\nThe idx parameter can be either a pd.Series or a pd.DatetimeIndex. It represents the index or the time series data for which we want to determine the frequency.\nrequired\n\n\nforce_regular\nbool\nThe force_regular parameter is a boolean flag that determines whether to force the frequency to be regular. If set to True, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is ‘B’ (business days), it will be converted to ‘D’ (calendar days). The default value is False.\nFalse"
-  },
-  {
-    "objectID": "reference/get_pandas_frequency.html#returns",
-    "href": "reference/get_pandas_frequency.html#returns",
-    "title": "get_pandas_frequency",
-    "section": "",
-    "text": "Type\nDescription\n\n\n\n\nstr\nThe frequency of the given pandas series or datetime index."
-  },
-  {
-    "objectID": "reference/apply_by_time.html",
-    "href": "reference/apply_by_time.html",
-    "title": "apply_by_time",
-    "section": "",
-    "text": "apply_by_time(data, date_column, freq='D', wide_format=False, fillna=0, **named_funcs)\nApply for time series."
-  },
-  {
-    "objectID": "reference/apply_by_time.html#parameters",
-    "href": "reference/apply_by_time.html#parameters",
-    "title": "apply_by_time",
-    "section": "Parameters",
-    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\nUnion[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]\nThe data parameter can be either a pandas DataFrame or a pandas DataFrameGroupBy object. It represents the data on which the apply operation will be performed.\nrequired\n\n\ndate_column\nstr\nThe name of the column in the DataFrame that contains the dates.\nrequired\n\n\nfreq\nstr\nThe freq parameter specifies the frequency at which the data should be resampled. It accepts a string representing a time frequency, such as “D” for daily, “W” for weekly, “M” for monthly, etc. The default value is “D”, which means the data will be resampled on a daily basis. Some common frequency aliases include: - S: secondly frequency - min: minute frequency - H: hourly frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency\n'D'\n\n\nwide_format\nbool\nThe wide_format parameter is a boolean flag that determines whether the output should be in wide format or not. If wide_format is set to True, the output will have a multi-index column structure, where the first level represents the original columns and the second level represents the group names\nFalse\n\n\nfillna\nint\nThe fillna parameter is used to specify the value that will be used to fill missing values in the resulting DataFrame. By default, it is set to 0.\n0\n\n\n**named_funcs\n\nThe **named_funcs parameter is used to specify one or more custom aggregation functions to apply to the data. It accepts named functions in the format: python name = lambda df: df['column1'].corr(df['column2']]) Where name is the name of the function and df is the DataFrame that will be passed to the function. The function must return a single value.\n{}"
-  },
-  {
-    "objectID": "reference/apply_by_time.html#returns",
-    "href": "reference/apply_by_time.html#returns",
-    "title": "apply_by_time",
+    "objectID": "reference/get_seasonal_frequency.html#returns",
+    "href": "reference/get_seasonal_frequency.html#returns",
+    "title": "get_seasonal_frequency",
     "section": "Returns",
-    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\nThe function apply_by_time returns a pandas DataFrame object."
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\nThe function get_seasonal_frequency returns the seasonal period based on the input index. If the index is a pd.DatetimeIndex, it is converted to a pd.Series with the name “idx”. The function then calculates the summary frequency of the index using the get_frequency_summary function. It determines the scale and unit of the frequency and adjusts the unit if the scale is"
   },
   {
-    "objectID": "reference/apply_by_time.html#examples",
-    "href": "reference/apply_by_time.html#examples",
-    "title": "apply_by_time",
+    "objectID": "reference/get_seasonal_frequency.html#examples",
+    "href": "reference/get_seasonal_frequency.html#examples",
+    "title": "get_seasonal_frequency",
     "section": "Examples",
-    "text": "Examples\n\nimport pytimetk as tk\nimport pandas as pd\n\ndf = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])\n\ndf.glimpse()\n\n&lt;class 'pandas.core.frame.DataFrame'&gt;: 2466 rows of 13 columns\norder_id:        int64            [1, 1, 2, 2, 3, 3, 3, 3, 3, 4, 5, 5, 5 ...\norder_line:      int64            [1, 2, 1, 2, 1, 2, 3, 4, 5, 1, 1, 2, 3 ...\norder_date:      datetime64[ns]   [Timestamp('2011-01-07 00:00:00'), Tim ...\nquantity:        int64            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1 ...\nprice:           int64            [6070, 5970, 2770, 5970, 10660, 3200,  ...\ntotal_price:     int64            [6070, 5970, 2770, 5970, 10660, 3200,  ...\nmodel:           object           ['Jekyll Carbon 2', 'Trigger Carbon 2' ...\ncategory_1:      object           ['Mountain', 'Mountain', 'Mountain', ' ...\ncategory_2:      object           ['Over Mountain', 'Over Mountain', 'Tr ...\nframe_material:  object           ['Carbon', 'Carbon', 'Aluminum', 'Carb ...\nbikeshop_name:   object           ['Ithaca Mountain Climbers', 'Ithaca M ...\ncity:            object           ['Ithaca', 'Ithaca', 'Kansas City', 'K ...\nstate:           object           ['NY', 'NY', 'KS', 'KS', 'KY', 'KY', ' ...\n\n\n\n# Apply by time with a DataFrame object\n# Allows access to multiple columns at once\n( \n    df[['order_date', 'price', 'quantity']] \n        .apply_by_time(\n            \n            # Named apply functions\n            price_quantity_sum = lambda df: (df['price'] * df['quantity']).sum(),\n            price_quantity_mean = lambda df: (df['price'] * df['quantity']).mean(),\n            \n            # Parameters\n            date_column  = 'order_date', \n            freq         = \"MS\",\n            \n        )\n)\n\n\n\n\n\n\n\n\norder_date\nprice_quantity_sum\nprice_quantity_mean\n\n\n\n\n0\n2011-01-01\n483015.0\n4600.142857\n\n\n1\n2011-02-01\n1162075.0\n4611.408730\n\n\n2\n2011-03-01\n659975.0\n5196.653543\n\n\n3\n2011-04-01\n1827140.0\n4533.846154\n\n\n4\n2011-05-01\n844170.0\n4097.912621\n\n\n5\n2011-06-01\n1413445.0\n4544.839228\n\n\n6\n2011-07-01\n1194430.0\n4976.791667\n\n\n7\n2011-08-01\n679790.0\n4961.970803\n\n\n8\n2011-09-01\n814720.0\n4682.298851\n\n\n9\n2011-10-01\n734920.0\n3930.053476\n\n\n10\n2011-11-01\n1006085.0\n4768.175355\n\n\n11\n2011-12-01\n473120.0\n4186.902655\n\n\n\n\n\n\n\n\n# Apply by time with a GroupBy object\n( \n    df[['category_1', 'order_date', 'price', 'quantity']] \n        .groupby('category_1')\n        .apply_by_time(\n            \n            # Named functions\n            price_quantity_sum = lambda df: (df['price'] * df['quantity']).sum(),\n            price_quantity_mean = lambda df: (df['price'] * df['quantity']).mean(),\n            \n            # Parameters\n            date_column  = 'order_date', \n            freq         = \"MS\",\n            \n        )\n)\n\n\n\n\n\n\n\n\ncategory_1\norder_date\nprice_quantity_sum\nprice_quantity_mean\n\n\n\n\n0\nMountain\n2011-01-01\n221490.0\n4922.000000\n\n\n1\nMountain\n2011-02-01\n660555.0\n4374.536424\n\n\n2\nMountain\n2011-03-01\n358855.0\n5882.868852\n\n\n3\nMountain\n2011-04-01\n1075975.0\n4890.795455\n\n\n4\nMountain\n2011-05-01\n450440.0\n4549.898990\n\n\n5\nMountain\n2011-06-01\n723040.0\n5021.111111\n\n\n6\nMountain\n2011-07-01\n767740.0\n5444.964539\n\n\n7\nMountain\n2011-08-01\n361255.0\n5734.206349\n\n\n8\nMountain\n2011-09-01\n401125.0\n5077.531646\n\n\n9\nMountain\n2011-10-01\n377335.0\n4439.235294\n\n\n10\nMountain\n2011-11-01\n549345.0\n5282.163462\n\n\n11\nMountain\n2011-12-01\n276055.0\n5208.584906\n\n\n12\nRoad\n2011-01-01\n261525.0\n4358.750000\n\n\n13\nRoad\n2011-02-01\n501520.0\n4965.544554\n\n\n14\nRoad\n2011-03-01\n301120.0\n4562.424242\n\n\n15\nRoad\n2011-04-01\n751165.0\n4104.726776\n\n\n16\nRoad\n2011-05-01\n393730.0\n3679.719626\n\n\n17\nRoad\n2011-06-01\n690405.0\n4134.161677\n\n\n18\nRoad\n2011-07-01\n426690.0\n4310.000000\n\n\n19\nRoad\n2011-08-01\n318535.0\n4304.527027\n\n\n20\nRoad\n2011-09-01\n413595.0\n4353.631579\n\n\n21\nRoad\n2011-10-01\n357585.0\n3505.735294\n\n\n22\nRoad\n2011-11-01\n456740.0\n4268.598131\n\n\n23\nRoad\n2011-12-01\n197065.0\n3284.416667\n\n\n\n\n\n\n\n\n# Return complex objects\n( \n    df[['order_date', 'price', 'quantity']] \n        .apply_by_time(\n            \n            # Named apply functions\n            complex_object = lambda df: [df],\n            \n            # Parameters\n            date_column  = 'order_date', \n            freq         = \"MS\",\n            \n        )\n)\n\n\n\n\n\n\n\n\norder_date\nprice\nquantity\n\n\n\n\n0\n2011-01-01\n[[6070, 5970, 2770, 5970, 10660, 3200, 12790, ...\n[[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1,...\n\n\n1\n2011-02-01\n[[8200, 7990, 3200, 4800, 3200, 2130, 1030, 37...\n[[1, 4, 1, 1, 1, 2, 1, 1, 1, 3, 1, 2, 1, 1, 2,...\n\n\n2\n2011-03-01\n[[2660, 3200, 3200, 815, 8200, 9060, 815, 2130...\n[[1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1,...\n\n\n3\n2011-04-01\n[[5330, 4500, 585, 2660, 3200, 2770, 1030, 234...\n[[1, 1, 1, 3, 1, 1, 8, 1, 1, 1, 1, 1, 1, 1, 7,...\n\n\n4\n2011-05-01\n[[1840, 3200, 7000, 5860, 1030, 3200, 3500, 15...\n[[1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,...\n\n\n5\n2011-06-01\n[[7990, 4500, 1250, 3730, 1950, 2660, 2340, 19...\n[[1, 1, 1, 3, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 9,...\n\n\n6\n2011-07-01\n[[3200, 2880, 5330, 3200, 585, 5330, 4800, 111...\n[[2, 3, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 2, 1, 1,...\n\n\n7\n2011-08-01\n[[12250, 2130, 7000, 2660, 5860, 3500, 1950, 1...\n[[2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1,...\n\n\n8\n2011-09-01\n[[4800, 480, 12790, 6390, 7990, 3500, 3730, 63...\n[[1, 1, 1, 1, 1, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1,...\n\n\n9\n2011-10-01\n[[9060, 12250, 2880, 9060, 4480, 3200, 2340, 2...\n[[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,...\n\n\n10\n2011-11-01\n[[2240, 2660, 3200, 980, 2880, 1750, 2130, 224...\n[[1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 2, 1, 6,...\n\n\n11\n2011-12-01\n[[1030, 3200, 870, 1350, 4260, 7460, 2880, 270...\n[[1, 1, 2, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1,..."
+    "text": "Examples\n\nimport pytimetk as tk\nimport pandas as pd\n\ndates = pd.date_range(start='2021-01-01', end='2024-01-01', freq='MS')\n\ntk.get_seasonal_frequency(dates)\n\n'1Y'"
   },
   {
-    "objectID": "reference/augment_expanding_apply.html",
-    "href": "reference/augment_expanding_apply.html",
-    "title": "augment_expanding_apply",
+    "objectID": "reference/get_date_summary.html",
+    "href": "reference/get_date_summary.html",
+    "title": "get_date_summary",
     "section": "",
-    "text": "augment_expanding_apply(data, date_column, window_func, min_periods=None)\nApply one or more DataFrame-based expanding functions to one or more columns of a DataFrame."
+    "text": "get_date_summary(idx)\nReturns a summary of the date-related information, including the number of dates, the time zone, the start date, and the end date.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DateTimeIndex\nThe parameter idx can be either a pandas Series or a pandas DateTimeIndex. It represents the dates or timestamps for which we want to generate a summary.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\nA pandas DataFrame with the following columns: - date_n: The number of dates in the index. - date_tz: The time zone of the dates in the index. - date_start: The first date in the index. - date_end: The last date in the index."
   },
   {
-    "objectID": "reference/augment_expanding_apply.html#parameters",
-    "href": "reference/augment_expanding_apply.html#parameters",
-    "title": "augment_expanding_apply",
-    "section": "Parameters",
-    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\nUnion[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]\nInput data to be processed. Can be a Pandas DataFrame or a GroupBy object.\nrequired\n\n\ndate_column\nstr\nName of the datetime column. Data is sorted by this column within each group.\nrequired\n\n\nwindow_func\nUnion[Tuple[str, Callable], List[Tuple[str, Callable]]]\nThe window_func parameter in the augment_expanding_apply function specifies the function(s) that operate on a expanding window with the consideration of multiple columns. The specification can be: - A tuple where the first element is a string representing the function’s name and the second element is the callable function itself. - A list of such tuples for multiple functions. Note: For functions targeting only a single value column without the need for contextual data from other columns, consider using the augment_expanding function in this library.\nrequired\n\n\nmin_periods\nint\nMinimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.\nNone"
+    "objectID": "reference/get_date_summary.html#parameters",
+    "href": "reference/get_date_summary.html#parameters",
+    "title": "get_date_summary",
+    "section": "",
+    "text": "Name\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DateTimeIndex\nThe parameter idx can be either a pandas Series or a pandas DateTimeIndex. It represents the dates or timestamps for which we want to generate a summary.\nrequired"
   },
   {
-    "objectID": "reference/augment_expanding_apply.html#returns",
-    "href": "reference/augment_expanding_apply.html#returns",
-    "title": "augment_expanding_apply",
+    "objectID": "reference/get_date_summary.html#returns",
+    "href": "reference/get_date_summary.html#returns",
+    "title": "get_date_summary",
+    "section": "",
+    "text": "Type\nDescription\n\n\n\n\npd.DataFrame\nA pandas DataFrame with the following columns: - date_n: The number of dates in the index. - date_tz: The time zone of the dates in the index. - date_start: The first date in the index. - date_end: The last date in the index."
+  },
+  {
+    "objectID": "reference/palette_timetk.html",
+    "href": "reference/palette_timetk.html",
+    "title": "palette_timetk",
+    "section": "",
+    "text": "palette_timetk()\nThe function palette_timetk returns a dictionary of color codes for various colors in the timetk theme."
+  },
+  {
+    "objectID": "reference/palette_timetk.html#returns",
+    "href": "reference/palette_timetk.html#returns",
+    "title": "palette_timetk",
     "section": "Returns",
-    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\nThe augment_expanding function returns a DataFrame with new columns for each applied function, window size, and value column."
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\nThe function palette_timetk returns a dictionary containing color names as keys and their corresponding hexadecimal color codes as values:"
   },
   {
-    "objectID": "reference/augment_expanding_apply.html#examples",
-    "href": "reference/augment_expanding_apply.html#examples",
-    "title": "augment_expanding_apply",
+    "objectID": "reference/palette_timetk.html#examples",
+    "href": "reference/palette_timetk.html#examples",
+    "title": "palette_timetk",
     "section": "Examples",
-    "text": "Examples\n\nimport pytimetk as tk\nimport pandas as pd\nimport numpy as np\n\n\n# Example showcasing the expanding correlation between two columns (`value1` and `value2`).\n# The correlation requires both columns as input.\n\n# Sample DataFrame with id, date, value1, and value2 columns.\ndf = pd.DataFrame({\n    'id': [1, 1, 1, 2, 2, 2],\n    'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),\n    'value1': [10, 20, 29, 42, 53, 59],\n    'value2': [2, 16, 20, 40, 41, 50],\n})\n\n# Compute the expanding correlation for each group of 'id'\nexpanding_df = (\n    df.groupby('id')\n    .augment_expanding_apply(\n        date_column='date',\n        window_func=[('corr', lambda x: x['value1'].corr(x['value2']))],  # Lambda function for correlation\n    )\n)\ndisplay(expanding_df)\n\n\n\n\n\n\n\n\nid\ndate\nvalue1\nvalue2\nexpanding_corr\n\n\n\n\n0\n1\n2023-01-01\n10\n2\nNaN\n\n\n1\n1\n2023-01-02\n20\n16\n1.000000\n\n\n2\n1\n2023-01-03\n29\n20\n0.961054\n\n\n3\n2\n2023-01-04\n42\n40\nNaN\n\n\n4\n2\n2023-01-05\n53\n41\n1.000000\n\n\n5\n2\n2023-01-06\n59\n50\n0.824831\n\n\n\n\n\n\n\n\n# expanding Regression Example: Using `value1` as the dependent variable and `value2` and `value3` as the independent variables.\n# This example demonstrates how to perform a expanding regression using two independent variables.\n\n# Required module (scikit-learn) for regression.\nfrom sklearn.linear_model import LinearRegression\n\n# Sample DataFrame with `id`, `date`, `value1`, `value2`, and `value3` columns.\ndf = pd.DataFrame({\n    'id': [1, 1, 1, 2, 2, 2],\n    'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),\n    'value1': [10, 20, 29, 42, 53, 59],\n    'value2': [5, 16, 24, 35, 45, 58],\n    'value3': [2, 3, 6, 9, 10, 13]\n})\n\n# Define Regression Function to be applied on the expanding window.\ndef regression(df):\n\n    model = LinearRegression()\n    X = df[['value2', 'value3']]  # Independent variables\n    y = df['value1']  # Dependent variable\n    model.fit(X, y)\n    ret = pd.Series([model.intercept_, model.coef_[0]], index=['Intercept', 'Slope'])\n    \n    return ret # Return intercept and slope as a Series\n    \n# Compute the expanding regression for each group of `id`\nresult_df = (\n    df.groupby('id')\n    .augment_expanding_apply(\n        date_column='date',\n        window_func=[('regression', regression)]\n    )\n    .dropna()\n)\n\n# Format the results to have each regression output (slope and intercept) in separate columns.\nregression_wide_df = pd.concat(result_df['expanding_regression'].to_list(), axis=1).T\nregression_wide_df = pd.concat([result_df.reset_index(drop = True), regression_wide_df], axis=1)\ndisplay(regression_wide_df)\n\n\n\n\n\n\n\n\nid\ndate\nvalue1\nvalue2\nvalue3\nexpanding_regression\nIntercept\nSlope\n\n\n\n\n0\n1\n2023-01-01\n10\n5\n2\nIntercept 10.0 Slope 0.0 dtype: flo...\n10.000000\n0.000000\n\n\n1\n1\n2023-01-02\n20\n16\n3\nIntercept 5.327869 Slope 0.901639 dt...\n5.327869\n0.901639\n\n\n2\n1\n2023-01-03\n29\n24\n6\nIntercept 4.28 Slope 0.84 dtype: flo...\n4.280000\n0.840000\n\n\n3\n2\n2023-01-04\n42\n35\n9\nIntercept 42.0 Slope 0.0 dtype: flo...\n42.000000\n0.000000\n\n\n4\n2\n2023-01-05\n53\n45\n10\nIntercept 2.900990 Slope 1.089109 dt...\n2.900990\n1.089109\n\n\n5\n2\n2023-01-06\n59\n58\n13\nIntercept 30.352941 Slope 1.588235 ...\n30.352941\n1.588235"
+    "text": "Examples\n\nimport pytimetk as tk\n\ntk.palette_timetk()\n\n{'blue': '#2c3e50',\n 'red': '#e31a1c',\n 'green': '#18BC9C',\n 'yellow': '#CCBE93',\n 'steel_blue': '#a6cee3',\n 'navy_blue': '#1f78b4',\n 'light_green': '#b2df8a',\n 'pink': '#fb9a99',\n 'light_orange': '#fdbf6f',\n 'orange': '#ff7f00',\n 'light_purple': '#cab2d6',\n 'purple': '#6a3d9a'}"
+  },
+  {
+    "objectID": "reference/index.html",
+    "href": "reference/index.html",
+    "title": "Function reference",
+    "section": "",
+    "text": "Visualize time series data with one line of code.\n\n\n\nplot_timeseries\nCreates time series plots using different plotting engines such as Plotnine, Matplotlib, and Plotly.\n\n\n\n\n\n\nBend time series data to your will.\n\n\n\nsummarize_by_time\nSummarize a DataFrame or GroupBy object by time.\n\n\napply_by_time\nApply for time series.\n\n\npad_by_time\nMake irregular time series regular by padding with missing dates.\n\n\nfuture_frame\nExtend a DataFrame or GroupBy object with future dates.\n\n\n\n\n\n\nAdd one or more feature columns to time series data.\n\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame.\n\n\naugment_holiday_signature\nEngineers 4 different holiday features from a single datetime for 80+ countries.\n\n\naugment_lags\nAdds lags to a Pandas DataFrame or DataFrameGroupBy object.\n\n\naugment_leads\nAdds leads to a Pandas DataFrame or DataFrameGroupBy object.\n\n\naugment_rolling\nApply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame.\n\n\naugment_rolling_apply\nApply one or more DataFrame-based rolling functions and window sizes to one or more columns of a DataFrame.\n\n\naugment_expanding\nApply one or more Series-based expanding functions and window sizes to one or more columns of a DataFrame.\n\n\naugment_expanding_apply\nApply one or more DataFrame-based expanding functions to one or more columns of a DataFrame.\n\n\n\n\n\n\nPython implementation of the R package tsfeatures.\n\n\n\nts_features\nExtracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the tsfeatures package.\n\n\nts_summary\nComputes summary statistics for a time series data, either for the entire dataset or grouped by a specific column.\n\n\n\n\n\n\nTime series functions that generate / manipulate Pandas Series.\n\n\n\nmake_future_timeseries\nMake future dates for a time series.\n\n\nmake_weekday_sequence\nGenerate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays.\n\n\nmake_weekend_sequence\nGenerate a sequence of weekend dates within a specified date range, optionally excluding holidays.\n\n\nget_date_summary\nReturns a summary of the date-related information, including the number of dates, the time zone, the start\n\n\nget_frequency_summary\nMore robust version of pandas inferred frequency.\n\n\nget_diff_summary\nCalculates summary statistics of the time differences between consecutive values in a datetime index.\n\n\nget_frequency\nGet the frequency of a pandas Series or DatetimeIndex.\n\n\nget_seasonal_frequency\nThe get_seasonal_frequency function returns the seasonal period of a given time series or datetime index.\n\n\nget_trend_frequency\nThe get_trend_frequency function returns the trend period of a given time series or datetime index.\n\n\nget_timeseries_signature\nConvert a timestamp to a set of 29 time series features.\n\n\nget_holiday_signature\nEngineers 4 different holiday features from a single datetime for 80+ countries.\n\n\n\n\n\n\nHelper functions to make your life easier.\n\n\n\nfloor_date\nRound a date down to the specified unit (e.g. Flooring).\n\n\nceil_date\nRound a date up to the specified unit (e.g. Ceiling).\n\n\nis_holiday\nCheck if a given list of dates are holidays for a specified country.\n\n\nweek_of_month\nThe “week_of_month” function calculates the week number of a given date within its month.\n\n\ntimeseries_unit_frequency_table\nThe function timeseries_unit_frequency_table returns a pandas DataFrame with units of time and their corresponding frequencies in seconds.\n\n\ntime_scale_template\nThe function time_scale_template returns a table with time scale information in either wide or long format.\n\n\n\n\n\n\nHelper functions to make your life easier.\n\n\n\ntheme_timetk\nReturns a plotnine theme with timetk styles applied, allowing for customization of the appearance of plots in Python.\n\n\npalette_timetk\nThe function palette_timetk returns a dictionary of color codes for various colors in the timetk theme.\n\n\n\n\n\n\n\n\n\nglimpse\nTakes a pandas DataFrame and prints a summary of\n\n\nflatten_multiindex_column_names\nTakes a DataFrame as input and flattens the column\n\n\n\n\n\n\nPractice pytimetk with 13 complementary time series datasets.\n\n\n\nget_available_datasets\nGet a list of 12 datasets that can be loaded with pytimetk.load_dataset.\n\n\nload_dataset\nLoad one of 12 Time Series Datasets."
+  },
+  {
+    "objectID": "reference/index.html#data-visualization",
+    "href": "reference/index.html#data-visualization",
+    "title": "Function reference",
+    "section": "",
+    "text": "Visualize time series data with one line of code.\n\n\n\nplot_timeseries\nCreates time series plots using different plotting engines such as Plotnine, Matplotlib, and Plotly."
+  },
+  {
+    "objectID": "reference/index.html#wrangling-pandas-time-series-dataframes",
+    "href": "reference/index.html#wrangling-pandas-time-series-dataframes",
+    "title": "Function reference",
+    "section": "",
+    "text": "Bend time series data to your will.\n\n\n\nsummarize_by_time\nSummarize a DataFrame or GroupBy object by time.\n\n\napply_by_time\nApply for time series.\n\n\npad_by_time\nMake irregular time series regular by padding with missing dates.\n\n\nfuture_frame\nExtend a DataFrame or GroupBy object with future dates."
+  },
+  {
+    "objectID": "reference/index.html#adding-features-to-time-series-dataframes-augmenting",
+    "href": "reference/index.html#adding-features-to-time-series-dataframes-augmenting",
+    "title": "Function reference",
+    "section": "",
+    "text": "Add one or more feature columns to time series data.\n\n\n\naugment_timeseries_signature\nAdd 29 time series features to a DataFrame.\n\n\naugment_holiday_signature\nEngineers 4 different holiday features from a single datetime for 80+ countries.\n\n\naugment_lags\nAdds lags to a Pandas DataFrame or DataFrameGroupBy object.\n\n\naugment_leads\nAdds leads to a Pandas DataFrame or DataFrameGroupBy object.\n\n\naugment_rolling\nApply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame.\n\n\naugment_rolling_apply\nApply one or more DataFrame-based rolling functions and window sizes to one or more columns of a DataFrame.\n\n\naugment_expanding\nApply one or more Series-based expanding functions and window sizes to one or more columns of a DataFrame.\n\n\naugment_expanding_apply\nApply one or more DataFrame-based expanding functions to one or more columns of a DataFrame."
+  },
+  {
+    "objectID": "reference/index.html#ts-features",
+    "href": "reference/index.html#ts-features",
+    "title": "Function reference",
+    "section": "",
+    "text": "Python implementation of the R package tsfeatures.\n\n\n\nts_features\nExtracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the tsfeatures package.\n\n\nts_summary\nComputes summary statistics for a time series data, either for the entire dataset or grouped by a specific column."
+  },
+  {
+    "objectID": "reference/index.html#time-series-for-pandas-series",
+    "href": "reference/index.html#time-series-for-pandas-series",
+    "title": "Function reference",
+    "section": "",
+    "text": "Time series functions that generate / manipulate Pandas Series.\n\n\n\nmake_future_timeseries\nMake future dates for a time series.\n\n\nmake_weekday_sequence\nGenerate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays.\n\n\nmake_weekend_sequence\nGenerate a sequence of weekend dates within a specified date range, optionally excluding holidays.\n\n\nget_date_summary\nReturns a summary of the date-related information, including the number of dates, the time zone, the start\n\n\nget_frequency_summary\nMore robust version of pandas inferred frequency.\n\n\nget_diff_summary\nCalculates summary statistics of the time differences between consecutive values in a datetime index.\n\n\nget_frequency\nGet the frequency of a pandas Series or DatetimeIndex.\n\n\nget_seasonal_frequency\nThe get_seasonal_frequency function returns the seasonal period of a given time series or datetime index.\n\n\nget_trend_frequency\nThe get_trend_frequency function returns the trend period of a given time series or datetime index.\n\n\nget_timeseries_signature\nConvert a timestamp to a set of 29 time series features.\n\n\nget_holiday_signature\nEngineers 4 different holiday features from a single datetime for 80+ countries."
+  },
+  {
+    "objectID": "reference/index.html#date-utilities",
+    "href": "reference/index.html#date-utilities",
+    "title": "Function reference",
+    "section": "",
+    "text": "Helper functions to make your life easier.\n\n\n\nfloor_date\nRound a date down to the specified unit (e.g. Flooring).\n\n\nceil_date\nRound a date up to the specified unit (e.g. Ceiling).\n\n\nis_holiday\nCheck if a given list of dates are holidays for a specified country.\n\n\nweek_of_month\nThe “week_of_month” function calculates the week number of a given date within its month.\n\n\ntimeseries_unit_frequency_table\nThe function timeseries_unit_frequency_table returns a pandas DataFrame with units of time and their corresponding frequencies in seconds.\n\n\ntime_scale_template\nThe function time_scale_template returns a table with time scale information in either wide or long format."
+  },
+  {
+    "objectID": "reference/index.html#visualization-utilities",
+    "href": "reference/index.html#visualization-utilities",
+    "title": "Function reference",
+    "section": "",
+    "text": "Helper functions to make your life easier.\n\n\n\ntheme_timetk\nReturns a plotnine theme with timetk styles applied, allowing for customization of the appearance of plots in Python.\n\n\npalette_timetk\nThe function palette_timetk returns a dictionary of color codes for various colors in the timetk theme."
+  },
+  {
+    "objectID": "reference/index.html#extra-pandas-helpers-that-help-beyond-just-time-series",
+    "href": "reference/index.html#extra-pandas-helpers-that-help-beyond-just-time-series",
+    "title": "Function reference",
+    "section": "",
+    "text": "glimpse\nTakes a pandas DataFrame and prints a summary of\n\n\nflatten_multiindex_column_names\nTakes a DataFrame as input and flattens the column"
+  },
+  {
+    "objectID": "reference/index.html#datasets",
+    "href": "reference/index.html#datasets",
+    "title": "Function reference",
+    "section": "",
+    "text": "Practice pytimetk with 13 complementary time series datasets.\n\n\n\nget_available_datasets\nGet a list of 12 datasets that can be loaded with pytimetk.load_dataset.\n\n\nload_dataset\nLoad one of 12 Time Series Datasets."
+  },
+  {
+    "objectID": "reference/summarize_by_time.html",
+    "href": "reference/summarize_by_time.html",
+    "title": "summarize_by_time",
+    "section": "",
+    "text": "summarize_by_time(data, date_column, value_column, freq='D', agg_func='sum', wide_format=False, fillna=0, *args, **kwargs)\nSummarize a DataFrame or GroupBy object by time.\nThe summarize_by_time function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the time-based aggregation."
+  },
+  {
+    "objectID": "reference/summarize_by_time.html#parameters",
+    "href": "reference/summarize_by_time.html#parameters",
+    "title": "summarize_by_time",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ndata\npd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy\nA pandas DataFrame or a pandas GroupBy object. This is the data that you want to summarize by time.\nrequired\n\n\ndate_column\nstr\nThe name of the column in the data frame that contains the dates or timestamps to be aggregated by. This column must be of type datetime64.\nrequired\n\n\nvalue_column\nstr or list\nThe value_column parameter is the name of one or more columns in the DataFrame that you want to aggregate by. It can be either a string representing a single column name, or a list of strings representing multiple column names.\nrequired\n\n\nfreq\nstr\nThe freq parameter specifies the frequency at which the data should be aggregated. It accepts a string representing a pandas frequency offset, such as “D” for daily or “MS” for month start. The default value is “D”, which means the data will be aggregated on a daily basis. Some common frequency aliases include: - S: secondly frequency - min: minute frequency - H: hourly frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency\n'D'\n\n\nagg_func\nlist\nThe agg_func parameter is used to specify one or more aggregating functions to apply to the value column(s) during the summarization process. It can be a single function or a list of functions. The default value is \"sum\", which represents the sum function. Some common aggregating functions include: - “sum”: Sum of values - “mean”: Mean of values - “median”: Median of values - “min”: Minimum of values - “max”: Maximum of values - “std”: Standard deviation of values - “var”: Variance of values - “first”: First value in group - “last”: Last value in group - “count”: Count of values - “nunique”: Number of unique values Custom lambda aggregating functions can be used too. Here are several common examples: - (“q25”, lambda x: x.quantile(0.25)): 25th percentile of values - (“q75”, lambda x: x.quantile(0.75)): 75th percentile of values - (“iqr”, lambda x: x.quantile(0.75) - x.quantile(0.25)): Interquartile range of values - (“range”, lambda x: x.max() - x.min()): Range of values\n'sum'\n\n\nwide_format\nbool\nA boolean parameter that determines whether the output should be in “wide” or “long” format. If set to True, the output will be in wide format, where each group is represented by a separate column. If set to False, the output will be in long format, where each group is represented by a separate row. The default value is False.\nFalse\n\n\nfillna\nint\nThe fillna parameter is used to specify the value to fill missing data with. By default, it is set to 0. If you want to keep missing values as NaN, you can use np.nan as the value for fillna.\n0"
+  },
+  {
+    "objectID": "reference/summarize_by_time.html#returns",
+    "href": "reference/summarize_by_time.html#returns",
+    "title": "summarize_by_time",
+    "section": "Returns",
+    "text": "Returns\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\nA Pandas DataFrame that is summarized by time."
+  },
+  {
+    "objectID": "reference/summarize_by_time.html#examples",
+    "href": "reference/summarize_by_time.html#examples",
+    "title": "summarize_by_time",
+    "section": "Examples",
+    "text": "Examples\n\nimport pytimetk as tk\nimport pandas as pd\n\ndf = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])\n\ndf\n\n\n\n\n\n\n\n\norder_id\norder_line\norder_date\nquantity\nprice\ntotal_price\nmodel\ncategory_1\ncategory_2\nframe_material\nbikeshop_name\ncity\nstate\n\n\n\n\n0\n1\n1\n2011-01-07\n1\n6070\n6070\nJekyll Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n\n\n1\n1\n2\n2011-01-07\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nIthaca Mountain Climbers\nIthaca\nNY\n\n\n2\n2\n1\n2011-01-10\n1\n2770\n2770\nBeast of the East 1\nMountain\nTrail\nAluminum\nKansas City 29ers\nKansas City\nKS\n\n\n3\n2\n2\n2011-01-10\n1\n5970\n5970\nTrigger Carbon 2\nMountain\nOver Mountain\nCarbon\nKansas City 29ers\nKansas City\nKS\n\n\n4\n3\n1\n2011-01-10\n1\n10660\n10660\nSupersix Evo Hi-Mod Team\nRoad\nElite Road\nCarbon\nLouisville Race Equipment\nLouisville\nKY\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n2461\n321\n3\n2011-12-22\n1\n1410\n1410\nCAAD8 105\nRoad\nElite Road\nAluminum\nMiami Race Equipment\nMiami\nFL\n\n\n2462\n322\n1\n2011-12-28\n1\n1250\n1250\nSynapse Disc Tiagra\nRoad\nEndurance Road\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2463\n322\n2\n2011-12-28\n1\n2660\n2660\nBad Habit 2\nMountain\nTrail\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2464\n322\n3\n2011-12-28\n1\n2340\n2340\nF-Si 1\nMountain\nCross Country Race\nAluminum\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n2465\n322\n4\n2011-12-28\n1\n5860\n5860\nSynapse Hi-Mod Dura Ace\nRoad\nEndurance Road\nCarbon\nPhoenix Bi-peds\nPhoenix\nAZ\n\n\n\n\n2466 rows × 13 columns\n\n\n\n\n# Summarize by time with a DataFrame object\n( \n    df \n        .summarize_by_time(\n            date_column  = 'order_date', \n            value_column = 'total_price',\n            freq         = \"MS\",\n            agg_func     = ['mean', 'sum']\n        )\n)\n\n\n\n\n\n\n\n\norder_date\ntotal_price_mean\ntotal_price_sum\n\n\n\n\n0\n2011-01-01\n4600.142857\n483015\n\n\n1\n2011-02-01\n4611.408730\n1162075\n\n\n2\n2011-03-01\n5196.653543\n659975\n\n\n3\n2011-04-01\n4533.846154\n1827140\n\n\n4\n2011-05-01\n4097.912621\n844170\n\n\n5\n2011-06-01\n4544.839228\n1413445\n\n\n6\n2011-07-01\n4976.791667\n1194430\n\n\n7\n2011-08-01\n4961.970803\n679790\n\n\n8\n2011-09-01\n4682.298851\n814720\n\n\n9\n2011-10-01\n3930.053476\n734920\n\n\n10\n2011-11-01\n4768.175355\n1006085\n\n\n11\n2011-12-01\n4186.902655\n473120\n\n\n\n\n\n\n\n\n# Summarize by time with a GroupBy object (Long Format)\n(\n    df \n        .groupby('category_1') \n        .summarize_by_time(\n            date_column  = 'order_date', \n            value_column = 'total_price', \n            freq         = 'MS',\n            agg_func     = 'sum',\n            wide_format  = False, \n        )\n)\n\n\n\n\n\n\n\n\ncategory_1\norder_date\ntotal_price\n\n\n\n\n0\nMountain\n2011-01-01\n221490\n\n\n1\nMountain\n2011-02-01\n660555\n\n\n2\nMountain\n2011-03-01\n358855\n\n\n3\nMountain\n2011-04-01\n1075975\n\n\n4\nMountain\n2011-05-01\n450440\n\n\n5\nMountain\n2011-06-01\n723040\n\n\n6\nMountain\n2011-07-01\n767740\n\n\n7\nMountain\n2011-08-01\n361255\n\n\n8\nMountain\n2011-09-01\n401125\n\n\n9\nMountain\n2011-10-01\n377335\n\n\n10\nMountain\n2011-11-01\n549345\n\n\n11\nMountain\n2011-12-01\n276055\n\n\n12\nRoad\n2011-01-01\n261525\n\n\n13\nRoad\n2011-02-01\n501520\n\n\n14\nRoad\n2011-03-01\n301120\n\n\n15\nRoad\n2011-04-01\n751165\n\n\n16\nRoad\n2011-05-01\n393730\n\n\n17\nRoad\n2011-06-01\n690405\n\n\n18\nRoad\n2011-07-01\n426690\n\n\n19\nRoad\n2011-08-01\n318535\n\n\n20\nRoad\n2011-09-01\n413595\n\n\n21\nRoad\n2011-10-01\n357585\n\n\n22\nRoad\n2011-11-01\n456740\n\n\n23\nRoad\n2011-12-01\n197065\n\n\n\n\n\n\n\n\n# Summarize by time with a GroupBy object (Wide Format)\n(\n    df \n        .groupby('category_1') \n        .summarize_by_time(\n            date_column  = 'order_date', \n            value_column = 'total_price', \n            freq         = 'MS',\n            agg_func     = 'sum',\n            wide_format  = True, \n        )\n)\n\n\n\n\n\n\n\n\norder_date\ntotal_price_Mountain\ntotal_price_Road\n\n\n\n\n0\n2011-01-01\n221490\n261525\n\n\n1\n2011-02-01\n660555\n501520\n\n\n2\n2011-03-01\n358855\n301120\n\n\n3\n2011-04-01\n1075975\n751165\n\n\n4\n2011-05-01\n450440\n393730\n\n\n5\n2011-06-01\n723040\n690405\n\n\n6\n2011-07-01\n767740\n426690\n\n\n7\n2011-08-01\n361255\n318535\n\n\n8\n2011-09-01\n401125\n413595\n\n\n9\n2011-10-01\n377335\n357585\n\n\n10\n2011-11-01\n549345\n456740\n\n\n11\n2011-12-01\n276055\n197065\n\n\n\n\n\n\n\n\n# Summarize by time with a GroupBy object and multiple summaries (Wide Format)\n(\n    df \n        .groupby('category_1') \n        .summarize_by_time(\n            date_column  = 'order_date', \n            value_column = 'total_price', \n            freq         = 'MS',\n            agg_func     = ['sum', 'mean', ('q25', lambda x: x.quantile(0.25)), ('q75', lambda x: x.quantile(0.75))],\n            wide_format  = True, \n        )\n)\n\n\n\n\n\n\n\n\norder_date\ntotal_price_sum_Mountain\ntotal_price_sum_Road\ntotal_price_mean_Mountain\ntotal_price_mean_Road\ntotal_price_q25_Mountain\ntotal_price_q75_Road\ntotal_price_q25_Mountain\ntotal_price_q75_Road\n\n\n\n\n0\n2011-01-01\n221490\n261525\n4922.000000\n4358.750000\n2060.0\n1950.0\n6070.0\n5605.0\n\n\n1\n2011-02-01\n660555\n501520\n4374.536424\n4965.544554\n2060.0\n1950.0\n5330.0\n5860.0\n\n\n2\n2011-03-01\n358855\n301120\n5882.868852\n4562.424242\n2130.0\n2240.0\n6390.0\n5875.0\n\n\n3\n2011-04-01\n1075975\n751165\n4890.795455\n4104.726776\n2060.0\n1950.0\n5970.0\n4800.0\n\n\n4\n2011-05-01\n450440\n393730\n4549.898990\n3679.719626\n2010.0\n1570.0\n6020.0\n3500.0\n\n\n5\n2011-06-01\n723040\n690405\n5021.111111\n4134.161677\n1950.0\n1840.0\n5647.5\n4500.0\n\n\n6\n2011-07-01\n767740\n426690\n5444.964539\n4310.000000\n2130.0\n1895.0\n6400.0\n5330.0\n\n\n7\n2011-08-01\n361255\n318535\n5734.206349\n4304.527027\n2235.0\n1950.0\n6400.0\n4987.5\n\n\n8\n2011-09-01\n401125\n413595\n5077.531646\n4353.631579\n1620.0\n1950.0\n6390.0\n5330.0\n\n\n9\n2011-10-01\n377335\n357585\n4439.235294\n3505.735294\n2160.0\n1750.0\n6070.0\n4260.0\n\n\n10\n2011-11-01\n549345\n456740\n5282.163462\n4268.598131\n2340.0\n1950.0\n7460.0\n4370.0\n\n\n11\n2011-12-01\n276055\n197065\n5208.584906\n3284.416667\n2060.0\n1652.5\n6400.0\n3200.0"
+  },
+  {
+    "objectID": "reference/week_of_month.html",
+    "href": "reference/week_of_month.html",
+    "title": "week_of_month",
+    "section": "",
+    "text": "week_of_month(idx)\nThe “week_of_month” function calculates the week number of a given date within its month."
+  },
+  {
+    "objectID": "reference/week_of_month.html#parameters",
+    "href": "reference/week_of_month.html#parameters",
+    "title": "week_of_month",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nidx\npd.Series or pd.DatetimeIndex\nThe parameter “idx” is a pandas Series object that represents a specific date for which you want to determine the week of the month.\nrequired"
+  },
+  {
+    "objectID": "reference/week_of_month.html#returns",
+    "href": "reference/week_of_month.html#returns",
+    "title": "week_of_month",
+    "section": "Returns",
+    "text": "Returns\n\n\n\nType\nDescription\n\n\n\n\npd.Series\nThe week of the month for a given date."
+  },
+  {
+    "objectID": "reference/week_of_month.html#examples",
+    "href": "reference/week_of_month.html#examples",
+    "title": "week_of_month",
+    "section": "Examples",
+    "text": "Examples\n\nimport pytimetk as tk\nimport pandas as pd\n\ndates = pd.date_range(\"2020-01-01\", \"2020-02-28\", freq=\"1D\")\ndates\n\nDatetimeIndex(['2020-01-01', '2020-01-02', '2020-01-03', '2020-01-04',\n               '2020-01-05', '2020-01-06', '2020-01-07', '2020-01-08',\n               '2020-01-09', '2020-01-10', '2020-01-11', '2020-01-12',\n               '2020-01-13', '2020-01-14', '2020-01-15', '2020-01-16',\n               '2020-01-17', '2020-01-18', '2020-01-19', '2020-01-20',\n               '2020-01-21', '2020-01-22', '2020-01-23', '2020-01-24',\n               '2020-01-25', '2020-01-26', '2020-01-27', '2020-01-28',\n               '2020-01-29', '2020-01-30', '2020-01-31', '2020-02-01',\n               '2020-02-02', '2020-02-03', '2020-02-04', '2020-02-05',\n               '2020-02-06', '2020-02-07', '2020-02-08', '2020-02-09',\n               '2020-02-10', '2020-02-11', '2020-02-12', '2020-02-13',\n               '2020-02-14', '2020-02-15', '2020-02-16', '2020-02-17',\n               '2020-02-18', '2020-02-19', '2020-02-20', '2020-02-21',\n               '2020-02-22', '2020-02-23', '2020-02-24', '2020-02-25',\n               '2020-02-26', '2020-02-27', '2020-02-28'],\n              dtype='datetime64[ns]', freq='D')\n\n\n\n# Works on DateTimeIndex\ntk.week_of_month(dates)\n\n0     1\n1     1\n2     1\n3     1\n4     1\n5     1\n6     1\n7     2\n8     2\n9     2\n10    2\n11    2\n12    2\n13    2\n14    3\n15    3\n16    3\n17    3\n18    3\n19    3\n20    3\n21    4\n22    4\n23    4\n24    4\n25    4\n26    4\n27    4\n28    5\n29    5\n30    5\n31    1\n32    1\n33    1\n34    1\n35    1\n36    1\n37    1\n38    2\n39    2\n40    2\n41    2\n42    2\n43    2\n44    2\n45    3\n46    3\n47    3\n48    3\n49    3\n50    3\n51    3\n52    4\n53    4\n54    4\n55    4\n56    4\n57    4\n58    4\nName: week_of_month, dtype: int32\n\n\n\n# Works on Pandas Series\ndates.to_series().week_of_month()\n\n2020-01-01    1\n2020-01-02    1\n2020-01-03    1\n2020-01-04    1\n2020-01-05    1\n2020-01-06    1\n2020-01-07    1\n2020-01-08    2\n2020-01-09    2\n2020-01-10    2\n2020-01-11    2\n2020-01-12    2\n2020-01-13    2\n2020-01-14    2\n2020-01-15    3\n2020-01-16    3\n2020-01-17    3\n2020-01-18    3\n2020-01-19    3\n2020-01-20    3\n2020-01-21    3\n2020-01-22    4\n2020-01-23    4\n2020-01-24    4\n2020-01-25    4\n2020-01-26    4\n2020-01-27    4\n2020-01-28    4\n2020-01-29    5\n2020-01-30    5\n2020-01-31    5\n2020-02-01    1\n2020-02-02    1\n2020-02-03    1\n2020-02-04    1\n2020-02-05    1\n2020-02-06    1\n2020-02-07    1\n2020-02-08    2\n2020-02-09    2\n2020-02-10    2\n2020-02-11    2\n2020-02-12    2\n2020-02-13    2\n2020-02-14    2\n2020-02-15    3\n2020-02-16    3\n2020-02-17    3\n2020-02-18    3\n2020-02-19    3\n2020-02-20    3\n2020-02-21    3\n2020-02-22    4\n2020-02-23    4\n2020-02-24    4\n2020-02-25    4\n2020-02-26    4\n2020-02-27    4\n2020-02-28    4\nFreq: D, Name: week_of_month, dtype: int32"
   },
   {
     "objectID": "reference/future_frame.html",
@@ -1320,14 +1432,21 @@
     "href": "reference/timeseries_unit_frequency_table.html",
     "title": "timeseries_unit_frequency_table",
     "section": "",
-    "text": "timeseries_unit_frequency_table(wide_format=False)\nThe function timeseries_unit_frequency_table returns a pandas DataFrame with units of time and their corresponding frequencies in seconds.\n\n\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\na pandas DataFrame that contains two columns: “unit” and “freq”. The “unit” column contains the units of time (seconds, minutes, hours, etc.), and the “freq” column contains the corresponding frequencies in seconds for each unit."
+    "text": "timeseries_unit_frequency_table(wide_format=False)\nThe function timeseries_unit_frequency_table returns a pandas DataFrame with units of time and their corresponding frequencies in seconds."
   },
   {
     "objectID": "reference/timeseries_unit_frequency_table.html#returns",
     "href": "reference/timeseries_unit_frequency_table.html#returns",
     "title": "timeseries_unit_frequency_table",
-    "section": "",
-    "text": "Type\nDescription\n\n\n\n\npd.DataFrame\na pandas DataFrame that contains two columns: “unit” and “freq”. The “unit” column contains the units of time (seconds, minutes, hours, etc.), and the “freq” column contains the corresponding frequencies in seconds for each unit."
+    "section": "Returns",
+    "text": "Returns\n\n\n\n\n\n\n\nType\nDescription\n\n\n\n\npd.DataFrame\na pandas DataFrame that contains two columns: “unit” and “freq”. The “unit” column contains the units of time (seconds, minutes, hours, etc.), and the “freq” column contains the corresponding frequencies in seconds for each unit."
+  },
+  {
+    "objectID": "reference/timeseries_unit_frequency_table.html#examples",
+    "href": "reference/timeseries_unit_frequency_table.html#examples",
+    "title": "timeseries_unit_frequency_table",
+    "section": "Examples",
+    "text": "Examples\n\nimport pytimetk as tk\n\ntk.timeseries_unit_frequency_table()\n\n\n\n\n\n\n\n\nunit\nfreq\nfreq_min\nfreq_max\n\n\n\n\n0\nsec\n0\n0\n0\n\n\n1\nmin\n60\n60\n60\n\n\n2\nhour\n3600\n3600\n3600\n\n\n3\nday\n86400\n86400\n86400\n\n\n4\nweek\n604800\n604800\n604800\n\n\n5\nmonth\n2678400\n2419200\n2678400\n\n\n6\nquarter\n7948800\n7689600\n8035200\n\n\n7\nyear\n31622400\n31536000\n31622400"
   },
   {
     "objectID": "reference/ts_summary.html",

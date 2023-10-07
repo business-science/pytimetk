@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>pytimetk – get_frequency</title>
+<title>pytimetk – get_trend_frequency</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -100,7 +134,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">get_trend_frequency</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -285,32 +319,42 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#pytimetk.get_frequency" id="toc-pytimetk.get_frequency" class="nav-link active" data-scroll-target="#pytimetk.get_frequency">get_frequency</a>
-  <ul class="collapse">
-  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
-  </ul></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/get_frequency.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/get_trend_frequency.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">get_trend_frequency</h1>
+</div>
 
 
-<section id="pytimetk.get_frequency" class="level1">
-<h1>get_frequency</h1>
-<p><code>get_frequency(idx, force_regular=False, numeric=False)</code></p>
-<p>Get the frequency of a pandas Series or DatetimeIndex.</p>
-<p>The function <code>get_frequency</code> first attempts to get a pandas inferred frequency. If the inferred frequency is None, it will attempt calculate the frequency manually. If the frequency cannot be determined, the function will raise a ValueError.</p>
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p><code>get_trend_frequency(idx, force_regular=False, numeric=False)</code></p>
+<p>The <code>get_trend_frequency</code> function returns the trend period of a given time series or datetime index.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
 <col style="width: 4%">
-<col style="width: 7%">
-<col style="width: 85%">
-<col style="width: 2%">
+<col style="width: 10%">
+<col style="width: 81%">
+<col style="width: 3%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -323,20 +367,20 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td><code>idx</code></td>
-<td>pd.Series or pd.DatetimeIndex</td>
-<td>The <code>idx</code> parameter can be either a <code>pd.Series</code> or a <code>pd.DatetimeIndex</code>. It represents the index or the time series data for which we want to determine the frequency.</td>
+<td>Union[pd.Series, pd.DatetimeIndex]</td>
+<td>The <code>idx</code> parameter can be either a pandas Series or a pandas DatetimeIndex. It represents the time index for which you want to calculate the trend frequency.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td><code>force_regular</code></td>
 <td>bool</td>
-<td>The <code>force_regular</code> parameter is a boolean flag that determines whether to force the frequency to be regular. If set to <code>True</code>, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is ‘B’ (business days), it will be converted to ‘D’ (calendar days). The default value is <code>False</code>.</td>
+<td>force_regular is a boolean parameter that determines whether to force the frequency to be regular. If set to True, the function will try to find a regular frequency even if the data is irregular. If set to False, the function will return the actual frequency of the data.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
 <td><code>numeric</code></td>
 <td>bool</td>
-<td>The <code>numeric</code> parameter is a boolean flag that indicates whether a numeric value for the median timestamps per pandas frequency or the pandas string frequency alias.</td>
+<td>The <code>numeric</code> parameter is a boolean flag that determines whether the output should be in numeric format or a string Pandas Frequency Alias. If <code>numeric</code> is set to <code>True</code>, the output will be a numeric representation of the trend period. If <code>numeric</code> is set to <code>False</code> (default), the output will</td>
 <td><code>False</code></td>
 </tr>
 </tbody>
@@ -345,6 +389,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <section id="returns" class="level2">
 <h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
+<colgroup>
+<col style="width: 96%">
+<col style="width: 3%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Type</th>
@@ -353,14 +401,27 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td>str</td>
-<td>The frequency of the given pandas series or datetime index.</td>
+<td>The function <code>get_trend_frequency</code> returns the trend period based on the input index. If the index is a <code>pd.DatetimeIndex</code>, it is converted to a <code>pd.Series</code> with the name “idx”. The function then calculates the summary frequency of the index using the <code>get_frequency_summary</code> function. It determines the scale and unit of the frequency and adjusts the unit if the scale is</td>
+<td></td>
 </tr>
 </tbody>
 </table>
-
-
 </section>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.date_range(start<span class="op">=</span><span class="st">'2021-01-01'</span>, end<span class="op">=</span><span class="st">'2024-01-01'</span>, freq<span class="op">=</span><span class="st">'MS'</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>tk.get_trend_frequency(dates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>'5Y'</code></pre>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
