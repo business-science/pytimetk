@@ -153,118 +153,6 @@ def get_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool =
     
     return freq
 
-    
-
-def _get_manual_frequency(idx: Union[pd.Series, pd.DatetimeIndex]) -> str:
-    '''
-    This is an internal function and not meant to be called directly.
-    
-    Parameters
-    ----------
-    idx : Union[pd.Series, pd.DatetimeIndex]
-        The `idx` parameter can be either a pandas Series or a pandas DatetimeIndex.
-    
-    Returns
-    -------
-        a string representing the frequency alias.
-    
-    '''
-    
-    
-    # common checks
-    check_series_or_datetime(idx)
-    
-    freq_summary_df = get_frequency_summary(idx)
-    
-    freq_median_scale = freq_summary_df['freq_median_scale'].values[0]
-    freq_median_unit = freq_summary_df['freq_median_unit'].values[0]
-    freq_median_timedelta = freq_summary_df['freq_median_timedelta'].values[0]
-    
-    number = freq_median_scale
-    remainder = number - int(number)
-    
-    # IRREGULAR FREQUENCIES (MONTH AND QUARTER)
-    if freq_median_unit in ['M', 'Q', 'Y']:
-        if 0.1 <= remainder <= 0.9:
-            # Switch to days
-            days = freq_median_timedelta.astype('timedelta64[D]').astype(int)
-            
-            freq_alias = f'{days}D'
-        else:
-            # Switch to Start
-            if isinstance(idx, pd.Series):
-                idx = idx.values
-            if idx[0].day == 1:
-                freq_alias = f'{int(number)}{freq_median_unit.upper()}S'
-            else:
-                freq_alias = f'{int(number)}{freq_median_unit.upper()}'
-    else:
-        freq_alias = f'{int(number)}{freq_median_unit.upper()}'
-    
-    return freq_alias
-    
-    
-
-
-def _get_pandas_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool = False) -> str:
-    '''
-    This is an internal function and not meant to be called directly.
-    
-    Parameters
-    ----------
-    idx : pd.Series or pd.DatetimeIndex
-        The `idx` parameter can be either a `pd.Series` or a `pd.DatetimeIndex`. It represents the index or the time series data for which we want to determine the frequency.
-    force_regular : bool, optional
-        The `force_regular` parameter is a boolean flag that determines whether to force the frequency to be regular. If set to `True`, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is 'B' (business days), it will be converted to 'D' (calendar days). The default value is `False`.
-    
-    Returns
-    -------
-    str
-        The frequency of the given pandas series or datetime index.
-    
-    '''
-    
-    # common checks
-    check_series_or_datetime(idx)
-   
-    if isinstance(idx, pd.Series):
-        idx = idx.values
-        
-    _len = len(idx)
-    if _len > 10:
-        _len = 10
-    
-    dt_index = pd.DatetimeIndex(idx[0:_len])
-    
-    freq = dt_index.inferred_freq
-    
-    # if freq is None:
-    #         raise ValueError("The frequency could not be detectied.")
-    
-    if force_regular:
-        if freq == 'B':
-            freq = 'D'
-        if freq == 'BM':
-            freq = 'M'
-        if freq == 'BQ':
-            freq = 'Q'
-        if freq == 'BA':
-            freq = 'A'
-        if freq == 'BY':
-            freq = 'Y'
-        if freq == 'BMS':
-            freq = 'MS'
-        if freq == 'BQS':
-            freq = 'QS'
-        if freq == 'BYS':
-            freq = 'YS'
-        if freq == 'BAS':
-            freq = 'AS'
-        
-    
-    return freq
-
-
 def timeseries_unit_frequency_table(wide_format: bool = False) -> pd.DataFrame:
     '''The function `timeseries_unit_frequency_table` returns a pandas DataFrame with units of time and their corresponding frequencies in seconds.
     
@@ -272,6 +160,14 @@ def timeseries_unit_frequency_table(wide_format: bool = False) -> pd.DataFrame:
     -------
     pd.DataFrame
         a pandas DataFrame that contains two columns: "unit" and "freq". The "unit" column contains the units of time (seconds, minutes, hours, etc.), and the "freq" column contains the corresponding frequencies in seconds for each unit.
+    
+    Examples
+    --------
+    ```{python}
+    import pytimetk as tk
+    
+    tk.timeseries_unit_frequency_table()
+    ```
     
     '''
     
@@ -460,4 +356,115 @@ def _get_median_timestamps(idx, period):
     
     return df.groupby('idx_floor').sum().median().values[0]
     
+# UTILITIES ---------------------------------------------------------------
+
+def _get_manual_frequency(idx: Union[pd.Series, pd.DatetimeIndex]) -> str:
+    '''
+    This is an internal function and not meant to be called directly.
     
+    Parameters
+    ----------
+    idx : Union[pd.Series, pd.DatetimeIndex]
+        The `idx` parameter can be either a pandas Series or a pandas DatetimeIndex.
+    
+    Returns
+    -------
+        a string representing the frequency alias.
+    
+    '''
+    
+    
+    # common checks
+    check_series_or_datetime(idx)
+    
+    freq_summary_df = get_frequency_summary(idx)
+    
+    freq_median_scale = freq_summary_df['freq_median_scale'].values[0]
+    freq_median_unit = freq_summary_df['freq_median_unit'].values[0]
+    freq_median_timedelta = freq_summary_df['freq_median_timedelta'].values[0]
+    
+    number = freq_median_scale
+    remainder = number - int(number)
+    
+    # IRREGULAR FREQUENCIES (MONTH AND QUARTER)
+    if freq_median_unit in ['M', 'Q', 'Y']:
+        if 0.1 <= remainder <= 0.9:
+            # Switch to days
+            days = freq_median_timedelta.astype('timedelta64[D]').astype(int)
+            
+            freq_alias = f'{days}D'
+        else:
+            # Switch to Start
+            if isinstance(idx, pd.Series):
+                idx = idx.values
+            if idx[0].day == 1:
+                freq_alias = f'{int(number)}{freq_median_unit.upper()}S'
+            else:
+                freq_alias = f'{int(number)}{freq_median_unit.upper()}'
+    else:
+        freq_alias = f'{int(number)}{freq_median_unit.upper()}'
+    
+    return freq_alias
+    
+    
+
+
+def _get_pandas_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool = False) -> str:
+    '''
+    This is an internal function and not meant to be called directly.
+    
+    Parameters
+    ----------
+    idx : pd.Series or pd.DatetimeIndex
+        The `idx` parameter can be either a `pd.Series` or a `pd.DatetimeIndex`. It represents the index or the time series data for which we want to determine the frequency.
+    force_regular : bool, optional
+        The `force_regular` parameter is a boolean flag that determines whether to force the frequency to be regular. If set to `True`, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is 'B' (business days), it will be converted to 'D' (calendar days). The default value is `False`.
+    
+    Returns
+    -------
+    str
+        The frequency of the given pandas series or datetime index.
+    
+    '''
+    
+    # common checks
+    check_series_or_datetime(idx)
+   
+    if isinstance(idx, pd.Series):
+        idx = idx.values
+        
+    _len = len(idx)
+    if _len > 10:
+        _len = 10
+    
+    dt_index = pd.DatetimeIndex(idx[0:_len])
+    
+    freq = dt_index.inferred_freq
+    
+    # if freq is None:
+    #         raise ValueError("The frequency could not be detectied.")
+    
+    if force_regular:
+        if freq == 'B':
+            freq = 'D'
+        if freq == 'BM':
+            freq = 'M'
+        if freq == 'BQ':
+            freq = 'Q'
+        if freq == 'BA':
+            freq = 'A'
+        if freq == 'BY':
+            freq = 'Y'
+        if freq == 'BMS':
+            freq = 'MS'
+        if freq == 'BQS':
+            freq = 'QS'
+        if freq == 'BYS':
+            freq = 'YS'
+        if freq == 'BAS':
+            freq = 'AS'
+        
+    
+    return freq
+
+
