@@ -16,9 +16,10 @@ def anomalize(
     value_column: str,
     period: int = None,
     method: str = 'twitter',
+    decomp: str = 'additive',
     iqr_alpha: float = 0.05,
     max_anomalies: float = 0.2,
-    
+    bind_data = False,
     
 ) -> pd.DataFrame:
     """
@@ -46,9 +47,15 @@ def anomalize(
     df.plot_timeseries("date", "value")
     
     # Anomalize the data
-    anomalize_df = tk.anomalize(df, "date", "value", method = "seasonal", iqr_alpha = 0.05)
+    anomalize_df = tk.anomalize(df, "date", "value", method = "twitter", iqr_alpha = 0.05)
     
     anomalize_df.glimpse()
+    
+    # Visualize the results
+    anomalize_df[["date", "observed", "seasonal", "trend", "remainder"]] \
+        .melt(id_vars = "date", value_name='val') \
+        .groupby("variable") \
+        .plot_timeseries("date", "val", color_column = "variable", smooth = False)
     
     anomalize_df[["date", "observed", "recomposed_l1", "recomposed_l2"]] \
         .melt(id_vars = "date", value_name='val') \
@@ -60,7 +67,6 @@ def anomalize(
     check_date_column(data, date_column)
     check_value_column(data, value_column)
     
-    
     # STEP 1: Decompose the time series
     if method == 'twitter':
         
@@ -70,8 +76,9 @@ def anomalize(
             data = data, 
             date_column=date_column, 
             value_column=value_column, 
-            period = period,
+            period=period,
             median_span=median_span,
+            model=decomp
         )
     else:
         result = _seasonal_decompose(
@@ -79,37 +86,34 @@ def anomalize(
             date_column=date_column, 
             value_column=value_column, 
             period = period,
-            model='additive',
+            model=decomp,
             filt=None,
             two_sided=True, 
             extrapolate_trend = 'freq'
         )
     
-    result = pd.concat([data, result.drop(date_column, axis=1)], axis=1)
+    if bind_data:
+        result = pd.concat([data, result.drop(date_column, axis=1)], axis=1)
     
     
     # STEP 2: Identify the outliers
     
-    outlier_dict = _iqr(
+    outlier_df = _iqr(
         data = result, 
         target = 'remainder', 
         alpha = iqr_alpha, 
         max_anoms = max_anomalies
-    )
+    ).sort_index()
     
-    limits = outlier_dict['critical_limits']
-    outliers = outlier_dict['outlier'].sort_index()
-    
-    result['remainder_l1'] = limits[0]
-    result['remainder_l2'] = limits[1]
-    
-    result['anomaly'] = outliers
+    result['anomaly'] = outlier_df['outlier_reported']
+    result['anomaly_score'] = outlier_df['score']
+    result['anomaly_direction'] = outlier_df['direction']
     
     # STEP 3: Recompose the time series
     
-    result['recomposed_l1'] = result['seasonal'] + result['trend'] + result['remainder_l1']
+    result['recomposed_l1'] = result['seasonal'] + result['trend'] + outlier_df['remainder_l1']
     
-    result['recomposed_l2'] = result['seasonal'] + result['trend'] + result['remainder_l2']
+    result['recomposed_l2'] = result['seasonal'] + result['trend'] + outlier_df['remainder_l1']
     
    
     return result
@@ -238,6 +242,7 @@ def _twitter_decompose(
     value_column, 
     period = None, 
     median_span = None,
+    model = 'additive',
 ):
     orig_index = data.index
         
@@ -248,6 +253,8 @@ def _twitter_decompose(
     result = seasonal_decompose(
         series, 
         period = period,
+        model=model,
+        extrapolate_trend='freq',
     )
     
     # Construct TS Decomposition DataFrame
@@ -257,8 +264,8 @@ def _twitter_decompose(
     seasadj.name = 'seasadj'
     
     # Calculate median trend
-    
-    median_span = len(series) // 6
+    if median_span is None:
+        median_span = len(series) // 6
     
     def repeat_sequence(seq, length_out):
         quotient, remainder = divmod(length_out, len(seq))
@@ -319,10 +326,12 @@ def _iqr(data, target, alpha=0.05, max_anoms=0.2):
     outlier_idx = (data[target] < limits[0]) | (data[target] > limits[1])
     outlier_vals = data.loc[outlier_idx, target]
 
+    # Calculate the anomaly_score from the centerline
     centerline = sum(limits) / 2
-    data['distance'] = abs(data[target] - centerline)
-    data_sorted = data.sort_values(by='distance', ascending=False)
+    data['score'] = abs(data[target] - centerline)
+    data_sorted = data.sort_values(by='score', ascending=False)
 
+    # Yes/No flag for outlier
     n_outliers = int(max_anoms * len(data_sorted))
     outliers_reported = ['No'] * len(data_sorted)
     outliers_reported[:n_outliers] = ['Yes'] * n_outliers
@@ -330,22 +339,13 @@ def _iqr(data, target, alpha=0.05, max_anoms=0.2):
     data_sorted['outlier_reported'] = outliers_reported
 
     # Direction of the outlier
-    data_sorted['direction'] = np.where(data_sorted[target] > limits[1], 'Up', np.where(data_sorted[target] < limits[0], 'Down', "Not Outlier"))
-
+    data_sorted['direction'] = np.where(data_sorted[target] > limits[1], 1, np.where(data_sorted[target] < limits[0], -1, 0))
     
-    return {
-        'outlier': data_sorted['outlier_reported'],
-        
-        'outlier_idx': data_sorted.index[data_sorted['outlier_reported'] == 'Yes'],
-        
-        'outlier_vals': data_sorted[data_sorted['outlier_reported'] == 'Yes'][target],
-        
-        'outlier_direction': data_sorted[data_sorted['outlier_reported'] == 'Yes']['direction'],
-        
-        'critical_limits': limits,
-        
-        'outlier_report': data_sorted[['outlier_reported', 'direction']]
-    }
+    # Remainder Limits
+    data_sorted['remainder_l1'] = limits[0]
+    data_sorted['remainder_l2'] = limits[1]
+    
+    return data_sorted[['outlier_reported', 'direction', 'score', 'remainder_l1', 'remainder_l2']]
     
 
 
