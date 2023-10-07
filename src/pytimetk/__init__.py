@@ -81,7 +81,7 @@ from .datasets.get_datasets import (
     load_dataset, get_available_datasets
 )
 from .utils.datetime_helpers import (
-    week_of_month, floor_date, is_holiday,
+    week_of_month, floor_date, ceil_date, is_holiday,
 )
 from .utils.memory_helpers import (
     reduce_memory_usage
