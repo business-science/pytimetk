@@ -1,0 +1,30 @@
+# get_seasonal_frequency { #pytimetk.get_seasonal_frequency }
+
+`get_seasonal_frequency(idx, force_regular=False, numeric=False)`
+
+The `get_seasonal_frequency` function returns the seasonal period of a given time series or datetime index.
+
+## Parameters
+
+| Name            | Type                                 | Description                                                                                                                                                                                                                                                                                               | Default    |
+|-----------------|--------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `idx`           | Union\[pd.Series, pd.DatetimeIndex\] | The `idx` parameter can be either a pandas Series or a pandas DatetimeIndex. It represents the time index for which you want to calculate the seasonal frequency.                                                                                                                                         | _required_ |
+| `force_regular` | bool                                 | force_regular is a boolean parameter that determines whether to force the frequency to be regular. If set to True, the function will try to find a regular frequency even if the data is irregular. If set to False, the function will return the actual frequency of the data.                           | `False`    |
+| `numeric`       | bool                                 | The `numeric` parameter is a boolean flag that determines whether the output should be in numeric format or a string Pandas Frequency Alias. If `numeric` is set to `True`, the output will be a numeric representation of the seasonal period. If `numeric` is set to `False` (default), the output will | `False`    |
+
+## Returns
+
+| Type                                                                                                                                                                                                                                                                                                                                                                                       | Description   |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
+| The function `get_seasonal_frequency` returns the seasonal period based on the input index. If the index is a `pd.DatetimeIndex`, it is converted to a `pd.Series` with the name "idx". The function then calculates the summary frequency of the index using the `get_frequency_summary` function. It determines the scale and unit of the frequency and adjusts the unit if the scale is |               |
+
+## Examples
+
+```{python}
+import pytimetk as tk
+import pandas as pd
+
+dates = pd.date_range(start='2021-01-01', end='2024-01-01', freq='MS')
+
+tk.get_seasonal_frequency(dates)
+```

@@ -33,14 +33,18 @@ website:
       - reference/get_frequency_summary.qmd
       - reference/get_diff_summary.qmd
       - reference/get_frequency.qmd
+      - reference/get_seasonal_frequency.qmd
+      - reference/get_trend_frequency.qmd
       - reference/get_timeseries_signature.qmd
       - reference/get_holiday_signature.qmd
       section: "\U0001F43C Time Series for Pandas Series"
     - contents:
       - reference/floor_date.qmd
+      - reference/ceil_date.qmd
       - reference/is_holiday.qmd
       - reference/week_of_month.qmd
       - reference/timeseries_unit_frequency_table.qmd
+      - reference/time_scale_template.qmd
       section: "\U0001F6E0\uFE0F Date Utilities"
     - contents:
       - reference/theme_timetk.qmd

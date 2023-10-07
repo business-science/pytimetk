@@ -11,21 +11,23 @@ number-depth: 2
 
 ### New Functions:
 
-- `apply_by_time()`
-- `augment_rolling_apply()`
-- `augment_expanding()`
-- `augment_expanding_apply()`
+- `apply_by_time()`: For complex apply-style aggregations by time. 
+- `augment_rolling_apply()`: For complex rolling operations using apply-style data frame functions.  
+- `augment_expanding()`: For expanding calculations with single-column functions (e.g. mean). 
+- `augment_expanding_apply()`: For complex expanding operations with apply-style data frame functions.
 - `get_frequency()`: Infer a pandas-like frequency. More robust than `pandas.infer_freq`.
+- `get_seasonal_frequency()`: Infer the pandas-like seasonal frequency (periodicity) for the time series. 
+- `get_trend_frequency()`: Infer the pandas-like trend for the time series. 
 
 ### New Data Sets:
 
-- `expedia`: Expedia hotel searches
+- `expedia`: Expedia hotel searches time series data set
 
 ### New Applied Tutorials:
 
-1. Sales Analysis Tutorial
-2. Finance Analysis Tutorial
-3. Demand Forecasting Tutorial
+1. [Sales Analysis Tutorial](/tutorials/01_sales_crm.html)
+2. [Finance Analysis Tutorial](/tutorials/02_finance.html)
+3. [Demand Forecasting Tutorial](/tutorials/03_demand_forecasting.html)
 
 ### Final Deprecations:
 - `summarize_by_time()`: `kind = "period"`. This is being removed for consistency with `pytimetk`. "timestamp" is the default. 

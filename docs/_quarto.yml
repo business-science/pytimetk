@@ -156,9 +156,11 @@ quartodoc:
       package: pytimetk
       contents:    
         - floor_date
+        - ceil_date
         - is_holiday
         - week_of_month
         - timeseries_unit_frequency_table
+        - time_scale_template
     - title: 🛠️ Visualization Utilities
       desc: Helper functions to make your life easier.
       package: pytimetk
