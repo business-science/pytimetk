@@ -115,7 +115,7 @@ def get_timeseries_signature(idx: Union[pd.Series, pd.DatetimeIndex]) -> pd.Data
     wday        = idx.dt.dayofweek + 1
     wday_lbl    = idx.dt.day_name()
     mday        = idx.dt.day
-    qday        = (idx - pd.PeriodIndex(idx, freq ='Q').start_time).dt.days + 1
+    qday        = (idx.dt.tz_localize(None) - pd.PeriodIndex(idx.dt.tz_localize(None), freq ='Q').start_time).dt.days + 1
     yday        = idx.dt.dayofyear
     weekend     = np.where((idx.dt.dayofweek <= 5), 0, 1)
     weekend     = pd.Series(weekend, index = idx.index)
