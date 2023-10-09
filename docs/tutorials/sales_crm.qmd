@@ -1,0 +1,335 @@
+---
+title: Sales CRM Analysis
+jupyter: python3
+---
+
+In this tutorial, we will use pytimetk and its powerful functions to perform a time series analysis on a dataset representing bike sales. Our goal is to understand the patterns in the data and forecast future sales.
+
+
+## 1. Load Packages. 
+If you do not have pytimetk installed, you can install by using 
+
+```python
+pip install pytimetk
+```
+
+or for the latest features and functionality, you can install the development version.
+
+```python
+pip install git+https://github.com/business-science/pytimetk.git
+```
+
+```{python}
+import timetk as tk
+import pandas as pd
+import numpy as np
+```
+
+## 2. Load & inspect dataset
+To kick off our analysis, we'll begin by importing essential libraries and accessing the 'bike_sales' dataset available within pytimetk's suite of built-in datasets.
+
+The Bike Sales dataset exemplifies what one might find in a CRM (Customer Relationship Management) system. CRM systems are pivotal for businesses, offering vital insights by tracking sales throughout the entire sales funnel. Such datasets are rich with transaction-level data, encompassing elements like order numbers, individual order lines, customer details, product information, and specific transaction data.
+
+Transactional data, such as this, inherently holds the essential components for time series analysis:
+
+Time Stamps
+Associated Values
+Distinct Groups or Categories
+Given these attributes, the Bike Sales dataset emerges as an ideal candidate for analysis using pytimetk.
+
+To get a preliminary understanding of our data, let's utilize the 
+```python tk.glimpse()```
+function from pytimetk. This will provide us a snapshot of the available fields, their respective data types, and a sneak peek into the data entries.
+
+```{python}
+df = tk.datasets.load_dataset('bike_sales_sample')
+df['order_date'] = pd.to_datetime(df['order_date'])
+
+df.glimpse()
+```
+
+## 3. Preliminary Data Exploration
+
+CRM data is often bustling with activity, reflecting the myriad of transactions happening daily. Due to this high volume, the data can sometimes seem overwhelming or noisy. To derive meaningful insights, it's essential to aggregate this data over specific time intervals. This is where tk.summarize_by_time() comes into play.
+
+The ``` tk.summarize_by_time()``` function offers a streamlined approach to time-based data aggregation. By defining a desired frequency and an aggregation method, this function seamlessly organizes your data. The beauty of it is its versatility; from a broad array of built-in aggregation methods and frequencies to the flexibility of integrating a custom function, it caters to a range of requirements.
+
+Curious about the various options it provides? Dive into its documentation with:
+
+```python
+help(tk.summarize_by_time)
+```
+
+And explore the plethora of possibilities!
+
+
+```{python}
+weekly_totals = df.summarize_by_time(
+                        date_column = 'order_date',
+                        value_column = 'total_price',
+                        agg_func = ['sum'],
+                        freq = 'W')
+
+weekly_totals.head(10)
+```
+
+To better understand your data, you might want to add groups to this summary.  We can include a groupby before the summarize and then aggregate our data.
+
+```{python}
+ sales_by_week = df \
+    .groupby('category_2') \
+    .summarize_by_time(
+                        date_column = 'order_date',
+                        value_column = 'total_price',
+                        agg_func = ['sum'],
+                        freq = 'W')
+sales_by_week.head(10)
+```
+
+This long format can be a little hard to compare the different group values visually, so instead of long format you might want to pivot wide to view the data.
+
+```{python}
+sales_by_week_wide = df \
+    .groupby('category_2') \
+    .summarize_by_time(
+                        date_column = 'order_date',
+                        value_column = 'total_price',
+                        agg_func = ['sum'],
+                        freq = 'W',
+                        wide_format = True)
+sales_by_week_wide.head(10)
+```
+
+You can now observe the total sales for each product side by side. This streamlined view facilitates easy comparison between product sales.
+
+## 4. Plot your data
+You can now visualize the summarized data to gain a clearer insight into the prevailing trends.
+
+```{python}
+sales_by_week \
+    .groupby('category_2') \
+    .plot_timeseries(
+        date_column = 'order_date',  
+        value_column = 'total_price_sum',
+        title = 'Bike Sales by Category',
+        facet_scales = "free_x",
+        y_intercept_color = tk.palette_timetk()['steel_blue'],
+        width = 800,
+        height = 600,
+        y_lab = 'Total Sales', 
+        engine = 'plotly'
+        )
+```
+
+The graph showcases a pronounced uptick in sales for most of the different  bike products during the summer. It's a natural trend, aligning with our understanding that people gravitate towards biking during the balmy summer days. Conversely, as the chill of winter sets in at the year's start and end, we observe a corresponding dip in sales.
+
+It's worth highlighting the elegance of the ```plot_timeseries function```. Beyond just plotting raw data, it introduces a smoother, accentuating underlying trends and making them more discernible. This enhancement ensures we can effortlessly capture and comprehend the cyclical nature of bike sales throughout the year.
+
+## 5. Create Forecast Model
+
+Forecasting future sales for bikes requires meticulous data preparation, and pytimetk streamlines this process for us. When crafting a Machine Learning model tailored for time series analysis, there are several pivotal steps to follow:
+
+1. **Time Padding for Comprehensive Historical Data:** It's essential to ensure that our data captures every week, even those that witnessed zero sales. This padding becomes especially pertinent when integrating time series features, like lags.
+
+2. **Crafting the Future Frame:** This step involves setting up a structure that accommodates the test data features, which will eventually be fed into our prediction function.
+
+3. **Infusing Time Series Lag Features:** These features are critical for capturing patterns in time series data, and they need to be integrated into our future frame.
+
+4. **Feature / Date Augmentation:** This step can involve adding contextual features that might influence sales, such as date features, holidays, promotional events, etc.
+
+5. **Model Training:** Once the data is prepped, it's time to train our Machine Learning model, refining it to understand historical patterns and predict future trends.
+
+6. **Making Predictions:** After training, the model is ready to forecast sales for future periods based on the features of the new data.
+
+Kicking off our journey, we'll utilize pytimetk's ```tk.pad_by_time()``` function. For this, grouping by the 'category_1' variable is recommended. Moreover, it's prudent to establish a definitive end date. This ensures that all groups are equipped with training data up to the most recent date, accommodating scenarios where certain categories might have seen no sales in the final training week. By doing so, we create a representative observation for every group, capturing the nuances of each category's sales pattern.
+
+#### 5.1 Time Padding
+
+```{python}
+sales_padded = sales_by_week \
+    .groupby('category_2') \
+    .pad_by_time(
+        date_column = 'order_date',
+        freq        = 'W',
+        end_date    = sales_by_week.order_date.max()
+)
+sales_padded
+```
+
+#### 5.2 Future Frame
+Moving on, let's set up the future frame, which will serve as our test dataset. To achieve this, employ the ```tk.future_frame()``` method. This function allows for the specification of a grouping column and a forecast horizon.
+
+Upon invoking ```tk.future_frame()```, you'll observe that placeholders (null values) are added for each group, extending 12 weeks into the future.
+
+```{python}
+df_with_futureframe = sales_padded.groupby('category_2').future_frame(date_column = 'order_date',length_out = 12)
+df_with_futureframe
+```
+
+#### 5.3 Lag Values
+Crafting features from time series data can be intricate, but thanks to the suite of feature engineering tools in pytimetk, the process is streamlined and intuitive.
+
+In this guide, we'll focus on the basics: introducing a few lag variables and incorporating some date-related features.
+
+Firstly, let's dive into creating lag features.
+
+Given our forecasting objective of a 12-week horizon, to ensure we have lag data available for every future point, we should utilize a lag of 12 or more. The beauty of the toolkit is that it supports the addition of multiple lags simultaneously.
+
+Lag features play a pivotal role in machine learning for time series. Often, recent data offers valuable insights into future trends. To capture this recency effect, it's crucial to integrate lag values. For this purpose, ```tk.augment_lags()``` comes in handy.
+
+```{python}
+df_with_lags = df_with_futureframe.groupby('category_2').augment_lags(
+    date_column = 'order_date',
+    value_column = 'total_price_sum',
+    lags = [12,24]
+
+)
+df_with_lags.head(25)
+```
+
+Observe that lag values of 12 and 24 introduce missing entries at the dataset's outset. This occurs because there isn't available data from 12 or 24 weeks prior. To address these gaps, you can adopt one of two strategies:
+
+1. Discard the Affected Rows: This is a recommended approach if your dataset is sufficiently large. Removing a few initial rows might not significantly impact the training process.
+
+2. Backfill Missing Values: In situations with limited data, you might consider backfilling these nulls using the first available values from lag 12 and 24. However, the appropriateness of this technique hinges on your specific context and objectives. 
+
+For the scope of this tutorial, we'll opt to remove these rows.  However, its worth pointing out that our dataset is actually quite smalll with limited historical data, so this might impact our model.
+
+```{python}
+lag_columns = [col for col in df_with_lags.columns if 'lag' in col]
+df_no_nas = df_with_lags.dropna(subset=lag_columns, inplace=False)
+df_no_nas.head()
+```
+
+#### 5.4 Date Features
+Now, let's enrich our dataset with date-related features.
+
+With the function ```tk.augment_timeseries_signature()```, you can effortlessly append 29 date attributes to a timestamp. Given that our dataset captures weekly intervals, certain attributes like 'hour' may not be pertinent. Thus, it's prudent to refine our columns, retaining only those that truly matter to our analysis.
+
+```{python}
+df_with_datefeatures = df_no_nas.augment_timeseries_signature(date_column='order_date')
+df_with_datefeatures.head(10)
+```
+
+```{python}
+df_with_datefeatures.columns
+```
+
+Let's subset to just a few of the relevant date features.
+
+```{python}
+df_with_datefeatures_narrom = df_with_datefeatures[['order_date', 'category_2', 'total_price_sum', 'total_price_sum_lag_12',
+       'total_price_sum_lag_24',
+       'order_date_year',  'order_date_half', 'order_date_quarter',      'order_date_month','order_date_yweek']]
+
+df_with_datefeatures_narrom.head(10)
+```
+
+The final phase in our feature engineering journey is one-hot encoding our categorical variables. While certain machine learning models like CatBoost can natively handle categorical data, many cannot. Enter one-hot encoding, a technique that transforms each category within a column into its own separate column, marking its presence with a '1' or absence with a '0'.
+
+For this transformation, the handy ```pd.get_dummies()``` function from pandas comes to the rescue.
+
+```{python}
+df_encoded = pd.get_dummies(df_with_datefeatures_narrom, columns=['category_2'])
+
+df_encoded.head(10)
+```
+
+Pytimetk offers an extensive array of feature engineering tools and augmentation functions, giving you a broad spectrum of possibilities. However, for the purposes of this tutorial, let's shift our focus to modeling.
+
+Let's proceed by segmenting our dataframe into training and future sets. 
+
+```{python}
+future = df_encoded[df_encoded.total_price_sum.isnull()]
+train = df_encoded[df_encoded.total_price_sum.notnull()]
+```
+
+Let's focus on the columns essential for training. You'll observe that we've excluded the 'order_date' column. This is because numerous machine learning models struggle with date data types. This is precisely why we utilized the ```tk.time_series_signature90``` earlier—to transform date features into a format that's compatible with ML models.
+
+```{python}
+train.columns
+```
+
+```{python}
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.model_selection import train_test_split
+
+train_columns = [ 'total_price_sum_lag_12',
+       'total_price_sum_lag_24', 'order_date_year', 'order_date_half',
+       'order_date_quarter', 'order_date_month', 'order_date_yweek','category_2_Cross Country Race', 'category_2_Cyclocross',
+       'category_2_Elite Road', 'category_2_Endurance Road',
+       'category_2_Fat Bike', 'category_2_Over Mountain', 'category_2_Sport',
+       'category_2_Trail', 'category_2_Triathalon']
+X = train[train_columns]
+y = train[['total_price_sum']]
+
+model = DecisionTreeRegressor()
+model = model.fit(X, y)
+```
+
+We now have a fitted model, and can use this to predict sales from our future frame.
+
+```{python}
+predicted_values = model.predict(future[train_columns])
+future['y_pred'] = predicted_values
+
+future.head(10)
+```
+
+Now let us do a little clean up.  For ease in plotting later, let's add a column to track the actuals vs. the predicted values.
+
+```{python}
+train['type'] = 'actuals'
+future['type'] = 'prediction'
+
+
+full_df = pd.concat([train, future])
+
+full_df.head(10)
+```
+
+You can get the grouping category back from the one-hot encoding for easier plotting.  
+For simplicity, we will search for any column with 'category' in its name. 
+
+```{python}
+# Extract dummy columns
+dummy_cols = [col for col in full_df.columns if 'category' in col.lower() ]
+full_df_reverted = full_df.copy()
+
+# Convert dummy columns back to categorical column
+full_df_reverted['category'] = full_df_reverted[dummy_cols].idxmax(axis=1).str.replace("A_", "")
+
+# Drop dummy columns
+full_df_reverted = full_df_reverted.drop(columns=dummy_cols)
+
+full_df_reverted.head(10)
+```
+
+Before we proceed to visualization, let's streamline our dataset by aligning our predicted values with the actuals. This approach will simplify the plotting process. Given that our dataframe columns are already labeled as 'actuals' and 'predictions', a brief conditional check will allow us to consolidate the necessary values.
+
+```{python}
+full_df_reverted['total_price_sum'] = np.where(full_df_reverted.type =='actuals', full_df_reverted.total_price_sum, full_df_reverted.y_pred)
+full_df_reverted.head(10)
+```
+
+```{python}
+full_df_reverted.groupby('category').plot_timeseries(
+    date_column = 'order_date',
+    value_column = 'total_price_sum',
+    color_column = 'type',
+    smooth = False,
+    smooth_alpha = 0,
+    facet_scales = "free_x",
+    y_intercept_color = tk.palette_timetk()['steel_blue'],
+    width = 800,
+    height = 600,
+    engine = 'plotly'
+
+)
+```
+
+Upon examining the graph, it's evident that our model's performance was suboptimal. For effective time series forecasting, having multiple years of data is pivotal. This provides the model ample opportunities to recognize and adapt to seasonal variations. Given our dataset spanned less than a year, the model lacked the depth of historical context to discern such patterns. Although our feature engineering was kept basic to introduce various pytimetk capabilities, there's room for enhancement.
+
+For a more refined analysis, consider experimenting with different machine learning models and diving deeper into feature engineering. Pytimetk's ```tk.augment_fourier()``` might assist in discerning seasonal trends, but with the dataset's limited historical scope, capturing intricate patterns could remain a challenge.
+
+
