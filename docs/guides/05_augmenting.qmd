@@ -219,7 +219,7 @@ df \
 		value_column = 'value',
 		window       = 3,
 		window_func  = 'mean',
-		center       = True
+		center       = False
 	)
 ```
 
