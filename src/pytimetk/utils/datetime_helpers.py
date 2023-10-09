@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import pandas_flavor as pf
 
+import re
 from datetime import datetime
 from dateutil import parser
 from warnings import warn
@@ -63,14 +64,20 @@ def floor_date(
     if isinstance(idx, pd.DatetimeIndex):
         idx = pd.Series(idx, name="idx")
     
+    # Fix for pandas bug: When unit is greater than the frequency of the index, the floor function returns the first day of the year
+    days_in_sequence = idx[1] - idx[0]
+    days_in_unit = freq_to_timedelta(unit)
+    
+    if days_in_unit > days_in_sequence:
+        # fill series with first value
+        idx.iloc[1:] = idx.iloc[0]
+        
     # Convert to period
-    period = idx.dt.to_period(unit)
-
-    try:
-        date = period.dt.to_timestamp()
-    except:
-        warn("Failed attempt to convert to pandas timestamp. Returning pandas period instead.")
-        date = period
+    nm = idx.name
+    date = pd.Series(
+        pd.PeriodIndex(idx.values, freq = unit).to_timestamp(),
+        name=nm
+    )       
 
     return date
 
@@ -126,6 +133,44 @@ def ceil_date(
     date = idx.dt.ceil(unit)
 
     return date
+
+
+
+def freq_to_timedelta(freq_str):
+    # Adjusted regex to account for potential absence of numeric part
+    match = re.match(r'(\d+)?([A-Z]+)', freq_str)
+    if not match:
+        raise ValueError(f"Invalid frequency string: {freq_str}")
+    
+    quantity, unit = match.groups()
+    
+    # Assume quantity of 1 if it's not explicitly provided
+    quantity = int(quantity) if quantity else 1
+    
+    if unit == 'D':  # Days
+        return pd.Timedelta(days=quantity)
+    elif unit == 'H':  # Hours
+        return pd.Timedelta(hours=quantity)
+    elif unit == 'T' or unit == 'min':  # Minutes
+        return pd.Timedelta(minutes=quantity)
+    elif unit == 'S':  # Seconds
+        return pd.Timedelta(seconds=quantity)
+    elif unit == 'L' or unit == 'U':  # Milliseconds
+        return pd.Timedelta(milliseconds=quantity)
+    elif unit == 'N':  # Nanoseconds
+        return pd.Timedelta(nanoseconds=quantity)
+    elif unit in ['Y', 'A', 'AS', 'YS']:  # Years (approximated as 365.25 days per year)
+        return pd.Timedelta(days=quantity*365.25)
+    elif unit == 'W':  # Weeks
+        return pd.Timedelta(weeks=quantity)
+    elif unit in ['Q', 'QS']:  # Quarters (approximated as 3*30.44 days)
+        return pd.Timedelta(days=quantity*3*30.44)
+    elif unit in ['M', 'MS']:  # Months (approximated as 30.44 days)
+        return pd.Timedelta(days=quantity*30.44)
+    # ... add other units if needed
+    else:
+        raise ValueError(f"Unsupported frequency unit: {unit}")
+
 
 @pf.register_series_method
 def week_of_month(idx: Union[pd.Series, pd.DatetimeIndex]) -> pd.Series:
