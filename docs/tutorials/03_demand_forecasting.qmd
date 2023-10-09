@@ -5,7 +5,7 @@ toc: true
 toc-depth: 3
 number-sections: true
 number-depth: 2
-code-fold: true
+code-fold: show
 code-tools: 
     source: false
     toggle: true
