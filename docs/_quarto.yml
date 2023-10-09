@@ -99,6 +99,8 @@ format:
       sidebar-width: 300px
       body-width: 900px
       margin-width: 300px
+    include-in-header: 
+      - _includes/head.html
 
 
 quartodoc:
