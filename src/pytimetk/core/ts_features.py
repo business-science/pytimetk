@@ -200,48 +200,56 @@ def ts_features(
         dict_freqs=dict_freqs
     )
     
-    if threads != 1:
+    if isinstance(data, pd.DataFrame):
+        ts_features = tsf.tsfeatures(construct_df, features=features)
+        ts_features = ts_features.dropna(axis=1)
         
-        if threads is None: threads = cpu_count()
-        if threads == -1: threads = cpu_count()
+        ts_features.drop(columns=['unique_id'], inplace=True)
         
-        # with Pool(threads) as pool:
-        #     ts_features = pool.starmap(
-        #         partial_get_feats, 
-        #         construct_df.groupby('unique_id')
-        #     )
+        # RETURN SINGLE DATA FRAME HERE
+        return ts_features
         
-        # Switch to concurrent.futures for better performance
-        # multiprocessing.Pool is slower than concurrent.futures.ThreadPoolExecutor
-        with ThreadPoolExecutor(threads) as executor:
-            futures = [executor.submit(partial_get_feats, *args) for args in construct_df.groupby('unique_id')]
+    else: # grouped dataframe                
+        
+        ts_features = []
+        for name, group in construct_df.groupby('unique_id'):
+            result = partial_get_feats(name, group, features = features)
+            ts_features.append(result)
+    
+        if threads != 1:
             
-            ts_features = [future.result() for future in futures]
+            if threads is None: threads = cpu_count()
+            if threads == -1: threads = cpu_count()
             
-    else:
-        # Don't parallel process
-
-        if isinstance(data, pd.DataFrame):
-            ts_features = tsf.tsfeatures(construct_df, features=features)
-            ts_features = ts_features.dropna(axis=1)
-        else: # grouped dataframe                
+            # Switch to concurrent.futures for better performance
+            # multiprocessing.Pool is slower than concurrent.futures.ThreadPoolExecutor
+            with ThreadPoolExecutor(threads) as executor:
+                futures = [executor.submit(partial_get_feats, *args) for args in construct_df.groupby('unique_id')]
+                
+                ts_features = [future.result() for future in futures]
+        
+        else:
+            # Don't parallel process
             ts_features = []
             for name, group in construct_df.groupby('unique_id'):
                 result = partial_get_feats(name, group, features = features)
                 ts_features.append(result)
             
-            ts_features = pd.concat(ts_features).rename_axis('unique_id')
-            ts_features = ts_features.reset_index() 
-
-            # Finalize id or grouping columns
-            if group_names is not None:
-                id_df = df[group_names].drop_duplicates().reset_index(drop=True)   
-            ts_features = pd.concat([id_df, ts_features], axis=1)
-
-    # drop unique_id column
-    ts_features.drop(columns=['unique_id'], inplace=True)
+            
     
-    return ts_features
+        # Combine the list to a DataFrame      
+        ts_features = pd.concat(ts_features).rename_axis('unique_id')
+        ts_features = ts_features.reset_index() 
+
+        # Finalize id or grouping columns
+        if group_names is not None:
+            id_df = df[group_names].drop_duplicates().reset_index(drop=True)   
+        ts_features = pd.concat([id_df, ts_features], axis=1)
+
+        # drop unique_id column
+        ts_features.drop(columns=['unique_id'], inplace=True)
+        
+        return ts_features
     
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.ts_features = ts_features

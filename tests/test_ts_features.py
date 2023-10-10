@@ -139,5 +139,34 @@ def test_ts_features_grouped_dataframe_specifying_features(grouped_data_frame_to
     # Assert if was generated four rows
     assert result.shape[0] == 4
 
+def test_ts_features_grouped_dataframe_parallel_processing(grouped_data_frame_to_test):
+    # Load data frame with groups
+    df = grouped_data_frame_to_test
+
+    # Call the ts_features function
+    result = df.groupby('id') \
+        .ts_features(    
+            date_column  = 'date', 
+            value_column = 'value',
+            features     = [acf_features, hurst, series_length],
+            threads      = 2
+        )
+
+    # Assert the result is a Pandas DataFrame
+    assert isinstance(result, pd.DataFrame)
+
+    # Assert the result has the correct columns
+    expected_columns = [
+        'id', 'series_length', 'hurst',
+        'x_acf1', 'x_acf10', 'diff1_acf1', 'diff1_acf10',
+        'diff2_acf1', 'diff2_acf10'
+    ]
+
+    assert result.columns.tolist() == expected_columns
+
+    # Assert if was generated four rows
+    assert result.shape[0] == 4
+
+
 if __name__ == "__main__":
     pytest.main([__file__])
