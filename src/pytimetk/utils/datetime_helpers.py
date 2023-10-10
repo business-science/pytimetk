@@ -65,7 +65,7 @@ def floor_date(
         idx = pd.Series(idx, name="idx")
     
     # Fix for pandas bug: When unit is greater than the frequency of the index, the floor function returns the first day of the year
-    days_in_sequence = idx[1] - idx[0]
+    days_in_sequence = idx.iloc[-1] - idx.iloc[0]
     days_in_unit = freq_to_timedelta(unit)
     
     if days_in_unit > days_in_sequence:
