@@ -1,5 +1,6 @@
 
 import pandas as pd
+import numpy as np
 
 from functools import partial
 
@@ -130,13 +131,18 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
             # If the result is scalar or a Series
             if not isinstance(result, pd.DataFrame):
                 result = pd.Series([result])
+                result.index.name = result.name
+                result.name = None
                 
             # Set the index based on the group
             if isinstance(group_name, tuple):
                 result.index = pd.MultiIndex.from_tuples([group_name] * len(result), names=grouped_df.keys)
             else:
                 result.index = [group_name] * len(result)
-                result.name = grouped_df.keys[0]
+                # result.name = grouped_df.keys[0]
+                result.index.name = grouped_df.keys[0]
+                result.name = None
+                
             
             results_dict[group_name] = result
 
