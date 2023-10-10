@@ -255,8 +255,12 @@ def get_seasonal_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regula
     
     summary_freq = get_frequency_summary(idx)
     
+    summary_freq.glimpse() # TODO: Remove
+    
     scale = summary_freq['freq_median_scale'].values[0]
     unit = summary_freq['freq_median_unit'].values[0]
+    
+    unit = unit[0] # Get first letter if "MS", "QS", "AS", etc.
     
     if unit == "D":
         if scale > 1:
@@ -354,7 +358,11 @@ def _get_median_timestamps(idx, period):
     
     df['n'] = 1
     
-    return df.groupby('idx_floor').sum().median().values[0]
+    ret = df.groupby('idx_floor').sum()
+    
+    print(ret)
+    
+    return ret.median().values[0]
     
 # UTILITIES ---------------------------------------------------------------
 
