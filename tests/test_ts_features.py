@@ -42,18 +42,21 @@ def test_ts_features_dataframe_with_all_features(data_frame_to_test):
     df = data_frame_to_test
 
     # Call the ts_features function
-    result = tk.ts_features(df, 'date', 'value')
+    result = tk.ts_features(df, 'date', 'value', features=[acf_features, series_length, hurst])
 
     # Assert the result is a Pandas DataFrame
     assert isinstance(result, pd.DataFrame)
 
     # Assert the result has the correct columns
     expected_columns = [
-        'hurst', 'series_length',
-        'unitroot_pp', 'unitroot_kpss',
-        'stability', 'nperiods', 'seasonal_period', 'nonlinearity',
-        'lumpiness', 'alpha', 'beta', 'flat_spots', 'entropy',	
-        'crossing_points', 'x_acf1'
+        'hurst',
+        'series_length',
+        'x_acf1',
+        'x_acf10',
+        'diff1_acf1',
+        'diff1_acf10',
+        'diff2_acf1',
+        'diff2_acf10'
     ]
 
     assert result.columns.tolist() == expected_columns

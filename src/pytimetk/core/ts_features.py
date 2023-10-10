@@ -197,32 +197,33 @@ def ts_features(
     # Run tsfeatures
     # features_df = tsf.tsfeatures(construct_df, features=features, freq=freq, scale=scale, threads=threads)
     
+        
+    partial_get_feats = partial(
+        _get_feats, 
+        freq=freq, 
+        scale=scale,
+        features=features, 
+        dict_freqs=dict_freqs
+    )  
     
     if isinstance(data, pd.DataFrame):
         
-        ts_features = tsf.tsfeatures(construct_df, features=features)
-        ts_features = ts_features.dropna(axis=1)
-        
-        ts_features.drop(columns=['unique_id'], inplace=True)
+        name = "X1"
+        group = construct_df
+        result = partial_get_feats(name, group, features = features)
         
         # RETURN SINGLE DATA FRAME HERE
-        return ts_features
+        return result
         
     else: # grouped dataframe 
         
         # Replicate tsfeatures without threads
         # https://github.com/Nixtla/tsfeatures/blob/fe4f6e63b8883f84922354b7a57056cf534aa4ae/tsfeatures/tsfeatures.py#L967
-    
-        partial_get_feats = partial(
-            _get_feats, 
-            freq=freq, 
-            scale=scale,
-            features=features, 
-            dict_freqs=dict_freqs
-        )               
+             
         
         ts_features = []
         for name, group in construct_df.groupby('unique_id'):
+            
             result = partial_get_feats(name, group, features = features)
             ts_features.append(result)
     
