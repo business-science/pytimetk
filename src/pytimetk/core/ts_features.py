@@ -221,13 +221,7 @@ def ts_features(
         
         # Replicate tsfeatures without threads
         # https://github.com/Nixtla/tsfeatures/blob/fe4f6e63b8883f84922354b7a57056cf534aa4ae/tsfeatures/tsfeatures.py#L967
-             
-        
-        ts_features = []
-        for name, group in construct_df.groupby('unique_id'):
-            
-            result = partial_get_feats(name, group, features = features)
-            ts_features.append(result)
+
     
         if threads != 1:
             
@@ -240,9 +234,9 @@ def ts_features(
                 
                 futures = [executor.submit(partial_get_feats, *args) for args in construct_df.groupby('unique_id')]
                 
-                results = []
+                ts_features = []
                 for future in conditional_tqdm(as_completed(futures), total=len(futures), desc="Processing", display=show_progress):
-                     results.append(future.result())
+                    ts_features.append(future.result())
         
         else:
             # Don't parallel process
