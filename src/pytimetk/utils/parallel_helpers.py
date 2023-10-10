@@ -81,6 +81,9 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     
     ``` {python}
     # Example 2 - Multiple arguments returns MultiIndex DataFrame
+    import pytimetk as tk
+    import pandas as pd
+    
     df = pd.DataFrame({
         'A': ['foo', 'foo', 'bar', 'bar', 'foo', 'bar', 'foo', 'foo'],
         'B': ['one', 'one', 'one', 'two', 'two', 'two', 'one', 'two'],
@@ -94,6 +97,31 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
             'sum': [group['C'].sum()],
             'mean': [group['C'].mean()]
         })
+
+    grouped = df.groupby(['A', 'B'])
+    
+    result = grouped.apply(calculate)
+    result
+    
+    # One difference is that the multi-index does not include the level 2 index containing 0's.
+    result = tk.parallel_apply(grouped, calculate, show_progress=True)
+    result
+    
+    ```
+    
+    ``` {python}
+    # Example 3 - Multiple arguments returns MultiIndex DataFrame
+    import pytimetk as tk
+    import pandas as pd
+    
+    df = pd.DataFrame({
+        'A': ['foo', 'foo', 'bar', 'bar', 'foo', 'bar', 'foo', 'foo'],
+        'B': ['one', 'one', 'one', 'two', 'two', 'two', 'one', 'two'],
+        'C': [1, 3, 5, 7, 9, 2, 4, 6]
+    })
+
+    def calculate(group):
+        return group.head(2)
 
     grouped = df.groupby(['A', 'B'])
     
@@ -121,37 +149,32 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
 
     results_dict = {}
     with ThreadPoolExecutor(max_workers=threads) as executor:
-        # Submit both group name and group data to the executor
         futures = {executor.submit(func, group): name for name, group in grouped_df}
         
         for future in conditional_tqdm(as_completed(futures), total=len(futures), display=show_progress):
             result = future.result()
             group_name = futures[future]
             
-            # If the result is scalar or a Series
-            if not isinstance(result, pd.DataFrame):
+            # If the result is a DataFrame
+            if isinstance(result, pd.DataFrame) and len(grouped_df.keys) > 1:
+                # Mimic pandas behavior: If the result's index is a default range index, we reset it.
+                if isinstance(result.index, pd.RangeIndex) and result.index.start == 0:
+                    new_idx = range(len(result))
+                    multiindex_tuples = [group_name + (i,) for i in new_idx]
+                else:
+                    multiindex_tuples = [group_name + (idx,) for idx in result.index]
+                names = list(grouped_df.keys) + [result.index.name if result.index.name else None]
+                result.index = pd.MultiIndex.from_tuples(multiindex_tuples, names=names)
+            elif not isinstance(result, pd.DataFrame):
                 result = pd.Series([result])
                 result.index.name = result.name
                 result.name = None
-                
-            # Set the index based on the group
-            if isinstance(group_name, tuple):
-                result.index = pd.MultiIndex.from_tuples([group_name] * len(result), names=grouped_df.keys)
-            else:
-                result.index = [group_name] * len(result)
-                # result.name = grouped_df.keys[0]
-                result.index.name = grouped_df.keys[0]
-                result.name = None
-                
-            
-            results_dict[group_name] = result
 
+            # Append to results dictionary
+            results_dict[group_name] = result
+    
     # To maintain the order, concatenate the results based on the order in the group names
     ordered_results = [results_dict[name] for name in grouped_df.groups.keys()]
-
-    # Concatenate the results
-    if isinstance(ordered_results[0], pd.Series) and len(grouped_df.keys) == 1:
-        return pd.concat(ordered_results, axis=0)
     return pd.concat(ordered_results, axis=0)
 
 # Monkey patch the method to pandas groupby objects
