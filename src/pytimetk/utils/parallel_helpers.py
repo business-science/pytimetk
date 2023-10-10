@@ -115,21 +115,22 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func, show_p
             group_name = futures[future]
             result = future.result()
             
-            # If the function returns a scalar or Series, convert it to DataFrame format
+            # If the result is scalar or a Series
             if not isinstance(result, pd.DataFrame):
-                result = pd.DataFrame([result])
-            
+                result = pd.Series([result])
+                
             # Set the index based on the group
             if isinstance(group_name, tuple):
                 result.index = pd.MultiIndex.from_tuples([group_name] * len(result), names=grouped_df.keys)
             else:
                 result.index = [group_name] * len(result)
+                result.name = grouped_df.keys[0]
             results.append(result)
 
     # Concatenate the results
-    return pd.concat(results)
-
-    # Concatenate the results
-    return pd.concat(results)
+    if isinstance(results[0], pd.Series) and len(grouped_df.keys) == 1:
+        return pd.concat(results, axis=0)
+    else:
+        return pd.concat(results, axis=0)
 
 
