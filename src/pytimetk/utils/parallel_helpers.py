@@ -157,7 +157,6 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
             
             # If the result is a DataFrame
             if isinstance(result, pd.DataFrame) and len(grouped_df.keys) > 1:
-                # Mimic pandas behavior: If the result's index is a default range index, we reset it.
                 if isinstance(result.index, pd.RangeIndex) and result.index.start == 0:
                     new_idx = range(len(result))
                     multiindex_tuples = [group_name + (i,) for i in new_idx]
@@ -165,9 +164,11 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
                     multiindex_tuples = [group_name + (idx,) for idx in result.index]
                 names = list(grouped_df.keys) + [result.index.name if result.index.name else None]
                 result.index = pd.MultiIndex.from_tuples(multiindex_tuples, names=names)
-            elif not isinstance(result, pd.DataFrame):
+            else:
+                # This handles cases where the result is not a DataFrame (e.g. Series or scalar)
                 result = pd.Series([result])
-                result.index.name = result.name
+                result.index = [group_name]
+                result.index.name = grouped_df.keys[0]  # Set the index name based on the grouping column
                 result.name = None
 
             # Append to results dictionary
