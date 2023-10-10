@@ -63,6 +63,7 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func, show_p
     result = grouped.apply(lambda df: df['B'].sum())
     result
     
+    # Won't match exactly because of the decision to return a Named series instead of an unnamed series with named index
     result = tk.parallel_apply(grouped, lambda df: df['B'].sum(), show_progress=True)
     result
     ```
@@ -88,6 +89,7 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func, show_p
     result = grouped.apply(calculate)
     result
     
+    # One difference is that the multi-index does not include the level 2 index containing 0's.
     result = tk.parallel_apply(grouped, calculate, show_progress=True)
     result
     
@@ -106,14 +108,14 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func, show_p
         
     # func = partial(func, **kwargs)
 
-    results = []
+    results_dict = {}
     with ThreadPoolExecutor(max_workers=threads) as executor:
         # Submit both group name and group data to the executor
         futures = {executor.submit(func, group): name for name, group in grouped_df}
         
         for future in conditional_tqdm(as_completed(futures), total=len(futures), display=show_progress):
-            group_name = futures[future]
             result = future.result()
+            group_name = futures[future]
             
             # If the result is scalar or a Series
             if not isinstance(result, pd.DataFrame):
@@ -125,12 +127,15 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func, show_p
             else:
                 result.index = [group_name] * len(result)
                 result.name = grouped_df.keys[0]
-            results.append(result)
+            
+            results_dict[group_name] = result
+
+    # To maintain the order, concatenate the results based on the order in the group names
+    ordered_results = [results_dict[name] for name in grouped_df.groups.keys()]
 
     # Concatenate the results
-    if isinstance(results[0], pd.Series) and len(grouped_df.keys) == 1:
-        return pd.concat(results, axis=0)
-    else:
-        return pd.concat(results, axis=0)
+    if isinstance(ordered_results[0], pd.Series) and len(grouped_df.keys) == 1:
+        return pd.concat(ordered_results, axis=0)
+    return pd.concat(ordered_results, axis=0)
 
 
