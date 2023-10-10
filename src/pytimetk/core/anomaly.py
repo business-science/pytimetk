@@ -30,8 +30,7 @@ def anomalize(
     Examples
     --------
     ``` {python}
-    # The code is importing the `pytimetk` library as `tk`, as well as the `pandas` and `numpy`
-    # libraries.
+    # The code is importing the `pytimetk` library as `tk`, as well as the `pandas` and `numpy` libraries.
     import pytimetk as tk
     import pandas as pd
     import numpy as np
@@ -54,8 +53,6 @@ def anomalize(
     # Anomalize the data
     anomalize_df = tk.anomalize(
         df, "date", "value",
-        # period = 12,
-        # trend = 12*2, 
         method = "twitter", 
         iqr_alpha = 0.05,
         verbose = True,
@@ -83,11 +80,109 @@ def anomalize(
         .plot_timeseries("date", "val", color_column = "variable", smooth = False)
     
     ```
+    
+    ``` {python}
+    df = tk.load_dataset("walmart_sales_weekly", parse_dates=["Date"])[["id", "Date", "Weekly_Sales"]]
+    
+    anomalize_df = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52) 
+    
+    # Visualize the results
+    anomalize_df[["id", "Date", "observed", "seasonal", "trend", "remainder"]] \
+        .melt(id_vars = ["id", "Date"], value_name='val') \
+        .groupby(["id", "variable"]) \
+        .plot_timeseries(
+            "Date", "val", 
+            facet_ncol = 7, 
+            smooth = False,
+            width = 1200,
+            height = 800,
+        )
+    
+    # Visualize the anomaly bands
+    anomalize_df[["id", "Date", "observed", "recomposed_l1", "recomposed_l2"]] \
+        .melt(id_vars = ["id", "Date"], value_name='val') \
+        .groupby(["id"]) \
+        .plot_timeseries(
+            "Date", "val", 
+            color_column = "variable",
+            facet_ncol = 2, 
+            smooth = False,
+            width = 800,
+            height = 800,
+        )
+    
+    # Get the anomalies    
+    anomalize_df.query("anomaly=='Yes'")
+        
+    # Visualize observed vs cleaned
+    anomalize_df[["id", "Date", "observed", "observed_clean"]] \
+        .melt(id_vars = ["id", "Date"], value_name='val') \
+        .groupby(["id"]) \
+        .plot_timeseries("Date", "val", color_column = "variable", smooth = False)
+    
+    ```
     """
     
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
     check_value_column(data, value_column)
+    
+    if isinstance(data, pd.DataFrame):
+        result = _anomalize(
+            data = data, 
+            date_column=date_column, 
+            value_column=value_column,
+            period=period,
+            trend=trend,
+            method=method,
+            decomp=decomp,
+            clean=clean,
+            iqr_alpha=iqr_alpha,
+            max_anomalies=max_anomalies,
+            bind_data=bind_data,
+            verbose=verbose,
+        )
+    
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        
+        group_names = data.grouper.names
+        
+        result = data \
+            .apply(
+                _anomalize, 
+                date_column=date_column, 
+                value_column=value_column,
+                period=period,
+                trend=trend,
+                method=method,
+                decomp=decomp,
+                clean=clean,
+                iqr_alpha=iqr_alpha,
+                max_anomalies=max_anomalies,
+                bind_data=bind_data,
+                verbose=verbose,
+            ).reset_index(level=group_names)
+    
+    return result
+
+# Monkey patch the method to pandas groupby objects
+pd.core.groupby.generic.DataFrameGroupBy.anomalize = anomalize
+
+
+def _anomalize(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    date_column: str,
+    value_column: str,
+    period: Optional[int] = None,
+    trend: Optional[int] = None,
+    method: str = 'twitter',
+    decomp: str = 'additive',
+    clean: str = 'linear',
+    iqr_alpha: float = 0.05,
+    max_anomalies: float = 0.2,
+    bind_data: bool = False,
+    verbose = False,
+) -> pd.DataFrame:
     
     orig_date_column = data[date_column]
     
