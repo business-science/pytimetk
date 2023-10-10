@@ -21,9 +21,9 @@ def floor_date(
     idx: Union[pd.Series, pd.DatetimeIndex], 
     unit: str = "D",
 ) -> pd.Series:
-    '''Round a date down to the specified unit (e.g. Flooring).
+    '''Robust date flooring.
     
-    The `floor_date` function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit.
+    The `floor_date` function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit. It's more robust than the pandas `floor` function, which does weird things with irregular frequencies like Month which are actually regular.
     
     Parameters
     ----------
@@ -48,13 +48,11 @@ def floor_date(
     ```
     
     ```{python}
-    # Works on DateTimeIndex
-    tk.floor_date(dates, unit="D")
-    ```
+    # Pandas fails to floor Month
+    # dates.floor("M") # ValueError: <MonthEnd> is a non-fixed frequency
     
-    ```{python}
-    # Works on Pandas Series
-    dates.to_series().floor_date(unit="D")
+    # floor_date works as expected
+    tk.floor_date(dates, unit="M")
     ```
     '''
     # Common checks
@@ -64,7 +62,7 @@ def floor_date(
     if isinstance(idx, pd.DatetimeIndex):
         idx = pd.Series(idx, name="idx")
     
-    # Fix for pandas bug: When unit is greater than the frequency of the index, the floor function returns the first day of the year
+    # Fix for pandas bug: When unit is greater than the length of the index, the floor function returns the first day of the year
     days_in_sequence = idx.iloc[-1] - idx.iloc[0]
     days_in_unit = freq_to_timedelta(unit)
     
@@ -86,9 +84,9 @@ def ceil_date(
     idx: Union[pd.Series, pd.DatetimeIndex], 
     unit: str = "D",
 ) -> pd.Series:
-    '''Round a date up to the specified unit (e.g. Ceiling).
+    '''Robust date ceiling.
     
-    The `ceil_date` function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit.
+    The `ceil_date` function takes a pandas Series of dates and returns a new Series with the dates rounded up to the next specified unit. It's more robust than the pandas `ceil` function, which does weird things with irregular frequencies like Month which are actually regular.
     
     Parameters
     ----------
@@ -113,13 +111,11 @@ def ceil_date(
     ```
     
     ```{python}
-    # Works on DateTimeIndex
-    tk.ceil_date(dates, unit="D")
-    ```
+    # Pandas ceil fails on month
+    # dates.ceil("M") # ValueError: <MonthEnd> is a non-fixed frequency
     
-    ```{python}
-    # Works on Pandas Series
-    dates.to_series().ceil_date(unit="D")
+    # Works on Month
+    tk.ceil_date(dates, unit="M")
     ```
     '''
     # Common checks
@@ -130,19 +126,55 @@ def ceil_date(
         idx = pd.Series(idx, name="idx")
     
     # Convert to period
-    date = idx.dt.ceil(unit)
+    date = floor_date(idx, unit=unit) + freq_to_dateoffset(unit)
 
     return date
 
-
-
-def freq_to_timedelta(freq_str):
-    # Adjusted regex to account for potential absence of numeric part
-    match = re.match(r'(\d+)?([A-Z]+)', freq_str)
+def parse_freq_str(freq_str):
+    match = re.match(r'(\d+)?([A-Z]+|min)', freq_str)
     if not match:
         raise ValueError(f"Invalid frequency string: {freq_str}")
     
     quantity, unit = match.groups()
+    
+    return quantity, unit
+
+def freq_to_dateoffset(freq_str):
+    # Adjusted regex to account for potential absence of numeric part
+    quantity, unit = parse_freq_str(freq_str)
+    
+    # Assume quantity of 1 if it's not explicitly provided
+    quantity = int(quantity) if quantity else 1
+    
+    if unit == 'D':  # Days
+        return pd.DateOffset(days=quantity)
+    elif unit == 'H':  # Hours
+        return pd.DateOffset(hours=quantity)
+    elif unit == 'T' or unit == 'min':  # Minutes
+        return pd.DateOffset(minutes=quantity)
+    elif unit == 'S':  # Seconds
+        return pd.DateOffset(seconds=quantity)
+    elif unit == 'L':  # Milliseconds
+        return pd.DateOffset(milliseconds=quantity)
+    elif unit == 'U':  # Microseconds
+        return pd.DateOffset(microseconds=quantity)
+    elif unit == 'N':  # Nanoseconds
+        return pd.DateOffset(nanoseconds=quantity)
+    elif unit in ['Y', 'A', 'AS', 'YS']:  # Years 
+        return pd.DateOffset(years=quantity)
+    elif unit == 'W':  # Weeks
+        return pd.DateOffset(weeks=quantity)
+    elif unit in ['Q', 'QS']:  # Quarters (approximated as 3*months)
+        return pd.DateOffset(months=quantity*3)
+    elif unit in ['M', 'MS']:  # Months (approximated as 30.44 days)
+        return pd.DateOffset(months=quantity)
+    # ... add other units if needed
+    else:
+        raise ValueError(f"Unsupported frequency unit: {unit}")
+
+def freq_to_timedelta(freq_str):
+    # Adjusted regex to account for potential absence of numeric part
+    quantity, unit = parse_freq_str(freq_str)
     
     # Assume quantity of 1 if it's not explicitly provided
     quantity = int(quantity) if quantity else 1

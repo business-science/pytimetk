@@ -5,7 +5,7 @@ from pandas.testing import assert_series_equal, assert_frame_equal
 import pytimetk as tk
 
 def test_floor_date():
-    # Test with regular frequency
+    
     dates = pd.DatetimeIndex(['2022-01-04', '2022-01-05', '2022-01-06'])
     
     # Week Flooring
@@ -56,3 +56,29 @@ def test_floor_datetime():
     result = tk.floor_date(datetimes, 'M')
     
     assert_series_equal(result, pd.Series(pd.to_datetime(['2022-01-01', '2022-01-01', '2022-01-01'])), check_freq=False, check_names=False)
+    
+    
+def test_ceil_date():
+    
+    
+    dates = pd.DatetimeIndex(['2022-01-04', '2022-01-05', '2022-01-06'])
+    
+    # Week 
+    result = tk.ceil_date(dates, 'W')
+    
+    assert_series_equal(result, pd.Series(pd.to_datetime(['2022-01-10', '2022-01-10', '2022-01-10'])), check_freq=False, check_names=False)
+    
+    # Month
+    result = tk.ceil_date(dates, 'M')
+    
+    assert_series_equal(result, pd.Series(pd.to_datetime(['2022-02-01', '2022-02-01', '2022-02-01'])), check_freq=False, check_names=False)
+    
+    # Quarter   
+    result = tk.ceil_date(dates, 'Q')
+    
+    assert_series_equal(result, pd.Series(pd.to_datetime(['2022-04-01', '2022-04-01', '2022-04-01'])), check_freq=False, check_names=False)
+    
+    # Year
+    result = tk.ceil_date(dates, 'Y')
+    
+    assert_series_equal(result, pd.Series(pd.to_datetime(['2023-01-01', '2023-01-01', '2023-01-01'])), check_freq=False, check_names=False)

@@ -2,9 +2,9 @@
 
 `floor_date(idx, unit='D')`
 
-Round a date down to the specified unit (e.g. Flooring).
+Robust date flooring.
 
-The `floor_date` function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit.
+The `floor_date` function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit. It's more robust than the pandas `floor` function, which does weird things with irregular frequencies like Month which are actually regular.
 
 ## Parameters
 
@@ -30,11 +30,9 @@ dates
 ```
 
 ```{python}
-# Works on DateTimeIndex
-tk.floor_date(dates, unit="D")
-```
+# Pandas fails to floor Month
+# dates.floor("M") # ValueError: <MonthEnd> is a non-fixed frequency
 
-```{python}
-# Works on Pandas Series
-dates.to_series().floor_date(unit="D")
+# floor_date works as expected
+tk.floor_date(dates, unit="M")
 ```

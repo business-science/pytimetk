@@ -67,8 +67,8 @@ Helper functions to make your life easier.
 
 | | |
 | --- | --- |
-| [floor_date](floor_date.qmd#pytimetk.floor_date) | Round a date down to the specified unit (e.g. Flooring). |
-| [ceil_date](ceil_date.qmd#pytimetk.ceil_date) | Round a date up to the specified unit (e.g. Ceiling). |
+| [floor_date](floor_date.qmd#pytimetk.floor_date) | Robust date flooring. |
+| [ceil_date](ceil_date.qmd#pytimetk.ceil_date) | Robust date ceiling. |
 | [is_holiday](is_holiday.qmd#pytimetk.is_holiday) | Check if a given list of dates are holidays for a specified country. |
 | [week_of_month](week_of_month.qmd#pytimetk.week_of_month) | The "week_of_month" function calculates the week number of a given date within its month. |
 | [timeseries_unit_frequency_table](timeseries_unit_frequency_table.qmd#pytimetk.timeseries_unit_frequency_table) | The function `timeseries_unit_frequency_table` returns a pandas DataFrame with units of time and their corresponding frequencies in seconds. |

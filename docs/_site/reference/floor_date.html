@@ -358,8 +358,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </header>
 
 <p><code>floor_date(idx, unit='D')</code></p>
-<p>Round a date down to the specified unit (e.g.&nbsp;Flooring).</p>
-<p>The <code>floor_date</code> function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit.</p>
+<p>Robust date flooring.</p>
+<p>The <code>floor_date</code> function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit. It’s more robust than the pandas <code>floor</code> function, which does weird things with irregular frequencies like Month which are actually regular.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
@@ -438,8 +438,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Works on DateTimeIndex</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tk.floor_date(dates, unit<span class="op">=</span><span class="st">"D"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pandas fails to floor Month</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># dates.floor("M") # ValueError: &lt;MonthEnd&gt; is a non-fixed frequency</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># floor_date works as expected</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>tk.floor_date(dates, unit<span class="op">=</span><span class="st">"M"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>0     2020-01-01
 1     2020-01-01
@@ -447,30 +450,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 3     2020-01-01
 4     2020-01-01
          ...    
-212   2020-01-09
-213   2020-01-09
-214   2020-01-09
-215   2020-01-09
-216   2020-01-10
+212   2020-01-01
+213   2020-01-01
+214   2020-01-01
+215   2020-01-01
+216   2020-01-01
 Name: idx, Length: 217, dtype: datetime64[ns]</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Works on Pandas Series</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>dates.to_series().floor_date(unit<span class="op">=</span><span class="st">"D"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>2020-01-01 00:00:00   2020-01-01
-2020-01-01 01:00:00   2020-01-01
-2020-01-01 02:00:00   2020-01-01
-2020-01-01 03:00:00   2020-01-01
-2020-01-01 04:00:00   2020-01-01
-                         ...    
-2020-01-09 20:00:00   2020-01-09
-2020-01-09 21:00:00   2020-01-09
-2020-01-09 22:00:00   2020-01-09
-2020-01-09 23:00:00   2020-01-09
-2020-01-10 00:00:00   2020-01-10
-Freq: H, Length: 217, dtype: datetime64[ns]</code></pre>
 </div>
 </div>
 

@@ -2,9 +2,9 @@
 
 `ceil_date(idx, unit='D')`
 
-Round a date up to the specified unit (e.g. Ceiling).
+Robust date ceiling.
 
-The `ceil_date` function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit.
+The `ceil_date` function takes a pandas Series of dates and returns a new Series with the dates rounded up to the next specified unit. It's more robust than the pandas `ceil` function, which does weird things with irregular frequencies like Month which are actually regular.
 
 ## Parameters
 
@@ -30,11 +30,9 @@ dates
 ```
 
 ```{python}
-# Works on DateTimeIndex
-tk.ceil_date(dates, unit="D")
-```
+# Pandas ceil fails on month
+# dates.ceil("M") # ValueError: <MonthEnd> is a non-fixed frequency
 
-```{python}
-# Works on Pandas Series
-dates.to_series().ceil_date(unit="D")
+# Works on Month
+tk.ceil_date(dates, unit="M")
 ```
