@@ -189,6 +189,9 @@ def ts_features(
         for col in group_names:
             construct_df[col] = df[col].astype(str)
         construct_df['unique_id'] = construct_df[group_names].apply(lambda row: '_'.join(row), axis=1)
+        
+        group_names_lookup_df = construct_df[[*group_names, 'unique_id']].drop_duplicates().reset_index(drop=True)
+        
         construct_df.drop(columns=group_names, inplace=True)
         construct_df['ds'] = df[date_column]
         construct_df['y'] = df[value_column]
@@ -255,9 +258,7 @@ def ts_features(
         ts_features = ts_features.reset_index() 
 
         # Finalize id or grouping columns
-        if group_names is not None:
-            id_df = df[group_names].drop_duplicates().reset_index(drop=True)   
-        ts_features = pd.concat([id_df, ts_features], axis=1)
+        ts_features = group_names_lookup_df.merge(ts_features, on='unique_id', how='left')
 
         # drop unique_id column
         ts_features.drop(columns=['unique_id'], inplace=True)
