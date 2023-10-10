@@ -334,7 +334,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#examples" id="toc-examples" class="nav-link active" data-scroll-target="#examples">Examples:</a></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples:</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/parallel_apply.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -359,6 +361,79 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </header>
 
 <p><code>parallel_apply(data, func, show_progress=True, threads=None, **kwargs)</code></p>
+<p>The <code>parallel_apply</code> function parallelizes the application of a function on grouped dataframes using concurrent.futures.</p>
+<section id="parameters" class="level2">
+<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<table class="table">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 11%">
+<col style="width: 80%">
+<col style="width: 3%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>data</code></td>
+<td>pd.core.groupby.generic.DataFrameGroupBy</td>
+<td>The <code>data</code> parameter is a Pandas DataFrameGroupBy object, which is the result of grouping a DataFrame by one or more columns. It represents the grouped data that you want to apply the function to.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td><code>func</code></td>
+<td>Callable</td>
+<td>The <code>func</code> parameter is the function that you want to apply to each group in the grouped dataframe. This function should take a single argument, which is a dataframe representing a group, and return a result. The result can be a scalar value, a pandas Series, or a pandas DataFrame.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td><code>show_progress</code></td>
+<td>bool</td>
+<td>A boolean parameter that determines whether to display progress using tqdm. If set to True, progress will be displayed. If set to False, progress will not be displayed.</td>
+<td><code>True</code></td>
+</tr>
+<tr class="even">
+<td><code>threads</code></td>
+<td>int</td>
+<td>The <code>threads</code> parameter specifies the number of threads to use for parallel processing. If <code>threads</code> is set to <code>None</code>, it will use all available processors. If <code>threads</code> is set to <code>-1</code>, it will use all available processors as well.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td><code>**kwargs</code></td>
+<td></td>
+<td>The <code>**kwargs</code> parameter is a dictionary of keyword arguments that are passed to the <code>func</code> function.</td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns" class="level2">
+<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<table class="table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 94%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>pd.DataFrame</td>
+<td>The <code>parallel_apply</code> function returns a combined result after applying the specified function on all groups in the grouped dataframe. The result can be a pandas DataFrame or a pandas Series, depending on the function applied.</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="examples" class="level2">
 <h2 class="anchored" data-anchor-id="examples">Examples:</h2>
 <div class="cell" data-execution_count="1">
@@ -380,7 +455,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> tk.parallel_apply(grouped, <span class="kw">lambda</span> df: df[<span class="st">'B'</span>].<span class="bu">sum</span>(), show_progress<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>  0%|          | 0/2 [00:00&lt;?, ?it/s]100%|██████████| 2/2 [00:00&lt;00:00, 1863.72it/s]</code></pre>
+<pre><code>  0%|          | 0/2 [00:00&lt;?, ?it/s]100%|██████████| 2/2 [00:00&lt;00:00, 1951.29it/s]</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>bar    12
@@ -413,7 +488,7 @@ Name: A, dtype: int64</code></pre>
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> tk.parallel_apply(grouped, calculate, show_progress<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>  0%|          | 0/4 [00:00&lt;?, ?it/s]100%|██████████| 4/4 [00:00&lt;00:00, 1618.17it/s]</code></pre>
+<pre><code>  0%|          | 0/4 [00:00&lt;?, ?it/s]100%|██████████| 4/4 [00:00&lt;00:00, 1562.42it/s]</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>

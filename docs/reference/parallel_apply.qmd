@@ -2,6 +2,25 @@
 
 `parallel_apply(data, func, show_progress=True, threads=None, **kwargs)`
 
+The `parallel_apply` function parallelizes the application of a function on grouped dataframes using
+concurrent.futures.
+
+## Parameters
+
+| Name            | Type                                     | Description                                                                                                                                                                                                                                                                                | Default    |
+|-----------------|------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `data`          | pd.core.groupby.generic.DataFrameGroupBy | The `data` parameter is a Pandas DataFrameGroupBy object, which is the result of grouping a DataFrame by one or more columns. It represents the grouped data that you want to apply the function to.                                                                                       | _required_ |
+| `func`          | Callable                                 | The `func` parameter is the function that you want to apply to each group in the grouped dataframe. This function should take a single argument, which is a dataframe representing a group, and return a result. The result can be a scalar value, a pandas Series, or a pandas DataFrame. | _required_ |
+| `show_progress` | bool                                     | A boolean parameter that determines whether to display progress using tqdm. If set to True, progress will be displayed. If set to False, progress will not be displayed.                                                                                                                   | `True`     |
+| `threads`       | int                                      | The `threads` parameter specifies the number of threads to use for parallel processing. If `threads` is set to `None`, it will use all available processors. If `threads` is set to `-1`, it will use all available processors as well.                                                    | `None`     |
+| `**kwargs`      |                                          | The `**kwargs` parameter is a dictionary of keyword arguments that are passed to the `func` function.                                                                                                                                                                                      | `{}`       |
+
+## Returns
+
+| Type         | Description                                                                                                                                                                                                                       |
+|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| pd.DataFrame | The `parallel_apply` function returns a combined result after applying the specified function on all groups in the grouped dataframe. The result can be a pandas DataFrame or a pandas Series, depending on the function applied. |
+
 ## Examples:
 
 ``` {python}

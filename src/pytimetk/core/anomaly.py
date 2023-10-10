@@ -7,6 +7,8 @@ from typing import Union, Optional
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.core.frequency import get_frequency, get_seasonal_frequency, get_trend_frequency
 
+from pytimetk.utils.parallel_helpers import parallel_apply
+
 from statsmodels.tsa.seasonal import STL
 from statsmodels.tsa.seasonal import seasonal_decompose
 
@@ -23,6 +25,8 @@ def anomalize(
     iqr_alpha: float = 0.05,
     max_anomalies: float = 0.2,
     bind_data: bool = False,
+    threads: Optional[int] = 1,
+    show_progress: bool = True,
     verbose = False,
 ) -> pd.DataFrame:
     """
@@ -30,7 +34,7 @@ def anomalize(
     Examples
     --------
     ``` {python}
-    # The code is importing the `pytimetk` library as `tk`, as well as the `pandas` and `numpy` libraries.
+    # EXAMPLE 1: SINGLE TIME SERIES
     import pytimetk as tk
     import pandas as pd
     import numpy as np
@@ -82,6 +86,10 @@ def anomalize(
     ```
     
     ``` {python}
+    # EXAMPLE 2: MULTIPLE TIME SERIES
+    import pytimetk as tk
+    import pandas as pd
+    
     df = tk.load_dataset("walmart_sales_weekly", parse_dates=["Date"])[["id", "Date", "Weekly_Sales"]]
     
     anomalize_df = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52) 
@@ -121,6 +129,19 @@ def anomalize(
         .plot_timeseries("Date", "val", color_column = "variable", smooth = False)
     
     ```
+    
+    ``` {python}
+    # PARALLEL PROCESSING
+    import pytimetk as tk
+    import pandas as pd
+    
+    df = tk.load_dataset("walmart_sales_weekly", parse_dates=["Date"])[["id", "Date", "Weekly_Sales"]]
+    
+    anomalize_df = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = 2) 
+    
+    anomalize_df
+    
+    ```
     """
     
     check_dataframe_or_groupby(data)
@@ -147,8 +168,26 @@ def anomalize(
         
         group_names = data.grouper.names
         
-        result = data \
-            .apply(
+        if threads == 1:
+        
+            result = data \
+                .apply(
+                    _anomalize, 
+                    date_column=date_column, 
+                    value_column=value_column,
+                    period=period,
+                    trend=trend,
+                    method=method,
+                    decomp=decomp,
+                    clean=clean,
+                    iqr_alpha=iqr_alpha,
+                    max_anomalies=max_anomalies,
+                    bind_data=bind_data,
+                    verbose=verbose,
+                ).reset_index(level=group_names)
+        else:
+            result = parallel_apply(
+                data, 
                 _anomalize, 
                 date_column=date_column, 
                 value_column=value_column,
@@ -160,6 +199,8 @@ def anomalize(
                 iqr_alpha=iqr_alpha,
                 max_anomalies=max_anomalies,
                 bind_data=bind_data,
+                threads=threads,
+                show_progress=show_progress,
                 verbose=verbose,
             ).reset_index(level=group_names)
     
@@ -187,6 +228,8 @@ def _anomalize(
     orig_date_column = data[date_column]
     
     data = data.copy()
+    
+    
     
     # STEP 0: Get the seasonal period and trend frequency
     if period is None:
@@ -315,6 +358,7 @@ def _twitter_decompose(
     result_df.columns = ['observed', 'seasonal', 'seasadj', 'trend', 'remainder']
     
     result_df.reset_index(inplace=True)
+
     
     result_df.index = orig_index
     

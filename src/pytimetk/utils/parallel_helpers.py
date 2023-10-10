@@ -71,10 +71,10 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     })
 
     grouped = df.groupby('A')
+    
     result = grouped.apply(lambda df: df['B'].sum())
     result
     
-    # Won't match exactly because of the decision to return a Named series instead of an unnamed series with named index
     result = tk.parallel_apply(grouped, lambda df: df['B'].sum(), show_progress=True)
     result
     ```
@@ -103,7 +103,6 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     result = grouped.apply(calculate)
     result
     
-    # One difference is that the multi-index does not include the level 2 index containing 0's.
     result = tk.parallel_apply(grouped, calculate, show_progress=True)
     result
     
@@ -128,7 +127,6 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     result = grouped.apply(calculate)
     result
     
-    # One difference is that the multi-index does not include the level 2 index containing 0's.
     result = tk.parallel_apply(grouped, calculate, show_progress=True)
     result
     
