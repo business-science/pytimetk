@@ -34,17 +34,24 @@ def conditional_tqdm(iterable: Iterable, display: bool =True, **kwargs):
     
 
 def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func, show_progress=True, threads=None, **kwargs):
-    """
-    Parallelize apply on grouped dataframes using concurrent.futures.
-
-    Parameters:
-        data (pd.core.groupby.generic.DataFrameGroupBy): Grouped dataframe.
-        func (function): Function to apply on each group.
-        show_progress (bool): Whether to display progress with tqdm.
-        threads (int): Number of threads. -1 means using all processors. None means all processors. Defaults to None.
-
-    Returns:
-        pd.DataFrame: Combined result after applying the function on all groups.
+    '''The `parallel_apply` function parallelizes the application of a function on grouped dataframes using
+    concurrent.futures.
+    
+    Parameters
+    ----------
+    data : pd.core.groupby.generic.DataFrameGroupBy
+        The `data` parameter is a Pandas DataFrameGroupBy object, which is the result of grouping a DataFrame by one or more columns.
+    func
+        The `func` parameter is the function that you want to apply to each group in the grouped dataframe. This function should take a single argument, which is a dataframe representing a group, and return a result. The result can be a scalar value, a pandas Series, or a pandas DataFrame.
+    show_progress, optional
+        A boolean parameter that determines whether to display progress using tqdm. If set to True, progress will be displayed. If set to False, progress will not be displayed.
+    threads
+        The `threads` parameter specifies the number of threads to use for parallel processing. If `threads` is set to `None`, it will use all available processors. If `threads` is set to `-1`, it will use all available processors as well.
+    
+    Returns
+    -------
+    pd.DataFrame
+        The function `parallel_apply` returns a combined result after applying the specified function on all groups in the grouped dataframe. The result can be a pandas DataFrame or a pandas Series, depending on the function applied.
         
     Examples:
     --------
@@ -94,7 +101,7 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func, show_p
     result
     
     ```
-    """
+    '''
     
     if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         raise TypeError("`data` is not a Pandas DataFrameGroupBy object.")
@@ -106,7 +113,7 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func, show_p
     if threads == -1: 
         threads = cpu_count()
         
-    # func = partial(func, **kwargs)
+    func = partial(func, **kwargs)
 
     results_dict = {}
     with ThreadPoolExecutor(max_workers=threads) as executor:
@@ -138,4 +145,6 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func, show_p
         return pd.concat(ordered_results, axis=0)
     return pd.concat(ordered_results, axis=0)
 
+# Monkey patch the method to pandas groupby objects
+pd.core.groupby.generic.DataFrameGroupBy.parallel_apply = parallel_apply
 
