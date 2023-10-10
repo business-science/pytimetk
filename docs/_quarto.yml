@@ -173,6 +173,7 @@ quartodoc:
       package: pytimetk
       contents:
       - glimpse
+      - parallel_apply
       - flatten_multiindex_column_names
     - title: 💾 13 Datasets
       package: pytimetk
