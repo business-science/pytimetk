@@ -5,9 +5,8 @@ from functools import partial
 
 from multiprocessing import cpu_count
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from tqdm import tqdm
 
-from pytimetk.utils.memory_helpers import conditional_tqdm
+from pytimetk.utils.parallel_helpers import conditional_tqdm
 
 from typing import Optional, Union
 

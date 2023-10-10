@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 
-from tqdm import tqdm
 
 def reduce_memory_usage(data: pd.DataFrame):
   """
@@ -68,9 +67,5 @@ def reduce_memory_usage(data: pd.DataFrame):
   return data
 
 
-def conditional_tqdm(iterable, display=True, **kwargs):
-    if display:
-        return tqdm(iterable, **kwargs)
-    else:
-        return iterable
+
 
