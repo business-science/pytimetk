@@ -88,6 +88,7 @@ Helper functions to make your life easier.
 | | |
 | --- | --- |
 | [glimpse](glimpse.qmd#pytimetk.glimpse) | Takes a pandas DataFrame and prints a summary of |
+| [parallel_apply](parallel_apply.qmd#pytimetk.parallel_apply) | Parallelize apply on grouped dataframes using concurrent.futures. |
 | [flatten_multiindex_column_names](flatten_multiindex_column_names.qmd#pytimetk.flatten_multiindex_column_names) | Takes a DataFrame as input and flattens the column |
 
 ## 💾 13 Datasets

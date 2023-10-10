@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/ts_features.html</loc>
-    <lastmod>2023-10-10T01:39:01.374Z</lastmod>
+    <lastmod>2023-10-10T16:09:43.082Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_holiday_signature.html</loc>
@@ -82,7 +82,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/changelog-news.html</loc>
-    <lastmod>2023-10-10T01:38:28.397Z</lastmod>
+    <lastmod>2023-10-10T16:10:25.611Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/tutorials/01_sales_crm.html</loc>
@@ -170,7 +170,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2023-10-10T01:38:39.465Z</lastmod>
+    <lastmod>2023-10-10T16:09:24.077Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/summarize_by_time.html</loc>
@@ -219,5 +219,9 @@
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/floor_date.html</loc>
     <lastmod>2023-10-10T01:39:00.565Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/parallel_apply.html</loc>
+    <lastmod>2023-10-10T16:09:33.649Z</lastmod>
   </url>
 </urlset>

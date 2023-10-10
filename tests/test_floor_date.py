@@ -1,7 +1,5 @@
 import pandas as pd
-import numpy as np
-import pytest
-from pandas.testing import assert_series_equal, assert_frame_equal
+from pandas.testing import assert_series_equal
 import pytimetk as tk
 
 def test_floor_date():

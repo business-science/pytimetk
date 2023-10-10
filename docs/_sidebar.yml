@@ -52,6 +52,7 @@ website:
       section: "\U0001F6E0\uFE0F Visualization Utilities"
     - contents:
       - reference/glimpse.qmd
+      - reference/parallel_apply.qmd
       - reference/flatten_multiindex_column_names.qmd
       section: Extra Pandas Helpers (That Help Beyond Just Time Series)
     - contents:

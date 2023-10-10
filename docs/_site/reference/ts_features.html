@@ -360,7 +360,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>ts_features(data, date_column, value_column, features=None, freq=None, scale=True, threads=1)</code></p>
+<p><code>ts_features(data, date_column, value_column, features=None, freq=None, scale=True, threads=1, show_progress=True)</code></p>
 <p>Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the <code>tsfeatures</code> package.</p>
 <p>Note: Requires the <code>tsfeatures</code> package to be installed.</p>
 <section id="parameters" class="level2">
@@ -423,6 +423,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>The <code>threads</code> parameter is an optional parameter that specifies the number of threads to use for parallel processing. - If is <code>None</code>, tthe function will use all available threads on the system. - If is -1, the function will use all available threads on the system.</td>
 <td><code>1</code></td>
 </tr>
+<tr class="even">
+<td><code>show_progress</code></td>
+<td>bool</td>
+<td>The <code>show_progress</code> parameter is a boolean parameter that determines whether or not to show a progress bar when extracting features.</td>
+<td><code>True</code></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -471,14 +477,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    df</span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        .ts_features(    </span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'date'</span>, </span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>,</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>            features     <span class="op">=</span> [acf_features, hurst],</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="dv">7</span>,</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>            threads      <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>) </span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>feature_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>            date_column   <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>            value_column  <span class="op">=</span> <span class="st">'value'</span>,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>            features      <span class="op">=</span> [acf_features, hurst],</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>            freq          <span class="op">=</span> <span class="dv">7</span>,</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>            threads       <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>            show_progress <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>) </span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>feature_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Processing:   0%|          | 0/4 [00:00&lt;?, ?it/s]Processing:  50%|█████     | 2/4 [00:00&lt;00:00, 14.67it/s]Processing: 100%|██████████| 4/4 [00:00&lt;00:00, 15.97it/s]Processing: 100%|██████████| 4/4 [00:00&lt;00:00, 15.72it/s]</code></pre>
+</div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
