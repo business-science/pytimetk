@@ -4,7 +4,10 @@ import pandas_flavor as pf
 from functools import partial
 
 from multiprocessing import cpu_count
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from tqdm import tqdm
+
+from pytimetk.utils.memory_helpers import conditional_tqdm
 
 from typing import Optional, Union
 
@@ -37,6 +40,7 @@ def ts_features(
     freq: Optional[str] = None,
     scale: bool = True,
     threads: Optional[int] = 1,
+    show_progress: bool = True,
 ) -> pd.DataFrame:
     '''Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the `tsfeatures` package.
     
@@ -86,6 +90,8 @@ def ts_features(
         The `threads` parameter is an optional parameter that specifies the number of threads to use for parallel processing. 
         - If is `None`, tthe function will use all available threads on the system.
         - If is -1, the function will use all available threads on the system.
+    show_progress : bool
+        The `show_progress` parameter is a boolean parameter that determines whether or not to show a progress bar when extracting features.
     
     Returns
     -------
@@ -116,11 +122,12 @@ def ts_features(
         df
             .groupby('id')
             .ts_features(    
-                date_column  = 'date', 
-                value_column = 'value',
-                features     = [acf_features, hurst],
-                freq         = 7,
-                threads      = 1
+                date_column   = 'date', 
+                value_column  = 'value',
+                features      = [acf_features, hurst],
+                freq          = 7,
+                threads       = 1,
+                show_progress = True
             )
     ) 
     feature_df
@@ -190,17 +197,9 @@ def ts_features(
     # Run tsfeatures
     # features_df = tsf.tsfeatures(construct_df, features=features, freq=freq, scale=scale, threads=threads)
     
-    # Replicate tsfeatures without threads
-    # https://github.com/Nixtla/tsfeatures/blob/fe4f6e63b8883f84922354b7a57056cf534aa4ae/tsfeatures/tsfeatures.py#L967
-    partial_get_feats = partial(
-        _get_feats, 
-        freq=freq, 
-        scale=scale,
-        features=features, 
-        dict_freqs=dict_freqs
-    )
     
     if isinstance(data, pd.DataFrame):
+        
         ts_features = tsf.tsfeatures(construct_df, features=features)
         ts_features = ts_features.dropna(axis=1)
         
@@ -209,7 +208,18 @@ def ts_features(
         # RETURN SINGLE DATA FRAME HERE
         return ts_features
         
-    else: # grouped dataframe                
+    else: # grouped dataframe 
+        
+        # Replicate tsfeatures without threads
+        # https://github.com/Nixtla/tsfeatures/blob/fe4f6e63b8883f84922354b7a57056cf534aa4ae/tsfeatures/tsfeatures.py#L967
+    
+        partial_get_feats = partial(
+            _get_feats, 
+            freq=freq, 
+            scale=scale,
+            features=features, 
+            dict_freqs=dict_freqs
+        )               
         
         ts_features = []
         for name, group in construct_df.groupby('unique_id'):
@@ -224,14 +234,17 @@ def ts_features(
             # Switch to concurrent.futures for better performance
             # multiprocessing.Pool is slower than concurrent.futures.ThreadPoolExecutor
             with ThreadPoolExecutor(threads) as executor:
+                
                 futures = [executor.submit(partial_get_feats, *args) for args in construct_df.groupby('unique_id')]
                 
-                ts_features = [future.result() for future in futures]
+                results = []
+                for future in conditional_tqdm(as_completed(futures), total=len(futures), desc="Processing", display=show_progress):
+                     results.append(future.result())
         
         else:
             # Don't parallel process
             ts_features = []
-            for name, group in construct_df.groupby('unique_id'):
+            for name, group in conditional_tqdm(construct_df.groupby('unique_id'), total=len(construct_df.unique_id.unique()), desc="Processing", display=show_progress):
                 result = partial_get_feats(name, group, features = features)
                 ts_features.append(result)
             

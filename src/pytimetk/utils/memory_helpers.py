@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 
+from tqdm import tqdm
+
 def reduce_memory_usage(data: pd.DataFrame):
   """
   Iterate through all columns of a Pandas DataFrame and modify the dtypes to reduce memory usage.
@@ -64,3 +66,11 @@ def reduce_memory_usage(data: pd.DataFrame):
     
   # Return the memory optimized
   return data
+
+
+def conditional_tqdm(iterable, display=True, **kwargs):
+    if display:
+        return tqdm(iterable, **kwargs)
+    else:
+        return iterable
+
