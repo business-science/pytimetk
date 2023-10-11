@@ -125,7 +125,7 @@ def ts_features(
                 value_column  = 'value',
                 features      = [acf_features, hurst],
                 freq          = 7,
-                threads       = 1,
+                threads       = 2,
                 show_progress = True
             )
     ) 
@@ -243,9 +243,7 @@ def ts_features(
             ts_features = []
             for name, group in conditional_tqdm(construct_df.groupby('unique_id'), total=len(construct_df.unique_id.unique()), desc="Processing", display=show_progress):
                 result = partial_get_feats(name, group, features = features)
-                ts_features.append(result)
-            
-            
+                ts_features.append(result)    
     
         # Combine the list to a DataFrame      
         ts_features = pd.concat(ts_features).rename_axis('unique_id')

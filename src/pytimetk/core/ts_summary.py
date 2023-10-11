@@ -8,6 +8,7 @@ from pytimetk.core.frequency import get_frequency_summary
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_series_or_datetime
 
+from pytimetk.utils.parallel_helpers import parallel_apply
 
 
     
@@ -15,6 +16,8 @@ from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column,
 def ts_summary(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
+    threads = 1,
+    show_progress = True,
 ) -> pd.DataFrame:
     '''Computes summary statistics for a time series data, either for the entire dataset or grouped by a specific column.
     
@@ -64,9 +67,21 @@ def ts_summary(
     ```
     
     ```{python}
+    # Grouped ts_summary
     df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
      
     df.groupby('symbol').ts_summary(date_column = 'date') 
+    ```
+    
+    ```{python}
+    # Parallelized grouped ts_summary 
+    df \
+        .groupby('symbol') \
+        .ts_summary(
+            date_column = 'date', 
+            threads = 2, 
+            show_progress = True
+        ) 
     ```
     
     ```{python}
@@ -88,64 +103,44 @@ def ts_summary(
         
     if isinstance(data, pd.DataFrame):
         
-        df = data.copy()        
-        df.sort_values(by=[date_column], inplace=True)
-        
-        date = df[date_column]
-
-        # Compute summary statistics
-        date_summary = get_date_summary(date)
-        frequency_summary = get_frequency_summary(date)
-        diff_summary = get_diff_summary(date)
-        diff_summary_num = get_diff_summary(date, numeric = True)
-        
-        # Combine summary statistics into a single DataFrame
-        return pd.concat([date_summary, frequency_summary, diff_summary, diff_summary_num], axis = 1)
+        return _ts_summary(data, date_column)
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         
-        group_names = data.grouper.names
-        data = data.obj
-        
-        df = data.copy()
-        
-        df.sort_values(by=[*group_names, date_column], inplace=True)
-        
-        # Get unique group combinations
-        groups = df[group_names].drop_duplicates()
-        
-        summary_dfs = []
-        for idx, group in groups.iterrows():
-            mask = (df[group_names] == group).all(axis=1)
-            group_df = df[mask]
-
-            
-            # Get group columns
-            id_df = pd.DataFrame(group).T.reset_index(drop=True)
-            # print(id_df)
-
-            date = group_df[date_column]
-            
-            # Compute summary statistics
-            date_summary = get_date_summary(date)
-            frequency_summary = get_frequency_summary(date)
-            diff_summary = get_diff_summary(date)
-            diff_summary_num = get_diff_summary(date, numeric = True)
-            
-            unique_id = ' | '.join(group.values)
-            
-            # Combine summary statistics into a single DataFrame
-            summary_df = pd.concat([id_df, date_summary, frequency_summary, diff_summary, diff_summary_num], axis = 1)
-            
-            # Append to list of summary DataFrames
-            summary_dfs.append(summary_df)
-            
-        return pd.concat(summary_dfs, axis = 0).reset_index(drop=True)
+        result = data.parallel_apply(
+            func = lambda group: _ts_summary(group, date_column),
+            threads = threads,
+            show_progress = show_progress,
+        )
+        result = result.reset_index(drop=True)
+        return result
         
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.ts_summary = ts_summary
         
-  
+
+def _ts_summary(group: pd.DataFrame, date_column: str) -> pd.DataFrame:
+    """Compute time series summary for a single group."""
+    
+    # Make sure date is sorted
+    group = group.sort_values(by=date_column)
+    
+    date = group[date_column]
+
+    # Compute summary statistics
+    date_summary = get_date_summary(date)
+    frequency_summary = get_frequency_summary(date)
+    diff_summary = get_diff_summary(date)
+    diff_summary_num = get_diff_summary(date, numeric=True)
+    
+    # Combine summary statistics into a single DataFrame
+    result = pd.concat([date_summary, frequency_summary, diff_summary, diff_summary_num], axis=1)
+    
+    # Add group columns back
+    for col in group.columns.difference([date_column]):
+        result[col] = group[col].iloc[0]
+
+    return result
     
 def get_diff_summary(idx: Union[pd.Series, pd.DatetimeIndex], numeric: bool = False):
     '''Calculates summary statistics of the time differences between consecutive values in a datetime index.

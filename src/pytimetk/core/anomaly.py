@@ -92,7 +92,7 @@ def anomalize(
     
     df = tk.load_dataset("walmart_sales_weekly", parse_dates=["Date"])[["id", "Date", "Weekly_Sales"]]
     
-    anomalize_df = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52) 
+    anomalize_df = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = 1) 
     
     # Visualize the results
     anomalize_df[["id", "Date", "observed", "seasonal", "trend", "remainder"]] \
@@ -172,41 +172,23 @@ def anomalize(
         
         group_names = data.grouper.names
         
-        if threads == 1:
-        
-            result = data \
-                .apply(
-                    _anomalize, 
-                    date_column=date_column, 
-                    value_column=value_column,
-                    period=period,
-                    trend=trend,
-                    method=method,
-                    decomp=decomp,
-                    clean=clean,
-                    iqr_alpha=iqr_alpha,
-                    max_anomalies=max_anomalies,
-                    bind_data=bind_data,
-                    verbose=verbose,
-                ).reset_index(level=group_names)
-        else:
-            result = parallel_apply(
-                data, 
-                _anomalize, 
-                date_column=date_column, 
-                value_column=value_column,
-                period=period,
-                trend=trend,
-                method=method,
-                decomp=decomp,
-                clean=clean,
-                iqr_alpha=iqr_alpha,
-                max_anomalies=max_anomalies,
-                bind_data=bind_data,
-                threads=threads,
-                show_progress=show_progress,
-                verbose=verbose,
-            ).reset_index(level=group_names)
+        result = parallel_apply(
+            data, 
+            _anomalize, 
+            date_column=date_column, 
+            value_column=value_column,
+            period=period,
+            trend=trend,
+            method=method,
+            decomp=decomp,
+            clean=clean,
+            iqr_alpha=iqr_alpha,
+            max_anomalies=max_anomalies,
+            bind_data=bind_data,
+            threads=threads,
+            show_progress=show_progress,
+            verbose=verbose,
+        ).reset_index(level=group_names)
     
     return result
 
