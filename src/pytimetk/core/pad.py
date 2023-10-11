@@ -98,10 +98,10 @@ def pad_by_time(
                 date_column = 'date',
                 freq        = 'D',
                 start_date  = '2013-01-01',
-                end_date    = '2023-09-21'
+                end_date    = '2023-09-22'
             )
     )
-    padded_df
+    padded_df.query('symbol == "AAPL"')
     '''
     # Common checks
     check_dataframe_or_groupby(data)
@@ -141,34 +141,50 @@ def pad_by_time(
         group_names = data.grouper.names
         data = data.obj
         df = data.copy()
+        
         df[date_column] = pd.to_datetime(df[date_column])
         df.sort_values(by=[*group_names, date_column], inplace=True)
         
-        groups = df[group_names].drop_duplicates()
-        padded_dfs = []
+        padded_df = _pad_by_time_vectorized(
+            data=df,
+            date_column=date_column,
+            groupby_columns=group_names,
+            freq=freq,
+            start_date=start_date,
+            end_date=end_date
+        )
         
-        for _, group in groups.iterrows():
-            mask = (df[group_names] == group).all(axis=1)
-            group_df = df[mask]
-            
-            min_date = start_date if start_date else group_df[date_column].min()
-            max_date = end_date if end_date else group_df[date_column].max()
-            
-            date_range = pd.date_range(start=min_date, end=max_date, freq=freq)
-            new_df = pd.DataFrame({date_column: date_range})
-            
-            for col, value in group.items():
-                new_df[col] = value
-                
-            new_df = new_df.merge(group_df, on=[*group_names, date_column], how='left')
-            padded_dfs.append(new_df)
-            
-        padded_df = pd.concat(padded_dfs, ignore_index=True)
-        padded_df.sort_values(by=[*group_names, date_column], inplace=True)
-        padded_df.reset_index(drop=True, inplace=True)
-        
-        return padded_df
+        return padded_df[df.columns]
 
+def _pad_by_time_vectorized(
+    data: pd.DataFrame, 
+    date_column: str, 
+    groupby_columns: list,
+    freq: str = 'D',
+    start_date: Union[str, None] = None,
+    end_date: Union[str, None] = None
+) -> pd.DataFrame:
+    
+    # Calculate the overall min and max dates across the entire dataset if not provided
+    if not start_date:
+        start_date = data[date_column].min()
+    if not end_date:
+        end_date = data[date_column].max()
+        
+    # Create a full date range
+    all_dates = pd.date_range(start=start_date, end=end_date, freq=freq)
+    
+    # Generate the Cartesian product of all_dates and unique group values
+    idx = pd.MultiIndex.from_product(
+        [data[col].unique() for col in groupby_columns] + [all_dates], 
+        names=groupby_columns + [date_column]
+    )
+    cartesian_df = pd.DataFrame(index=idx).reset_index()
+    
+    # Merge to introduce NaN values for missing rows
+    padded_data = pd.merge(cartesian_df, data, on=groupby_columns + [date_column], how='left')
+    
+    return padded_data
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.pad_by_time = pad_by_time

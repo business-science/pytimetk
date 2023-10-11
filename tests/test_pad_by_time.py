@@ -27,8 +27,7 @@ def test_dataframe():
 def test_pad_by_time_single_series(test_dataframe):
     # Apply pad_by_time to a single series
     padded_df = (
-        test_dataframe
-        .pad_by_time(date_column="date", freq="D")
+        test_dataframe.pad_by_time(date_column="date", freq="D")
     )
 
     # Define the expected result
@@ -70,17 +69,17 @@ def test_pad_by_time_grouped(test_dataframe):
     # Define the expected result for each group
     expected_data = {
         "date": ['2022-01-01','2022-01-02','2022-01-03','2022-01-04',\
-                '2022-01-05','2022-01-06','2022-01-02','2022-01-03',\
-                '2022-01-04','2022-01-05'],
+                '2022-01-05','2022-01-06','2022-01-01','2022-01-02','2022-01-03',\
+                '2022-01-04','2022-01-05', '2022-01-06'],
                 
-        "group": ["A", "A", "A", "A", "A","A",'B','B','B','B'],
-        "value": [1, np.nan, 3, np.nan,np.nan, 6,2,np.nan,4, 5],
+        "value": [1, np.nan, 3, np.nan,np.nan, 6,np.nan, 2,np.nan,4, 5, np.nan],
+        "group": ["A", "A", "A", "A", "A","A",'B','B','B','B', 'B', 'B'],
         
     }
     expected_df = pd.DataFrame(expected_data)
     expected_df['date'] = pd.to_datetime(expected_df['date'])
     # Check if the result matches the expected DataFrame
-    assert_frame_equal(padded_df, expected_df, check_dtype=False)
+    assert_frame_equal(padded_df, expected_df, check_dtype=True)
 
 def test_pad_by_time_grouped_end(test_dataframe):
     # Create a grouped DataFrame for testing
@@ -97,11 +96,10 @@ def test_pad_by_time_grouped_end(test_dataframe):
     # Define the expected result for each group
     expected_data = {
         "date": ['2022-01-01','2022-01-02','2022-01-03','2022-01-04',\
-                '2022-01-05','2022-01-06','2022-01-02','2022-01-03',\
+                '2022-01-05','2022-01-06','2022-01-01','2022-01-02','2022-01-03',\
                 '2022-01-04','2022-01-05','2022-01-06'],
-                
-        "group": ["A", "A", "A", "A", "A","A",'B','B','B','B','B'],
-        "value": [1, np.nan, 3, np.nan,np.nan, 6,2,np.nan,4, 5, np.nan],
+        "value": [1, np.nan, 3, np.nan,np.nan, 6,np.nan,2,np.nan,4, 5, np.nan],
+        "group": ["A", "A", "A", "A", "A","A",'B','B','B','B','B','B'],
         
     }
     expected_df = pd.DataFrame(expected_data)
