@@ -122,6 +122,8 @@ def future_frame(
     length_out: int, 
     force_regular: bool = False,
     bind_data: bool = True,
+    threads: int = 1,
+    show_progress: bool = True
 ) -> pd.DataFrame:
     '''Extend a DataFrame or GroupBy object with future dates.
     
@@ -139,6 +141,10 @@ def future_frame(
         The `force_regular` parameter is a boolean flag that determines whether the frequency of the future dates should be forced to be regular. If `force_regular` is set to `True`, the frequency of the future dates will be forced to be regular. If `force_regular` is set to `False`, the frequency of the future dates will be inferred from the input data (e.g. business calendars might be used). The default value is `False`.
     bind_data : bool, optional
         The `bind_data` parameter is a boolean flag that determines whether the extended data should be concatenated with the original data or returned separately. If `bind_data` is set to `True`, the extended data will be concatenated with the original data using `pd.concat`. If `bind_data` is set to `False`, the extended data will be returned separately. The default value is `True`.
+    threads : int
+        The `threads` parameter specifies the number of threads to use for parallel processing. If `threads` is set to `None`, it will use all available processors. If `threads` is set to `-1`, it will use all available processors as well.
+    show_progress : bool, optional
+        A boolean parameter that determines whether to display progress using tqdm. If set to True, progress will be displayed. If set to False, progress will not be displayed.
     
     Returns
     -------
@@ -306,10 +312,18 @@ def future_frame(
             data
                 .groupby(
                     group_names, 
-                    as_index   = False, 
-                    group_keys = False
+                    # as_index   = False, 
+                    # group_keys = False
                 )
-                .apply(extend_group)
+                # .apply(
+                #     extend_group
+                # )
+                .parallel_apply(
+                    extend_group,
+                    show_progress=show_progress,
+                    threads=threads
+                )
+                .reset_index(drop=True)
         )   
     
     return extended_df
