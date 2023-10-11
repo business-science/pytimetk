@@ -60,10 +60,10 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     Examples:
     --------
     ``` {python}
-    import pytimetk as tk
-    import pandas as pd
-    
     # Example 1 - Single argument returns Series
+    
+    import pytimetk as tk
+    import pandas as pd   
     
     df = pd.DataFrame({
         'A': ['foo', 'bar', 'foo', 'bar', 'foo', 'bar'],
@@ -81,6 +81,7 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     
     ``` {python}
     # Example 2 - Multiple arguments returns MultiIndex DataFrame
+    
     import pytimetk as tk
     import pandas as pd
     
@@ -91,8 +92,6 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     })
 
     def calculate(group):
-        # This function calculates the sum and mean of column C for each group
-        # and returns a DataFrame with two columns: sum and mean.
         return pd.DataFrame({
             'sum': [group['C'].sum()],
             'mean': [group['C'].mean()]
@@ -110,6 +109,7 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     
     ``` {python}
     # Example 3 - Multiple arguments returns MultiIndex DataFrame
+    
     import pytimetk as tk
     import pandas as pd
     
@@ -155,12 +155,26 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
             
             # If the result is a DataFrame
             if isinstance(result, pd.DataFrame) and len(grouped_df.keys) > 1:
+                if not isinstance(group_name, tuple):
+                        group_name = (group_name,)
+                
                 if isinstance(result.index, pd.RangeIndex) and result.index.start == 0:
+                    # If the index is a RangeIndex starting from 0, then we need to reset the index
                     new_idx = range(len(result))
                     multiindex_tuples = [group_name + (i,) for i in new_idx]
                 else:
+                    # Otherwise, we can use the existing index
+                    # if not isinstance(group_name, tuple):
+                    #     group_name = (group_name,)
+                    
                     multiindex_tuples = [group_name + (idx,) for idx in result.index]
-                names = list(grouped_df.keys) + [result.index.name if result.index.name else None]
+                
+                
+                group_keys = grouped_df.keys
+                if not isinstance(group_keys, list):
+                    group_keys = [group_keys]  
+                names = list(group_keys) + [result.index.name if result.index.name else None]
+                
                 result.index = pd.MultiIndex.from_tuples(multiindex_tuples, names=names)
             else:
                 # This handles cases where the result is not a DataFrame (e.g. Series or scalar)
@@ -173,6 +187,11 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
             results_dict[group_name] = result
     
     # To maintain the order, concatenate the results based on the order in the group names
+    
+    print(results_dict.keys())
+    
+    print(grouped_df.groups.keys())
+    
     ordered_results = [results_dict[name] for name in grouped_df.groups.keys()]
     return pd.concat(ordered_results, axis=0)
 
