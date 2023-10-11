@@ -1,16 +1,17 @@
 import pandas as pd
 import numpy as np
 import pandas_flavor as pf
-from typing import Union
+from typing import Union, Optional, List
 
 from pytimetk.core.frequency import get_frequency
 
-from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column, check_series_or_datetime
+from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column,  check_series_or_datetime
 
 @pf.register_series_method
 def make_future_timeseries(
-    idx: Union[pd.Series, pd.DatetimeIndex],
+    idx: Union[str, List[str], pd.Series, pd.DatetimeIndex],
     length_out: int,
+    freq: Optional[str] = None,
     force_regular: bool = False,
 ) -> pd.Series:
     '''Make future dates for a time series.
@@ -23,6 +24,8 @@ def make_future_timeseries(
         The `idx` parameter is the input time series data. It can be either a pandas Series or a pandas DateTimeIndex. It represents the existing dates in the time series.
     length_out : int
         The parameter `length_out` is an integer that represents the number of future dates to generate for the time series.
+    freq : str, optional
+        The `frequency` parameter is a string that specifies the frequency of the future dates. If `frequency` is set to `None`, the frequency of the future dates will be inferred from the input data (e.g. business calendars might be used). The default value is `None`.
     force_regular : bool, optional
         The `force_regular` parameter is a boolean flag that determines whether the frequency of the future dates should be forced to be regular. If `force_regular` is set to `True`, the frequency of the future dates will be forced to be regular. If `force_regular` is set to `False`, the frequency of the future dates will be inferred from the input data (e.g. business calendars might be used). The default value is `False`.
     
@@ -38,12 +41,15 @@ def make_future_timeseries(
     import pandas as pd
     import pytimetk as tk
     
-    dates = pd.Series(pd.to_datetime(['2022-01-01', '2022-01-02', '2022-01-03', '2022-01-04']))
-    dates
+    # Works with a single date (must provide a length out and frequency if only 1 date is provided)
+    tk.make_future_timeseries("2011-01-01", 5, "D")
     ```
     
     ```{python}
-    # DateTimeIndex: Generate 5 future dates
+    # DateTimeIndex: Generate 5 future dates (with inferred frequency)
+    
+    dates = pd.Series(pd.to_datetime(['2022-01-01', '2022-01-02', '2022-01-03', '2022-01-04']))
+
     future_dates_dt = tk.make_future_timeseries(dates, 5)
     future_dates_dt
     ```
@@ -54,6 +60,7 @@ def make_future_timeseries(
     ```
     
     ```{python}
+    # Hourly Frequency: Generate 5 future dates
     timestamps = ["2023-01-01 01:00", "2023-01-01 02:00", "2023-01-01 03:00", "2023-01-01 04:00", "2023-01-01 05:00"]
     
     dates = pd.to_datetime(timestamps)
@@ -89,9 +96,19 @@ def make_future_timeseries(
     tk.make_future_timeseries(dates, 4, force_regular=True)
     ```
     '''
-    
+    # Convert idx to Pandas DateTime Index if it's a string or list of strings
+    if isinstance(idx, str):
+        idx = pd.to_datetime([idx])
+        
+    if isinstance(idx, list):
+        idx = pd.to_datetime(idx)
+        
     # Check if idx is a Series or DatetimeIndex
     check_series_or_datetime(idx)
+        
+    if len(idx) < 2:
+        if freq is None:
+            raise ValueError("`freq` must be provided if `idx` contains only 1 date.")
     
     # If idx is a DatetimeIndex, convert to Series
     if isinstance(idx, pd.DatetimeIndex):
@@ -101,13 +118,14 @@ def make_future_timeseries(
     dt_index = pd.DatetimeIndex(pd.Series(idx).values)
     
     # Determine the frequency
-    frequency = get_frequency(dt_index, force_regular=force_regular)  
+    if freq is None:
+        freq = get_frequency(dt_index, force_regular=force_regular)  
     
     # Generate the next four periods (dates)
     future_dates = pd.date_range(
         start   = dt_index[-1], 
         periods = length_out +1, 
-        freq    = frequency
+        freq    = freq
     )[1:]  # Exclude the first date as it's already in dt_index
 
     ret = pd.Series(future_dates)
@@ -119,7 +137,8 @@ def make_future_timeseries(
 def future_frame(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str, 
-    length_out: int, 
+    length_out: int,
+    freq: Optional[str] = None, 
     force_regular: bool = False,
     bind_data: bool = True,
     threads: int = 1,
@@ -135,6 +154,7 @@ def future_frame(
         The `data` parameter is the input DataFrame or DataFrameGroupBy object that you want to extend with future dates.
     date_column : str
         The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to generate future dates.
+    freq : str, optional
     length_out : int
         The `length_out` parameter specifies the number of future dates to be added to the DataFrame.
     force_regular : bool, optional
@@ -262,71 +282,56 @@ def future_frame(
         new_rows = pd.DataFrame({date_column: new_dates})
         
         if bind_data:
-            ret = pd.concat(
-                [data, new_rows], 
-                axis         = 0,
-                ignore_index = True
-            )
+            extended_df = pd.concat([data, new_rows], axis=0, ignore_index=True)
         else:
-            ret = new_rows
-            
-        extended_df = ret        
+            extended_df = new_rows
+        
+        return extended_df       
     
     
     # GROUPED EXTENSION - If data is a GroupBy object, extend with future dates by group
     
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         
-        # Get the group names and original ungrouped data
         group_names = data.grouper.names
-        data = data.obj
         
-        # Define a function to extend each group
-        def extend_group(group_df):
+        # If freq is None, infer the frequency from the first series in the data
+        if freq is None:
             
-            ts_series = group_df[date_column]
+            label_of_first_group = data.groups.keys()[0]
+            first_group = data.get_group(label_of_first_group)
             
-            new_dates = make_future_timeseries(
-                idx=ts_series, 
-                length_out=length_out, 
+            
+            freq = get_frequency(first_group[date_column].sort_values(), force_regular=force_regular)
+        
+        # Use agg to get the last date of each group in a vectorized manner
+        last_dates_df = data.agg({date_column: 'max'}).reset_index()
+        
+        future_dates_list = []
+        
+        for _, row in last_dates_df.iterrows():
+            future_dates = make_future_timeseries(
+                idx=pd.Series(row[date_column]), 
+                length_out=length_out,
+                freq=freq, 
                 force_regular=force_regular
             )
             
-            new_rows = pd.DataFrame({date_column: new_dates})
+            future_dates_df = pd.DataFrame({date_column: future_dates})
+            
             for group_name in group_names:
-                new_rows[group_name] = group_df[group_name].iloc[0]       
+                future_dates_df[group_name] = row[group_name]
             
-            if bind_data:
-                ret = pd.concat(
-                    [group_df, new_rows], 
-                    axis         = 0,
-                    ignore_index = True
-                )
-            else:
-                ret = new_rows
-            
-            return ret 
+            future_dates_list.append(future_dates_df)
         
-        # Group by 'group' column and apply the function to each group
-        extended_df = (
-            data
-                .groupby(
-                    group_names, 
-                    # as_index   = False, 
-                    # group_keys = False
-                )
-                # .apply(
-                #     extend_group
-                # )
-                .parallel_apply(
-                    extend_group,
-                    show_progress=show_progress,
-                    threads=threads
-                )
-                .reset_index(drop=True)
-        )   
-    
-    return extended_df
+        future_dates_df = pd.concat(future_dates_list, axis=0).reset_index(drop=True)
+        
+        if bind_data:
+            extended_df = pd.concat([data.obj, future_dates_df], axis=0).reset_index(drop=True)
+        else:
+            extended_df = future_dates_df
+            
+        return extended_df
     
     
 # Monkey patch the method to pandas groupby objects

@@ -139,6 +139,9 @@ def get_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool =
     # common checks
     check_series_or_datetime(idx)
     
+    if len(idx) <2:
+        raise ValueError("Cannot determine frequency with less than 2 timestamps. Please provide a timeseries with at least 2 timestamps.")
+    
     if isinstance(idx, pd.Series):
         idx = idx.values
         
