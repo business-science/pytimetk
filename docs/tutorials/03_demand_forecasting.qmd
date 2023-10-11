@@ -97,12 +97,11 @@ fig
 
 # Create a Department Forecast Model
 
-## Making Future Dates Easier with ```tk.future_frame```
+## Making Future Dates Easier with `tk.future_frame`
 
 
 
-When building machine learning models, we need to setup our dataframe to hold information about the future. This is the dataframe that will get passed to our ```model.predict()``` call.
-This is made easy with ```tk.future_frame()```.
+When building machine learning models, we need to setup our dataframe to hold information about the future. This is the dataframe that will get passed to our `model.predict()` call. This is made easy with `tk.future_frame()`.
 
 
 ::: {.callout-note collapse="true"}
@@ -119,7 +118,9 @@ Previously our max date was 2012-10-26.
 ```{python}
 print(sales_df.groupby('Dept').Date.max())
 ```
+
 After applying our future frame, we can now see values 5 weeks in the future, and our dataframe has been extended to 2012-11-30 for all groups.
+
 ```{python}
 sales_df_with_futureframe = sales_df \
     .groupby('Dept') \
@@ -134,8 +135,8 @@ sales_df_with_futureframe.groupby('Dept').Date.max()
 
 
 
-## Date Features with ```tk.augment_timeseries_signature```
-Machine Learning models generally cannot process raw date objects directly. Moreover, they lack an inherent understanding of the passage of time. This means, without specific features, a model can't differentiate between a January observation and a June one. To bridge this gap, the tk.augment_timeseries_signature function is invaluable. It generates 29 distinct date-oriented features suitable for model inputs.
+## Date Features with `tk.augment_timeseries_signature`
+Machine Learning models generally cannot process raw date objects directly. Moreover, they lack an inherent understanding of the passage of time. This means that, without specific features, a model can't differentiate between a January observation and a June one. To bridge this gap, the tk.augment_timeseries_signature function is invaluable. It generates 29 distinct date-oriented features suitable for model inputs.
 
 ::: {.callout-note collapse="true"}
 ## Getting More Info: `tk.augment_timeseries_signature()`,`tk.augment_lags()`, `tk.augment_rolling()`
@@ -157,7 +158,7 @@ sales_df_dates.head(10)
 
 Upon reviewing the generated features, it's evident that certain attributes don't align with the granularity of our dataset. For optimal results, features exhibiting no variance—like "Date_hour" due to the weekly nature of our data—should be omitted. We also spot redundant features, such as "Date_Month" and "Date_month_lbl"; both convey month information, albeit in different formats. To enhance clarity and computational efficiency, we'll refine our dataset to include only the most relevant columns.
 
-Additionally, we've eliminated certain categorical columns, which, although compatible with models like LightGBM and Catboost, demand extra processing for many tree-based ML models. While 1-hot encoding is a popular method for managing categorical data, it's not typically recommended for date attributes. Instead, leveraging numeric date features directly, combined with the integration of fourier features, can effectively capture cyclical patterns.
+Additionally, we've eliminated certain categorical columns, which, although compatible with models like LightGBM and Catboost, demand extra processing for many tree-based ML models. While 1-hot encoding is a popular method for managing categorical data, it's not typically recommended for date attributes. Instead, leveraging numeric date features directly, combined with the integration of Fourier features, can effectively capture cyclical patterns.
 
 ```{python}
 sales_df_dates.glimpse()
@@ -175,9 +176,9 @@ sales_df_dates = sales_df_dates[[
 sales_df_dates.tail(10)
 ```
 
-## Lag Features with ```tk.augment_lags```
+## Lag Features with `tk.augment_lags`
 
-As previously noted, it's important to recognize that machine learning models lack inherent awareness of time, a vital consideration in time series modeling. Furthermore, these models operate under the assumption that each row is independent, meaning that the information from last month's weekly sales is not inherently integrated into the prediction of next month's sales target. To address this limitation, we incorporate additional features, such as lags, into the models to capture temporal dependencies. You can easily achieve this by employing the ```tk.augment_lags``` function.
+As previously noted, it's important to recognize that machine learning models lack inherent awareness of time, a vital consideration in time series modeling. Furthermore, these models operate under the assumption that each row is independent, meaning that the information from last month's weekly sales is not inherently integrated into the prediction of next month's sales target. To address this limitation, we incorporate additional features, such as lags, into the models to capture temporal dependencies. You can easily achieve this by employing the `tk.augment_lags` function.
 ```{python}
 df_with_lags = sales_df_dates \
     .groupby('Dept') \
@@ -185,13 +186,12 @@ df_with_lags = sales_df_dates \
         date_column  = 'Date',
         value_column = 'Weekly_Sales',
         lags         = [5,6,7,8,9]
-
     )
 df_with_lags.head(5)
 ```
 
-## Rolling Lag Features with ```tk.augment_rolling```
-Another pivotal aspect of time series analysis involves the utilization of rolling lags. These operations facilitate computations within a moving time window, enabling the use of functions such as "mean" and "std" on these rolling windows. This can be achieved by invoking the ```tk.augment_rolling()``` function on grouped time series data. To execute this, we will initially gather all columns containing 'lag' in their names. We then apply this function to the lag values, as opposed to the weekly sales, since we lack future weekly sales data. By applying these functions to the lag values, we ensure the prevention of data leakage and maintain the adaptability of our method to unforeseen future data.
+## Rolling Lag Features with `tk.augment_rolling`
+Another pivotal aspect of time series analysis involves the utilization of rolling lags. These operations facilitate computations within a moving time window, enabling the use of functions such as "mean" and "std" on these rolling windows. This can be achieved by invoking the `tk.augment_rolling()` function on grouped time series data. To execute this, we will initially gather all columns containing 'lag' in their names. We then apply this function to the lag values, as opposed to the weekly sales, since we lack future weekly sales data. By applying these functions to the lag values, we ensure the prevention of data leakage and maintain the adaptability of our method to unforeseen future data.
 
 ```{python}
 lag_columns = [col for col in df_with_lags.columns if 'lag' in col]
@@ -202,7 +202,8 @@ df_with_rolling = df_with_lags \
         date_column  = 'Date',
         value_column = lag_columns,
         window  = 4,
-        window_func = 'mean'
+        window_func = 'mean',
+        threads = 1 # Change to -1 to use all available cores
     ) 
 df_with_rolling[df_with_rolling.Dept ==1].head(10)
 ```
@@ -218,7 +219,9 @@ df_no_nas = df_with_rolling \
 
 df_no_nas.head()
 ```
-We can call ```tk.glimpse()``` again to quickly see what features we still have available. 
+
+We can call `tk.glimpse()` again to quickly see what features we still have available. 
+
 ```{python}
 df_no_nas.glimpse()
 ```
@@ -268,7 +271,7 @@ future['y_pred'] = predicted_values
 future.head(10)
 ```
 
-Let's create a label to split up our actuals from our predction dataset before recombining.
+Let's create a label to split up our actuals from our prediction dataset before recombining.
 
 ```{python}
 train['type'] = 'actuals'
@@ -331,19 +334,19 @@ Our weekly sales forecasts exhibit a noticeable alignment with historical trends
 
 Here are some additional techniques that can be explored to elevate its performance:
 
-1. Experiment with the incorporation of various lags using the versatile ```tk.augment_lags() ``` function.
-2. Enhance the model's capabilities by introducing additional rolling calculations through ```tk.augment_rolling()```.
-3. Consider incorporating cyclic features by utilizing ```tk.augment_fourier()```.
-4. Try different models and build a robust cross validation strategy for model selection.
+1. Experiment with the incorporation of various lags using the versatile `tk.augment_lags()` function.
+2. Enhance the model's capabilities by introducing additional rolling calculations through `tk.augment_rolling()`.
+3. Consider incorporating cyclic features by utilizing `tk.augment_fourier()`.
+4. Try different models and build a robust cross-validation strategy for model selection.
 
 These strategies hold promise for refining the model's accuracy and predictive power
 
 # Conclusion
 This exemplifies the remarkable capabilities of pytimetk in aiding Data Scientists in conducting comprehensive time series analysis for demand forecasting. Throughout this process, we employed various pytimetk functions and techniques to enhance our analytical approach:
 
-- We harnessed the power of ```tk.augment_time_signature()``` to generate a plethora of date features, enriching our dataset.
-- The feature engineering functions ```tk.augment_lags()``` and ```tk.augment_rolling()``` from pytimetk played a pivotal role in our analysis, enabling us to create lag-based features and rolling calculations.
-- Utilizing ```tk.future_frame()```, we constructed our prediction set
-- To gain valuable insights into our final model's performance, we leveraged ```tk.plot_timeseries()``` to visualize our results.
+- We harnessed the power of `tk.augment_time_signature()` to generate a plethora of date features, enriching our dataset.
+- The feature engineering functions `tk.augment_lags()` and `tk.augment_rolling()` from pytimetk played a pivotal role in our analysis, enabling us to create lag-based features and rolling calculations.
+- Utilizing `tk.future_frame()`, we constructed our prediction set
+- To gain valuable insights into our final model's performance, we leveraged `tk.plot_timeseries()` to visualize our results.
 
 These pytimetk features provide incredibly powerful techniques with a very easy strcuture and minimal code.  They were indispensable in crafting a high-quality sales forecast, seamlessly integrated with sklearn.

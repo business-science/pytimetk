@@ -304,8 +304,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#pytimetk-0.1.0.9000-in-development" id="toc-pytimetk-0.1.0.9000-in-development" class="nav-link active" data-scroll-target="#pytimetk-0.1.0.9000-in-development"><span class="header-section-number">1</span> pytimetk 0.1.0.9000 (in development)</a>
   <ul class="collapse">
   <li><a href="#new-functions" id="toc-new-functions" class="nav-link" data-scroll-target="#new-functions">New Functions:</a></li>
+  <li><a href="#speed-improvements" id="toc-speed-improvements" class="nav-link" data-scroll-target="#speed-improvements">Speed Improvements</a></li>
   <li><a href="#new-data-sets" id="toc-new-data-sets" class="nav-link" data-scroll-target="#new-data-sets">New Data Sets:</a></li>
-  <li><a href="#new-applied-tutorials" id="toc-new-applied-tutorials" class="nav-link" data-scroll-target="#new-applied-tutorials">New Applied Tutorials:</a></li>
+  <li><a href="#new-applied-tutorials" id="toc-new-applied-tutorials" class="nav-link" data-scroll-target="#new-applied-tutorials">3 New Applied Tutorials:</a></li>
   <li><a href="#final-deprecations" id="toc-final-deprecations" class="nav-link" data-scroll-target="#final-deprecations">Final Deprecations:</a></li>
   </ul></li>
   <li><a href="#pytimetk-0.1.0-2023-10-02" id="toc-pytimetk-0.1.0-2023-10-02" class="nav-link" data-scroll-target="#pytimetk-0.1.0-2023-10-02"><span class="header-section-number">2</span> pytimetk 0.1.0 (2023-10-02)</a>
@@ -349,6 +350,24 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <li><code>get_frequency()</code>: Infer a pandas-like frequency. More robust than <code>pandas.infer_freq</code>.</li>
 <li><code>get_seasonal_frequency()</code>: Infer the pandas-like seasonal frequency (periodicity) for the time series.</li>
 <li><code>get_trend_frequency()</code>: Infer the pandas-like trend for the time series.</li>
+<li><code>parallel_apply</code>: Mimics the <code>pandas apply()</code> function with concurrent futures.</li>
+</ul>
+</section>
+<section id="speed-improvements" class="level3">
+<h3 class="anchored" data-anchor-id="speed-improvements">Speed Improvements</h3>
+<ul>
+<li><code>pad_by_time()</code>: Complete overhaul. Uses Cartesian Product (Vectorization) to enhance the speed. 1000s of time series can now be padded in seconds.
+<ul>
+<li><strong>Independent review: Time went from over 90 minutes to 13 seconds for a 500X speedup on 10M rows.</strong></li>
+</ul></li>
+<li><code>future_frame()</code>: Complete overhaul. Uses vectorization when possible. Grouped parallel processing. Set <code>threads = -1</code> to use all cores.
+<ul>
+<li><strong>Independent Review: Time went from 11 minutes to 2.5 minutes for a 4.4X speedup on 10M rows</strong></li>
+</ul></li>
+<li><code>ts_features</code>: Uses concurrent futures to parallelize tasks. Set <code>threads = -1</code> to use all cores.</li>
+<li><code>ts_summary</code>: Uses concurrent futures to parallelize tasks. Set <code>threads = -1</code> to use all cores.</li>
+<li><code>anomalize</code>: Uses concurrent futures to parallelize tasks. Set <code>threads = -1</code> to use all cores.</li>
+<li><code>augment_rolling()</code> and <code>augment_rolling_apply()</code>: Uses concurrent futures to parallelize tasks. Set <code>threads = -1</code> to use all cores.</li>
 </ul>
 </section>
 <section id="new-data-sets" class="level3">
@@ -358,7 +377,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </ul>
 </section>
 <section id="new-applied-tutorials" class="level3">
-<h3 class="anchored" data-anchor-id="new-applied-tutorials">New Applied Tutorials:</h3>
+<h3 class="anchored" data-anchor-id="new-applied-tutorials">3 New Applied Tutorials:</h3>
 <ol type="1">
 <li><a href="./tutorials/01_sales_crm.html">Sales Analysis Tutorial</a></li>
 <li><a href="./tutorials/02_finance.html">Finance Analysis Tutorial</a></li>

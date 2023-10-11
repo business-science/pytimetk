@@ -162,7 +162,8 @@ sma_df = stocks_df[['symbol', 'date', 'adjusted']] \
         value_column = 'adjusted',
         window = [10, 50],
         window_func = ['mean'],
-        center = False
+        center = False,
+        threads = 1, # Change to -1 to use all available cores
     )
 
 # Visualize 
@@ -206,7 +207,8 @@ sma_df = stocks_df[['symbol', 'date', 'adjusted']] \
         value_column = 'adjusted',
         window = [10, 50],
         window_func = ['mean'],
-        center = False
+        center = False,
+        threads = 1, # Change to -1 to use all available cores
     )
 
 # Visualize 
@@ -463,7 +465,8 @@ rolling_stats_df = returns_long_df \
             'median',
             ('q75', lambda x: np.quantile(x, 0.75)),
             'max'
-        ]
+        ],
+        threads = 1 # Change to -1 to use all threads
     ) \
     .dropna()
 
@@ -575,7 +578,7 @@ return_combinations_long_df
 Next, let's add rolling correlations. 
 
 - We first `.groupby()` on the combination of our target assets "symbol" and our comparison asset "comp". 
-- Then we use different function `tk.augment_rolling_apply()`.
+- Then we use a different function, `tk.augment_rolling_apply()`.
 
 ::: {.callout-warning collapse="false"}
 ## `tk.augment_rolling()` vs `tk.augment_rolling_apply()`
@@ -597,7 +600,8 @@ return_corr_df = return_combinations_long_df \
     .augment_rolling_apply(
         date_column = "date",
         window = 90,
-        window_func=[('corr', lambda x: x['returns'].corr(x['returns_comp']))]
+        window_func=[('corr', lambda x: x['returns'].corr(x['returns_comp']))],
+        threads = 1, # Change to -1 to use all available cores
     )
 
 return_corr_df
@@ -679,7 +683,7 @@ Rolling regression involves running regression analyses over rolling windows of 
 ::: {.callout-warning collapse="false"}
 ## This Application Requires Scikit Learn
 
-We need to make a regression function that returns the Slope and Intercept. Scikit Learn has an easy to use modeling interface. You may need to `pip install scikit-learn` to use this applied tutorial.  
+We need to make a regression function that returns the Slope and Intercept. Scikit Learn has an easy-to-use modeling interface. You may need to `pip install scikit-learn` to use this applied tutorial.  
 
 :::
 
@@ -730,7 +734,8 @@ return_regression_df = returns_long_market_df \
     .augment_rolling_apply(
         date_column = "date",
         window = 90,
-        window_func = [('regression', regression)]
+        window_func = [('regression', regression)],
+        threads = 1, # Change to -1 to use all available cores 
     ) \
     .dropna()
 
@@ -797,5 +802,9 @@ return_beta_df \
 
 # Conclusions
 
-The `pytimetk` package offers a wide range of versatile time series functions, many of which can help improve Financial, Stock, Portfolio, and Investment Analysis in Python. 
+The `pytimetk` package offers a wide range of versatile time series functions, many of which can help improve Financial, Stock, Portfolio, and Investment Analysis in Python. We examined:
+
+- `tk.plot_timeseries()`: Visualizing financial data
+- `tk.augment_rolling()`: Moving averages
+- `tk.augment_rolling_apply()`: Rolling correlations and rolling regressions
 
