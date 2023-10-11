@@ -131,6 +131,33 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     result
     
     ```
+    
+    ``` {python}
+    # Example 4 - Multiple arguments returns MultiIndex DataFrame
+    
+    import pytimetk as tk
+    import pandas as pd
+    
+    df = pd.DataFrame({
+        'A': ['foo', 'foo', 'bar', 'bar', 'foo', 'bar', 'foo', 'foo'],
+        'B': [1, 3, 5, 7, 9, 2, 4, 6]
+    })
+
+    def calculate(group):
+        return pd.DataFrame({
+            'sum': [group['B'].sum()],
+            'mean': [group['B'].mean()]
+        })
+
+    grouped = df.groupby(['A', 'B'])
+    
+    result = grouped.apply(calculate)
+    result
+    
+    result = tk.parallel_apply(grouped, calculate, show_progress=True)
+    result
+    
+    ```
     '''
     
     if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -146,6 +173,7 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     func = partial(func, **kwargs)
 
     results_dict = {}
+    convert_keys_to_tuples = False
     with ThreadPoolExecutor(max_workers=threads) as executor:
         futures = {executor.submit(func, group): name for name, group in grouped_df}
         
@@ -173,6 +201,7 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
                 group_keys = grouped_df.keys
                 if not isinstance(group_keys, list):
                     group_keys = [group_keys]  
+                    convert_keys_to_tuples = True
                 names = list(group_keys) + [result.index.name if result.index.name else None]
                 
                 result.index = pd.MultiIndex.from_tuples(multiindex_tuples, names=names)
@@ -188,11 +217,11 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     
     # To maintain the order, concatenate the results based on the order in the group names
     
-    print(results_dict.keys())
-    
-    print(grouped_df.groups.keys())
-    
-    ordered_results = [results_dict[name] for name in grouped_df.groups.keys()]
+    grouped_df_groups_keys = grouped_df.groups.keys()
+    if convert_keys_to_tuples:
+        grouped_df_groups_keys = [tuple([key]) for key in grouped_df_groups_keys]
+
+    ordered_results = [results_dict[name] for name in grouped_df_groups_keys]
     return pd.concat(ordered_results, axis=0)
 
 # Monkey patch the method to pandas groupby objects

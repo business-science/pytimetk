@@ -132,14 +132,18 @@ def anomalize(
     
     ``` {python}
     # PARALLEL PROCESSING
+    
     import pytimetk as tk
     import pandas as pd
     
     df = tk.load_dataset("walmart_sales_weekly", parse_dates=["Date"])[["id", "Date", "Weekly_Sales"]]
     
-    anomalize_df = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = 2) 
+    anomalize_df_par = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = 2) 
     
-    anomalize_df
+    anomalize_df_ser = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = 1) 
+    
+    from pandas.testing import assert_frame_equal
+    assert_frame_equal(anomalize_df_par, anomalize_df_ser)
     
     ```
     """
