@@ -11,28 +11,23 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Iterable, Callable
 
 def conditional_tqdm(iterable: Iterable, display: bool =True, **kwargs):
-    '''Conditional tqdm progress bar
-    
-    Parameters
-    ----------
-    iterable : Iterable
-        The `iterable` parameter is any object that can be iterated over, such as a list, tuple, or range. It is the collection of items that you want to iterate through and potentially display a progress bar for.
-    display : bool, optional
-        The `display` parameter is a boolean flag that determines whether or not to display the progress bar. If `display` is set to `True`, the progress bar will be displayed using the `tqdm` library. If `display` is set to `False`, the progress bar will not be displayed and the original `iterable` will be returned. The default value is `True`.
-    **kwargs 
-        The `**kwargs` parameter is a dictionary of keyword arguments that are passed to the `tqdm` function when `display` is `True`.
-    
-    Returns
-    -------
-    Iterable
-        The `iterable` parameter is any object that can be iterated over, such as a list, tuple, or range. It is the collection of items that you want to iterate through and potentially display a progress bar for.
-    
-    '''
+    tqdm = get_tqdm()
     if display:
         return tqdm(iterable, **kwargs)
     else:
         return iterable
-    
+
+def get_tqdm():
+    try:
+        # Check if we are in a Jupyter environment
+        ipy_instance = get_ipython().__class__.__name__
+        if "ZMQ" in ipy_instance or "Shell" in ipy_instance:  # Jupyter Notebook or Jupyter Lab
+            from tqdm.notebook import tqdm
+        else:
+            from tqdm import tqdm
+    except (NameError, ImportError):  # Not in an IPython environment
+        from tqdm import tqdm
+    return tqdm   
 
 def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Callable, show_progress: bool=True, threads: int=None, **kwargs):
     '''The `parallel_apply` function parallelizes the application of a function on grouped dataframes using
@@ -133,7 +128,7 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     ```
     
     ``` {python}
-    # Example 4 - Multiple arguments returns MultiIndex DataFrame
+    # Example 4 - Single Grouping Column Returns DataFrame
     
     import pytimetk as tk
     import pandas as pd
@@ -149,7 +144,7 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
             'mean': [group['B'].mean()]
         })
 
-    grouped = df.groupby(['A', 'B'])
+    grouped = df.groupby(['A'])
     
     result = grouped.apply(calculate)
     result
@@ -173,7 +168,6 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     func = partial(func, **kwargs)
 
     results_dict = {}
-    convert_keys_to_tuples = False
     with ThreadPoolExecutor(max_workers=threads) as executor:
         futures = {executor.submit(func, group): name for name, group in grouped_df}
         
@@ -182,26 +176,23 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
             group_name = futures[future]
             
             # If the result is a DataFrame
-            if isinstance(result, pd.DataFrame) and len(grouped_df.keys) > 1:
+            if isinstance(result, pd.DataFrame):
+                
                 if not isinstance(group_name, tuple):
-                        group_name = (group_name,)
+                    group_name = (group_name, )
                 
                 if isinstance(result.index, pd.RangeIndex) and result.index.start == 0:
                     # If the index is a RangeIndex starting from 0, then we need to reset the index
                     new_idx = range(len(result))
                     multiindex_tuples = [group_name + (i,) for i in new_idx]
                 else:
-                    # Otherwise, we can use the existing index
-                    # if not isinstance(group_name, tuple):
-                    #     group_name = (group_name,)
-                    
+                    # Otherwise, we can use the existing index                    
                     multiindex_tuples = [group_name + (idx,) for idx in result.index]
                 
-                
+                # Set the index name based on the grouping column
                 group_keys = grouped_df.keys
                 if not isinstance(group_keys, list):
                     group_keys = [group_keys]  
-                    convert_keys_to_tuples = True
                 names = list(group_keys) + [result.index.name if result.index.name else None]
                 
                 result.index = pd.MultiIndex.from_tuples(multiindex_tuples, names=names)
@@ -215,13 +206,19 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
             # Append to results dictionary
             results_dict[group_name] = result
     
-    # To maintain the order, concatenate the results based on the order in the group names
-    
+    # Convert the keys to tuples if necessary
     grouped_df_groups_keys = grouped_df.groups.keys()
-    if convert_keys_to_tuples:
-        grouped_df_groups_keys = [tuple([key]) for key in grouped_df_groups_keys]
-
+    
+    first_key_results = next(iter(results_dict))
+    first_key_groups = next(iter(grouped_df.groups))
+    
+    if isinstance(first_key_results, tuple): 
+        if not isinstance(first_key_groups, tuple):
+            grouped_df_groups_keys = [tuple([key]) for key in grouped_df_groups_keys]
+    
+    # To maintain the order, concatenate the results based on the order in the group names
     ordered_results = [results_dict[name] for name in grouped_df_groups_keys]
+    
     return pd.concat(ordered_results, axis=0)
 
 # Monkey patch the method to pandas groupby objects
