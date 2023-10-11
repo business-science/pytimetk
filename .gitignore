@@ -3,3 +3,5 @@ __pycache__/
 /docs/.quarto/
 /docs/_freeze/
 /_freeze/
+/.vscode/
+

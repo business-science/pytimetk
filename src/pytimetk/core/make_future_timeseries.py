@@ -7,6 +7,8 @@ from pytimetk.core.frequency import get_frequency
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column,  check_series_or_datetime
 
+from pytimetk.utils.parallel_helpers import conditional_tqdm
+
 @pf.register_series_method
 def make_future_timeseries(
     idx: Union[str, List[str], pd.Series, pd.DatetimeIndex],
@@ -128,6 +130,10 @@ def make_future_timeseries(
         freq    = freq
     )[1:]  # Exclude the first date as it's already in dt_index
 
+    # If the original index has a timezone, apply it to the future dates
+    if idx.dt.tz is not None:
+        future_dates = future_dates.tz_localize(idx.dt.tz)
+    
     ret = pd.Series(future_dates)
     
     return ret
@@ -241,7 +247,7 @@ def future_frame(
                 date_column = 'date', 
                 length_out  = 12,
                 force_regular = False, # Allow irregular future dates (i.e. business days)),
-                bind_data   = False
+                bind_data   = True
             )
     )    
     extended_df
@@ -256,7 +262,7 @@ def future_frame(
                 date_column = 'date', 
                 length_out  = 12,
                 force_regular = True, # Force regular future dates (i.e. include weekends)),
-                bind_data   = False
+                bind_data   = True
             )
     )    
     extended_df
@@ -298,9 +304,8 @@ def future_frame(
         # If freq is None, infer the frequency from the first series in the data
         if freq is None:
             
-            label_of_first_group = data.groups.keys()[0]
+            label_of_first_group = list(data.groups.keys())[0]
             first_group = data.get_group(label_of_first_group)
-            
             
             freq = get_frequency(first_group[date_column].sort_values(), force_regular=force_regular)
         
@@ -309,7 +314,9 @@ def future_frame(
         
         future_dates_list = []
         
-        for _, row in last_dates_df.iterrows():
+        iterable = conditional_tqdm(last_dates_df.iterrows(), total=len(last_dates_df), display=show_progress)
+        
+        for _, row in iterable:
             future_dates = make_future_timeseries(
                 idx=pd.Series(row[date_column]), 
                 length_out=length_out,
@@ -336,4 +343,22 @@ def future_frame(
     
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.future_frame = future_frame
+
+# UTILITIES ------------------------------------------------------------------
+def _parallel_group_extension(group_data, date_column, length_out, freq, force_regular, group_names):
     
+    last_date = group_data[date_column].max()
+    
+    future_dates = make_future_timeseries(
+        idx=pd.Series(last_date),
+        length_out=length_out,
+        freq=freq,
+        force_regular=force_regular
+    )
+
+    future_dates_df = pd.DataFrame({date_column: future_dates})
+
+    for group_name in group_names:
+        future_dates_df[group_name] = group_data[group_name].iloc[0]
+
+    return future_dates_df

@@ -434,8 +434,8 @@ def _get_pandas_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular
     
     '''
     
-    # common checks
-    check_series_or_datetime(idx)
+    # common checks    
+    # check_series_or_datetime(idx)
    
     if isinstance(idx, pd.Series):
         idx = idx.values
