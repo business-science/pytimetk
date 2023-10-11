@@ -187,6 +187,8 @@ def augment_rolling_apply(
     window: Union[int, tuple, list] = 2, 
     min_periods: Optional[int] = None,
     center: bool = False,
+    threads: int = 1,
+    show_progress: bool = True,
 ) -> pd.DataFrame:
     '''Apply one or more DataFrame-based rolling functions and window sizes to one or more columns of a DataFrame.
     
@@ -215,11 +217,28 @@ def augment_rolling_apply(
         Minimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.
     center : bool, optional
         If `True`, the rolling window will be centered on the current value. For even-sized windows, the window will be left-biased. Otherwise, it uses a trailing window.
+    threads : int, optional, default 1
+        Number of threads to use for parallel processing. If `threads` is set to 1, parallel processing will be disabled. Set to -1 to use all available CPU cores.
+    show_progress : bool, optional, default True
+        If `True`, a progress bar will be displayed during parallel processing.
     
     Returns
     -------
     pd.DataFrame
         The `augment_rolling` function returns a DataFrame with new columns for each applied function, window size, and value column.
+        
+    Notes
+    -----
+    
+    ## Performance
+    
+    This function uses parallel processing to speed up computation for large datasets with many time series groups: 
+    
+    - A parallel apply function is used to apply the summarizations to each group in the grouped dataframe.
+    
+        - Set threads = -1 to use all available processors. 
+        - Set threads = 1 to disable parallel processing.
+    
     
     Examples
     --------
@@ -228,7 +247,7 @@ def augment_rolling_apply(
     import pandas as pd
     import numpy as np
 
-    # Example showcasing the rolling correlation between two columns (`value1` and `value2`).
+    # Example 1 - showcasing the rolling correlation between two columns (`value1` and `value2`).
     # The correlation requires both columns as input.
     
     # Sample DataFrame with id, date, value1, and value2 columns.
@@ -241,13 +260,15 @@ def augment_rolling_apply(
     
     # Compute the rolling correlation for each group of 'id'
     # Using a rolling window of size 3 and a lambda function to calculate the correlation.
+    
     rolled_df = (
         df.groupby('id')
         .augment_rolling_apply(
             date_column='date',
             window=3,
             window_func=[('corr', lambda x: x['value1'].corr(x['value2']))],  # Lambda function for correlation
-            center = False  # Not centering the rolling window
+            center = False,  # Not centering the rolling window
+            threads = 2 # Using 2 threads for parallel processing
         )
     )
     display(rolled_df)
@@ -327,48 +348,15 @@ def augment_rolling_apply(
         group_names = None
         grouped = [([], data_copy.sort_values(by=[date_column]))]
     
-    # Helper function to apply rolling calculations on a dataframe
-    def rolling_apply(func, df, window_size, min_periods, center):
-        num_rows = len(df)
-        results = [np.nan] * num_rows
-        adjusted_window = window_size // 2 if center else window_size - 1  # determine the offset for centering
-        
-        for center_point in range(num_rows):
-            if center:
-                if window_size % 2 == 0:  # left biased window if window size is even
-                    start = max(0, center_point - adjusted_window)
-                    end = min(num_rows, center_point + adjusted_window)
-                else: 
-                    start = max(0, center_point - adjusted_window)
-                    end = min(num_rows, center_point + adjusted_window + 1)
-            else:
-                start = max(0, center_point - adjusted_window)
-                end = center_point + 1
-            
-            window_df = df.iloc[start:end]
-            
-            if len(window_df) >= min_periods:
-                results[center_point if center else end - 1] = func(window_df)
-        
-        return pd.DataFrame({'result': results}, index=df.index)
-    
-    # Apply DataFrame-based rolling window functions
-    result_dfs = []
-    for _, group_df in grouped:
-        for window_size in window:
-            min_periods = window_size if min_periods is None else min_periods
-            for func in window_func:
-                if isinstance(func, tuple):
-                    func_name, func = func
-                    new_column_name = f"rolling_{func_name}_win_{window_size}"
-                    group_df[new_column_name] = rolling_apply(func, group_df, window_size, min_periods=min_periods, center=center)
-                else:
-                    raise TypeError(f"Expected 'tuple', but got invalid function type: {type(func)}")     
-                    
-        result_dfs.append(group_df)
-    
+    # Parallelize over the groups using ProcessPoolExecutor
+    with ThreadPoolExecutor() as executor:
+        args = [(group, window, window_func, min_periods, center) for group in grouped]
+        result_dfs = list(conditional_tqdm(executor.map(_process_single_apply_group, args), total=len(grouped), desc = "Processing rolling calculations",))
+
     # Combine processed dataframes and sort by index
-    result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
+    result_df = pd.concat(result_dfs).sort_index()
+
+    result_df = pd.concat([data_copy, result_df], axis=1)
     
     return result_df
 
@@ -379,6 +367,50 @@ pd.core.groupby.generic.DataFrameGroupBy.augment_rolling_apply = augment_rolling
 
 # UTILITIES
 # ---------
+def _process_single_apply_group(args):
+    
+    group, window, window_func, min_periods, center = args
+    
+    name, group_df = group
+    results = {}
+    for window_size in window:
+        min_periods = window_size if min_periods is None else min_periods
+        for func in window_func:
+            if isinstance(func, tuple):
+                func_name, func = func
+                new_column_name = f"rolling_{func_name}_win_{window_size}"
+                results[new_column_name] = _rolling_apply(func, group_df, window_size, min_periods=min_periods, center=center)["result"]
+            else:
+                raise TypeError(f"Expected 'tuple', but got invalid function type: {type(func)}")
+    return pd.DataFrame(results, index=group_df.index)
+
+def _rolling_apply(func, df, window_size, center, min_periods):
+        
+    num_rows = len(df)
+    results = [np.nan] * num_rows
+    adjusted_window = window_size // 2 if center else window_size - 1  # determine the offset for centering
+    
+    for center_point in range(num_rows):
+        if center:
+            if window_size % 2 == 0:  # left biased window if window size is even
+                start = max(0, center_point - adjusted_window)
+                end = min(num_rows, center_point + adjusted_window)
+            else: 
+                start = max(0, center_point - adjusted_window)
+                end = min(num_rows, center_point + adjusted_window + 1)
+        else:
+            start = max(0, center_point - adjusted_window)
+            end = center_point + 1
+        
+        window_df = df.iloc[start:end]
+        
+        if min_periods is None:
+            min_periods = window_size
+        
+        if len(window_df) >= min_periods:
+            results[center_point if center else end - 1] = func(window_df)
+    
+    return pd.DataFrame({'result': results}, index=df.index)
 
 def _process_single_roll(group_df, value_column, window_func, window, min_periods, center, **kwargs):
     result_dfs = []
