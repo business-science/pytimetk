@@ -152,11 +152,7 @@ def anomalize(
     anomalize_df_ser = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = 1)
     
     anomalize_df_par = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = -1) 
-    
-     
-    
-    from pandas.testing import assert_frame_equal
-    assert_frame_equal(anomalize_df_par, anomalize_df_ser)
+
     
     ```
     """
