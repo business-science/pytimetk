@@ -275,7 +275,7 @@ def augment_rolling_apply(
     ```
     
     ```{python}
-    # Rolling Regression Example: Using `value1` as the dependent variable and `value2` and `value3` as the independent variables.
+    # Example 2 - Rolling Regression Example: Using `value1` as the dependent variable and `value2` and `value3` as the independent variables.
     # This example demonstrates how to perform a rolling regression using two independent variables.
 
     # Required module (scikit-learn) for regression.
@@ -314,8 +314,11 @@ def augment_rolling_apply(
     )
 
     # Format the results to have each regression output (slope and intercept) in separate columns.
+    
     regression_wide_df = pd.concat(rolled_df['rolling_regression_win_3'].to_list(), axis=1).T
+    
     regression_wide_df = pd.concat([rolled_df.reset_index(drop = True), regression_wide_df], axis=1)
+    
     display(regression_wide_df)
     ```
     '''
@@ -340,6 +343,8 @@ def augment_rolling_apply(
     # Create a fresh copy of the data, leaving the original untouched
     data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
     
+    original_index = data_copy.index
+    
     # Group data if it's a GroupBy object; otherwise, prepare it for the rolling calculations
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
@@ -356,7 +361,10 @@ def augment_rolling_apply(
     # Combine processed dataframes and sort by index
     result_df = pd.concat(result_dfs).sort_index()
 
-    result_df = pd.concat([data_copy, result_df], axis=1)
+    # result_df = pd.concat([data_copy, result_df], axis=1)
+    result_df = pd.concat([data_copy.reset_index(drop=True), result_df.reset_index(drop=True)], axis=1)
+
+    result_df.index = original_index
     
     return result_df
 
