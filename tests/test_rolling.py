@@ -9,6 +9,37 @@ df = pd.DataFrame({
     'value': [1, 2, 3]
 })
 
+# Generate sample data for testing
+def generate_data(num_groups=5, num_entries_per_group=365):
+    np.random.seed(42)
+    date_rng = pd.date_range(start='2020-01-01', freq='D', periods=num_entries_per_group)
+    data = []
+    for i in range(num_groups):
+        group_data = np.random.randn(num_entries_per_group).cumsum() + 50
+        group_df = pd.DataFrame({
+            'date': date_rng,
+            'value': group_data,
+            'group': f'group_{i}'
+        })
+        data.append(group_df)
+    return pd.concat(data)
+
+
+
+@pytest.fixture
+def sample_data():
+    return generate_data()
+
+def test_dataframe_size(sample_data):
+    df_rolled = augment_rolling(sample_data.groupby('group'), 'date', 'value', window_func='sum', threads=2)
+    assert df_rolled.shape[1] > sample_data.shape[1]
+
+def test_custom_functions(sample_data):
+    custom_func = [('range', lambda x: x.max() - x.min())]
+    df_rolled = augment_rolling(sample_data.groupby('group'), 'date', 'value', window_func=custom_func)
+    expected_column = "value_rolling_range_win_2"
+    assert expected_column in df_rolled.columns
+
 def test_augment_rolling_single_window_single_func():
     result = df.augment_rolling(date_column='date', value_column='value', window=2, window_func='mean')
     expected = df.copy()
