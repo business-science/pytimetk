@@ -65,6 +65,20 @@ def augment_rolling(
     pd.DataFrame
         The `augment_rolling` function returns a DataFrame with new columns for each applied function, window size, and value column.
     
+    Notes
+    -----
+    
+    ## Performance
+    
+    This function uses parallel processing to speed up computation for large datasets with many time series groups: 
+    
+    - A parallel apply function is used to apply the summarizations to each group in the grouped dataframe.
+    
+        - Set threads = -1 to use all available processors. 
+        - Set threads = 1 to disable parallel processing.
+    
+    
+    
     Examples
     --------
     ```{python}
