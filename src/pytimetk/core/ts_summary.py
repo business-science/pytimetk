@@ -54,6 +54,19 @@ def ts_summary(
         - `diff_q75_seconds`: The 75th percentile of the time difference between consecutive observations in the time series in seconds.
         - `diff_max_seconds`: The maximum time difference between consecutive observations in the time series in seconds.
     
+    Notes
+    -----
+    
+    ## Performance
+    
+    This function uses parallel processing to speed up computation for large datasets with many time series groups: 
+    
+    - A parallel apply function is used to apply the summarizations to each group in the grouped dataframe.
+    
+        - Set threads = -1 to use all available processors. 
+        - Set threads = 1 to disable parallel processing.
+    
+    
     Examples
     --------
     ```{python}

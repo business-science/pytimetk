@@ -96,7 +96,18 @@ def ts_features(
     -------
     pd.DataFrame
         The function `ts_features` returns a pandas DataFrame containing the extracted time series features. If grouped data is provided, the DataFrame will contain the grouping columns as well.
-        
+    
+    Notes
+    -----
+    ## Performance
+    
+    This function uses a number of techniques to speed up computation for large datasets with many time series groups: 
+    
+    - A parallel apply function is used to apply the summarizations to each group in the grouped dataframe.
+    
+        - Set threads = -1 to use all available processors. 
+        - Set threads = 1 to disable parallel processing.
+    
     Examples
     --------
     ```{python}

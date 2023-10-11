@@ -31,6 +31,17 @@ def anomalize(
 ) -> pd.DataFrame:
     """
     
+    Notes
+    -----
+    ## Performance
+    
+    This function uses parallel processing to speed up computation for large datasets with many time series groups: 
+    
+    - A parallel apply function is used to apply the summarizations to each group in the grouped dataframe.
+    
+        - Set threads = -1 to use all available processors. 
+        - Set threads = 1 to disable parallel processing.
+    
     Examples
     --------
     ``` {python}
@@ -138,9 +149,11 @@ def anomalize(
     
     df = tk.load_dataset("walmart_sales_weekly", parse_dates=["Date"])[["id", "Date", "Weekly_Sales"]]
     
-    anomalize_df_par = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = 2) 
+    anomalize_df_ser = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = 1)
     
-    anomalize_df_ser = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = 1) 
+    anomalize_df_par = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = -1) 
+    
+     
     
     from pandas.testing import assert_frame_equal
     assert_frame_equal(anomalize_df_par, anomalize_df_ser)
