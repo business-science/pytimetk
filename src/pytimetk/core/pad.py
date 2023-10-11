@@ -15,7 +15,6 @@ def pad_by_time(
     '''
     Make irregular time series regular by padding with missing dates.
     
-    
     The `pad_by_time` function inserts missing dates into a Pandas DataFrame or DataFrameGroupBy object, through the process making an irregularly spaced time series regularly spaced.
     
     Parameters
@@ -51,6 +50,18 @@ def pad_by_time(
     -------
     pd.DataFrame
         The function `pad_by_time` returns a Pandas DataFrame that has been extended with future dates.
+        
+    Notes
+    -----
+    
+    ## Performance
+    
+    This function uses a number of techniques to speed up computation for large datasets with many time series groups. 
+    
+    - We use a vectorized approach to generate the Cartesian product of all unique group values and all dates in the date range. 
+    - We then merge this Cartesian product with the original data to introduce NaN values for missing rows. This approach is much faster than looping through each group and applying a function to each group.
+    
+    Note: There is no parallel processing since the vectorized approach is almost always faster.
     
     Examples
     --------
