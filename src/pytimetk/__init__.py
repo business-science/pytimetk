@@ -7,7 +7,7 @@ from .plot.theme import *
 from .core.summarize_by_time import *
 from .core.timeseries_signature import *
 from .core.holiday_signature import *
-from .core.make_future_timeseries import *
+from .core.future import *
 from .core.make_timeseries_sequence import *
 from .core.lags import *
 from .core.leads import *
@@ -45,7 +45,7 @@ from .core.timeseries_signature import (
 from .core.holiday_signature import (
     augment_holiday_signature, get_holiday_signature
 )
-from .core.make_future_timeseries import (
+from .core.future import (
     make_future_timeseries, future_frame
 )
 from .core.make_timeseries_sequence import (
