@@ -23,7 +23,7 @@ number-depth: 2
 ### Speed Improvements
 
 - `pad_by_time()`: Complete overhaul. Uses Cartesian Product (Vectorization) to enhance the speed. 1000s of time series can now be padded in seconds.
-- `future_frame()`: Complete overhaul. Uses vectorization when possible. 
+- `future_frame()`: Complete overhaul. Uses vectorization when possible. Grouped parallel processing. Set `threads = -1` to use all cores.
 - `ts_features`: Uses concurrent futures to parallelize tasks. Set `threads = -1` to use all cores.
 - `ts_summary`: Uses concurrent futures to parallelize tasks. Set `threads = -1` to use all cores.
 - `anomalize`: Uses concurrent futures to parallelize tasks. Set `threads = -1` to use all cores.
