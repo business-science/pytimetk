@@ -8,7 +8,7 @@ from pytimetk.core.frequency import get_frequency_summary
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_series_or_datetime
 
-from pytimetk.utils.parallel_helpers import parallel_apply
+from pytimetk.utils.parallel_helpers import parallel_apply, get_threads
 
 
     
@@ -119,6 +119,9 @@ def ts_summary(
         return _ts_summary(data, date_column)
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        
+        # Get threads
+        threads = get_threads(threads)
         
         result = data.parallel_apply(
             func = lambda group: _ts_summary(group, date_column),

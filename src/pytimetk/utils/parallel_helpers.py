@@ -10,6 +10,13 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from typing import Iterable, Callable
 
+def get_threads(threads: int=None):
+    if threads is None: 
+        threads = cpu_count()
+    if threads == -1: 
+        threads = cpu_count()
+    return threads
+
 def conditional_tqdm(iterable: Iterable, display: bool =True, **kwargs):
     tqdm = get_tqdm()
     if display:

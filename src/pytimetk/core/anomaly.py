@@ -7,7 +7,7 @@ from typing import Union, Optional
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.core.frequency import get_frequency, get_seasonal_frequency, get_trend_frequency
 
-from pytimetk.utils.parallel_helpers import parallel_apply
+from pytimetk.utils.parallel_helpers import parallel_apply, get_threads
 
 from statsmodels.tsa.seasonal import STL
 from statsmodels.tsa.seasonal import seasonal_decompose
@@ -180,6 +180,9 @@ def anomalize(
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         
         group_names = data.grouper.names
+        
+        # Get threads
+        threads = get_threads(threads)
         
         result = parallel_apply(
             data, 

@@ -7,7 +7,7 @@ from pytimetk.core.frequency import get_frequency
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column,  check_series_or_datetime
 
-from pytimetk.utils.parallel_helpers import conditional_tqdm
+from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -184,6 +184,9 @@ def future_frame(
     
     elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
+        
+        # Get threads
+        threads = get_threads(threads)
         
         # If freq is None, infer the frequency from the first series in the data
         if freq is None:

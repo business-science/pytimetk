@@ -7,7 +7,7 @@ from typing import Union, Optional, Callable, Tuple, List
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
-from pytimetk.utils.parallel_helpers import conditional_tqdm
+from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 
 @pf.register_dataframe_method
 def augment_rolling(
@@ -153,6 +153,9 @@ def augment_rolling(
         window = [window]
     elif isinstance(window, tuple):
         window = list(range(window[0], window[1] + 1))
+    
+    # Get threads
+    threads = get_threads(threads)    
     
     # Convert single window function to list for consistent processing    
     if isinstance(window_func, (str, tuple)):
@@ -327,6 +330,9 @@ def augment_rolling_apply(
     
     # Ensure date column exists and is properly formatted
     check_date_column(data, date_column)
+    
+    # Get threads
+    threads = get_threads(threads)
     
     # Validate window argument and convert it to a consistent list format
     if not isinstance(window, (int, tuple, list)):

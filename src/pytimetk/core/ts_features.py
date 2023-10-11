@@ -6,7 +6,7 @@ from functools import partial
 from multiprocessing import cpu_count
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from pytimetk.utils.parallel_helpers import conditional_tqdm
+from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 
 from typing import Optional, Union
 
@@ -154,6 +154,9 @@ def ts_features(
     if not isinstance(data, pd.DataFrame):
         if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
             raise TypeError("`data` is not a Pandas DataFrame.")
+        
+    # Get threads
+    threads = get_threads(threads)
 
     group_names = None  
     if isinstance(data, pd.DataFrame):
