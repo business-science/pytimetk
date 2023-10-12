@@ -123,7 +123,8 @@ def ts_summary(
         # Get threads
         threads = get_threads(threads)
         
-        result = data.parallel_apply(
+        result = parallel_apply(
+            data,
             func = lambda group: _ts_summary(group, date_column),
             threads = threads,
             show_progress = show_progress,

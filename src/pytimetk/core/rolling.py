@@ -4,7 +4,6 @@ import numpy as np
 
 from typing import Union, Optional, Callable, Tuple, List
 
-from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathos.multiprocessing import ProcessingPool
 from functools import partial
 
