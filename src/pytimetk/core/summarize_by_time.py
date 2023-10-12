@@ -98,7 +98,7 @@ def summarize_by_time(
     ```
     
     ```{python}
-    # Summarize by time with a DataFrame object
+    # Example 1 - Summarize by time with a DataFrame object, pandas engine
     ( 
         df 
             .summarize_by_time(
@@ -112,7 +112,7 @@ def summarize_by_time(
     ```
     
     ```{python}
-    # Summarize by time with a GroupBy object (Long Format)
+    # Example 2 - Summarize by time with a GroupBy object (Long Format), polars engine
     (
         df 
             .groupby('category_1') 
@@ -128,7 +128,7 @@ def summarize_by_time(
     ```
     
     ```{python}
-    # Summarize by time with a GroupBy object (Wide Format)
+    # Example 3 - Summarize by time with a GroupBy object (Wide Format)
     (
         df 
             .groupby('category_1') 
@@ -144,17 +144,17 @@ def summarize_by_time(
     ```
     
     ```{python}
-    # Summarize by time with a GroupBy object and multiple summaries (Wide Format)
+    # Example 4 - Summarize by time with a GroupBy object and multiple value columns and summaries (Wide Format)
     (
         df 
             .groupby('category_1') 
             .summarize_by_time(
                 date_column  = 'order_date', 
-                value_column = 'total_price', 
+                value_column = ['total_price', 'quantity'], 
                 freq         = 'MS',
                 agg_func     = ['sum', 'mean', ('q25', lambda x: x.quantile(0.25)), ('q75', lambda x: x.quantile(0.75))],
                 wide_format  = True,
-                engine       = 'pandas' 
+                engine       = 'polars' 
             )
     )
     ```
@@ -303,6 +303,10 @@ def summarize_by_time_polars(
         'nunique': pl.col(value_column).n_unique().suffix("_nunique")
     }
 
+    # If value_column is a string, convert it to a list
+    if isinstance(value_column, str):
+        value_column = [value_column]
+    
     # If agg_func is a string, convert it to a list
     if isinstance(agg_func, str):
         agg_func = [agg_func]
