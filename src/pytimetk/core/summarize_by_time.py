@@ -7,8 +7,13 @@ import re
 from itertools import cycle
 
 from pytimetk.utils.pandas_helpers import flatten_multiindex_column_names
+
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 
+from pytimetk.utils.polars_helpers import pandas_to_polars_frequency_mapping, pandas_to_polars_aggregation_mapping
+
+
+# FUNCTIONS -------------------------------------------------------------------
 
 @pf.register_dataframe_method
 def summarize_by_time(
@@ -77,9 +82,11 @@ def summarize_by_time(
     fillna : int, optional
         The `fillna` parameter is used to specify the value to fill missing data with. By default, it is set to 0. If you want to keep missing values as NaN, you can use `np.nan` as the value for `fillna`.
     engine : str, optional
-        The `engine` parameter is used to specify the engine to use for summarizing the data. It can be either "pandas" or "polars". The default value is "pandas".
+        The `engine` parameter is used to specify the engine to use for summarizing the data. It can be either "pandas" or "polars". 
         
-        When "polars", the function will internally use the Polars library for summarizing the data. This can be faster than using "pandas" for large datasets. 
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library for summarizing the data. This can be faster than using "pandas" for large datasets. 
     
     Returns
     -------
@@ -162,7 +169,7 @@ def summarize_by_time(
     if engine == 'pandas':
         return _summarize_by_time_pandas(data, date_column, value_column, freq, agg_func, wide_format, fillna)
     elif engine == 'polars':
-        return summarize_by_time_polars(data, date_column, value_column, freq, agg_func, wide_format, fillna)
+        return _summarize_by_time_polars(data, date_column, value_column, freq, agg_func, wide_format, fillna)
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
 
@@ -260,7 +267,7 @@ def _summarize_by_time_pandas(
     return data
 
 
-def summarize_by_time_polars(
+def _summarize_by_time_polars(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
     value_column: Union[str, List[str]],  
@@ -271,37 +278,13 @@ def summarize_by_time_polars(
 ):
     
     # Mapping of frequency offsets between pandas and Polars
-    frequency_mapping = {
-        "S"   : "1s",
-        "min" : "1m",
-        "H"   : "1h",
-        "D"   : "1d",
-        "W"   : "1w",
-        "M"   : "1mo",
-        "MS"  : "1mo",
-        "Q"   : "3mo",
-        "QS"  : "3mo",
-        "Y"   : "1y",
-        "YS"  : "1y"
-    }
+    frequency_mapping = pandas_to_polars_frequency_mapping()
 
     # Translate the pandas frequency offset to Polars
     polars_freq = frequency_mapping.get(freq, "1d")  # Default to daily if not found
 
     # Define a dictionary mapping aggregation function names to Polars aggregation expressions
-    aggregation_mapping = {
-        'sum'    : pl.col(value_column) .sum().suffix("_sum"),
-        'mean'   : pl.col(value_column).mean().suffix("_mean"),
-        'median' : pl.col(value_column).median().suffix("_median"),
-        'min'    : pl.col(value_column).min().suffix("_min"),
-        'max'    : pl.col(value_column).max().suffix("_max"),
-        'std'    : pl.col(value_column).std().suffix("_std"),
-        'var'    : pl.col(value_column).var().suffix("_var"),
-        'first'  : pl.col(value_column).first().suffix("_first"),
-        'last'   : pl.col(value_column).last().suffix("_last"),
-        'count'  : pl.col(value_column).count().suffix("_count"),
-        'nunique': pl.col(value_column).n_unique().suffix("_nunique")
-    }
+    aggregation_mapping = pandas_to_polars_aggregation_mapping(value_column)
 
     # If value_column is a string, convert it to a list
     if isinstance(value_column, str):
