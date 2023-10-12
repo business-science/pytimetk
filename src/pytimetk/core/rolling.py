@@ -4,7 +4,7 @@ import numpy as np
 
 from typing import Union, Optional, Callable, Tuple, List
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
@@ -168,7 +168,7 @@ def augment_rolling(
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
         grouped = data_copy.sort_values(by=[*group_names, date_column]).groupby(group_names)
-        with ThreadPoolExecutor(max_workers=threads) as executor:
+        with ProcessPoolExecutor(max_workers=threads) as executor:
             futures = [executor.submit(_process_single_roll, group, value_column, window_func, window, min_periods, center, **kwargs) for _, group in grouped]
             # Collect results from all threads
             result_dfs = [future.result() for future in conditional_tqdm(as_completed(futures), total = len(futures), desc = "Processing rolling calculations", display=show_progress)]
@@ -360,7 +360,7 @@ def augment_rolling_apply(
         grouped = [([], data_copy.sort_values(by=[date_column]))]
     
     # Parallelize over the groups using ProcessPoolExecutor
-    with ThreadPoolExecutor() as executor:
+    with ProcessPoolExecutor() as executor:
         args = [(group, window, window_func, min_periods, center) for group in grouped]
         result_dfs = list(conditional_tqdm(executor.map(_process_single_apply_group, args), total=len(grouped), desc = "Processing rolling calculations",))
 

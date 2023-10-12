@@ -4,7 +4,7 @@ import pandas_flavor as pf
 from functools import partial
 
 from multiprocessing import cpu_count
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 
@@ -243,8 +243,8 @@ def ts_features(
             if threads == -1: threads = cpu_count()
             
             # Switch to concurrent.futures for better performance
-            # multiprocessing.Pool is slower than concurrent.futures.ThreadPoolExecutor
-            with ThreadPoolExecutor(threads) as executor:
+            # multiprocessing.Pool is slower than concurrent.futures.ProcessPoolExecutor
+            with ProcessPoolExecutor(threads) as executor:
                 
                 futures = [executor.submit(partial_get_feats, *args) for args in construct_df.groupby('unique_id')]
                 

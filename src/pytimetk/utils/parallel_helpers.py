@@ -6,7 +6,7 @@ from functools import partial
 
 from tqdm import tqdm
 from multiprocessing import cpu_count
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from typing import Iterable, Callable
 
@@ -175,7 +175,7 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     func = partial(func, **kwargs)
 
     results_dict = {}
-    with ThreadPoolExecutor(max_workers=threads) as executor:
+    with ProcessPoolExecutor(max_workers=threads) as executor:
         futures = {executor.submit(func, group): name for name, group in grouped_df}
         
         for future in conditional_tqdm(as_completed(futures), total=len(futures), display=show_progress):

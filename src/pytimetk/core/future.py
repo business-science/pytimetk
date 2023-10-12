@@ -9,7 +9,7 @@ from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column,
 
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 
 
 @pf.register_dataframe_method
@@ -200,7 +200,7 @@ def future_frame(
         subsets = [last_dates_df.iloc[i:i + chunk_size] for i in range(0, len(last_dates_df), chunk_size)]
         
         future_dates_list = []
-        with ThreadPoolExecutor(max_workers=threads) as executor:
+        with ProcessPoolExecutor(max_workers=threads) as executor:
             results = list(conditional_tqdm(executor.map(_process_future_frame_subset, subsets, 
                                                         [date_column] * len(subsets),
                                                         [group_names] * len(subsets),
