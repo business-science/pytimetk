@@ -1,12 +1,8 @@
 
 import pandas as pd
-import numpy as np
-
 from functools import partial
-
-from tqdm import tqdm
 from multiprocessing import cpu_count
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from pathos.multiprocessing import ProcessingPool
 
 from typing import Iterable, Callable
 
@@ -164,68 +160,48 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     
     if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         raise TypeError("`data` is not a Pandas DataFrameGroupBy object.")
-    
-    grouped_df = data
-    
-    if threads is None: 
+
+    if threads is None:
         threads = cpu_count()
-    if threads == -1: 
+    if threads == -1:
         threads = cpu_count()
-        
+
+    pool = ProcessingPool(threads)
+
+    groups = list(data)
     func = partial(func, **kwargs)
+    results = list(conditional_tqdm(pool.map(func, (group for _, group in groups)), total=len(groups), display=show_progress))
 
+    # Begin post-processing to format results properly
     results_dict = {}
-    with ProcessPoolExecutor(max_workers=threads) as executor:
-        futures = {executor.submit(func, group): name for name, group in grouped_df}
-        
-        for future in conditional_tqdm(as_completed(futures), total=len(futures), display=show_progress):
-            result = future.result()
-            group_name = futures[future]
-            
-            # If the result is a DataFrame
-            if isinstance(result, pd.DataFrame):
-                
-                if not isinstance(group_name, tuple):
-                    group_name = (group_name, )
-                
-                if isinstance(result.index, pd.RangeIndex) and result.index.start == 0:
-                    # If the index is a RangeIndex starting from 0, then we need to reset the index
-                    new_idx = range(len(result))
-                    multiindex_tuples = [group_name + (i,) for i in new_idx]
-                else:
-                    # Otherwise, we can use the existing index                    
-                    multiindex_tuples = [group_name + (idx,) for idx in result.index]
-                
-                # Set the index name based on the grouping column
-                group_keys = grouped_df.keys
-                if not isinstance(group_keys, list):
-                    group_keys = [group_keys]  
-                names = list(group_keys) + [result.index.name if result.index.name else None]
-                
-                result.index = pd.MultiIndex.from_tuples(multiindex_tuples, names=names)
+    for (name, _), result in zip(groups, results):
+        if isinstance(result, pd.DataFrame):
+            if not isinstance(name, tuple):
+                name = (name, )
+            if isinstance(result.index, pd.RangeIndex) and result.index.start == 0:
+                new_idx = range(len(result))
+                multiindex_tuples = [name + (i,) for i in new_idx]
             else:
-                # This handles cases where the result is not a DataFrame (e.g. Series or scalar)
-                result = pd.Series([result])
-                result.index = [group_name]
-                result.index.name = grouped_df.keys[0]  # Set the index name based on the grouping column
-                result.name = None
+                multiindex_tuples = [name + (idx,) for idx in result.index]
+            group_keys = data.keys
+            if not isinstance(group_keys, list):
+                group_keys = [group_keys]
+            names = list(group_keys) + [result.index.name if result.index.name else None]
+            result.index = pd.MultiIndex.from_tuples(multiindex_tuples, names=names)
+        else:
+            result = pd.Series([result])
+            result.index = [name]
+            result.index.name = data.keys[0]
+            result.name = None
+        results_dict[name] = result
 
-            # Append to results dictionary
-            results_dict[group_name] = result
-    
     # Convert the keys to tuples if necessary
-    grouped_df_groups_keys = grouped_df.groups.keys()
-    
-    first_key_results = next(iter(results_dict))
-    first_key_groups = next(iter(grouped_df.groups))
-    
-    if isinstance(first_key_results, tuple): 
-        if not isinstance(first_key_groups, tuple):
-            grouped_df_groups_keys = [tuple([key]) for key in grouped_df_groups_keys]
-    
-    # To maintain the order, concatenate the results based on the order in the group names
-    ordered_results = [results_dict[name] for name in grouped_df_groups_keys]
-    
+    grouped_df_groups_keys = data.groups.keys()
+    first_key_groups = next(iter(data.groups))
+    if isinstance(name, tuple) and not isinstance(first_key_groups, tuple):
+        grouped_df_groups_keys = [tuple([key]) for key in grouped_df_groups_keys]
+    ordered_results = [results_dict[key] for key in grouped_df_groups_keys]
+
     return pd.concat(ordered_results, axis=0)
 
 # Monkey patch the method to pandas groupby objects
