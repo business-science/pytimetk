@@ -1,4 +1,5 @@
 from .summarize_by_time import *
+from .apply_by_time import *
 from .timeseries_signature import *
 from .holiday_signature import *
 from .future import *

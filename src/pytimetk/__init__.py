@@ -5,6 +5,7 @@ from .plot.plot_timeseries import *
 from .plot.theme import *
 
 from .core.summarize_by_time import *
+from .core.apply_by_time import *
 from .core.timeseries_signature import *
 from .core.holiday_signature import *
 from .core.future import *
@@ -37,7 +38,10 @@ from .plot.theme import (
     theme_timetk, palette_timetk
 )
 from .core.summarize_by_time import (
-    summarize_by_time, apply_by_time
+    summarize_by_time, 
+)
+from .core.apply_by_time import (
+    apply_by_time
 )
 from .core.timeseries_signature import (
     get_timeseries_signature, augment_timeseries_signature
