@@ -44,7 +44,8 @@ def augment_ewm(
     pd.DataFrame
         The function `augment_ewm` returns a DataFrame augmented with the results of the Exponential Weighted Moving (EWM) calculations.
     
-    Note:
+    Notes
+    ------
         Any additional arguments provided through **kwargs are directly passed to the pandas EWM method. These arguments 
         can include parameters like 'com', 'span', 'halflife', 'ignore_na', 'adjust' and more.
     
