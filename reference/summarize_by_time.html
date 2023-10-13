@@ -360,7 +360,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>summarize_by_time(data, date_column, value_column, freq='D', agg_func='sum', wide_format=False, fillna=0, *args, **kwargs)</code></p>
+<p><code>summarize_by_time(data, date_column, value_column, freq='D', agg_func='sum', wide_format=False, fillna=0, engine='pandas')</code></p>
 <p>Summarize a DataFrame or GroupBy object by time.</p>
 <p>The <code>summarize_by_time</code> function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the time-based aggregation.</p>
 <section id="parameters" class="level2">
@@ -408,7 +408,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td><code>agg_func</code></td>
 <td>list</td>
-<td>The <code>agg_func</code> parameter is used to specify one or more aggregating functions to apply to the value column(s) during the summarization process. It can be a single function or a list of functions. The default value is <code>"sum"</code>, which represents the sum function. Some common aggregating functions include: - “sum”: Sum of values - “mean”: Mean of values - “median”: Median of values - “min”: Minimum of values - “max”: Maximum of values - “std”: Standard deviation of values - “var”: Variance of values - “first”: First value in group - “last”: Last value in group - “count”: Count of values - “nunique”: Number of unique values Custom <code>lambda</code> aggregating functions can be used too. Here are several common examples: - (“q25”, lambda x: x.quantile(0.25)): 25th percentile of values - (“q75”, lambda x: x.quantile(0.75)): 75th percentile of values - (“iqr”, lambda x: x.quantile(0.75) - x.quantile(0.25)): Interquartile range of values - (“range”, lambda x: x.max() - x.min()): Range of values</td>
+<td>The <code>agg_func</code> parameter is used to specify one or more aggregating functions to apply to the value column(s) during the summarization process. It can be a single function or a list of functions. The default value is <code>"sum"</code>, which represents the sum function. Some common aggregating functions include: - “sum”: Sum of values - “mean”: Mean of values - “median”: Median of values - “min”: Minimum of values - “max”: Maximum of values - “std”: Standard deviation of values - “var”: Variance of values - “first”: First value in group - “last”: Last value in group - “count”: Count of values - “nunique”: Number of unique values - “corr”: Correlation between values Pandas Engine Only: Custom <code>lambda</code> aggregating functions can be used too. Here are several common examples: - (“q25”, lambda x: x.quantile(0.25)): 25th percentile of values - (“q75”, lambda x: x.quantile(0.75)): 75th percentile of values - (“iqr”, lambda x: x.quantile(0.75) - x.quantile(0.25)): Interquartile range of values - (“range”, lambda x: x.max() - x.min()): Range of values</td>
 <td><code>'sum'</code></td>
 </tr>
 <tr class="even">
@@ -422,6 +422,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>int</td>
 <td>The <code>fillna</code> parameter is used to specify the value to fill missing data with. By default, it is set to 0. If you want to keep missing values as NaN, you can use <code>np.nan</code> as the value for <code>fillna</code>.</td>
 <td><code>0</code></td>
+</tr>
+<tr class="even">
+<td><code>engine</code></td>
+<td>str</td>
+<td>The <code>engine</code> parameter is used to specify the engine to use for summarizing the data. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for summarizing the data. This can be faster than using “pandas” for large datasets.</td>
+<td><code>'pandas'</code></td>
 </tr>
 </tbody>
 </table>
@@ -660,16 +666,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize by time with a DataFrame object</span></span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Summarize by time with a DataFrame object, pandas engine</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>( </span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    df </span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'total_price'</span>,</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">"MS"</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> [<span class="st">'mean'</span>, <span class="st">'sum'</span>]</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> [<span class="st">'mean'</span>, <span class="st">'sum'</span>],</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            engine       <span class="op">=</span> <span class="st">'pandas'</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
@@ -763,7 +770,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize by time with a GroupBy object (Long Format)</span></span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Summarize by time with a GroupBy object (Long Format), polars engine</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>(</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df </span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'category_1'</span>) </span>
@@ -773,8 +780,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">'MS'</span>,</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> <span class="st">'sum'</span>,</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            wide_format  <span class="op">=</span> <span class="va">False</span>, </span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            engine       <span class="op">=</span> <span class="st">'polars'</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
@@ -785,7 +793,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">category_1</th>
 <th data-quarto-table-cell-role="th">order_date</th>
-<th data-quarto-table-cell-role="th">total_price</th>
+<th data-quarto-table-cell-role="th">total_price_sum</th>
 </tr>
 </thead>
 <tbody>
@@ -940,7 +948,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize by time with a GroupBy object (Wide Format)</span></span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 - Summarize by time with a GroupBy object (Wide Format)</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>(</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df </span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'category_1'</span>) </span>
@@ -949,9 +957,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'total_price'</span>, </span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">'MS'</span>,</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> <span class="st">'sum'</span>,</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>            wide_format  <span class="op">=</span> <span class="va">True</span>, </span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>            wide_format  <span class="op">=</span> <span class="va">True</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>            engine       <span class="op">=</span> <span class="st">'pandas'</span> </span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
@@ -1045,18 +1054,24 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize by time with a GroupBy object and multiple summaries (Wide Format)</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>(</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    df </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'category_1'</span>) </span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'total_price'</span>, </span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">'MS'</span>,</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> [<span class="st">'sum'</span>, <span class="st">'mean'</span>, (<span class="st">'q25'</span>, <span class="kw">lambda</span> x: x.quantile(<span class="fl">0.25</span>)), (<span class="st">'q75'</span>, <span class="kw">lambda</span> x: x.quantile(<span class="fl">0.75</span>))],</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            wide_format  <span class="op">=</span> <span class="va">True</span>, </span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 4 - Summarize by time with a GroupBy object and multiple value columns and summaries (Wide Format)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Note - This example only works with the pandas engine</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'category_1'</span>) </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> [<span class="st">'total_price'</span>, <span class="st">'quantity'</span>], </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">'MS'</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> [</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'sum'</span>, </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>, </span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'q25'</span>, <span class="kw">lambda</span> x: x.quantile(<span class="fl">0.25</span>)), (<span class="st">'q75'</span>, <span class="kw">lambda</span> x: x.quantile(<span class="fl">0.75</span>))</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>            ],</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>            wide_format  <span class="op">=</span> <span class="va">False</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>            engine       <span class="op">=</span> <span class="st">'pandas'</span> </span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
@@ -1065,161 +1080,330 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">category_1</th>
 <th data-quarto-table-cell-role="th">order_date</th>
-<th data-quarto-table-cell-role="th">total_price_sum_Mountain</th>
-<th data-quarto-table-cell-role="th">total_price_sum_Road</th>
-<th data-quarto-table-cell-role="th">total_price_mean_Mountain</th>
-<th data-quarto-table-cell-role="th">total_price_mean_Road</th>
-<th data-quarto-table-cell-role="th">total_price_q25_Mountain</th>
-<th data-quarto-table-cell-role="th">total_price_q75_Road</th>
-<th data-quarto-table-cell-role="th">total_price_q25_Mountain</th>
-<th data-quarto-table-cell-role="th">total_price_q75_Road</th>
+<th data-quarto-table-cell-role="th">total_price_sum</th>
+<th data-quarto-table-cell-role="th">total_price_mean</th>
+<th data-quarto-table-cell-role="th">total_price_q25</th>
+<th data-quarto-table-cell-role="th">total_price_q75</th>
+<th data-quarto-table-cell-role="th">quantity_sum</th>
+<th data-quarto-table-cell-role="th">quantity_mean</th>
+<th data-quarto-table-cell-role="th">quantity_q25</th>
+<th data-quarto-table-cell-role="th">quantity_q75</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
+<td>Mountain</td>
 <td>2011-01-01</td>
 <td>221490</td>
-<td>261525</td>
 <td>4922.000000</td>
-<td>4358.750000</td>
 <td>2060.0</td>
-<td>1950.0</td>
 <td>6070.0</td>
-<td>5605.0</td>
+<td>57</td>
+<td>1.266667</td>
+<td>1.0</td>
+<td>1.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
+<td>Mountain</td>
 <td>2011-02-01</td>
 <td>660555</td>
-<td>501520</td>
 <td>4374.536424</td>
-<td>4965.544554</td>
 <td>2060.0</td>
-<td>1950.0</td>
 <td>5330.0</td>
-<td>5860.0</td>
+<td>186</td>
+<td>1.231788</td>
+<td>1.0</td>
+<td>1.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
+<td>Mountain</td>
 <td>2011-03-01</td>
 <td>358855</td>
-<td>301120</td>
 <td>5882.868852</td>
-<td>4562.424242</td>
 <td>2130.0</td>
-<td>2240.0</td>
 <td>6390.0</td>
-<td>5875.0</td>
+<td>87</td>
+<td>1.426230</td>
+<td>1.0</td>
+<td>1.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
+<td>Mountain</td>
 <td>2011-04-01</td>
 <td>1075975</td>
-<td>751165</td>
 <td>4890.795455</td>
-<td>4104.726776</td>
 <td>2060.0</td>
-<td>1950.0</td>
 <td>5970.0</td>
-<td>4800.0</td>
+<td>294</td>
+<td>1.336364</td>
+<td>1.0</td>
+<td>1.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
+<td>Mountain</td>
 <td>2011-05-01</td>
 <td>450440</td>
-<td>393730</td>
 <td>4549.898990</td>
-<td>3679.719626</td>
 <td>2010.0</td>
-<td>1570.0</td>
 <td>6020.0</td>
-<td>3500.0</td>
+<td>146</td>
+<td>1.474747</td>
+<td>1.0</td>
+<td>1.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
+<td>Mountain</td>
 <td>2011-06-01</td>
 <td>723040</td>
-<td>690405</td>
 <td>5021.111111</td>
-<td>4134.161677</td>
 <td>1950.0</td>
-<td>1840.0</td>
 <td>5647.5</td>
-<td>4500.0</td>
+<td>187</td>
+<td>1.298611</td>
+<td>1.0</td>
+<td>1.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
+<td>Mountain</td>
 <td>2011-07-01</td>
 <td>767740</td>
-<td>426690</td>
 <td>5444.964539</td>
-<td>4310.000000</td>
 <td>2130.0</td>
-<td>1895.0</td>
 <td>6400.0</td>
-<td>5330.0</td>
+<td>185</td>
+<td>1.312057</td>
+<td>1.0</td>
+<td>1.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">7</td>
+<td>Mountain</td>
 <td>2011-08-01</td>
 <td>361255</td>
-<td>318535</td>
 <td>5734.206349</td>
-<td>4304.527027</td>
 <td>2235.0</td>
-<td>1950.0</td>
 <td>6400.0</td>
-<td>4987.5</td>
+<td>87</td>
+<td>1.380952</td>
+<td>1.0</td>
+<td>2.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">8</td>
+<td>Mountain</td>
 <td>2011-09-01</td>
 <td>401125</td>
-<td>413595</td>
 <td>5077.531646</td>
-<td>4353.631579</td>
 <td>1620.0</td>
-<td>1950.0</td>
 <td>6390.0</td>
-<td>5330.0</td>
+<td>106</td>
+<td>1.341772</td>
+<td>1.0</td>
+<td>1.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9</td>
+<td>Mountain</td>
 <td>2011-10-01</td>
 <td>377335</td>
-<td>357585</td>
 <td>4439.235294</td>
-<td>3505.735294</td>
 <td>2160.0</td>
-<td>1750.0</td>
 <td>6070.0</td>
-<td>4260.0</td>
+<td>104</td>
+<td>1.223529</td>
+<td>1.0</td>
+<td>1.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">10</td>
+<td>Mountain</td>
 <td>2011-11-01</td>
 <td>549345</td>
-<td>456740</td>
 <td>5282.163462</td>
-<td>4268.598131</td>
 <td>2340.0</td>
-<td>1950.0</td>
 <td>7460.0</td>
-<td>4370.0</td>
+<td>134</td>
+<td>1.288462</td>
+<td>1.0</td>
+<td>1.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">11</td>
+<td>Mountain</td>
 <td>2011-12-01</td>
 <td>276055</td>
-<td>197065</td>
 <td>5208.584906</td>
-<td>3284.416667</td>
 <td>2060.0</td>
-<td>1652.5</td>
 <td>6400.0</td>
+<td>82</td>
+<td>1.547170</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>Road</td>
+<td>2011-01-01</td>
+<td>261525</td>
+<td>4358.750000</td>
+<td>1950.0</td>
+<td>5605.0</td>
+<td>71</td>
+<td>1.183333</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>Road</td>
+<td>2011-02-01</td>
+<td>501520</td>
+<td>4965.544554</td>
+<td>1950.0</td>
+<td>5860.0</td>
+<td>145</td>
+<td>1.435644</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>Road</td>
+<td>2011-03-01</td>
+<td>301120</td>
+<td>4562.424242</td>
+<td>2240.0</td>
+<td>5875.0</td>
+<td>87</td>
+<td>1.318182</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>Road</td>
+<td>2011-04-01</td>
+<td>751165</td>
+<td>4104.726776</td>
+<td>1950.0</td>
+<td>4800.0</td>
+<td>248</td>
+<td>1.355191</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>Road</td>
+<td>2011-05-01</td>
+<td>393730</td>
+<td>3679.719626</td>
+<td>1570.0</td>
+<td>3500.0</td>
+<td>156</td>
+<td>1.457944</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>Road</td>
+<td>2011-06-01</td>
+<td>690405</td>
+<td>4134.161677</td>
+<td>1840.0</td>
+<td>4500.0</td>
+<td>224</td>
+<td>1.341317</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>Road</td>
+<td>2011-07-01</td>
+<td>426690</td>
+<td>4310.000000</td>
+<td>1895.0</td>
+<td>5330.0</td>
+<td>135</td>
+<td>1.363636</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>Road</td>
+<td>2011-08-01</td>
+<td>318535</td>
+<td>4304.527027</td>
+<td>1950.0</td>
+<td>4987.5</td>
+<td>105</td>
+<td>1.418919</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>Road</td>
+<td>2011-09-01</td>
+<td>413595</td>
+<td>4353.631579</td>
+<td>1950.0</td>
+<td>5330.0</td>
+<td>113</td>
+<td>1.189474</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>Road</td>
+<td>2011-10-01</td>
+<td>357585</td>
+<td>3505.735294</td>
+<td>1750.0</td>
+<td>4260.0</td>
+<td>113</td>
+<td>1.107843</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>Road</td>
+<td>2011-11-01</td>
+<td>456740</td>
+<td>4268.598131</td>
+<td>1950.0</td>
+<td>4370.0</td>
+<td>146</td>
+<td>1.364486</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>Road</td>
+<td>2011-12-01</td>
+<td>197065</td>
+<td>3284.416667</td>
+<td>1652.5</td>
 <td>3200.0</td>
+<td>70</td>
+<td>1.166667</td>
+<td>1.0</td>
+<td>1.0</td>
 </tr>
 </tbody>
 </table>
