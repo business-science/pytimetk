@@ -2,7 +2,7 @@ import pandas as pd
 import pandas_flavor as pf
 import polars as pl
 
-from typing import Union, Optional, Callable, Tuple, List
+from typing import Union, Callable, Tuple, List
 import re 
 from itertools import cycle
 
@@ -172,6 +172,11 @@ def summarize_by_time(
     )
     ```
     '''
+    # Run common checks
+    check_dataframe_or_groupby(data)
+    check_value_column(data, value_column)
+    check_date_column(data, date_column)
+    
     if engine == 'pandas':
         return _summarize_by_time_pandas(data, date_column, value_column, freq, agg_func, wide_format, fillna)
     elif engine == 'polars':
@@ -195,11 +200,6 @@ def _summarize_by_time_pandas(
     *args,
     **kwargs
 ) -> pd.DataFrame:
-    
-    # Run common checks
-    check_dataframe_or_groupby(data)
-    check_value_column(data, value_column)
-    check_date_column(data, date_column)
 
     # Convert value_column to a list if it is not already
     if not isinstance(value_column, list):
