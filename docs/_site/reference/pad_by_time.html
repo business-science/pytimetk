@@ -336,6 +336,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <ul>
   <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
+  <li><a href="#performance" id="toc-performance" class="nav-link" data-scroll-target="#performance">Performance</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   <li><a href="#pad-with-end-dates-specified" id="toc-pad-with-end-dates-specified" class="nav-link" data-scroll-target="#pad-with-end-dates-specified">Pad with end dates specified</a></li>
   </ul>
@@ -435,6 +437,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 </tbody>
 </table>
+</section>
+<section id="notes" class="level2">
+<h2 class="anchored" data-anchor-id="notes">Notes</h2>
+</section>
+<section id="performance" class="level2">
+<h2 class="anchored" data-anchor-id="performance">Performance</h2>
+<p>This function uses a number of techniques to speed up computation for large datasets with many time series groups.</p>
+<ul>
+<li>We use a vectorized approach to generate the Cartesian product of all unique group values and all dates in the date range.</li>
+<li>We then merge this Cartesian product with the original data to introduce NaN values for missing rows. This approach is much faster than looping through each group and applying a function to each group.</li>
+</ul>
+<p>Note: There is no parallel processing since the vectorized approach is almost always faster.</p>
 </section>
 <section id="examples" class="level2">
 <h2 class="anchored" data-anchor-id="examples">Examples</h2>
@@ -923,7 +937,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </section>
 <section id="pad-with-end-dates-specified" class="level1">
 <h1>Pad with end dates specified</h1>
-<p>padded_df = ( df .groupby(‘symbol’) .pad_by_time( date_column = ‘date’, freq = ‘D’, start_date = ‘2013-01-01’, end_date = ‘2023-09-21’ ) ) padded_df</p>
+<p>padded_df = ( df .groupby(‘symbol’) .pad_by_time( date_column = ‘date’, freq = ‘D’, start_date = ‘2013-01-01’, end_date = ‘2023-09-22’ ) ) padded_df.query(‘symbol == “AAPL”’)</p>
 
 
 </section>

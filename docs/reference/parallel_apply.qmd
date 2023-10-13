@@ -1,6 +1,6 @@
 # parallel_apply { #pytimetk.parallel_apply }
 
-`parallel_apply(data, func, show_progress=True, threads=None, **kwargs)`
+`parallel_apply(data, func, show_progress=True, threads=None, desc='Processing...', **kwargs)`
 
 The `parallel_apply` function parallelizes the application of a function on grouped dataframes using
 concurrent.futures.
@@ -24,10 +24,10 @@ concurrent.futures.
 ## Examples:
 
 ``` {python}
-import pytimetk as tk
-import pandas as pd
-
 # Example 1 - Single argument returns Series
+
+import pytimetk as tk
+import pandas as pd   
 
 df = pd.DataFrame({
     'A': ['foo', 'bar', 'foo', 'bar', 'foo', 'bar'],
@@ -35,16 +35,20 @@ df = pd.DataFrame({
 })
 
 grouped = df.groupby('A')
+
 result = grouped.apply(lambda df: df['B'].sum())
 result
 
-# Won't match exactly because of the decision to return a Named series instead of an unnamed series with named index
 result = tk.parallel_apply(grouped, lambda df: df['B'].sum(), show_progress=True)
 result
 ```
 
 ``` {python}
 # Example 2 - Multiple arguments returns MultiIndex DataFrame
+
+import pytimetk as tk
+import pandas as pd
+
 df = pd.DataFrame({
     'A': ['foo', 'foo', 'bar', 'bar', 'foo', 'bar', 'foo', 'foo'],
     'B': ['one', 'one', 'one', 'two', 'two', 'two', 'one', 'two'],
@@ -52,8 +56,6 @@ df = pd.DataFrame({
 })
 
 def calculate(group):
-    # This function calculates the sum and mean of column C for each group
-    # and returns a DataFrame with two columns: sum and mean.
     return pd.DataFrame({
         'sum': [group['C'].sum()],
         'mean': [group['C'].mean()]
@@ -64,7 +66,58 @@ grouped = df.groupby(['A', 'B'])
 result = grouped.apply(calculate)
 result
 
-# One difference is that the multi-index does not include the level 2 index containing 0's.
+result = tk.parallel_apply(grouped, calculate, show_progress=True)
+result
+
+```
+
+``` {python}
+# Example 3 - Multiple arguments returns MultiIndex DataFrame
+
+import pytimetk as tk
+import pandas as pd
+
+df = pd.DataFrame({
+    'A': ['foo', 'foo', 'bar', 'bar', 'foo', 'bar', 'foo', 'foo'],
+    'B': ['one', 'one', 'one', 'two', 'two', 'two', 'one', 'two'],
+    'C': [1, 3, 5, 7, 9, 2, 4, 6]
+})
+
+def calculate(group):
+    return group.head(2)
+
+grouped = df.groupby(['A', 'B'])
+
+result = grouped.apply(calculate)
+result
+
+result = tk.parallel_apply(grouped, calculate, show_progress=True)
+result
+
+```
+
+``` {python}
+# Example 4 - Single Grouping Column Returns DataFrame
+
+import pytimetk as tk
+import pandas as pd
+
+df = pd.DataFrame({
+    'A': ['foo', 'foo', 'bar', 'bar', 'foo', 'bar', 'foo', 'foo'],
+    'B': [1, 3, 5, 7, 9, 2, 4, 6]
+})
+
+def calculate(group):
+    return pd.DataFrame({
+        'sum': [group['B'].sum()],
+        'mean': [group['B'].mean()]
+    })
+
+grouped = df.groupby(['A'])
+
+result = grouped.apply(calculate)
+result
+
 result = tk.parallel_apply(grouped, calculate, show_progress=True)
 result
 

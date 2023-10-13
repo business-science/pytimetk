@@ -1,6 +1,6 @@
 # future_frame { #pytimetk.future_frame }
 
-`future_frame(data, date_column, length_out, force_regular=False, bind_data=True)`
+`future_frame(data, date_column, length_out, freq=None, force_regular=False, bind_data=True, threads=1, show_progress=True, engine='pandas')`
 
 Extend a DataFrame or GroupBy object with future dates.
 
@@ -12,15 +12,35 @@ The `future_frame` function extends a given DataFrame or GroupBy object with fut
 |-----------------|----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
 | `data`          | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | The `data` parameter is the input DataFrame or DataFrameGroupBy object that you want to extend with future dates.                                                                                                                                                                                                                                                                                                                  | _required_ |
 | `date_column`   | str                                                      | The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to generate future dates.                                                                                                                                                                                                                                                         | _required_ |
+| `freq`          | str                                                      |                                                                                                                                                                                                                                                                                                                                                                                                                                    | `None`     |
 | `length_out`    | int                                                      | The `length_out` parameter specifies the number of future dates to be added to the DataFrame.                                                                                                                                                                                                                                                                                                                                      | _required_ |
 | `force_regular` | bool                                                     | The `force_regular` parameter is a boolean flag that determines whether the frequency of the future dates should be forced to be regular. If `force_regular` is set to `True`, the frequency of the future dates will be forced to be regular. If `force_regular` is set to `False`, the frequency of the future dates will be inferred from the input data (e.g. business calendars might be used). The default value is `False`. | `False`    |
 | `bind_data`     | bool                                                     | The `bind_data` parameter is a boolean flag that determines whether the extended data should be concatenated with the original data or returned separately. If `bind_data` is set to `True`, the extended data will be concatenated with the original data using `pd.concat`. If `bind_data` is set to `False`, the extended data will be returned separately. The default value is `True`.                                        | `True`     |
+| `threads`       | int                                                      | The `threads` parameter specifies the number of threads to use for parallel processing. If `threads` is set to `None`, it will use all available processors. If `threads` is set to `-1`, it will use all available processors as well.                                                                                                                                                                                            | `1`        |
+| `show_progress` | bool                                                     | A boolean parameter that determines whether to display progress using tqdm. If set to True, progress will be displayed. If set to False, progress will not be displayed.                                                                                                                                                                                                                                                           | `True`     |
+| `engine`        | str                                                      | The `engine` parameter specifies the engine to use for computation.  - Currently only `pandas` is supported. - `polars` will be supported in the future.                                                                                                                                                                                                                                                                           | `'pandas'` |
 
 ## Returns
 
 | Type         | Description                              |
 |--------------|------------------------------------------|
 | pd.DataFrame | An extended DataFrame with future dates. |
+
+## Notes
+
+
+## Performance
+
+This function uses a number of techniques to speed up computation for large datasets with many time series groups: 
+
+- We vectorize where possible and use parallel processing to speed up. 
+- The `threads` parameter controls the number of threads to use for parallel processing.
+
+    - Set threads = -1 to use all available processors. 
+    - Set threads = 1 to disable parallel processing.
+
+
+
 
 ## See Also
 
@@ -34,10 +54,8 @@ import pytimetk as tk
 
 df = tk.load_dataset('m4_hourly', parse_dates = ['date'])
 df
-```
 
-```{python}
-# Extend the data for a single time series group by 12 hours
+# Example 1 - Extend the data for a single time series group by 12 hours
 extended_df = (
     df
         .query('id == "H10"')
@@ -51,23 +69,24 @@ extended_df
 ```
 
 ```{python}
-# Extend the data for each group by 12 hours
+# Example 2 - Extend the data for each group by 12 hours
 extended_df = (
     df
-        .groupby('id')
+        .groupby('id', sort = False) # Use sort = False to preserve the original order of the data
         .future_frame(
             date_column = 'date', 
-            length_out  = 12
+            length_out  = 12,
+            threads     = 1 # Use 2 threads for parallel processing
         )
 )    
 extended_df
 ```
 
 ```{python}
-# Same as above, but just return the extended data with bind_data=False
+# Example 3 - Same as above, but just return the extended data with bind_data=False
 extended_df = (
     df
-        .groupby('id')
+        .groupby('id', sort = False)
         .future_frame(
             date_column = 'date', 
             length_out  = 12,
@@ -78,21 +97,25 @@ extended_df
 ```
 
 ```{python}
- # Working with irregular dates: Business Days (Stocks Data)
+# Example 4 - Working with irregular dates: Business Days (Stocks Data)
+
+import pytimetk as tk
+import pandas as pd
+
+# Stock data
 df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
 df
-```
 
-```{python}
 # Allow irregular future dates (i.e. business days)
 extended_df = (
     df
-        .groupby('symbol')
+        .groupby('symbol', sort = False)
         .future_frame(
             date_column = 'date', 
             length_out  = 12,
             force_regular = False, # Allow irregular future dates (i.e. business days)),
-            bind_data   = False
+            bind_data   = True,
+            threads     = 1
         )
 )    
 extended_df
@@ -102,12 +125,12 @@ extended_df
 # Force regular: Include Weekends
 extended_df = (
     df
-        .groupby('symbol')
+        .groupby('symbol', sort = False)
         .future_frame(
             date_column = 'date', 
             length_out  = 12,
             force_regular = True, # Force regular future dates (i.e. include weekends)),
-            bind_data   = False
+            bind_data   = True
         )
 )    
 extended_df

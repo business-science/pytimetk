@@ -717,10 +717,11 @@ Next, run the following code to perform a rolling regression:
 - Run the rolling regression with `tk.augment_rolling_apply()`.
 
 ```{python}
-from sklearn.linear_model import LinearRegression
-
 def regression(df):
     
+    # External functions must 
+    from sklearn.linear_model import LinearRegression
+
     model = LinearRegression()
     X = df[['returns_market']]  # Extract X values (independent variables)
     y = df['returns']  # Extract y values (dependent variable)

@@ -119,6 +119,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
 
 
 </head>
@@ -336,6 +337,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <ul>
   <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
+  <li><a href="#performance" id="toc-performance" class="nav-link" data-scroll-target="#performance">Performance</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/ts_summary.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
@@ -360,7 +363,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>ts_summary(data, date_column)</code></p>
+<p><code>ts_summary(data, date_column, threads=1, show_progress=True)</code></p>
 <p>Computes summary statistics for a time series data, either for the entire dataset or grouped by a specific column.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
@@ -415,6 +418,15 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 </tbody>
 </table>
+</section>
+<section id="notes" class="level2">
+<h2 class="anchored" data-anchor-id="notes">Notes</h2>
+</section>
+<section id="performance" class="level2">
+<h2 class="anchored" data-anchor-id="performance">Performance</h2>
+<p>This function uses parallel processing to speed up computation for large datasets with many time series groups:</p>
+<p>Parallel processing has overhead and may not be faster on small datasets.</p>
+<p>To use parallel processing, set <code>threads = -1</code> to use all available processors.</p>
 </section>
 <section id="examples" class="level2">
 <h2 class="anchored" data-anchor-id="examples">Examples</h2>
@@ -487,9 +499,15 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'stocks_daily'</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df.groupby(<span class="st">'symbol'</span>).ts_summary(date_column <span class="op">=</span> <span class="st">'date'</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Grouped ts_summary</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'stocks_daily'</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df.groupby(<span class="st">'symbol'</span>).ts_summary(date_column <span class="op">=</span> <span class="st">'date'</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"ebaae166c8af4c17be985e277abecd0a","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
@@ -498,7 +516,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">symbol</th>
 <th data-quarto-table-cell-role="th">date_n</th>
 <th data-quarto-table-cell-role="th">date_tz</th>
 <th data-quarto-table-cell-role="th">date_start</th>
@@ -508,23 +525,23 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <th data-quarto-table-cell-role="th">freq_median_scale</th>
 <th data-quarto-table-cell-role="th">freq_median_unit</th>
 <th data-quarto-table-cell-role="th">diff_min</th>
+<th data-quarto-table-cell-role="th">diff_q25</th>
 <th data-quarto-table-cell-role="th">...</th>
-<th data-quarto-table-cell-role="th">diff_median</th>
-<th data-quarto-table-cell-role="th">diff_mean</th>
-<th data-quarto-table-cell-role="th">diff_q75</th>
-<th data-quarto-table-cell-role="th">diff_max</th>
-<th data-quarto-table-cell-role="th">diff_min_seconds</th>
-<th data-quarto-table-cell-role="th">diff_q25_seconds</th>
-<th data-quarto-table-cell-role="th">diff_median_seconds</th>
 <th data-quarto-table-cell-role="th">diff_mean_seconds</th>
 <th data-quarto-table-cell-role="th">diff_q75_seconds</th>
 <th data-quarto-table-cell-role="th">diff_max_seconds</th>
+<th data-quarto-table-cell-role="th">adjusted</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>AAPL</td>
 <td>2699</td>
 <td>None</td>
 <td>2013-01-02</td>
@@ -534,21 +551,21 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>1.0</td>
 <td>D</td>
 <td>1 days</td>
+<td>1 days</td>
 <td>...</td>
-<td>1 days</td>
-<td>1 days 10:49:00.845070422</td>
-<td>1 days</td>
-<td>4 days</td>
-<td>86400.0</td>
-<td>86400.0</td>
-<td>86400.0</td>
 <td>125340.84507</td>
 <td>86400.0</td>
 <td>345600.0</td>
+<td>16.791180</td>
+<td>19.608213</td>
+<td>19.821428</td>
+<td>19.343929</td>
+<td>19.779285</td>
+<td>AAPL</td>
+<td>560518000</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>AMZN</td>
 <td>2699</td>
 <td>None</td>
 <td>2013-01-02</td>
@@ -558,21 +575,21 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>1.0</td>
 <td>D</td>
 <td>1 days</td>
+<td>1 days</td>
 <td>...</td>
-<td>1 days</td>
-<td>1 days 10:49:00.845070422</td>
-<td>1 days</td>
-<td>4 days</td>
-<td>86400.0</td>
-<td>86400.0</td>
-<td>86400.0</td>
 <td>125340.84507</td>
 <td>86400.0</td>
 <td>345600.0</td>
+<td>12.865500</td>
+<td>12.865500</td>
+<td>12.905000</td>
+<td>12.663000</td>
+<td>12.804000</td>
+<td>AMZN</td>
+<td>65420000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>GOOG</td>
 <td>2699</td>
 <td>None</td>
 <td>2013-01-02</td>
@@ -582,21 +599,21 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>1.0</td>
 <td>D</td>
 <td>1 days</td>
+<td>1 days</td>
 <td>...</td>
-<td>1 days</td>
-<td>1 days 10:49:00.845070422</td>
-<td>1 days</td>
-<td>4 days</td>
-<td>86400.0</td>
-<td>86400.0</td>
-<td>86400.0</td>
 <td>125340.84507</td>
 <td>86400.0</td>
 <td>345600.0</td>
+<td>18.013729</td>
+<td>18.013729</td>
+<td>18.107130</td>
+<td>17.846855</td>
+<td>17.918339</td>
+<td>GOOG</td>
+<td>102033017</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>META</td>
 <td>2699</td>
 <td>None</td>
 <td>2013-01-02</td>
@@ -606,21 +623,21 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>1.0</td>
 <td>D</td>
 <td>1 days</td>
+<td>1 days</td>
 <td>...</td>
-<td>1 days</td>
-<td>1 days 10:49:00.845070422</td>
-<td>1 days</td>
-<td>4 days</td>
-<td>86400.0</td>
-<td>86400.0</td>
-<td>86400.0</td>
 <td>125340.84507</td>
 <td>86400.0</td>
 <td>345600.0</td>
+<td>28.000000</td>
+<td>28.000000</td>
+<td>28.180000</td>
+<td>27.420000</td>
+<td>27.440001</td>
+<td>META</td>
+<td>69846400</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>NFLX</td>
 <td>2699</td>
 <td>None</td>
 <td>2013-01-02</td>
@@ -630,21 +647,21 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>1.0</td>
 <td>D</td>
 <td>1 days</td>
+<td>1 days</td>
 <td>...</td>
-<td>1 days</td>
-<td>1 days 10:49:00.845070422</td>
-<td>1 days</td>
-<td>4 days</td>
-<td>86400.0</td>
-<td>86400.0</td>
-<td>86400.0</td>
 <td>125340.84507</td>
 <td>86400.0</td>
 <td>345600.0</td>
+<td>13.144286</td>
+<td>13.144286</td>
+<td>13.687143</td>
+<td>12.955714</td>
+<td>13.601429</td>
+<td>NFLX</td>
+<td>19431300</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
-<td>NVDA</td>
 <td>2699</td>
 <td>None</td>
 <td>2013-01-02</td>
@@ -654,35 +671,231 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>1.0</td>
 <td>D</td>
 <td>1 days</td>
+<td>1 days</td>
 <td>...</td>
-<td>1 days</td>
-<td>1 days 10:49:00.845070422</td>
-<td>1 days</td>
-<td>4 days</td>
-<td>86400.0</td>
-<td>86400.0</td>
-<td>86400.0</td>
 <td>125340.84507</td>
 <td>86400.0</td>
 <td>345600.0</td>
+<td>2.936236</td>
+<td>3.180000</td>
+<td>3.182500</td>
+<td>3.127500</td>
+<td>3.140000</td>
+<td>NVDA</td>
+<td>47883600</td>
 </tr>
 </tbody>
 </table>
 
-<p>6 rows × 21 columns</p>
+<p>6 rows × 27 columns</p>
 </div>
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># See also:</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tk.get_date_summary(df[<span class="st">'date'</span>])</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>tk.get_frequency_summary(df[<span class="st">'date'</span>])</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>tk.get_diff_summary(df[<span class="st">'date'</span>])</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>tk.get_diff_summary(df[<span class="st">'date'</span>], numeric <span class="op">=</span> <span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Parallelized grouped ts_summary </span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df         .groupby(<span class="st">'symbol'</span>)         .ts_summary(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        threads <span class="op">=</span> <span class="dv">2</span>, </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        show_progress <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"fca799a656fd4283a6744c7c724ab59d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
 <div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date_n</th>
+<th data-quarto-table-cell-role="th">date_tz</th>
+<th data-quarto-table-cell-role="th">date_start</th>
+<th data-quarto-table-cell-role="th">date_end</th>
+<th data-quarto-table-cell-role="th">freq_inferred_unit</th>
+<th data-quarto-table-cell-role="th">freq_median_timedelta</th>
+<th data-quarto-table-cell-role="th">freq_median_scale</th>
+<th data-quarto-table-cell-role="th">freq_median_unit</th>
+<th data-quarto-table-cell-role="th">diff_min</th>
+<th data-quarto-table-cell-role="th">diff_q25</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">diff_mean_seconds</th>
+<th data-quarto-table-cell-role="th">diff_q75_seconds</th>
+<th data-quarto-table-cell-role="th">diff_max_seconds</th>
+<th data-quarto-table-cell-role="th">adjusted</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">volume</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2699</td>
+<td>None</td>
+<td>2013-01-02</td>
+<td>2023-09-21</td>
+<td>B</td>
+<td>1 days</td>
+<td>1.0</td>
+<td>D</td>
+<td>1 days</td>
+<td>1 days</td>
+<td>...</td>
+<td>125340.84507</td>
+<td>86400.0</td>
+<td>345600.0</td>
+<td>16.791180</td>
+<td>19.608213</td>
+<td>19.821428</td>
+<td>19.343929</td>
+<td>19.779285</td>
+<td>AAPL</td>
+<td>560518000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2699</td>
+<td>None</td>
+<td>2013-01-02</td>
+<td>2023-09-21</td>
+<td>B</td>
+<td>1 days</td>
+<td>1.0</td>
+<td>D</td>
+<td>1 days</td>
+<td>1 days</td>
+<td>...</td>
+<td>125340.84507</td>
+<td>86400.0</td>
+<td>345600.0</td>
+<td>12.865500</td>
+<td>12.865500</td>
+<td>12.905000</td>
+<td>12.663000</td>
+<td>12.804000</td>
+<td>AMZN</td>
+<td>65420000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2699</td>
+<td>None</td>
+<td>2013-01-02</td>
+<td>2023-09-21</td>
+<td>B</td>
+<td>1 days</td>
+<td>1.0</td>
+<td>D</td>
+<td>1 days</td>
+<td>1 days</td>
+<td>...</td>
+<td>125340.84507</td>
+<td>86400.0</td>
+<td>345600.0</td>
+<td>18.013729</td>
+<td>18.013729</td>
+<td>18.107130</td>
+<td>17.846855</td>
+<td>17.918339</td>
+<td>GOOG</td>
+<td>102033017</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2699</td>
+<td>None</td>
+<td>2013-01-02</td>
+<td>2023-09-21</td>
+<td>B</td>
+<td>1 days</td>
+<td>1.0</td>
+<td>D</td>
+<td>1 days</td>
+<td>1 days</td>
+<td>...</td>
+<td>125340.84507</td>
+<td>86400.0</td>
+<td>345600.0</td>
+<td>28.000000</td>
+<td>28.000000</td>
+<td>28.180000</td>
+<td>27.420000</td>
+<td>27.440001</td>
+<td>META</td>
+<td>69846400</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2699</td>
+<td>None</td>
+<td>2013-01-02</td>
+<td>2023-09-21</td>
+<td>B</td>
+<td>1 days</td>
+<td>1.0</td>
+<td>D</td>
+<td>1 days</td>
+<td>1 days</td>
+<td>...</td>
+<td>125340.84507</td>
+<td>86400.0</td>
+<td>345600.0</td>
+<td>13.144286</td>
+<td>13.144286</td>
+<td>13.687143</td>
+<td>12.955714</td>
+<td>13.601429</td>
+<td>NFLX</td>
+<td>19431300</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>2699</td>
+<td>None</td>
+<td>2013-01-02</td>
+<td>2023-09-21</td>
+<td>B</td>
+<td>1 days</td>
+<td>1.0</td>
+<td>D</td>
+<td>1 days</td>
+<td>1 days</td>
+<td>...</td>
+<td>125340.84507</td>
+<td>86400.0</td>
+<td>345600.0</td>
+<td>2.936236</td>
+<td>3.180000</td>
+<td>3.182500</td>
+<td>3.127500</td>
+<td>3.140000</td>
+<td>NVDA</td>
+<td>47883600</td>
+</tr>
+</tbody>
+</table>
+
+<p>6 rows × 27 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># See also:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>tk.get_date_summary(df[<span class="st">'date'</span>])</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>tk.get_frequency_summary(df[<span class="st">'date'</span>])</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>tk.get_diff_summary(df[<span class="st">'date'</span>])</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>tk.get_diff_summary(df[<span class="st">'date'</span>], numeric <span class="op">=</span> <span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
@@ -719,6 +932,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </section>
 
 </main> <!-- /main -->
+<script type="application/vnd.jupyter.widget-state+json">
+{"state":{"152364190d6b45e49085803b3f017735":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_5ad24ebbaf1f466ba1a960389a7e661b","placeholder":"​","style":"IPY_MODEL_92be124abb5a4129a571e51fd4e4e427","tabbable":null,"tooltip":null,"value":"TS Summarizing...: 100%"}},"2367f7fbdc3c4b34a3d81a651d850142":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":null,"description_width":""}},"2abd6cf22e854347b3af5797aca936b9":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"success","description":"","description_allow_html":false,"layout":"IPY_MODEL_f3b7d2faa3334528a7fa8f05deeeeb65","max":6,"min":0,"orientation":"horizontal","style":"IPY_MODEL_d60b7d2a256448199b7122d3d801eae7","tabbable":null,"tooltip":null,"value":6}},"3b57b41a9eee4935ae35ae937b7665a1":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"3f193997202c4e8ab56d361dfa6a3f2b":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_af13213e5710401aabe4fe52039000f1","placeholder":"​","style":"IPY_MODEL_55484030fcaa4572864efdbe0fbb24ff","tabbable":null,"tooltip":null,"value":" 6/6 [00:00&lt;00:00, 705.12it/s]"}},"52ac0cc26bc847d8836d3af88a84dc5b":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"55484030fcaa4572864efdbe0fbb24ff":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"5ad24ebbaf1f466ba1a960389a7e661b":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"70c561505dc24f49910484ac0c9a92b1":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"7cfb623a6fe04f05baf3de6dddb44ce6":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"80fac916adb949baa7a53fcb93ad0bc3":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_8b6bd7d903374aa887aa00eb17a22866","placeholder":"​","style":"IPY_MODEL_70c561505dc24f49910484ac0c9a92b1","tabbable":null,"tooltip":null,"value":"TS Summarizing...: 100%"}},"8b6bd7d903374aa887aa00eb17a22866":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"90ef4f3289ea490d996362950ea44b63":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"92be124abb5a4129a571e51fd4e4e427":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"af13213e5710401aabe4fe52039000f1":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"c4c6519e222848bf830a5a2482065a5a":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_e41b7d04b0b74766b743d600919450c2","placeholder":"​","style":"IPY_MODEL_7cfb623a6fe04f05baf3de6dddb44ce6","tabbable":null,"tooltip":null,"value":" 6/6 [00:00&lt;00:00, 81.71it/s]"}},"cb3b37b166534a0887d34590fa8cd307":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"success","description":"","description_allow_html":false,"layout":"IPY_MODEL_90ef4f3289ea490d996362950ea44b63","max":6,"min":0,"orientation":"horizontal","style":"IPY_MODEL_2367f7fbdc3c4b34a3d81a651d850142","tabbable":null,"tooltip":null,"value":6}},"d60b7d2a256448199b7122d3d801eae7":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":null,"description_width":""}},"e41b7d04b0b74766b743d600919450c2":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"ebaae166c8af4c17be985e277abecd0a":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HBoxModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HBoxModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HBoxView","box_style":"","children":["IPY_MODEL_152364190d6b45e49085803b3f017735","IPY_MODEL_2abd6cf22e854347b3af5797aca936b9","IPY_MODEL_c4c6519e222848bf830a5a2482065a5a"],"layout":"IPY_MODEL_3b57b41a9eee4935ae35ae937b7665a1","tabbable":null,"tooltip":null}},"f3b7d2faa3334528a7fa8f05deeeeb65":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"fca799a656fd4283a6744c7c724ab59d":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HBoxModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HBoxModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HBoxView","box_style":"","children":["IPY_MODEL_80fac916adb949baa7a53fcb93ad0bc3","IPY_MODEL_cb3b37b166534a0887d34590fa8cd307","IPY_MODEL_3f193997202c4e8ab56d361dfa6a3f2b"],"layout":"IPY_MODEL_52ac0cc26bc847d8836d3af88a84dc5b","tabbable":null,"tooltip":null}}},"version_major":2,"version_minor":0}
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

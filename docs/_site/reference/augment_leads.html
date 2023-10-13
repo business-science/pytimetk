@@ -360,16 +360,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_leads(data, date_column, value_column, leads=1)</code></p>
-<p>Adds leads to a Pandas DataFrame or DataFrameGroupBy object.</p>
-<p>The <code>augment_leads</code> function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a lead or list of leads, and adds leaded versions of the value columns to the DataFrame.</p>
+<p><code>augment_leads(data, date_column, value_column, leads=1, engine='pandas')</code></p>
+<p>Adds lags to a Pandas DataFrame or DataFrameGroupBy object.</p>
+<p>The <code>augment_lags</code> function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a lag or list of lags, and adds lagged versions of the value columns to the DataFrame.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
 <col style="width: 3%">
 <col style="width: 11%">
-<col style="width: 82%">
+<col style="width: 83%">
 <col style="width: 2%">
 </colgroup>
 <thead>
@@ -384,26 +384,32 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td><code>data</code></td>
 <td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
-<td>The <code>data</code> parameter is the input DataFrame or DataFrameGroupBy object that you want to add leaded columns to.</td>
+<td>The <code>data</code> parameter is the input DataFrame or DataFrameGroupBy object that you want to add lagged columns to.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td><code>date_column</code></td>
 <td>str</td>
-<td>The <code>date_column</code> parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the leaded values.</td>
+<td>The <code>date_column</code> parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the lagged values.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td><code>value_column</code></td>
 <td>str or list</td>
-<td>The <code>value_column</code> parameter is the column(s) in the DataFrame that you want to add leaded values for. It can be either a single column name (string) or a list of column names.</td>
+<td>The <code>value_column</code> parameter is the column(s) in the DataFrame that you want to add lagged values for. It can be either a single column name (string) or a list of column names.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td><code>leads</code></td>
 <td>int or tuple or list</td>
-<td>The <code>leads</code> parameter is an integer, tuple, or list that specifies the number of leaded values to add to the DataFrame. If it is an integer, the function will add that number of leaded values for each column specified in the <code>value_column</code> parameter. If it is a tuple, it will generate leads from the first to the second value (inclusive). If it is a list, it will generate leads based on the values in the list.</td>
+<td>The <code>leads</code> parameter is an integer, tuple, or list that specifies the number of lead values to add to the DataFrame. - If it is an integer, the function will add that number of lead values for each column specified in the <code>value_column</code> parameter. - If it is a tuple, it will generate leads from the first to the second value (inclusive). - If it is a list, it will generate leads based on the values in the list.</td>
 <td><code>1</code></td>
+</tr>
+<tr class="odd">
+<td><code>engine</code></td>
+<td>str</td>
+<td>The <code>engine</code> parameter is used to specify the engine to use for augmenting lags. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for augmenting lags. This can be faster than using “pandas” for large datasets.</td>
+<td><code>'pandas'</code></td>
 </tr>
 </tbody>
 </table>
@@ -420,7 +426,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>pd.DataFrame</td>
-<td>A Pandas DataFrame with leaded columns added to it.</td>
+<td>A Pandas DataFrame with lead columns added to it.</td>
 </tr>
 </tbody>
 </table>
@@ -431,20 +437,121 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'m4_daily'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'m4_daily'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>D10</td>
+<td>2014-07-03</td>
+<td>2076.2</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>D10</td>
+<td>2014-07-04</td>
+<td>2073.4</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>D10</td>
+<td>2014-07-05</td>
+<td>2048.7</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>D10</td>
+<td>2014-07-06</td>
+<td>2048.9</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>D10</td>
+<td>2014-07-07</td>
+<td>2006.4</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9738</td>
+<td>D500</td>
+<td>2012-09-19</td>
+<td>9418.8</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9739</td>
+<td>D500</td>
+<td>2012-09-20</td>
+<td>9365.7</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9740</td>
+<td>D500</td>
+<td>2012-09-21</td>
+<td>9445.9</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9741</td>
+<td>D500</td>
+<td>2012-09-22</td>
+<td>9497.9</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9742</td>
+<td>D500</td>
+<td>2012-09-23</td>
+<td>9545.3</td>
+</tr>
+</tbody>
+</table>
+
+<p>9743 rows × 3 columns</p>
+</div>
+</div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a leaded value of 2 for each grouped time series</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>leaded_df <span class="op">=</span> (</span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Add 7 lead values for a single DataFrame object, pandas engine</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>lead_df_single <span class="op">=</span> (</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    df </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'id == "D10"'</span>)</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        .augment_leads(</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            leads<span class="op">=</span><span class="dv">2</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>leaded_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            leads<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">7</span>),</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'pandas'</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>lead_df_single</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Add a single lead value of 2 for each GroupBy object, polars engine</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>lead_df <span class="op">=</span> (</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        .augment_leads(</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>            leads<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'polars'</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>lead_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
@@ -545,201 +652,19 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add 7 leaded values for a single time series</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>leaded_df_single <span class="op">=</span> (</span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 add 2 lead values, 2 and 4, for a single DataFrame object, pandas engine</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>lead_df_single_two <span class="op">=</span> (</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df </span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'id == "D10"'</span>)</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .augment_leads(</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            leads<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">7</span>)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>leaded_df_single </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            leads<span class="op">=</span>[<span class="dv">2</span>, <span class="dv">4</span>],</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'pandas'</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>lead_df_single_two</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">id</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">value</th>
-<th data-quarto-table-cell-role="th">value_lead_1</th>
-<th data-quarto-table-cell-role="th">value_lead_2</th>
-<th data-quarto-table-cell-role="th">value_lead_3</th>
-<th data-quarto-table-cell-role="th">value_lead_4</th>
-<th data-quarto-table-cell-role="th">value_lead_5</th>
-<th data-quarto-table-cell-role="th">value_lead_6</th>
-<th data-quarto-table-cell-role="th">value_lead_7</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>D10</td>
-<td>2014-07-03</td>
-<td>2076.2</td>
-<td>2073.4</td>
-<td>2048.7</td>
-<td>2048.9</td>
-<td>2006.4</td>
-<td>2017.6</td>
-<td>2019.1</td>
-<td>2007.4</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>D10</td>
-<td>2014-07-04</td>
-<td>2073.4</td>
-<td>2048.7</td>
-<td>2048.9</td>
-<td>2006.4</td>
-<td>2017.6</td>
-<td>2019.1</td>
-<td>2007.4</td>
-<td>2010.0</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>D10</td>
-<td>2014-07-05</td>
-<td>2048.7</td>
-<td>2048.9</td>
-<td>2006.4</td>
-<td>2017.6</td>
-<td>2019.1</td>
-<td>2007.4</td>
-<td>2010.0</td>
-<td>2001.5</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>D10</td>
-<td>2014-07-06</td>
-<td>2048.9</td>
-<td>2006.4</td>
-<td>2017.6</td>
-<td>2019.1</td>
-<td>2007.4</td>
-<td>2010.0</td>
-<td>2001.5</td>
-<td>1978.8</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>D10</td>
-<td>2014-07-07</td>
-<td>2006.4</td>
-<td>2017.6</td>
-<td>2019.1</td>
-<td>2007.4</td>
-<td>2010.0</td>
-<td>2001.5</td>
-<td>1978.8</td>
-<td>1988.3</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">669</td>
-<td>D10</td>
-<td>2016-05-02</td>
-<td>2630.7</td>
-<td>2649.3</td>
-<td>2631.8</td>
-<td>2622.5</td>
-<td>2620.1</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">670</td>
-<td>D10</td>
-<td>2016-05-03</td>
-<td>2649.3</td>
-<td>2631.8</td>
-<td>2622.5</td>
-<td>2620.1</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">671</td>
-<td>D10</td>
-<td>2016-05-04</td>
-<td>2631.8</td>
-<td>2622.5</td>
-<td>2620.1</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">672</td>
-<td>D10</td>
-<td>2016-05-05</td>
-<td>2622.5</td>
-<td>2620.1</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">673</td>
-<td>D10</td>
-<td>2016-05-06</td>
-<td>2620.1</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-</tbody>
-</table>
-
-<p>674 rows × 10 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add 2 leaded values, 2 and 4, for a single time series</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>leaded_df_single_two <span class="op">=</span> (</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'id == "D10"'</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .augment_leads(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            leads<span class="op">=</span>[<span class="dv">2</span>, <span class="dv">4</span>]</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>leaded_df_single_two</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 

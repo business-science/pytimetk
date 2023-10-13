@@ -120,6 +120,11 @@ quartodoc:
         - apply_by_time
         - pad_by_time
         - future_frame
+    - title: 🔍 Anomally Detection
+      desc: Detect anomalies in time series data.
+      package: pytimetk
+      contents:
+        - anomalize
     - title: 🏗️ Adding Features to Time Series DataFrames (Augmenting)
       desc: Add one or more feature columns to time series data.
       package: pytimetk

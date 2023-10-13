@@ -1,6 +1,6 @@
 # make_future_timeseries { #pytimetk.make_future_timeseries }
 
-`make_future_timeseries(idx, length_out, force_regular=False)`
+`make_future_timeseries(idx, length_out, freq=None, force_regular=False)`
 
 Make future dates for a time series.
 
@@ -12,6 +12,7 @@ The function `make_future_timeseries` takes a pandas Series or DateTimeIndex and
 |-----------------|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
 | `idx`           | pd.Series or pd.DateTimeIndex | The `idx` parameter is the input time series data. It can be either a pandas Series or a pandas DateTimeIndex. It represents the existing dates in the time series.                                                                                                                                                                                                                                                                | _required_ |
 | `length_out`    | int                           | The parameter `length_out` is an integer that represents the number of future dates to generate for the time series.                                                                                                                                                                                                                                                                                                               | _required_ |
+| `freq`          | str                           | The `frequency` parameter is a string that specifies the frequency of the future dates. If `frequency` is set to `None`, the frequency of the future dates will be inferred from the input data (e.g. business calendars might be used). The default value is `None`.                                                                                                                                                              | `None`     |
 | `force_regular` | bool                          | The `force_regular` parameter is a boolean flag that determines whether the frequency of the future dates should be forced to be regular. If `force_regular` is set to `True`, the frequency of the future dates will be forced to be regular. If `force_regular` is set to `False`, the frequency of the future dates will be inferred from the input data (e.g. business calendars might be used). The default value is `False`. | `False`    |
 
 ## Returns
@@ -26,12 +27,15 @@ The function `make_future_timeseries` takes a pandas Series or DateTimeIndex and
 import pandas as pd
 import pytimetk as tk
 
-dates = pd.Series(pd.to_datetime(['2022-01-01', '2022-01-02', '2022-01-03', '2022-01-04']))
-dates
+# Works with a single date (must provide a length out and frequency if only 1 date is provided)
+tk.make_future_timeseries("2011-01-01", 5, "D")
 ```
 
 ```{python}
-# DateTimeIndex: Generate 5 future dates
+# DateTimeIndex: Generate 5 future dates (with inferred frequency)
+
+dates = pd.Series(pd.to_datetime(['2022-01-01', '2022-01-02', '2022-01-03', '2022-01-04']))
+
 future_dates_dt = tk.make_future_timeseries(dates, 5)
 future_dates_dt
 ```
@@ -42,6 +46,7 @@ pd.Series(future_dates_dt).make_future_timeseries(5)
 ```
 
 ```{python}
+# Hourly Frequency: Generate 5 future dates
 timestamps = ["2023-01-01 01:00", "2023-01-01 02:00", "2023-01-01 03:00", "2023-01-01 04:00", "2023-01-01 05:00"]
 
 dates = pd.to_datetime(timestamps)

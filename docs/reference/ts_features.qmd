@@ -25,10 +25,19 @@ Note: Requires the `tsfeatures` package to be installed.
 |--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | pd.DataFrame | The function `ts_features` returns a pandas DataFrame containing the extracted time series features. If grouped data is provided, the DataFrame will contain the grouping columns as well. |
 
+## Notes
+
+## Performance
+
+This function uses parallel processing to speed up computation for large datasets with many time series groups: 
+
+Parallel processing has overhead and may not be faster on small datasets.
+
+To use parallel processing, set `threads = -1` to use all available processors.
+
 ## Examples
 
 ```{python}
-# REQUIRES tsfeatures: pip install tsfeatures
 import pandas as pd
 import pytimetk as tk
 
@@ -44,6 +53,7 @@ from tsfeatures import (
 
 df = tk.load_dataset('m4_daily', parse_dates = ['date'])
 
+# Example 1 - Grouped DataFrame
 # Feature Extraction
 feature_df = (
     df

@@ -1,0 +1,111 @@
+# anomalize { #pytimetk.anomalize }
+
+`anomalize(data, date_column, value_column, period=None, trend=None, method='twitter', decomp='additive', clean='linear', iqr_alpha=0.05, max_anomalies=0.2, bind_data=False, threads=1, show_progress=True, verbose=False)`
+
+## Notes
+
+## Performance
+
+This function uses parallel processing to speed up computation for large datasets with many time series groups: 
+
+Parallel processing has overhead and may not be faster on small datasets.
+
+To use parallel processing, set `threads = -1` to use all available processors.
+
+## Examples
+
+``` {python}
+# EXAMPLE 1: SINGLE TIME SERIES
+import pytimetk as tk
+import pandas as pd
+import numpy as np
+
+# Create a date range
+date_rng = pd.date_range(start='2021-01-01', end='2024-01-01', freq='MS')
+
+# Generate some random data with a few outliers
+np.random.seed(42)
+data = np.random.randn(len(date_rng)) * 10 + 25  
+data[3] = 100  # outlier
+
+# Create a DataFrame
+df = pd.DataFrame(date_rng, columns=['date'])
+df['value'] = data
+df    
+
+df.plot_timeseries("date", "value")
+
+# Anomalize the data
+anomalize_df = tk.anomalize(
+    df, "date", "value",
+    method = "twitter", 
+    iqr_alpha = 0.05,
+    verbose = True,
+)
+
+anomalize_df.glimpse()
+
+# Visualize the results
+anomalize_df[["date", "observed", "seasonal", "trend", "remainder"]]         .melt(id_vars = "date", value_name='val')         .groupby("variable")         .plot_timeseries("date", "val", color_column = "variable", smooth = False)
+
+# Visualize the anomaly bands
+anomalize_df[["date", "observed", "recomposed_l1", "recomposed_l2"]]         .melt(id_vars = "date", value_name='val')         .plot_timeseries("date", "val", color_column = "variable", smooth = False)
+
+# Get the anomalies    
+anomalize_df.query("anomaly=='Yes'")
+    
+# Visualize observed vs cleaned
+anomalize_df[["date", "observed", "observed_clean"]]         .melt(id_vars = "date", value_name='val')         .plot_timeseries("date", "val", color_column = "variable", smooth = False)
+
+```
+
+``` {python}
+# EXAMPLE 2: MULTIPLE TIME SERIES
+import pytimetk as tk
+import pandas as pd
+
+df = tk.load_dataset("walmart_sales_weekly", parse_dates=["Date"])[["id", "Date", "Weekly_Sales"]]
+
+anomalize_df = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = 1) 
+
+# Visualize the results
+anomalize_df[["id", "Date", "observed", "seasonal", "trend", "remainder"]]         .melt(id_vars = ["id", "Date"], value_name='val')         .groupby(["id", "variable"])         .plot_timeseries(
+        "Date", "val", 
+        facet_ncol = 7, 
+        smooth = False,
+        width = 1200,
+        height = 800,
+    )
+
+# Visualize the anomaly bands
+anomalize_df[["id", "Date", "observed", "recomposed_l1", "recomposed_l2"]]         .melt(id_vars = ["id", "Date"], value_name='val')         .groupby(["id"])         .plot_timeseries(
+        "Date", "val", 
+        color_column = "variable",
+        facet_ncol = 2, 
+        smooth = False,
+        width = 800,
+        height = 800,
+    )
+
+# Get the anomalies    
+anomalize_df.query("anomaly=='Yes'")
+    
+# Visualize observed vs cleaned
+anomalize_df[["id", "Date", "observed", "observed_clean"]]         .melt(id_vars = ["id", "Date"], value_name='val')         .groupby(["id"])         .plot_timeseries("Date", "val", color_column = "variable", smooth = False)
+
+```
+
+``` {python}
+# PARALLEL PROCESSING
+
+import pytimetk as tk
+import pandas as pd
+
+df = tk.load_dataset("walmart_sales_weekly", parse_dates=["Date"])[["id", "Date", "Weekly_Sales"]]
+
+anomalize_df_ser = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = 1)
+
+anomalize_df_par = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = -1) 
+
+
+```

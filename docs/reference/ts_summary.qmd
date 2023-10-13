@@ -1,6 +1,6 @@
 # ts_summary { #pytimetk.ts_summary }
 
-`ts_summary(data, date_column)`
+`ts_summary(data, date_column, threads=1, show_progress=True)`
 
 Computes summary statistics for a time series data, either for the entire dataset or grouped by a specific column.
 
@@ -17,6 +17,16 @@ Computes summary statistics for a time series data, either for the entire datase
 |--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | pd.DataFrame | The `ts_summary` function returns a summary of time series data. The summary includes the following statistics: - If grouped data is provided, the returned data will contain the grouping columns first. - `date_n`: The number of observations in the time series. - `date_tz`: The time zone of the time series. - `date_start`: The first date in the time series. - `date_end`: The last date in the time series. - `freq_inferred_unit`: The inferred frequency of the time series from `pandas`. - `freq_median_timedelta`: The median time difference between consecutive observations in the time series. - `freq_median_scale`: The median time difference between consecutive observations in the time series, scaled to a common unit. - `freq_median_unit`: The unit of the median time difference between consecutive observations in the time series. - `diff_min`: The minimum time difference between consecutive observations in the time series as a timedelta. - `diff_q25`: The 25th percentile of the time difference between consecutive observations in the time series as a timedelta. - `diff_median`: The median time difference between consecutive observations in the time series as a timedelta. - `diff_mean`: The mean time difference between consecutive observations in the time series as a timedelta. - `diff_q75`: The 75th percentile of the time difference between consecutive observations in the time series as a timedelta. - `diff_max`: The maximum time difference between consecutive observations in the time series as a timedelta. - `diff_min_seconds`: The minimum time difference between consecutive observations in the time series in seconds. - `diff_q25_seconds`: The 25th percentile of the time difference between consecutive observations in the time series in seconds. - `diff_median_seconds`: The median time difference between consecutive observations in the time series in seconds. - `diff_mean_seconds`: The mean time difference between consecutive observations in the time series in seconds. - `diff_q75_seconds`: The 75th percentile of the time difference between consecutive observations in the time series in seconds. - `diff_max_seconds`: The maximum time difference between consecutive observations in the time series in seconds. |
 
+## Notes
+
+## Performance
+
+This function uses parallel processing to speed up computation for large datasets with many time series groups: 
+
+Parallel processing has overhead and may not be faster on small datasets.
+
+To use parallel processing, set `threads = -1` to use all available processors.
+
 ## Examples
 
 ```{python}
@@ -30,9 +40,19 @@ df.ts_summary(date_column = 'date')
 ```
 
 ```{python}
+# Grouped ts_summary
 df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
  
 df.groupby('symbol').ts_summary(date_column = 'date') 
+```
+
+```{python}
+# Parallelized grouped ts_summary 
+df         .groupby('symbol')         .ts_summary(
+        date_column = 'date', 
+        threads = 2, 
+        show_progress = True
+    ) 
 ```
 
 ```{python}
