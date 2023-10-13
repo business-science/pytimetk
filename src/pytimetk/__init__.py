@@ -21,6 +21,8 @@ from .core.ts_summary import *
 from .core.anomaly import *
 from .core.frequency import *
 
+from .finance.exponential import *
+
 from .datasets.get_datasets import *
 
 from .utils.datetime_helpers import *
@@ -81,6 +83,9 @@ from .core.ts_summary import (
 )
 from .core.frequency import (
     get_frequency_summary, get_frequency, get_seasonal_frequency, get_trend_frequency, timeseries_unit_frequency_table, time_scale_template
+)
+from .finance.exponential import (
+    augment_ewm
 )
 from .datasets.get_datasets import (
     load_dataset, get_available_datasets
