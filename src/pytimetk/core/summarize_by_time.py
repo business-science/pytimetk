@@ -297,7 +297,9 @@ def _summarize_by_time_polars(
     agg_columns = [aggregation_mapping[func] for func in agg_func if func in aggregation_mapping]
 
     # Check if the input data is a DataFrame or a GroupBy object
+    grouped = False
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        grouped = True
         # Extract name from groupby object
         groups = data.grouper.names
 
@@ -313,15 +315,15 @@ def _summarize_by_time_polars(
 
         # Explode the selected columns
         exploded_df = df_pl.explode(columns=columns_to_explode)
-
+        
         # Group by group and date
         data = (
             exploded_df
-                .select([date_column, groups[0]] + value_column)
+                .select([groups[0], date_column] + value_column)
                 .with_columns(pl.col(date_column).dt.truncate(polars_freq))
-                .groupby([date_column, groups[0]])
+                .groupby([groups[0], date_column])
                 .agg(agg_columns)
-                .sort([date_column, groups[0]])
+                .sort([groups[0], date_column])
         )
         
         if wide_format:
@@ -356,7 +358,7 @@ def _summarize_by_time_polars(
                     ).to_pandas()
         else:
             # Convert back to a pandas DataFrame
-            data = data.to_pandas()
+            data = data.to_pandas()        
 
     return data
 
