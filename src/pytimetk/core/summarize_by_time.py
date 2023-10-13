@@ -10,7 +10,7 @@ from pytimetk.utils.pandas_helpers import flatten_multiindex_column_names
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 
-from pytimetk.utils.polars_helpers import pandas_to_polars_frequency_mapping, pandas_to_polars_aggregation_mapping
+from pytimetk.utils.polars_helpers import pandas_to_polars_frequency, pandas_to_polars_aggregation_mapping
 
 
 # FUNCTIONS -------------------------------------------------------------------
@@ -70,6 +70,7 @@ def summarize_by_time(
         - "nunique": Number of unique values
         - "corr": Correlation between values
         
+        Pandas Engine Only:
         Custom `lambda` aggregating functions can be used too. Here are several common examples:
         
         - ("q25", lambda x: x.quantile(0.25)): 25th percentile of values
@@ -152,6 +153,7 @@ def summarize_by_time(
     
     ```{python}
     # Example 4 - Summarize by time with a GroupBy object and multiple value columns and summaries (Wide Format)
+    # Note - This example only works with the pandas engine
     (
         df 
             .groupby('category_1') 
@@ -159,9 +161,13 @@ def summarize_by_time(
                 date_column  = 'order_date', 
                 value_column = ['total_price', 'quantity'], 
                 freq         = 'MS',
-                agg_func     = ['sum', 'mean', ('q25', lambda x: x.quantile(0.25)), ('q75', lambda x: x.quantile(0.75))],
+                agg_func     = [
+                    'sum', 
+                    'mean', 
+                    ('q25', lambda x: x.quantile(0.25)), ('q75', lambda x: x.quantile(0.75))
+                ],
                 wide_format  = True,
-                engine       = 'polars' 
+                engine       = 'pandas' 
             )
     )
     ```
@@ -277,11 +283,9 @@ def _summarize_by_time_polars(
     fillna: int = 0,
 ):
     
-    # Mapping of frequency offsets between pandas and Polars
-    frequency_mapping = pandas_to_polars_frequency_mapping()
 
     # Translate the pandas frequency offset to Polars
-    polars_freq = frequency_mapping.get(freq, "1d")  # Default to daily if not found
+    polars_freq = pandas_to_polars_frequency(freq, default="d")  # Default to daily if not found
 
     # Define a dictionary mapping aggregation function names to Polars aggregation expressions
     aggregation_mapping = pandas_to_polars_aggregation_mapping(value_column)
@@ -291,8 +295,13 @@ def _summarize_by_time_polars(
         value_column = [value_column]
     
     # If agg_func is a string, convert it to a list
-    if isinstance(agg_func, str):
+    if not isinstance(agg_func, list):
         agg_func = [agg_func]
+    
+    # Check if agg_func contains any unsupported functions 
+    for func in agg_func:
+        if isinstance(func, tuple):
+            raise TypeError(f"Polars does not currently support custom lambda functions or functions provided as tuples. Here are a list of supported functions: {list(aggregation_mapping.keys())}")
 
     # Select columns for aggregation based on agg_func
     agg_columns = [aggregation_mapping[func] for func in agg_func if func in aggregation_mapping]
@@ -303,9 +312,11 @@ def _summarize_by_time_polars(
         groups = data.grouper.names
 
         # Convert the GroupBy object into a Polars DataFrame
-        df_pl = (pl.from_pandas(data.apply(lambda x: x))
+        df_pl = (
+            pl.from_pandas(data.apply(lambda x: x))
                  .groupby(groups, maintain_order=True)
-                 .agg(pl.all().sort_by(date_column)))
+                 .agg(pl.all().sort_by(date_column))
+        )
 
         # Create a list of column names to explode
         columns_to_explode = [col for col in df_pl.columns if col != groups[0]]
@@ -314,21 +325,24 @@ def _summarize_by_time_polars(
         exploded_df = df_pl.explode(columns=columns_to_explode)
 
         # Group by group and date
-        data = (exploded_df
+        data = (
+            exploded_df
                 .select([date_column, groups[0]] + value_column)
                 .with_columns(pl.col(date_column).dt.truncate(polars_freq))
                 .groupby([date_column, groups[0]])
                 .agg(agg_columns)
-                .sort([date_column, groups[0]]))
+                .sort([date_column, groups[0]])
+        )
         
         if wide_format:
             # Value columns for aggregation
             values = data.select(pl.exclude([date_column, groups[0]])).columns
 
             # Pivot the data in Polars using the renamed columns
-            data = (data.pivot(values=values, index=[date_column], columns=[groups[0]])
+            data = (
+                data.pivot(values=values, index=[date_column], columns=[groups[0]])
                     .fill_null(fillna)
-                    ).to_pandas()
+            ).to_pandas()
         else:
             # Convert back to a pandas DataFrame
             data = data.to_pandas()

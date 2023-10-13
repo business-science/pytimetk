@@ -1,22 +1,33 @@
 import polars as pl
 
+from pytimetk.utils.datetime_helpers import parse_freq_str
 
-def pandas_to_polars_frequency_mapping():
+def pandas_to_polars_frequency(pandas_freq_str, default=(1, "d")):
     
-    return {
-        "S"   : "1s",
-        "min" : "1m",
-        "T"   : "1m",
-        "H"   : "1h",
-        "D"   : "1d",
-        "W"   : "1w",
-        "M"   : "1mo",
-        "MS"  : "1mo",
-        "Q"   : "3mo",
-        "QS"  : "3mo",
-        "Y"   : "1y",
-        "YS"  : "1y"
+    quantity, unit = parse_freq_str(pandas_freq_str) 
+    
+    unit = unit.upper()
+    
+    dict_mapping = {
+        "S"   : (1, "s"),
+        "min" : (1, "m"),
+        "T"   : (1, "m"),
+        "H"   : (1, "h"),
+        "D"   : (1, "d"),
+        "W"   : (1, "w"),
+        "M"   : (1, "mo"),
+        "MS"  : (1, "mo"),
+        "Q"   : (3, "mo"),
+        "QS"  : (3, "mo"),
+        "Y"   : (1, "y"),
+        "YS"  : (1, "y")
     }
+    
+    polars_tup = dict_mapping.get(unit, default)
+    
+    polars_freq_str = f"{quantity * polars_tup[0]}{polars_tup[1]}"
+    
+    return polars_freq_str
 
 def pandas_to_polars_aggregation_mapping(column_name):
     
