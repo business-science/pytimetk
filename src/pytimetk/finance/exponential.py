@@ -31,6 +31,19 @@ def augment_ewm(
     window_func : Union[str, list], optional
         The `window_func` parameter is used to specify the Exponential Weighted Moving (EWM) window function(s) to apply. It can be a string or a list of strings. The possible values are:
         
+        - 'mean': Calculate the exponentially weighted mean.
+        - 'median': Calculate the exponentially weighted median.
+        - 'std': Calculate the exponentially weighted standard deviation.
+        - 'var': Calculate the exponentially weighted variance.
+        
+    alpha : float
+        The `alpha` parameter is a float that represents the smoothing factor for the Exponential Weighted Moving (EWM) window function. It controls the rate at which the weights decrease exponentially as the data points move further away from the current point.
+    
+    Returns
+    -------
+    pd.DataFrame
+        The function `augment_ewm` returns a DataFrame augmented with the results of the Exponential Weighted Moving (EWM) calculations.
+    
     Note:
         Any additional arguments provided through **kwargs are directly passed to the pandas EWM method. These arguments 
         can include parameters like 'com', 'span', 'halflife', 'ignore_na', 'adjust' and more.
