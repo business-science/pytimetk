@@ -21,7 +21,8 @@ def future_frame(
     force_regular: bool = False,
     bind_data: bool = True,
     threads: int = 1,
-    show_progress: bool = True
+    show_progress: bool = True,
+    engine: str = 'pandas'
 ) -> pd.DataFrame:
     '''Extend a DataFrame or GroupBy object with future dates.
     
@@ -45,6 +46,10 @@ def future_frame(
         The `threads` parameter specifies the number of threads to use for parallel processing. If `threads` is set to `None`, it will use all available processors. If `threads` is set to `-1`, it will use all available processors as well.
     show_progress : bool, optional
         A boolean parameter that determines whether to display progress using tqdm. If set to True, progress will be displayed. If set to False, progress will not be displayed.
+    engine : str, optional
+        The `engine` parameter specifies the engine to use for computation. 
+        - Currently only `pandas` is supported.
+        - `polars` will be supported in the future.
     
     Returns
     -------
@@ -164,12 +169,45 @@ def future_frame(
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
     
+    if engine == 'pandas':
+        return _future_frame_pandas(
+            data=data,
+            date_column=date_column, 
+            length_out=length_out,
+            freq=freq, 
+            force_regular=force_regular,
+            bind_data=bind_data,
+            threads=threads,
+            show_progress=show_progress
+        )
+    elif engine == 'polars':
+        raise NotImplementedError("Polars engine is not yet supported.")
+    else:
+        raise ValueError(f"Unknown engine: {engine}")
+    
+    
+    
+# Monkey patch the method to pandas groupby objects
+pd.core.groupby.generic.DataFrameGroupBy.future_frame = future_frame
+
+def _future_frame_pandas(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    date_column: str, 
+    length_out: int,
+    freq: Optional[str] = None, 
+    force_regular: bool = False,
+    bind_data: bool = True,
+    threads: int = 1,
+    show_progress: bool = True
+):
+    
     if isinstance(data, pd.DataFrame):
         ts_series = data[date_column]
             
         new_dates = make_future_timeseries(
             idx=ts_series, 
             length_out=length_out, 
+            freq = freq,
             force_regular=force_regular
         )
         
@@ -222,10 +260,8 @@ def future_frame(
         # extended_df = extended_df.sort_values(by=[*group_names, date_column]).reset_index(drop=True)
             
         return extended_df
-    
-    
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.future_frame = future_frame
+
+
 
 
 @pf.register_series_method
