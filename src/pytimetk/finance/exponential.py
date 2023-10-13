@@ -6,7 +6,7 @@ from typing import Union, Optional, Callable, Tuple, List
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 
-    
+@pf.register_dataframe_method
 def augment_ewm(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str, 
@@ -35,18 +35,22 @@ def augment_ewm(
         - 'median': Calculate the exponentially weighted median.
         - 'std': Calculate the exponentially weighted standard deviation.
         - 'var': Calculate the exponentially weighted variance.
-        .
         
     alpha : float
-        The alpha parameter is a float that represents the smoothing factor for the Exponential Weighted Moving (EWM) window function. It controls the rate at which the weights decrease exponentially as the data points move further away from the current point. A smaller alpha value results in a smoother EWM calculation, while
+        The `alpha` parameter is a float that represents the smoothing factor for the Exponential Weighted Moving (EWM) window function. It controls the rate at which the weights decrease exponentially as the data points move further away from the current point.
+    **kwargs: 
+        Additional arguments that are directly passed to the pandas EWM method. For more details, refer to the "Notes" section below.
     
     Returns
     -------
     pd.DataFrame
         The function `augment_ewm` returns a DataFrame augmented with the results of the Exponential Weighted Moving (EWM) calculations.
-        
-    Notes:
-    -----
+    
+    Notes
+    ------
+        Any additional arguments provided through **kwargs are directly passed to the pandas EWM method. These arguments 
+        can include parameters like 'com', 'span', 'halflife', 'ignore_na', 'adjust' and more.
+    
         For a comprehensive list and detailed description of these parameters:
         - Refer to the official pandas documentation: https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.ewm.html
         - Or, within an interactive Python environment, use: `?pandas.DataFrame.ewm` to display the method's docstring.
