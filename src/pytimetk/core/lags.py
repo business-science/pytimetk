@@ -62,7 +62,7 @@ def augment_lags(
     lagged_df_single = (
         df 
             .query('id == "D10"')
-            .augment_lags_pandas(
+            .augment_lags(
                 date_column='date',
                 value_column='value',
                 lags=(1, 7),
@@ -122,87 +122,7 @@ def _augment_lags_pandas(
     value_column: Union[str, List[str]], 
     lags: Union[int, Tuple[int, int], List[int]] = 1
 ) -> pd.DataFrame:
-    """
-    Adds lags to a Pandas DataFrame or DataFrameGroupBy object.
-
-    The `augment_lags` function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a lag or list of lags, and adds lagged versions of the value columns to the DataFrame.
-
-    Parameters
-    ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter is the input DataFrame or DataFrameGroupBy object that you want to add lagged columns to.
-    date_column : str
-        The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the lagged values.
-    value_column : str or list
-        The `value_column` parameter is the column(s) in the DataFrame that you want to add lagged values for. It can be either a single column name (string) or a list of column names.
-    lags : int or tuple or list, optional
-        The `lags` parameter is an integer, tuple, or list that specifies the number of lagged values to add to the DataFrame. 
-        
-        - If it is an integer, the function will add that number of lagged values for each column specified in the `value_column` parameter. 
-        
-        - If it is a tuple, it will generate lags from the first to the second value (inclusive). 
-        
-        - If it is a list, it will generate lags based on the values in the list.
-
-    Returns
-    -------
-    pd.DataFrame
-        A Pandas DataFrame with lagged columns added to it.
     
-    Examples
-    --------
-    ```{python}
-    import pandas as pd
-    import pytimetk as tk
-
-    df = tk.load_dataset('m4_daily', parse_dates=['date'])
-    df
-    ```
-    
-    ```{python}
-    # Add a lagged value of 2 for each grouped time series
-    lagged_df = (
-        df 
-            .groupby('id')
-            .augment_lags_pandas(
-                date_column='date',
-                value_column='value',
-                lags=2
-            )
-    )
-    lagged_df
-    ```
-    
-    ```{python}
-    # Add 7 lagged values for a single time series
-    lagged_df_single = (
-        df 
-            .query('id == "D10"')
-            .augment_lags_pandas(
-                date_column='date',
-                value_column='value',
-                lags=(1, 7)
-            )
-    )
-    lagged_df_single
-    ```
-
-    ```{python}
-    # Add 2 lagged values, 2 and 4, for a single time series
-    lagged_df_single_two = (
-        df 
-            .query('id == "D10"')
-            .augment_lags_pandas(
-                date_column='date',
-                value_column='value',
-                lags=[2, 4]
-            )
-    )
-    lagged_df_single_two
-    ```
-
-    """
-
     if isinstance(value_column, str):
         value_column = [value_column]
 
