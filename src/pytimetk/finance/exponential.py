@@ -15,23 +15,21 @@ def augment_ewm(
     alpha: float = None,
     **kwargs,
 ) -> pd.DataFrame:
-    """
-    This function applies one or more Exponential Weighted Moving (EWM) window functions to the specified value columns of the data. The results are then 
-    added as new columns to the DataFrame.
-
-    Args:
-        data (Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]): The input DataFrame or GroupBy object.
-        date_column (str): The name of the column containing date information.
-        value_column (Union[str, list]): The column(s) on which the EWM calculations will be performed.
-        window_func (Union[str, list[str]], optional): The EWM window function(s) to apply. Can be a string 
-            or a list of strings. Possible values are 'mean', 'var', 'std', sum, corr, cov; corresponding to the EWM methods
-            available in pandas. Defaults to 'mean'.
-        alpha (float, optional): The alpha parameter for the EWM. This is directly passed to pandas.ewm method. If not 
-            provided, then one of the decay parameters ('com', 'span', 'halflife') should be provided through **kwargs.
-            Defaults to None.
-
-    Returns:
-        pd.DataFrame: A DataFrame augmented with the results of the EWM calculations.
+    """Add Exponential Weighted Moving (EWM) window functions to a DataFrame or GroupBy object.
+    
+    The `augment_ewm` function applies Exponential Weighted Moving (EWM) window functions to specified
+    value columns of a DataFrame and adds the results as new columns.
+    
+    Parameters
+    ----------
+    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+        The input DataFrame or GroupBy object.
+    date_column : str
+        The name of the column containing date information in the input DataFrame or GroupBy object.
+    value_column : Union[str, list]
+        The `value_column` parameter is used to specify the column(s) on which the Exponential Weighted Moving (EWM) calculations will be performed. It can be either a string or a list of strings, representing the name(s) of the column(s) in the input DataFrame or GroupBy
+    window_func : Union[str, list], optional
+        The `window_func` parameter is used to specify the Exponential Weighted Moving (EWM) window function(s) to apply. It can be a string or a list of strings. The possible values are:
         
     Note:
         Any additional arguments provided through **kwargs are directly passed to the pandas EWM method. These arguments 

@@ -137,6 +137,9 @@ def parse_freq_str(freq_str):
     
     quantity, unit = match.groups()
     
+    if quantity is None:
+        quantity = 1
+    
     return quantity, unit
 
 def freq_to_dateoffset(freq_str):

@@ -2,7 +2,7 @@ import pandas as pd
 import pandas_flavor as pf
 import polars as pl
 
-from typing import Union, Optional, Callable, Tuple, List
+from typing import Union, Callable, Tuple, List
 import re 
 from itertools import cycle
 
@@ -10,7 +10,7 @@ from pytimetk.utils.pandas_helpers import flatten_multiindex_column_names
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 
-from pytimetk.utils.polars_helpers import pandas_to_polars_frequency_mapping, pandas_to_polars_aggregation_mapping
+from pytimetk.utils.polars_helpers import pandas_to_polars_frequency, pandas_to_polars_aggregation_mapping
 
 
 # FUNCTIONS -------------------------------------------------------------------
@@ -70,6 +70,7 @@ def summarize_by_time(
         - "nunique": Number of unique values
         - "corr": Correlation between values
         
+        Pandas Engine Only:
         Custom `lambda` aggregating functions can be used too. Here are several common examples:
         
         - ("q25", lambda x: x.quantile(0.25)): 25th percentile of values
@@ -152,6 +153,7 @@ def summarize_by_time(
     
     ```{python}
     # Example 4 - Summarize by time with a GroupBy object and multiple value columns and summaries (Wide Format)
+    # Note - This example only works with the pandas engine
     (
         df 
             .groupby('category_1') 
@@ -159,13 +161,22 @@ def summarize_by_time(
                 date_column  = 'order_date', 
                 value_column = ['total_price', 'quantity'], 
                 freq         = 'MS',
-                agg_func     = ['sum', 'mean', ('q25', lambda x: x.quantile(0.25)), ('q75', lambda x: x.quantile(0.75))],
-                wide_format  = True,
-                engine       = 'polars' 
+                agg_func     = [
+                    'sum', 
+                    'mean', 
+                    ('q25', lambda x: x.quantile(0.25)), ('q75', lambda x: x.quantile(0.75))
+                ],
+                wide_format  = False,
+                engine       = 'pandas' 
             )
     )
     ```
     '''
+    # Run common checks
+    check_dataframe_or_groupby(data)
+    check_value_column(data, value_column)
+    check_date_column(data, date_column)
+    
     if engine == 'pandas':
         return _summarize_by_time_pandas(data, date_column, value_column, freq, agg_func, wide_format, fillna)
     elif engine == 'polars':
@@ -189,11 +200,6 @@ def _summarize_by_time_pandas(
     *args,
     **kwargs
 ) -> pd.DataFrame:
-    
-    # Run common checks
-    check_dataframe_or_groupby(data)
-    check_value_column(data, value_column)
-    check_date_column(data, date_column)
 
     # Convert value_column to a list if it is not already
     if not isinstance(value_column, list):
@@ -218,18 +224,14 @@ def _summarize_by_time_pandas(
     # Create a dictionary mapping each value column to the aggregating function(s)
     agg_dict = {col: agg_func for col in value_column}
     
-    # **** FIX BUG WITH GROUPBY RESAMPLED OBJECTS (PART 1) ****
     
+    # Get a list of unique first elements in the agg_dict values (used for renaming lambda columns)
     unique_first_elements = [func[0] for value in agg_dict.values() for func in value if isinstance(func, tuple)]
-    
-    # print(unique_first_elements)
 
     if not unique_first_elements == []:
         for key, value in agg_dict.items():
             agg_dict[key] = [func[1] if isinstance(func, tuple) else func for func in value]
-            
-    # **** END FIX BUG WITH GROUPBY RESAMPLED OBJECTS (PART 1) ****
-
+    
     
     # Apply the aggregation using the dict method of the resampled data
     data = data.agg(func=agg_dict, *args, **kwargs)    
@@ -247,22 +249,16 @@ def _summarize_by_time_pandas(
     # Reset the index of data   
     data.reset_index(inplace=True)
 
-    # Move date column to front of pandas dataframe
-    data = data[[date_column] + [col for col in data.columns if col != date_column] ]
-        
-    # **** FIX BUG WITH GROUPBY RESAMPLED OBJECTS (PART 2)
+    # Rename any lambda columns
     if not unique_first_elements == []:        
         
         columns = data.columns
-        # print(columns)
         
         names_iter = cycle(unique_first_elements)
         
-        # new_columns = [col.replace('<lambda>', next(names_iter)) if '<lambda>' in col else col for col in columns]
         new_columns = [re.sub(pattern=r"<lambda.*?>",repl=next(names_iter), string=col) if '<lambda' in col else col for col in columns]
         
         data.columns = new_columns
-    # **** END FIX BUG WITH GROUPBY RESAMPLED OBJECTS (PART 2)
     
     return data
 
@@ -277,11 +273,9 @@ def _summarize_by_time_polars(
     fillna: int = 0,
 ):
     
-    # Mapping of frequency offsets between pandas and Polars
-    frequency_mapping = pandas_to_polars_frequency_mapping()
 
     # Translate the pandas frequency offset to Polars
-    polars_freq = frequency_mapping.get(freq, "1d")  # Default to daily if not found
+    polars_freq = pandas_to_polars_frequency(freq, default="d")  # Default to daily if not found
 
     # Define a dictionary mapping aggregation function names to Polars aggregation expressions
     aggregation_mapping = pandas_to_polars_aggregation_mapping(value_column)
@@ -291,44 +285,56 @@ def _summarize_by_time_polars(
         value_column = [value_column]
     
     # If agg_func is a string, convert it to a list
-    if isinstance(agg_func, str):
+    if not isinstance(agg_func, list):
         agg_func = [agg_func]
+    
+    # Check if agg_func contains any unsupported functions 
+    for func in agg_func:
+        if isinstance(func, tuple):
+            raise TypeError(f"Polars does not currently support custom lambda functions or functions provided as tuples. Here are a list of supported functions: {list(aggregation_mapping.keys())}")
 
     # Select columns for aggregation based on agg_func
     agg_columns = [aggregation_mapping[func] for func in agg_func if func in aggregation_mapping]
 
     # Check if the input data is a DataFrame or a GroupBy object
+    grouped = False
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        grouped = True
         # Extract name from groupby object
         groups = data.grouper.names
 
         # Convert the GroupBy object into a Polars DataFrame
-        df_pl = (pl.from_pandas(data.apply(lambda x: x))
+        df_pl = (
+            pl.from_pandas(data.apply(lambda x: x))
                  .groupby(groups, maintain_order=True)
-                 .agg(pl.all().sort_by(date_column)))
+                 .agg(pl.all().sort_by(date_column))
+        )
 
         # Create a list of column names to explode
         columns_to_explode = [col for col in df_pl.columns if col != groups[0]]
 
         # Explode the selected columns
         exploded_df = df_pl.explode(columns=columns_to_explode)
-
+        
         # Group by group and date
-        data = (exploded_df
-                .select([date_column, groups[0]] + value_column)
+        data = (
+            exploded_df
+                .select([groups[0], date_column] + value_column)
                 .with_columns(pl.col(date_column).dt.truncate(polars_freq))
-                .groupby([date_column, groups[0]])
+                .groupby([groups[0], date_column])
                 .agg(agg_columns)
-                .sort([date_column, groups[0]]))
+                .sort([groups[0], date_column])
+        )
         
         if wide_format:
             # Value columns for aggregation
             values = data.select(pl.exclude([date_column, groups[0]])).columns
 
             # Pivot the data in Polars using the renamed columns
-            data = (data.pivot(values=values, index=[date_column], columns=[groups[0]])
+            data = (
+                data.pivot(values=values, index=[date_column], columns=[groups[0]])
                     .fill_null(fillna)
-                    ).to_pandas()
+            ).to_pandas()
         else:
             # Convert back to a pandas DataFrame
             data = data.to_pandas()
@@ -352,7 +358,7 @@ def _summarize_by_time_polars(
                     ).to_pandas()
         else:
             # Convert back to a pandas DataFrame
-            data = data.to_pandas()
+            data = data.to_pandas()        
 
     return data
 
