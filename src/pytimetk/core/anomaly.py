@@ -7,7 +7,7 @@ from typing import Union, Optional
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.core.frequency import get_frequency, get_seasonal_frequency, get_trend_frequency
 
-from pytimetk.utils.parallel_helpers import parallel_apply, get_threads
+from pytimetk.utils.parallel_helpers import parallel_apply, get_threads, progress_apply
 
 from statsmodels.tsa.seasonal import STL
 from statsmodels.tsa.seasonal import seasonal_decompose
@@ -37,10 +37,10 @@ def anomalize(
     
     This function uses parallel processing to speed up computation for large datasets with many time series groups: 
     
-    - A parallel apply function is used to apply the summarizations to each group in the grouped dataframe.
+    Parallel processing has overhead and may not be faster on small datasets.
     
-        - Set threads = -1 to use all available processors. 
-        - Set threads = 1 to disable parallel processing.
+    To use parallel processing, set `threads = -1` to use all available processors.
+    
     
     Examples
     --------
@@ -184,23 +184,47 @@ def anomalize(
         # Get threads
         threads = get_threads(threads)
         
-        result = parallel_apply(
-            data, 
-            _anomalize, 
-            date_column=date_column, 
-            value_column=value_column,
-            period=period,
-            trend=trend,
-            method=method,
-            decomp=decomp,
-            clean=clean,
-            iqr_alpha=iqr_alpha,
-            max_anomalies=max_anomalies,
-            bind_data=bind_data,
-            threads=threads,
-            show_progress=show_progress,
-            verbose=verbose,
-        ).reset_index(level=group_names)
+        if threads == 1:
+            
+            result = progress_apply(
+                data, 
+                func = _anomalize, 
+                show_progress=show_progress,
+                desc="Anomalizing...",
+                # kwargs
+                date_column=date_column, 
+                value_column=value_column,
+                period=period,
+                trend=trend,
+                method=method,
+                decomp=decomp,
+                clean=clean,
+                iqr_alpha=iqr_alpha,
+                max_anomalies=max_anomalies,
+                bind_data=bind_data,
+                verbose=verbose,
+            ).reset_index(level=group_names)
+            
+        else:
+        
+            result = parallel_apply(
+                data, 
+                _anomalize, 
+                date_column=date_column, 
+                value_column=value_column,
+                period=period,
+                trend=trend,
+                method=method,
+                decomp=decomp,
+                clean=clean,
+                iqr_alpha=iqr_alpha,
+                max_anomalies=max_anomalies,
+                bind_data=bind_data,
+                threads=threads,
+                show_progress=show_progress,
+                verbose=verbose,
+                desc="Anomalizing...",
+            ).reset_index(level=group_names)
     
     return result
 
