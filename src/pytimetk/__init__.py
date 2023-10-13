@@ -18,7 +18,7 @@ from .core.expanding import *
 from .core.fourier import *
 from .core.ts_features import *
 from .core.ts_summary import *
-from .core.anomaly import *
+from .core.anomalize import *
 from .core.frequency import *
 
 from .finance.exponential import *
@@ -38,6 +38,9 @@ from .plot.plot_timeseries import (
 )
 from .plot.theme import (
     theme_timetk, palette_timetk
+)
+from .core.anomalize import (
+    anomalize,
 )
 from .core.summarize_by_time import (
     summarize_by_time, 
