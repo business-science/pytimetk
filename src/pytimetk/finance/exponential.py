@@ -6,6 +6,7 @@ from typing import Union, Optional, Callable, Tuple, List
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 
+@pf.register_dataframe_method
 def augment_ewm(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str, 
@@ -33,6 +34,9 @@ def augment_ewm(
         pd.DataFrame: A DataFrame augmented with the results of the EWM calculations.
         
     Note:
+        Any additional arguments provided through **kwargs are directly passed to the pandas EWM method. These arguments 
+        can include parameters like 'com', 'span', 'halflife', 'ignore_na', 'adjust' and more.
+    
         For a comprehensive list and detailed description of these parameters:
         - Refer to the official pandas documentation: https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.ewm.html
         - Or, within an interactive Python environment, use: `?pandas.DataFrame.ewm` to display the method's docstring.
