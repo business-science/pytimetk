@@ -1,4 +1,5 @@
 import pandas as pd
+import polars as pl
 import numpy as np
 import pandas_flavor as pf
 from typing import Union, List, Tuple
@@ -7,6 +8,115 @@ from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column,
 
 @pf.register_dataframe_method
 def augment_leads(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
+    date_column: str,
+    value_column: Union[str, List[str]], 
+    leads: Union[int, Tuple[int, int], List[int]] = 1,
+    engine: str = 'pandas',
+) -> pd.DataFrame:
+    """
+    Adds lags to a Pandas DataFrame or DataFrameGroupBy object.
+
+    The `augment_lags` function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a lag or list of lags, and adds lagged versions of the value columns to the DataFrame.
+
+    Parameters
+    ----------
+    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
+        The `data` parameter is the input DataFrame or DataFrameGroupBy object that you want to add lagged columns to.
+    date_column : str
+        The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the lagged values.
+    value_column : str or list
+        The `value_column` parameter is the column(s) in the DataFrame that you want to add lagged values for. It can be either a single column name (string) or a list of column names.
+    leads : int or tuple or list, optional
+        The `leads` parameter is an integer, tuple, or list that specifies the number of lead values to add to the DataFrame. 
+        
+        - If it is an integer, the function will add that number of lead values for each column specified in the `value_column` parameter. 
+        
+        - If it is a tuple, it will generate leads from the first to the second value (inclusive). 
+        
+        - If it is a list, it will generate leads based on the values in the list.
+    engine : str, optional
+        The `engine` parameter is used to specify the engine to use for augmenting lags. It can be either "pandas" or "polars". 
+        
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library for augmenting lags. This can be faster than using "pandas" for large datasets. 
+
+    Returns
+    -------
+    pd.DataFrame
+        A Pandas DataFrame with lead columns added to it.
+    
+    Examples
+    --------
+    ```{python}
+    import pandas as pd
+    import pytimetk as tk
+
+    df = tk.load_dataset('m4_daily', parse_dates=['date'])
+    df
+    ```
+    
+    ```{python}
+    # Example 1 - Add 7 lead values for a single DataFrame object, pandas engine
+    lead_df_single = (
+        df 
+            .query('id == "D10"')
+            .augment_leads(
+                date_column='date',
+                value_column='value',
+                leads=(1, 7),
+                engine='pandas'
+            )
+    )
+    lead_df_single
+
+    # Example 2 - Add a single lead value of 2 for each GroupBy object, polars engine
+    lead_df = (
+        df 
+            .groupby('id')
+            .augment_leads(
+                date_column='date',
+                value_column='value',
+                leads=2,
+                engine='polars'
+            )
+    )
+    lead_df
+    ```
+
+    ```{python}
+    # Example 3 add 2 lead values, 2 and 4, for a single DataFrame object, pandas engine
+    lead_df_single_two = (
+        df 
+            .query('id == "D10"')
+            .augment_leads(
+                date_column='date',
+                value_column='value',
+                leads=[2, 4],
+                engine='pandas'
+            )
+    )
+    lead_df_single_two
+    ```
+    """
+    # Run common checks
+    check_dataframe_or_groupby(data)
+    check_value_column(data, value_column)
+    check_date_column(data, date_column)
+    
+    if engine == 'pandas':
+        return _augment_leads_pandas(data, date_column, value_column, leads)
+    elif engine == 'polars':
+        return _augment_leads_polars(data, date_column, value_column, leads)
+    else:
+        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+
+# Monkey patch the method to pandas groupby objects
+pd.core.groupby.generic.DataFrameGroupBy.augment_leads = augment_leads
+
+
+def _augment_leads_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
     value_column: Union[str, List[str]],
@@ -42,54 +152,48 @@ def augment_leads(
     df = tk.load_dataset('m4_daily', parse_dates=['date'])
     ```
     
-    ```{python}
-    # Add a leaded value of 2 for each grouped time series
-    leaded_df = (
-        df 
-            .groupby('id')
-            .augment_leads(
-                date_column='date',
-                value_column='value',
-                leads=2
-            )
-    )
-    leaded_df
     ```
-
+    
     ```{python}
-    # Add 7 leaded values for a single time series
-    leaded_df_single = (
+    # Example 1 - Add 7 lead values for a single DataFrame object, pandas engine
+    lead_df_single = (
         df 
             .query('id == "D10"')
-            .augment_leads(
+            .augment_leads_pandas(
                 date_column='date',
                 value_column='value',
                 leads=(1, 7)
             )
     )
-    leaded_df_single 
+    lagged_df_single
+
+    # Example 2 - Add a single lead value of 2 for each GroupBy object, polars engine
+    lagged_df = (
+        df 
+            .groupby('id')
+            .augment_leads_pandas(
+                date_column='date',
+                value_column='value',
+                leads=2
+            )
+    )
+    lagged_df
     ```
-    
+
     ```{python}
-    # Add 2 leaded values, 2 and 4, for a single time series
-    leaded_df_single_two = (
+    # Example 3 add 2 lead values, 2 and 4, for a single DataFrame object, pandas engine
+    lagged_df_single_two = (
         df 
             .query('id == "D10"')
-            .augment_leads(
+            .augment_leads_pandas(
                 date_column='date',
                 value_column='value',
                 leads=[2, 4]
             )
     )
-    leaded_df_single_two
+    lagged_df_single_two
     ```
-
     """
-
-    # Common checks
-    check_dataframe_or_groupby(data)
-    check_date_column(data, date_column)
-    check_value_column(data, value_column)
 
     if isinstance(value_column, str):
         value_column = [value_column]
@@ -129,5 +233,126 @@ def augment_leads(
 
     return df
 
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_leads = augment_leads
+def _augment_leads_polars(
+    data: Union[pl.DataFrame, pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    date_column: str,
+    value_columns: Union[str, List[str]],
+    leads: Union[int, Tuple[int, int], List[int]] = 1
+) -> pl.DataFrame:
+    """
+    Adds leads to a Pandas DataFrame or DataFrameGroupBy object.
+
+    The `augment_leads` function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a lead or list of leads, and adds leaded versions of the value columns to the DataFrame.
+
+    Parameters
+    ----------
+    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
+        The `data` parameter is the input DataFrame or DataFrameGroupBy object that you want to add leaded columns to.
+    date_column : str
+        The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the leaded values.
+    value_column : str or list
+        The `value_column` parameter is the column(s) in the DataFrame that you want to add leaded values for. It can be either a single column name (string) or a list of column names.
+    leads : int or tuple or list, optional
+        The `leads` parameter is an integer, tuple, or list that specifies the number of leaded values to add to the DataFrame. If it is an integer, the function will add that number of leaded values for each column specified in the `value_column` parameter. If it is a tuple, it will generate leads from the first to the second value (inclusive). If it is a list, it will generate leads based on the values in the list.
+
+    Returns
+    -------
+    pd.DataFrame
+        A Pandas DataFrame with leaded columns added to it.
+    
+    Examples
+    --------
+    ```{python}
+    import pandas as pd
+    import pytimetk as tk
+
+    df = tk.load_dataset('m4_daily', parse_dates=['date'])
+    ```
+    
+    ```
+    
+    ```{python}
+    # Example 1 - Add 7 lead values for a single DataFrame object, pandas engine
+    lead_df_single = (
+        df 
+            .query('id == "D10"')
+            .augment_leads_polars(
+                date_column='date',
+                value_column='value',
+                leads=(1, 7)
+            )
+    )
+    lagged_df_single
+
+    # Example 2 - Add a single lead value of 2 for each GroupBy object, polars engine
+    lagged_df = (
+        df 
+            .groupby('id')
+            .augment_leads_polars(
+                date_column='date',
+                value_column='value',
+                leads=2
+            )
+    )
+    lagged_df
+    ```
+
+    ```{python}
+    # Example 3 add 2 lead values, 2 and 4, for a single DataFrame object, pandas engine
+    lagged_df_single_two = (
+        df 
+            .query('id == "D10"')
+            .augment_leads_polars(
+                date_column='date',
+                value_column='value',
+                leads=[2, 4]
+            )
+    )
+    lagged_df_single_two
+    ```
+    """
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        # Data is a GroupBy object, use apply to get a DataFrame
+        pandas_df = data.apply(lambda x: x)
+    elif isinstance(data, pd.DataFrame):
+        # Data is already a DataFrame
+        pandas_df = data
+    elif isinstance(data, pl.DataFrame):
+        # Data is already a Polars DataFrame
+        pandas_df = data.to_pandas()
+    else:
+        raise ValueError("data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame")
+
+    if isinstance(value_columns, str):
+        value_columns = [value_columns]
+
+    lead_foo = pl.col(date_column).shift(-1).suffix("_lead_1")
+
+    if isinstance(leads, int):
+        leads = [leads]  # Convert to a list with a single value
+    elif isinstance(leads, tuple):
+        leads = list(range(leads[0], leads[1] + 1))
+    elif not isinstance(leads, list):
+        raise TypeError(f"Invalid leads specification: type: {type(leads)}. Please use int, tuple, or list.")
+
+    lead_exprs = []
+
+    for col in value_columns:
+        for lead in leads:
+            lead_expr = pl.col(col).shift(-lead).suffix(f"_lead_{lead}")
+            lead_exprs.append(lead_expr)
+
+    # Select columns
+    selected_columns = [lead_foo] + lead_exprs
+
+    # Drop the first column by position (index)
+    selected_columns = selected_columns[1:]
+
+    # Select the columns
+    df = pl.DataFrame(pandas_df)
+    out_df = df.select(selected_columns)
+
+    # Concatenate the DataFrames horizontally
+    df = pl.concat([df, out_df], how="horizontal").to_pandas()
+
+    return df
