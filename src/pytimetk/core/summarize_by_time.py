@@ -166,7 +166,7 @@ def summarize_by_time(
                     'mean', 
                     ('q25', lambda x: x.quantile(0.25)), ('q75', lambda x: x.quantile(0.75))
                 ],
-                wide_format  = True,
+                wide_format  = False,
                 engine       = 'pandas' 
             )
     )
@@ -224,18 +224,14 @@ def _summarize_by_time_pandas(
     # Create a dictionary mapping each value column to the aggregating function(s)
     agg_dict = {col: agg_func for col in value_column}
     
-    # **** FIX BUG WITH GROUPBY RESAMPLED OBJECTS (PART 1) ****
     
+    # Get a list of unique first elements in the agg_dict values (used for renaming lambda columns)
     unique_first_elements = [func[0] for value in agg_dict.values() for func in value if isinstance(func, tuple)]
-    
-    # print(unique_first_elements)
 
     if not unique_first_elements == []:
         for key, value in agg_dict.items():
             agg_dict[key] = [func[1] if isinstance(func, tuple) else func for func in value]
-            
-    # **** END FIX BUG WITH GROUPBY RESAMPLED OBJECTS (PART 1) ****
-
+    
     
     # Apply the aggregation using the dict method of the resampled data
     data = data.agg(func=agg_dict, *args, **kwargs)    
@@ -253,22 +249,16 @@ def _summarize_by_time_pandas(
     # Reset the index of data   
     data.reset_index(inplace=True)
 
-    # Move date column to front of pandas dataframe
-    data = data[[date_column] + [col for col in data.columns if col != date_column] ]
-        
-    # **** FIX BUG WITH GROUPBY RESAMPLED OBJECTS (PART 2)
+    # Rename any lambda columns
     if not unique_first_elements == []:        
         
         columns = data.columns
-        # print(columns)
         
         names_iter = cycle(unique_first_elements)
         
-        # new_columns = [col.replace('<lambda>', next(names_iter)) if '<lambda>' in col else col for col in columns]
         new_columns = [re.sub(pattern=r"<lambda.*?>",repl=next(names_iter), string=col) if '<lambda' in col else col for col in columns]
         
         data.columns = new_columns
-    # **** END FIX BUG WITH GROUPBY RESAMPLED OBJECTS (PART 2)
     
     return data
 
