@@ -38,6 +38,8 @@ def augment_ewm(
         
     alpha : float
         The `alpha` parameter is a float that represents the smoothing factor for the Exponential Weighted Moving (EWM) window function. It controls the rate at which the weights decrease exponentially as the data points move further away from the current point.
+    **kwargs: 
+        Additional arguments that are directly passed to the pandas EWM method. For more details, refer to the "Notes" section below.
     
     Returns
     -------
