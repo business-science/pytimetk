@@ -104,7 +104,7 @@ def future_frame(
             .future_frame(
                 date_column = 'date', 
                 length_out  = 12,
-                threads     = 2 # Use 2 threads for parallel processing
+                threads     = 1 # Use 2 threads for parallel processing
             )
     )    
     extended_df
@@ -218,13 +218,11 @@ def _future_frame_pandas(
         else:
             extended_df = new_rows
         
-        return extended_df       
+        return extended_df  
     
+    # If the data is grouped
     elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        
-        # Get threads
-        threads = get_threads(threads)
         
         # If freq is None, infer the frequency from the first series in the data
         if freq is None:
@@ -233,21 +231,36 @@ def _future_frame_pandas(
             freq = get_frequency(first_group[date_column].sort_values(), force_regular=force_regular)
         
         last_dates_df = data.agg({date_column: 'max'}).reset_index()
+
+        # Use parallel processing if threads is greater than 1
+        if threads != 1:
+            
+            threads = get_threads(threads)
+            
+            chunk_size = int(len(last_dates_df) / threads)
+            subsets = [last_dates_df.iloc[i:i + chunk_size] for i in range(0, len(last_dates_df), chunk_size)]
+            
+            future_dates_list = []
+            with ProcessPoolExecutor(max_workers=threads) as executor:
+                results = list(conditional_tqdm(executor.map(_process_future_frame_subset, subsets, 
+                                                [date_column] * len(subsets),
+                                                [group_names] * len(subsets),
+                                                [length_out] * len(subsets),
+                                                [freq] * len(subsets), 
+                                                [force_regular] * len(subsets)),
+                                    total=len(subsets), display= show_progress,
+                                    desc = "Future framing..."))
+                for future_dates_subset in results:
+                    future_dates_list.extend(future_dates_subset)
         
-        chunk_size = int(len(last_dates_df) / threads)
-        subsets = [last_dates_df.iloc[i:i + chunk_size] for i in range(0, len(last_dates_df), chunk_size)]
-        
-        future_dates_list = []
-        with ProcessPoolExecutor(max_workers=threads) as executor:
-            results = list(conditional_tqdm(executor.map(_process_future_frame_subset, subsets, 
-                                                        [date_column] * len(subsets),
-                                                        [group_names] * len(subsets),
-                                                        [length_out] * len(subsets),
-                                                        [freq] * len(subsets), 
-                                                        [force_regular] * len(subsets)),
-                                            total=len(subsets), display=show_progress))
-            for future_dates_subset in results:
-                future_dates_list.extend(future_dates_subset)
+        # Use non-parallel processing if threads is 1
+        else:
+            future_dates_list = []
+            for _, row in conditional_tqdm(last_dates_df.iterrows(), total=len(last_dates_df), disable=not show_progress, display=show_progress,desc="Future framing..."):
+                future_dates_subset = _process_future_frame_rows(
+                    row, date_column, group_names, length_out, freq, force_regular
+                )
+                future_dates_list.append(future_dates_subset)
         
         future_dates_df = pd.concat(future_dates_list, axis=0).reset_index(drop=True)
         
@@ -255,9 +268,6 @@ def _future_frame_pandas(
             extended_df = pd.concat([data.obj, future_dates_df], axis=0).reset_index(drop=True)
         else:
             extended_df = future_dates_df
-            
-        # Sort
-        # extended_df = extended_df.sort_values(by=[*group_names, date_column]).reset_index(drop=True)
             
         return extended_df
 
@@ -412,3 +422,17 @@ def _process_future_frame_subset(subset, date_column, group_names, length_out, f
         
         future_dates_list.append(future_dates_df)
     return future_dates_list
+
+def _process_future_frame_rows(row, date_column, group_names, length_out, freq, force_regular):
+    future_dates = make_future_timeseries(
+        idx=pd.Series(row[date_column]),
+        length_out=length_out,
+        freq=freq, 
+        force_regular=force_regular
+    )
+    
+    future_dates_df = pd.DataFrame({date_column: future_dates})
+    for group_name in group_names:
+        future_dates_df[group_name] = row[group_name]
+    
+    return future_dates_df
