@@ -8,7 +8,7 @@ from pytimetk.core.frequency import get_frequency_summary
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_series_or_datetime
 
-from pytimetk.utils.parallel_helpers import parallel_apply, get_threads
+from pytimetk.utils.parallel_helpers import parallel_apply, get_threads, progress_apply
 
 
     
@@ -56,15 +56,13 @@ def ts_summary(
     
     Notes
     -----
-    
     ## Performance
     
     This function uses parallel processing to speed up computation for large datasets with many time series groups: 
     
-    - A parallel apply function is used to apply the summarizations to each group in the grouped dataframe.
+    Parallel processing has overhead and may not be faster on small datasets.
     
-        - Set threads = -1 to use all available processors. 
-        - Set threads = 1 to disable parallel processing.
+    To use parallel processing, set `threads = -1` to use all available processors.
     
     
     Examples
@@ -123,12 +121,25 @@ def ts_summary(
         # Get threads
         threads = get_threads(threads)
         
-        result = parallel_apply(
-            data,
-            func = lambda group: _ts_summary(group, date_column),
-            threads = threads,
-            show_progress = show_progress,
-        )
+        if threads == 1:
+            
+            result = progress_apply(
+                data,
+                func = lambda group: _ts_summary(group, date_column),
+                show_progress = show_progress,
+                desc = "TS Summarizing..."
+            )
+            
+        else:
+        
+            result = parallel_apply(
+                data,
+                func = lambda group: _ts_summary(group, date_column),
+                threads = threads,
+                show_progress = show_progress,
+                desc = "TS Summarizing..."
+            )
+            
         result = result.reset_index(drop=True)
         return result
         

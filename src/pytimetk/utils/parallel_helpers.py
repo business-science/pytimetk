@@ -32,7 +32,24 @@ def get_tqdm():
         from tqdm import tqdm
     return tqdm   
 
-def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Callable, show_progress: bool=True, threads: int=None, **kwargs):
+def progress_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Callable, show_progress: bool=True, desc="Processing...", **kwargs):
+    
+    tqdm = get_tqdm()
+    
+    tqdm.pandas(desc = desc,)
+    
+    if show_progress:
+        ret = data.progress_apply(func,  **kwargs)
+    else:
+        ret = data.apply(func, **kwargs)
+    
+    return ret
+
+# Monkey patch the method to pandas groupby objects
+pd.core.groupby.generic.DataFrameGroupBy.progress_apply = progress_apply
+
+
+def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Callable, show_progress: bool=True, threads: int=None, desc="Processing...", **kwargs):
     '''The `parallel_apply` function parallelizes the application of a function on grouped dataframes using
     concurrent.futures.
     
@@ -170,7 +187,7 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
 
     groups = list(data)
     func = partial(func, **kwargs)
-    results = list(conditional_tqdm(pool.map(func, (group for _, group in groups)), total=len(groups), display=show_progress))
+    results = list(conditional_tqdm(pool.map(func, (group for _, group in groups)), total=len(groups), display=show_progress, desc=desc))
 
     # Begin post-processing to format results properly
     results_dict = {}

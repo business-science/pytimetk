@@ -8,6 +8,8 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 
+from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column, check_installed
+
 from typing import Optional, Union
 
 try:
@@ -101,17 +103,15 @@ def ts_features(
     -----
     ## Performance
     
-    This function uses a number of techniques to speed up computation for large datasets with many time series groups: 
+    This function uses parallel processing to speed up computation for large datasets with many time series groups: 
     
-    - A parallel apply function is used to apply the summarizations to each group in the grouped dataframe.
+    Parallel processing has overhead and may not be faster on small datasets.
     
-        - Set threads = -1 to use all available processors. 
-        - Set threads = 1 to disable parallel processing.
+    To use parallel processing, set `threads = -1` to use all available processors.
     
     Examples
     --------
     ```{python}
-    # REQUIRES tsfeatures: pip install tsfeatures
     import pandas as pd
     import pytimetk as tk
     
@@ -127,6 +127,7 @@ def ts_features(
     
     df = tk.load_dataset('m4_daily', parse_dates = ['date'])
     
+    # Example 1 - Grouped DataFrame
     # Feature Extraction
     feature_df = (
         df
@@ -136,24 +137,18 @@ def ts_features(
                 value_column  = 'value',
                 features      = [acf_features, hurst],
                 freq          = 7,
-                threads       = 2,
+                threads       = 1,
                 show_progress = True
             )
     ) 
     feature_df
     ```
     '''
-    
-    # This function requires the holidays package to be installed
-    try:
-        import tsfeatures
-    except ImportError:
-        raise ImportError("The 'tsfeatures' package is not installed. Please install it by running 'pip install tsfeatures'.")
-    
-    # Check if data is a Pandas DataFrame
-    if not isinstance(data, pd.DataFrame):
-        if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-            raise TypeError("`data` is not a Pandas DataFrame.")
+    # Checks 
+    check_installed('tsfeatures')
+    check_dataframe_or_groupby(data)
+    check_date_column(data, date_column)
+    check_value_column(data, value_column)
         
     # Get threads
     threads = get_threads(threads)
@@ -249,13 +244,13 @@ def ts_features(
                 futures = [executor.submit(partial_get_feats, *args) for args in construct_df.groupby('unique_id')]
                 
                 ts_features = []
-                for future in conditional_tqdm(as_completed(futures), total=len(futures), desc="Processing", display=show_progress):
+                for future in conditional_tqdm(as_completed(futures), total=len(futures), desc="TS Featurizing...", display=show_progress):
                     ts_features.append(future.result())
         
         else:
             # Don't parallel process
             ts_features = []
-            for name, group in conditional_tqdm(construct_df.groupby('unique_id'), total=len(construct_df.unique_id.unique()), desc="Processing", display=show_progress):
+            for name, group in conditional_tqdm(construct_df.groupby('unique_id'), total=len(construct_df.unique_id.unique()), desc="TS Featurizing...", display=show_progress):
                 result = partial_get_feats(name, group, features = features)
                 ts_features.append(result)    
     

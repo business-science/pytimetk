@@ -1,17 +1,16 @@
 # Dependencies
 import pandas as pd
-import numpy as np
 import math
 import pandas_flavor as pf
 
-from typing import Union
-
-from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_series_or_datetime
-
-try: 
+try:
     import holidays
 except ImportError:
-    pass
+    pass 
+
+from typing import Union
+
+from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_series_or_datetime, check_installed
 
 
 @pf.register_dataframe_method
@@ -150,12 +149,9 @@ def augment_holiday_signature(
     ```
     """
     # This function requires the holidays package to be installed
-    try:
-        import holidays
-    except ImportError:
-        raise ImportError("The 'holidays' package is not installed. Please install it by running 'pip install holidays'.")
     
     # Common checks
+    check_installed('holidays')
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
         
