@@ -107,7 +107,7 @@ def augment_rolling(
                     'mean',  # Built-in mean function
                     ('std', lambda x: x.std())  # Lambda function to compute standard deviation
                 ],
-                threads = -1
+                threads = 1  # Disabling parallel processing
             )
     )
     display(rolled_df)
@@ -170,21 +170,33 @@ def augment_rolling(
         group_names = data.grouper.names
         grouped = data_copy.sort_values(by=[*group_names, date_column]).groupby(group_names)
         
-        # Prepare to use pathos.multiprocessing
-        pool = ProcessingPool(threads)
+        # Check if the data is grouped and threads are set to 1. If true, handle it without parallel processing.
+        if threads == 1:
+            func = partial(_process_single_roll, 
+                           value_column=value_column, 
+                           window_func=window_func, 
+                           window=window, 
+                           min_periods=min_periods, 
+                           center=center, **kwargs)
 
-        # Use partial to "freeze" arguments for _process_single_roll
-        func = partial(_process_single_roll, 
-                       value_column=value_column, 
-                       window_func=window_func, 
-                       window=window, 
-                       min_periods=min_periods, 
-                       center=center, **kwargs)
+            # Use tqdm to display progress for the loop
+            result_dfs = [func(group) for _, group in conditional_tqdm(grouped, total=len(grouped), desc="Calculating Rolling...", display=show_progress)]
+        else:
+            # Prepare to use pathos.multiprocessing
+            pool = ProcessingPool(threads)
 
-        result_dfs = list(conditional_tqdm(pool.map(func, (group for _, group in grouped)), 
-                                           total=len(grouped), 
-                                           desc="Processing rolling calculations", 
-                                           display=show_progress))
+            # Use partial to "freeze" arguments for _process_single_roll
+            func = partial(_process_single_roll, 
+                           value_column=value_column, 
+                           window_func=window_func, 
+                           window=window, 
+                           min_periods=min_periods, 
+                           center=center, **kwargs)
+
+            result_dfs = list(conditional_tqdm(pool.map(func, (group for _, group in grouped)), 
+                                               total=len(grouped), 
+                                               desc="Calculating Rolling...", 
+                                               display=show_progress))
     else:
         result_dfs = [_process_single_roll(data_copy, value_column, window_func, window, min_periods, center, **kwargs)]
     
@@ -284,7 +296,7 @@ def augment_rolling_apply(
             window=3,
             window_func=[('corr', lambda x: x['value1'].corr(x['value2']))],  # Lambda function for correlation
             center = False,  # Not centering the rolling window
-            threads = 2 # Using 2 threads for parallel processing
+            threads = 1 # Increase threads for parallel processing (use -1 for all cores)
         )
     )
     display(rolled_df)
@@ -372,14 +384,20 @@ def augment_rolling_apply(
     else: 
         group_names = None
         grouped = [([], data_copy.sort_values(by=[date_column]))]
-    
-    # Prepare to use pathos.multiprocessing
-    pool = ProcessingPool(threads)
-    args = [(group, window, window_func, min_periods, center) for group in grouped]
-    result_dfs = list(conditional_tqdm(pool.map(_process_single_apply_group, args), 
-                                    total=len(grouped), 
-                                    desc="Processing rolling calculations", 
-                                    display=show_progress))
+
+    if threads == 1:
+        result_dfs = []
+        for group in conditional_tqdm(grouped, total=len(grouped), desc="Processing rolling apply...", display= show_progress):
+            args = group, window, window_func, min_periods, center
+            result_dfs.append(_process_single_apply_group(args))
+    else:
+        # Prepare to use pathos.multiprocessing
+        pool = ProcessingPool(threads)
+        args = [(group, window, window_func, min_periods, center) for group in grouped]
+        result_dfs = list(conditional_tqdm(pool.map(_process_single_apply_group, args), 
+                                        total=len(grouped), 
+                                        desc="Processing rolling apply...", 
+                                        display=show_progress))
 
     # Combine processed dataframes and sort by index
     result_df = pd.concat(result_dfs).sort_index()
@@ -387,7 +405,7 @@ def augment_rolling_apply(
     # result_df = pd.concat([data_copy, result_df], axis=1)
     result_df = pd.concat([data_copy.reset_index(drop=True), result_df.reset_index(drop=True)], axis=1)
     result_df.index = original_index
-    
+
     return result_df
 
 # Monkey patch the method to pandas groupby objects
