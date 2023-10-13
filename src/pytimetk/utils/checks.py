@@ -1,7 +1,8 @@
 
 import pandas as pd
 import numpy as np
-import pkg_resources
+from importlib.metadata import distribution, DistributionNotFound
+
 
 from typing import Union, List
 
@@ -54,10 +55,9 @@ def check_series_or_datetime(data: Union[pd.Series, pd.DatetimeIndex]) -> None:
     return None
 
 def check_installed(package_name: str):
-    
     try:
-        pkg_resources.get_distribution(package_name)
-    except pkg_resources.DistributionNotFound:
+        distribution(package_name)
+    except DistributionNotFound:
         raise ImportError(f"The '{package_name}' package was not found in the active python environment. Please install it by running 'pip install {package_name}'.")
 
 # def ensure_datetime64_date_column(data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], date_column = str) -> Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]:
