@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>pytimetk - Changelog for PyTimeTK</title>
+<title>pytimetk – augment_ewm</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,27 +20,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<link href="./favicon.ico" rel="icon">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -82,12 +116,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <!-- SUMO -->
 <script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
-<meta property="og:title" content="pytimetk - Changelog for PyTimeTK">
-<meta property="og:site-name" content="pytimetk">
-<meta name="twitter:title" content="pytimetk - Changelog for PyTimeTK">
-<meta name="twitter:card" content="summary">
 </head>
 
 <body class="nav-sidebar floating nav-fixed">
@@ -97,10 +130,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
-    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
     <img src="https://www.business-science.io/img/business-science-logo.png" alt="" class="navbar-logo">
     </a>
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">pytimetk</span>
     </a>
   </div>
@@ -116,7 +149,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./changelog-news.html">📧 Change Log</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">augment_ewm</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -130,7 +163,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">PyTimeTK 📈</span></a>
   </div>
 </li>
@@ -146,13 +179,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./getting-started/01_installation.html" class="sidebar-item-text sidebar-link">
+  <a href="../getting-started/01_installation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Install</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./getting-started/02_quick_start.html" class="sidebar-item-text sidebar-link">
+  <a href="../getting-started/02_quick_start.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Quick Start</span></a>
   </div>
 </li>
@@ -169,31 +202,31 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./guides/01_visualization.html" class="sidebar-item-text sidebar-link">
+  <a href="../guides/01_visualization.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Data Visualization</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./guides/02_timetk_concepts.html" class="sidebar-item-text sidebar-link">
+  <a href="../guides/02_timetk_concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">PyTimeTK Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./guides/03_pandas_frequency.html" class="sidebar-item-text sidebar-link">
+  <a href="../guides/03_pandas_frequency.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Pandas Frequencies</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./guides/04_wrangling.html" class="sidebar-item-text sidebar-link">
+  <a href="../guides/04_wrangling.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Data Wrangling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./guides/05_augmenting.html" class="sidebar-item-text sidebar-link">
+  <a href="../guides/05_augmenting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Adding Features (Augmenting)</span></a>
   </div>
 </li>
@@ -210,31 +243,31 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tutorials/01_sales_crm.html" class="sidebar-item-text sidebar-link">
+  <a href="../tutorials/01_sales_crm.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Sales Analysis</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tutorials/02_finance.html" class="sidebar-item-text sidebar-link">
+  <a href="../tutorials/02_finance.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Finance Analysis</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tutorials/03_demand_forecasting.html" class="sidebar-item-text sidebar-link">
+  <a href="../tutorials/03_demand_forecasting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Demand Forecasting</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tutorials/04_anomaly_detection.html" class="sidebar-item-text sidebar-link">
+  <a href="../tutorials/04_anomaly_detection.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Anomaly Detection</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./tutorials/05_clustering.html" class="sidebar-item-text sidebar-link">
+  <a href="../tutorials/05_clustering.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Clustering</span></a>
   </div>
 </li>
@@ -243,7 +276,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reference/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📄 API Reference</span></a>
   </div>
 </li>
@@ -257,14 +290,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./contributing.html" class="sidebar-item-text sidebar-link">
+  <a href="../contributing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">🍻 Contributing</span></a>
   </div>
 </li>
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./changelog-news.html" class="sidebar-item-text sidebar-link active">
+  <a href="../changelog-news.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📧 Change Log</span></a>
   </div>
 </li>
@@ -301,31 +334,19 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#pytimetk-0.1.0.9000-in-development" id="toc-pytimetk-0.1.0.9000-in-development" class="nav-link active" data-scroll-target="#pytimetk-0.1.0.9000-in-development"><span class="header-section-number">1</span> pytimetk 0.1.0.9000 (in development)</a>
-  <ul class="collapse">
-  <li><a href="#anomaly-detection" id="toc-anomaly-detection" class="nav-link" data-scroll-target="#anomaly-detection">Anomaly Detection</a></li>
-  <li><a href="#new-functions" id="toc-new-functions" class="nav-link" data-scroll-target="#new-functions">New Functions:</a></li>
-  <li><a href="#new-finance-module" id="toc-new-finance-module" class="nav-link" data-scroll-target="#new-finance-module">New Finance Module</a></li>
-  <li><a href="#speed-improvements" id="toc-speed-improvements" class="nav-link" data-scroll-target="#speed-improvements">Speed Improvements</a></li>
-  <li><a href="#helpful-utilities" id="toc-helpful-utilities" class="nav-link" data-scroll-target="#helpful-utilities">Helpful Utilities:</a></li>
-  <li><a href="#new-data-sets" id="toc-new-data-sets" class="nav-link" data-scroll-target="#new-data-sets">New Data Sets:</a></li>
-  <li><a href="#new-applied-tutorials" id="toc-new-applied-tutorials" class="nav-link" data-scroll-target="#new-applied-tutorials">3 New Applied Tutorials:</a></li>
-  <li><a href="#final-deprecations" id="toc-final-deprecations" class="nav-link" data-scroll-target="#final-deprecations">Final Deprecations:</a></li>
-  </ul></li>
-  <li><a href="#pytimetk-0.1.0-2023-10-02" id="toc-pytimetk-0.1.0-2023-10-02" class="nav-link" data-scroll-target="#pytimetk-0.1.0-2023-10-02"><span class="header-section-number">2</span> pytimetk 0.1.0 (2023-10-02)</a>
-  <ul class="collapse">
-  <li><a href="#about-the-initial-release." id="toc-about-the-initial-release." class="nav-link" data-scroll-target="#about-the-initial-release.">About the Initial release.</a></li>
-  <li><a href="#the-pytimetk-website-comes-with" id="toc-the-pytimetk-website-comes-with" class="nav-link" data-scroll-target="#the-pytimetk-website-comes-with">The PyTimeTK website comes with:</a></li>
-  </ul></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/changelog-news.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_ewm.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Changelog for PyTimeTK</h1>
+<h1 class="title">augment_ewm</h1>
 </div>
 
 
@@ -340,124 +361,237 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<section id="pytimetk-0.1.0.9000-in-development" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> pytimetk 0.1.0.9000 (in development)</h1>
-<section id="anomaly-detection" class="level3">
-<h3 class="anchored" data-anchor-id="anomaly-detection">Anomaly Detection</h3>
-<ul>
-<li><code>anomalize()</code>: A new scalable function for detecting time series anomalies (outliers)</li>
-</ul>
+<p><code>augment_ewm(data, date_column, value_column, window_func='mean', alpha=None, **kwargs)</code></p>
+<p>Add Exponential Weighted Moving (EWM) window functions to a DataFrame or GroupBy object.</p>
+<p>The <code>augment_ewm</code> function applies Exponential Weighted Moving (EWM) window functions to specified value columns of a DataFrame and adds the results as new columns.</p>
+<section id="parameters" class="level2">
+<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<table class="table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 12%">
+<col style="width: 81%">
+<col style="width: 2%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>data</code></td>
+<td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
+<td>The input DataFrame or GroupBy object.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td><code>date_column</code></td>
+<td>str</td>
+<td>The name of the column containing date information in the input DataFrame or GroupBy object.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td><code>value_column</code></td>
+<td>Union[str, list]</td>
+<td>The <code>value_column</code> parameter is used to specify the column(s) on which the Exponential Weighted Moving (EWM) calculations will be performed. It can be either a string or a list of strings, representing the name(s) of the column(s) in the input DataFrame or GroupBy</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td><code>window_func</code></td>
+<td>Union[str, list]</td>
+<td>The <code>window_func</code> parameter is used to specify the Exponential Weighted Moving (EWM) window function(s) to apply. It can be a string or a list of strings. The possible values are: - ‘mean’: Calculate the exponentially weighted mean. - ‘median’: Calculate the exponentially weighted median. - ‘std’: Calculate the exponentially weighted standard deviation. - ‘var’: Calculate the exponentially weighted variance.</td>
+<td><code>'mean'</code></td>
+</tr>
+<tr class="odd">
+<td><code>alpha</code></td>
+<td>float</td>
+<td>The <code>alpha</code> parameter is a float that represents the smoothing factor for the Exponential Weighted Moving (EWM) window function. It controls the rate at which the weights decrease exponentially as the data points move further away from the current point.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td><code>**kwargs</code></td>
+<td></td>
+<td>Additional arguments that are directly passed to the pandas EWM method. For more details, refer to the “Notes” section below.</td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="new-functions" class="level3">
-<h3 class="anchored" data-anchor-id="new-functions">New Functions:</h3>
-<ul>
-<li><code>apply_by_time()</code>: For complex apply-style aggregations by time.</li>
-<li><code>augment_rolling_apply()</code>: For complex rolling operations using apply-style data frame functions.<br>
-</li>
-<li><code>augment_expanding()</code>: For expanding calculations with single-column functions (e.g.&nbsp;mean).</li>
-<li><code>augment_expanding_apply()</code>: For complex expanding operations with apply-style data frame functions.</li>
-<li><code>get_frequency()</code>: Infer a pandas-like frequency. More robust than <code>pandas.infer_freq</code>.</li>
-<li><code>get_seasonal_frequency()</code>: Infer the pandas-like seasonal frequency (periodicity) for the time series.</li>
-<li><code>get_trend_frequency()</code>: Infer the pandas-like trend for the time series.</li>
-</ul>
+<section id="returns" class="level2">
+<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<table class="table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 90%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>pd.DataFrame</td>
+<td>The function <code>augment_ewm</code> returns a DataFrame augmented with the results of the Exponential Weighted Moving (EWM) calculations.</td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="new-finance-module" class="level3">
-<h3 class="anchored" data-anchor-id="new-finance-module">New Finance Module</h3>
-<ul>
-<li><code>augment_ewm()</code>: Exponentially weighted augmentation</li>
-</ul>
+<section id="notes" class="level2">
+<h2 class="anchored" data-anchor-id="notes">Notes</h2>
+<pre><code>Any additional arguments provided through **kwargs are directly passed to the pandas EWM method. These arguments 
+can include parameters like 'com', 'span', 'halflife', 'ignore_na', 'adjust' and more.
+
+For a comprehensive list and detailed description of these parameters:
+- Refer to the official pandas documentation: https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.ewm.html
+- Or, within an interactive Python environment, use: `?pandas.DataFrame.ewm` to display the method's docstring.</code></pre>
 </section>
-<section id="speed-improvements" class="level3">
-<h3 class="anchored" data-anchor-id="speed-improvements">Speed Improvements</h3>
-<section id="polars-engines" class="level4">
-<h4 class="anchored" data-anchor-id="polars-engines">Polars Engines:</h4>
-<ul>
-<li><code>summarize_by_time()</code>: Gains a polars engine.
-<ul>
-<li>3X to 10X speed improvements.</li>
-</ul></li>
-<li><code>augment_lags()</code> and <code>augment_leads()</code>: Gains a polars engine. Speed improvements increase with number of lags/leads.
-<ul>
-<li>6.5X speed improvement with 100 lags.</li>
-</ul></li>
-<li><code>augment_expanding()</code>: Gains a polars engine.</li>
-</ul>
-</section>
-<section id="parallel-processing-and-vectorized-optimizations" class="level4">
-<h4 class="anchored" data-anchor-id="parallel-processing-and-vectorized-optimizations">Parallel Processing and Vectorized Optimizations:</h4>
-<ul>
-<li><code>pad_by_time()</code>: Complete overhaul. Uses Cartesian Product (Vectorization) to enhance the speed. 1000s of time series can now be padded in seconds.
-<ul>
-<li><strong>Independent review: Time went from over 90 minutes to 13 seconds for a 500X speedup on 10M rows.</strong></li>
-</ul></li>
-<li><code>future_frame()</code>: Complete overhaul. Uses vectorization when possible. Grouped parallel processing. Set <code>threads = -1</code> to use all cores.
-<ul>
-<li><strong>Independent Review: Time went from 11 minutes to 2.5 minutes for a 4.4X speedup on 10M rows</strong></li>
-</ul></li>
-<li><code>ts_features</code>: Uses concurrent futures to parallelize tasks. Set <code>threads = -1</code> to use all cores.</li>
-<li><code>ts_summary</code>: Uses concurrent futures to parallelize tasks. Set <code>threads = -1</code> to use all cores.</li>
-<li><code>anomalize</code>: Uses concurrent futures to parallelize tasks. Set <code>threads = -1</code> to use all cores.</li>
-<li><code>augment_rolling()</code> and <code>augment_rolling_apply()</code>: Uses concurrent futures to parallelize tasks. Set <code>threads = -1</code> to use all cores.</li>
-</ul>
-</section>
-</section>
-<section id="helpful-utilities" class="level3">
-<h3 class="anchored" data-anchor-id="helpful-utilities">Helpful Utilities:</h3>
-<ul>
-<li><code>parallel_apply</code>: Mimics the <code>pandas apply()</code> function with concurrent futures.</li>
-<li><code>progress_apply</code>: Adds a progress bar to pandas apply()</li>
-<li><code>glimpse()</code>: Mimics tidyverse (tibble) glimpse function</li>
-</ul>
-</section>
-<section id="new-data-sets" class="level3">
-<h3 class="anchored" data-anchor-id="new-data-sets">New Data Sets:</h3>
-<ul>
-<li><code>expedia</code>: Expedia hotel searches time series data set</li>
-</ul>
-</section>
-<section id="new-applied-tutorials" class="level3">
-<h3 class="anchored" data-anchor-id="new-applied-tutorials">3 New Applied Tutorials:</h3>
-<ol type="1">
-<li><a href="./tutorials/01_sales_crm.html">Sales Analysis Tutorial</a></li>
-<li><a href="./tutorials/02_finance.html">Finance Analysis Tutorial</a></li>
-<li><a href="./tutorials/03_demand_forecasting.html">Demand Forecasting Tutorial</a></li>
-</ol>
-</section>
-<section id="final-deprecations" class="level3">
-<h3 class="anchored" data-anchor-id="final-deprecations">Final Deprecations:</h3>
-<ul>
-<li><code>summarize_by_time()</code>: <code>kind = "period"</code>. This was removed for consistency with <code>pytimetk</code>. “timestamp” is the default.</li>
-<li><code>augment_rolling()</code>: <code>use_independent_variables</code>. This is replaced by <code>augment_rolling_apply()</code>.</li>
-</ul>
-</section>
-</section>
-<section id="pytimetk-0.1.0-2023-10-02" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> pytimetk 0.1.0 (2023-10-02)</h1>
-<section id="about-the-initial-release." class="level3">
-<h3 class="anchored" data-anchor-id="about-the-initial-release.">About the Initial release.</h3>
-<p>This release includes the following features:</p>
-<ol type="1">
-<li>A workhorse plotting function called <code>plot_timeseries()</code> 💪</li>
-<li>Three (3) data wrangling functions that will simplify 90% of time series tasks 🙏</li>
-<li>Five (5) “augmentor” functions: These add hundreds of features to time series to help in predictive tasks 🧠</li>
-<li>Two (2) time series feature summarizes: identify key aspects of your time series 🔍</li>
-<li>Nine (9) pandas series and DatetimeIndex helpers (work more easily with these timestamp data structures) ⏲</li>
-<li>Four (4) date utility functions that fill in missing function gaps in pandas 🐼</li>
-<li>Two (2) Visualization utilities to help you customize your visualizations and make them look MORE professional 📈</li>
-<li>Two (2) Pandas helpers that help clean up and understand pandas data frames with time series 🎇</li>
-<li>Twelve (12) time series datasets that you can practice PyTimeTK time series analysis on 🔢</li>
-</ol>
-</section>
-<section id="the-pytimetk-website-comes-with" class="level3">
-<h3 class="anchored" data-anchor-id="the-pytimetk-website-comes-with">The PyTimeTK website comes with:</h3>
-<ol type="1">
-<li>Two (2) Getting started tutorials</li>
-<li>Five (5) Guides covering common tasks</li>
-<li>Coming Soon: Applied Tutorials in Sales, Finance, Demand Forecasting, Anomaly Detection, and more.</li>
-</ol>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pytimetk.finance <span class="im">import</span> augment_ewm</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"m4_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This example demonstrates the use of string-named functions on an EWM.</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The decay parameter used in this example is 'alpha', but other methods (e.g., 'com', 'span', 'halflife') can also be utilized.</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>ewm_df <span class="op">=</span> (</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        .augment_ewm(</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>, </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>            ],</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>            alpha <span class="op">=</span> <span class="fl">0.1</span>, </span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>display(ewm_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
 
 
-</section>
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+<th data-quarto-table-cell-role="th">value_ewm_mean_alpha_0.1</th>
+<th data-quarto-table-cell-role="th">value_ewm_std_alpha_0.1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>D10</td>
+<td>2014-07-03</td>
+<td>2076.2</td>
+<td>2076.200000</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>D10</td>
+<td>2014-07-04</td>
+<td>2073.4</td>
+<td>2074.726316</td>
+<td>1.979899</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>D10</td>
+<td>2014-07-05</td>
+<td>2048.7</td>
+<td>2065.122509</td>
+<td>15.469679</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>D10</td>
+<td>2014-07-06</td>
+<td>2048.9</td>
+<td>2060.405292</td>
+<td>14.956710</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>D10</td>
+<td>2014-07-07</td>
+<td>2006.4</td>
+<td>2047.217509</td>
+<td>28.900759</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9738</td>
+<td>D500</td>
+<td>2012-09-19</td>
+<td>9418.8</td>
+<td>9063.846716</td>
+<td>383.153610</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9739</td>
+<td>D500</td>
+<td>2012-09-20</td>
+<td>9365.7</td>
+<td>9094.032044</td>
+<td>375.209253</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9740</td>
+<td>D500</td>
+<td>2012-09-21</td>
+<td>9445.9</td>
+<td>9129.218840</td>
+<td>372.109978</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9741</td>
+<td>D500</td>
+<td>2012-09-22</td>
+<td>9497.9</td>
+<td>9166.086956</td>
+<td>370.853344</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9742</td>
+<td>D500</td>
+<td>2012-09-23</td>
+<td>9545.3</td>
+<td>9204.008260</td>
+<td>370.729312</td>
+</tr>
+</tbody>
+</table>
+
+<p>9743 rows × 5 columns</p>
+</div>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
