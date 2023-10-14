@@ -123,7 +123,7 @@ def summarize_by_time(
     # Example 2 - Summarize by time with a GroupBy object (Long Format), polars engine
     (
         df 
-            .groupby('category_1') 
+            .groupby(['category_1', 'category_2']) 
             .summarize_by_time(
                 date_column  = 'order_date', 
                 value_column = 'total_price', 
@@ -300,8 +300,8 @@ def _summarize_by_time_polars(
     grouped = False
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         grouped = True
-        # Extract name from groupby object
-        groups = data.grouper.names
+        # Extract names from groupby object
+        groups = data.grouper.names  # This can be a list of group names
 
         # Convert the GroupBy object into a Polars DataFrame
         df_pl = (
@@ -311,28 +311,28 @@ def _summarize_by_time_polars(
         )
 
         # Create a list of column names to explode
-        columns_to_explode = [col for col in df_pl.columns if col != groups[0]]
+        columns_to_explode = [col for col in df_pl.columns if col not in groups]
 
         # Explode the selected columns
         exploded_df = df_pl.explode(columns=columns_to_explode)
         
-        # Group by group and date
+        # Group by groups and date
         data = (
             exploded_df
-                .select([groups[0], date_column] + value_column)
+                .select(groups + [date_column] + value_column)
                 .with_columns(pl.col(date_column).dt.truncate(polars_freq))
-                .groupby([groups[0], date_column])
+                .groupby(groups + [date_column])
                 .agg(agg_columns)
-                .sort([groups[0], date_column])
+                .sort(groups + [date_column])
         )
         
         if wide_format:
             # Value columns for aggregation
-            values = data.select(pl.exclude([date_column, groups[0]])).columns
+            values = data.select(pl.exclude([date_column] + groups)).columns
 
             # Pivot the data in Polars using the renamed columns
             data = (
-                data.pivot(values=values, index=[date_column], columns=[groups[0]])
+                data.pivot(values=values, index=[date_column] + groups)
                     .fill_null(fillna)
             ).to_pandas()
         else:
