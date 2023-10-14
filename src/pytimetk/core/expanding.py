@@ -239,9 +239,6 @@ def augment_expanding_apply(
     # expanding Regression Example: Using `value1` as the dependent variable and `value2` and `value3` as the independent variables.
     # This example demonstrates how to perform a expanding regression using two independent variables.
 
-    # Required module (scikit-learn) for regression.
-    from sklearn.linear_model import LinearRegression
-
     # Sample DataFrame with `id`, `date`, `value1`, `value2`, and `value3` columns.
     df = pd.DataFrame({
         'id': [1, 1, 1, 2, 2, 2],
@@ -253,6 +250,9 @@ def augment_expanding_apply(
     
     # Define Regression Function to be applied on the expanding window.
     def regression(df):
+    
+        # Required module (scikit-learn) for regression.
+        from sklearn.linear_model import LinearRegression
     
         model = LinearRegression()
         X = df[['value2', 'value3']]  # Independent variables
