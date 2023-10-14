@@ -120,16 +120,16 @@ def summarize_by_time(
     ```
     
     ```{python}
-    # Example 2 - Summarize by time with a GroupBy object (Long Format), polars engine
+    # Example 2 - Summarize by time with a GroupBy object (Wide Format), polars engine
     (
         df 
-            .groupby(['category_1', 'category_2']) 
+            .groupby(['category_1', 'frame_material']) 
             .summarize_by_time(
                 date_column  = 'order_date', 
-                value_column = 'total_price', 
+                value_column = ['total_price', 'quantity'], 
                 freq         = 'MS',
                 agg_func     = 'sum',
-                wide_format  = False, 
+                wide_format  = True, 
                 engine       = 'polars'
             )
     )
@@ -330,11 +330,32 @@ def _summarize_by_time_polars(
             # Value columns for aggregation
             values = data.select(pl.exclude([date_column] + groups)).columns
 
-            # Pivot the data in Polars using the renamed columns
+            # Emulate the pandas pivot function
+            if not isinstance(groups, list):
+                groups = [groups]
+
+            # Combine columns using a loop
+            cols_to_combine = groups
+            separator = "_"
+
+            combined_expr = pl.col(cols_to_combine[0])
+            if len(cols_to_combine) > 1:
+                for col_name in cols_to_combine[1:]:
+                    combined_expr = combined_expr + separator + pl.col(col_name)
+
+            data = data.with_columns(combined_expr.alias("_Combined"))
+            
             data = (
-                data.pivot(values=values, index=[date_column] + groups)
+                data.pivot(
+                    values=values, 
+                    index=[date_column], 
+                    columns= "_Combined",
+                    aggregate_function = pl.col(values[0]).sum()
+                )
                     .fill_null(fillna)
             ).to_pandas()
+            
+            data.columns = data.columns.str.replace("__Combined", "")
         else:
             # Convert back to a pandas DataFrame
             data = data.to_pandas()
