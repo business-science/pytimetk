@@ -42,7 +42,7 @@ Add one or more feature columns to time series data.
 | [augment_expanding](augment_expanding.qmd#pytimetk.augment_expanding) | Apply one or more Series-based expanding functions and window sizes to one or more columns of a DataFrame. |
 | [augment_expanding_apply](augment_expanding_apply.qmd#pytimetk.augment_expanding_apply) | Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame. |
 
-## TS Features
+## 📎 TS Features
 
 Python implementation of the R package `tsfeatures`.
 
@@ -50,6 +50,14 @@ Python implementation of the R package `tsfeatures`.
 | --- | --- |
 | [ts_features](ts_features.qmd#pytimetk.ts_features) | Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the `tsfeatures` package. |
 | [ts_summary](ts_summary.qmd#pytimetk.ts_summary) | Computes summary statistics for a time series data, either for the entire dataset or grouped by a specific column. |
+
+## 💹 Finance Module
+
+Functions for working with financial time series data.
+
+| | |
+| --- | --- |
+| [augment_ewm](augment_ewm.qmd#pytimetk.augment_ewm) | Add Exponential Weighted Moving (EWM) window functions to a DataFrame or GroupBy object. |
 
 ## 🐼 Time Series for Pandas Series
 
@@ -97,6 +105,7 @@ Helper functions to make your life easier.
 | --- | --- |
 | [glimpse](glimpse.qmd#pytimetk.glimpse) | Takes a pandas DataFrame and prints a summary of |
 | [parallel_apply](parallel_apply.qmd#pytimetk.parallel_apply) | The `parallel_apply` function parallelizes the application of a function on grouped dataframes using |
+| [progress_apply](progress_apply.qmd#pytimetk.progress_apply) | Adds a progress bar to pandas apply(). |
 | [flatten_multiindex_column_names](flatten_multiindex_column_names.qmd#pytimetk.flatten_multiindex_column_names) | Takes a DataFrame as input and flattens the column |
 
 ## 💾 13 Datasets

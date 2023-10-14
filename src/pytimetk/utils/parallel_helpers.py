@@ -6,33 +6,48 @@ from pathos.multiprocessing import ProcessingPool
 
 from typing import Iterable, Callable
 
-def get_threads(threads: int=None):
-    if threads is None: 
-        threads = cpu_count()
-    if threads == -1: 
-        threads = cpu_count()
-    return threads
 
-def conditional_tqdm(iterable: Iterable, display: bool =True, **kwargs):
-    tqdm = get_tqdm()
-    if display:
-        return tqdm(iterable, **kwargs)
-    else:
-        return iterable
 
-def get_tqdm():
-    try:
-        # Check if we are in a Jupyter environment
-        ipy_instance = get_ipython().__class__.__name__
-        if "ZMQ" in ipy_instance or "Shell" in ipy_instance:  # Jupyter Notebook or Jupyter Lab
-            from tqdm.notebook import tqdm
-        else:
-            from tqdm import tqdm
-    except (NameError, ImportError):  # Not in an IPython environment
-        from tqdm import tqdm
-    return tqdm   
+def progress_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Callable, show_progress: bool=True, desc: str="Processing...", **kwargs):
+    '''Adds a progress bar to pandas apply().
+    
+    Parameters
+    ----------
+    data : pd.core.groupby.generic.DataFrameGroupBy
+        The `data` parameter is a pandas DataFrameGroupBy object. It represents a grouped DataFrame, where the data is grouped based on one or more columns.
+    func : Callable
+        The `func` parameter is a callable function that will be applied to each group in the `data` DataFrameGroupBy object. This function will be applied to each group separately.
+    show_progress : bool
+        A boolean value indicating whether to show the progress bar or not. If set to True, a progress bar will be displayed while the function is being applied. If set to False, no progress bar will be displayed.
+    desc : str
+        The `desc` parameter is used to provide a description for the progress bar. It is displayed as a prefix to the progress bar.
+    **kwargs
+        The `**kwargs` parameter is a dictionary of keyword arguments that are passed to the `func` function.
+    
+    Returns
+    -------
+    pd.DataFrame
+        The result of applying the given function to the grouped data.
+        
+    Examples:
+    --------
+    ``` {python}
+    import pytimetk as tk
+    import pandas as pd   
+    
+    df = pd.DataFrame({
+        'A': ['foo', 'bar', 'foo', 'bar', 'foo', 'bar'],
+        'B': [1, 2, 3, 4, 5, 6]
+    })
 
-def progress_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Callable, show_progress: bool=True, desc="Processing...", **kwargs):
+    grouped = df.groupby('A')
+    
+    result = grouped.progress_apply(lambda df: df['B'].sum())
+    result
+    
+    ```
+    
+    '''
     
     tqdm = get_tqdm()
     
@@ -224,3 +239,32 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.parallel_apply = parallel_apply
 
+
+# Utility functions
+# -----------------
+
+def get_threads(threads: int=None):
+    if threads is None: 
+        threads = cpu_count()
+    if threads == -1: 
+        threads = cpu_count()
+    return threads
+
+def conditional_tqdm(iterable: Iterable, display: bool =True, **kwargs):
+    tqdm = get_tqdm()
+    if display:
+        return tqdm(iterable, **kwargs)
+    else:
+        return iterable
+
+def get_tqdm():
+    try:
+        # Check if we are in a Jupyter environment
+        ipy_instance = get_ipython().__class__.__name__
+        if "ZMQ" in ipy_instance or "Shell" in ipy_instance:  # Jupyter Notebook or Jupyter Lab
+            from tqdm.notebook import tqdm
+        else:
+            from tqdm import tqdm
+    except (NameError, ImportError):  # Not in an IPython environment
+        from tqdm import tqdm
+    return tqdm   

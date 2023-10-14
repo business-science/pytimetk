@@ -770,16 +770,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Summarize by time with a GroupBy object (Long Format), polars engine</span></span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Summarize by time with a GroupBy object (Wide Format), polars engine</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>(</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'category_1'</span>) </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">'category_1'</span>, <span class="st">'frame_material'</span>]) </span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'total_price'</span>, </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> [<span class="st">'total_price'</span>, <span class="st">'quantity'</span>], </span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">'MS'</span>,</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> <span class="st">'sum'</span>,</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            wide_format  <span class="op">=</span> <span class="va">False</span>, </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            wide_format  <span class="op">=</span> <span class="va">True</span>, </span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            engine       <span class="op">=</span> <span class="st">'polars'</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -791,155 +791,161 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">category_1</th>
 <th data-quarto-table-cell-role="th">order_date</th>
-<th data-quarto-table-cell-role="th">total_price_sum</th>
+<th data-quarto-table-cell-role="th">total_price_sum_Mountain_Aluminum</th>
+<th data-quarto-table-cell-role="th">total_price_sum_Mountain_Carbon</th>
+<th data-quarto-table-cell-role="th">total_price_sum_Road_Aluminum</th>
+<th data-quarto-table-cell-role="th">total_price_sum_Road_Carbon</th>
+<th data-quarto-table-cell-role="th">quantity_sum_Mountain_Aluminum</th>
+<th data-quarto-table-cell-role="th">quantity_sum_Mountain_Carbon</th>
+<th data-quarto-table-cell-role="th">quantity_sum_Road_Aluminum</th>
+<th data-quarto-table-cell-role="th">quantity_sum_Road_Carbon</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>Mountain</td>
 <td>2011-01-01</td>
-<td>221490</td>
+<td>66290</td>
+<td>155200</td>
+<td>61005</td>
+<td>200520</td>
+<td>34</td>
+<td>23</td>
+<td>30</td>
+<td>41</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>Mountain</td>
 <td>2011-02-01</td>
-<td>660555</td>
+<td>245115</td>
+<td>415440</td>
+<td>100480</td>
+<td>401040</td>
+<td>118</td>
+<td>68</td>
+<td>52</td>
+<td>93</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>Mountain</td>
 <td>2011-03-01</td>
-<td>358855</td>
+<td>82025</td>
+<td>276830</td>
+<td>63390</td>
+<td>237730</td>
+<td>41</td>
+<td>46</td>
+<td>33</td>
+<td>54</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>Mountain</td>
 <td>2011-04-01</td>
-<td>1075975</td>
+<td>340725</td>
+<td>735250</td>
+<td>197705</td>
+<td>553460</td>
+<td>164</td>
+<td>130</td>
+<td>104</td>
+<td>144</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>Mountain</td>
 <td>2011-05-01</td>
-<td>450440</td>
+<td>160130</td>
+<td>290310</td>
+<td>127600</td>
+<td>266130</td>
+<td>93</td>
+<td>53</td>
+<td>75</td>
+<td>81</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
-<td>Mountain</td>
 <td>2011-06-01</td>
-<td>723040</td>
+<td>183680</td>
+<td>539360</td>
+<td>174655</td>
+<td>515750</td>
+<td>96</td>
+<td>91</td>
+<td>82</td>
+<td>142</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
-<td>Mountain</td>
 <td>2011-07-01</td>
-<td>767740</td>
+<td>186030</td>
+<td>581710</td>
+<td>98090</td>
+<td>328600</td>
+<td>94</td>
+<td>91</td>
+<td>53</td>
+<td>82</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">7</td>
-<td>Mountain</td>
 <td>2011-08-01</td>
-<td>361255</td>
+<td>119785</td>
+<td>241470</td>
+<td>65855</td>
+<td>252680</td>
+<td>53</td>
+<td>34</td>
+<td>36</td>
+<td>69</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">8</td>
-<td>Mountain</td>
 <td>2011-09-01</td>
-<td>401125</td>
+<td>100455</td>
+<td>300670</td>
+<td>78485</td>
+<td>335110</td>
+<td>59</td>
+<td>47</td>
+<td>36</td>
+<td>77</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9</td>
-<td>Mountain</td>
 <td>2011-10-01</td>
-<td>377335</td>
+<td>105035</td>
+<td>272300</td>
+<td>83105</td>
+<td>274480</td>
+<td>61</td>
+<td>43</td>
+<td>42</td>
+<td>71</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">10</td>
-<td>Mountain</td>
 <td>2011-11-01</td>
-<td>549345</td>
+<td>102045</td>
+<td>447300</td>
+<td>90050</td>
+<td>366690</td>
+<td>55</td>
+<td>79</td>
+<td>51</td>
+<td>95</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">11</td>
-<td>Mountain</td>
 <td>2011-12-01</td>
-<td>276055</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">12</td>
-<td>Road</td>
-<td>2011-01-01</td>
-<td>261525</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">13</td>
-<td>Road</td>
-<td>2011-02-01</td>
-<td>501520</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">14</td>
-<td>Road</td>
-<td>2011-03-01</td>
-<td>301120</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">15</td>
-<td>Road</td>
-<td>2011-04-01</td>
-<td>751165</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">16</td>
-<td>Road</td>
-<td>2011-05-01</td>
-<td>393730</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">17</td>
-<td>Road</td>
-<td>2011-06-01</td>
-<td>690405</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">18</td>
-<td>Road</td>
-<td>2011-07-01</td>
-<td>426690</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">19</td>
-<td>Road</td>
-<td>2011-08-01</td>
-<td>318535</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">20</td>
-<td>Road</td>
-<td>2011-09-01</td>
-<td>413595</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">21</td>
-<td>Road</td>
-<td>2011-10-01</td>
-<td>357585</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">22</td>
-<td>Road</td>
-<td>2011-11-01</td>
-<td>456740</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">23</td>
-<td>Road</td>
-<td>2011-12-01</td>
-<td>197065</td>
+<td>111125</td>
+<td>164930</td>
+<td>45555</td>
+<td>151510</td>
+<td>55</td>
+<td>27</td>
+<td>27</td>
+<td>43</td>
 </tr>
 </tbody>
 </table>

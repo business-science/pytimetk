@@ -1,0 +1,65 @@
+# augment_ewm { #pytimetk.augment_ewm }
+
+`augment_ewm(data, date_column, value_column, window_func='mean', alpha=None, **kwargs)`
+
+Add Exponential Weighted Moving (EWM) window functions to a DataFrame or GroupBy object.
+
+The `augment_ewm` function applies Exponential Weighted Moving (EWM) window functions to specified
+value columns of a DataFrame and adds the results as new columns.
+
+## Parameters
+
+| Name           | Type                                                            | Description                                                                                                                                                                                                                                                                                                                                                                                                                  | Default    |
+|----------------|-----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `data`         | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | The input DataFrame or GroupBy object.                                                                                                                                                                                                                                                                                                                                                                                       | _required_ |
+| `date_column`  | str                                                             | The name of the column containing date information in the input DataFrame or GroupBy object.                                                                                                                                                                                                                                                                                                                                 | _required_ |
+| `value_column` | Union\[str, list\]                                              | The `value_column` parameter is used to specify the column(s) on which the Exponential Weighted Moving (EWM) calculations will be performed. It can be either a string or a list of strings, representing the name(s) of the column(s) in the input DataFrame or GroupBy                                                                                                                                                     | _required_ |
+| `window_func`  | Union\[str, list\]                                              | The `window_func` parameter is used to specify the Exponential Weighted Moving (EWM) window function(s) to apply. It can be a string or a list of strings. The possible values are:  - 'mean': Calculate the exponentially weighted mean. - 'median': Calculate the exponentially weighted median. - 'std': Calculate the exponentially weighted standard deviation. - 'var': Calculate the exponentially weighted variance. | `'mean'`   |
+| `alpha`        | float                                                           | The `alpha` parameter is a float that represents the smoothing factor for the Exponential Weighted Moving (EWM) window function. It controls the rate at which the weights decrease exponentially as the data points move further away from the current point.                                                                                                                                                               | `None`     |
+| `**kwargs`     |                                                                 | Additional arguments that are directly passed to the pandas EWM method. For more details, refer to the "Notes" section below.                                                                                                                                                                                                                                                                                                | `{}`       |
+
+## Returns
+
+| Type         | Description                                                                                                                      |
+|--------------|----------------------------------------------------------------------------------------------------------------------------------|
+| pd.DataFrame | The function `augment_ewm` returns a DataFrame augmented with the results of the Exponential Weighted Moving (EWM) calculations. |
+
+## Notes
+
+    Any additional arguments provided through **kwargs are directly passed to the pandas EWM method. These arguments 
+    can include parameters like 'com', 'span', 'halflife', 'ignore_na', 'adjust' and more.
+
+    For a comprehensive list and detailed description of these parameters:
+    - Refer to the official pandas documentation: https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.ewm.html
+    - Or, within an interactive Python environment, use: `?pandas.DataFrame.ewm` to display the method's docstring.
+
+## Examples
+
+```{python}
+import pytimetk as tk
+from pytimetk.finance import augment_ewm
+import pandas as pd
+import numpy as np
+
+df = tk.load_dataset("m4_daily", parse_dates = ['date'])
+```
+
+```{python}
+# This example demonstrates the use of string-named functions on an EWM.
+# The decay parameter used in this example is 'alpha', but other methods (e.g., 'com', 'span', 'halflife') can also be utilized.
+
+ewm_df = (
+    df
+        .groupby('id')
+        .augment_ewm(
+            date_column = 'date', 
+            value_column = 'value', 
+            window_func = [
+                'mean',
+                'std', 
+            ],
+            alpha = 0.1, 
+        )
+)
+display(ewm_df)
+```

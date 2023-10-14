@@ -27,7 +27,10 @@ website:
     - contents:
       - reference/ts_features.qmd
       - reference/ts_summary.qmd
-      section: TS Features
+      section: "\U0001F4CE TS Features"
+    - contents:
+      - reference/augment_ewm.qmd
+      section: "\U0001F4B9 Finance Module"
     - contents:
       - reference/make_future_timeseries.qmd
       - reference/make_weekday_sequence.qmd
@@ -56,6 +59,7 @@ website:
     - contents:
       - reference/glimpse.qmd
       - reference/parallel_apply.qmd
+      - reference/progress_apply.qmd
       - reference/flatten_multiindex_column_names.qmd
       section: Extra Pandas Helpers (That Help Beyond Just Time Series)
     - contents:

@@ -51,16 +51,16 @@ df
 ```
 
 ```{python}
-# Example 2 - Summarize by time with a GroupBy object (Long Format), polars engine
+# Example 2 - Summarize by time with a GroupBy object (Wide Format), polars engine
 (
     df 
-        .groupby('category_1') 
+        .groupby(['category_1', 'frame_material']) 
         .summarize_by_time(
             date_column  = 'order_date', 
-            value_column = 'total_price', 
+            value_column = ['total_price', 'quantity'], 
             freq         = 'MS',
             agg_func     = 'sum',
-            wide_format  = False, 
+            wide_format  = True, 
             engine       = 'polars'
         )
 )

@@ -9,6 +9,10 @@ number-depth: 2
 
 # pytimetk 0.1.0.9000 (in development)
 
+### Anomaly Detection
+
+- `anomalize()`: A new scalable function for detecting time series anomalies (outliers) 
+
 ### New Functions:
 
 - `apply_by_time()`: For complex apply-style aggregations by time. 
@@ -18,18 +22,37 @@ number-depth: 2
 - `get_frequency()`: Infer a pandas-like frequency. More robust than `pandas.infer_freq`.
 - `get_seasonal_frequency()`: Infer the pandas-like seasonal frequency (periodicity) for the time series. 
 - `get_trend_frequency()`: Infer the pandas-like trend for the time series. 
-- `parallel_apply`: Mimics the `pandas apply()` function with concurrent futures.
+
+### New Finance Module
+
+- `augment_ewm()`: Exponentially weighted augmentation
 
 ### Speed Improvements
 
+#### Polars Engines:
+
+- `summarize_by_time()`: Gains a polars engine. 
+  - 3X to 10X speed improvements. 
+- `augment_lags()` and `augment_leads()`: Gains a polars engine. Speed improvements increase with number of lags/leads. 
+  - 6.5X speed improvement with 100 lags. 
+- `augment_expanding()`: Gains a polars engine. 
+
+#### Parallel Processing and Vectorized Optimizations:
+
 - `pad_by_time()`: Complete overhaul. Uses Cartesian Product (Vectorization) to enhance the speed. 1000s of time series can now be padded in seconds.
   - **Independent review: Time went from over 90 minutes to 13 seconds for a 500X speedup on 10M rows.** 
-- `future_frame()`: Complete overhaul. Uses vectorization when possible. Grouped parallel processing. Set `threads = -1` to use all cores.
+- `future_frame()`: Complete overhaul. Uses vectorization when possible. Grouped parallel processing. Set `threads = -1` to use all cores. 
   - **Independent Review: Time went from 11 minutes to 2.5 minutes for a 4.4X speedup on 10M rows**
 - `ts_features`: Uses concurrent futures to parallelize tasks. Set `threads = -1` to use all cores.
 - `ts_summary`: Uses concurrent futures to parallelize tasks. Set `threads = -1` to use all cores.
 - `anomalize`: Uses concurrent futures to parallelize tasks. Set `threads = -1` to use all cores.
 - `augment_rolling()` and `augment_rolling_apply()`: Uses concurrent futures to parallelize tasks. Set `threads = -1` to use all cores.
+
+### Helpful Utilities:
+
+- `parallel_apply`: Mimics the `pandas apply()` function with concurrent futures.
+- `progress_apply`: Adds a progress bar to pandas apply()
+- `glimpse()`: Mimics tidyverse (tibble) glimpse function
 
 ### New Data Sets:
 
@@ -42,8 +65,9 @@ number-depth: 2
 3. [Demand Forecasting Tutorial](/tutorials/03_demand_forecasting.html)
 
 ### Final Deprecations:
-- `summarize_by_time()`: `kind = "period"`. This is being removed for consistency with `pytimetk`. "timestamp" is the default. 
-- `augment_rolling()`: `use_independent_variables`. This is being replaced by `augment_rolling_apply()`.
+
+- `summarize_by_time()`: `kind = "period"`. This was removed for consistency with `pytimetk`. "timestamp" is the default. 
+- `augment_rolling()`: `use_independent_variables`. This is replaced by `augment_rolling_apply()`.
 
 # pytimetk 0.1.0 (2023-10-02)
 

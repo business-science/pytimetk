@@ -103,7 +103,7 @@ from .utils.pandas_helpers import (
     flatten_multiindex_column_names, glimpse
 )
 from .utils.parallel_helpers import (
-    parallel_apply
+    parallel_apply, progress_apply
 )
 
 

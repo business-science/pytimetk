@@ -1,0 +1,39 @@
+# progress_apply { #pytimetk.progress_apply }
+
+`progress_apply(data, func, show_progress=True, desc='Processing...', **kwargs)`
+
+Adds a progress bar to pandas apply().
+
+## Parameters
+
+| Name            | Type                                     | Description                                                                                                                                                                                                   | Default           |
+|-----------------|------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
+| `data`          | pd.core.groupby.generic.DataFrameGroupBy | The `data` parameter is a pandas DataFrameGroupBy object. It represents a grouped DataFrame, where the data is grouped based on one or more columns.                                                          | _required_        |
+| `func`          | Callable                                 | The `func` parameter is a callable function that will be applied to each group in the `data` DataFrameGroupBy object. This function will be applied to each group separately.                                 | _required_        |
+| `show_progress` | bool                                     | A boolean value indicating whether to show the progress bar or not. If set to True, a progress bar will be displayed while the function is being applied. If set to False, no progress bar will be displayed. | `True`            |
+| `desc`          | str                                      | The `desc` parameter is used to provide a description for the progress bar. It is displayed as a prefix to the progress bar.                                                                                  | `'Processing...'` |
+| `**kwargs`      |                                          | The `**kwargs` parameter is a dictionary of keyword arguments that are passed to the `func` function.                                                                                                         | `{}`              |
+
+## Returns
+
+| Type         | Description                                                    |
+|--------------|----------------------------------------------------------------|
+| pd.DataFrame | The result of applying the given function to the grouped data. |
+
+## Examples:
+
+``` {python}
+import pytimetk as tk
+import pandas as pd   
+
+df = pd.DataFrame({
+    'A': ['foo', 'bar', 'foo', 'bar', 'foo', 'bar'],
+    'B': [1, 2, 3, 4, 5, 6]
+})
+
+grouped = df.groupby('A')
+
+result = grouped.progress_apply(lambda df: df['B'].sum())
+result
+
+```

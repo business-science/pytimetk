@@ -137,12 +137,17 @@ quartodoc:
         - augment_rolling_apply
         - augment_expanding
         - augment_expanding_apply
-    - title: TS Features
+    - title: 📎 TS Features
       desc: Python implementation of the R package `tsfeatures`.
       package: pytimetk
       contents:
         - ts_features
         - ts_summary
+    - title: 💹 Finance Module
+      desc: Functions for working with financial time series data.
+      package: pytimetk
+      contents:
+        - augment_ewm
     - title: 🐼 Time Series for Pandas Series
       desc: Time series functions that generate / manipulate Pandas Series.
       package: pytimetk
@@ -179,6 +184,7 @@ quartodoc:
       contents:
       - glimpse
       - parallel_apply
+      - progress_apply
       - flatten_multiindex_column_names
     - title: 💾 13 Datasets
       package: pytimetk
