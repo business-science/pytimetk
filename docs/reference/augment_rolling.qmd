@@ -26,15 +26,13 @@ Apply one or more Series-based rolling functions and window sizes to one or more
 
 ## Notes
 
-
 ## Performance
 
 This function uses parallel processing to speed up computation for large datasets with many time series groups: 
 
-- A parallel apply function is used to apply the summarizations to each group in the grouped dataframe.
+Parallel processing has overhead and may not be faster on small datasets.
 
-    - Set threads = -1 to use all available processors. 
-    - Set threads = 1 to disable parallel processing.
+To use parallel processing, set `threads = -1` to use all available processors.
 
 ## Examples
 
@@ -63,7 +61,7 @@ rolled_df = (
                 'mean',  # Built-in mean function
                 ('std', lambda x: x.std())  # Lambda function to compute standard deviation
             ],
-            threads = -1
+            threads = 1  # Disabling parallel processing
         )
 )
 display(rolled_df)

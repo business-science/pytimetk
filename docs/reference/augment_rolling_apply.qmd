@@ -25,15 +25,13 @@ Apply one or more DataFrame-based rolling functions and window sizes to one or m
 
 ## Notes
 
-
 ## Performance
 
 This function uses parallel processing to speed up computation for large datasets with many time series groups: 
 
-- A parallel apply function is used to apply the summarizations to each group in the grouped dataframe.
+Parallel processing has overhead and may not be faster on small datasets.
 
-    - Set threads = -1 to use all available processors. 
-    - Set threads = 1 to disable parallel processing.
+To use parallel processing, set `threads = -1` to use all available processors.
 
 ## Examples
 
@@ -63,7 +61,7 @@ rolled_df = (
         window=3,
         window_func=[('corr', lambda x: x['value1'].corr(x['value2']))],  # Lambda function for correlation
         center = False,  # Not centering the rolling window
-        threads = 2 # Using 2 threads for parallel processing
+        threads = 1 # Increase threads for parallel processing (use -1 for all cores)
     )
 )
 display(rolled_df)

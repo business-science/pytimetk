@@ -360,7 +360,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_expanding(data, date_column, value_column, window_func='mean', min_periods=None, **kwargs)</code></p>
+<p><code>augment_expanding(data, date_column, value_column, window_func='mean', min_periods=None, engine='pandas', **kwargs)</code></p>
 <p>Apply one or more Series-based expanding functions and window sizes to one or more columns of a DataFrame.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
@@ -410,6 +410,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>Minimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.</td>
 <td><code>None</code></td>
 </tr>
+<tr class="even">
+<td><code>engine</code></td>
+<td>str</td>
+<td>Specifies the backend computation library for augmenting expanding window functions. The options are: - “pandas” (default): Uses the <code>pandas</code> library. - “polars”: Uses the <code>polars</code> library, which may offer performance benefits for larger datasets.</td>
+<td><code>'pandas'</code></td>
+</tr>
+<tr class="odd">
+<td><code>**kwargs</code></td>
+<td>additional keyword arguments</td>
+<td>Additional arguments passed to the <code>pandas.Series.expanding</code> method when using the Pandas engine.</td>
+<td><code>{}</code></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -455,11 +467,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'std'</span>, <span class="kw">lambda</span> x: x.std())  <span class="co"># Lambda function to compute standard deviation</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>            ]</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>display(expanded_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in standard deviation function</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'range'</span>, <span class="kw">lambda</span> x: x.<span class="bu">max</span>() <span class="op">-</span> x.<span class="bu">min</span>()),  <span class="co"># Lambda function to compute the range of values within the expanding window</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>            ],</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'pandas'</span>,  <span class="co"># Pandas as the backend engine for calculations</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>display(expanded_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 
@@ -473,6 +488,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <th data-quarto-table-cell-role="th">value</th>
 <th data-quarto-table-cell-role="th">value_expanding_mean</th>
 <th data-quarto-table-cell-role="th">value_expanding_std</th>
+<th data-quarto-table-cell-role="th">value_expanding_range</th>
 </tr>
 </thead>
 <tbody>
@@ -482,7 +498,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-03</td>
 <td>2076.2</td>
 <td>2076.200000</td>
-<td>0.000000</td>
+<td>NaN</td>
+<td>0.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
@@ -490,7 +507,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-04</td>
 <td>2073.4</td>
 <td>2074.800000</td>
-<td>1.400000</td>
+<td>1.979899</td>
+<td>2.8</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
@@ -498,7 +516,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-05</td>
 <td>2048.7</td>
 <td>2066.100000</td>
-<td>12.356645</td>
+<td>15.133737</td>
+<td>27.5</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
@@ -506,7 +525,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-06</td>
 <td>2048.9</td>
 <td>2061.800000</td>
-<td>13.037830</td>
+<td>15.054789</td>
+<td>27.5</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
@@ -514,10 +534,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2014-07-07</td>
 <td>2006.4</td>
 <td>2050.720000</td>
-<td>25.041038</td>
+<td>27.996732</td>
+<td>69.8</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -530,7 +552,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-19</td>
 <td>9418.8</td>
 <td>8286.606679</td>
-<td>2456.667418</td>
+<td>2456.960489</td>
+<td>10782.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9739</td>
@@ -538,7 +561,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-20</td>
 <td>9365.7</td>
 <td>8286.864035</td>
-<td>2456.430967</td>
+<td>2456.723940</td>
+<td>10782.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9740</td>
@@ -546,7 +570,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-21</td>
 <td>9445.9</td>
 <td>8287.140391</td>
-<td>2456.203287</td>
+<td>2456.496163</td>
+<td>10782.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9741</td>
@@ -554,7 +579,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-22</td>
 <td>9497.9</td>
 <td>8287.429011</td>
-<td>2455.981643</td>
+<td>2456.274422</td>
+<td>10782.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9742</td>
@@ -562,12 +588,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2012-09-23</td>
 <td>9545.3</td>
 <td>8287.728789</td>
-<td>2455.765726</td>
+<td>2456.058410</td>
+<td>10782.0</td>
 </tr>
 </tbody>
 </table>
 
-<p>9743 rows × 5 columns</p>
+<p>9743 rows × 6 columns</p>
 </div>
 </div>
 </div>
