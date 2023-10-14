@@ -68,17 +68,13 @@ def augment_rolling(
     
     Notes
     -----
-    
     ## Performance
     
     This function uses parallel processing to speed up computation for large datasets with many time series groups: 
     
-    - A parallel apply function is used to apply the summarizations to each group in the grouped dataframe.
+    Parallel processing has overhead and may not be faster on small datasets.
     
-        - Set threads = -1 to use all available processors. 
-        - Set threads = 1 to disable parallel processing.
-    
-    
+    To use parallel processing, set `threads = -1` to use all available processors.
     
     Examples
     --------
@@ -257,15 +253,13 @@ def augment_rolling_apply(
         
     Notes
     -----
-    
     ## Performance
     
     This function uses parallel processing to speed up computation for large datasets with many time series groups: 
     
-    - A parallel apply function is used to apply the summarizations to each group in the grouped dataframe.
+    Parallel processing has overhead and may not be faster on small datasets.
     
-        - Set threads = -1 to use all available processors. 
-        - Set threads = 1 to disable parallel processing.
+    To use parallel processing, set `threads = -1` to use all available processors.
     
     
     Examples
