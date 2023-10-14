@@ -1,4 +1,5 @@
 import pandas as pd
+import polars as pl
 import pandas_flavor as pf
 import numpy as np
 
@@ -13,6 +14,7 @@ def augment_expanding(
     value_column: Union[str, list],  
     window_func: Union[str, list, Tuple[str, Callable]] = 'mean',
     min_periods: Optional[int] = None,
+    engine: str = 'pandas',
     **kwargs,
 ) -> pd.DataFrame:
     '''Apply one or more Series-based expanding functions and window sizes to one or more columns of a DataFrame.
@@ -41,6 +43,15 @@ def augment_expanding(
         Note: If your function needs to operate on multiple columns (i.e., it requires access to a DataFrame rather than just a Series), consider using the `augment_expanding_apply` function in this library.   
     min_periods : int, optional, default None
         Minimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.
+    engine : str, optional, default 'pandas'
+        Specifies the backend computation library for augmenting expanding window functions. 
+    
+        The options are:
+            - "pandas" (default): Uses the `pandas` library.
+            - "polars": Uses the `polars` library, which may offer performance benefits for larger datasets.
+    
+    **kwargs : additional keyword arguments
+        Additional arguments passed to the `pandas.Series.expanding` method when using the Pandas engine.
     
     Returns
     -------
@@ -69,13 +80,38 @@ def augment_expanding(
                 value_column = 'value', 
                 window_func = [
                     'mean',  # Built-in mean function
-                    ('std', lambda x: x.std())  # Lambda function to compute standard deviation
-                ]
+                    'std',   # Built-in standard deviation function
+                    ('range', lambda x: x.max() - x.min()),  # Lambda function to compute the range of values within the expanding window
+                ],
+                min_periods = 1,
+                engine = 'pandas',  # Pandas as the backend engine for calculations
             )
     )
     display(expanded_df)
     ```
     '''
+    
+    if engine == 'pandas':
+        return _augment_expanding_pandas(data, date_column, value_column, window_func, min_periods, **kwargs)
+    elif engine == 'polars':
+        return _augment_expanding_polars(data, date_column, value_column, window_func, min_periods, **kwargs)
+    else:
+        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+
+
+# Monkey patch the method to pandas groupby objects
+pd.core.groupby.generic.DataFrameGroupBy.augment_expanding = augment_expanding
+
+
+def _augment_expanding_pandas(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
+    date_column: str, 
+    value_column: Union[str, list],  
+    window_func: Union[str, list, Tuple[str, Callable]] = 'mean',
+    min_periods: Optional[int] = None,
+    **kwargs,
+) -> pd.DataFrame:
+
     # Ensure data is a DataFrame or a GroupBy object
     check_dataframe_or_groupby(data)
     
@@ -135,9 +171,6 @@ def augment_expanding(
     result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
     
     return result_df
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_expanding = augment_expanding
 
 
 @pf.register_dataframe_method
@@ -301,3 +334,130 @@ def augment_expanding_apply(
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.augment_expanding_apply = augment_expanding_apply
+
+
+def _augment_expanding_polars(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
+    date_column: str, 
+    value_column: Union[str, list],  
+    window_func: Union[str, list, Tuple[str, Callable]] = 'mean',
+    min_periods: Optional[int] = None,
+    **kwargs,
+) -> pl.DataFrame:
+    
+    # Ensure data is a DataFrame or a GroupBy object
+    check_dataframe_or_groupby(data)
+    
+    # Ensure date column exists and is properly formatted
+    check_date_column(data, date_column)
+    
+    # Ensure value column(s) exist
+    check_value_column(data, value_column)
+    
+    # Convert string value column to list for consistency
+    if isinstance(value_column, str):
+        value_column = [value_column]
+    
+    # Convert single window function to list for consistent processing    
+    if isinstance(window_func, (str, tuple)):
+        window_func = [window_func]
+    
+    # Create a fresh copy of the data, leaving the original untouched
+    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
+    
+    # If a GroubBy Object: Retreive the group by column name, and sort by group and date
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        group_names = data.grouper.names
+        data_copy = data_copy.sort_values(by=[*group_names, date_column])
+    else: 
+        group_names = None
+        data_copy = data_copy.sort_values(by=[date_column])
+        
+    # Set min_periods to 1 if not specified
+    min_periods = 1 if min_periods is None else min_periods
+
+    # Convert various data input types to a Pandas DataFrame
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        # Data is a GroupBy object, use apply to get a DataFrame
+        pandas_df = data.apply(lambda x: x)
+    elif isinstance(data, pd.DataFrame):
+        # Data is already a DataFrame
+        pandas_df = data
+    elif isinstance(data, pl.DataFrame):
+        # Data is already a Polars DataFrame
+        pandas_df = data.to_pandas()
+    else:
+        raise ValueError("data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame")
+
+    # Helper function to map the pandas aggregating function name to the corresponding Polars rolling function
+    def rolling_function(col, func_name, window_size, min_periods):
+        """Maps a Pandas string function name to a Polars rolling function."""
+        
+        rolling_funcs = {
+            'max': pl.col(col).rolling_max(window_size=window_size, min_periods=min_periods),
+            'mean': pl.col(col).rolling_mean(window_size=window_size, min_periods=min_periods),
+            'median': pl.col(col).rolling_median(window_size=window_size, min_periods=min_periods),
+            'min': pl.col(col).rolling_min(window_size=window_size, min_periods=min_periods),
+            'quantile': pl.col(col).rolling_quantile(quantile=0.5, window_size=window_size, min_periods=min_periods),
+            'skew': pl.col(col).rolling_skew(window_size=window_size),
+            'std': pl.col(col).rolling_std(window_size=window_size, min_periods=min_periods),
+            'sum': pl.col(col).rolling_sum(window_size=window_size, min_periods=min_periods),
+            'var': pl.col(col).rolling_var(window_size=window_size, min_periods=min_periods),
+        }
+        
+        return rolling_funcs[func_name]
+    
+    
+    expanding_exprs = []
+
+    # For each column and each function, construct the respective expanding
+    for col in value_column:
+        for func in window_func:
+            # Handle custom functions passed as tuple
+            if isinstance(func, tuple):
+                func_name, func = func
+                new_column_name = f"{col}_expanding_{func_name}"
+                # Construct the expanding expression that when executed will create the new column
+                expanding_expr = pl.col(col) \
+                    .cast(pl.Float64) \
+                    .rolling_apply(
+                        function=func,
+                        window_size=pandas_df.shape[0], 
+                        min_periods=1
+                    )
+                # Add groupby instructions to the expanding expression
+                if group_names:
+                    expanding_expr = expanding_expr.over(group_names)
+                # Add column naming instructions to expression
+                expanding_expr = expanding_expr.alias(new_column_name)
+           
+            # Handle built-in functions passed as string
+            elif isinstance(func, str):
+                new_column_name = f"{col}_expanding_{func}"
+                # Construct the expanding expression (mapped from the Pandas string-function) that when executed will create the new column
+                expanding_expr = rolling_function(
+                    col=col,
+                    func_name=func, 
+                    window_size=pandas_df.shape[0], 
+                    min_periods=min_periods
+                )
+                # Add groupby instructions to the expanding expression
+                if group_names:
+                    expanding_expr = expanding_expr.over(group_names)
+                # Add column naming instructions to expression
+                expanding_expr = expanding_expr.alias(new_column_name)
+                
+            else:
+                raise TypeError(f"Invalid function type: {type(func)}")
+            
+            # Store the expanding expression in a list.
+            expanding_exprs.append(expanding_expr)
+
+    # Convert the given Pandas DataFrame into a Polars DataFrame for processing
+    df = pl.DataFrame(pandas_df)
+    # Explicitly evaluate the accumulated expanding expressions to create new columns in a Polars DataFrame
+    out_df = df.select(expanding_exprs)
+    # Merge the original and the newly computed columns horizontally and convert back to a Pandas DataFrame
+    df = pl.concat([df, out_df], how="horizontal").to_pandas()
+
+    return df
