@@ -8,21 +8,6 @@ from typing import Union
 from pytimetk.utils.datetime_helpers import week_of_month
 from pytimetk.utils.checks import check_series_or_datetime, check_dataframe_or_groupby, check_date_column
 
-import pandas as pd
-import polars as pl
-import numpy as np
-from typing import Union
-
-# Dependencies
-import pandas as pd
-import numpy as np
-import polars as pl
-import pandas_flavor as pf
-from typing import Union
-
-from pytimetk.utils.datetime_helpers import week_of_month
-from pytimetk.utils.checks import check_series_or_datetime, check_dataframe_or_groupby, check_date_column
-
 @pf.register_series_method
 def get_timeseries_signature(
     data: Union[pd.Series, pd.DatetimeIndex],
