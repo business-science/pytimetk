@@ -14,6 +14,7 @@ def augment_expanding(
     value_column: Union[str, list],  
     window_func: Union[str, list, Tuple[str, Callable]] = 'mean',
     min_periods: Optional[int] = None,
+    quantile: Optional[float] = 0.5,
     engine: str = 'pandas',
     **kwargs,
 ) -> pd.DataFrame:
@@ -50,6 +51,9 @@ def augment_expanding(
             - "pandas" (default): Uses the `pandas` library.
             - "polars": Uses the `polars` library, which may offer performance benefits for larger datasets.
     
+    quantile : float, optional, default 0.5
+        Specifies the quantile value to be used when the "quantile" string is passed to the `window_func` parameter. 
+        The value should be between 0 and 1, inclusive. For example, 0.5 represents the median.
     **kwargs : additional keyword arguments
         Additional arguments passed to the `pandas.Series.expanding` method when using the Pandas engine.
     
@@ -70,7 +74,8 @@ def augment_expanding(
 
     ```{python}
     # This example demonstrates the use of both string-named functions 
-    # and lambda functions on an expanding window. 
+    # (including 'quantile') and lambda functions on an expanding window
+    # using the Pandas backend for calculations.
 
     expanded_df = (
         df
@@ -81,10 +86,12 @@ def augment_expanding(
                 window_func = [
                     'mean',  # Built-in mean function
                     'std',   # Built-in standard deviation function
+                    'quantile',  # Built-in quantile function
                     ('range', lambda x: x.max() - x.min()),  # Lambda function to compute the range of values within the expanding window
                 ],
                 min_periods = 1,
-                engine = 'pandas',  # Pandas as the backend engine for calculations
+                quantile = 0.5,  # Specify the quantile level for the 'quantile' function in window_func 
+                engine = 'pandas',  # Utilize pandas for the underlying computations
             )
     )
     display(expanded_df)
@@ -92,9 +99,9 @@ def augment_expanding(
     '''
     
     if engine == 'pandas':
-        return _augment_expanding_pandas(data, date_column, value_column, window_func, min_periods, **kwargs)
+        return _augment_expanding_pandas(data, date_column, value_column, window_func, min_periods, quantile, **kwargs)
     elif engine == 'polars':
-        return _augment_expanding_polars(data, date_column, value_column, window_func, min_periods, **kwargs)
+        return _augment_expanding_polars(data, date_column, value_column, window_func, min_periods, quantile, **kwargs)
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
 
@@ -109,6 +116,7 @@ def _augment_expanding_pandas(
     value_column: Union[str, list],  
     window_func: Union[str, list, Tuple[str, Callable]] = 'mean',
     min_periods: Optional[int] = None,
+    quantile: Optional[float] = 0.5,
     **kwargs,
 ) -> pd.DataFrame:
 
@@ -156,12 +164,15 @@ def _augment_expanding_pandas(
                 elif isinstance(func, str):
                     new_column_name = f"{value_col}_expanding_{func}"
                     # Get the expanding function (like mean, sum, etc.) specified by `func` for the given column and window settings
-                    expanding_function = getattr(group_df[value_col].expanding(min_periods=min_periods, **kwargs), func, None)
-                    # Apply expanding function to data and store in new column
-                    if expanding_function:
-                        group_df[new_column_name] = expanding_function()
+                    if func == "quantile":
+                        group_df[new_column_name] = group_df[value_col].expanding(min_periods=min_periods, **kwargs).quantile(q=quantile)
                     else:
-                        raise ValueError(f"Invalid function name: {func}")
+                        expanding_function = getattr(group_df[value_col].expanding(min_periods=min_periods, **kwargs), func, None)
+                        # Apply expanding function to data and store in new column
+                        if expanding_function:
+                            group_df[new_column_name] = expanding_function()
+                        else:
+                            raise ValueError(f"Invalid function name: {func}")
                 else:
                     raise TypeError(f"Invalid function type: {type(func)}")
                     
@@ -342,6 +353,7 @@ def _augment_expanding_polars(
     value_column: Union[str, list],  
     window_func: Union[str, list, Tuple[str, Callable]] = 'mean',
     min_periods: Optional[int] = None,
+    quantile: Optional[float] = 0.5,
     **kwargs,
 ) -> pl.DataFrame:
     
@@ -377,37 +389,38 @@ def _augment_expanding_polars(
     min_periods = 1 if min_periods is None else min_periods
 
     # Convert various data input types to a Pandas DataFrame
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data_copy, pd.core.groupby.generic.DataFrameGroupBy):
         # Data is a GroupBy object, use apply to get a DataFrame
-        pandas_df = data.apply(lambda x: x)
-    elif isinstance(data, pd.DataFrame):
+        pandas_df = data_copy.apply(lambda x: x)
+    elif isinstance(data_copy, pd.DataFrame):
         # Data is already a DataFrame
-        pandas_df = data
-    elif isinstance(data, pl.DataFrame):
+        pandas_df = data_copy
+    elif isinstance(data_copy, pl.DataFrame):
         # Data is already a Polars DataFrame
-        pandas_df = data.to_pandas()
+        pandas_df = data_copy.to_pandas()
     else:
         raise ValueError("data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame")
 
     # Helper function to map the pandas aggregating function name to the corresponding Polars rolling function
-    def rolling_function(col, func_name, window_size, min_periods):
+    def rolling_function(col, func_name, window_size, min_periods, quantile):
         """Maps a Pandas string function name to a Polars rolling function."""
         
-        rolling_funcs = {
-            'max': pl.col(col).rolling_max(window_size=window_size, min_periods=min_periods),
-            'mean': pl.col(col).rolling_mean(window_size=window_size, min_periods=min_periods),
-            'median': pl.col(col).rolling_median(window_size=window_size, min_periods=min_periods),
-            'min': pl.col(col).rolling_min(window_size=window_size, min_periods=min_periods),
-            'quantile': pl.col(col).rolling_quantile(quantile=0.5, window_size=window_size, min_periods=min_periods),
-            'skew': pl.col(col).rolling_skew(window_size=window_size),
-            'std': pl.col(col).rolling_std(window_size=window_size, min_periods=min_periods),
-            'sum': pl.col(col).rolling_sum(window_size=window_size, min_periods=min_periods),
-            'var': pl.col(col).rolling_var(window_size=window_size, min_periods=min_periods),
-        }
+        # Ensure the requested function name is a valid method of the column object
+        if not hasattr(pl.col(col), f"rolling_{func_name}"):
+            raise ValueError(f"{func_name} is not a recognized rolling function for Polars.")
         
-        return rolling_funcs[func_name]
-    
-    
+        # Construct the rolling function dynamically
+        func = getattr(pl.col(col), f"rolling_{func_name}")
+        
+        # Handle special case for 'quantile' and 'skew'
+        if func_name == "quantile":
+            return func(quantile=quantile, window_size=window_size, min_periods=min_periods, interpolation='midpoint')
+        if func_name == "skew":
+            return func(window_size=window_size)
+        
+        return func(window_size=window_size, min_periods=min_periods)
+        
+        
     expanding_exprs = []
 
     # For each column and each function, construct the respective expanding
@@ -423,7 +436,7 @@ def _augment_expanding_polars(
                     .rolling_apply(
                         function=func,
                         window_size=pandas_df.shape[0], 
-                        min_periods=1
+                        min_periods=min_periods
                     )
                 # Add groupby instructions to the expanding expression
                 if group_names:
@@ -439,9 +452,9 @@ def _augment_expanding_polars(
                     col=col,
                     func_name=func, 
                     window_size=pandas_df.shape[0], 
-                    min_periods=min_periods
+                    min_periods=min_periods,
+                    quantile=quantile
                 )
-                # Add groupby instructions to the expanding expression
                 if group_names:
                     expanding_expr = expanding_expr.over(group_names)
                 # Add column naming instructions to expression
