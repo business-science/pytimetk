@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import polars as pl
 import pandas_flavor as pf
 
 import re
@@ -206,24 +207,6 @@ def freq_to_timedelta(freq_str):
     else:
         raise ValueError(f"Unsupported frequency unit: {unit}")
 
-
-import pandas as pd
-import numpy as np
-import polars as pl
-import pandas_flavor as pf
-
-import re
-from datetime import datetime
-from dateutil import parser
-from warnings import warn
-from typing import Union, List
-
-from pytimetk.utils.checks import check_series_or_datetime
-
-try: 
-    import holidays
-except ImportError:
-    pass
 
 @pf.register_series_method
 def week_of_month(
