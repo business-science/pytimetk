@@ -4,4 +4,4 @@ __pycache__/
 /docs/_freeze/
 /_freeze/
 /.vscode/
-
+/.ipynb_checkpoints/

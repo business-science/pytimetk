@@ -9,15 +9,39 @@ def test_get_timeseries_signature():
     
     # Test if function produces the correct number of features
     signature = get_timeseries_signature(dates)
-    assert signature.shape[1] == 29, "Number of features generated is not correct."
+    assert signature.shape[1] == 30, "Number of features generated is not correct."
     
     # Test if the function produces the correct feature names
-    expected_columns = [
-        'index_num', 'year', 'year_iso', 'yearstart', 'yearend', 'leapyear', 
-        'half', 'quarter', 'quarteryear', 'quarterstart', 'quarterend', 
-        'month', 'month_lbl', 'monthstart', 'monthend', 'yweek', 'mweek', 
-        'wday', 'wday_lbl', 'mday', 'qday', 'yday', 'weekend', 'hour', 
-        'minute', 'second', 'msecond', 'nsecond', 'am_pm'
+    expected_columns = ['idx',
+        'idx_index_num',
+        'idx_year',
+        'idx_year_iso',
+        'idx_yearstart',
+        'idx_yearend',
+        'idx_leapyear',
+        'idx_half',
+        'idx_quarter',
+        'idx_quarteryear',
+        'idx_quarterstart',
+        'idx_quarterend',
+        'idx_month',
+        'idx_month_lbl',
+        'idx_monthstart',
+        'idx_monthend',
+        'idx_yweek',
+        'idx_mweek',
+        'idx_wday',
+        'idx_wday_lbl',
+        'idx_mday',
+        'idx_qday',
+        'idx_yday',
+        'idx_weekend',
+        'idx_hour',
+        'idx_minute',
+        'idx_second',
+        'idx_msecond',
+        'idx_nsecond',
+        'idx_am_pm'
     ]
     assert all(signature.columns == expected_columns), "Feature names are not as expected."
     
