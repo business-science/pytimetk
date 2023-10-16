@@ -207,14 +207,43 @@ def freq_to_timedelta(freq_str):
         raise ValueError(f"Unsupported frequency unit: {unit}")
 
 
+import pandas as pd
+import numpy as np
+import polars as pl
+import pandas_flavor as pf
+
+import re
+from datetime import datetime
+from dateutil import parser
+from warnings import warn
+from typing import Union, List
+
+from pytimetk.utils.checks import check_series_or_datetime
+
+try: 
+    import holidays
+except ImportError:
+    pass
+
 @pf.register_series_method
-def week_of_month(idx: Union[pd.Series, pd.DatetimeIndex]) -> pd.Series:
+def week_of_month(
+    idx: Union[pd.Series, pd.DatetimeIndex],
+    engine: str = 'pandas',
+    ) -> pd.Series:
     '''The "week_of_month" function calculates the week number of a given date within its month.
     
     Parameters
     ----------
     idx : pd.Series or pd.DatetimeIndex
-        The parameter "idx" is a pandas Series object that represents a specific date for which you want to determine the week of the month.
+        The parameter "idx" is a pandas Series object that represents a specific
+        date for which you want to determine the week of the month.
+    engine : str, optional
+        The `engine` parameter is used to specify the engine to use for calculating the week of the month. It can be either "pandas" or "polars". 
+        
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library for calculating the week of the month. This can be faster than using "pandas" for large datasets. 
+
     
     Returns
     -------
@@ -233,7 +262,7 @@ def week_of_month(idx: Union[pd.Series, pd.DatetimeIndex]) -> pd.Series:
     
     ```{python}
     # Works on DateTimeIndex
-    tk.week_of_month(dates)
+    tk.week_of_month(dates, engine='pandas')
     ```
     
     ```{python}
@@ -242,9 +271,22 @@ def week_of_month(idx: Union[pd.Series, pd.DatetimeIndex]) -> pd.Series:
     ```
     
     '''
+
     # Common checks
     check_series_or_datetime(idx)
-    
+
+    if engine == 'pandas':
+        return _week_of_month_pandas(idx)
+    elif engine == 'polars':
+        return _week_of_month_polars(idx)
+    else:
+        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+
+def _week_of_month_pandas(idx: Union[pd.Series, pd.DatetimeIndex]) -> pd.Series:
+    '''
+    The "week_of_month" function calculates the week number of a given date within its month.
+    '''
+ 
     if isinstance(idx, pd.DatetimeIndex):
         idx = pd.Series(idx, name="idx")
     
@@ -258,6 +300,25 @@ def week_of_month(idx: Union[pd.Series, pd.DatetimeIndex]) -> pd.Series:
     
     return ret
 
+def _week_of_month_polars(idx: Union[pd.Series, pd.DatetimeIndex]) -> pd.Series:
+    '''
+    The "week_of_month" function calculates the week number of a given date within its month.
+    '''
+    
+    if isinstance(idx, pd.DatetimeIndex):
+        idx = pl.Series(idx).alias('idx')
+    elif isinstance(idx, pd.Series):
+        idx = pl.Series(idx).alias('idx')
+    else:
+        raise ValueError("Input 'idx' must be a Pandas DatetimeIndex or Series.")
+        
+    ret = (
+        ((idx.dt.day() - 1) // 7 + 1)
+        .alias('week_of_month')
+        .to_pandas()
+    )
+    
+    return ret
 
 @pf.register_series_method
 def is_holiday(
