@@ -249,8 +249,18 @@ def week_of_month(
     ```
     
     ```{python}
+    # Works on DateTimeIndex
+    tk.week_of_month(dates, engine='polars')
+    ```
+    
+    ```{python}
     # Works on Pandas Series
     dates.to_series().week_of_month()
+    ```
+    
+    ```{python}
+    # Works on Pandas Series
+    dates.to_series().week_of_month(engine='polars')
     ```
     
     '''

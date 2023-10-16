@@ -2,6 +2,36 @@
 
 `anomalize(data, date_column, value_column, period=None, trend=None, method='twitter', decomp='additive', clean='linear', iqr_alpha=0.05, max_anomalies=0.2, bind_data=False, threads=1, show_progress=True, verbose=False)`
 
+The `anomalize` function is used to detect anomalies in time series data, either for a single time
+series or for multiple time series grouped by a specific column.
+
+## Parameters
+
+| Name            | Type                                                            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Default      |
+|-----------------|-----------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| `data`          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | The input data, which can be either a pandas DataFrame or a pandas DataFrameGroupBy object.                                                                                                                                                                                                                                                                                                                                                                                                 | _required_   |
+| `date_column`   | str                                                             | The name of the column in the data that contains the dates or timestamps.                                                                                                                                                                                                                                                                                                                                                                                                                   | _required_   |
+| `value_column`  | str                                                             | The name of the column in the data that contains the values to be analyzed for anomalies.                                                                                                                                                                                                                                                                                                                                                                                                   | _required_   |
+| `period`        | Optional\[int\]                                                 | The `period` parameter specifies the length of the seasonal component in the time series. It is used in the decomposition process to separate the time series into its seasonal, trend, and remainder components. If not specified, the function will automatically determine the period based on the data.                                                                                                                                                                                 | `None`       |
+| `trend`         | Optional\[int\]                                                 | The `trend` parameter is an optional integer that specifies the length of the moving average window used for trend estimation. If `trend` is set to `None`, no trend estimation will be performed.                                                                                                                                                                                                                                                                                          | `None`       |
+| `method`        | str                                                             | The `method` parameter determines the method used for anomaly detection. The available options are 'twitter' and 'gesd'. The default value is 'twitter'.                                                                                                                                                                                                                                                                                                                                    | `'twitter'`  |
+| `decomp`        | str                                                             | The `decomp` parameter specifies the type of decomposition to use for time series decomposition. It can take two values: 1. 'additive' - This is the default value. It specifies that the time series will be decomposed using an additive model. 2. 'multiplicative' - This specifies that the time series will be decomposed using a multiplicative model.                                                                                                                                | `'additive'` |
+| `clean`         | str                                                             | The `clean` parameter determines the method used to clean the data. It has the following options:                                                                                                                                                                                                                                                                                                                                                                                           | `'linear'`   |
+| `iqr_alpha`     | float                                                           | The `iqr_alpha` parameter is used to determine the threshold for detecting outliers. It is the significance level used in the interquartile range (IQR) method for outlier detection.  - The default value is 0.05, which corresponds to a 5% significance level.  - A lower significance level will result in a higher threshold, which means fewer outliers will be detected. - A higher significance level will result in a lower threshold, which means more outliers will be detected. | `0.05`       |
+| `max_anomalies` | float                                                           | The `max_anomalies` parameter is used to specify the maximum percentage of anomalies allowed in the data. It is a float value between 0 and 1. For example, if `max_anomalies` is set to 0.2, it means that the function will identify and remove outliers until the percentage of outliers in the data is less than or equal to 20%. The default value is 0.2.                                                                                                                             | `0.2`        |
+| `bind_data`     | bool                                                            | The `bind_data` parameter determines whether the original data will be included in the output. If set to `True`, the original data will be included in the output dataframe. If set to `False`, only the anomalous data will be included.                                                                                                                                                                                                                                                   | `False`      |
+| `threads`       | Optional\[int\]                                                 | The `threads` parameter specifies the number of threads to use for parallel processing. By default, it is set to `1`, which means no parallel processing is used. If you set `threads` to `-1`, it will use all available processors for parallel processing.                                                                                                                                                                                                                               | `1`          |
+| `show_progress` | bool                                                            | A boolean parameter that determines whether to show a progress bar during the execution of the function. If set to True, a progress bar will be displayed. If set to False, no progress bar will be shown.                                                                                                                                                                                                                                                                                  | `True`       |
+| `verbose`       |                                                                 | The `verbose` parameter is a boolean flag that determines whether or not to display additional information and progress updates during the execution of the `anomalize` function. If `verbose` is set to `True`, you will see more detailed output.                                                                                                                                                                                                                                         | `False`      |
+| `optional`      |                                                                 | The `verbose` parameter is a boolean flag that determines whether or not to display additional information and progress updates during the execution of the `anomalize` function. If `verbose` is set to `True`, you will see more detailed output.                                                                                                                                                                                                                                         | `False`      |
+
+## Returns
+
+| Type         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| pd.DataFrame | The `anomalize` function returns a pandas DataFrame containing the original data with additional                                                                                                                                                                                                                                                                                                                                                                                                   |
+| pd.DataFrame | - observed: original data - seasonal: seasonal component - seasadaj: seasonal adjusted - trend: trend component - remainder: residual component - anomaly: Yes/No flag for outlier detection - anomaly score: distance from centerline - anomaly direction: -1, 0, 1 inidicator for direction of the anomaly - recomposed_l1: lower level bound of recomposed time series - recomposed_l2: upper level bound of recomposed time series - observed_clean: original data with anomalies interpolated |
+
 ## Notes
 
 ## Performance
@@ -31,9 +61,7 @@ data[3] = 100  # outlier
 # Create a DataFrame
 df = pd.DataFrame(date_rng, columns=['date'])
 df['value'] = data
-df    
 
-df.plot_timeseries("date", "value")
 
 # Anomalize the data
 anomalize_df = tk.anomalize(
@@ -44,16 +72,24 @@ anomalize_df = tk.anomalize(
 )
 
 anomalize_df.glimpse()
+```
 
+``` {python}
 # Visualize the results
 anomalize_df[["date", "observed", "seasonal", "trend", "remainder"]]         .melt(id_vars = "date", value_name='val')         .groupby("variable")         .plot_timeseries("date", "val", color_column = "variable", smooth = False)
+```
 
+``` {python}
 # Visualize the anomaly bands
 anomalize_df[["date", "observed", "recomposed_l1", "recomposed_l2"]]         .melt(id_vars = "date", value_name='val')         .plot_timeseries("date", "val", color_column = "variable", smooth = False)
+```
 
+``` {python}
 # Get the anomalies    
 anomalize_df.query("anomaly=='Yes'")
-    
+```
+
+``` {python} 
 # Visualize observed vs cleaned
 anomalize_df[["date", "observed", "observed_clean"]]         .melt(id_vars = "date", value_name='val')         .plot_timeseries("date", "val", color_column = "variable", smooth = False)
 
@@ -66,7 +102,12 @@ import pandas as pd
 
 df = tk.load_dataset("walmart_sales_weekly", parse_dates=["Date"])[["id", "Date", "Weekly_Sales"]]
 
-anomalize_df = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = 1) 
+anomalize_df = df.groupby('id')         .anomalize(
+        "Date", "Weekly_Sales", 
+        period = 52, 
+        trend = 52, 
+        threads = 1
+    ) 
 
 # Visualize the results
 anomalize_df[["id", "Date", "observed", "seasonal", "trend", "remainder"]]         .melt(id_vars = ["id", "Date"], value_name='val')         .groupby(["id", "variable"])         .plot_timeseries(
@@ -76,7 +117,9 @@ anomalize_df[["id", "Date", "observed", "seasonal", "trend", "remainder"]]      
         width = 1200,
         height = 800,
     )
+```
 
+``` {python}
 # Visualize the anomaly bands
 anomalize_df[["id", "Date", "observed", "recomposed_l1", "recomposed_l2"]]         .melt(id_vars = ["id", "Date"], value_name='val')         .groupby(["id"])         .plot_timeseries(
         "Date", "val", 
@@ -86,26 +129,15 @@ anomalize_df[["id", "Date", "observed", "recomposed_l1", "recomposed_l2"]]      
         width = 800,
         height = 800,
     )
-
-# Get the anomalies    
-anomalize_df.query("anomaly=='Yes'")
-    
-# Visualize observed vs cleaned
-anomalize_df[["id", "Date", "observed", "observed_clean"]]         .melt(id_vars = ["id", "Date"], value_name='val')         .groupby(["id"])         .plot_timeseries("Date", "val", color_column = "variable", smooth = False)
-
 ```
 
 ``` {python}
-# PARALLEL PROCESSING
+# Get the anomalies    
+anomalize_df.query("anomaly=='Yes'")
+```
 
-import pytimetk as tk
-import pandas as pd
-
-df = tk.load_dataset("walmart_sales_weekly", parse_dates=["Date"])[["id", "Date", "Weekly_Sales"]]
-
-anomalize_df_ser = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = 1)
-
-anomalize_df_par = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = -1) 
-
+``` {python}
+# Visualize observed vs cleaned
+anomalize_df[["id", "Date", "observed", "observed_clean"]]         .melt(id_vars = ["id", "Date"], value_name='val')         .groupby(["id"])         .plot_timeseries("Date", "val", color_column = "variable", smooth = False, facet_ncol = 2)
 
 ```

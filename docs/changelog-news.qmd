@@ -36,6 +36,7 @@ number-depth: 2
 - `augment_lags()` and `augment_leads()`: Gains a polars engine. Speed improvements increase with number of lags/leads. 
   - 6.5X speed improvement with 100 lags. 
 - `augment_expanding()`: Gains a polars engine. 
+- `augment_timeseries_signature()`: Gains a polars engine.
 
 #### Parallel Processing and Vectorized Optimizations:
 

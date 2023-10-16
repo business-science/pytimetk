@@ -360,7 +360,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_expanding(data, date_column, value_column, window_func='mean', min_periods=None, engine='pandas', **kwargs)</code></p>
+<p><code>augment_expanding(data, date_column, value_column, window_func='mean', min_periods=None, quantile=0.5, engine='pandas', **kwargs)</code></p>
 <p>Apply one or more Series-based expanding functions and window sizes to one or more columns of a DataFrame.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
@@ -417,6 +417,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><code>'pandas'</code></td>
 </tr>
 <tr class="odd">
+<td><code>quantile</code></td>
+<td>float</td>
+<td>Specifies the quantile value to be used when the “quantile” string is passed to the <code>window_func</code> parameter. The value should be between 0 and 1, inclusive. For example, 0.5 represents the median.</td>
+<td><code>0.5</code></td>
+</tr>
+<tr class="even">
 <td><code>**kwargs</code></td>
 <td>additional keyword arguments</td>
 <td>Additional arguments passed to the <code>pandas.Series.expanding</code> method when using the Pandas engine.</td>
@@ -457,24 +463,27 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 <div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This example demonstrates the use of both string-named functions </span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># and lambda functions on an expanding window. </span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        .augment_expanding(</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in standard deviation function</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'range'</span>, <span class="kw">lambda</span> x: x.<span class="bu">max</span>() <span class="op">-</span> x.<span class="bu">min</span>()),  <span class="co"># Lambda function to compute the range of values within the expanding window</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>            ],</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'pandas'</span>,  <span class="co"># Pandas as the backend engine for calculations</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>display(expanded_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># (including 'quantile') and lambda functions on an expanding window</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># using the Pandas backend for calculations.</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        .augment_expanding(</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in standard deviation function</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                <span class="st">'quantile'</span>,  <span class="co"># Built-in quantile function</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'range'</span>, <span class="kw">lambda</span> x: x.<span class="bu">max</span>() <span class="op">-</span> x.<span class="bu">min</span>()),  <span class="co"># Lambda function to compute the range of values within the expanding window</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>            ],</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>            quantile <span class="op">=</span> <span class="fl">0.5</span>,  <span class="co"># Specify the quantile level for the 'quantile' function in window_func </span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'pandas'</span>,  <span class="co"># Utilize pandas for the underlying computations</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>display(expanded_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 
@@ -488,6 +497,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <th data-quarto-table-cell-role="th">value</th>
 <th data-quarto-table-cell-role="th">value_expanding_mean</th>
 <th data-quarto-table-cell-role="th">value_expanding_std</th>
+<th data-quarto-table-cell-role="th">value_expanding_quantile</th>
 <th data-quarto-table-cell-role="th">value_expanding_range</th>
 </tr>
 </thead>
@@ -499,6 +509,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2076.2</td>
 <td>2076.200000</td>
 <td>NaN</td>
+<td>2076.20</td>
 <td>0.0</td>
 </tr>
 <tr class="even">
@@ -508,6 +519,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2073.4</td>
 <td>2074.800000</td>
 <td>1.979899</td>
+<td>2074.80</td>
 <td>2.8</td>
 </tr>
 <tr class="odd">
@@ -517,6 +529,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2048.7</td>
 <td>2066.100000</td>
 <td>15.133737</td>
+<td>2073.40</td>
 <td>27.5</td>
 </tr>
 <tr class="even">
@@ -526,6 +539,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2048.9</td>
 <td>2061.800000</td>
 <td>15.054789</td>
+<td>2061.15</td>
 <td>27.5</td>
 </tr>
 <tr class="odd">
@@ -535,10 +549,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2006.4</td>
 <td>2050.720000</td>
 <td>27.996732</td>
+<td>2048.90</td>
 <td>69.8</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -553,6 +569,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>9418.8</td>
 <td>8286.606679</td>
 <td>2456.960489</td>
+<td>7659.20</td>
 <td>10782.0</td>
 </tr>
 <tr class="even">
@@ -562,6 +579,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>9365.7</td>
 <td>8286.864035</td>
 <td>2456.723940</td>
+<td>7659.50</td>
 <td>10782.0</td>
 </tr>
 <tr class="odd">
@@ -571,6 +589,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>9445.9</td>
 <td>8287.140391</td>
 <td>2456.496163</td>
+<td>7660.70</td>
 <td>10782.0</td>
 </tr>
 <tr class="even">
@@ -580,6 +599,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>9497.9</td>
 <td>8287.429011</td>
 <td>2456.274422</td>
+<td>7661.90</td>
 <td>10782.0</td>
 </tr>
 <tr class="odd">
@@ -589,12 +609,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>9545.3</td>
 <td>8287.728789</td>
 <td>2456.058410</td>
+<td>7662.10</td>
 <td>10782.0</td>
 </tr>
 </tbody>
 </table>
 
-<p>9743 rows × 6 columns</p>
+<p>9743 rows × 7 columns</p>
 </div>
 </div>
 </div>

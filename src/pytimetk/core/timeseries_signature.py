@@ -72,14 +72,21 @@ def get_timeseries_signature(
     import pytimetk as tk
     
     dates = pd.date_range(start = '2019-01', end = '2019-03', freq = 'D')
+    ```
     
+    ```{python}
     # Makes 29 new time series features from the dates
     tk.get_timeseries_signature(dates, engine='pandas').glimpse()
+    ```
     
+    ```{python}
     tk.get_timeseries_signature(dates, engine='polars').glimpse()
-    
+    ```
+    ```{python}
     pd.Series(dates, name = "date").get_timeseries_signature(engine='pandas').glimpse()
+    ```
     
+    ```{python}
     pd.Series(dates, name = "date").get_timeseries_signature(engine='polars').glimpse()
     ```
     """
@@ -205,14 +212,18 @@ def augment_timeseries_signature(
     import pytimetk as tk
     
     df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
+    ```
     
+    ```{python}
     # Adds 29 new time series features as columns to the original DataFrame (pandas engine)
     ( 
         df
             .augment_timeseries_signature(date_column='order_date', engine ='pandas')
             .glimpse()
     )
+    ```
     
+    ```{python}
     # Adds 29 new time series features as columns to the original DataFrame (polars engine)
     ( 
         df
