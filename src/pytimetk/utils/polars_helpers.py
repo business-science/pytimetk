@@ -65,3 +65,15 @@ def pl_quantile(**kwargs):
         'closed': 'left'
     }
     return func_type, func_name, default_kwargs, kwargs
+
+def update_dict(d1, d2):
+    """
+    Update values in dictionary `d1` based on matching keys from dictionary `d2`.
+    
+    This function will only update the values of existing keys in `d1`.
+    New keys present in `d2` but not in `d1` will be ignored. 
+    """
+    for key in d1.keys():
+        if key in d2:
+            d1[key] = d2[key]
+    return d1
