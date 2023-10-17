@@ -2,10 +2,12 @@ import pandas as pd
 import polars as pl
 import pandas_flavor as pf
 import numpy as np
+import inspect
 
 from typing import Union, Optional, Callable, Tuple, List
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
+from pytimetk.utils.polars_helpers import update_dict
 
 @pf.register_dataframe_method
 def augment_expanding(
@@ -103,7 +105,8 @@ def augment_expanding(
     ```
 
     ```{python}
-    # This example demonstrates the use of string-named functions and configurable functions.
+    # This example demonstrates the use of string-named functions and configurable functions 
+    # using the Polars backend for computations.
     # Configurable functions, like pl_quantile, allow the use of specific parameters associated 
     # with their corresponding polars.Expr.rolling_<function_name> method.
     # For instance, pl_quantile corresponds to polars.Expr.rolling_quantile.
@@ -117,7 +120,7 @@ def augment_expanding(
                 window_func = [
                     'sum',  # Built-in sum function
                     'max',   # Built-in maximum function
-                    ('quantile_75', lambda: pl_quantile(quantile=0.75)),  # Configurable with all parameters found in polars.Expr.rolling_quantile
+                    ('quantile_75', pl_quantile(quantile=0.75)),  # Configurable with all parameters found in polars.Expr.rolling_quantile
                 ],
                 min_periods = 1,
                 engine = 'polars',  # Utilize Polars for the underlying computations
@@ -126,7 +129,7 @@ def augment_expanding(
     display(expanded_df)
     ```
     
-            ```{python}
+    ```{python}
     import pytimetk as tk
     import pandas as pd
     import polars as pl
@@ -137,10 +140,9 @@ def augment_expanding(
     ```
 
     ```{python}
-    # This example differentiates between configurable functions (e.g., lambda: pl_quantile()) 
-    # and identity lambda functions (e.g., lambda x: x.operation()).
-    # - Configurable functions are optimized for speed in Polars.
-    # - Identity lambda functions, while convenient, have signficantly slower performance. They will be faster on the Pandas backend.
+    # This example demonstrates the use of lambda functions of the form lambda x: x
+    # Identity lambda functions, while convenient, have signficantly slower performance.
+    # When using lambda functions the Pandas backend will likely be faster than Polars.
     
     expanded_df = (
         df
@@ -149,11 +151,11 @@ def augment_expanding(
                 date_column = 'date', 
                 value_column = 'value', 
                 window_func = [
-                    ('quantile_75', lambda: pl_quantile(quantile=0.75)),  # Configurable with all parameters found in polars.Expr.rolling_quantile
+                    
                     ('range', lambda x: x.max() - x.min()),  # Identity lambda function: can be slower, especially in Polars
                 ],
                 min_periods = 1,
-                engine = 'polars',  # Utilize polars for the underlying computations
+                engine = 'pandas',  # Utilize pandas for the underlying computations
             )
     )
     display(expanded_df)
@@ -413,21 +415,19 @@ def _augment_expanding_polars(
     # Create a fresh copy of the data, leaving the original untouched
     data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
     
-    # Retrieve the group column names if the input data is a DataFrameGroupBy object
+    # Retrieve the group column names if the input data is a GroupBy object
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
     else: 
         group_names = None
 
-    # Convert various data input types to a Pandas DataFrame
+    # Convert data into a Pandas DataFrame format for processing
     if isinstance(data_copy, pd.core.groupby.generic.DataFrameGroupBy):
         pandas_df = data_copy.apply(lambda x: x)
     elif isinstance(data_copy, pd.DataFrame):
         pandas_df = data_copy
-    elif isinstance(data_copy, pl.DataFrame):
-        pandas_df = data_copy.to_pandas()
     else:
-        raise ValueError("data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame")
+        raise ValueError("Data must be a Pandas DataFrame or Pandas GroupBy object.")
     
     # Initialize lists to store expanding expressions and new column names  
     expanding_exprs = []
@@ -436,43 +436,22 @@ def _augment_expanding_polars(
     # Construct expanding expressions for each column and function combination
     for col in value_column:
         for func in window_func:
-            # Handle custom functions passed as tuples
+            
+            # Handle functions passed as tuples
             if isinstance(func, tuple):
+                # Ensure the tuple is of length 2 and begins with a string
                 if len(func) != 2:
-                    raise ValueError(f"Expected the tuple passed to the `window_func` to be of length 2, but received tuple of length {len(func)}.")
+                    raise ValueError(f"Expected tuple of length 2, but `window_func` received tuple of length {len(func)}.")
                 if not isinstance(func[0], str):
-                    raise TypeError(f"Expected the first element of the tuple passed to `window_func` to be of type 'str', but received {type(func[0])}.")
+                    raise TypeError(f"Expected first element of tuple to be type 'str', but `window_func` received {type(func[0])}.")
                 
                 user_func_name, func = func
                 new_column_name = f"{col}_expanding_{user_func_name}"
-                try:
-                    # Handle configurable function format
-                    result = func()
-                    if not (isinstance(result, tuple) and result[0] == 'configurable'):
-                        raise ValueError("Expected a configurable function format.")
-                    
-                    _, func_name, default_kwargs, user_kwargs = func()      
-                    # Update the default keyword arguments with those provided by the user and infered
-                    user_kwargs.update(
-                        {
-                            'window_size' : pandas_df.shape[0],
-                            'min_periods' : min_periods
-                        }
-                    )
-                    default_kwargs.update(user_kwargs)
-                    
+                
+                # Try handling a lambda function of the form lambda x: x
+                if inspect.isfunction(func) and len(inspect.signature(func).parameters) == 1:
                     try:
                         # Construct expanding window expression
-                        expanding_expr = getattr(pl.col(col), f"rolling_{func_name}")(**default_kwargs)
-                    except AttributeError as e:
-                        raise AttributeError(f"The function `{user_func_name}` attempted to access an attribute or method that does not exist in Polars. Error: {e}")
-                    except Exception as e:
-                        raise Exception(f"An error occurred during the operation of the `{user_func_name}` function in Polars. Error: {e}")
-                
-                # Handle missing positional arguments, typically encountered for lambda x: functions
-                except TypeError as e:
-                    if "missing 1 required positional argument" in str(e):
-                        # Construct the expanding expression that when executed will create the new column
                         expanding_expr = pl.col(col) \
                             .cast(pl.Float64) \
                             .rolling_apply(
@@ -480,12 +459,45 @@ def _augment_expanding_polars(
                                 window_size=pandas_df.shape[0], 
                                 min_periods=min_periods
                             )
-                    else:
-                        raise e
+                    except Exception as e:
+                        raise Exception(f"An error occurred during the operation of the `{user_func_name}` function in Polars. Error: {e}")
+   
+                # Try handling a configurable function (e.g. pl_quantile) if it is not a lambda function
+                elif isinstance(func, tuple) and func[0] == 'configurable':
+                    try:
+                        # Configurable function should return 4 objects
+                        _, func_name, default_kwargs, user_kwargs = func
+                    except Exception as e:
+                        raise ValueError(f"Unexpected function format. Expected a tuple with format ('configurable', func_name, default_kwargs, user_kwargs). Received: {func}. Original error: {e}")
+                    
+                    try:
+                        # Define local values that may be required by configurable functions.
+                        # If adding a new configurable function in utils.polars_helpers that necessitates 
+                        # additional local values, consider updating this dictionary accordingly.
+                        local_values = {
+                            'window_size': pandas_df.shape[0],
+                            'min_periods': min_periods
+                        }
+                        # Combine local values with user-provided parameters for the configurable function
+                        user_kwargs.update(local_values)
+                        # Update the default configurable parameters (without adding new keys)
+                        default_kwargs = update_dict(default_kwargs, user_kwargs)
+                    except Exception as e:
+                        raise ValueError("Error encountered while updating parameters for the configurable function `{func_name}` passed to `window_func`: {e}")
+                    
+                    try:
+                        # Construct expanding window expression
+                        expanding_expr = getattr(pl.col(col), f"rolling_{func_name}")(**default_kwargs)
+                    except AttributeError as e:
+                        raise AttributeError(f"The function `{user_func_name}` tried to access a non-existent attribute or method in Polars. Error: {e}")
+                    except Exception as e:
+                        raise Exception(f"Error during the execution of `{user_func_name}` in Polars. Error: {e}")
+                
+                else:
+                    raise TypeError(f"Unexpected function format for `{user_func_name}`.")
                 
                 expanding_expr = expanding_expr.alias(new_column_name)
 
-            # Handle built-in functions passed as strings
             elif isinstance(func, str):
                 func_name = func
                 new_column_name = f"{col}_expanding_{func_name}"
@@ -503,10 +515,11 @@ def _augment_expanding_polars(
             else:
                 raise TypeError(f"Invalid function type: {type(func)}")
             
+            # Add constructed expressions and new column names to respective lists
             expanding_exprs.append(expanding_expr)
             new_column_names.append(new_column_name)
 
-    # Convert Pandas DataFrame to Polars, resetting the index to preserve original order for later use
+    # Convert Pandas DataFrame to Polars and ensure a consistent row order by resetting the index
     df = pl.from_pandas(pandas_df.reset_index())
     
     # Evaluate the accumulated expanding expressions and convert back to a Pandas DataFrame
