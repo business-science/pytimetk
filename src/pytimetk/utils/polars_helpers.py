@@ -1,6 +1,6 @@
 import polars as pl
 
-from pytimetk.utils.datetime_helpers import parse_freq_str
+from pytimetk.utils.string_helpers import parse_freq_str
 
 def pandas_to_polars_frequency(pandas_freq_str, default=(1, "d")):
     
