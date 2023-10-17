@@ -44,3 +44,24 @@ def pandas_to_polars_aggregation_mapping(column_name):
         'count'  : pl.col(column_name).count().suffix("_count"),
         'nunique': pl.col(column_name).n_unique().suffix("_nunique")
     }
+    
+    
+def pl_quantile(**kwargs):
+    """Generates configuration for the rolling quantile function in Polars."""
+    # Designate this function as a 'configurable' type - this helps 'augment_expanding' recognize and process it appropriately
+    func_type = 'configurable'
+    # Specify the Polars rolling function to be called, `rolling_<func_name>`
+    func_name = 'quantile'
+    # Initial parameters for Polars' rolling quantile function
+    # Many will be updated by **kwargs or inferred externally based on the dataframe
+    default_kwargs = {
+        'quantile': None,
+        'interpolation': 'midpoint',
+        'window_size': None,
+        'weights': None, 
+        'min_periods': None,
+        'center': False,
+        'by': None,
+        'closed': 'left'
+    }
+    return func_type, func_name, default_kwargs, kwargs
