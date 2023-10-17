@@ -54,8 +54,9 @@ def anomalize(
     clean : str
         The `clean` parameter specifies the method used to clean the anomalies. It can take two values:
         
-        1. 'linear' - This is the default value. It specifies that the anomalies will be cleaned using linear interpolation.
-        2. 'min_max' - This specifies that the anomalies will be cleaned using the min-max method. This method replaces the anomalies with the 0.75 * lower or upper bound of the recomposed time series, depending on the direction of the anomaly.
+        1. 'min_max' - This specifies that the anomalies will be cleaned using the min-max method. This method replaces the anomalies with the 0.75 * lower or upper bound of the recomposed time series, depending on the direction of the anomaly. The 0.75 multiplier can be adjusted using the `clean_alpha` parameter.
+        2. 'linear' - This specifies that the anomalies will be cleaned using linear interpolation.
+        
     iqr_alpha : float
         The `iqr_alpha` parameter is used to determine the threshold for detecting outliers. It is the significance level used in the interquartile range (IQR) method for outlier detection. 
         - The default value is 0.05, which corresponds to a 5% significance level. 

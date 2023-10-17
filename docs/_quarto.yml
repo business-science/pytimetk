@@ -120,7 +120,7 @@ quartodoc:
         - apply_by_time
         - pad_by_time
         - future_frame
-    - title: 🔍 Anomally Detection
+    - title: 🔍 Anomaly Detection
       desc: Detect anomalies in time series data.
       package: pytimetk
       contents:

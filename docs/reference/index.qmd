@@ -19,7 +19,7 @@ Bend time series data to your will.
 | [pad_by_time](pad_by_time.qmd#pytimetk.pad_by_time) | Make irregular time series regular by padding with missing dates. |
 | [future_frame](future_frame.qmd#pytimetk.future_frame) | Extend a DataFrame or GroupBy object with future dates. |
 
-## 🔍 Anomally Detection
+## 🔍 Anomaly Detection
 
 Detect anomalies in time series data.
 
