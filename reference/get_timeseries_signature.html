@@ -116,9 +116,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <!-- SUMO -->
 <script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -360,48 +357,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>get_timeseries_signature(idx)</code></p>
+<p><code>get_timeseries_signature(idx, engine='pandas')</code></p>
 <p>Convert a timestamp to a set of 29 time series features.</p>
-<p>The function <code>tk_get_timeseries_signature</code> engineers <strong>29 different date and time based features</strong> from a single datetime index <code>idx</code>:</p>
-<ul>
-<li>index_num: An int64 feature that captures the entire datetime as a numeric value to the second</li>
-<li>year: The year of the datetime</li>
-<li>year_iso: The iso year of the datetime</li>
-<li>yearstart: Logical (0,1) indicating if first day of year (defined by frequency)</li>
-<li>yearend: Logical (0,1) indicating if last day of year (defined by frequency)</li>
-<li>leapyear: Logical (0,1) indicating if the date belongs to a leap year</li>
-<li>half: Half year of the date: Jan-Jun = 1, July-Dec = 2</li>
-<li>quarter: Quarter of the date: Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4</li>
-<li>quarteryear: Quarter of the date + relative year</li>
-<li>quarterstart: Logical (0,1) indicating if first day of quarter (defined by frequency)</li>
-<li>quarterend: Logical (0,1) indicating if last day of quarter (defined by frequency)</li>
-<li>month: The month of the datetime</li>
-<li>month_lbl: The month label of the datetime</li>
-<li>monthstart: Logical (0,1) indicating if first day of month (defined by frequency)</li>
-<li>monthend: Logical (0,1) indicating if last day of month (defined by frequency)</li>
-<li>yweek: The week ordinal of the year</li>
-<li>mweek: The week ordinal of the month</li>
-<li>wday: The number of the day of the week with Monday=1, Sunday=6</li>
-<li>wday_lbl: The day of the week label</li>
-<li>mday: The day of the datetime</li>
-<li>qday: The days of the relative quarter</li>
-<li>yday: The ordinal day of year</li>
-<li>weekend: Logical (0,1) indicating if the day is a weekend</li>
-<li>hour: The hour of the datetime</li>
-<li>minute: The minutes of the datetime</li>
-<li>second: The seconds of the datetime</li>
-<li>msecond: The microseconds of the datetime</li>
-<li>nsecond: The nanoseconds of the datetime</li>
-<li>am_pm: Half of the day, AM = ante meridiem, PM = post meridiem</li>
-</ul>
+<p>The function <code>get_timeseries_signature</code> engineers <strong>29 different date and time based features</strong> from a single datetime index <code>idx</code>:</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 5%">
-<col style="width: 19%">
-<col style="width: 67%">
-<col style="width: 7%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 90%">
+<col style="width: 3%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -414,9 +380,15 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td><code>idx</code></td>
-<td>pd.Series or pd.DatetimeIndex</td>
-<td>idx is a pandas Series object containing datetime values. Alternatively a pd.DatetimeIndex can be passed.</td>
+<td>pd.DataFrame</td>
+<td>The <code>idx</code> parameter is a pandas Series of DatetimeIndex.</td>
 <td><em>required</em></td>
+</tr>
+<tr class="even">
+<td><code>engine</code></td>
+<td>str</td>
+<td>The <code>engine</code> parameter is used to specify the engine to use for augmenting datetime features. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for feature generation. This is generally faster than using “pandas” for large datasets.</td>
+<td><code>'pandas'</code></td>
 </tr>
 </tbody>
 </table>
@@ -425,8 +397,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 91%">
-<col style="width: 8%">
+<col style="width: 62%">
+<col style="width: 37%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -436,7 +408,123 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td>The function <code>tk_get_timeseries_signature</code> returns a pandas DataFrame that contains 29 different date and time based features derived from a single datetime column.</td>
+<td>pd.DataFrame</td>
+<td>A Pandas DataFrame with 29 datetime features added to it.</td>
+</tr>
+<tr class="even">
+<td>- _index_num: An int64 feature that captures the entire datetime as a numeric value to the second</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>- _year: The year of the datetime</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>- _year_iso: The iso year of the datetime</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>- _yearstart: Logical (0,1) indicating if first day of year (defined by frequency)</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>- _yearend: Logical (0,1) indicating if last day of year (defined by frequency)</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>- _leapyear: Logical (0,1) indicating if the date belongs to a leap year</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>- _half: Half year of the date: Jan-Jun = 1, July-Dec = 2</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>- _quarter: Quarter of the date: Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>- _quarteryear: Quarter of the date + relative year</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>- _quarterstart: Logical (0,1) indicating if first day of quarter (defined by frequency)</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>- _quarterend: Logical (0,1) indicating if last day of quarter (defined by frequency)</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>- _month: The month of the datetime</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>- _month_lbl: The month label of the datetime</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>- _monthstart: Logical (0,1) indicating if first day of month (defined by frequency)</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>- _monthend: Logical (0,1) indicating if last day of month (defined by frequency)</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>- _yweek: The week ordinal of the year</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>- _mweek: The week ordinal of the month</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>- _wday: The number of the day of the week with Monday=1, Sunday=6</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>- _wday_lbl: The day of the week label</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>- _mday: The day of the datetime</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>- _qday: The days of the relative quarter</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>- _yday: The ordinal day of year</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>- _weekend: Logical (0,1) indicating if the day is a weekend</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>- _hour: The hour of the datetime</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>- _minute: The minutes of the datetime</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>- _second: The seconds of the datetime</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>- _msecond: The microseconds of the datetime</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>- _nsecond: The nanoseconds of the datetime</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>- _am_pm: Half of the day, AM = ante meridiem, PM = post meridiem</td>
 <td></td>
 </tr>
 </tbody>
@@ -448,216 +536,151 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_columns'</span>, <span class="va">None</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.date_range(start <span class="op">=</span> <span class="st">'2019-01'</span>, end <span class="op">=</span> <span class="st">'2019-03'</span>, freq <span class="op">=</span> <span class="st">'D'</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Makes 29 new time series features from the dates</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>tk.get_timeseries_signature(dates).head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">index_num</th>
-<th data-quarto-table-cell-role="th">year</th>
-<th data-quarto-table-cell-role="th">year_iso</th>
-<th data-quarto-table-cell-role="th">yearstart</th>
-<th data-quarto-table-cell-role="th">yearend</th>
-<th data-quarto-table-cell-role="th">leapyear</th>
-<th data-quarto-table-cell-role="th">half</th>
-<th data-quarto-table-cell-role="th">quarter</th>
-<th data-quarto-table-cell-role="th">quarteryear</th>
-<th data-quarto-table-cell-role="th">quarterstart</th>
-<th data-quarto-table-cell-role="th">quarterend</th>
-<th data-quarto-table-cell-role="th">month</th>
-<th data-quarto-table-cell-role="th">month_lbl</th>
-<th data-quarto-table-cell-role="th">monthstart</th>
-<th data-quarto-table-cell-role="th">monthend</th>
-<th data-quarto-table-cell-role="th">yweek</th>
-<th data-quarto-table-cell-role="th">mweek</th>
-<th data-quarto-table-cell-role="th">wday</th>
-<th data-quarto-table-cell-role="th">wday_lbl</th>
-<th data-quarto-table-cell-role="th">mday</th>
-<th data-quarto-table-cell-role="th">qday</th>
-<th data-quarto-table-cell-role="th">yday</th>
-<th data-quarto-table-cell-role="th">weekend</th>
-<th data-quarto-table-cell-role="th">hour</th>
-<th data-quarto-table-cell-role="th">minute</th>
-<th data-quarto-table-cell-role="th">second</th>
-<th data-quarto-table-cell-role="th">msecond</th>
-<th data-quarto-table-cell-role="th">nsecond</th>
-<th data-quarto-table-cell-role="th">am_pm</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>1546300800</td>
-<td>2019</td>
-<td>2019</td>
-<td>1</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>2019Q1</td>
-<td>1</td>
-<td>0</td>
-<td>1</td>
-<td>January</td>
-<td>1</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>2</td>
-<td>Tuesday</td>
-<td>1</td>
-<td>1</td>
-<td>1</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>am</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>1546387200</td>
-<td>2019</td>
-<td>2019</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>2019Q1</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>January</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>3</td>
-<td>Wednesday</td>
-<td>2</td>
-<td>2</td>
-<td>2</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>am</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>1546473600</td>
-<td>2019</td>
-<td>2019</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>2019Q1</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>January</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>4</td>
-<td>Thursday</td>
-<td>3</td>
-<td>3</td>
-<td>3</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>am</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>1546560000</td>
-<td>2019</td>
-<td>2019</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>2019Q1</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>January</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>5</td>
-<td>Friday</td>
-<td>4</td>
-<td>4</td>
-<td>4</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>am</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>1546646400</td>
-<td>2019</td>
-<td>2019</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>2019Q1</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>January</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>6</td>
-<td>Saturday</td>
-<td>5</td>
-<td>5</td>
-<td>5</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>am</td>
-</tr>
-</tbody>
-</table>
-
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.date_range(start <span class="op">=</span> <span class="st">'2019-01'</span>, end <span class="op">=</span> <span class="st">'2019-03'</span>, freq <span class="op">=</span> <span class="st">'D'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Makes 29 new time series features from the dates</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>tk.get_timeseries_signature(dates, engine<span class="op">=</span><span class="st">'pandas'</span>).glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 60 rows of 30 columns
+idx:               datetime64[ns]   [Timestamp('2019-01-01 00:00:00'), T ...
+idx_index_num:     int64            [1546300800, 1546387200, 1546473600, ...
+idx_year:          int32            [2019, 2019, 2019, 2019, 2019, 2019, ...
+idx_year_iso:      UInt32           [2019, 2019, 2019, 2019, 2019, 2019, ...
+idx_yearstart:     uint8            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_yearend:       uint8            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_leapyear:      uint8            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_half:          int64            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+idx_quarter:       int32            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+idx_quarteryear:   object           ['2019Q1', '2019Q1', '2019Q1', '2019 ...
+idx_quarterstart:  uint8            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_quarterend:    uint8            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_month:         int32            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+idx_month_lbl:     object           ['January', 'January', 'January', 'J ...
+idx_monthstart:    uint8            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_monthend:      uint8            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_yweek:         UInt32           [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, ...
+idx_mweek:         int32            [1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, ...
+idx_wday:          int32            [2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, ...
+idx_wday_lbl:      object           ['Tuesday', 'Wednesday', 'Thursday', ...
+idx_mday:          int32            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,  ...
+idx_qday:          int64            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,  ...
+idx_yday:          int32            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,  ...
+idx_weekend:       int64            [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, ...
+idx_hour:          int32            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_minute:        int32            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_second:        int32            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_msecond:       int32            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_nsecond:       int32            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_am_pm:         object           ['am', 'am', 'am', 'am', 'am', 'am', ...</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>tk.get_timeseries_signature(dates, engine<span class="op">=</span><span class="st">'polars'</span>).glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 60 rows of 30 columns
+idx:               datetime64[ns]   [Timestamp('2019-01-01 00:00:00'), T ...
+idx_index_num:     float64          [1546300800.0, 1546387200.0, 1546473 ...
+idx_year:          int32            [2019, 2019, 2019, 2019, 2019, 2019, ...
+idx_year_iso:      int32            [2019, 2019, 2019, 2019, 2019, 2019, ...
+idx_yearstart:     int32            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_yearend:       int32            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_leapyear:      int8             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_half:          int32            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+idx_quarter:       uint32           [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+idx_quarteryear:   object           ['2019Q1', '2019Q1', '2019Q1', '2019 ...
+idx_quarterstart:  int32            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_quarterend:    int32            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_month:         uint32           [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+idx_month_lbl:     object           ['January', 'January', 'January', 'J ...
+idx_monthstart:    int32            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_monthend:      int32            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_yweek:         uint32           [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, ...
+idx_mweek:         uint32           [1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, ...
+idx_wday:          uint32           [2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, ...
+idx_wday_lbl:      object           ['Tuesday', 'Wednesday', 'Thursday', ...
+idx_mday:          uint32           [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,  ...
+idx_qday:          int64            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,  ...
+idx_yday:          uint32           [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,  ...
+idx_weekend:       int32            [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, ...
+idx_hour:          uint32           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_minute:        uint32           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_second:        uint32           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_msecond:       uint32           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_nsecond:       uint32           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
+idx_am_pm:         object           ['am', 'am', 'am', 'am', 'am', 'am', ...</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>pd.Series(dates, name <span class="op">=</span> <span class="st">"date"</span>).get_timeseries_signature(engine<span class="op">=</span><span class="st">'pandas'</span>).glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 60 rows of 30 columns
+date:               datetime64[ns]   [Timestamp('2019-01-01 00:00:00'),  ...
+date_index_num:     int64            [1546300800, 1546387200, 1546473600 ...
+date_year:          int32            [2019, 2019, 2019, 2019, 2019, 2019 ...
+date_year_iso:      UInt32           [2019, 2019, 2019, 2019, 2019, 2019 ...
+date_yearstart:     uint8            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_yearend:       uint8            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_leapyear:      uint8            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_half:          int64            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ...
+date_quarter:       int32            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ...
+date_quarteryear:   object           ['2019Q1', '2019Q1', '2019Q1', '201 ...
+date_quarterstart:  uint8            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_quarterend:    uint8            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_month:         int32            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ...
+date_month_lbl:     object           ['January', 'January', 'January', ' ...
+date_monthstart:    uint8            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_monthend:      uint8            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_yweek:         UInt32           [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2 ...
+date_mweek:         int32            [1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2 ...
+date_wday:          int32            [2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6 ...
+date_wday_lbl:      object           ['Tuesday', 'Wednesday', 'Thursday' ...
+date_mday:          int32            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ...
+date_qday:          int64            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ...
+date_yday:          int32            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ...
+date_weekend:       int64            [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 ...
+date_hour:          int32            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_minute:        int32            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_second:        int32            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_msecond:       int32            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_nsecond:       int32            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_am_pm:         object           ['am', 'am', 'am', 'am', 'am', 'am' ...</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pd.Series(dates, name <span class="op">=</span> <span class="st">"date"</span>).get_timeseries_signature(engine<span class="op">=</span><span class="st">'polars'</span>).glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 60 rows of 30 columns
+date:               datetime64[ns]   [Timestamp('2019-01-01 00:00:00'),  ...
+date_index_num:     float64          [1546300800.0, 1546387200.0, 154647 ...
+date_year:          int32            [2019, 2019, 2019, 2019, 2019, 2019 ...
+date_year_iso:      int32            [2019, 2019, 2019, 2019, 2019, 2019 ...
+date_yearstart:     int32            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_yearend:       int32            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_leapyear:      int8             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_half:          int32            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ...
+date_quarter:       uint32           [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ...
+date_quarteryear:   object           ['2019Q1', '2019Q1', '2019Q1', '201 ...
+date_quarterstart:  int32            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_quarterend:    int32            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_month:         uint32           [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ...
+date_month_lbl:     object           ['January', 'January', 'January', ' ...
+date_monthstart:    int32            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_monthend:      int32            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_yweek:         uint32           [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2 ...
+date_mweek:         uint32           [1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2 ...
+date_wday:          uint32           [2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6 ...
+date_wday_lbl:      object           ['Tuesday', 'Wednesday', 'Thursday' ...
+date_mday:          uint32           [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ...
+date_qday:          int64            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ...
+date_yday:          uint32           [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ...
+date_weekend:       int32            [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1 ...
+date_hour:          uint32           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_minute:        uint32           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_second:        uint32           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_msecond:       uint32           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_nsecond:       uint32           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ...
+date_am_pm:         object           ['am', 'am', 'am', 'am', 'am', 'am' ...</code></pre>
 </div>
 </div>
 
