@@ -130,29 +130,20 @@ def plot_anomalies(
             recomposed_l1_data = None
             
             for i in tripple:
-                i-=1
-                print(i)
-                
+                i-=1             
                 
                 # Extract data for each subplot
-                
-                print(fig.data[i].name)
                 
                 if fig.data[i].name == 'observed':
                     observed_data = fig.data[i]
                 elif fig.data[i].name == 'recomposed_l1':
                     recomposed_l1_data = fig.data[i]
+                    fig.data[i].legendgroup = "bands"
+                    fig.data[i].showlegend = False
                 elif fig.data[i].name == 'recomposed_l2':
                     recomposed_l2_data = fig.data[i]
-            
-                print("observed_data")
-                print(observed_data)
-                
-                print("recomposed_l1_data")
-                print(recomposed_l1_data)
-                
-                print("recomposed_l2_data")
-                print(recomposed_l2_data)
+                    fig.data[i].legendgroup = "bands"
+                    fig.data[i].showlegend = False
 
             # Ensure we have the data
             if observed_data and recomposed_l2_data and recomposed_l1_data:
@@ -164,10 +155,6 @@ def plot_anomalies(
                         x_values.append(x)
                         y_values.append(y)
                 
-                print(x_values)
-                print(y_values)
-                print("---")
-                
                 # Add scatter plot with identified points to the correct subplot
                 fig.add_trace(
                     go.Scatter(
@@ -175,12 +162,21 @@ def plot_anomalies(
                         y=y_values,
                         mode='markers',
                         marker=dict(color='red', size=6),
-                        name=f'anomalies',
+                        name='anomalies',
                         legendgroup='anomalies',
                         xaxis=observed_data.xaxis,
                         yaxis=observed_data.yaxis
                     )
                 )
+        
+        # Remove duplicate legends in each legend group
+        seen_legendgroups = set()
+        for trace in fig.data:
+            legendgroup = trace.legendgroup
+            if legendgroup in seen_legendgroups:
+                trace.showlegend = False
+            else:
+                seen_legendgroups.add(legendgroup)
                 
         return fig
     
