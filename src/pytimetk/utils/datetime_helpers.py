@@ -10,6 +10,7 @@ from warnings import warn
 from typing import Union, List
 
 from pytimetk.utils.checks import check_series_or_datetime
+from pytimetk.utils.polars_helpers import pandas_to_polars_frequency
 
 try: 
     import holidays
@@ -21,17 +22,35 @@ except ImportError:
 def floor_date(
     idx: Union[pd.Series, pd.DatetimeIndex], 
     unit: str = "D",
-) -> pd.Series:
-    '''Robust date flooring.
+    engine: str = 'pandas',
+    ) -> pd.Series:
+    '''
+    Robust date flooring.
     
-    The `floor_date` function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit. It's more robust than the pandas `floor` function, which does weird things with irregular frequencies like Month which are actually regular.
+    The `floor_date` function takes a pandas Series of dates and returns a new Series 
+    with the dates rounded down to the specified unit. It's more robust than the 
+    pandas `floor` function, which does weird things with irregular frequencies 
+    like Month which are actually regular.
     
     Parameters
     ----------
     idx : pd.Series or pd.DatetimeIndex
-        The `idx` parameter is a pandas Series or pandas DatetimeIndex object that contains datetime values. It represents the dates that you want to round down.
+        The `idx` parameter is a pandas Series or pandas DatetimeIndex object that 
+        contains datetime values. It represents the dates that you want to round down.
     unit : str, optional
-        The `unit` parameter in the `floor_date` function is a string that specifies the time unit to which the dates in the `idx` series should be rounded down. It has a default value of "D", which stands for day. Other possible values for the `unit` parameter could be
+        The `unit` parameter in the `floor_date` function is a string that specifies 
+        the time unit to which the dates in the `idx` series should be rounded down. 
+        It has a default value of "D", which stands for day. Other possible values 
+        for the `unit` parameter could be.
+    engine : str, optional
+        The `engine` parameter is used to specify the engine to use for calculating 
+        the floor datetime. It can be either "pandas" or "polars". 
+        
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library for 
+          calculating the floor datetime. This can be faster than using "pandas" for 
+          large datasets. 
     
     Returns
     -------
@@ -53,11 +72,27 @@ def floor_date(
     # dates.floor("M") # ValueError: <MonthEnd> is a non-fixed frequency
     
     # floor_date works as expected
-    tk.floor_date(dates, unit="M")
+    tk.floor_date(dates, unit="M", engine='pandas')
     ```
     '''
+
     # Common checks
     check_series_or_datetime(idx)
+
+    if engine == 'pandas':
+        return _floor_date_pandas(idx)
+    elif engine == 'polars':
+        return _floor_date_polars(idx)
+    else:
+        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+
+def _floor_date_pandas(
+    idx: Union[pd.Series, pd.DatetimeIndex], 
+    unit: str = "D",
+    ) -> pd.Series:
+    '''
+    Robust date flooring.
+    '''
     
     # If idx is a DatetimeIndex, convert to Series
     if isinstance(idx, pd.DatetimeIndex):
@@ -77,6 +112,25 @@ def floor_date(
         pd.PeriodIndex(idx.values, freq = unit).to_timestamp(),
         name=nm
     )       
+
+    return date
+
+def _floor_date_polars(
+    idx: Union[pd.Series, pd.DatetimeIndex], 
+    unit: str = "D",
+) -> pd.Series:
+    '''
+    Robust date flooring.
+    '''
+    
+    # If idx is a DatetimeIndex, convert to Series
+    if isinstance(idx, pd.DatetimeIndex):
+        idx = pl.Series(idx).alias('idx')
+    
+    date = (idx
+            .dt
+            .truncate(every=pandas_to_polars_frequency(unit))
+            ).to_arrow().to_pandas()
 
     return date
 
