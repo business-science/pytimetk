@@ -143,27 +143,25 @@ def parse_freq_str(freq_str):
     
     return quantity, unit
 
-import pandas as pd
-
 def freq_to_dateoffset(freq_str):
     unit_mapping = {
-        'D': 'days',
-        'H': 'hours',
-        'T': 'minutes',
+        'D'  : 'days',
+        'H'  : 'hours',
+        'T'  : 'minutes',
         'min': 'minutes',
-        'S': 'seconds',
-        'L': 'milliseconds',
-        'U': 'microseconds',
-        'N': 'nanoseconds',
-        'Y': 'years',
-        'A': 'years',
-        'AS': 'years',
-        'YS': 'years',
-        'W': 'weeks',
-        'Q': 'months',
-        'QS': 'months',
-        'M': 'months',
-        'MS': 'months',
+        'S'  : 'seconds',
+        'L'  : 'milliseconds',
+        'U'  : 'microseconds',
+        'N'  : 'nanoseconds',
+        'Y'  : 'years',
+        'A'  : 'years',
+        'AS' : 'years',
+        'YS' : 'years',
+        'W'  : 'weeks',
+        'Q'  : 'months',
+        'QS' : 'months',
+        'M'  : 'months',
+        'MS' : 'months',
     }
 
     quantity, unit = parse_freq_str(freq_str)
