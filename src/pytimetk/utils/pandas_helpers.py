@@ -107,3 +107,33 @@ def flatten_multiindex_column_names(data: pd.DataFrame, sep = '_') -> pd.DataFra
                 
     return data
 
+
+def pd_quantile(**kwargs):
+    """Generates configuration for the rolling quantile function in Polars."""
+    # Designate this function as a 'configurable' type - this helps 'augment_expanding' recognize and process it appropriately
+    func_type = 'configurable'
+    # Specify the Polars rolling function to be called, `rolling_<func_name>`
+    func_name = 'quantile'
+    # Initial parameters for Polars' rolling quantile function
+    # Many will be updated by **kwargs or inferred externally based on the dataframe
+    default_kwargs = {
+        'q' : None,
+        'interpolation' : 'midpoint',
+        'numeric_only' : False, 
+    }
+    
+    return func_type, func_name, default_kwargs, kwargs
+
+
+def update_dict(d1, d2):
+    """
+    Update values in dictionary `d1` based on matching keys from dictionary `d2`.
+    
+    This function will only update the values of existing keys in `d1`.
+    New keys present in `d2` but not in `d1` will be ignored. 
+    """
+    for key in d1.keys():
+        if key in d2:
+            d1[key] = d2[key]
+    return d1
+
