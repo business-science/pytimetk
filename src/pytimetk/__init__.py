@@ -32,6 +32,7 @@ from .utils.memory_helpers import *
 from .utils.plot_helpers import *
 from .utils.checks import *
 from .utils.parallel_helpers import *
+from .utils.string_helpers import *
 
 # *** Needed for quartodoc build important functions ***
 from .plot.plot_timeseries import (
