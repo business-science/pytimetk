@@ -2,6 +2,7 @@
 # *** Import everything to make pytimetk a standalone package ***
 
 from .plot.plot_timeseries import *
+from .plot.plot_anomalies import *
 from .plot.theme import *
 
 from .core.summarize_by_time import *
@@ -35,6 +36,9 @@ from .utils.parallel_helpers import *
 # *** Needed for quartodoc build important functions ***
 from .plot.plot_timeseries import (
     plot_timeseries
+)
+from .plot.plot_anomalies import (
+    plot_anomalies
 )
 from .plot.theme import (
     theme_timetk, palette_timetk

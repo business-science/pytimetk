@@ -223,6 +223,7 @@ def anomalize(
             .plot_timeseries(
                 "Date", "val", 
                 color_column = "variable",
+                color_palette = ["#2c3e50", "#e31a1c", "#e31a1c"],
                 facet_ncol = 2, 
                 smooth = False,
                 width = 800,
