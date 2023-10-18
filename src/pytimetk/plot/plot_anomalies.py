@@ -74,6 +74,9 @@ def plot_anomalies(
     if group_names is None:
         1+1
     else:
+        
+        # 1.0 Create Main Plot
+        
         data[group_names] = data[group_names].astype(str)
     
         fig = (
