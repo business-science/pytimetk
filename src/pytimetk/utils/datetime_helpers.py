@@ -177,33 +177,38 @@ def freq_to_dateoffset(freq_str):
         raise ValueError(f"Unsupported frequency unit: {unit}")
 
 def freq_to_timedelta(freq_str):
-    # Adjusted regex to account for potential absence of numeric part
+    unit_mapping = {
+        'D'  : 'days',
+        'H'  : 'hours',
+        'T'  : 'minutes',
+        'min': 'minutes',
+        'S'  : 'seconds',
+        'L'  : 'milliseconds',
+        'U'  : 'milliseconds',
+        'N'  : 'nanoseconds',
+        'Y'  : 'years',
+        'A'  : 'years',
+        'AS' : 'years',
+        'YS' : 'years',
+        'W'  : 'weeks',
+        'Q'  : 'quarters',
+        'QS' : 'quarters',
+        'M'  : 'months',
+        'MS' : 'months',
+    }
+
     quantity, unit = parse_freq_str(freq_str)
-    
-    # Assume quantity of 1 if it's not explicitly provided
     quantity = int(quantity) if quantity else 1
-    
-    if unit == 'D':  # Days
-        return pd.Timedelta(days=quantity)
-    elif unit == 'H':  # Hours
-        return pd.Timedelta(hours=quantity)
-    elif unit == 'T' or unit == 'min':  # Minutes
-        return pd.Timedelta(minutes=quantity)
-    elif unit == 'S':  # Seconds
-        return pd.Timedelta(seconds=quantity)
-    elif unit == 'L' or unit == 'U':  # Milliseconds
-        return pd.Timedelta(milliseconds=quantity)
-    elif unit == 'N':  # Nanoseconds
-        return pd.Timedelta(nanoseconds=quantity)
-    elif unit in ['Y', 'A', 'AS', 'YS']:  # Years (approximated as 365.25 days per year)
-        return pd.Timedelta(days=quantity*365.25)
-    elif unit == 'W':  # Weeks
-        return pd.Timedelta(weeks=quantity)
-    elif unit in ['Q', 'QS']:  # Quarters (approximated as 3*30.44 days)
-        return pd.Timedelta(days=quantity*3*30.44)
-    elif unit in ['M', 'MS']:  # Months (approximated as 30.44 days)
-        return pd.Timedelta(days=quantity*30.44)
-    # ... add other units if needed
+
+    if unit in unit_mapping:
+        if unit_mapping[unit] == 'years':
+            return pd.Timedelta(days=quantity*365.25)
+        elif unit_mapping[unit] == 'quarters':
+            return pd.Timedelta(days=quantity*3*30.44)
+        elif unit_mapping[unit] == 'months':
+            return pd.Timedelta(days=quantity*30.44)
+        else:
+            return pd.Timedelta(**{unit_mapping[unit]: quantity})
     else:
         raise ValueError(f"Unsupported frequency unit: {unit}")
 
