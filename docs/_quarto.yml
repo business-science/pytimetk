@@ -61,6 +61,8 @@ website:
         contents: guides/*
       - section: "📘 Applied Tutorials:"
         contents: tutorials/*
+      - section: "📘 Performance:"
+        contents: comparisons/*
       - text: "---"
       - text: 📄 API Reference
         file: reference/index.qmd

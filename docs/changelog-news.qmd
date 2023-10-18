@@ -3,8 +3,7 @@ title: "Changelog for PyTimeTK"
 jupyter: python3
 toc: true
 toc-depth: 3
-number-sections: true
-number-depth: 2
+number-sections: false
 ---
 
 # pytimetk 0.1.0.9000 (in development)
