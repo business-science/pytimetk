@@ -11,6 +11,8 @@ from typing import Union, List
 
 from pytimetk.utils.checks import check_series_or_datetime
 from pytimetk.utils.polars_helpers import pandas_to_polars_frequency
+from pytimetk.utils.string_helpers import parse_freq_str
+
 
 try: 
     import holidays
@@ -77,7 +79,7 @@ def floor_date(
     '''
 
     # Common checks
-    check_series_or_datetime1(idx)
+    check_series_or_datetime(idx)
 
     if engine == 'pandas':
         return _floor_date_pandas(idx, unit)
@@ -184,18 +186,6 @@ def ceil_date(
     date = floor_date(idx, unit=unit) + freq_to_dateoffset(unit)
 
     return date
-
-def parse_freq_str(freq_str):
-    match = re.match(r'(\d+)?([A-Z]+|min)', freq_str)
-    if not match:
-        raise ValueError(f"Invalid frequency string: {freq_str}")
-    
-    quantity, unit = match.groups()
-    
-    if quantity is None:
-        quantity = 1
-    
-    return quantity, unit
 
 def freq_to_dateoffset(freq_str):
     # Adjusted regex to account for potential absence of numeric part
