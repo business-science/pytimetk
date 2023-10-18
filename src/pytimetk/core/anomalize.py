@@ -21,15 +21,77 @@ def anomalize(
     trend: Optional[int] = None,
     method: str = 'twitter',
     decomp: str = 'additive',
-    clean: str = 'linear',
+    clean: str = 'min_max',
     iqr_alpha: float = 0.05,
+    clean_alpha: float = 0.75,
     max_anomalies: float = 0.2,
     bind_data: bool = False,
-    threads: Optional[int] = 1,
+    threads: int = 1,
     show_progress: bool = True,
     verbose = False,
 ) -> pd.DataFrame:
-    """
+    '''The `anomalize` function is used to detect anomalies in time series data, either for a single time
+    series or for multiple time series grouped by a specific column.
+    
+    Parameters
+    ----------
+    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+        The input data, which can be either a pandas DataFrame or a pandas DataFrameGroupBy object.
+    date_column : str
+        The name of the column in the data that contains the dates or timestamps.
+    value_column : str
+        The name of the column in the data that contains the values to be analyzed for anomalies.
+    period : Optional[int]
+        The `period` parameter specifies the length of the seasonal component in the time series. It is used in the decomposition process to separate the time series into its seasonal, trend, and remainder components. If not specified, the function will automatically determine the period based on the data.
+    trend : Optional[int]
+        The `trend` parameter is an optional integer that specifies the length of the moving average window used for trend estimation. If `trend` is set to `None`, no trend estimation will be performed.
+    method : str
+        The `method` parameter determines the method used for anomaly detection. The available options are 'twitter' and 'seasonal_decompose'. The default value is 'twitter'.
+    decomp : str
+        The `decomp` parameter specifies the type of decomposition to use for time series decomposition. It can take two values:
+        1. 'additive' - This is the default value. It specifies that the time series will be decomposed using an additive model.
+        2. 'multiplicative' - This specifies that the time series will be decomposed using a multiplicative model.        
+    clean : str
+        The `clean` parameter specifies the method used to clean the anomalies. It can take two values:
+        
+        1. 'min_max' - This specifies that the anomalies will be cleaned using the min-max method. This method replaces the anomalies with the 0.75 * lower or upper bound of the recomposed time series, depending on the direction of the anomaly. The 0.75 multiplier can be adjusted using the `clean_alpha` parameter.
+        2. 'linear' - This specifies that the anomalies will be cleaned using linear interpolation.
+        
+    iqr_alpha : float
+        The `iqr_alpha` parameter is used to determine the threshold for detecting outliers. It is the significance level used in the interquartile range (IQR) method for outlier detection. 
+        - The default value is 0.05, which corresponds to a 5% significance level. 
+        - A lower significance level will result in a higher threshold, which means fewer outliers will be detected.
+        - A higher significance level will result in a lower threshold, which means more outliers will be detected.
+    clean_alpha : float
+        The `clean_alpha` parameter is used to determine the threshold for cleaning the outliers. The default is 0.75, which means that the anomalies will be cleaned using the 0.75 * lower or upper bound of the recomposed time series, depending on the direction of the anomaly.
+    max_anomalies : float
+        The `max_anomalies` parameter is used to specify the maximum percentage of anomalies allowed in the data. It is a float value between 0 and 1. For example, if `max_anomalies` is set to 0.2, it means that the function will identify and remove outliers until the percentage of outliers in the data is less than or equal to 20%. The default value is 0.2.
+    bind_data : bool
+        The `bind_data` parameter determines whether the original data will be included in the output. If set to `True`, the original data will be included in the output dataframe. If set to `False`, only the anomalous data will be included.
+    threads : int
+        The `threads` parameter specifies the number of threads to use for parallel processing. By default, it is set to `1`, which means no parallel processing is used. If you set `threads` to `-1`, it will use all available processors for parallel processing.
+    show_progress : bool
+        A boolean parameter that determines whether to show a progress bar during the execution of the function. If set to True, a progress bar will be displayed. If set to False, no progress bar will be shown.
+    verbose: bool
+        The `verbose` parameter is a boolean flag that determines whether or not to display additional information and progress updates during the execution of the `anomalize` function. If `verbose` is set to `True`, you will see more detailed output. 
+    
+    Returns
+    -------
+    pd.DataFrame
+        The `anomalize` function returns a pandas DataFrame containing the original data with additional
+    columns:
+        - observed: original data
+        - seasonal: seasonal component
+        - seasadaj: seasonal adjusted
+        - trend: trend component
+        - remainder: residual component
+        - anomaly: Yes/No flag for outlier detection
+        - anomaly score: distance from centerline
+        - anomaly direction: -1, 0, 1 inidicator for direction of the anomaly
+        - recomposed_l1: lower level bound of recomposed time series
+        - recomposed_l2: upper level bound of recomposed time series
+        - observed_clean: original data with anomalies interpolated
+    
     
     Notes
     -----
@@ -61,38 +123,56 @@ def anomalize(
     # Create a DataFrame
     df = pd.DataFrame(date_rng, columns=['date'])
     df['value'] = data
-    df    
-    
-    df.plot_timeseries("date", "value")
     
     # Anomalize the data
     anomalize_df = tk.anomalize(
         df, "date", "value",
         method = "twitter", 
-        iqr_alpha = 0.05,
+        iqr_alpha = 0.10, 
+        clean_alpha = 0.75,
+        clean = "min_max",
         verbose = True,
     )
     
     anomalize_df.glimpse()
+    ```
     
+    ``` {python}
     # Visualize the results
-    anomalize_df[["date", "observed", "seasonal", "trend", "remainder"]] \
-        .melt(id_vars = "date", value_name='val') \
-        .groupby("variable") \
-        .plot_timeseries("date", "val", color_column = "variable", smooth = False)
+    (
+        anomalize_df[["date", "observed", "seasonal", "trend", "remainder"]] 
+            .melt(id_vars = "date", value_name='val') 
+            .groupby("variable") 
+            .plot_timeseries("date", "val", color_column = "variable", smooth = False)   
+    )
+    ```
     
+    ``` {python}
     # Visualize the anomaly bands
-    anomalize_df[["date", "observed", "recomposed_l1", "recomposed_l2"]] \
-        .melt(id_vars = "date", value_name='val') \
-        .plot_timeseries("date", "val", color_column = "variable", smooth = False)
+    (
+         anomalize_df
+            .plot_anomalies(
+                date_column = "date"
+            )
+    )
+    ```
     
+    ``` {python}
     # Get the anomalies    
     anomalize_df.query("anomaly=='Yes'")
-        
+    ```
+    
+    ``` {python} 
     # Visualize observed vs cleaned
-    anomalize_df[["date", "observed", "observed_clean"]] \
-        .melt(id_vars = "date", value_name='val') \
-        .plot_timeseries("date", "val", color_column = "variable", smooth = False)
+    (
+        anomalize_df[["date", "observed", "observed_clean"]] 
+            .melt(id_vars = "date", value_name='val') 
+            .plot_timeseries(
+                "date", "val", 
+                color_column = "variable", 
+                smooth = False
+            )
+    )
     
     ```
     
@@ -103,59 +183,67 @@ def anomalize(
     
     df = tk.load_dataset("walmart_sales_weekly", parse_dates=["Date"])[["id", "Date", "Weekly_Sales"]]
     
-    anomalize_df = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = 1) 
+    anomalize_df = (
+        df
+            .groupby('id') 
+            .anomalize(
+                "Date", "Weekly_Sales", 
+                period = 52, 
+                trend = 52, 
+                threads = 1
+            ) 
+    )
     
     # Visualize the results
-    anomalize_df[["id", "Date", "observed", "seasonal", "trend", "remainder"]] \
-        .melt(id_vars = ["id", "Date"], value_name='val') \
-        .groupby(["id", "variable"]) \
-        .plot_timeseries(
-            "Date", "val", 
-            facet_ncol = 7, 
-            smooth = False,
-            width = 1200,
-            height = 800,
-        )
-    
-    # Visualize the anomaly bands
-    anomalize_df[["id", "Date", "observed", "recomposed_l1", "recomposed_l2"]] \
-        .melt(id_vars = ["id", "Date"], value_name='val') \
-        .groupby(["id"]) \
-        .plot_timeseries(
-            "Date", "val", 
-            color_column = "variable",
-            facet_ncol = 2, 
-            smooth = False,
-            width = 800,
-            height = 800,
-        )
-    
-    # Get the anomalies    
-    anomalize_df.query("anomaly=='Yes'")
-        
-    # Visualize observed vs cleaned
-    anomalize_df[["id", "Date", "observed", "observed_clean"]] \
-        .melt(id_vars = ["id", "Date"], value_name='val') \
-        .groupby(["id"]) \
-        .plot_timeseries("Date", "val", color_column = "variable", smooth = False)
-    
+    (
+        anomalize_df[["id", "Date", "observed", "seasonal", "trend", "remainder"]] 
+            .melt(id_vars = ["id", "Date"], value_name='val') 
+            .groupby(["id", "variable"]) 
+            .plot_timeseries(
+                "Date", "val", 
+                facet_ncol = 7, 
+                smooth = False,
+                width = 1200,
+                height = 800,
+                color_palette = ["#2c3e50", "#e31a1c", "#e31a1c"]
+            )
+    )
     ```
     
     ``` {python}
-    # PARALLEL PROCESSING
-    
-    import pytimetk as tk
-    import pandas as pd
-    
-    df = tk.load_dataset("walmart_sales_weekly", parse_dates=["Date"])[["id", "Date", "Weekly_Sales"]]
-    
-    anomalize_df_ser = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = 1)
-    
-    anomalize_df_par = df.groupby('id').anomalize("Date", "Weekly_Sales", period = 52, trend = 52, threads = -1) 
-
-    
+    # Visualize the anomaly bands
+    (
+        anomalize_df 
+            .groupby(["id"]) 
+            .plot_anomalies(
+                date_column = "Date", 
+                facet_ncol = 2, 
+                width = 800,
+                height = 800,
+            )
+    )
     ```
-    """
+    
+    ``` {python}
+    # Get the anomalies    
+    anomalize_df.query("anomaly=='Yes'")
+    ```
+    
+    ``` {python}
+    # Visualize observed vs cleaned
+    (
+        anomalize_df[["id", "Date", "observed", "observed_clean"]]
+            .melt(id_vars = ["id", "Date"], value_name='val') 
+            .groupby(["id"]) 
+            .plot_timeseries(
+                "Date", "val", 
+                color_column = "variable", 
+                smooth = False, 
+                facet_ncol = 2
+            )
+    )
+    ```
+    '''
     
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
@@ -172,6 +260,7 @@ def anomalize(
             decomp=decomp,
             clean=clean,
             iqr_alpha=iqr_alpha,
+            clean_alpha=clean_alpha,
             max_anomalies=max_anomalies,
             bind_data=bind_data,
             verbose=verbose,
@@ -200,6 +289,7 @@ def anomalize(
                 decomp=decomp,
                 clean=clean,
                 iqr_alpha=iqr_alpha,
+                clean_alpha=clean_alpha,
                 max_anomalies=max_anomalies,
                 bind_data=bind_data,
                 verbose=verbose,
@@ -218,6 +308,7 @@ def anomalize(
                 decomp=decomp,
                 clean=clean,
                 iqr_alpha=iqr_alpha,
+                clean_alpha=clean_alpha,
                 max_anomalies=max_anomalies,
                 bind_data=bind_data,
                 threads=threads,
@@ -242,6 +333,7 @@ def _anomalize(
     decomp: str = 'additive',
     clean: str = 'linear',
     iqr_alpha: float = 0.05,
+    clean_alpha: float = 0.75,
     max_anomalies: float = 0.2,
     bind_data: bool = False,
     verbose = False,
@@ -317,9 +409,22 @@ def _anomalize(
     result['recomposed_l2'] = result['seasonal'] + result['trend'] + outlier_df['remainder_l2']
     
     # STEP 4: Clean the Anomalies
-    result['observed_clean'] = result['observed'] \
-        .where(result['anomaly']=='No', np.nan) \
-        .interpolate(method=clean, limit_direction='both')
+    
+    if clean == 'linear':
+        result['observed_clean'] = result['observed'] \
+            .where(result['anomaly']=='No', np.nan) \
+            .interpolate(method=clean, limit_direction='both')
+    else:
+        # min_max
+        result['observed_clean'] = np.where(
+            result['anomaly_direction'] == -1, 
+            clean_alpha*result['recomposed_l1'],
+            np.where(
+                result['anomaly_direction'] == 1, 
+                clean_alpha*result['recomposed_l2'], 
+                result['observed']
+            )
+        )
         
         
     result[date_column] = orig_date_column

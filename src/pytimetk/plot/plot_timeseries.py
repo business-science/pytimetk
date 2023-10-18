@@ -536,8 +536,7 @@ def _plot_timeseries_plotly(
         color_df["_color"] = (color_palette * 1_000_000)[:len(color_df)]  
         
         color_df["_color_group_names"] =  color_df[color_column].agg(" | ".join, axis=1)
-        
-        # print(color_df)
+
         
     # SETUP SUBPLOTS ----
     
@@ -568,10 +567,6 @@ def _plot_timeseries_plotly(
             colors = colors[:num_groups]
         else: 
             colors = [line_color] * num_groups
-        
-        
-        # print(colors)
-        # print(subplot_titles)
         
     else:
         facet_nrow = 1
@@ -613,17 +608,11 @@ def _plot_timeseries_plotly(
                 
                 for j, (name, color_group) in enumerate(color_group.groupby("_color_group_names")):
                     
-                    # print(color_group)
-                    
                     color = color_group['_color'].unique()[0]
                     
                     grp_nm = color_group['_group_names'].unique()[0]
                     
                     name = color_group['_color_group_names'].unique()[0]
-                    
-                    # print(color)
-                    # print(name)
-                    # print(j)
                     
                     trace = go.Scatter(
                         x=color_group[date_column], 
@@ -650,8 +639,6 @@ def _plot_timeseries_plotly(
             else:
                 
                 group_group = group.merge(group_lookup_df, on=group_names, how="left")
-                
-                # print(group_group)
                 
                 grp_nm = group_group['_group_names'].unique()[0]
                 
@@ -686,16 +673,10 @@ def _plot_timeseries_plotly(
                     
             for j, (name, color_group) in enumerate(color_group.groupby("_color")):
                 
-                # print(color_group)
-                
                 color = color_group['_color'].unique()[0]
                 
                 name = color_group['_color_group_names'].unique()[0]
-                
-                # print(color)
-                # print(name)
-                # print(j)
-                
+                                
                 trace = go.Scatter(
                     x=color_group[date_column], 
                     y=color_group[value_column], 
@@ -770,9 +751,7 @@ def _plot_timeseries_plotly(
     
     if not legend_show:
         fig.update_layout(showlegend=False)
-
-     
-        
+   
     return fig
 
 
