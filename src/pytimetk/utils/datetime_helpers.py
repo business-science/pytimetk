@@ -144,36 +144,35 @@ def parse_freq_str(freq_str):
     return quantity, unit
 
 def freq_to_dateoffset(freq_str):
-    unit_mapping = {
-        'D'  : 'days',
-        'H'  : 'hours',
-        'T'  : 'minutes',
-        'min': 'minutes',
-        'S'  : 'seconds',
-        'L'  : 'milliseconds',
-        'U'  : 'microseconds',
-        'N'  : 'nanoseconds',
-        'Y'  : 'years',
-        'A'  : 'years',
-        'AS' : 'years',
-        'YS' : 'years',
-        'W'  : 'weeks',
-        'Q'  : 'months',
-        'QS' : 'months',
-        'M'  : 'months',
-        'MS' : 'months',
-    }
-
+    # Adjusted regex to account for potential absence of numeric part
     quantity, unit = parse_freq_str(freq_str)
+    
+    # Assume quantity of 1 if it's not explicitly provided
     quantity = int(quantity) if quantity else 1
-
-    if unit in unit_mapping:
-        if unit_mapping[unit] == 'years':
-            return pd.DateOffset(years=quantity)
-        elif unit_mapping[unit] == 'months':
-            return pd.DateOffset(months=quantity)
-        else:
-            return pd.DateOffset(**{unit_mapping[unit]: quantity})
+    
+    if unit == 'D':  # Days
+        return pd.DateOffset(days=quantity)
+    elif unit == 'H':  # Hours
+        return pd.DateOffset(hours=quantity)
+    elif unit == 'T' or unit == 'min':  # Minutes
+        return pd.DateOffset(minutes=quantity)
+    elif unit == 'S':  # Seconds
+        return pd.DateOffset(seconds=quantity)
+    elif unit == 'L':  # Milliseconds
+        return pd.DateOffset(milliseconds=quantity)
+    elif unit == 'U':  # Microseconds
+        return pd.DateOffset(microseconds=quantity)
+    elif unit == 'N':  # Nanoseconds
+        return pd.DateOffset(nanoseconds=quantity)
+    elif unit in ['Y', 'A', 'AS', 'YS']:  # Years 
+        return pd.DateOffset(years=quantity)
+    elif unit == 'W':  # Weeks
+        return pd.DateOffset(weeks=quantity)
+    elif unit in ['Q', 'QS']:  # Quarters (approximated as 3*months)
+        return pd.DateOffset(months=quantity*3)
+    elif unit in ['M', 'MS']:  # Months (approximated as 30.44 days)
+        return pd.DateOffset(months=quantity)
+    # ... add other units if needed
     else:
         raise ValueError(f"Unsupported frequency unit: {unit}")
 
