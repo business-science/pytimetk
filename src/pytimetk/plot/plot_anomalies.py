@@ -1,32 +1,17 @@
 import pandas as pd
-import numpy as np
 import pandas_flavor as pf
-
-from plotnine import *
-
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-
-from mizani.breaks import date_breaks
-from mizani.formatters import date_format
-
-from statsmodels.nonparametric.smoothers_lowess import lowess
-
-from pytimetk.plot.theme import theme_timetk, palette_timetk
-from pytimetk.utils.plot_helpers import hex_to_rgba, rgba_to_hex
-
 from typing import Union, Optional
+from functools import partial
+import plotly.graph_objects as go
 
-from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
+from pytimetk.plot.plot_timeseries import plot_timeseries
+from pytimetk.utils.plot_helpers import hex_to_rgba, rgba_to_hex, parse_rgba
+from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column
 
 @pf.register_dataframe_method
 def plot_anomalies(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
-    
-    color_column: Optional[str] = None,
-    color_palette: Optional[Union[dict, list, str]] = None,
 
     facet_ncol: int = 1,
     facet_nrow: Optional[int] = None,
@@ -34,20 +19,21 @@ def plot_anomalies(
     facet_dir: str = "h", 
 
     line_color: str = "#2c3e50",
-    line_size: float = None,
+    line_size: Optional[float] = None,
     line_type: str = 'solid',
     line_alpha: float = 1.0,
+    
+    anom_color: str = "#E31A1C",
+    anom_alpha: float = 1.0,
+    anom_size: Optional[float] = None,
+    
+    ribbon_fill: str = "#646464",
+    ribbon_alpha: float = 0.2,
     
     y_intercept: Optional[float] = None,
     y_intercept_color: str = "#2c3e50",
     x_intercept: Optional[str] = None,
     x_intercept_color: str = "#2c3e50",
-    
-    smooth: bool = True,
-    smooth_color: str = "#3366FF",
-    smooth_frac: float = 0.2,
-    smooth_size: float = 1.0,
-    smooth_alpha: float = 1.0,
     
     legend_show: bool = True,
     
@@ -64,127 +50,282 @@ def plot_anomalies(
     engine: str = 'plotly'
 ):
     
-    group_names = None
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
-        data = data.obj.copy()
-    else:
-        data = data.copy()
+    # Check data
+    check_dataframe_or_groupby(data)
+    check_date_column(data, date_column)
     
-    if group_names is None:
-        1+1
-    else:
+    if engine == 'plotly':
         
-        # 1.0 Create Main Plot
+        if anom_size is None:
+            anom_size = 6.0
         
-        data[group_names] = data[group_names].astype(str)
-    
-        fig = (
-            data[[*group_names, date_column, "observed", "recomposed_l1", "recomposed_l2"]] 
-                .melt(
-                    id_vars = [*group_names, date_column], value_name='_val',
-                    var_name = '_var',
-                ) 
-                .groupby(group_names) 
-                .plot_timeseries(
-                    date_column, "_val", 
-                    color_column = "_var",
-                    color_palette = ["#2c3e50", '#64646433', '#64646433'],
-                    facet_ncol = 2, 
-                    smooth = False,
-                    width = 800,
-                    height = 800,
-                )
+        
+        fig = _plot_anomalies_plotly(
+            data = data,
+            date_column = date_column,
+
+            facet_ncol = facet_ncol,
+            facet_nrow = facet_nrow,
+            facet_scales = facet_scales,
+            facet_dir = facet_dir, 
+
+            line_color = line_color,
+            line_size = line_size,
+            line_type = line_type,
+            line_alpha = line_alpha,
+            
+            anom_color = anom_color,
+            anom_alpha = anom_alpha,
+            anom_size = anom_size,
+            
+            ribbon_fill = ribbon_fill,
+            ribbon_alpha = ribbon_alpha,
+            
+            y_intercept = y_intercept,
+            y_intercept_color = y_intercept_color,
+            x_intercept = x_intercept,
+            x_intercept_color = x_intercept_color,
+            
+            legend_show = legend_show,
+            
+            title = title,
+            x_lab = x_lab,
+            y_lab = y_lab,
+            color_lab = color_lab,
+            
+            x_axis_date_labels = x_axis_date_labels,
+            base_size = base_size,
+            width = width,
+            height = height,
         )
         
-        # 2.0 Add Ribbon
+    else:
         
-        # Create lists to store the indices of the traces
-        indices_l1 = [i for i, trace in enumerate(fig.data) if trace.name == 'recomposed_l1']
-        indices_l2 = [i for i, trace in enumerate(fig.data) if trace.name == 'recomposed_l2']
-
-        # Iterate through the pairs of indices and update the fig.data list
-        for i_l1, i_l2 in zip(indices_l1, indices_l2):
-            # Ensure 'recomposed_l1' comes before 'recomposed_l2' in fig.data
-            if i_l1 > i_l2:
-                i_l1, i_l2 = i_l2, i_l1  # Swap the indices
-                fig.data[i_l1], fig.data[i_l2] = fig.data[i_l2], fig.data[i_l1]  # Swap the traces
-
-            # Update the 'recomposed_l2' trace to fill towards 'recomposed_l1'
-            fig.data[i_l2].update(fill='tonexty', fillcolor=hex_to_rgba('#64646433'))  # Adjust fill color as needed
-
-        # 3.0 Add Red dots
+        if anom_size is None:
+            anom_size = 1.0
         
-        # Assuming fig.data contains your trace data and you know the number of subplots
-        num_subplots = len(fig.layout.annotations)  # Assuming each subplot has one annotation
+        raise NotImplementedError(f"Engine {engine} is not implemented.")
+    
         
-        def generate_triples(n):
-            result = []
-            for i in range(1, 3*n+1, 3):
-                result.append([i, i+1, i+2])
-            return result
         
-        tripples = generate_triples(num_subplots)
-
-        for tripple in tripples:
-            
-            observed_data = None
-            recomposed_l2_data = None
-            recomposed_l1_data = None
-            
-            for i in tripple:
-                i-=1             
                 
-                # Extract data for each subplot
-                
-                if fig.data[i].name == 'observed':
-                    observed_data = fig.data[i]
-                elif fig.data[i].name == 'recomposed_l1':
-                    recomposed_l1_data = fig.data[i]
-                    fig.data[i].legendgroup = "bands"
-                    fig.data[i].showlegend = False
-                elif fig.data[i].name == 'recomposed_l2':
-                    recomposed_l2_data = fig.data[i]
-                    fig.data[i].legendgroup = "bands"
-                    fig.data[i].showlegend = False
-
-            # Ensure we have the data
-            if observed_data and recomposed_l2_data and recomposed_l1_data:
-                # Identify points where condition is met
-                x_values = []
-                y_values = []
-                for x, y, y_l2, y_l1 in zip(observed_data.x, observed_data.y, recomposed_l2_data.y, recomposed_l1_data.y):
-                    if y > y_l2 or y < y_l1:
-                        x_values.append(x)
-                        y_values.append(y)
-                
-                # Add scatter plot with identified points to the correct subplot
-                fig.add_trace(
-                    go.Scatter(
-                        x=x_values,
-                        y=y_values,
-                        mode='markers',
-                        marker=dict(color='red', size=6),
-                        name='anomalies',
-                        legendgroup='anomalies',
-                        xaxis=observed_data.xaxis,
-                        yaxis=observed_data.yaxis
-                    )
-                )
-        
-        # Remove duplicate legends in each legend group
-        seen_legendgroups = set()
-        for trace in fig.data:
-            legendgroup = trace.legendgroup
-            if legendgroup in seen_legendgroups:
-                trace.showlegend = False
-            else:
-                seen_legendgroups.add(legendgroup)
-                
-        return fig
+    return fig
     
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.plot_anomalies = plot_anomalies
 
 
+def _plot_anomalies_plotly(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    date_column: str,
 
+    facet_ncol: int = 1,
+    facet_nrow: Optional[int] = None,
+    facet_scales: str = "free_y",
+    facet_dir: str = "h", 
+
+    line_color: str = "#2c3e50",
+    line_size: float = None,
+    line_type: str = 'solid',
+    line_alpha: float = 1.0,
+    
+    anom_color: str = "#E31A1C",
+    anom_alpha: float = 1.0,
+    anom_size: Optional[float] = None,
+    
+    ribbon_fill: str = "#646464",
+    ribbon_alpha: float = 0.2,
+    
+    y_intercept: Optional[float] = None,
+    y_intercept_color: str = "#2c3e50",
+    x_intercept: Optional[str] = None,
+    x_intercept_color: str = "#2c3e50",
+    
+    legend_show: bool = True,
+    
+    title: str = "Anomaly Plot",
+    x_lab: str = "",
+    y_lab: str = "",
+    color_lab: str = "Legend",
+    
+    x_axis_date_labels: str = "%b %Y",
+    base_size: float = 11,
+    width: Optional[int] = None,
+    height: Optional[int] = None,
+    
+):
+    
+    # Plot Setup
+    ribbon_color_rgba = hex_to_rgba(ribbon_fill, ribbon_alpha)
+    ribbon_color_rgba_list = parse_rgba(ribbon_color_rgba)
+    ribbon_color_hex = rgba_to_hex(*ribbon_color_rgba_list)
+    
+    preload_plot_timeseries = partial(
+        plot_timeseries,
+                    
+        date_column = date_column,
+        value_column = "_val", 
+        color_column = "_var",
+        
+        color_palette = [
+            line_color, 
+            ribbon_color_hex, 
+            ribbon_color_hex
+        ],
+        
+        facet_ncol = facet_ncol,
+        facet_nrow = facet_nrow,
+        facet_scales = facet_scales,
+        facet_dir = facet_dir,
+        
+        line_size = line_size,
+        line_type = line_type,
+        line_alpha = line_alpha,
+        
+        y_intercept = y_intercept,
+        y_intercept_color = y_intercept_color,
+        x_intercept = x_intercept,
+        x_intercept_color = x_intercept_color,
+        
+        smooth = False,
+        
+        legend_show = legend_show,
+        
+        title = title,
+        x_lab = x_lab,
+        y_lab = y_lab,
+        color_lab = color_lab,
+        
+        x_axis_date_labels = x_axis_date_labels,
+        
+        base_size = base_size,
+        
+        width = width,
+        height = height,
+    )
+    
+    # 1.0 Create Main Plot
+    
+    is_grouped = False
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        group_names = data.grouper.names
+        data = data.obj.copy()
+        is_grouped = True
+    else:
+        data = data.copy()
+        data["_grp"] = "Time Series"
+        group_names = ["_grp"]
+    
+    
+    data[group_names] = data[group_names].astype(str)
+
+    data_prepared = (
+        data[[*group_names, date_column, "observed", "recomposed_l1", "recomposed_l2"]] 
+            .melt(
+                id_vars = [*group_names, date_column], 
+                value_name='_val',
+                var_name = '_var',
+            ) 
+            .groupby(group_names) 
+    )
+    
+    fig = preload_plot_timeseries(data_prepared)
+                
+        
+    # 2.0 Add Ribbon
+    
+    # Create lists to store the indices of the traces
+    indices_l1 = [i for i, trace in enumerate(fig.data) if trace.name == 'recomposed_l1']
+    indices_l2 = [i for i, trace in enumerate(fig.data) if trace.name == 'recomposed_l2']
+
+    # Iterate through the pairs of indices and update the fig.data list
+    for i_l1, i_l2 in zip(indices_l1, indices_l2):
+        # Ensure 'recomposed_l1' comes before 'recomposed_l2' in fig.data
+        if i_l1 > i_l2:
+            i_l1, i_l2 = i_l2, i_l1  # Swap the indices
+            fig.data[i_l1], fig.data[i_l2] = fig.data[i_l2], fig.data[i_l1]  # Swap the traces
+
+        # Update the 'recomposed_l2' trace to fill towards 'recomposed_l1'
+        fig.data[i_l2].update(fill='tonexty', fillcolor=ribbon_color_rgba)  # Adjust fill color as needed
+
+    # 3.0 Add Anomaly Dots
+    
+    # Assuming fig.data contains your trace data and you know the number of subplots
+    num_subplots = len(fig.layout.annotations)  # Assuming each subplot has one annotation
+    
+    def generate_triples(n):
+        result = []
+        for i in range(1, 3*n+1, 3):
+            result.append([i, i+1, i+2])
+        return result
+    
+    tripples = generate_triples(num_subplots)
+
+    for tripple in tripples:
+        
+        observed_data = None
+        recomposed_l2_data = None
+        recomposed_l1_data = None
+        
+        for i in tripple:
+            i-=1             
+            
+            # Extract data for each subplot
+            
+            if fig.data[i].name == 'observed':
+                observed_data = fig.data[i]
+            elif fig.data[i].name == 'recomposed_l1':
+                recomposed_l1_data = fig.data[i]
+                fig.data[i].legendgroup = "bands"
+                fig.data[i].showlegend = False
+            elif fig.data[i].name == 'recomposed_l2':
+                recomposed_l2_data = fig.data[i]
+                fig.data[i].legendgroup = "bands"
+                fig.data[i].showlegend = False
+
+        # Ensure we have the data
+        if observed_data and recomposed_l2_data and recomposed_l1_data:
+            # Identify points where condition is met
+            x_values = []
+            y_values = []
+            for x, y, y_l2, y_l1 in zip(observed_data.x, observed_data.y, recomposed_l2_data.y, recomposed_l1_data.y):
+                if y > y_l2 or y < y_l1:
+                    x_values.append(x)
+                    y_values.append(y)
+            
+            # Add scatter plot with identified points to the correct subplot
+            fig.add_trace(
+                go.Scatter(
+                    x=x_values,
+                    y=y_values,
+                    mode='markers',
+                    marker=dict(
+                        color=anom_color, 
+                        size=anom_size,
+                        opacity=anom_alpha,
+                    ),
+                    name='anomalies',
+                    legendgroup='anomalies',
+                    xaxis=observed_data.xaxis,
+                    yaxis=observed_data.yaxis
+                )
+            )
+    
+    # Remove duplicate legends in each legend group
+    seen_legendgroups = set()
+    for trace in fig.data:
+        legendgroup = trace.legendgroup
+        if legendgroup in seen_legendgroups:
+            trace.showlegend = False
+        else:
+            seen_legendgroups.add(legendgroup)
+    
+    # Cleanup annotations if ungrouped
+    if not is_grouped:
+        fig['layout']['annotations'] = []
+    
+    # Apply Styling
+    fig.update_annotations(font_size=base_size*0.8)     
+    fig.update_traces(hoverlabel=dict(font_size=base_size*0.8))
+            
+    return fig

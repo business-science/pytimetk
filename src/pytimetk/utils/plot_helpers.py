@@ -1,3 +1,14 @@
+import re
+
+def parse_rgba(s):
+    # Find all numbers (including floating points)
+    numbers = re.findall(r'[\d.]+', s)
+
+    # Convert the strings to appropriate number types (int or float)
+    parsed_numbers = [int(num) if '.' not in num else float(num) for num in numbers]
+
+    return parsed_numbers
+
 def hex_to_rgba(hex_color, alpha=1):
     """
     Convert hex to rgba.
@@ -30,3 +41,4 @@ def rgba_to_hex(r, g, b, a):
     hex_alpha = int(a * 255)
     extended_hex_color = "#{:02x}{:02x}{:02x}{:02x}".format(r, g, b, hex_alpha)
     return extended_hex_color
+
