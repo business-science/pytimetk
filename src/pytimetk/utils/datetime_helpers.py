@@ -150,31 +150,34 @@ def freq_to_dateoffset(freq_str):
     # Assume quantity of 1 if it's not explicitly provided
     quantity = int(quantity) if quantity else 1
     
-    if unit == 'D':  # Days
-        return pd.DateOffset(days=quantity)
-    elif unit == 'H':  # Hours
-        return pd.DateOffset(hours=quantity)
-    elif unit == 'T' or unit == 'min':  # Minutes
-        return pd.DateOffset(minutes=quantity)
-    elif unit == 'S':  # Seconds
-        return pd.DateOffset(seconds=quantity)
-    elif unit == 'L':  # Milliseconds
-        return pd.DateOffset(milliseconds=quantity)
-    elif unit == 'U':  # Microseconds
-        return pd.DateOffset(microseconds=quantity)
-    elif unit == 'N':  # Nanoseconds
-        return pd.DateOffset(nanoseconds=quantity)
-    elif unit in ['Y', 'A', 'AS', 'YS']:  # Years 
-        return pd.DateOffset(years=quantity)
-    elif unit == 'W':  # Weeks
-        return pd.DateOffset(weeks=quantity)
-    elif unit in ['Q', 'QS']:  # Quarters (approximated as 3*months)
-        return pd.DateOffset(months=quantity*3)
-    elif unit in ['M', 'MS']:  # Months (approximated as 30.44 days)
-        return pd.DateOffset(months=quantity)
-    # ... add other units if needed
-    else:
+    # Define a dictionary to map frequency units to DateOffset functions
+    unit_to_offset = {
+        'D'  : pd.DateOffset(days=quantity),
+        'H'  : pd.DateOffset(hours=quantity),
+        'T'  : pd.DateOffset(minutes=quantity),
+        'min': pd.DateOffset(minutes=quantity),
+        'S'  : pd.DateOffset(seconds=quantity),
+        'L'  : pd.DateOffset(milliseconds=quantity),
+        'U'  : pd.DateOffset(microseconds=quantity),
+        'N'  : pd.DateOffset(nanoseconds=quantity),
+        'Y'  : pd.DateOffset(years=quantity),
+        'A'  : pd.DateOffset(years=quantity),
+        'AS' : pd.DateOffset(years=quantity),
+        'YS' : pd.DateOffset(years=quantity),
+        'W'  : pd.DateOffset(weeks=quantity),
+        'Q'  : pd.DateOffset(months=quantity*3),
+        'QS' : pd.DateOffset(months=quantity*3),
+        'M'  : pd.DateOffset(months=quantity),
+        'MS' : pd.DateOffset(months=quantity)
+    }
+    
+    # Get the DateOffset function for the given unit
+    offset = unit_to_offset.get(unit)
+    
+    if offset is None:
         raise ValueError(f"Unsupported frequency unit: {unit}")
+    
+    return offset
 
 def freq_to_timedelta(freq_str):
     unit_mapping = {
