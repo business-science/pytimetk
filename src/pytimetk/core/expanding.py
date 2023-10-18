@@ -63,17 +63,17 @@ def augment_expanding(
     
     Examples
     --------
+
     ```{python}
+    # Example 1 - Pandas Backend for Expanding Window Functions
+    # This example demonstrates the use of string-named functions 
+    # on an expanding window using the Pandas backend for computations.
+    
     import pytimetk as tk
     import pandas as pd
     import numpy as np
 
     df = tk.load_dataset("m4_daily", parse_dates = ['date'])
-    ```
-
-    ```{python}
-    # This example demonstrates the use of string-named functions 
-    # on an expanding window using the Pandas backend for computations.
 
     expanded_df = (
         df
@@ -93,8 +93,16 @@ def augment_expanding(
     )
     display(expanded_df)
     ```
-    
+
+
     ```{python}
+    # Example 2 - Polars Backend for Expanding Window Functions (538X Faster than Pandas)
+    # This example demonstrates the use of string-named functions and configurable functions 
+    # using the Polars backend for computations.
+    # Configurable functions, like pl_quantile, allow the use of specific parameters associated 
+    # with their corresponding polars.Expr.rolling_<function_name> method.
+    # For instance, pl_quantile corresponds to polars.Expr.rolling_quantile.
+    
     import pytimetk as tk
     import pandas as pd
     import polars as pl
@@ -103,14 +111,6 @@ def augment_expanding(
     from pytimetk.utils.pandas_helpers import pd_quantile
     
     df = tk.load_dataset("m4_daily", parse_dates = ['date'])
-    ```
-
-    ```{python}
-    # This example demonstrates the use of string-named functions and configurable functions 
-    # using the Polars backend for computations.
-    # Configurable functions, like pl_quantile, allow the use of specific parameters associated 
-    # with their corresponding polars.Expr.rolling_<function_name> method.
-    # For instance, pl_quantile corresponds to polars.Expr.rolling_quantile.
 
     expanded_df = (
         df
