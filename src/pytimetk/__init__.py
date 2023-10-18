@@ -33,6 +33,7 @@ from .utils.plot_helpers import *
 from .utils.checks import *
 from .utils.parallel_helpers import *
 from .utils.polars_helpers import *
+from .utils.string_helpers import *
 
 # *** Needed for quartodoc build important functions ***
 from .plot.plot_timeseries import (
@@ -109,6 +110,9 @@ from .utils.pandas_helpers import (
 )
 from .utils.parallel_helpers import (
     parallel_apply, progress_apply
+)
+from .utils.string_helpers import (
+    parse_freq_str
 )
 
 
