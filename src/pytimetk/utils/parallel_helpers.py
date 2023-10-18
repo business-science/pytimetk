@@ -105,7 +105,7 @@ def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     result = grouped.apply(lambda df: df['B'].sum())
     result
     
-    result = tk.parallel_apply(grouped, lambda df: df['B'].sum(), show_progress=True)
+    result = tk.parallel_apply(grouped, lambda df: df['B'].sum(), show_progress=True, threads=2)
     result
     ```
     
