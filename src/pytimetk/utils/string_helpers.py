@@ -1,6 +1,6 @@
 import re
 
-def parse_freq_str1(freq_str):
+def parse_freq_str(freq_str):
     match = re.match(r'(\d+)?([A-Z]+|min)', freq_str)
     if not match:
         raise ValueError(f"Invalid frequency string: {freq_str}")
