@@ -1,6 +1,6 @@
 # augment_expanding { #pytimetk.augment_expanding }
 
-`augment_expanding(data, date_column, value_column, window_func='mean', min_periods=None, quantile=0.5, engine='pandas', **kwargs)`
+`augment_expanding(data, date_column, value_column, window_func='mean', min_periods=None, engine='pandas', **kwargs)`
 
 Apply one or more Series-based expanding functions and window sizes to one or more columns of a DataFrame.
 
@@ -14,7 +14,6 @@ Apply one or more Series-based expanding functions and window sizes to one or mo
 | `window_func`  | Union\[str, list, Tuple\[str, Callable\]\]                      | The `window_func` parameter in the `augment_expanding` function specifies the function(s) to be applied to the expanding windows of the value column(s).  1. It can be either:     - A string representing the name of a standard function (e.g., 'mean', 'sum').      2. For custom functions:     - Provide a list of tuples. Each tuple should contain a custom name for the function and the function itself.     - Each custom function should accept a Pandas Series as its input and operate on that series.       Example: ("range", lambda x: x.max() - x.min())  (See more Examples below.)  Note: If your function needs to operate on multiple columns (i.e., it requires access to a DataFrame rather than just a Series), consider using the `augment_expanding_apply` function in this library. | `'mean'`   |
 | `min_periods`  | int                                                             | Minimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `None`     |
 | `engine`       | str                                                             | Specifies the backend computation library for augmenting expanding window functions.   The options are:     - "pandas" (default): Uses the `pandas` library.     - "polars": Uses the `polars` library, which may offer performance benefits for larger datasets.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | `'pandas'` |
-| `quantile`     | float                                                           | Specifies the quantile value to be used when the "quantile" string is passed to the `window_func` parameter.  The value should be between 0 and 1, inclusive. For example, 0.5 represents the median.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | `0.5`      |
 | `**kwargs`     | additional keyword arguments                                    | Additional arguments passed to the `pandas.Series.expanding` method when using the Pandas engine.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | `{}`       |
 
 ## Returns
@@ -34,9 +33,8 @@ df = tk.load_dataset("m4_daily", parse_dates = ['date'])
 ```
 
 ```{python}
-# This example demonstrates the use of both string-named functions 
-# (including 'quantile') and lambda functions on an expanding window
-# using the Pandas backend for calculations.
+# This example demonstrates the use of string-named functions 
+# on an expanding window using the Pandas backend for computations.
 
 expanded_df = (
     df
@@ -46,12 +44,78 @@ expanded_df = (
             value_column = 'value', 
             window_func = [
                 'mean',  # Built-in mean function
-                'std',   # Built-in standard deviation function
-                'quantile',  # Built-in quantile function
-                ('range', lambda x: x.max() - x.min()),  # Lambda function to compute the range of values within the expanding window
+                'std',   # Built-in standard deviation function,
+                ('quantile_75', lambda x: pd.Series(x).quantile(0.75)),  # Custom quantile function
+                
             ],
             min_periods = 1,
-            quantile = 0.5,  # Specify the quantile level for the 'quantile' function in window_func 
+            engine = 'pandas',  # Utilize pandas for the underlying computations
+        )
+)
+display(expanded_df)
+```
+
+```{python}
+import pytimetk as tk
+import pandas as pd
+import polars as pl
+import numpy as np
+from pytimetk.utils.polars_helpers import pl_quantile
+
+df = tk.load_dataset("m4_daily", parse_dates = ['date'])
+```
+
+```{python}
+# This example demonstrates the use of string-named functions and configurable functions 
+# using the Polars backend for computations.
+# Configurable functions, like pl_quantile, allow the use of specific parameters associated 
+# with their corresponding polars.Expr.rolling_<function_name> method.
+# For instance, pl_quantile corresponds to polars.Expr.rolling_quantile.
+
+expanded_df = (
+    df
+        .groupby('id')
+        .augment_expanding(
+            date_column = 'date', 
+            value_column = 'value', 
+            window_func = [
+                'sum',  # Built-in sum function
+                'max',   # Built-in maximum function
+                ('quantile_75', pl_quantile(quantile=0.75)),  # Configurable with all parameters found in polars.Expr.rolling_quantile
+            ],
+            min_periods = 1,
+            engine = 'polars',  # Utilize Polars for the underlying computations
+        )
+)
+display(expanded_df)
+```
+
+```{python}
+import pytimetk as tk
+import pandas as pd
+import polars as pl
+import numpy as np
+from pytimetk.utils.polars_helpers import pl_quantile
+
+df = tk.load_dataset("m4_daily", parse_dates = ['date'])
+```
+
+```{python}
+# This example demonstrates the use of lambda functions of the form lambda x: x
+# Identity lambda functions, while convenient, have signficantly slower performance.
+# When using lambda functions the Pandas backend will likely be faster than Polars.
+
+expanded_df = (
+    df
+        .groupby('id')
+        .augment_expanding(
+            date_column = 'date', 
+            value_column = 'value', 
+            window_func = [
+                
+                ('range', lambda x: x.max() - x.min()),  # Identity lambda function: can be slower, especially in Polars
+            ],
+            min_periods = 1,
             engine = 'pandas',  # Utilize pandas for the underlying computations
         )
 )

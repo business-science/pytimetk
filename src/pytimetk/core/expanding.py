@@ -133,12 +133,9 @@ def augment_expanding(
     import pandas as pd
     import polars as pl
     import numpy as np
-    from pytimetk.utils.polars_helpers import pl_quantile
-
-    df = tk.load_dataset("m4_daily", parse_dates = ['date'])
-    ```
-
-    ```{python}
+    
+    df = tk.load_dataset("m4_daily", parse_dates = 
+    
     # This example demonstrates the use of lambda functions of the form lambda x: x
     # Identity lambda functions, while convenient, have signficantly slower performance.
     # When using lambda functions the Pandas backend will likely be faster than Polars.
@@ -158,6 +155,7 @@ def augment_expanding(
             )
     )
     display(expanded_df)
+    ```
     '''
     # Ensure data is a DataFrame or a GroupBy object
     check_dataframe_or_groupby(data)
