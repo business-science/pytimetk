@@ -96,7 +96,7 @@ def augment_expanding(
 
 
     ```{python}
-    # Example 2 - Polars Backend for Expanding Window Functions (538X Faster than Pandas)
+    # Example 2 - Polars Backend for Expanding Window Functions using Built-Ins (538X Faster than Pandas)
     # This example demonstrates the use of string-named functions and configurable functions 
     # using the Polars backend for computations.
     # Configurable functions, like pl_quantile, allow the use of specific parameters associated 
@@ -131,17 +131,18 @@ def augment_expanding(
     ```
     
     ```{python}
+    # Example 3 - Lambda Functions for Expanding Window Functions are faster in Pandas than Polars
+    # This example demonstrates the use of lambda functions of the form lambda x: x
+    # Identity lambda functions, while convenient, have signficantly slower performance.
+    # When using lambda functions the Pandas backend will likely be faster than Polars.
+    
     import pytimetk as tk
     import pandas as pd
     import polars as pl
     import numpy as np
     
     df = tk.load_dataset("m4_daily", parse_dates = ['date'])
-    
-    # This example demonstrates the use of lambda functions of the form lambda x: x
-    # Identity lambda functions, while convenient, have signficantly slower performance.
-    # When using lambda functions the Pandas backend will likely be faster than Polars.
-    
+
     expanded_df = (
         df
             .groupby('id')
