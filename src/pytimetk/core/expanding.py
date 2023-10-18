@@ -119,8 +119,8 @@ def augment_expanding(
                 date_column = 'date', 
                 value_column = 'value', 
                 window_func = [
-                    'sum',  # Built-in sum function
-                    'max',   # Built-in maximum function
+                    'mean',  # Built-in mean function
+                    'std',   # Built-in std function
                     ('quantile_75', pl_quantile(quantile=0.75)),  # Configurable with all parameters found in polars.Expr.rolling_quantile
                 ],
                 min_periods = 1,
