@@ -13,12 +13,10 @@ from pytimetk.utils.checks import check_series_or_datetime
 from pytimetk.utils.polars_helpers import pandas_to_polars_frequency
 from pytimetk.utils.string_helpers import parse_freq_str
 
-
 try: 
     import holidays
 except ImportError:
     pass
-
 
 @pf.register_series_method
 def floor_date(
@@ -259,7 +257,6 @@ def freq_to_timedelta(freq_str):
     else:
         raise ValueError(f"Unsupported frequency unit: {unit}")
 
-
 @pf.register_series_method
 def week_of_month(
     idx: Union[pd.Series, pd.DatetimeIndex],
@@ -449,8 +446,6 @@ def is_holiday(
     ret = pd.Series([date in country_module(years=date.year) for date in idx], name='is_holiday')
     
     return ret
-
-
 
 def is_datetime_string(x: Union[str, pd.Series, pd.DatetimeIndex]) -> bool:
     
