@@ -596,6 +596,7 @@ def _augment_expanding_polars(
             .sort(*group_names, date_column) \
             .group_by(group_names) \
             .agg(expanding_exprs) \
+            .sort(*group_names) \
             .explode(new_column_names)
 
         df = pl.concat([df, df_new_columns.drop(group_names)], how="horizontal") \
