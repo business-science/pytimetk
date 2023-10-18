@@ -1,0 +1,316 @@
+---
+title: "Speed Comparisons"
+jupyter: python3
+toc: true
+toc-depth: 3
+number-sections: true
+number-depth: 2
+code-fold: true
+code-tools: 
+    source: false
+    toggle: true
+---
+
+::: {.callout-note collapse="false"}
+## How this guide benefits you
+
+This guide covers speed and performance comparisons using the `polars` backend. 
+:::
+
+# Pytimetk Speed Result Summary
+
+| Features/Properties | **polars**                  | **pandas**               |
+|---------------------|-------------------------------|---------------------------------------|
+| `summarize_by_time()` | 🚀 13X Faster            | 🐢 Standard                           |
+| `augment_expanding()` | 🚀 2X to 250X Faster            | 🐢 Standard                           |
+
+
+# About Performance
+
+Beginning in version 0.2.0 of `pytimetk`, we introduced new `polars` engines to many of our functions. 
+
+## Key benefits:
+
+1. You can get between 2X and 500X speed boost on many common time series operations
+2. You don't need to know how to use `polars` to gain massive speed boosts
+3. Simply turn `engine = 'polars'` to get the speed boost. 
+
+## What affects speed?
+
+There are many factors that can affect speed. Things that are known to slow performance down:
+
+1. Using non-optimized functions: Lambda Functions that are "group applied" (with for-loops) are extremely inefficient. Where possible use "built-in" or "configurable" functions instead. 
+2. Polars is built on top of Rust, which is a low-level language known for performance and optimized for speed.
+
+
+
+
+
+# Speed Tests and Conclusions
+
+Load the packages and datasets needed to replicate the speed tests (Click to Expand):
+
+```{python}
+# | eval: false
+
+# Setup for tests
+import pytimetk as tk
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+from pytimetk.utils.polars_helpers import pl_quantile
+from pytimetk.utils.pandas_helpers import pd_quantile
+
+expedia_df = tk.load_dataset("expedia", parse_dates = ['date_time'])
+m4_daily_df = tk.load_dataset("m4_daily", parse_dates = ['date'])
+```
+
+## Summarize By Time `summarize_by_time()`
+
+- Polars is 13.1X faster than Pandas
+
+
+```{python}
+# | echo: false
+import matplotlib.pyplot as plt
+
+# Data
+methods = ['Polars', 'Pandas']
+times = [50.8, 668]
+
+# Calculate percentage slower relative to the fastest method
+min_time = min(times)
+slowness_percentage = [(time - min_time) / min_time * 100 for time in times]
+
+# Create the bar chart
+# plt.figure(figsize=(12, 8))
+bars = plt.bar(methods, times, color=['blue', 'red', 'green'])
+
+# Add title and labels
+plt.title('Comparison of Execution Times')
+plt.ylabel('Execution Time (ms)')
+plt.xlabel('Methods')
+
+# Display the values and percentage slower on top of the bars
+for bar, v, slowness in zip(bars, times, slowness_percentage):
+    height = bar.get_height()
+    plt.text(bar.get_x() + bar.get_width() / 2, height + 50, f"{v} ms\n({slowness:.2f}% slower)", 
+             ha='center', va='bottom', fontsize=9, color='black' if slowness != 0 else 'green')
+
+# Adjust y-axis limit to make sure all labels fit
+plt.ylim(0, max(times) + 500)
+
+# Display the plot
+plt.tight_layout()
+plt.show()
+```
+
+
+:::{.panel-tabset groups="bbands-plotly-plotnine"}
+
+## Polars
+
+```{python}
+# | eval: false
+%%timeit -n 10
+
+df_pytimetk = expedia_df[['site_name', 'date_time', 'cnt', 'is_booking']] \
+    .groupby('site_name') \
+    .summarize_by_time(
+        date_column = 'date_time',
+        value_column = ['cnt', 'is_booking'],
+        freq = 'W',
+        agg_func = ['sum', 'count'],
+        engine = 'polars'
+    )
+
+# 50.8 ms ± 2.45 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+```
+
+## Pandas
+
+```{python}
+# | eval: false
+%%timeit -n 10
+
+df_pytimetk = expedia_df[['site_name', 'date_time', 'cnt', 'is_booking']] \
+    .groupby('site_name') \
+    .summarize_by_time(
+        date_column = 'date_time',
+        value_column = ['cnt', 'is_booking'],
+        freq = 'W',
+        agg_func = ['sum', 'count'],
+        engine = 'pandas'
+    )
+
+# 668 ms ± 16.5 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+```
+
+:::
+
+
+## Augment Expanding `augment_expanding()`
+
+- Polars is 1.8X faster than Pandas with built-in and configurable functions
+- Polars is 247X faster than Pandas with lambda functions
+
+```{python}
+# | echo: false
+import matplotlib.pyplot as plt
+
+# Data
+methods = ['Polars w/ pl_quantile', 'Pandas w/ pd_quantile', 'Pandas w/ Lambda Quantile']
+times = [6.95, 20.8, 3580]
+
+# Calculate percentage slower relative to the fastest method
+min_time = min(times)
+slowness_percentage = [(time - min_time) / min_time * 100 for time in times]
+
+# Create the bar chart
+# plt.figure(figsize=(12, 8))
+bars = plt.bar(methods, times, color=['blue', 'red', 'green'])
+
+# Add title and labels
+plt.title('Comparison of Execution Times')
+plt.ylabel('Execution Time (ms)')
+plt.xlabel('Methods')
+
+# Display the values and percentage slower on top of the bars
+for bar, v, slowness in zip(bars, times, slowness_percentage):
+    height = bar.get_height()
+    plt.text(bar.get_x() + bar.get_width() / 2, height + 50, f"{v} ms\n({slowness:.2f}% slower)", 
+             ha='center', va='bottom', fontsize=9, color='black' if slowness != 0 else 'green')
+
+# Adjust y-axis limit to make sure all labels fit
+plt.ylim(0, max(times) + 500)
+
+# Display the plot
+plt.tight_layout()
+plt.show()
+```
+
+:::{.panel-tabset groups="bbands-plotly-plotnine"}
+
+## Polars
+
+Uses `pl_quantile()` configurable function.
+
+``` {python}
+# | eval: false
+%%timeit
+
+expanded_df = (
+    m4_daily_df
+        .groupby('id')
+        .augment_expanding(
+            date_column = 'date', 
+            value_column = 'value', 
+            window_func = [
+                'mean',  # Built-in mean function
+                'std',   # Built-in std function
+                ('quantile_75', pl_quantile(quantile=0.75)),  # Configurable with all parameters found in polars.Expr.rolling_quantile
+            ],
+            min_periods = 1,
+            engine = 'polars',
+        )
+)
+# 6.95 ms ± 163 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+```
+
+## Pandas
+
+Uses `pd_quantile()` configurable function.
+
+``` {python}
+# | eval: false
+%%timeit
+
+expanded_df = (
+    m4_daily_df
+        .groupby('id')
+        .augment_expanding(
+            date_column = 'date', 
+            value_column = 'value', 
+            window_func = [
+                'mean',  # Built-in mean function
+                'std',   # Built-in standard deviation function,
+                # ('quantile_75', lambda x: pd.Series(x).quantile(0.75)),  # Custom quantile function
+                ('quantile_75', pd_quantile(q=0.75))
+            ],
+            min_periods = 1,
+            engine = 'pandas',  # Utilize pandas for the underlying computations
+        )
+)
+
+# 20.8 ms ± 1.51 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+```
+
+## Pandas (Lambda)
+
+Uses `lambda x: pd.Series(x).quantile(0.75)`.
+
+``` {python}
+# | eval: false
+%%timeit
+
+expanded_df = (
+    m4_daily_df
+        .groupby('id')
+        .augment_expanding(
+            date_column = 'date', 
+            value_column = 'value', 
+            window_func = [
+                'mean',  # Built-in mean function
+                'std',   # Built-in standard deviation function,
+                ('quantile_75', lambda x: pd.Series(x).quantile(0.75)), # lambda slows things down
+            ],
+            min_periods = 1,
+            engine = 'pandas',  
+        )
+)
+
+# 3.58 s ± 110 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+```
+
+:::
+
+# More Coming Soon...
+
+We are in the early stages of development. But it's obvious the potential for `pytimetk` now in Python. 🐍
+
+- Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). 
+- To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 
+- Want to contribute? [See our contributing guide here.](/contributing.html) 
+
+
+Certainly! Here's a markdown comparison table and a persuasive introduction for the `pytimetk` homepage:
+
+---
+
+## Introducing pytimetk: Simplifying Time Series Analysis for Everyone
+
+Time series analysis is fundamental in many fields, from business forecasting to scientific research. While the Python ecosystem offers tools like `pandas`, they sometimes can be verbose and not optimized for all operations, especially for complex time-based aggregations and visualizations.
+
+Enter **pytimetk**. Crafted with a blend of ease-of-use and computational efficiency, `pytimetk` significantly simplifies the process of time series manipulation and visualization. By leveraging the `polars` backend, you can experience speed improvements ranging from 3X to a whopping 30X. Let's dive into a comparative analysis.
+
+| Features/Properties | **pytimetk**                  | **pandas (+matplotlib)**               |
+|---------------------|-------------------------------|---------------------------------------|
+| **Speed**           | 🚀 3X to 30X Faster            | 🐢 Standard                           |
+| **Code Simplicity** | 🎉 Concise, readable syntax    | 📜 Often verbose                      |
+| `summarize_by_time()` | 🕐 2 lines, 13.4X faster     | 🕐 6 lines, 2 for-loops               |
+| `plot_timeseries()`  | 🎨 2 lines, no customization  | 🎨 16 lines, customization needed    |
+
+As evident from the table:
+
+- `summarize_by_time()` in **pytimetk** is not just about speed; it also simplifies your codebase, converting a 6-line, double for-loop routine in `pandas` into a concise 2-line operation.
+  
+- Similarly, `plot_timeseries()` dramatically streamlines the plotting process, encapsulating what would typically require 16 lines of `matplotlib` code into a mere 2-line command in **pytimetk**, without sacrificing customization or quality.
+
+Join the revolution in time series analysis. Reduce your code complexity, increase your productivity, and harness the speed that **pytimetk** brings to your workflows.
+
+Explore more at [pytimetk homepage](https://business-science.github.io/pytimetk/).
+
+---
+
+Feel free to modify the content as per your requirements or branding guidelines.

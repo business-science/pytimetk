@@ -25,16 +25,15 @@ Apply one or more Series-based expanding functions and window sizes to one or mo
 ## Examples
 
 ```{python}
+# Example 1 - Pandas Backend for Expanding Window Functions
+# This example demonstrates the use of string-named functions 
+# on an expanding window using the Pandas backend for computations.
+
 import pytimetk as tk
 import pandas as pd
 import numpy as np
 
 df = tk.load_dataset("m4_daily", parse_dates = ['date'])
-```
-
-```{python}
-# This example demonstrates the use of string-named functions 
-# on an expanding window using the Pandas backend for computations.
 
 expanded_df = (
     df
@@ -55,22 +54,23 @@ expanded_df = (
 display(expanded_df)
 ```
 
-```{python}
-import pytimetk as tk
-import pandas as pd
-import polars as pl
-import numpy as np
-from pytimetk.utils.polars_helpers import pl_quantile
-
-df = tk.load_dataset("m4_daily", parse_dates = ['date'])
-```
 
 ```{python}
+# Example 2 - Polars Backend for Expanding Window Functions using Built-Ins (538X Faster than Pandas)
 # This example demonstrates the use of string-named functions and configurable functions 
 # using the Polars backend for computations.
 # Configurable functions, like pl_quantile, allow the use of specific parameters associated 
 # with their corresponding polars.Expr.rolling_<function_name> method.
 # For instance, pl_quantile corresponds to polars.Expr.rolling_quantile.
+
+import pytimetk as tk
+import pandas as pd
+import polars as pl
+import numpy as np
+from pytimetk.utils.polars_helpers import pl_quantile
+from pytimetk.utils.pandas_helpers import pd_quantile
+
+df = tk.load_dataset("m4_daily", parse_dates = ['date'])
 
 expanded_df = (
     df
@@ -79,8 +79,8 @@ expanded_df = (
             date_column = 'date', 
             value_column = 'value', 
             window_func = [
-                'sum',  # Built-in sum function
-                'max',   # Built-in maximum function
+                'mean',  # Built-in mean function
+                'std',   # Built-in std function
                 ('quantile_75', pl_quantile(quantile=0.75)),  # Configurable with all parameters found in polars.Expr.rolling_quantile
             ],
             min_periods = 1,
@@ -91,19 +91,17 @@ display(expanded_df)
 ```
 
 ```{python}
+# Example 3 - Lambda Functions for Expanding Window Functions are faster in Pandas than Polars
+# This example demonstrates the use of lambda functions of the form lambda x: x
+# Identity lambda functions, while convenient, have signficantly slower performance.
+# When using lambda functions the Pandas backend will likely be faster than Polars.
+
 import pytimetk as tk
 import pandas as pd
 import polars as pl
 import numpy as np
-from pytimetk.utils.polars_helpers import pl_quantile
 
 df = tk.load_dataset("m4_daily", parse_dates = ['date'])
-```
-
-```{python}
-# This example demonstrates the use of lambda functions of the form lambda x: x
-# Identity lambda functions, while convenient, have signficantly slower performance.
-# When using lambda functions the Pandas backend will likely be faster than Polars.
 
 expanded_df = (
     df
