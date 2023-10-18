@@ -111,6 +111,9 @@ from .utils.pandas_helpers import (
 from .utils.parallel_helpers import (
     parallel_apply, progress_apply
 )
+from .utils.string_helpers import (
+    parse_freq_str
+)
 
 
 
