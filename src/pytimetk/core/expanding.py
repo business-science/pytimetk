@@ -278,7 +278,7 @@ def _augment_expanding_pandas(
                     # Get the expanding function (like mean, sum, etc.) specified by `func` for the given column and window settings
                     if func == "quantile":
                         new_column_name = f"{col}_expanding_{func}_50"
-                        group_df[new_column_name] = group_df[col].expanding(min_periods=min_periods, **kwargs).quantile(q=quantile)
+                        group_df[new_column_name] = group_df[col].expanding(min_periods=min_periods, **kwargs).quantile(q=0.5)
                         warnings.warn(
                             "You passed 'quantile' as a string-based function, so it defaulted to a 50 percent quantile (0.5). "
                             "For more control over the quantile value, consider using the function `pd_quantile()`. "
@@ -408,6 +408,14 @@ def _augment_expanding_polars(
                 # Construct expanding window expression and handle specific case of 'skew'
                 if func_name == "skew":
                     expanding_expr = getattr(pl.col(col), f"rolling_{func_name}")(window_size=pandas_df.shape[0])
+                elif func_name == "quantile":
+                        new_column_name = f"{col}_expanding_{func}_50"
+                        expanding_expr = getattr(pl.col(col), f"rolling_{func_name}")(quantile=0.5, window_size=pandas_df.shape[0], min_periods=min_periods, interpolation='midpoint')
+                        warnings.warn(
+                            "You passed 'quantile' as a string-based function, so it defaulted to a 50 percent quantile (0.5). "
+                            "For more control over the quantile value, consider using the function `pl_quantile()`. "
+                            "For example: ('quantile_75', pl_quantile(quantile=0.75))."
+                        )
                 else: 
                     expanding_expr = getattr(pl.col(col), f"rolling_{func_name}")(window_size=pandas_df.shape[0], min_periods=min_periods)
 
@@ -429,6 +437,7 @@ def _augment_expanding_polars(
             .sort(*group_names, date_column) \
             .group_by(group_names) \
             .agg(expanding_exprs) \
+            .sort(*group_names) \
             .explode(new_column_names)
 
         df = pl.concat([df, df_new_columns.drop(group_names)], how="horizontal") \
