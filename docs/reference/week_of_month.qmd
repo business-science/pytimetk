@@ -1,14 +1,15 @@
 # week_of_month { #pytimetk.week_of_month }
 
-`week_of_month(idx)`
+`week_of_month(idx, engine='pandas')`
 
 The "week_of_month" function calculates the week number of a given date within its month.
 
 ## Parameters
 
-| Name   | Type                          | Description                                                                                                                          | Default    |
-|--------|-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `idx`  | pd.Series or pd.DatetimeIndex | The parameter "idx" is a pandas Series object that represents a specific date for which you want to determine the week of the month. | _required_ |
+| Name     | Type                          | Description                                                                                                                                                                                                                                                                                                                                            | Default    |
+|----------|-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `idx`    | pd.Series or pd.DatetimeIndex | The parameter "idx" is a pandas Series object that represents a specific date for which you want to determine the week of the month.                                                                                                                                                                                                                   | _required_ |
+| `engine` | str                           | The `engine` parameter is used to specify the engine to use for calculating the week of the month. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library for calculating the week of the month. This can be faster than using "pandas" for large datasets. | `'pandas'` |
 
 ## Returns
 
@@ -28,10 +29,20 @@ dates
 
 ```{python}
 # Works on DateTimeIndex
-tk.week_of_month(dates)
+tk.week_of_month(dates, engine='pandas')
+```
+
+```{python}
+# Works on DateTimeIndex
+tk.week_of_month(dates, engine='polars')
 ```
 
 ```{python}
 # Works on Pandas Series
 dates.to_series().week_of_month()
+```
+
+```{python}
+# Works on Pandas Series
+dates.to_series().week_of_month(engine='polars')
 ```

@@ -15,3 +15,18 @@ def hex_to_rgba(hex_color, alpha=1):
     else:
         raise ValueError('Input hex color is not in #RRGGBB or #RRGGBBAA format')
     return f'rgba({r}, {g}, {b}, {a})'
+
+def rgba_to_hex(r, g, b, a):
+    """
+    Convert RGBA values to their 8-character hexadecimal representation.
+
+    Parameters:
+    - r, g, b: Red, Green, and Blue components (integers from 0 to 255).
+    - a: Alpha/opacity component (float from 0.0 to 1.0).
+
+    Returns:
+    - The 8-character hex representation of the RGBA values (string).
+    """
+    hex_alpha = int(a * 255)
+    extended_hex_color = "#{:02x}{:02x}{:02x}{:02x}".format(r, g, b, hex_alpha)
+    return extended_hex_color

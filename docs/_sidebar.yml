@@ -13,7 +13,7 @@ website:
       section: "\U0001F525 Wrangling Pandas Time Series DataFrames"
     - contents:
       - reference/anomalize.qmd
-      section: "\U0001F50D Anomally Detection"
+      section: "\U0001F50D Anomaly Detection"
     - contents:
       - reference/augment_timeseries_signature.qmd
       - reference/augment_holiday_signature.qmd
