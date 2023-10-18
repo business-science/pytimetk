@@ -3,6 +3,7 @@ import polars as pl
 import pandas_flavor as pf
 import numpy as np
 import inspect
+import warnings
 
 from typing import Union, Optional, Callable, Tuple, List
 
@@ -99,7 +100,8 @@ def augment_expanding(
     import polars as pl
     import numpy as np
     from pytimetk.utils.polars_helpers import pl_quantile
-
+    from pytimetk.utils.pandas_helpers import pd_quantile
+    
     df = tk.load_dataset("m4_daily", parse_dates = ['date'])
     ```
 
@@ -199,6 +201,9 @@ def _augment_expanding_pandas(
     quantile: Optional[float] = 0.5,
     **kwargs,
 ) -> pd.DataFrame:
+    """
+    Augments the given dataframe with expanding calculations using the Pandas library.
+    """
     
     # Create a fresh copy of the data, leaving the original untouched
     data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
@@ -214,20 +219,74 @@ def _augment_expanding_pandas(
     # Apply Series-based expanding window functions
     result_dfs = []
     for _, group_df in grouped:
-        for value_col in value_column:
+        for col in value_column:
             for func in window_func:
                 if isinstance(func, tuple):
-                    func_name, func = func
-                    new_column_name = f"{value_col}_expanding_{func_name}"
-                    group_df[new_column_name] = group_df[value_col].expanding(min_periods=min_periods, **kwargs).apply(func, raw=True)
+                    # Ensure the tuple is of length 2 and begins with a string
+                    if len(func) != 2:
+                        raise ValueError(f"Expected tuple of length 2, but `window_func` received tuple of length {len(func)}.")
+                    if not isinstance(func[0], str):
+                        raise TypeError(f"Expected first element of tuple to be type 'str', but `window_func` received {type(func[0])}.")
+                
+                    user_func_name, func = func
+                    new_column_name = f"{col}_expanding_{user_func_name}"
+                        
+                    # Try handling a lambda function of the form lambda x: x
+                    if inspect.isfunction(func) and len(inspect.signature(func).parameters) == 1:
+                        try:
+                            # Construct expanding window column
+                            group_df[new_column_name] = group_df[col].expanding(min_periods=min_periods, **kwargs).apply(func, raw=True)
+                        except Exception as e:
+                            raise Exception(f"An error occurred during the operation of the `{user_func_name}` function in Pandas. Error: {e}")
+
+                    # Try handling a configurable function (e.g. pd_quantile)
+                    elif isinstance(func, tuple) and func[0] == 'configurable':
+                        try:
+                            # Configurable function should return 4 objects
+                            _, func_name, default_kwargs, user_kwargs = func
+                        except Exception as e:
+                            raise ValueError(f"Unexpected function format. Expected a tuple with format ('configurable', func_name, default_kwargs, user_kwargs). Received: {func}. Original error: {e}")
+                        
+                        try:
+                            # Define local values that may be required by configurable functions.
+                            # If adding a new configurable function in utils.pandas_helpers that necessitates 
+                            # additional local values, consider updating this dictionary accordingly.
+                            local_values = {}
+                            # Combine local values with user-provided parameters for the configurable function
+                            user_kwargs.update(local_values)
+                            # Update the default configurable parameters (without adding new keys)
+                            default_kwargs = update_dict(default_kwargs, user_kwargs)
+                        except Exception as e:
+                            raise ValueError("Error encountered while updating parameters for the configurable function `{func_name}` passed to `window_func`: {e}")
+                        
+                        try:
+                            # Get the expanding window function 
+                            expanding_function = getattr(group_df[col].expanding(min_periods=min_periods, **kwargs), func_name, None)
+                        except Exception as e:
+                            raise AttributeError(f"The function `{func_name}` tried to access a non-existent attribute or method in Pandas. Error: {e}")
+
+                        if expanding_function:
+                            try:
+                                # Apply expanding function to data and store in new column
+                                group_df[new_column_name] = expanding_function(**default_kwargs)
+                            except Exception as e:
+                                raise Exception(f"Failed to construct the expanding window column using function `{user_func_name}`. Error: {e}")
+                    else:
+                        raise TypeError(f"Unexpected function format for `{user_func_name}`.")
     
                 elif isinstance(func, str):
-                    new_column_name = f"{value_col}_expanding_{func}"
+                    new_column_name = f"{col}_expanding_{func}"
                     # Get the expanding function (like mean, sum, etc.) specified by `func` for the given column and window settings
                     if func == "quantile":
-                        group_df[new_column_name] = group_df[value_col].expanding(min_periods=min_periods, **kwargs).quantile(q=quantile)
+                        new_column_name = f"{col}_expanding_{func}_50"
+                        group_df[new_column_name] = group_df[col].expanding(min_periods=min_periods, **kwargs).quantile(q=quantile)
+                        warnings.warn(
+                            "You passed 'quantile' as a string-based function, so it defaulted to a 50 percent quantile (0.5). "
+                            "For more control over the quantile value, consider using the function `pd_quantile()`. "
+                            "For example: ('quantile_75', pd_quantile(q=0.75))."
+                        )
                     else:
-                        expanding_function = getattr(group_df[value_col].expanding(min_periods=min_periods, **kwargs), func, None)
+                        expanding_function = getattr(group_df[col].expanding(min_periods=min_periods, **kwargs), func, None)
                         # Apply expanding function to data and store in new column
                         if expanding_function:
                             group_df[new_column_name] = expanding_function()
@@ -539,6 +598,7 @@ def augment_expanding_apply(
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.augment_expanding_apply = augment_expanding_apply
+
 
 
 
