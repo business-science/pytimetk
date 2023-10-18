@@ -136,7 +136,7 @@ def augment_expanding(
     import polars as pl
     import numpy as np
     
-    df = tk.load_dataset("m4_daily", parse_dates = 
+    df = tk.load_dataset("m4_daily", parse_dates = ['date'])
     
     # This example demonstrates the use of lambda functions of the form lambda x: x
     # Identity lambda functions, while convenient, have signficantly slower performance.
@@ -198,7 +198,6 @@ def _augment_expanding_pandas(
     value_column: Union[str, list],  
     window_func: Union[str, list, Tuple[str, Callable]] = 'mean',
     min_periods: Optional[int] = None,
-    quantile: Optional[float] = 0.5,
     **kwargs,
 ) -> pd.DataFrame:
     """
