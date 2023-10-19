@@ -20,7 +20,7 @@ def augment_expanding(
     engine: str = 'pandas',
     **kwargs,
 ) -> pd.DataFrame:
-    '''Apply one or more Series-based expanding functions and window sizes to one or more columns of a DataFrame.
+    '''Apply one or more Series-based expanding functions to one or more columns of a DataFrame.
     
     Parameters
     ----------

@@ -59,6 +59,13 @@ def augment_rolling(
         - A list of integers designates multiple window sizes for each respective column.
     min_periods : int, optional, default None
         Minimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.
+    engine : str, optional, default 'pandas'
+        Specifies the backend computation library for augmenting expanding window functions. 
+    
+        The options are:
+            - "pandas" (default): Uses the `pandas` library.
+            - "polars": Uses the `polars` library, which may offer performance benefits for larger datasets.
+    
     center : bool, optional, default False
         If `True`, the rolling window will be centered on the current value. For even-sized windows, the window will be left-biased. Otherwise, it uses a trailing window.
     threads : int, optional, default 1
