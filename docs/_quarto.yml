@@ -127,6 +127,7 @@ quartodoc:
       package: pytimetk
       contents:
         - anomalize
+        - plot_anomalies
     - title: 🏗️ Adding Features to Time Series DataFrames (Augmenting)
       desc: Add one or more feature columns to time series data.
       package: pytimetk

@@ -11,6 +11,7 @@ number-sections: false
 ### Anomaly Detection
 
 - `anomalize()`: A new scalable function for detecting time series anomalies (outliers) 
+- `plot_anomalies()`: A scalable visualization tool for inspecting anomalies in time series data. 
 
 ### New Functions:
 
@@ -34,6 +35,7 @@ number-sections: false
   - 3X to 10X speed improvements. 
 - `augment_lags()` and `augment_leads()`: Gains a polars engine. Speed improvements increase with number of lags/leads. 
   - 6.5X speed improvement with 100 lags. 
+- `augment_rolling()`: Gains a polars engine.
 - `augment_expanding()`: Gains a polars engine. 
 - `augment_timeseries_signature()`: Gains a polars engine.
 
