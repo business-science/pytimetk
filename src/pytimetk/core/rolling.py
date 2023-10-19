@@ -99,10 +99,11 @@ def augment_rolling(
     ```
     
     ```{python}
-    # This example demonstrates the use of both string-named functions 
-    # and lambda functions on a rolling window. 
+    # Example 1 - Using a single window size and a single function name, pandas engine
+    # This example demonstrates the use of both string-named functions and lambda functions on a rolling window. 
     # We specify a list of window sizes: [2,7]. 
     # As a result, the output will have computations for both window sizes 2 and 7.
+    # Note - It's preferred to use built-in or configurable functions instead of lambda functions for performance reasons.
 
     rolled_df = (
         df
@@ -115,16 +116,18 @@ def augment_rolling(
                     'mean',  # Built-in mean function
                     ('std', lambda x: x.std())  # Lambda function to compute standard deviation
                 ],
-                threads = 1  # Disabling parallel processing
+                threads = 1,  # Disabling parallel processing
+                engine = 'pandas'  # Using pandas engine
             )
     )
     display(rolled_df)
     ```
     
     ```{python}
-    # Example showcasing the use of string function names and lambda functions 
-    # applied on rolling windows.
+    # Example 2 - Multiple groups, pandas engine
+    # Example showcasing the use of string function names and lambda functions applied on rolling windows.
     # The `window` tuple (1,3) will generate window sizes of 1, 2, and 3.
+    # Note - It's preferred to use built-in or configurable functions instead of lambda functions for performance reasons.
     
     rolled_df = (
         df
@@ -136,19 +139,37 @@ def augment_rolling(
                 window_func = [
                     'mean',  # Using built-in mean function
                     ('std', lambda x: x.std())  # Lambda function for standard deviation
-                ]
+                ],
+                threads = 1,  # Disabling parallel processing
+                engine = 'pandas'  # Using pandas engine
+            )
+    )
+    display(rolled_df) 
+    ```
+    
+    ```{python}
+    # Example 3 - Multiple groups, polars engine
+    
+    rolled_df = (
+        df
+            .groupby('id')
+            .augment_rolling(
+                date_column = 'date', 
+                value_column = 'value', 
+                window = (1,3),  # Specifying a range of window sizes
+                window_func = [
+                    'mean',  # Using built-in mean function
+                    'std',  # Using built-in standard deviation function
+                ],
+                engine = 'polars'  # Using polars engine
             )
     )
     display(rolled_df) 
     ```
     '''
-    # Ensure data is a DataFrame or a GroupBy object
+    # Checks
     check_dataframe_or_groupby(data)
-    
-    # Ensure date column exists and is properly formatted
     check_date_column(data, date_column)
-    
-    # Ensure value column(s) exist
     check_value_column(data, value_column)
     
     # Convert string value column to list for consistency
