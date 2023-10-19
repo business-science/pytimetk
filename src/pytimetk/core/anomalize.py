@@ -152,7 +152,8 @@ def anomalize(
     (
          anomalize_df
             .plot_anomalies(
-                date_column = "date"
+                date_column = "date",
+                engine = "plotly",
             )
     )
     ```
@@ -220,6 +221,7 @@ def anomalize(
                 facet_ncol = 2, 
                 width = 800,
                 height = 800,
+                engine = "plotly",
             )
     )
     ```

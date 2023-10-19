@@ -4,9 +4,13 @@ from typing import Union, Optional
 from functools import partial
 import plotly.graph_objects as go
 
+from plotnine import *
+
 from pytimetk.plot.plot_timeseries import plot_timeseries
 from pytimetk.utils.plot_helpers import hex_to_rgba, rgba_to_hex, parse_rgba
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column
+from pytimetk.plot.theme import theme_timetk
+
 
 @pf.register_dataframe_method
 def plot_anomalies(
@@ -53,6 +57,15 @@ def plot_anomalies(
     # Check data
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
+    
+    # Handle line_size
+    if line_size is None:
+        if engine == 'plotnine':
+            line_size = 0.35
+        elif engine == 'matplotlib':
+            line_size = 0.35
+        elif engine == 'plotly':
+            line_size = 0.65
     
     if engine == 'plotly':
         
@@ -103,12 +116,59 @@ def plot_anomalies(
         
         if anom_size is None:
             anom_size = 1.0
+            
+        fig = _plot_anomalies_plotnine(
+            data = data,
+            date_column = date_column,
+
+            facet_ncol = facet_ncol,
+            facet_nrow = facet_nrow,
+            facet_scales = facet_scales,
+            facet_dir = facet_dir, 
+
+            line_color = line_color,
+            line_size = line_size,
+            line_type = line_type,
+            line_alpha = line_alpha,
+            
+            anom_color = anom_color,
+            anom_alpha = anom_alpha,
+            anom_size = anom_size,
+            
+            ribbon_fill = ribbon_fill,
+            ribbon_alpha = ribbon_alpha,
+            
+            y_intercept = y_intercept,
+            y_intercept_color = y_intercept_color,
+            x_intercept = x_intercept,
+            x_intercept_color = x_intercept_color,
+            
+            legend_show = legend_show,
+            
+            title = title,
+            x_lab = x_lab,
+            y_lab = y_lab,
+            color_lab = color_lab,
+            
+            x_axis_date_labels = x_axis_date_labels,
+            base_size = base_size,
+            width = width,
+            height = height,
+        )
         
-        raise NotImplementedError(f"Engine {engine} is not implemented.")
-    
-        
-        
-                
+        if engine == 'matplotlib':
+            if width == None:
+                width_size = 800 # in pixels for compat with plotly
+            else: 
+                width_size = width
+
+            if height == None:
+                height_size = 600 # in pixels for compat with plotly
+            else:
+                height_size = height
+            fig = fig + theme_timetk(height=height_size, width=width_size) # setting default figure size to prevent matplotlib sizing error
+            fig = fig.draw()
+     
     return fig
     
 # Monkey patch the method to pandas groupby objects
@@ -329,3 +389,160 @@ def _plot_anomalies_plotly(
     fig.update_traces(hoverlabel=dict(font_size=base_size*0.8))
             
     return fig
+
+
+def _plot_anomalies_plotnine(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    date_column: str,
+
+    facet_ncol: int = 1,
+    facet_nrow: Optional[int] = None,
+    facet_scales: str = "free_y",
+    facet_dir: str = "h", 
+
+    line_color: str = "#2c3e50",
+    line_size: float = None,
+    line_type: str = 'solid',
+    line_alpha: float = 1.0,
+    
+    anom_color: str = "#E31A1C",
+    anom_alpha: float = 1.0,
+    anom_size: Optional[float] = None,
+    
+    ribbon_fill: str = "#646464",
+    ribbon_alpha: float = 0.2,
+    
+    y_intercept: Optional[float] = None,
+    y_intercept_color: str = "#2c3e50",
+    x_intercept: Optional[str] = None,
+    x_intercept_color: str = "#2c3e50",
+    
+    legend_show: bool = True,
+    
+    title: str = "Anomaly Plot",
+    x_lab: str = "",
+    y_lab: str = "",
+    color_lab: str = "Legend",
+    
+    x_axis_date_labels: str = "%b %Y",
+    base_size: float = 11,
+    width: Optional[int] = None,
+    height: Optional[int] = None,
+    
+):
+    
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        
+        group_names = data.grouper.names
+        
+        data = data.obj.copy()
+        
+        if not isinstance(group_names, list):
+            group_names = [group_names]
+        
+        data[group_names] = data[group_names].astype(str) 
+        
+        data["_group_names"] =  data[group_names].agg(" | ".join, axis=1)
+        
+    else:
+        group_names = None
+        data = data.copy()
+    
+    # 1.0 Canvas
+    if group_names is not None:
+        g = ggplot(
+                data = data,
+                mapping = aes(
+                    x = date_column,
+                    y = "observed",
+                    group = "_group_names",
+                )
+            )
+    
+    else:
+        g = ggplot(
+            data = data,
+            mapping = aes(
+                x = date_column,
+                y = "observed",
+            )
+        )
+        
+    # 2.0 Add facets
+    if group_names is not None:
+       g = g + facet_wrap(
+            "_group_names",
+            ncol = facet_ncol,
+            nrow = facet_nrow, 
+            scales = facet_scales, 
+            dir = facet_dir, 
+            shrink = True
+        )
+    
+    # 3.0 Add Ribbons
+    g = g + geom_ribbon(
+        mapping = aes(
+            ymin = "recomposed_l1",
+            ymax = "recomposed_l2",
+        ),
+        alpha = ribbon_alpha,
+        fill  = ribbon_fill,
+    )
+    
+    # 4.0 Add Lines
+    g = g + \
+        geom_line(
+            color    = line_color,
+            size     = line_size,
+            linetype = line_type,
+            alpha    = line_alpha
+        )
+    
+    # 5.0 Add Anomalies
+    if anom_size is None:
+        anom_size = 2.0
+    
+    g = g + \
+        geom_point(
+            mapping = aes(
+                x = date_column,
+                y = "observed",
+            ),
+            color = anom_color,
+            size = anom_size,
+            alpha = anom_alpha,
+            data = data.query("observed > recomposed_l2 | observed < recomposed_l1"),
+        )
+    
+    # Add a Y-Intercept if desired
+    if y_intercept is not None:
+        g = g \
+            + geom_hline(
+                yintercept = y_intercept,
+                color = y_intercept_color
+        )
+
+    # Add a X-Intercept if desired
+    if x_intercept is not None:
+        g = g \
+            + geom_vline(
+                xintercept = x_intercept,
+                color = x_intercept_color
+        )
+
+    # Add theme & labs
+    g = g + labs(x = x_lab, y = y_lab, title = title, color = color_lab)
+
+    # Add scale to X
+    g = g + scale_x_datetime(date_labels = x_axis_date_labels)
+    
+    # Add theme
+    g = g + \
+        theme_timetk(base_size=base_size, width = width, height = height)
+        
+    if not legend_show:
+        g = g + theme(legend_position='none')
+    
+    return g
+    
+    
