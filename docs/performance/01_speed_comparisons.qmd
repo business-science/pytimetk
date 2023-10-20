@@ -53,7 +53,7 @@ Many factors can affect speed. Things that are known to slow performance down:
 Load the packages and datasets needed to replicate the speed tests (Click to Expand):
 
 ```{python}
-# | eval: false
+# | eval: true
 
 # Libraries
 import pytimetk as tk

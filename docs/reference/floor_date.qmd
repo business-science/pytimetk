@@ -1,17 +1,21 @@
 # floor_date { #pytimetk.floor_date }
 
-`floor_date(idx, unit='D')`
+`floor_date(idx, unit='D', engine='pandas')`
 
 Robust date flooring.
 
-The `floor_date` function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit. It's more robust than the pandas `floor` function, which does weird things with irregular frequencies like Month which are actually regular.
+The `floor_date` function takes a pandas Series of dates and returns a new Series 
+with the dates rounded down to the specified unit. It's more robust than the 
+pandas `floor` function, which does weird things with irregular frequencies 
+like Month which are actually regular.
 
 ## Parameters
 
-| Name   | Type                          | Description                                                                                                                                                                                                                                                            | Default    |
-|--------|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `idx`  | pd.Series or pd.DatetimeIndex | The `idx` parameter is a pandas Series or pandas DatetimeIndex object that contains datetime values. It represents the dates that you want to round down.                                                                                                              | _required_ |
-| `unit` | str                           | The `unit` parameter in the `floor_date` function is a string that specifies the time unit to which the dates in the `idx` series should be rounded down. It has a default value of "D", which stands for day. Other possible values for the `unit` parameter could be | `'D'`      |
+| Name     | Type                          | Description                                                                                                                                                                                                                                                                                                                                             | Default    |
+|----------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `idx`    | pd.Series or pd.DatetimeIndex | The `idx` parameter is a pandas Series or pandas DatetimeIndex object that  contains datetime values. It represents the dates that you want to round down.                                                                                                                                                                                              | _required_ |
+| `unit`   | str                           | The `unit` parameter in the `floor_date` function is a string that specifies  the time unit to which the dates in the `idx` series should be rounded down.  It has a default value of "D", which stands for day. Other possible values  for the `unit` parameter could be.                                                                              | `'D'`      |
+| `engine` | str                           | The `engine` parameter is used to specify the engine to use for calculating  the floor datetime. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library for    calculating the floor datetime. This can be faster than using "pandas" for    large datasets. | `'pandas'` |
 
 ## Returns
 
@@ -34,5 +38,5 @@ dates
 # dates.floor("M") # ValueError: <MonthEnd> is a non-fixed frequency
 
 # floor_date works as expected
-tk.floor_date(dates, unit="M")
+tk.floor_date(dates, unit="M", engine='pandas')
 ```

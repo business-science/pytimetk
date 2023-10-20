@@ -13,6 +13,7 @@ website:
       section: "\U0001F525 Wrangling Pandas Time Series DataFrames"
     - contents:
       - reference/anomalize.qmd
+      - reference/plot_anomalies.qmd
       section: "\U0001F50D Anomaly Detection"
     - contents:
       - reference/augment_timeseries_signature.qmd

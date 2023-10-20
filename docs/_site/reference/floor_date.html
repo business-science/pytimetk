@@ -374,7 +374,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>floor_date(idx, unit='D')</code></p>
+<p><code>floor_date(idx, unit='D', engine='pandas')</code></p>
 <p>Robust date flooring.</p>
 <p>The <code>floor_date</code> function takes a pandas Series of dates and returns a new Series with the dates rounded down to the specified unit. It’s more robust than the pandas <code>floor</code> function, which does weird things with irregular frequencies like Month which are actually regular.</p>
 <section id="parameters" class="level2">
@@ -382,8 +382,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <table class="table">
 <colgroup>
 <col style="width: 2%">
-<col style="width: 9%">
-<col style="width: 83%">
+<col style="width: 7%">
+<col style="width: 86%">
 <col style="width: 3%">
 </colgroup>
 <thead>
@@ -404,8 +404,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="even">
 <td><code>unit</code></td>
 <td>str</td>
-<td>The <code>unit</code> parameter in the <code>floor_date</code> function is a string that specifies the time unit to which the dates in the <code>idx</code> series should be rounded down. It has a default value of “D”, which stands for day. Other possible values for the <code>unit</code> parameter could be</td>
+<td>The <code>unit</code> parameter in the <code>floor_date</code> function is a string that specifies the time unit to which the dates in the <code>idx</code> series should be rounded down. It has a default value of “D”, which stands for day. Other possible values for the <code>unit</code> parameter could be.</td>
 <td><code>'D'</code></td>
+</tr>
+<tr class="odd">
+<td><code>engine</code></td>
+<td>str</td>
+<td>The <code>engine</code> parameter is used to specify the engine to use for calculating the floor datetime. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for calculating the floor datetime. This can be faster than using “pandas” for large datasets.</td>
+<td><code>'pandas'</code></td>
 </tr>
 </tbody>
 </table>
@@ -459,7 +465,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># dates.floor("M") # ValueError: &lt;MonthEnd&gt; is a non-fixed frequency</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># floor_date works as expected</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>tk.floor_date(dates, unit<span class="op">=</span><span class="st">"M"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>tk.floor_date(dates, unit<span class="op">=</span><span class="st">"M"</span>, engine<span class="op">=</span><span class="st">'pandas'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>0     2020-01-01
 1     2020-01-01

@@ -6,7 +6,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/floor_date.html</loc>
-    <lastmod>2023-10-18T21:42:13.980Z</lastmod>
+    <lastmod>2023-10-20T23:35:02.264Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/ts_summary.html</loc>
@@ -78,7 +78,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_expanding.html</loc>
-    <lastmod>2023-10-18T21:40:45.860Z</lastmod>
+    <lastmod>2023-10-20T23:34:31.614Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/ceil_date.html</loc>
@@ -90,7 +90,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/changelog-news.html</loc>
-    <lastmod>2023-10-18T21:40:26.656Z</lastmod>
+    <lastmod>2023-10-20T23:33:58.340Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/tutorials/02_finance.html</loc>
@@ -150,11 +150,11 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/performance/01_speed_comparisons.html</loc>
-    <lastmod>2023-10-18T21:40:25.848Z</lastmod>
+    <lastmod>2023-10-20T23:33:53.562Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_rolling.html</loc>
-    <lastmod>2023-10-18T21:40:41.294Z</lastmod>
+    <lastmod>2023-10-20T23:34:14.458Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_rolling_apply.html</loc>
@@ -182,7 +182,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2023-10-18T21:41:00.048Z</lastmod>
+    <lastmod>2023-10-20T23:34:32.621Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/summarize_by_time.html</loc>
@@ -238,6 +238,10 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/anomalize.html</loc>
-    <lastmod>2023-10-18T21:42:15.734Z</lastmod>
+    <lastmod>2023-10-20T23:35:18.424Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/plot_anomalies.html</loc>
+    <lastmod>2023-10-20T23:34:50.865Z</lastmod>
   </url>
 </urlset>

@@ -26,6 +26,7 @@ Detect anomalies in time series data.
 | | |
 | --- | --- |
 | [anomalize](anomalize.qmd#pytimetk.anomalize) | The `anomalize` function is used to detect anomalies in time series data, either for a single time |
+| [plot_anomalies](plot_anomalies.qmd#pytimetk.plot_anomalies) | The `plot_anomalies` function is used to plot anomalies in a time series data using either Plotly, |
 
 ## 🏗️ Adding Features to Time Series DataFrames (Augmenting)
 
@@ -39,7 +40,7 @@ Add one or more feature columns to time series data.
 | [augment_leads](augment_leads.qmd#pytimetk.augment_leads) | Adds lags to a Pandas DataFrame or DataFrameGroupBy object. |
 | [augment_rolling](augment_rolling.qmd#pytimetk.augment_rolling) | Apply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame. |
 | [augment_rolling_apply](augment_rolling_apply.qmd#pytimetk.augment_rolling_apply) | Apply one or more DataFrame-based rolling functions and window sizes to one or more columns of a DataFrame. |
-| [augment_expanding](augment_expanding.qmd#pytimetk.augment_expanding) | Apply one or more Series-based expanding functions and window sizes to one or more columns of a DataFrame. |
+| [augment_expanding](augment_expanding.qmd#pytimetk.augment_expanding) | Apply one or more Series-based expanding functions to one or more columns of a DataFrame. |
 | [augment_expanding_apply](augment_expanding_apply.qmd#pytimetk.augment_expanding_apply) | Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame. |
 
 ## 📎 TS Features
