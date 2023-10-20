@@ -350,7 +350,12 @@ def _augment_leads_polars(
 
     # Select the columns
     df = pl.DataFrame(pandas_df)
-    out_df = df.select(selected_columns)
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        out_df = df.group_by(data.grouper.names, maintain_order=True).agg(selected_columns)
+        out_df = out_df.explode(out_df.columns[1:])
+        out_df = out_df.drop(data.grouper.names)
+    else: # a dataframe
+        out_df = df.select(selected_columns)
 
     # Concatenate the DataFrames horizontally
     df = pl.concat([df, out_df], how="horizontal").to_pandas()
