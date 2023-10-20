@@ -4,38 +4,51 @@ import numpy as np
 from pytimetk import augment_leads  
 
 # Sample Data for testing
-data = {
-    'date': pd.date_range(start='2021-01-01', periods=5),
-    'value': [1, 2, 3, 4, 5],
-    'id': ['A', 'A', 'B', 'B', 'B']
-}
-df = pd.DataFrame(data)
+@pytest.fixture
+def df_sample():
+    df_sample = pd.DataFrame({
+        'date': pd.date_range('2021-01-01', periods=5),
+        'value': [1, 2, 3, 4, 5],
+        'id': ['A', 'A', 'A', 'B', 'B']
+    })
 
-df.dtypes
-# Tests
-def test_dataframe_extension_single_lead():
-    result = augment_leads(df, date_column='date', value_column='value', leads=1)
-    assert 'value_lead_1' in result.columns
-    assert np.array_equal(result['value_lead_1'].to_numpy() , np.array([2.0, 3.0, 4.0, 5.0, np.nan]), equal_nan=True)
+    return df_sample
 
-def test_dataframe_extension_multiple_leads():
-    result = augment_leads(df, date_column='date', value_column='value', leads=[1, 2])
-    assert 'value_lead_1' in result.columns
-    assert 'value_lead_2' in result.columns
-    assert np.array_equal(result['value_lead_1'].to_numpy() , np.array([2.0, 3.0, 4.0, 5.0, np.nan]), equal_nan=True)
-    assert np.array_equal(result['value_lead_2'].to_numpy() , np.array([3.0, 4.0, 5.0, np.nan, np.nan]), equal_nan=True)
+@pytest.mark.parametrize("engine", ["pandas", "polars"])
+def test_single_lead(df_sample, engine):
+    df_result = augment_leads(df_sample, date_column='date', value_column='value', leads=1, engine = engine)
+    assert all(df_result.columns == ['date', 'value', 'id', 'value_lead_1'])
+    assert np.array_equal(df_result['value_lead_1'].to_numpy() , np.array([2.0, 3.0, 4.0, 5.0, np.nan]), equal_nan=True)
 
-def test_groupby_extension_single_lead():
-    grouped = df.groupby('id')
-    result = augment_leads(grouped, date_column='date', value_column='value', leads=1)
-    assert 'value_lead_1' in result.columns
-    assert np.array_equal(result['value_lead_1'].to_numpy() , np.array([2.0, np.nan, 4.0, 5.0, np.nan]), equal_nan=True)
+@pytest.mark.parametrize("engine", ["pandas", "polars"])
+def test_multiple_leads(df_sample, engine):
+    df_result = augment_leads(df_sample, date_column='date', value_column='value', leads=[1, 2], engine = engine)
+    assert all(df_result.columns == ['date', 'value', 'id', 'value_lead_1', 'value_lead_2'])
+    assert np.array_equal(df_result['value_lead_1'].to_numpy() , np.array([2.0, 3.0, 4.0, 5.0, np.nan]), equal_nan=True)
+    assert np.array_equal(df_result['value_lead_2'].to_numpy() , np.array([3.0, 4.0, 5.0, np.nan, np.nan]), equal_nan=True)
 
-def test_invalid_data_type_error():
+@pytest.mark.parametrize("engine", ["pandas", "polars"])
+def test_groupby_single_lead(df_sample, engine):
+    grouped = df_sample.groupby('id')
+    df_result = augment_leads(grouped, date_column='date', value_column='value', leads=1, engine = engine)
+    assert all(df_result.columns == ['date', 'value', 'id', 'value_lead_1'])
+    assert np.array_equal(df_result['value_lead_1'].to_numpy() , np.array([2.0, 3.0, np.nan, 5.0, np.nan]), equal_nan=True)
+
+@pytest.mark.parametrize("engine", ["pandas", "polars"])
+def test_groupby_multiple_leads(df_sample, engine):
+    df_result = df_sample.groupby('id').augment_leads(date_column='date', value_column='value', leads=(1, 2), engine = engine)
+    assert all(df_result.columns == ['date', 'value', 'id', 'value_lead_1', 'value_lead_2'])
+    assert np.array_equal(df_result['value_lead_1'].to_numpy() , np.array([2.0, 3.0, np.nan, 5.0, np.nan]), equal_nan=True)
+    assert np.array_equal(df_result['value_lead_2'].to_numpy() , np.array([3.0, np.nan, np.nan, np.nan, np.nan]), equal_nan=True)
+
+def test_invalid_dataframe_or_groupby_input():
+    invalid_data = {"key": "value"}
+    with pytest.raises(TypeError, match="`data` is not a Pandas DataFrame or GroupBy object."):
+        augment_leads(data=invalid_data, date_column="date", value_column="value", leads=1)
+
+def test_invalid_leads_type(df_sample):
     with pytest.raises(TypeError):
-        augment_leads("invalid_data", date_column='date', value_column='value', leads=1)
+        df_sample.augment_lags(date_column='date', value_column='value', leads='string')
 
-def test_invalid_leads_value_error():
-    with pytest.raises(ValueError):
-        augment_leads(df, date_column='date', value_column='value', leads="invalid_lead")
-
+if __name__ == "__main__":
+    pytest.main()
