@@ -139,21 +139,31 @@ def ceil_date(
     idx: Union[pd.Series, pd.DatetimeIndex], 
     unit: str = "D",
 ) -> pd.Series:
-    '''Robust date ceiling.
+    '''
+    Robust date ceiling.
     
-    The `ceil_date` function takes a pandas Series of dates and returns a new Series with the dates rounded up to the next specified unit. It's more robust than the pandas `ceil` function, which does weird things with irregular frequencies like Month which are actually regular.
+    The `ceil_date` function takes a pandas Series of dates and returns a new 
+    Series with the dates rounded up to the next specified unit. It's more 
+    robust than the pandas `ceil` function, which does weird things with 
+    irregular frequencies like Month which are actually regular.
     
     Parameters
     ----------
     idx : pd.Series or pd.DatetimeIndex
-        The `idx` parameter is a pandas Series or pandas DatetimeIndex object that contains datetime values. It represents the dates that you want to round down.
+        The `idx` parameter is a pandas Series or pandas DatetimeIndex object 
+        that contains datetime values. It represents the dates that you want to 
+        round down.
     unit : str, optional
-        The `unit` parameter in the `ceil_date` function is a string that specifies the time unit to which the dates in the `idx` series should be rounded down. It has a default value of "D", which stands for day. Other possible values for the `unit` parameter could be
+        The `unit` parameter in the `ceil_date` function is a string that 
+        specifies the time unit to which the dates in the `idx` series should be 
+        rounded down. It has a default value of "D", which stands for day. Other 
+        possible values for the `unit` parameter could be
     
     Returns
     -------
     pd.Series 
-        The `ceil_date` function returns a pandas Series object containing datetime64[ns] values.
+        The `ceil_date` function returns a pandas Series object containing 
+        datetime64[ns] values.
     
     Examples
     --------
@@ -262,7 +272,9 @@ def week_of_month(
     idx: Union[pd.Series, pd.DatetimeIndex],
     engine: str = 'pandas',
     ) -> pd.Series:
-    '''The "week_of_month" function calculates the week number of a given date within its month.
+    '''
+    The "week_of_month" function calculates the week number of a given date 
+    within its month.
     
     Parameters
     ----------
@@ -270,11 +282,14 @@ def week_of_month(
         The parameter "idx" is a pandas Series object that represents a specific
         date for which you want to determine the week of the month.
     engine : str, optional
-        The `engine` parameter is used to specify the engine to use for calculating the week of the month. It can be either "pandas" or "polars". 
+        The `engine` parameter is used to specify the engine to use for 
+        calculating the week of the month. It can be either "pandas" or "polars". 
         
         - The default value is "pandas".
         
-        - When "polars", the function will internally use the `polars` library for calculating the week of the month. This can be faster than using "pandas" for large datasets. 
+        - When "polars", the function will internally use the `polars` library 
+        for calculating the week of the month. This can be faster than using 
+        "pandas" for large datasets. 
 
     
     Returns
@@ -313,7 +328,6 @@ def week_of_month(
     ```
     
     '''
-
     # Common checks
     check_series_or_datetime(idx)
 
@@ -375,12 +389,15 @@ def is_holiday(
 
     Parameters
     ----------
-    idx : Union[str, datetime, List[Union[str, datetime]], pd.DatetimeIndex, pd.Series]
+    idx : Union[str, datetime, List[Union[str, datetime]], pd.DatetimeIndex, 
+    pd.Series]
         The dates to check for holiday status.
     country_name (str, optional):
-        The name of the country for which to check the holiday status. Defaults to 'UnitedStates' if not specified.
+        The name of the country for which to check the holiday status. Defaults 
+        to 'UnitedStates' if not specified.
     country (str, optional):
-        An alternative parameter to specify the country for holiday checking, overriding country_name.
+        An alternative parameter to specify the country for holiday checking, 
+        overriding country_name.
 
     Returns:
     -------
@@ -483,6 +500,3 @@ def get_timeseries_colname(data: pd.DataFrame, verbose: bool = False) -> str:
         print(detect_timeseries_columns(data).iloc[0])
         
     return detect_timeseries_columns(data).iloc[0].idxmax()
-
-
-
