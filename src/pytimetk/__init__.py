@@ -4,6 +4,7 @@
 from .plot.plot_timeseries import *
 from .plot.plot_anomalies import *
 from .plot.plot_anomaly_decomp import *
+from .plot.plot_anomaly_cleaned import *
 from .plot.theme import *
 
 from .core.summarize_by_time import *
@@ -45,6 +46,9 @@ from .plot.plot_anomalies import (
 )
 from .plot.plot_anomaly_decomp import (
     plot_anomaly_decomp
+)
+from .plot.plot_anomaly_cleaned import (
+    plot_anomalies_cleaned
 )
 from .plot.theme import (
     theme_timetk, palette_timetk

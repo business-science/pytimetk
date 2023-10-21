@@ -13,6 +13,7 @@ number-sections: false
 - `anomalize()`: A new scalable function for detecting time series anomalies (outliers) 
 - `plot_anomalies()`: A scalable visualization tool for inspecting anomalies in time series data. 
 - `plot_anomaly_decomp`: A scalable visualization tool for inspecting the observed, seasonal, trend, and remainder decomposition, which are useful for telling you whether or not anomalies are being detected to your preference.
+- `plot_anomalies_cleaned()`: A scalable visualization tool for showing the before and after transformation for the cleaned vs uncleaned anomalies. 
 
 ### New Functions:
 

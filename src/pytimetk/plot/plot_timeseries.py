@@ -694,6 +694,8 @@ def _plot_timeseries_plotly(
                     
                     name = color_group['_color_group_names'].unique()[0]
                     
+                    color = name_to_hex(color)
+                    
                     trace = go.Scatter(
                         x=color_group[date_column], 
                         y=color_group[value_column], 
@@ -756,6 +758,8 @@ def _plot_timeseries_plotly(
                 color = color_group['_color'].unique()[0]
                 
                 name = color_group['_color_group_names'].unique()[0]
+                
+                color = name_to_hex(color)
                                 
                 trace = go.Scatter(
                     x=color_group[date_column], 
