@@ -62,7 +62,7 @@ def plot_anomaly_decomp(
         value_column = '_val',
         
         facet_ncol = facet_ncol, 
-        facet_dir = 'h' if engine == 'plotly' else 'v',
+        facet_dir = 'h',
         
         line_color = line_color,
         line_size = line_size,
