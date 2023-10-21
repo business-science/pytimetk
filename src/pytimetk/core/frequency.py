@@ -10,45 +10,50 @@ from pytimetk.utils.datetime_helpers import floor_date
 
 
 def get_frequency_summary(idx: Union[pd.Series, pd.DatetimeIndex]):  
-    '''More robust version of pandas inferred frequency.
-    
+    '''
+    More robust version of pandas inferred frequency.
+        
     Parameters
     ----------
     idx : pd.Series or pd.DateTimeIndex
-        The `idx` parameter is either a `pd.Series` or a `pd.DateTimeIndex`. It represents the index of a pandas DataFrame or Series, which contains datetime values.
-    
+        The `idx` parameter is either a `pd.Series` or a `pd.DateTimeIndex`. It 
+        represents the index of a pandas DataFrame or Series, which contains 
+        datetime values.
+        
     Returns
     -------
     pd.DataFrame
         A pandas DataFrame with the following columns:
         - `freq_inferred_unit`: The inferred frequency of the time series from `pandas`.
-        - `freq_median_timedelta`: The median time difference between consecutive observations in the time series.
-        - `freq_median_scale`: The median time difference between consecutive observations in the time series, scaled to a common unit.
-        - `freq_median_unit`: The unit of the median time difference between consecutive observations in the time series.
-    
+        - `freq_median_timedelta`: The median time difference between consecutive 
+           observations in the time series.
+        - `freq_median_scale`: The median time difference between consecutive 
+           observations in the time series, scaled to a common unit.
+        - `freq_median_unit`: The unit of the median time difference between 
+           consecutive observations in the time series.
+        
     Examples
     --------
     ```{python}
     import pytimetk as tk
     import pandas as pd
-    
+        
     dates = pd.date_range(start = '2020-01-01', end = '2020-01-10', freq = 'D')
-    
+        
     tk.get_frequency(dates)
     ```
-    
+        
     ```{python}
     # pandas inferred frequency fails
     dates = pd.to_datetime(["2021-01-01", "2021-02-01"])
-    
+        
     # Returns None
     tk.get_pandas_frequency(dates)
-    
+        
     # Returns '1MS'
     tk.get_frequency(dates)
-    
-    ```
-    
+        
+    ``` 
     '''
     
     # common checks
@@ -119,16 +124,27 @@ def get_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool =
     '''
     Get the frequency of a pandas Series or DatetimeIndex.
     
-    The function `get_frequency` first attempts to get a pandas inferred frequency. If the inferred frequency is None, it will attempt calculate the frequency manually. If the frequency cannot be determined, the function will raise a ValueError.
+    The function `get_frequency` first attempts to get a pandas inferred 
+    frequency. If the inferred frequency is None, it will attempt calculate the 
+    frequency manually. If the frequency cannot be determined, the function will 
+    raise a ValueError.
     
     Parameters
     ----------
     idx : pd.Series or pd.DatetimeIndex
-        The `idx` parameter can be either a `pd.Series` or a `pd.DatetimeIndex`. It represents the index or the time series data for which we want to determine the frequency.
+        The `idx` parameter can be either a `pd.Series` or a `pd.DatetimeIndex`. 
+        It represents the index or the time series data for which we want to 
+        determine the frequency.
     force_regular : bool, optional
-        The `force_regular` parameter is a boolean flag that determines whether to force the frequency to be regular. If set to `True`, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is 'B' (business days), it will be converted to 'D' (calendar days). The default value is `False`.
+        The `force_regular` parameter is a boolean flag that determines whether 
+        to force the frequency to be regular. If set to `True`, the function 
+        will convert irregular frequencies to their regular counterparts. For 
+        example, if the inferred frequency is 'B' (business days), it will be 
+        converted to 'D' (calendar days). The default value is `False`.
     numeric : bool, optional
-        The `numeric` parameter is a boolean flag that indicates whether a numeric value for the median timestamps per pandas frequency or the pandas string frequency alias.
+        The `numeric` parameter is a boolean flag that indicates whether a 
+        numeric value for the median timestamps per pandas frequency or the 
+        pandas string frequency alias.
     
     Returns
     -------
@@ -157,12 +173,17 @@ def get_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool =
     return freq
 
 def timeseries_unit_frequency_table(wide_format: bool = False) -> pd.DataFrame:
-    '''The function `timeseries_unit_frequency_table` returns a pandas DataFrame with units of time and their corresponding frequencies in seconds.
+    '''
+    The function `timeseries_unit_frequency_table` returns a pandas DataFrame 
+    with units of time and their corresponding frequencies in seconds.
     
     Returns
     -------
     pd.DataFrame
-        a pandas DataFrame that contains two columns: "unit" and "freq". The "unit" column contains the units of time (seconds, minutes, hours, etc.), and the "freq" column contains the corresponding frequencies in seconds for each unit.
+        a pandas DataFrame that contains two columns: "unit" and "freq". The 
+        "unit" column contains the units of time (seconds, minutes, hours, etc.), 
+        and the "freq" column contains the corresponding frequencies in seconds 
+        for each unit.
     
     Examples
     --------
@@ -187,17 +208,24 @@ def timeseries_unit_frequency_table(wide_format: bool = False) -> pd.DataFrame:
     return _table
 
 def time_scale_template(wide_format: bool = False):
-    '''The function `time_scale_template` returns a table with time scale information in either wide or long format.
+    '''
+    The function `time_scale_template` returns a table with time scale 
+    information in either wide or long format.
     
     Parameters
     ----------
     wide_format : bool, optional
-        The wide_format parameter determines the format of the output table. If wide_format is set to True, the table will be transposed with the median_unit column as the index. If wide_format is set to False (default), the table will have the median_unit column as a regular column.
+        The wide_format parameter determines the format of the output table. If 
+        wide_format is set to True, the table will be transposed with the 
+        median_unit column as the index. If wide_format is set to False (default), 
+        the table will have the median_unit column as a regular column.
     
     Returns
     -------
     pd.DataFrame
-        A pandas DataFrame containing information about different time scales. If the `wide_format` parameter is set to `True`, the DataFrame is transposed with the 'median_unit' column as the index.
+        A pandas DataFrame containing information about different time scales. 
+        If the `wide_format` parameter is set to `True`, the DataFrame is 
+        transposed with the 'median_unit' column as the index.
         
     Examples
     --------
@@ -222,20 +250,36 @@ def time_scale_template(wide_format: bool = False):
     
 @pf.register_series_method
 def get_seasonal_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool = False, numeric: bool = False):
-    '''The `get_seasonal_frequency` function returns the seasonal period of a given time series or datetime index.
+    '''
+    The `get_seasonal_frequency` function returns the seasonal period of a given 
+    time series or datetime index.
     
     Parameters
     ----------
     idx : Union[pd.Series, pd.DatetimeIndex]
-        The `idx` parameter can be either a pandas Series or a pandas DatetimeIndex. It represents the time index for which you want to calculate the seasonal frequency.
+        The `idx` parameter can be either a pandas Series or a pandas 
+        DatetimeIndex. It represents the time index for which you want to 
+        calculate the seasonal frequency.
     force_regular : bool, optional
-        force_regular is a boolean parameter that determines whether to force the frequency to be regular. If set to True, the function will try to find a regular frequency even if the data is irregular. If set to False, the function will return the actual frequency of the data.
+        force_regular is a boolean parameter that determines whether to force 
+        the frequency to be regular. If set to True, the function will try to 
+        find a regular frequency even if the data is irregular. If set to False, 
+        the function will return the actual frequency of the data.
     numeric : bool, optional
-        The `numeric` parameter is a boolean flag that determines whether the output should be in numeric format or a string Pandas Frequency Alias. If `numeric` is set to `True`, the output will be a numeric representation of the seasonal period. If `numeric` is set to `False` (default), the output will
+        The `numeric` parameter is a boolean flag that determines whether the 
+        output should be in numeric format or a string Pandas Frequency Alias. 
+        If `numeric` is set to `True`, the output will be a numeric representation 
+        of the seasonal period. If `numeric` is set to `False` (default), the 
+        output will
     
     Returns
     -------
-        The function `get_seasonal_frequency` returns the seasonal period based on the input index. If the index is a `pd.DatetimeIndex`, it is converted to a `pd.Series` with the name "idx". The function then calculates the summary frequency of the index using the `get_frequency_summary` function. It determines the scale and unit of the frequency and adjusts the unit if the scale is
+        The function `get_seasonal_frequency` returns the seasonal period based 
+        on the input index. If the index is a `pd.DatetimeIndex`, it is converted 
+        to a `pd.Series` with the name "idx". The function then calculates the 
+        summary frequency of the index using the `get_frequency_summary` function. 
+        It determines the scale and unit of the frequency and adjusts the unit if 
+        the scale is
         
     Examples
     --------
@@ -284,20 +328,36 @@ def get_seasonal_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regula
     
 @pf.register_series_method
 def get_trend_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool = False, numeric: bool = False):
-    '''The `get_trend_frequency` function returns the trend period of a given time series or datetime index.
+    '''
+    The `get_trend_frequency` function returns the trend period of a given time 
+    series or datetime index.
     
     Parameters
     ----------
     idx : Union[pd.Series, pd.DatetimeIndex]
-        The `idx` parameter can be either a pandas Series or a pandas DatetimeIndex. It represents the time index for which you want to calculate the trend frequency.
+        The `idx` parameter can be either a pandas Series or a pandas 
+        DatetimeIndex. It represents the time index for which you want to 
+        calculate the trend frequency.
     force_regular : bool, optional
-        force_regular is a boolean parameter that determines whether to force the frequency to be regular. If set to True, the function will try to find a regular frequency even if the data is irregular. If set to False, the function will return the actual frequency of the data.
+        force_regular is a boolean parameter that determines whether to force the 
+        frequency to be regular. If set to True, the function will try to find a 
+        regular frequency even if the data is irregular. If set to False, the 
+        function will return the actual frequency of the data.
     numeric : bool, optional
-        The `numeric` parameter is a boolean flag that determines whether the output should be in numeric format or a string Pandas Frequency Alias. If `numeric` is set to `True`, the output will be a numeric representation of the trend period. If `numeric` is set to `False` (default), the output will
+        The `numeric` parameter is a boolean flag that determines whether the 
+        output should be in numeric format or a string Pandas Frequency Alias. 
+        If `numeric` is set to `True`, the output will be a numeric representation 
+        of the trend period. If `numeric` is set to `False` (default), the output 
+        will
     
     Returns
     -------
-        The function `get_trend_frequency` returns the trend period based on the input index. If the index is a `pd.DatetimeIndex`, it is converted to a `pd.Series` with the name "idx". The function then calculates the summary frequency of the index using the `get_frequency_summary` function. It determines the scale and unit of the frequency and adjusts the unit if the scale is
+        The function `get_trend_frequency` returns the trend period based on the 
+        input index. If the index is a `pd.DatetimeIndex`, it is converted to a 
+        `pd.Series` with the name "idx". The function then calculates the summary 
+        frequency of the index using the `get_frequency_summary` function. It 
+        determines the scale and unit of the frequency and adjusts the unit if 
+        the scale is
         
     Examples
     --------
@@ -309,9 +369,7 @@ def get_trend_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: 
     
     tk.get_trend_frequency(dates)
     
-    
     ```
-    
     '''
     
     check_series_or_datetime(idx)
@@ -423,9 +481,15 @@ def _get_pandas_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular
     Parameters
     ----------
     idx : pd.Series or pd.DatetimeIndex
-        The `idx` parameter can be either a `pd.Series` or a `pd.DatetimeIndex`. It represents the index or the time series data for which we want to determine the frequency.
+        The `idx` parameter can be either a `pd.Series` or a `pd.DatetimeIndex`. 
+        It represents the index or the time series data for which we want to 
+        determine the frequency.
     force_regular : bool, optional
-        The `force_regular` parameter is a boolean flag that determines whether to force the frequency to be regular. If set to `True`, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is 'B' (business days), it will be converted to 'D' (calendar days). The default value is `False`.
+        The `force_regular` parameter is a boolean flag that determines whether 
+        to force the frequency to be regular. If set to `True`, the function will 
+        convert irregular frequencies to their regular counterparts. For example, 
+        if the inferred frequency is 'B' (business days), it will be converted 
+        to 'D' (calendar days). The default value is `False`.
     
     Returns
     -------
