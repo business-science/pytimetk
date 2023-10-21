@@ -62,27 +62,6 @@ def test_03_parallel_slicing_dataframes():
     
     assert_frame_equal(result_1, result_2)
 
-
-
-# def test_04_parallel_slicing_dataframes():
-#     # Test 4 - Single Group returns MultiIndex DataFrame
-    
-#     df = pd.DataFrame({
-#         'A': ['foo', 'foo', 'bar', 'bar', 'foo', 'bar', 'foo', 'foo'],
-#         'B': [1, 3, 5, 7, 9, 2, 4, 6]
-#     })
-
-#     def calculate(group):
-#         return group.head(2)
-
-#     grouped = df.groupby(['A'])
-    
-#     result_1 = grouped.apply(calculate)
-    
-#     result_2 = tk.parallel_apply(grouped, calculate, show_progress=True, threads=2)
-    
-#     assert_frame_equal(result_1, result_2)
-
 def test_04_parallel_slicing_dataframes():
     # Test 4 - Single Group returns MultiIndex DataFrame
     

@@ -86,13 +86,15 @@ def ts_summary(
     
     ```{python}
     # Parallelized grouped ts_summary 
-    df \
-        .groupby('symbol') \
-        .ts_summary(
-            date_column = 'date', 
-            threads = 2, 
-            show_progress = True
-        ) 
+    (
+        df 
+            .groupby('symbol') 
+            .ts_summary(
+                date_column = 'date', 
+                threads = 2, 
+                show_progress = True
+            ) 
+    )
     ```
     
     ```{python}
