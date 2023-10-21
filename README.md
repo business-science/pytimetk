@@ -20,6 +20,29 @@
 
 **Please ⭐ us on GitHub (it takes 2-seconds and means a lot).**
 
+# Introducing pytimetk: Simplifying Time Series Analysis for Everyone
+
+Time series analysis is fundamental in many fields, from business forecasting to scientific research. While the Python ecosystem offers tools like `pandas`, they sometimes can be verbose and not optimized for all operations, especially for complex time-based aggregations and visualizations.
+
+Enter **pytimetk**. Crafted with a blend of ease-of-use and computational efficiency, `pytimetk` significantly simplifies the process of time series manipulation and visualization. By leveraging the `polars` backend, you can experience speed improvements ranging from 3X to a whopping 30X. Let's dive into a comparative analysis.
+
+| Features/Properties | **pytimetk**                  | **pandas (+matplotlib)**               |
+|---------------------|-------------------------------|---------------------------------------|
+| **Speed**           | 🚀 3X to 30X Faster            | 🐢 Standard                           |
+| **Code Simplicity** | 🎉 Concise, readable syntax    | 📜 Often verbose                      |
+| `summarize_by_time()` | 🕐 2 lines, 13.4X faster     | 🕐 6 lines, 2 for-loops               |
+| `plot_timeseries()`  | 🎨 2 lines, no customization  | 🎨 16 lines, customization needed    |
+
+As evident from the table:
+
+- `summarize_by_time()` in **pytimetk** is not just about speed; it also simplifies your codebase, converting a 6-line, double for-loop routine in `pandas` into a concise 2-line operation.
+  
+- Similarly, `plot_timeseries()` dramatically streamlines the plotting process, encapsulating what would typically require 16 lines of `matplotlib` code into a mere 2-line command in **pytimetk**, without sacrificing customization or quality.
+
+Join the revolution in time series analysis. Reduce your code complexity, increase your productivity, and harness the speed that **pytimetk** brings to your workflows.
+
+Explore more at [pytimetk homepage](https://business-science.github.io/pytimetk/).
+
 # Installation
 
 Install the latest stable version of `pytimetk` using `pip`:

@@ -61,7 +61,7 @@ website:
         contents: guides/*
       - section: "📘 Applied Tutorials:"
         contents: tutorials/*
-      - section: "⚡ Performance:"
+      - section: "🏎️ Performance:"
         contents: performance/*
       - text: "---"
       - text: 📄 API Reference

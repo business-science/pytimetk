@@ -5,7 +5,7 @@ toc: true
 toc-depth: 3
 number-sections: true
 number-depth: 2
-code-fold: true
+code-fold: show
 code-tools: 
     source: false
     toggle: true
@@ -17,7 +17,13 @@ code-tools:
 This guide covers speed and performance comparisons using the `polars` backend. 
 :::
 
+
+Beginning in version 0.2.0 of `pytimetk`, we introduced new `polars` engines to many of our functions. This is aimed at leveraging the speed benefits of polars without requiring you (the user) to learn a new data manipulation framework. 
+
+
 # Pytimetk Speed Result Summary
+
+It's typical to see 2X to 15X speedups just by using the `polars` engine. Speedups of 500X to 3500X are possible by using efficient functions (e.g. staying away from lambdas).
 
 | Features/Properties | **polars**  | **pandas** |
 |---------------------|------------|----------------------|
@@ -28,7 +34,7 @@ This guide covers speed and performance comparisons using the `polars` backend.
 
 # About Performance
 
-Beginning in version 0.2.0 of `pytimetk`, we introduced new `polars` engines to many of our functions. This is aimed at leveraging the speed benefits of polars without requiring you (the user) to learn a new data manipulation framework. 
+In time series, data is often large (<100M Rows), and contains many groups. Bbecause of this, computational efficiency is paramount. Beginning in pytimetk 0.2.0 we began introducing a new, `polars` backend to help improve the speed. 
 
 ## Key benefits:
 
@@ -126,6 +132,7 @@ times = [50.8, 668]
 
 make_time_comparison_plot(title, methods, times, height_spacer=500)
 
+plt.show()
 ```
 
 
@@ -190,6 +197,7 @@ times = [9.81, 106, 34_500]
 
 make_time_comparison_plot(title, methods, times, height_spacer = 5000)
 
+plt.show()
 ```
 
 
@@ -299,6 +307,8 @@ methods = ['Polars w/ pl_quantile', 'Pandas w/ pd_quantile', 'Pandas w/ Lambda Q
 times = [6.95, 20.8, 3580]
 
 make_time_comparison_plot(title, methods, times, 500)
+
+plt.show()
 ```
 
 :::{.panel-tabset}
@@ -395,33 +405,3 @@ We are in the early stages of development. But it's obvious the potential for `p
 - Want to contribute? [See our contributing guide here.](/contributing.html) 
 
 
-Certainly! Here's a markdown comparison table and a persuasive introduction for the `pytimetk` homepage:
-
----
-
-## Introducing pytimetk: Simplifying Time Series Analysis for Everyone
-
-Time series analysis is fundamental in many fields, from business forecasting to scientific research. While the Python ecosystem offers tools like `pandas`, they sometimes can be verbose and not optimized for all operations, especially for complex time-based aggregations and visualizations.
-
-Enter **pytimetk**. Crafted with a blend of ease-of-use and computational efficiency, `pytimetk` significantly simplifies the process of time series manipulation and visualization. By leveraging the `polars` backend, you can experience speed improvements ranging from 3X to a whopping 30X. Let's dive into a comparative analysis.
-
-| Features/Properties | **pytimetk**                  | **pandas (+matplotlib)**               |
-|---------------------|-------------------------------|---------------------------------------|
-| **Speed**           | 🚀 3X to 30X Faster            | 🐢 Standard                           |
-| **Code Simplicity** | 🎉 Concise, readable syntax    | 📜 Often verbose                      |
-| `summarize_by_time()` | 🕐 2 lines, 13.4X faster     | 🕐 6 lines, 2 for-loops               |
-| `plot_timeseries()`  | 🎨 2 lines, no customization  | 🎨 16 lines, customization needed    |
-
-As evident from the table:
-
-- `summarize_by_time()` in **pytimetk** is not just about speed; it also simplifies your codebase, converting a 6-line, double for-loop routine in `pandas` into a concise 2-line operation.
-  
-- Similarly, `plot_timeseries()` dramatically streamlines the plotting process, encapsulating what would typically require 16 lines of `matplotlib` code into a mere 2-line command in **pytimetk**, without sacrificing customization or quality.
-
-Join the revolution in time series analysis. Reduce your code complexity, increase your productivity, and harness the speed that **pytimetk** brings to your workflows.
-
-Explore more at [pytimetk homepage](https://business-science.github.io/pytimetk/).
-
----
-
-Feel free to modify the content as per your requirements or branding guidelines.

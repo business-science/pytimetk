@@ -108,14 +108,14 @@ If these are NOT upheld, this will impact your ability to use `pytimetk` DataFra
 ::: {.callout-tip collapse="false"}
 ## Inspect the DataFrame
 
-Use Pandas `info()` method to check compliance. 
+Use the `tk.glimpse()` method to check compliance. 
 :::
 
-Using pandas `info()` method, we can see that we have a compliant data frame with a `date` column containing `datetime64` and a `value` column containing `float64`. For grouped analysis we have the `id` column containing `object` dtype. 
+Using pytimetk `glimpse()` method, we can see that we have a compliant data frame with a `date` column containing `datetime64` and a `value` column containing `float64`. For grouped analysis we have the `id` column containing `object` dtype. 
 
 ```{python}
-# Tip: Inspect for compliance with info()
-m4_daily_df.info()
+# Tip: Inspect for compliance with glimpse()
+m4_daily_df.glimpse()
 ```
 
 ### Grouped Time Series Analysis with Summarize By Time
