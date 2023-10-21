@@ -1,4 +1,14 @@
 import re
+import matplotlib.colors as mcolors
+
+def name_to_hex(color_name):
+    
+    try:
+        hex_color = mcolors.to_hex(color_name)
+    except:
+        hex_color = None
+    
+    return hex_color
 
 def parse_rgba(s):
     # Find all numbers (including floating points)

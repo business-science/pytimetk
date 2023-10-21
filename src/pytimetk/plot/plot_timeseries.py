@@ -8,13 +8,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from mizani.breaks import date_breaks
-from mizani.formatters import date_format
-
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
 from pytimetk.plot.theme import theme_timetk, palette_timetk
-from pytimetk.utils.plot_helpers import hex_to_rgba
+from pytimetk.utils.plot_helpers import hex_to_rgba, name_to_hex
 
 from typing import Union, Optional
 
@@ -277,7 +274,6 @@ def plot_timeseries(
     )
     fig
     ```
-    
     '''
     
     # Common checks
@@ -294,6 +290,13 @@ def plot_timeseries(
             line_size = 0.35
         elif engine == 'plotly':
             line_size = 0.65
+            
+    # Handle named colors
+    line_color = name_to_hex(line_color)
+    smooth_color = name_to_hex(smooth_color)
+    y_intercept_color = name_to_hex(y_intercept_color)
+    x_intercept_color = name_to_hex(x_intercept_color)
+    
     
     # Handle DataFrames
     if isinstance(data, pd.DataFrame):

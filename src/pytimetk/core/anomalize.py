@@ -139,12 +139,7 @@ def anomalize(
     
     ``` {python}
     # Visualize the results
-    (
-        anomalize_df[["date", "observed", "seasonal", "trend", "remainder"]] 
-            .melt(id_vars = "date", value_name='val') 
-            .groupby("variable") 
-            .plot_timeseries("date", "val", color_column = "variable", smooth = False)   
-    )
+    anomalize_df.plot_anomaly_decomp("date")
     ```
     
     ``` {python}
@@ -195,18 +190,18 @@ def anomalize(
             ) 
     )
     
-    # Visualize the results
+    # Visualize the decomposition results
+    
     (
-        anomalize_df[["id", "Date", "observed", "seasonal", "trend", "remainder"]] 
-            .melt(id_vars = ["id", "Date"], value_name='val') 
-            .groupby(["id", "variable"]) 
-            .plot_timeseries(
-                "Date", "val", 
-                facet_ncol = 7, 
-                smooth = False,
+        anomalize_df
+            .groupby("id")
+            .plot_anomaly_decomp(
+                date_column = "Date",
+                line_color = "steelblue",
                 width = 1200,
                 height = 800,
-                color_palette = ["#2c3e50", "#e31a1c", "#e31a1c"]
+                x_axis_date_labels = "%y",
+                engine = 'plotnine',                
             )
     )
     ```
