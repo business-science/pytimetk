@@ -17,30 +17,43 @@ def augment_lags(
     """
     Adds lags to a Pandas DataFrame or DataFrameGroupBy object.
 
-    The `augment_lags` function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a lag or list of lags, and adds lagged versions of the value columns to the DataFrame.
+    The `augment_lags` function takes a Pandas DataFrame or GroupBy object, a 
+    date column, a value column or list of value columns, and a lag or list of 
+    lags, and adds lagged versions of the value columns to the DataFrame.
 
     Parameters
     ----------
     data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter is the input DataFrame or DataFrameGroupBy object that you want to add lagged columns to.
+        The `data` parameter is the input DataFrame or DataFrameGroupBy object 
+        that you want to add lagged columns to.
     date_column : str
-        The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the lagged values.
+        The `date_column` parameter is a string that specifies the name of the 
+        column in the DataFrame that contains the dates. This column will be 
+        used to sort the data before adding the lagged values.
     value_column : str or list
-        The `value_column` parameter is the column(s) in the DataFrame that you want to add lagged values for. It can be either a single column name (string) or a list of column names.
+        The `value_column` parameter is the column(s) in the DataFrame that you 
+        want to add lagged values for. It can be either a single column name 
+        (string) or a list of column names.
     lags : int or tuple or list, optional
-        The `lags` parameter is an integer, tuple, or list that specifies the number of lagged values to add to the DataFrame. 
+        The `lags` parameter is an integer, tuple, or list that specifies the 
+        number of lagged values to add to the DataFrame. 
         
-        - If it is an integer, the function will add that number of lagged values for each column specified in the `value_column` parameter. 
+        - If it is an integer, the function will add that number of lagged 
+          values for each column specified in the `value_column` parameter. 
         
-        - If it is a tuple, it will generate lags from the first to the second value (inclusive). 
+        - If it is a tuple, it will generate lags from the first to the second 
+          value (inclusive). 
         
         - If it is a list, it will generate lags based on the values in the list.
     engine : str, optional
-        The `engine` parameter is used to specify the engine to use for augmenting lags. It can be either "pandas" or "polars". 
+        The `engine` parameter is used to specify the engine to use for 
+        augmenting lags. It can be either "pandas" or "polars". 
         
         - The default value is "pandas".
         
-        - When "polars", the function will internally use the `polars` library for augmenting lags. This can be faster than using "pandas" for large datasets. 
+        - When "polars", the function will internally use the `polars` library 
+          for augmenting lags. This can be faster than using "pandas" for large 
+          datasets. 
 
     Returns
     -------

@@ -15,16 +15,25 @@ def pad_by_time(
     '''
     Make irregular time series regular by padding with missing dates.
     
-    The `pad_by_time` function inserts missing dates into a Pandas DataFrame or DataFrameGroupBy object, through the process making an irregularly spaced time series regularly spaced.
+    The `pad_by_time` function inserts missing dates into a Pandas DataFrame or 
+    DataFrameGroupBy object, through the process making an irregularly spaced 
+    time series regularly spaced.
     
     Parameters
     ----------
     data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter can be either a Pandas DataFrame or a Pandas DataFrameGroupBy object. It represents the data that you want to pad with missing dates.
+        The `data` parameter can be either a Pandas DataFrame or a Pandas 
+        DataFrameGroupBy object. It represents the data that you want to pad 
+        with missing dates.
     date_column : str
-        The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to determine the minimum and maximum dates in theDataFrame, and to generate the regular date range for padding.
+        The `date_column` parameter is a string that specifies the name of the 
+        column in the DataFrame that contains the dates. This column will be 
+        used to determine the minimum and maximum dates in theDataFrame, and to 
+        generate the regular date range for padding.
     freq : str, optional
-        The `freq` parameter specifies the frequency at which the missing timestamps should be generated. It accepts a string representing a pandas frequency alias. Some common frequency aliases include:
+        The `freq` parameter specifies the frequency at which the missing 
+        timestamps should be generated. It accepts a string representing a 
+        pandas frequency alias. Some common frequency aliases include:
         
         - S: secondly frequency
         - min: minute frequency
@@ -40,28 +49,38 @@ def pad_by_time(
         - Y: year end frequency
         - YS: year start frequency
     start_date : str, optional
-        Specifies the start of the padded series.  If NULL, it will use the lowest value of the input variable. In the case of groups, it will use the lowest value by group.
+        Specifies the start of the padded series.  If NULL, it will use the 
+        lowest value of the input variable. In the case of groups, it will use 
+        the lowest value by group.
         
     end_date  : str, optional;
-        Specifies the end of the padded series.  If NULL, it will use the highest value of the input variable.  In the case of groups, it will use the highest value by group.
+        Specifies the end of the padded series.  If NULL, it will use the highest 
+        value of the input variable.  In the case of groups, it will use the 
+        highest value by group.
     
     
     Returns
     -------
     pd.DataFrame
-        The function `pad_by_time` returns a Pandas DataFrame that has been extended with future dates.
+        The function `pad_by_time` returns a Pandas DataFrame that has been 
+        extended with future dates.
         
     Notes
     -----
     
     ## Performance
     
-    This function uses a number of techniques to speed up computation for large datasets with many time series groups. 
+    This function uses a number of techniques to speed up computation for large 
+    datasets with many time series groups. 
     
-    - We use a vectorized approach to generate the Cartesian product of all unique group values and all dates in the date range. 
-    - We then merge this Cartesian product with the original data to introduce NaN values for missing rows. This approach is much faster than looping through each group and applying a function to each group.
+    - We use a vectorized approach to generate the Cartesian product of all 
+      unique group values and all dates in the date range. 
+    - We then merge this Cartesian product with the original data to introduce 
+      NaN values for missing rows. This approach is much faster than looping 
+      through each group and applying a function to each group.
     
-    Note: There is no parallel processing since the vectorized approach is almost always faster.
+    Note: There is no parallel processing since the vectorized approach is 
+          almost always faster.
     
     Examples
     --------
