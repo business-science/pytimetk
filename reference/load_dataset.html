@@ -116,9 +116,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <!-- SUMO -->
 <script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -149,7 +146,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">load_dataset</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -351,33 +348,23 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#pytimetk.load_dataset" id="toc-pytimetk.load_dataset" class="nav-link active" data-scroll-target="#pytimetk.load_dataset">load_dataset</a>
+  <ul class="collapse">
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/load_dataset.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">load_dataset</h1>
-</div>
 
 
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-</header>
-
-<p><code>load_dataset(name='m4_daily', verbose=False, **kwargs)</code></p>
+<section id="pytimetk.load_dataset" class="level1">
+<h1>load_dataset</h1>
+<p><code>load_dataset(name='m4_daily', verbose=False, engine='pandas', **kwargs)</code></p>
 <p>Load one of 12 Time Series Datasets.</p>
 <p>The <code>load_dataset</code> function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to <code>pandas.read_csv</code>. The available datasets are:</p>
 <ul>
@@ -395,7 +382,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <li><code>stocks_daily</code>: The MAANNG stocks dataset</li>
 <li><code>expedia</code>: Expedia Hotel Time Series Dataset</li>
 </ul>
-<p>The datasets can be loaded with <code>pytimetk.load_dataset(name)</code>, where <code>name</code> is the name of the dataset that you want to load. The default value is set to “m4_daily”, which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned above.</p>
+<p>The datasets can be loaded with <code>load_dataset(name)</code>, where <code>name</code> is the name of the dataset that you want to load. The default value is set to “m4_daily”, which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned above.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
@@ -427,6 +414,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
+<td><code>engine</code></td>
+<td>str</td>
+<td>The <code>engine</code> parameter is used to specify the engine to use for reading the csv file. The default value is set to “pandas”, which uses pandas to read the csv file. If <code>engine</code> is set to “polars”, the function will use polars to read the csv file and convert it to a pandas DataFrame.</td>
+<td><code>'pandas'</code></td>
+</tr>
+<tr class="even">
 <td><code>**kwargs</code></td>
 <td></td>
 <td>The <code>**kwargs</code> parameter is used to pass additional arguments to <code>pandas.read_csv</code>.</td>
@@ -458,456 +451,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </section>
 <section id="examples" class="level2">
 <h2 class="anchored" data-anchor-id="examples">Examples</h2>
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stocks Daily Dataset: META, APPL, AMZN, NFLX, NVDA, GOOG</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'stocks_daily'</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the M4 daily dataset using pandas</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> load_dataset(<span class="st">'m4_daily'</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the M4 daily dataset using polars</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> load_dataset(<span class="st">'m4_daily'</span>, engine<span class="op">=</span><span class="st">'polars'</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>META</td>
-<td>2013-01-02</td>
-<td>27.440001</td>
-<td>28.180000</td>
-<td>27.420000</td>
-<td>28.000000</td>
-<td>69846400</td>
-<td>28.000000</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>META</td>
-<td>2013-01-03</td>
-<td>27.879999</td>
-<td>28.469999</td>
-<td>27.590000</td>
-<td>27.770000</td>
-<td>63140600</td>
-<td>27.770000</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>META</td>
-<td>2013-01-04</td>
-<td>28.010000</td>
-<td>28.930000</td>
-<td>27.830000</td>
-<td>28.760000</td>
-<td>72715400</td>
-<td>28.760000</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>META</td>
-<td>2013-01-07</td>
-<td>28.690001</td>
-<td>29.790001</td>
-<td>28.650000</td>
-<td>29.420000</td>
-<td>83781800</td>
-<td>29.420000</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>META</td>
-<td>2013-01-08</td>
-<td>29.510000</td>
-<td>29.600000</td>
-<td>28.860001</td>
-<td>29.059999</td>
-<td>45871300</td>
-<td>29.059999</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">16189</td>
-<td>GOOG</td>
-<td>2023-09-15</td>
-<td>138.800003</td>
-<td>139.360001</td>
-<td>137.179993</td>
-<td>138.300003</td>
-<td>48947600</td>
-<td>138.300003</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">16190</td>
-<td>GOOG</td>
-<td>2023-09-18</td>
-<td>137.630005</td>
-<td>139.929993</td>
-<td>137.630005</td>
-<td>138.960007</td>
-<td>16233600</td>
-<td>138.960007</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">16191</td>
-<td>GOOG</td>
-<td>2023-09-19</td>
-<td>138.250000</td>
-<td>139.175003</td>
-<td>137.500000</td>
-<td>138.830002</td>
-<td>15479100</td>
-<td>138.830002</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">16192</td>
-<td>GOOG</td>
-<td>2023-09-20</td>
-<td>138.830002</td>
-<td>138.839996</td>
-<td>134.520004</td>
-<td>134.589996</td>
-<td>21473500</td>
-<td>134.589996</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">16193</td>
-<td>GOOG</td>
-<td>2023-09-21</td>
-<td>132.389999</td>
-<td>133.190002</td>
-<td>131.089996</td>
-<td>131.360001</td>
-<td>22042700</td>
-<td>131.360001</td>
-</tr>
-</tbody>
-</table>
-
-<p>16194 rows × 8 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bike Sales CRM Sample Dataset</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'bike_sales_sample'</span>, parse_dates <span class="op">=</span> [<span class="st">'order_date'</span>])</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">order_id</th>
-<th data-quarto-table-cell-role="th">order_line</th>
-<th data-quarto-table-cell-role="th">order_date</th>
-<th data-quarto-table-cell-role="th">quantity</th>
-<th data-quarto-table-cell-role="th">price</th>
-<th data-quarto-table-cell-role="th">total_price</th>
-<th data-quarto-table-cell-role="th">model</th>
-<th data-quarto-table-cell-role="th">category_1</th>
-<th data-quarto-table-cell-role="th">category_2</th>
-<th data-quarto-table-cell-role="th">frame_material</th>
-<th data-quarto-table-cell-role="th">bikeshop_name</th>
-<th data-quarto-table-cell-role="th">city</th>
-<th data-quarto-table-cell-role="th">state</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>1</td>
-<td>1</td>
-<td>2011-01-07</td>
-<td>1</td>
-<td>6070</td>
-<td>6070</td>
-<td>Jekyll Carbon 2</td>
-<td>Mountain</td>
-<td>Over Mountain</td>
-<td>Carbon</td>
-<td>Ithaca Mountain Climbers</td>
-<td>Ithaca</td>
-<td>NY</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>1</td>
-<td>2</td>
-<td>2011-01-07</td>
-<td>1</td>
-<td>5970</td>
-<td>5970</td>
-<td>Trigger Carbon 2</td>
-<td>Mountain</td>
-<td>Over Mountain</td>
-<td>Carbon</td>
-<td>Ithaca Mountain Climbers</td>
-<td>Ithaca</td>
-<td>NY</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2</td>
-<td>1</td>
-<td>2011-01-10</td>
-<td>1</td>
-<td>2770</td>
-<td>2770</td>
-<td>Beast of the East 1</td>
-<td>Mountain</td>
-<td>Trail</td>
-<td>Aluminum</td>
-<td>Kansas City 29ers</td>
-<td>Kansas City</td>
-<td>KS</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>2</td>
-<td>2</td>
-<td>2011-01-10</td>
-<td>1</td>
-<td>5970</td>
-<td>5970</td>
-<td>Trigger Carbon 2</td>
-<td>Mountain</td>
-<td>Over Mountain</td>
-<td>Carbon</td>
-<td>Kansas City 29ers</td>
-<td>Kansas City</td>
-<td>KS</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>3</td>
-<td>1</td>
-<td>2011-01-10</td>
-<td>1</td>
-<td>10660</td>
-<td>10660</td>
-<td>Supersix Evo Hi-Mod Team</td>
-<td>Road</td>
-<td>Elite Road</td>
-<td>Carbon</td>
-<td>Louisville Race Equipment</td>
-<td>Louisville</td>
-<td>KY</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2461</td>
-<td>321</td>
-<td>3</td>
-<td>2011-12-22</td>
-<td>1</td>
-<td>1410</td>
-<td>1410</td>
-<td>CAAD8 105</td>
-<td>Road</td>
-<td>Elite Road</td>
-<td>Aluminum</td>
-<td>Miami Race Equipment</td>
-<td>Miami</td>
-<td>FL</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">2462</td>
-<td>322</td>
-<td>1</td>
-<td>2011-12-28</td>
-<td>1</td>
-<td>1250</td>
-<td>1250</td>
-<td>Synapse Disc Tiagra</td>
-<td>Road</td>
-<td>Endurance Road</td>
-<td>Aluminum</td>
-<td>Phoenix Bi-peds</td>
-<td>Phoenix</td>
-<td>AZ</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2463</td>
-<td>322</td>
-<td>2</td>
-<td>2011-12-28</td>
-<td>1</td>
-<td>2660</td>
-<td>2660</td>
-<td>Bad Habit 2</td>
-<td>Mountain</td>
-<td>Trail</td>
-<td>Aluminum</td>
-<td>Phoenix Bi-peds</td>
-<td>Phoenix</td>
-<td>AZ</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">2464</td>
-<td>322</td>
-<td>3</td>
-<td>2011-12-28</td>
-<td>1</td>
-<td>2340</td>
-<td>2340</td>
-<td>F-Si 1</td>
-<td>Mountain</td>
-<td>Cross Country Race</td>
-<td>Aluminum</td>
-<td>Phoenix Bi-peds</td>
-<td>Phoenix</td>
-<td>AZ</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2465</td>
-<td>322</td>
-<td>4</td>
-<td>2011-12-28</td>
-<td>1</td>
-<td>5860</td>
-<td>5860</td>
-<td>Synapse Hi-Mod Dura Ace</td>
-<td>Road</td>
-<td>Endurance Road</td>
-<td>Carbon</td>
-<td>Phoenix Bi-peds</td>
-<td>Phoenix</td>
-<td>AZ</td>
-</tr>
-</tbody>
-</table>
-
-<p>2466 rows × 13 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Taylor 30-Minute Power Demand Dataset</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'taylor_30_min'</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>2000-06-05 00:00:00+00:00</td>
-<td>22262</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>2000-06-05 00:30:00+00:00</td>
-<td>21756</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2000-06-05 01:00:00+00:00</td>
-<td>22247</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>2000-06-05 01:30:00+00:00</td>
-<td>22759</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>2000-06-05 02:00:00+00:00</td>
-<td>22549</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4027</td>
-<td>2000-08-27 21:30:00+00:00</td>
-<td>27946</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">4028</td>
-<td>2000-08-27 22:00:00+00:00</td>
-<td>27133</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4029</td>
-<td>2000-08-27 22:30:00+00:00</td>
-<td>25996</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">4030</td>
-<td>2000-08-27 23:00:00+00:00</td>
-<td>24610</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4031</td>
-<td>2000-08-27 23:30:00+00:00</td>
-<td>23132</td>
-</tr>
-</tbody>
-</table>
-
-<p>4032 rows × 2 columns</p>
-</div>
-</div>
-</div>
-
-
+</section>
 </section>
 
 </main> <!-- /main -->

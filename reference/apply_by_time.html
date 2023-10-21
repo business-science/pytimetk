@@ -418,7 +418,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="even">
 <td><code>wide_format</code></td>
 <td>bool</td>
-<td>The <code>wide_format</code> parameter is a boolean flag that determines whether the output should be in wide format or not. If <code>wide_format</code> is set to <code>True</code>, the output will have a multi-index column structure, where the first level represents the original columns and the second level represents the group names</td>
+<td>The <code>wide_format</code> parameter is a boolean flag that determines whether the output should be in wide format or not. If <code>wide_format</code> is set to <code>True</code>, the output will have a multi-index column structure, where the first level represents the original columns and the second level represents the group names.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
@@ -430,7 +430,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="even">
 <td><code>**named_funcs</code></td>
 <td></td>
-<td>The <code>**named_funcs</code> parameter is used to specify one or more custom aggregation functions to apply to the data. It accepts named functions in the format: <code>python name = lambda df: df['column1'].corr(df['column2']])</code> Where <code>name</code> is the name of the function and <code>df</code> is the DataFrame that will be passed to the function. The function must return a single value.</td>
+<td>The <code>**named_funcs</code> parameter is used to specify one or more custom aggregation functions to apply to the data. It accepts named functions in the format: <code>python     name = lambda df: df['column1'].corr(df['column2']])</code> Where <code>name</code> is the name of the function and <code>df</code> is the DataFrame that will be passed to the function. The function must return a single value.</td>
 <td><code>{}</code></td>
 </tr>
 </tbody>
@@ -462,9 +462,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'bike_sales_sample'</span>, parse_dates <span class="op">=</span> [<span class="st">'order_date'</span>])</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 2466 rows of 13 columns
@@ -483,428 +483,485 @@ city:            object           ['Ithaca', 'Ithaca', 'Kansas City', 'K ...
 state:           object           ['NY', 'NY', 'KS', 'KS', 'KY', 'KY', ' ...</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply by time with a DataFrame object</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Allows access to multiple columns at once</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>( </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    df[[<span class="st">'order_date'</span>, <span class="st">'price'</span>, <span class="st">'quantity'</span>]] </span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .apply_by_time(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Named apply functions</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            price_quantity_sum <span class="op">=</span> <span class="kw">lambda</span> df: (df[<span class="st">'price'</span>] <span class="op">*</span> df[<span class="st">'quantity'</span>]).<span class="bu">sum</span>(),</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            price_quantity_mean <span class="op">=</span> <span class="kw">lambda</span> df: (df[<span class="st">'price'</span>] <span class="op">*</span> df[<span class="st">'quantity'</span>]).mean(),</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Parameters</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">"MS"</span>,</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<div>
+<pre><code>::: {.cell execution_count=2}
+``` {.python .cell-code}
+# Apply by time with a DataFrame object
+# Allows access to multiple columns at once
+( 
+    df[['order_date', 'price', 'quantity']] 
+        .apply_by_time(
+            
+            # Named apply functions
+            price_quantity_sum = lambda df: (df['price'] * df['quantity']).sum(),
+            price_quantity_mean = lambda df: (df['price'] * df['quantity']).mean(),
+            
+            # Parameters
+            date_column  = 'order_date', 
+            freq         = "MS",
+            
+        )
+)
+```
+
+::: {.cell-output .cell-output-display execution_count=2}
+
+```{=html}
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;order_date&lt;/th&gt;
+      &lt;th&gt;price_quantity_sum&lt;/th&gt;
+      &lt;th&gt;price_quantity_mean&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;2011-01-01&lt;/td&gt;
+      &lt;td&gt;483015.0&lt;/td&gt;
+      &lt;td&gt;4600.142857&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;2011-02-01&lt;/td&gt;
+      &lt;td&gt;1162075.0&lt;/td&gt;
+      &lt;td&gt;4611.408730&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;2011-03-01&lt;/td&gt;
+      &lt;td&gt;659975.0&lt;/td&gt;
+      &lt;td&gt;5196.653543&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;2011-04-01&lt;/td&gt;
+      &lt;td&gt;1827140.0&lt;/td&gt;
+      &lt;td&gt;4533.846154&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;2011-05-01&lt;/td&gt;
+      &lt;td&gt;844170.0&lt;/td&gt;
+      &lt;td&gt;4097.912621&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;5&lt;/th&gt;
+      &lt;td&gt;2011-06-01&lt;/td&gt;
+      &lt;td&gt;1413445.0&lt;/td&gt;
+      &lt;td&gt;4544.839228&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;6&lt;/th&gt;
+      &lt;td&gt;2011-07-01&lt;/td&gt;
+      &lt;td&gt;1194430.0&lt;/td&gt;
+      &lt;td&gt;4976.791667&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;7&lt;/th&gt;
+      &lt;td&gt;2011-08-01&lt;/td&gt;
+      &lt;td&gt;679790.0&lt;/td&gt;
+      &lt;td&gt;4961.970803&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;8&lt;/th&gt;
+      &lt;td&gt;2011-09-01&lt;/td&gt;
+      &lt;td&gt;814720.0&lt;/td&gt;
+      &lt;td&gt;4682.298851&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;9&lt;/th&gt;
+      &lt;td&gt;2011-10-01&lt;/td&gt;
+      &lt;td&gt;734920.0&lt;/td&gt;
+      &lt;td&gt;3930.053476&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;10&lt;/th&gt;
+      &lt;td&gt;2011-11-01&lt;/td&gt;
+      &lt;td&gt;1006085.0&lt;/td&gt;
+      &lt;td&gt;4768.175355&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;11&lt;/th&gt;
+      &lt;td&gt;2011-12-01&lt;/td&gt;
+      &lt;td&gt;473120.0&lt;/td&gt;
+      &lt;td&gt;4186.902655&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+```
+
+:::
+:::
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">order_date</th>
-<th data-quarto-table-cell-role="th">price_quantity_sum</th>
-<th data-quarto-table-cell-role="th">price_quantity_mean</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>2011-01-01</td>
-<td>483015.0</td>
-<td>4600.142857</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>2011-02-01</td>
-<td>1162075.0</td>
-<td>4611.408730</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2011-03-01</td>
-<td>659975.0</td>
-<td>5196.653543</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>2011-04-01</td>
-<td>1827140.0</td>
-<td>4533.846154</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>2011-05-01</td>
-<td>844170.0</td>
-<td>4097.912621</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5</td>
-<td>2011-06-01</td>
-<td>1413445.0</td>
-<td>4544.839228</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">6</td>
-<td>2011-07-01</td>
-<td>1194430.0</td>
-<td>4976.791667</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">7</td>
-<td>2011-08-01</td>
-<td>679790.0</td>
-<td>4961.970803</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8</td>
-<td>2011-09-01</td>
-<td>814720.0</td>
-<td>4682.298851</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9</td>
-<td>2011-10-01</td>
-<td>734920.0</td>
-<td>3930.053476</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">10</td>
-<td>2011-11-01</td>
-<td>1006085.0</td>
-<td>4768.175355</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">11</td>
-<td>2011-12-01</td>
-<td>473120.0</td>
-<td>4186.902655</td>
-</tr>
-</tbody>
-</table>
 
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply by time with a GroupBy object</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>( </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df[[<span class="st">'category_1'</span>, <span class="st">'order_date'</span>, <span class="st">'price'</span>, <span class="st">'quantity'</span>]] </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'category_1'</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .apply_by_time(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Named functions</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            price_quantity_sum <span class="op">=</span> <span class="kw">lambda</span> df: (df[<span class="st">'price'</span>] <span class="op">*</span> df[<span class="st">'quantity'</span>]).<span class="bu">sum</span>(),</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            price_quantity_mean <span class="op">=</span> <span class="kw">lambda</span> df: (df[<span class="st">'price'</span>] <span class="op">*</span> df[<span class="st">'quantity'</span>]).mean(),</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Parameters</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">"MS"</span>,</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<div>
+::: {.cell execution_count=3}
+``` {.python .cell-code}
+# Apply by time with a GroupBy object
+( 
+    df[['category_1', 'order_date', 'price', 'quantity']] 
+        .groupby('category_1')
+        .apply_by_time(
+            
+            # Named functions
+            price_quantity_sum = lambda df: (df['price'] * df['quantity']).sum(),
+            price_quantity_mean = lambda df: (df['price'] * df['quantity']).mean(),
+            
+            # Parameters
+            date_column  = 'order_date', 
+            freq         = "MS",
+            
+        )
+)
+```
 
+::: {.cell-output .cell-output-display execution_count=3}
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">category_1</th>
-<th data-quarto-table-cell-role="th">order_date</th>
-<th data-quarto-table-cell-role="th">price_quantity_sum</th>
-<th data-quarto-table-cell-role="th">price_quantity_mean</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>Mountain</td>
-<td>2011-01-01</td>
-<td>221490.0</td>
-<td>4922.000000</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>Mountain</td>
-<td>2011-02-01</td>
-<td>660555.0</td>
-<td>4374.536424</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>Mountain</td>
-<td>2011-03-01</td>
-<td>358855.0</td>
-<td>5882.868852</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>Mountain</td>
-<td>2011-04-01</td>
-<td>1075975.0</td>
-<td>4890.795455</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>Mountain</td>
-<td>2011-05-01</td>
-<td>450440.0</td>
-<td>4549.898990</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5</td>
-<td>Mountain</td>
-<td>2011-06-01</td>
-<td>723040.0</td>
-<td>5021.111111</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">6</td>
-<td>Mountain</td>
-<td>2011-07-01</td>
-<td>767740.0</td>
-<td>5444.964539</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">7</td>
-<td>Mountain</td>
-<td>2011-08-01</td>
-<td>361255.0</td>
-<td>5734.206349</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8</td>
-<td>Mountain</td>
-<td>2011-09-01</td>
-<td>401125.0</td>
-<td>5077.531646</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9</td>
-<td>Mountain</td>
-<td>2011-10-01</td>
-<td>377335.0</td>
-<td>4439.235294</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">10</td>
-<td>Mountain</td>
-<td>2011-11-01</td>
-<td>549345.0</td>
-<td>5282.163462</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">11</td>
-<td>Mountain</td>
-<td>2011-12-01</td>
-<td>276055.0</td>
-<td>5208.584906</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">12</td>
-<td>Road</td>
-<td>2011-01-01</td>
-<td>261525.0</td>
-<td>4358.750000</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">13</td>
-<td>Road</td>
-<td>2011-02-01</td>
-<td>501520.0</td>
-<td>4965.544554</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">14</td>
-<td>Road</td>
-<td>2011-03-01</td>
-<td>301120.0</td>
-<td>4562.424242</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">15</td>
-<td>Road</td>
-<td>2011-04-01</td>
-<td>751165.0</td>
-<td>4104.726776</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">16</td>
-<td>Road</td>
-<td>2011-05-01</td>
-<td>393730.0</td>
-<td>3679.719626</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">17</td>
-<td>Road</td>
-<td>2011-06-01</td>
-<td>690405.0</td>
-<td>4134.161677</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">18</td>
-<td>Road</td>
-<td>2011-07-01</td>
-<td>426690.0</td>
-<td>4310.000000</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">19</td>
-<td>Road</td>
-<td>2011-08-01</td>
-<td>318535.0</td>
-<td>4304.527027</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">20</td>
-<td>Road</td>
-<td>2011-09-01</td>
-<td>413595.0</td>
-<td>4353.631579</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">21</td>
-<td>Road</td>
-<td>2011-10-01</td>
-<td>357585.0</td>
-<td>3505.735294</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">22</td>
-<td>Road</td>
-<td>2011-11-01</td>
-<td>456740.0</td>
-<td>4268.598131</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">23</td>
-<td>Road</td>
-<td>2011-12-01</td>
-<td>197065.0</td>
-<td>3284.416667</td>
-</tr>
-</tbody>
-</table>
+```{=html}
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return complex objects</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>( </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    df[[<span class="st">'order_date'</span>, <span class="st">'price'</span>, <span class="st">'quantity'</span>]] </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        .apply_by_time(</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Named apply functions</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            complex_object <span class="op">=</span> <span class="kw">lambda</span> df: [df],</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Parameters</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">"MS"</span>,</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<div>
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;category_1&lt;/th&gt;
+      &lt;th&gt;order_date&lt;/th&gt;
+      &lt;th&gt;price_quantity_sum&lt;/th&gt;
+      &lt;th&gt;price_quantity_mean&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;Mountain&lt;/td&gt;
+      &lt;td&gt;2011-01-01&lt;/td&gt;
+      &lt;td&gt;221490.0&lt;/td&gt;
+      &lt;td&gt;4922.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;Mountain&lt;/td&gt;
+      &lt;td&gt;2011-02-01&lt;/td&gt;
+      &lt;td&gt;660555.0&lt;/td&gt;
+      &lt;td&gt;4374.536424&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;Mountain&lt;/td&gt;
+      &lt;td&gt;2011-03-01&lt;/td&gt;
+      &lt;td&gt;358855.0&lt;/td&gt;
+      &lt;td&gt;5882.868852&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;Mountain&lt;/td&gt;
+      &lt;td&gt;2011-04-01&lt;/td&gt;
+      &lt;td&gt;1075975.0&lt;/td&gt;
+      &lt;td&gt;4890.795455&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;Mountain&lt;/td&gt;
+      &lt;td&gt;2011-05-01&lt;/td&gt;
+      &lt;td&gt;450440.0&lt;/td&gt;
+      &lt;td&gt;4549.898990&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;5&lt;/th&gt;
+      &lt;td&gt;Mountain&lt;/td&gt;
+      &lt;td&gt;2011-06-01&lt;/td&gt;
+      &lt;td&gt;723040.0&lt;/td&gt;
+      &lt;td&gt;5021.111111&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;6&lt;/th&gt;
+      &lt;td&gt;Mountain&lt;/td&gt;
+      &lt;td&gt;2011-07-01&lt;/td&gt;
+      &lt;td&gt;767740.0&lt;/td&gt;
+      &lt;td&gt;5444.964539&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;7&lt;/th&gt;
+      &lt;td&gt;Mountain&lt;/td&gt;
+      &lt;td&gt;2011-08-01&lt;/td&gt;
+      &lt;td&gt;361255.0&lt;/td&gt;
+      &lt;td&gt;5734.206349&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;8&lt;/th&gt;
+      &lt;td&gt;Mountain&lt;/td&gt;
+      &lt;td&gt;2011-09-01&lt;/td&gt;
+      &lt;td&gt;401125.0&lt;/td&gt;
+      &lt;td&gt;5077.531646&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;9&lt;/th&gt;
+      &lt;td&gt;Mountain&lt;/td&gt;
+      &lt;td&gt;2011-10-01&lt;/td&gt;
+      &lt;td&gt;377335.0&lt;/td&gt;
+      &lt;td&gt;4439.235294&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;10&lt;/th&gt;
+      &lt;td&gt;Mountain&lt;/td&gt;
+      &lt;td&gt;2011-11-01&lt;/td&gt;
+      &lt;td&gt;549345.0&lt;/td&gt;
+      &lt;td&gt;5282.163462&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;11&lt;/th&gt;
+      &lt;td&gt;Mountain&lt;/td&gt;
+      &lt;td&gt;2011-12-01&lt;/td&gt;
+      &lt;td&gt;276055.0&lt;/td&gt;
+      &lt;td&gt;5208.584906&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;12&lt;/th&gt;
+      &lt;td&gt;Road&lt;/td&gt;
+      &lt;td&gt;2011-01-01&lt;/td&gt;
+      &lt;td&gt;261525.0&lt;/td&gt;
+      &lt;td&gt;4358.750000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;13&lt;/th&gt;
+      &lt;td&gt;Road&lt;/td&gt;
+      &lt;td&gt;2011-02-01&lt;/td&gt;
+      &lt;td&gt;501520.0&lt;/td&gt;
+      &lt;td&gt;4965.544554&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;14&lt;/th&gt;
+      &lt;td&gt;Road&lt;/td&gt;
+      &lt;td&gt;2011-03-01&lt;/td&gt;
+      &lt;td&gt;301120.0&lt;/td&gt;
+      &lt;td&gt;4562.424242&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;15&lt;/th&gt;
+      &lt;td&gt;Road&lt;/td&gt;
+      &lt;td&gt;2011-04-01&lt;/td&gt;
+      &lt;td&gt;751165.0&lt;/td&gt;
+      &lt;td&gt;4104.726776&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;16&lt;/th&gt;
+      &lt;td&gt;Road&lt;/td&gt;
+      &lt;td&gt;2011-05-01&lt;/td&gt;
+      &lt;td&gt;393730.0&lt;/td&gt;
+      &lt;td&gt;3679.719626&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;17&lt;/th&gt;
+      &lt;td&gt;Road&lt;/td&gt;
+      &lt;td&gt;2011-06-01&lt;/td&gt;
+      &lt;td&gt;690405.0&lt;/td&gt;
+      &lt;td&gt;4134.161677&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;18&lt;/th&gt;
+      &lt;td&gt;Road&lt;/td&gt;
+      &lt;td&gt;2011-07-01&lt;/td&gt;
+      &lt;td&gt;426690.0&lt;/td&gt;
+      &lt;td&gt;4310.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;19&lt;/th&gt;
+      &lt;td&gt;Road&lt;/td&gt;
+      &lt;td&gt;2011-08-01&lt;/td&gt;
+      &lt;td&gt;318535.0&lt;/td&gt;
+      &lt;td&gt;4304.527027&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;20&lt;/th&gt;
+      &lt;td&gt;Road&lt;/td&gt;
+      &lt;td&gt;2011-09-01&lt;/td&gt;
+      &lt;td&gt;413595.0&lt;/td&gt;
+      &lt;td&gt;4353.631579&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;21&lt;/th&gt;
+      &lt;td&gt;Road&lt;/td&gt;
+      &lt;td&gt;2011-10-01&lt;/td&gt;
+      &lt;td&gt;357585.0&lt;/td&gt;
+      &lt;td&gt;3505.735294&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;22&lt;/th&gt;
+      &lt;td&gt;Road&lt;/td&gt;
+      &lt;td&gt;2011-11-01&lt;/td&gt;
+      &lt;td&gt;456740.0&lt;/td&gt;
+      &lt;td&gt;4268.598131&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;23&lt;/th&gt;
+      &lt;td&gt;Road&lt;/td&gt;
+      &lt;td&gt;2011-12-01&lt;/td&gt;
+      &lt;td&gt;197065.0&lt;/td&gt;
+      &lt;td&gt;3284.416667&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+```
+
+:::
+:::
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">order_date</th>
-<th data-quarto-table-cell-role="th">price</th>
-<th data-quarto-table-cell-role="th">quantity</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>2011-01-01</td>
-<td>[[6070, 5970, 2770, 5970, 10660, 3200, 12790, ...</td>
-<td>[[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1,...</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>2011-02-01</td>
-<td>[[8200, 7990, 3200, 4800, 3200, 2130, 1030, 37...</td>
-<td>[[1, 4, 1, 1, 1, 2, 1, 1, 1, 3, 1, 2, 1, 1, 2,...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2011-03-01</td>
-<td>[[2660, 3200, 3200, 815, 8200, 9060, 815, 2130...</td>
-<td>[[1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1,...</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>2011-04-01</td>
-<td>[[5330, 4500, 585, 2660, 3200, 2770, 1030, 234...</td>
-<td>[[1, 1, 1, 3, 1, 1, 8, 1, 1, 1, 1, 1, 1, 1, 7,...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>2011-05-01</td>
-<td>[[1840, 3200, 7000, 5860, 1030, 3200, 3500, 15...</td>
-<td>[[1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,...</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5</td>
-<td>2011-06-01</td>
-<td>[[7990, 4500, 1250, 3730, 1950, 2660, 2340, 19...</td>
-<td>[[1, 1, 1, 3, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 9,...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">6</td>
-<td>2011-07-01</td>
-<td>[[3200, 2880, 5330, 3200, 585, 5330, 4800, 111...</td>
-<td>[[2, 3, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 2, 1, 1,...</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">7</td>
-<td>2011-08-01</td>
-<td>[[12250, 2130, 7000, 2660, 5860, 3500, 1950, 1...</td>
-<td>[[2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1,...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8</td>
-<td>2011-09-01</td>
-<td>[[4800, 480, 12790, 6390, 7990, 3500, 3730, 63...</td>
-<td>[[1, 1, 1, 1, 1, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1,...</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9</td>
-<td>2011-10-01</td>
-<td>[[9060, 12250, 2880, 9060, 4480, 3200, 2340, 2...</td>
-<td>[[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">10</td>
-<td>2011-11-01</td>
-<td>[[2240, 2660, 3200, 980, 2880, 1750, 2130, 224...</td>
-<td>[[1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 2, 1, 6,...</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">11</td>
-<td>2011-12-01</td>
-<td>[[1030, 3200, 870, 1350, 4260, 7460, 2880, 270...</td>
-<td>[[1, 1, 2, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1,...</td>
-</tr>
-</tbody>
-</table>
 
-</div>
-</div>
-</div>
+::: {.cell execution_count=4}
+``` {.python .cell-code}
+# Return complex objects
+( 
+    df[['order_date', 'price', 'quantity']] 
+        .apply_by_time(
+            
+            # Named apply functions
+            complex_object = lambda df: [df],
+            
+            # Parameters
+            date_column  = 'order_date', 
+            freq         = "MS",
+            
+        )
+)
+```
+
+::: {.cell-output .cell-output-display execution_count=4}
+
+```{=html}
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;order_date&lt;/th&gt;
+      &lt;th&gt;price&lt;/th&gt;
+      &lt;th&gt;quantity&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;2011-01-01&lt;/td&gt;
+      &lt;td&gt;[[6070, 5970, 2770, 5970, 10660, 3200, 12790, ...&lt;/td&gt;
+      &lt;td&gt;[[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1,...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;2011-02-01&lt;/td&gt;
+      &lt;td&gt;[[8200, 7990, 3200, 4800, 3200, 2130, 1030, 37...&lt;/td&gt;
+      &lt;td&gt;[[1, 4, 1, 1, 1, 2, 1, 1, 1, 3, 1, 2, 1, 1, 2,...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;2011-03-01&lt;/td&gt;
+      &lt;td&gt;[[2660, 3200, 3200, 815, 8200, 9060, 815, 2130...&lt;/td&gt;
+      &lt;td&gt;[[1, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1,...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;2011-04-01&lt;/td&gt;
+      &lt;td&gt;[[5330, 4500, 585, 2660, 3200, 2770, 1030, 234...&lt;/td&gt;
+      &lt;td&gt;[[1, 1, 1, 3, 1, 1, 8, 1, 1, 1, 1, 1, 1, 1, 7,...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;2011-05-01&lt;/td&gt;
+      &lt;td&gt;[[1840, 3200, 7000, 5860, 1030, 3200, 3500, 15...&lt;/td&gt;
+      &lt;td&gt;[[1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;5&lt;/th&gt;
+      &lt;td&gt;2011-06-01&lt;/td&gt;
+      &lt;td&gt;[[7990, 4500, 1250, 3730, 1950, 2660, 2340, 19...&lt;/td&gt;
+      &lt;td&gt;[[1, 1, 1, 3, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 9,...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;6&lt;/th&gt;
+      &lt;td&gt;2011-07-01&lt;/td&gt;
+      &lt;td&gt;[[3200, 2880, 5330, 3200, 585, 5330, 4800, 111...&lt;/td&gt;
+      &lt;td&gt;[[2, 3, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 2, 1, 1,...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;7&lt;/th&gt;
+      &lt;td&gt;2011-08-01&lt;/td&gt;
+      &lt;td&gt;[[12250, 2130, 7000, 2660, 5860, 3500, 1950, 1...&lt;/td&gt;
+      &lt;td&gt;[[2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1,...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;8&lt;/th&gt;
+      &lt;td&gt;2011-09-01&lt;/td&gt;
+      &lt;td&gt;[[4800, 480, 12790, 6390, 7990, 3500, 3730, 63...&lt;/td&gt;
+      &lt;td&gt;[[1, 1, 1, 1, 1, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1,...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;9&lt;/th&gt;
+      &lt;td&gt;2011-10-01&lt;/td&gt;
+      &lt;td&gt;[[9060, 12250, 2880, 9060, 4480, 3200, 2340, 2...&lt;/td&gt;
+      &lt;td&gt;[[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;10&lt;/th&gt;
+      &lt;td&gt;2011-11-01&lt;/td&gt;
+      &lt;td&gt;[[2240, 2660, 3200, 980, 2880, 1750, 2130, 224...&lt;/td&gt;
+      &lt;td&gt;[[1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 2, 1, 6,...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;11&lt;/th&gt;
+      &lt;td&gt;2011-12-01&lt;/td&gt;
+      &lt;td&gt;[[1030, 3200, 870, 1350, 4260, 7460, 2880, 270...&lt;/td&gt;
+      &lt;td&gt;[[1, 1, 2, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1,...&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+```
+
+:::
+:::</code></pre>
 
 
 </section>

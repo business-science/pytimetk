@@ -354,6 +354,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#example-2---polars-backend-for-expanding-window-functions-using-built-ins" id="toc-example-2---polars-backend-for-expanding-window-functions-using-built-ins" class="nav-link" data-scroll-target="#example-2---polars-backend-for-expanding-window-functions-using-built-ins">Example 2 - Polars Backend for Expanding Window Functions using Built-Ins</a></li>
+  <li><a href="#x-faster-than-pandas" id="toc-x-faster-than-pandas" class="nav-link" data-scroll-target="#x-faster-than-pandas">(538X Faster than Pandas)</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_expanding.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -469,7 +471,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Pandas Backend for Expanding Window Functions</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This example demonstrates the use of string-named functions </span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># on an expanding window using the Pandas backend for computations.</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -485,13 +487,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in standard deviation function,</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'quantile_75'</span>, <span class="kw">lambda</span> x: pd.Series(x).quantile(<span class="fl">0.75</span>)),  <span class="co"># Custom quantile function</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>                 (<span class="st">'quantile_75'</span>, <span class="kw">lambda</span> x: pd.Series(x).quantile(<span class="fl">0.75</span>)),  <span class="co"># Custom quantile function</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>                    </span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>            ],</span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'pandas'</span>,  <span class="co"># Utilize pandas for the underlying computations</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>display(expanded_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -616,289 +618,185 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Polars Backend for Expanding Window Functions using Built-Ins (538X Faster than Pandas)</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This example demonstrates the use of string-named functions and configurable functions </span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># using the Polars backend for computations.</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Configurable functions, like pl_quantile, allow the use of specific parameters associated </span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># with their corresponding polars.Expr.rolling_&lt;function_name&gt; method.</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># For instance, pl_quantile corresponds to polars.Expr.rolling_quantile.</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pytimetk.utils.polars_helpers <span class="im">import</span> pl_quantile</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pytimetk.utils.pandas_helpers <span class="im">import</span> pd_quantile</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"m4_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        .augment_expanding(</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in std function</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'quantile_75'</span>, pl_quantile(quantile<span class="op">=</span><span class="fl">0.75</span>)),  <span class="co"># Configurable with all parameters found in polars.Expr.rolling_quantile</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>            ],</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'polars'</span>,  <span class="co"># Utilize Polars for the underlying computations</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>display(expanded_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
+</section>
+<section id="example-2---polars-backend-for-expanding-window-functions-using-built-ins" class="level1">
+<h1>Example 2 - Polars Backend for Expanding Window Functions using Built-Ins</h1>
+</section>
+<section id="x-faster-than-pandas" class="level1">
+<h1>(538X Faster than Pandas)</h1>
+<p>This example demonstrates the use of string-named functions and configurable functions using the Polars backend for computations. Configurable functions, like pl_quantile, allow the use of specific parameters associated with their corresponding polars.Expr.rolling_<function_name> method. For instance, pl_quantile corresponds to polars.Expr.rolling_quantile.</function_name></p>
+<pre><code>import pytimetk as tk
+import pandas as pd
+import polars as pl
+import numpy as np
+from pytimetk.utils.polars_helpers import pl_quantile
+from pytimetk.utils.pandas_helpers import pd_quantile
+
+df = tk.load_dataset("m4_daily", parse_dates = ['date'])
+
+expanded_df = (
+    df
+        .groupby('id')
+        .augment_expanding(
+            date_column = 'date', 
+            value_column = 'value', 
+            window_func = [
+                'mean',  # Built-in mean function
+                'std',   # Built-in std function
+                ('quantile_75', pl_quantile(quantile=0.75)),  # Configurable with all parameters found in polars.Expr.rolling_quantile
+            ],
+            min_periods = 1,
+            engine = 'polars',  # Utilize Polars for the underlying computations
+        )
+)
+display(expanded_df)
+```
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">id</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">value</th>
-<th data-quarto-table-cell-role="th">value_expanding_mean</th>
-<th data-quarto-table-cell-role="th">value_expanding_std</th>
-<th data-quarto-table-cell-role="th">value_expanding_quantile_75</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>D10</td>
-<td>2014-07-03</td>
-<td>2076.2</td>
-<td>2076.200000</td>
-<td>0.000000</td>
-<td>2076.20</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>D10</td>
-<td>2014-07-04</td>
-<td>2073.4</td>
-<td>2074.800000</td>
-<td>1.979899</td>
-<td>2074.80</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>D10</td>
-<td>2014-07-05</td>
-<td>2048.7</td>
-<td>2066.100000</td>
-<td>15.133737</td>
-<td>2074.80</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>D10</td>
-<td>2014-07-06</td>
-<td>2048.9</td>
-<td>2061.800000</td>
-<td>15.054789</td>
-<td>2074.80</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>D10</td>
-<td>2014-07-07</td>
-<td>2006.4</td>
-<td>2050.720000</td>
-<td>27.996732</td>
-<td>2073.40</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9738</td>
-<td>D500</td>
-<td>2012-09-19</td>
-<td>9418.8</td>
-<td>8286.606679</td>
-<td>2456.960489</td>
-<td>9904.50</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9739</td>
-<td>D500</td>
-<td>2012-09-20</td>
-<td>9365.7</td>
-<td>8286.864035</td>
-<td>2456.723940</td>
-<td>9902.60</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9740</td>
-<td>D500</td>
-<td>2012-09-21</td>
-<td>9445.9</td>
-<td>8287.140391</td>
-<td>2456.496163</td>
-<td>9901.55</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9741</td>
-<td>D500</td>
-<td>2012-09-22</td>
-<td>9497.9</td>
-<td>8287.429011</td>
-<td>2456.274422</td>
-<td>9901.55</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9742</td>
-<td>D500</td>
-<td>2012-09-23</td>
-<td>9545.3</td>
-<td>8287.728789</td>
-<td>2456.058410</td>
-<td>9901.55</td>
-</tr>
-</tbody>
-</table>
+::: {.cell execution_count=2}
+``` {.python .cell-code}
+# Example 3 - Lambda Functions for Expanding Window Functions are faster in Pandas than Polars
+# This example demonstrates the use of lambda functions of the form lambda x: x
+# Identity lambda functions, while convenient, have signficantly slower performance.
+# When using lambda functions the Pandas backend will likely be faster than Polars.
 
-<p>9743 rows × 6 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 - Lambda Functions for Expanding Window Functions are faster in Pandas than Polars</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This example demonstrates the use of lambda functions of the form lambda x: x</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Identity lambda functions, while convenient, have signficantly slower performance.</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># When using lambda functions the Pandas backend will likely be faster than Polars.</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"m4_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        .augment_expanding(</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>                </span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'range'</span>, <span class="kw">lambda</span> x: x.<span class="bu">max</span>() <span class="op">-</span> x.<span class="bu">min</span>()),  <span class="co"># Identity lambda function: can be slower, especially in Polars</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>            ],</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'pandas'</span>,  <span class="co"># Utilize pandas for the underlying computations</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>display(expanded_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
+import pytimetk as tk
+import pandas as pd
+import polars as pl
+import numpy as np
 
+df = tk.load_dataset("m4_daily", parse_dates = ['date'])
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">id</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">value</th>
-<th data-quarto-table-cell-role="th">value_expanding_range</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>D10</td>
-<td>2014-07-03</td>
-<td>2076.2</td>
-<td>0.0</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>D10</td>
-<td>2014-07-04</td>
-<td>2073.4</td>
-<td>2.8</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>D10</td>
-<td>2014-07-05</td>
-<td>2048.7</td>
-<td>27.5</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>D10</td>
-<td>2014-07-06</td>
-<td>2048.9</td>
-<td>27.5</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>D10</td>
-<td>2014-07-07</td>
-<td>2006.4</td>
-<td>69.8</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9738</td>
-<td>D500</td>
-<td>2012-09-19</td>
-<td>9418.8</td>
-<td>10782.0</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9739</td>
-<td>D500</td>
-<td>2012-09-20</td>
-<td>9365.7</td>
-<td>10782.0</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9740</td>
-<td>D500</td>
-<td>2012-09-21</td>
-<td>9445.9</td>
-<td>10782.0</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9741</td>
-<td>D500</td>
-<td>2012-09-22</td>
-<td>9497.9</td>
-<td>10782.0</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9742</td>
-<td>D500</td>
-<td>2012-09-23</td>
-<td>9545.3</td>
-<td>10782.0</td>
-</tr>
-</tbody>
-</table>
+expanded_df = (
+    df
+        .groupby('id')
+        .augment_expanding(
+            date_column = 'date', 
+            value_column = 'value', 
+            window_func = [
+                
+                ('range', lambda x: x.max() - x.min()),  # Identity lambda function: can be slower, especially in Polars
+            ],
+            min_periods = 1,
+            engine = 'pandas',  # Utilize pandas for the underlying computations
+        )
+)
+display(expanded_df)
+```
 
-<p>9743 rows × 4 columns</p>
-</div>
-</div>
-</div>
+::: {.cell-output .cell-output-display}
+
+```{=html}
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border="1" class="dataframe"&gt;
+  &lt;thead&gt;
+    &lt;tr style="text-align: right;"&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;id&lt;/th&gt;
+      &lt;th&gt;date&lt;/th&gt;
+      &lt;th&gt;value&lt;/th&gt;
+      &lt;th&gt;value_expanding_range&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;D10&lt;/td&gt;
+      &lt;td&gt;2014-07-03&lt;/td&gt;
+      &lt;td&gt;2076.2&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;D10&lt;/td&gt;
+      &lt;td&gt;2014-07-04&lt;/td&gt;
+      &lt;td&gt;2073.4&lt;/td&gt;
+      &lt;td&gt;2.8&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;D10&lt;/td&gt;
+      &lt;td&gt;2014-07-05&lt;/td&gt;
+      &lt;td&gt;2048.7&lt;/td&gt;
+      &lt;td&gt;27.5&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;D10&lt;/td&gt;
+      &lt;td&gt;2014-07-06&lt;/td&gt;
+      &lt;td&gt;2048.9&lt;/td&gt;
+      &lt;td&gt;27.5&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;D10&lt;/td&gt;
+      &lt;td&gt;2014-07-07&lt;/td&gt;
+      &lt;td&gt;2006.4&lt;/td&gt;
+      &lt;td&gt;69.8&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;...&lt;/th&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;9738&lt;/th&gt;
+      &lt;td&gt;D500&lt;/td&gt;
+      &lt;td&gt;2012-09-19&lt;/td&gt;
+      &lt;td&gt;9418.8&lt;/td&gt;
+      &lt;td&gt;10782.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;9739&lt;/th&gt;
+      &lt;td&gt;D500&lt;/td&gt;
+      &lt;td&gt;2012-09-20&lt;/td&gt;
+      &lt;td&gt;9365.7&lt;/td&gt;
+      &lt;td&gt;10782.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;9740&lt;/th&gt;
+      &lt;td&gt;D500&lt;/td&gt;
+      &lt;td&gt;2012-09-21&lt;/td&gt;
+      &lt;td&gt;9445.9&lt;/td&gt;
+      &lt;td&gt;10782.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;9741&lt;/th&gt;
+      &lt;td&gt;D500&lt;/td&gt;
+      &lt;td&gt;2012-09-22&lt;/td&gt;
+      &lt;td&gt;9497.9&lt;/td&gt;
+      &lt;td&gt;10782.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;9742&lt;/th&gt;
+      &lt;td&gt;D500&lt;/td&gt;
+      &lt;td&gt;2012-09-23&lt;/td&gt;
+      &lt;td&gt;9545.3&lt;/td&gt;
+      &lt;td&gt;10782.0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;9743 rows × 4 columns&lt;/p&gt;
+&lt;/div&gt;
+```
+
+:::
+:::</code></pre>
 
 
 </section>
