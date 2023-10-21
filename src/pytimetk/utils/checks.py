@@ -6,6 +6,30 @@ from importlib.metadata import distribution, PackageNotFoundError
 
 from typing import Union, List
 
+def check_anomalize_data(data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]) -> None:
+    
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        data = data.obj
+        
+    expected_colnames = [
+        'observed',
+        'seasonal',
+        'seasadj',
+        'trend',
+        'remainder',
+        'anomaly',
+        'anomaly_score',
+        'anomaly_direction',
+        'recomposed_l1',
+        'recomposed_l2',
+        'observed_clean'
+    ]
+    
+    if not all([column in data.columns for column in expected_colnames]):
+        raise ValueError(f"data does not have required colnames: {expected_colnames}. Did you run `anomalize()`?")
+    
+    return None
+
 def check_dataframe_or_groupby(data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]) -> None:
     
     if not isinstance(data, pd.DataFrame):
