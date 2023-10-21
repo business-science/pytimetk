@@ -14,7 +14,8 @@ def make_weekday_sequence(
     country: str = None
 ) -> pd.DataFrame:
     """
-    Generate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays.
+    Generate a sequence of weekday dates within a specified date range, 
+    optionally excluding weekends and holidays.
 
     Parameters
     ----------
@@ -23,12 +24,16 @@ def make_weekday_sequence(
     end_date : str or datetime or pd.DatetimeIndex
         The end date of the date range.
     sunday_to_thursday : bool, optional
-        If True, generates a sequence with Sunday to Thursday weekdays (excluding Friday and Saturday). If False (default), generates a sequence with Monday to Friday weekdays.
+        If True, generates a sequence with Sunday to Thursday weekdays (excluding 
+        Friday and Saturday). If False (default), generates a sequence with 
+        Monday to Friday weekdays.
     remove_holidays : bool, optional 
-        If True, excludes holidays (based on the specified country) from the generated sequence.
+        If True, excludes holidays (based on the specified country) from the 
+        generated sequence.
         If False (default), includes holidays in the sequence.
     country (str, optional): 
-        The name of the country for which to generate holiday-specific sequences. Defaults to None, which uses the United States as the default country.
+        The name of the country for which to generate holiday-specific sequences. 
+        Defaults to None, which uses the United States as the default country.
 
     Returns
     -------
@@ -41,15 +46,23 @@ def make_weekday_sequence(
     import pandas as pd
     import pytimetk as tk
     
-    # United States has Monday to Friday as weekdays (excluding Saturday and Sunday and holidays)
-    tk.make_weekday_sequence("2023-01-01", "2023-01-15", sunday_to_thursday=False, remove_holidays=True, country='UnitedStates')
+    # United States has Monday to Friday as weekdays (excluding Saturday and 
+    # Sunday and holidays)
+    tk.make_weekday_sequence("2023-01-01", "2023-01-15", 
+                              sunday_to_thursday = False, 
+                              remove_holidays    = True, 
+                              country            = 'UnitedStates')
     ```
     
     ```{python}   
-    # Israel has Sunday to Thursday as weekdays (excluding Friday and Saturday and Israel holidays)
-    tk.make_weekday_sequence("2023-01-01", "2023-01-15", sunday_to_thursday=True, remove_holidays=True, country='Israel')
+    # Israel has Sunday to Thursday as weekdays (excluding Friday and Saturday 
+    # and Israel holidays)
+    tk.make_weekday_sequence("2023-01-01", "2023-01-15", 
+                              sunday_to_thursday = True, 
+                              remove_holidays.   = True, 
+                              country            = 'Israel')
     ```
-    """
+    """ 
     # Convert start_date and end_date to datetime objects if they are strings
     if isinstance(start_date, str):
         start_date = pd.to_datetime(start_date)
@@ -89,7 +102,8 @@ def make_weekend_sequence(
     country: str = None
 ) -> pd.DataFrame:
     """
-    Generate a sequence of weekend dates within a specified date range, optionally excluding holidays.
+    Generate a sequence of weekend dates within a specified date range, 
+    optionally excluding holidays.
 
     Parameters
     ----------
@@ -98,11 +112,16 @@ def make_weekend_sequence(
     end_date : str or datetime or pd.DatetimeIndex
         The end date of the date range.
     friday_saturday (bool, optional): 
-        If True, generates a sequence with Friday and Saturday as weekends.If False (default), generates a sequence with Saturday and Sunday as weekends.
+        If True, generates a sequence with Friday and Saturday as weekends.If 
+        False (default), generates a sequence with Saturday and Sunday as 
+        weekends.
     remove_holidays (bool, optional): 
-        If True, excludes holidays (based on the specified country) from the generated sequence. If False (default), includes holidays in the sequence.
+        If True, excludes holidays (based on the specified country) from the 
+        generated sequence. If False (default), includes holidays in the 
+        sequence.
     country (str, optional): 
-        The name of the country for which to generate holiday-specific sequences. Defaults to None, which uses the United States as the default country.
+        The name of the country for which to generate holiday-specific sequences. 
+        Defaults to None, which uses the United States as the default country.
 
     Returns
     -------
@@ -116,12 +135,18 @@ def make_weekend_sequence(
     import pytimetk as tk
 
     # United States has Saturday and Sunday as weekends
-    tk.make_weekend_sequence("2023-01-01", "2023-01-31", friday_saturday=False, remove_holidays=True, country='UnitedStates')
+    tk.make_weekend_sequence("2023-01-01", "2023-01-31", 
+                             friday_saturday = False, 
+                             remove_holidays = True, 
+                             country         = 'UnitedStates')
     ```
     
     ```{python}
     # Saudi Arabia has Friday and Saturday as weekends
-    tk.make_weekend_sequence("2023-01-01", "2023-01-31", friday_saturday=True, remove_holidays=True, country='SaudiArabia')
+    tk.make_weekend_sequence("2023-01-01", "2023-01-31", 
+                             friday_saturday = True, 
+                             remove_holidays = True, 
+                             country         = 'SaudiArabia')
     ```
     """
     # Convert start_date and end_date to datetime objects if they are strings
