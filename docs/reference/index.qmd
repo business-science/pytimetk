@@ -27,7 +27,7 @@ Detect anomalies in time series data.
 | --- | --- |
 | [anomalize](anomalize.qmd#pytimetk.anomalize) | The `anomalize` function is used to detect anomalies in time series data, either for a single time |
 | [plot_anomalies](plot_anomalies.qmd#pytimetk.plot_anomalies) | The `plot_anomalies` function is used to plot anomalies in a time series data using either Plotly, |
-| [plot_anomaly_decomp](plot_anomaly_decomp.qmd#pytimetk.plot_anomaly_decomp) | The `plot_anomaly_decomp` function takes in data from the `anomalize()` function, and |
+| [plot_anomalies_decomp](plot_anomalies_decomp.qmd#pytimetk.plot_anomalies_decomp) | The `plot_anomalies_decomp` function takes in data from the `anomalize()` function, and |
 
 ## 🏗️ Adding Features to Time Series DataFrames (Augmenting)
 

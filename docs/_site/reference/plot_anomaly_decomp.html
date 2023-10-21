@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>pytimetk – plot_anomaly_decomp</title>
+<title>pytimetk – plot_anomalies_decomp</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -166,7 +166,7 @@ require(['plotly'], function(Plotly) {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">plot_anomaly_decomp</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">plot_anomalies_decomp</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -373,14 +373,14 @@ require(['plotly'], function(Plotly) {
   <li><a href="#see-also" id="toc-see-also" class="nav-link" data-scroll-target="#see-also">See Also</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/plot_anomaly_decomp.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/plot_anomalies_decomp.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">plot_anomaly_decomp</h1>
+<h1 class="title">plot_anomalies_decomp</h1>
 </div>
 
 
@@ -395,8 +395,8 @@ require(['plotly'], function(Plotly) {
 
 </header>
 
-<p><code>plot_anomaly_decomp(data, date_column, line_color='#2c3e50', line_size=None, line_type='solid', line_alpha=1.0, y_intercept=None, y_intercept_color='#2c3e50', x_intercept=None, x_intercept_color='#2c3e50', title='Anomaly Decomposition Plot', x_lab='', y_lab='', x_axis_date_labels='%b %Y', base_size=11, width=None, height=None, engine='plotly')</code></p>
-<p>The <code>plot_anomaly_decomp</code> function takes in data from the <code>anomalize()</code> function, and returns a plot of the anomaly decomposition.</p>
+<p><code>plot_anomalies_decomp(data, date_column, line_color='#2c3e50', line_size=None, line_type='solid', line_alpha=1.0, y_intercept=None, y_intercept_color='#2c3e50', x_intercept=None, x_intercept_color='#2c3e50', title='Anomaly Decomposition Plot', x_lab='', y_lab='', x_axis_date_labels='%b %Y', base_size=11, width=None, height=None, engine='plotly')</code></p>
+<p>The <code>plot_anomalies_decomp</code> function takes in data from the <code>anomalize()</code> function, and returns a plot of the anomaly decomposition.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
@@ -581,7 +581,7 @@ require(['plotly'], function(Plotly) {
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the results</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>anomalize_df.plot_anomaly_decomp(<span class="st">"date"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>anomalize_df.plot_anomalies_decomp(<span class="st">"date"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Using seasonal frequency of 12 observations
 Using trend frequency of 37 observations</code></pre>
@@ -638,7 +638,7 @@ if (outputEl) {{
 <span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>(</span>
 <span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    anomalize_df</span>
 <span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">"id"</span>)</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>        .plot_anomaly_decomp(</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>        .plot_anomalies_decomp(</span>
 <span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">"Date"</span>,</span>
 <span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>            line_color <span class="op">=</span> <span class="st">"steelblue"</span>,</span>
 <span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>            width <span class="op">=</span> <span class="dv">1200</span>,</span>
@@ -653,7 +653,7 @@ if (outputEl) {{
 </script>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="plot_anomaly_decomp_files/figure-html/cell-3-output-2.png" class="img-fluid"></p>
+<p><img src="plot_anomalies_decomp_files/figure-html/cell-3-output-2.png" class="img-fluid"></p>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>&lt;Figure Size: (1200 x 800)&gt;</code></pre>

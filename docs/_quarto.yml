@@ -128,7 +128,7 @@ quartodoc:
       contents:
         - anomalize
         - plot_anomalies
-        - plot_anomaly_decomp
+        - plot_anomalies_decomp
         - plot_anomalies_cleaned
     - title: 🏗️ Adding Features to Time Series DataFrames (Augmenting)
       desc: Add one or more feature columns to time series data.

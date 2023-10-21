@@ -7,7 +7,7 @@ from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column,
 
 
 @pf.register_dataframe_method
-def plot_anomaly_decomp(
+def plot_anomalies_decomp(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
     
@@ -33,7 +33,7 @@ def plot_anomaly_decomp(
     engine: str = 'plotly',    
 ):
     '''
-    The `plot_anomaly_decomp` function takes in data from the `anomalize()` 
+    The `plot_anomalies_decomp` function takes in data from the `anomalize()` 
     function, and returns a plot of the anomaly decomposition.
     
     Parameters
@@ -150,7 +150,7 @@ def plot_anomaly_decomp(
     )
     
     # Visualize the results
-    anomalize_df.plot_anomaly_decomp("date")
+    anomalize_df.plot_anomalies_decomp("date")
     ```
     
     ``` {python}
@@ -176,7 +176,7 @@ def plot_anomaly_decomp(
     (
         anomalize_df
             .groupby("id")
-            .plot_anomaly_decomp(
+            .plot_anomalies_decomp(
                 date_column = "Date",
                 line_color = "steelblue",
                 width = 1200,
@@ -248,5 +248,5 @@ def plot_anomaly_decomp(
     return fig
     
 # Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.plot_anomaly_decomp = plot_anomaly_decomp
+pd.core.groupby.generic.DataFrameGroupBy.plot_anomalies_decomp = plot_anomalies_decomp
 

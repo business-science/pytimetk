@@ -182,7 +182,7 @@ columns:
     
     ``` {python}
     # Visualize the results
-    anomalize_df.plot_anomaly_decomp("date")
+    anomalize_df.plot_anomalies_decomp("date")
     ```
     
     ``` {python}
@@ -238,7 +238,7 @@ columns:
     (
         anomalize_df
             .groupby("id")
-            .plot_anomaly_decomp(
+            .plot_anomalies_decomp(
                 date_column = "Date",
                 line_color = "steelblue",
                 width = 1200,

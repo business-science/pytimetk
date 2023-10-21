@@ -1,8 +1,8 @@
-# plot_anomaly_decomp { #pytimetk.plot_anomaly_decomp }
+# plot_anomalies_decomp { #pytimetk.plot_anomalies_decomp }
 
-`plot_anomaly_decomp(data, date_column, line_color='#2c3e50', line_size=None, line_type='solid', line_alpha=1.0, y_intercept=None, y_intercept_color='#2c3e50', x_intercept=None, x_intercept_color='#2c3e50', title='Anomaly Decomposition Plot', x_lab='', y_lab='', x_axis_date_labels='%b %Y', base_size=11, width=None, height=None, engine='plotly')`
+`plot_anomalies_decomp(data, date_column, line_color='#2c3e50', line_size=None, line_type='solid', line_alpha=1.0, y_intercept=None, y_intercept_color='#2c3e50', x_intercept=None, x_intercept_color='#2c3e50', title='Anomaly Decomposition Plot', x_lab='', y_lab='', x_axis_date_labels='%b %Y', base_size=11, width=None, height=None, engine='plotly')`
 
-The `plot_anomaly_decomp` function takes in data from the `anomalize()` function, and
+The `plot_anomalies_decomp` function takes in data from the `anomalize()` function, and
 returns a plot of the anomaly decomposition.
 
 ## Parameters
@@ -70,7 +70,7 @@ anomalize_df = tk.anomalize(
 )
 
 # Visualize the results
-anomalize_df.plot_anomaly_decomp("date")
+anomalize_df.plot_anomalies_decomp("date")
 ```
 
 ``` {python}
@@ -96,7 +96,7 @@ anomalize_df = (
 (
     anomalize_df
         .groupby("id")
-        .plot_anomaly_decomp(
+        .plot_anomalies_decomp(
             date_column = "Date",
             line_color = "steelblue",
             width = 1200,

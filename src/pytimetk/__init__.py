@@ -3,7 +3,7 @@
 
 from .plot.plot_timeseries import *
 from .plot.plot_anomalies import *
-from .plot.plot_anomaly_decomp import *
+from .plot.plot_anomalies_decomp import *
 from .plot.plot_anomaly_cleaned import *
 from .plot.theme import *
 
@@ -44,8 +44,8 @@ from .plot.plot_timeseries import (
 from .plot.plot_anomalies import (
     plot_anomalies
 )
-from .plot.plot_anomaly_decomp import (
-    plot_anomaly_decomp
+from .plot.plot_anomalies_decomp import (
+    plot_anomalies_decomp
 )
 from .plot.plot_anomaly_cleaned import (
     plot_anomalies_cleaned
