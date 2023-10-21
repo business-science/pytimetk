@@ -65,93 +65,170 @@ def plot_timeseries(
     engine: str = 'plotly'
 
 ):
-    '''Creates time series plots using different plotting engines such as Plotnine, Matplotlib, and Plotly.
+    '''
+    Creates time series plots using different plotting engines such as Plotnine, 
+    Matplotlib, and Plotly.
     
     Parameters
     ----------
     data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The input data for the plot. It can be either a Pandas DataFrame or a Pandas DataFrameGroupBy object.
+        The input data for the plot. It can be either a Pandas DataFrame or a 
+        Pandas DataFrameGroupBy object.
     date_column : str
-        The name of the column in the DataFrame that contains the dates for the time series data.
+        The name of the column in the DataFrame that contains the dates for the 
+        time series data.
     value_column : str
-        The `value_column` parameter is used to specify the name of the column in the DataFrame that contains the values for the time series data. This column will be plotted on the y-axis of the time series plot.
+        The `value_column` parameter is used to specify the name of the column 
+        in the DataFrame that contains the values for the time series data. This 
+        column will be plotted on the y-axis of the time series plot.
     color_column : str
-        The `color_column` parameter is an optional parameter that specifies the column in the DataFrame that will be used to assign colors to the different time series. If this parameter is not provided, all time series will have the same color.
+        The `color_column` parameter is an optional parameter that specifies the 
+        column in the DataFrame that will be used to assign colors to the 
+        different time series. If this parameter is not provided, all time 
+        series will have the same color.
     color_palette : list, optional
-        The `color_palette` parameter is used to specify the colors to be used for the different time series. It accepts a list of color codes or names. If the `color_column` parameter is not provided, the `tk.palette_timetk()` color palette will be used.
+        The `color_palette` parameter is used to specify the colors to be used 
+        for the different time series. It accepts a list of color codes or names. 
+        If the `color_column` parameter is not provided, the `tk.palette_timetk()` 
+        color palette will be used.
     facet_ncol : int, optional
-        The `facet_ncol` parameter determines the number of columns in the facet grid. It specifies how many subplots will be arranged horizontally in the plot.
+        The `facet_ncol` parameter determines the number of columns in the facet 
+        grid. It specifies how many subplots will be arranged horizontally in 
+        the plot.
     facet_nrow : int
-        The `facet_nrow` parameter determines the number of rows in the facet grid. It specifies how many subplots will be arranged vertically in the grid.
+        The `facet_nrow` parameter determines the number of rows in the facet 
+        grid. It specifies how many subplots will be arranged vertically in the 
+        grid.
     facet_scales : str, optional
-        The `facet_scales` parameter determines the scaling of the y-axis in the facetted plots. It can take the following values:
-        - "free_y": The y-axis scale will be free for each facet, but the x-axis scale will be fixed for all facets. This is the default value.
-        - "free_x": The y-axis scale will be free for each facet, but the x-axis scale will be fixed for all facets.
-        - "free": The y-axis scale will be free for each facet (subplot). This is the default value.
+        The `facet_scales` parameter determines the scaling of the y-axis in the 
+        facetted plots. It can take the following values:
+        - "free_y": The y-axis scale will be free for each facet, but the x-axis 
+        scale will be fixed for all facets. This is the default value.
+        - "free_x": The y-axis scale will be free for each facet, but the x-axis 
+        scale will be fixed for all facets.
+        - "free": The y-axis scale will be free for each facet (subplot). This 
+        is the default value.
         
     facet_dir : str, optional
-        The `facet_dir` parameter determines the direction in which the facets (subplots) are arranged. It can take two possible values:
-        - "h": The facets will be arranged horizontally (in rows). This is the default value.
+        The `facet_dir` parameter determines the direction in which the facets 
+        (subplots) are arranged. It can take two possible values:
+        - "h": The facets will be arranged horizontally (in rows). This is the 
+          default value.
         - "v": The facets will be arranged vertically (in columns).
     line_color : str, optional
-        The `line_color` parameter is used to specify the color of the lines in the time series plot. It accepts a string value representing a color code or name. The default value is "#2c3e50", which corresponds to a dark blue color.
+        The `line_color` parameter is used to specify the color of the lines in 
+        the time series plot. It accepts a string value representing a color 
+        code or name. The default value is "#2c3e50", which corresponds to a 
+        dark blue color.
     line_size : float
-        The `line_size` parameter is used to specify the size of the lines in the time series plot. It determines the thickness of the lines.
+        The `line_size` parameter is used to specify the size of the lines in 
+        the time series plot. It determines the thickness of the lines.
     line_type : str, optional
-        The `line_type` parameter is used to specify the type of line to be used in the time series plot.         
+        The `line_type` parameter is used to specify the type of line to be used 
+        in the time series plot.         
     line_alpha : float
-        The `line_alpha` parameter controls the transparency of the lines in the time series plot. It accepts a value between 0 and 1, where 0 means completely transparent (invisible) and 1 means completely opaque (solid).
+        The `line_alpha` parameter controls the transparency of the lines in the 
+        time series plot. It accepts a value between 0 and 1, where 0 means 
+        completely transparent (invisible) and 1 means completely opaque (solid).
     y_intercept : float
-        The `y_intercept` parameter is used to add a horizontal line to the plot at a specific y-value. It can be set to a numeric value to specify the y-value of the intercept. If set to `None` (default), no y-intercept line will be added to the plot
+        The `y_intercept` parameter is used to add a horizontal line to the plot 
+        at a specific y-value. It can be set to a numeric value to specify the 
+        y-value of the intercept. If set to `None` (default), no y-intercept 
+        line will be added to the plot
     y_intercept_color : str, optional
-        The `y_intercept_color` parameter is used to specify the color of the y-intercept line in the plot. It accepts a string value representing a color code or name. The default value is "#2c3e50", which corresponds to a dark blue color. You can change this value.
+        The `y_intercept_color` parameter is used to specify the color of the 
+        y-intercept line in the plot. It accepts a string value representing a 
+        color code or name. The default value is "#2c3e50", which corresponds to 
+        a dark blue color. You can change this value.
     x_intercept : str
-        The `x_intercept` parameter is used to add a vertical line at a specific x-axis value on the plot. It is used to highlight a specific point or event in the time series data. 
-        - By default, it is set to `None`, which means no vertical line will be added. 
-        - You can use a date string to specify the x-axis value of the intercept. For example, "2020-01-01" would add a vertical line at the beginning of the year 2020.
+        The `x_intercept` parameter is used to add a vertical line at a specific 
+        x-axis value on the plot. It is used to highlight a specific point or 
+        event in the time series data. 
+        - By default, it is set to `None`, which means no vertical line will be 
+          added. 
+        - You can use a date string to specify the x-axis value of the intercept. 
+          For example, "2020-01-01" would add a vertical line at the beginning 
+          of the year 2020.
     x_intercept_color : str, optional
-        The `x_intercept_color` parameter is used to specify the color of the vertical line that represents the x-intercept in the plot. By default, it is set to "#2c3e50", which is a dark blue color. You can change this value to any valid color code.
+        The `x_intercept_color` parameter is used to specify the color of the 
+        vertical line that represents the x-intercept in the plot. By default, 
+        it is set to "#2c3e50", which is a dark blue color. You can change this 
+        value to any valid color code.
     smooth : bool, optional
-        The `smooth` parameter is a boolean indicating whether or not to apply smoothing to the time eries data. If set to True, the time series will be smoothed using the lowess algorithm. The default value is True.
+        The `smooth` parameter is a boolean indicating whether or not to apply 
+        smoothing to the time eries data. If set to True, the time series will 
+        be smoothed using the lowess algorithm. The default value is True.
     smooth_color : str, optional
-        The `smooth_color` parameter is used to specify the color of the smoothed line in the time series plot. It accepts a string value representing a color code or name. The default value is `#3366FF`, which corresponds to a shade of blue. You can change this value to any valid color code.
+        The `smooth_color` parameter is used to specify the color of the 
+        smoothed line in the time series plot. It accepts a string value 
+        representing a color code or name. The default value is `#3366FF`, 
+        which corresponds to a shade of blue. You can change this value to any 
+        valid color code.
     smooth_frac : float
-        The `smooth_frac` parameter is used to control the fraction of data points used for smoothing the time series. It determines the degree of smoothing applied to the data. A smaller value of `smooth_frac` will result in more smoothing, while a larger value will result in less smoothing. The default value is 0.2.
+        The `smooth_frac` parameter is used to control the fraction of data 
+        points used for smoothing the time series. It determines the degree of 
+        smoothing applied to the data. A smaller value of `smooth_frac` will 
+        result in more smoothing, while a larger value will result in less 
+        smoothing. The default value is 0.2.
     smooth_size : float
-        The `smooth_size` parameter is used to specify the size of the line used to plot the smoothed values in the time series plot. It is a numeric value that controls the thickness of the line. A larger value will result in a thicker line, while a smaller value will result in a thinner line
+        The `smooth_size` parameter is used to specify the size of the line used 
+        to plot the smoothed values in the time series plot. It is a numeric 
+        value that controls the thickness of the line. A larger value will result 
+        in a thicker line, while a smaller value will result in a thinner line
     smooth_alpha : float
-        The `smooth_alpha` parameter controls the transparency of the smoothed line in the plot. It accepts a value between 0 and 1, where 0 means completely transparent and 1 means completely opaque.
+        The `smooth_alpha` parameter controls the transparency of the smoothed 
+        line in the plot. It accepts a value between 0 and 1, where 0 means 
+        completely transparent and 1 means completely opaque.
     legend_show : bool, optional
-        The `legend_show` parameter is a boolean indicating whether or not to show the legend in the plot. If set to True, the legend will be displayed. The default value is True.
+        The `legend_show` parameter is a boolean indicating whether or not to 
+        show the legend in the plot. If set to True, the legend will be 
+        displayed. The default value is True.
     title : str, optional
         The title of the plot.
     x_lab : str
-        The `x_lab` parameter is used to specify the label for the x-axis in the plot. It is a string that represents the label text.
+        The `x_lab` parameter is used to specify the label for the x-axis in the 
+        plot. It is a string that represents the label text.
     y_lab : str
-        The `y_lab` parameter is used to specify the label for the y-axis in the plot. It is a string that represents the label for the y-axis.
+        The `y_lab` parameter is used to specify the label for the y-axis in the 
+        plot. It is a string that represents the label for the y-axis.
     color_lab : str, optional
-        The `color_lab` parameter is used to specify the label for the legend or color scale in the plot. It is used to provide a description of the colors used in the plot, typically when a color column is specified.
+        The `color_lab` parameter is used to specify the label for the legend or 
+        color scale in the plot. It is used to provide a description of the colors 
+        used in the plot, typically when a color column is specified.
     x_axis_date_labels : str, optional
-        The `x_axis_date_labels` parameter is used to specify the format of the date labels on the x-axis of the plot. It accepts a string representing the format of the date labels. For  example, "%b %Y" would display the month abbreviation and year (e.g., Jan 2020).
+        The `x_axis_date_labels` parameter is used to specify the format of the 
+        date labels on the x-axis of the plot. It accepts a string representing 
+        the format of the date labels. For  example, "%b %Y" would display the 
+        month abbreviation and year (e.g., Jan 2020).
     base_size : float, optional
-        The `base_size` parameter is used to set the base font size for the plot. It determines the size of the text elements such as axis labels, titles, and legends.
+        The `base_size` parameter is used to set the base font size for the plot. 
+        It determines the size of the text elements such as axis labels, titles, 
+        and legends.
     width : int
-        The `width` parameter is used to specify the width of the plot. It determines the horizontal size of the plot in pixels.
+        The `width` parameter is used to specify the width of the plot. It 
+        determines the horizontal size of the plot in pixels.
     height : int
-        The `height` parameter is used to specify the height of the plot in pixels. It determines the vertical size of the plot when it is rendered.
+        The `height` parameter is used to specify the height of the plot in 
+        pixels. It determines the vertical size of the plot when it is rendered.
     engine : str, optional
-        The `engine` parameter specifies the plotting library to use for creating the time series plot. It can take one of the following values:
+        The `engine` parameter specifies the plotting library to use for 
+        creating the time series plot. It can take one of the following values:
         
-        - "plotly" (interactive): Use the plotly library to create the plot. This is the default value.
-        - "plotnine" (static): Use the plotnine library to create the plot. This is the default value.
+        - "plotly" (interactive): Use the plotly library to create the plot. 
+          This is the default value.
+        - "plotnine" (static): Use the plotnine library to create the plot. 
+          This is the default value.
         - "matplotlib" (static): Use the matplotlib library to create the plot.
         
     
     Returns
     -------
-        The function `plot_timeseries` returns a plot object, depending on the specified `engine` parameter. 
-        - If `engine` is set to 'plotnine' or 'matplotlib', the function returns a plot object that can be further customized or displayed. 
-        - If `engine` is set to 'plotly', the function returns a plotly figure object.
+        The function `plot_timeseries` returns a plot object, depending on the 
+        specified `engine` parameter. 
+        - If `engine` is set to 'plotnine' or 'matplotlib', the function returns 
+          a plot object that can be further customized or displayed. 
+        - If `engine` is set to 'plotly', the function returns a plotly figure 
+          object.
     
     
     Examples
