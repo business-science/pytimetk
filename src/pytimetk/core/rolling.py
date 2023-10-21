@@ -28,61 +28,81 @@ def augment_rolling(
     show_progress: bool = True,
     **kwargs,
 ) -> pd.DataFrame:
-    '''Apply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame.
+    '''
+    Apply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame.
     
     Parameters
     ----------
     data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        Input data to be processed. Can be a Pandas DataFrame or a GroupBy object.
+        Input data to be processed. Can be a Pandas DataFrame or a GroupBy 
+        object.
     date_column : str
-        Name of the datetime column. Data is sorted by this column within each group.
+        Name of the datetime column. Data is sorted by this column within each 
+        group.
     value_column : Union[str, list]
-        Column(s) to which the rolling window functions should be applied. Can be a single column name or a list.
+        Column(s) to which the rolling window functions should be applied. Can 
+        be a single column name or a list.
     window_func : Union[str, list, Tuple[str, Callable]], optional, default 'mean'
-        The `window_func` parameter in the `augment_rolling` function specifies the function(s) to be applied to the rolling windows of the value column(s).
+        The `window_func` parameter in the `augment_rolling` function specifies 
+        the function(s) to be applied to the rolling windows of the value 
+        column(s).
 
         1. It can be either:
-            - A string representing the name of a standard function (e.g., 'mean', 'sum').
+            - A string representing the name of a standard function (e.g., 
+              'mean', 'sum').
             
         2. For custom functions:
-            - Provide a list of tuples. Each tuple should contain a custom name for the function and the function itself.
-            - Each custom function should accept a Pandas Series as its input and operate on that series.
+            - Provide a list of tuples. Each tuple should contain a custom name 
+              for the function and the function itself.
+            - Each custom function should accept a Pandas Series as its input 
+              and operate on that series.
               Example: ("range", lambda x: x.max() - x.min())
         
         (See more Examples below.)
 
-        Note: If your function needs to operate on multiple columns (i.e., it requires access to a DataFrame rather than just a Series), consider using the `augment_rolling_apply` function in this library.   
+        Note: If your function needs to operate on multiple columns (i.e., it 
+              requires access to a DataFrame rather than just a Series), 
+              consider using the `augment_rolling_apply` function in this library.   
     window : Union[int, tuple, list], optional, default 2
         Specifies the size of the rolling windows.
         - An integer applies the same window size to all columns in `value_column`.
         - A tuple generates windows from the first to the second value (inclusive).
-        - A list of integers designates multiple window sizes for each respective column.
+        - A list of integers designates multiple window sizes for each respective 
+          column.
     min_periods : int, optional, default None
-        Minimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.
+        Minimum observations in the window to have a value. Defaults to the 
+        window size. If set, a value will be produced even if fewer observations 
+        are present than the window size.
     engine : str, optional, default 'pandas'
-        Specifies the backend computation library for augmenting expanding window functions. 
+        Specifies the backend computation library for augmenting expanding window 
+        functions. 
     
         The options are:
             - "pandas" (default): Uses the `pandas` library.
-            - "polars": Uses the `polars` library, which may offer performance benefits for larger datasets.
+            - "polars": Uses the `polars` library, which may offer performance 
+               benefits for larger datasets.
     
     center : bool, optional, default False
-        If `True`, the rolling window will be centered on the current value. For even-sized windows, the window will be left-biased. Otherwise, it uses a trailing window.
+        If `True`, the rolling window will be centered on the current value. For 
+        even-sized windows, the window will be left-biased. Otherwise, it uses a trailing window.
     threads : int, optional, default 1
-        Number of threads to use for parallel processing. If `threads` is set to 1, parallel processing will be disabled. Set to -1 to use all available CPU cores.
+        Number of threads to use for parallel processing. If `threads` is set to 
+        1, parallel processing will be disabled. Set to -1 to use all available CPU cores.
     show_progress : bool, optional, default True
         If `True`, a progress bar will be displayed during parallel processing.
     
     Returns
     -------
     pd.DataFrame
-        The `augment_rolling` function returns a DataFrame with new columns for each applied function, window size, and value column.
+        The `augment_rolling` function returns a DataFrame with new columns for 
+        each applied function, window size, and value column.
     
     Notes
     -----
     ## Performance
     
-    This function uses parallel processing to speed up computation for large datasets with many time series groups: 
+    This function uses parallel processing to speed up computation for large 
+    datasets with many time series groups: 
     
     Parallel processing has overhead and may not be faster on small datasets.
     
@@ -100,10 +120,11 @@ def augment_rolling(
     
     ```{python}
     # Example 1 - Using a single window size and a single function name, pandas engine
-    # This example demonstrates the use of both string-named functions and lambda functions on a rolling window. 
-    # We specify a list of window sizes: [2,7]. 
+    # This example demonstrates the use of both string-named functions and lambda 
+    # functions on a rolling window. We specify a list of window sizes: [2,7]. 
     # As a result, the output will have computations for both window sizes 2 and 7.
-    # Note - It's preferred to use built-in or configurable functions instead of lambda functions for performance reasons.
+    # Note - It's preferred to use built-in or configurable functions instead of 
+    # lambda functions for performance reasons.
 
     rolled_df = (
         df
@@ -125,9 +146,11 @@ def augment_rolling(
     
     ```{python}
     # Example 2 - Multiple groups, pandas engine
-    # Example showcasing the use of string function names and lambda functions applied on rolling windows.
-    # The `window` tuple (1,3) will generate window sizes of 1, 2, and 3.
-    # Note - It's preferred to use built-in or configurable functions instead of lambda functions for performance reasons.
+    # Example showcasing the use of string function names and lambda functions 
+    # applied on rolling windows. The `window` tuple (1,3) will generate window 
+    # sizes of 1, 2, and 3.
+    # Note - It's preferred to use built-in or configurable functions instead of 
+    # lambda functions for performance reasons.
     
     rolled_df = (
         df
@@ -447,48 +470,65 @@ def augment_rolling_apply(
     threads: int = 1,
     show_progress: bool = True,
 ) -> pd.DataFrame:
-    '''Apply one or more DataFrame-based rolling functions and window sizes to one or more columns of a DataFrame.
+    '''
+    Apply one or more DataFrame-based rolling functions and window sizes to one 
+    or more columns of a DataFrame.
     
     Parameters
     ----------
     data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
         Input data to be processed. Can be a Pandas DataFrame or a GroupBy object.
     date_column : str
-        Name of the datetime column. Data is sorted by this column within each group.
+        Name of the datetime column. Data is sorted by this column within each 
+        group.
     window_func : Union[Tuple[str, Callable], List[Tuple[str, Callable]]]
-        The `window_func` parameter in the `augment_rolling_apply` function specifies the function(s) that operate on a rolling window with the consideration of multiple columns.
+        The `window_func` parameter in the `augment_rolling_apply` function 
+        specifies the function(s) that operate on a rolling window with the 
+        consideration of multiple columns.
 
         The specification can be:
-        - A tuple where the first element is a string representing the function's name and the second element is the callable function itself.
+        - A tuple where the first element is a string representing the function's 
+          name and the second element is the callable function itself.
         - A list of such tuples for multiple functions.
         
         (See more Examples below.)
 
-        Note: For functions targeting only a single value column without the need for contextual data from other columns, consider using the `augment_rolling` function in this library.
+        Note: For functions targeting only a single value column without the 
+        need for contextual data from other columns, consider using the 
+        `augment_rolling` function in this library.
     window : Union[int, tuple, list], optional
         Specifies the size of the rolling windows.
         - An integer applies the same window size to all columns in `value_column`.
         - A tuple generates windows from the first to the second value (inclusive).
-        - A list of integers designates multiple window sizes for each respective column.
+        - A list of integers designates multiple window sizes for each respective 
+          column.
     min_periods : int, optional, default None
-        Minimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.
+        Minimum observations in the window to have a value. Defaults to the 
+        window size. If set, a value will be produced even if fewer observations 
+        are present than the window size.
     center : bool, optional
-        If `True`, the rolling window will be centered on the current value. For even-sized windows, the window will be left-biased. Otherwise, it uses a trailing window.
+        If `True`, the rolling window will be centered on the current value. For 
+        even-sized windows, the window will be left-biased. Otherwise, it uses a 
+        trailing window.
     threads : int, optional, default 1
-        Number of threads to use for parallel processing. If `threads` is set to 1, parallel processing will be disabled. Set to -1 to use all available CPU cores.
+        Number of threads to use for parallel processing. If `threads` is set to 
+        1, parallel processing will be disabled. Set to -1 to use all available 
+        CPU cores.
     show_progress : bool, optional, default True
         If `True`, a progress bar will be displayed during parallel processing.
     
     Returns
     -------
     pd.DataFrame
-        The `augment_rolling` function returns a DataFrame with new columns for each applied function, window size, and value column.
+        The `augment_rolling` function returns a DataFrame with new columns for 
+        each applied function, window size, and value column.
         
     Notes
     -----
     ## Performance
     
-    This function uses parallel processing to speed up computation for large datasets with many time series groups: 
+    This function uses parallel processing to speed up computation for large 
+    datasets with many time series groups: 
     
     Parallel processing has overhead and may not be faster on small datasets.
     
@@ -502,7 +542,8 @@ def augment_rolling_apply(
     import pandas as pd
     import numpy as np
 
-    # Example 1 - showcasing the rolling correlation between two columns (`value1` and `value2`).
+    # Example 1 - showcasing the rolling correlation between two columns 
+    # (`value1` and `value2`).
     # The correlation requires both columns as input.
     
     # Sample DataFrame with id, date, value1, and value2 columns.
@@ -514,7 +555,8 @@ def augment_rolling_apply(
     })
     
     # Compute the rolling correlation for each group of 'id'
-    # Using a rolling window of size 3 and a lambda function to calculate the correlation.
+    # Using a rolling window of size 3 and a lambda function to calculate the 
+    # correlation.
     
     rolled_df = (
         df.groupby('id')
@@ -530,8 +572,10 @@ def augment_rolling_apply(
     ```
     
     ```{python}
-    # Example 2 - Rolling Regression Example: Using `value1` as the dependent variable and `value2` and `value3` as the independent variables.
-    # This example demonstrates how to perform a rolling regression using two independent variables.
+    # Example 2 - Rolling Regression Example: Using `value1` as the dependent 
+    # variable and `value2` and `value3` as the independent variables. This 
+    # example demonstrates how to perform a rolling regression using two 
+    # independent variables.
 
     # Sample DataFrame with `id`, `date`, `value1`, `value2`, and `value3` columns.
     df = pd.DataFrame({
@@ -569,7 +613,8 @@ def augment_rolling_apply(
         .dropna()
     )
 
-    # Format the results to have each regression output (slope and intercept) in separate columns.
+    # Format the results to have each regression output (slope and intercept) in 
+    # separate columns.
     
     regression_wide_df = pd.concat(rolled_df['rolling_regression_win_3'].to_list(), axis=1).T
     
