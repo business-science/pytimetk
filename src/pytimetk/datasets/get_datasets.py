@@ -1,12 +1,12 @@
 
 import pandas as pd
-#from importlib.resources import open_text
-#from importlib.resources import contents
+import polars as pl
 from importlib.resources import files
     
 def load_dataset(
     name: str = "m4_daily", 
     verbose: bool = False, 
+    engine: str = 'pandas',
     **kwargs
 ) -> pd.DataFrame:
     '''
@@ -30,23 +30,28 @@ def load_dataset(
     - `stocks_daily`: The MAANNG stocks dataset
     - `expedia`: Expedia Hotel Time Series Dataset
     
-    The datasets can be loaded with `pytimetk.load_dataset(name)`, where `name` 
-    is the name of the dataset that you want to load. The default value is set 
-    to "m4_daily", which is the M4 daily dataset. However, you can choose from 
-    a list of available datasets mentioned above.
+    The datasets can be loaded with `load_dataset(name)`, where `name` is the 
+    name of the dataset that you want to load. The default value is set to 
+    "m4_daily", which is the M4 daily dataset. However, you can choose from a 
+    list of available datasets mentioned above.
     
     Parameters
     ----------
     name : str, optional
-        The `name` parameter is used to specify the name of the dataset that you 
-        want to load. The default value is set to "m4_daily", which is the M4 
-        daily dataset. However, you can choose from a list of available datasets 
-        mentioned in the function's docstring.
+        The `name` parameter is used to specify the name of the dataset that 
+        you want to load. The default value is set to "m4_daily", which is the 
+        M4 daily dataset. However, you can choose from a list of available 
+        datasets mentioned in the function's docstring.
     verbose : bool, optional
         The `verbose` parameter is a boolean flag that determines whether or not 
-        to print the names of the available datasets. If `verbose` is set to `
-        True`, the function will print the names of the available datasets. If 
-        `verbose` is set to `False`, the function will not print anything.
+        to print the names of the available datasets. If `verbose` is set to 
+        `True`, the function will print the names of the available datasets. 
+        If `verbose` is set to `False`, the function will not print anything.
+    engine : str, optional
+        The `engine` parameter is used to specify the engine to use for reading 
+        the csv file. The default value is set to "pandas", which uses pandas to 
+        read the csv file. If `engine` is set to "polars", the function will use 
+        polars to read the csv file and convert it to a pandas DataFrame.
     **kwargs
         The `**kwargs` parameter is used to pass additional arguments to 
         `pandas.read_csv`.
@@ -60,33 +65,20 @@ def load_dataset(
         
     Examples
     --------
-    ```{python}
-    import pytimetk as tk
-    import pandas as pd
-    ```
-    
-    ```{python}
-    # Stocks Daily Dataset: META, APPL, AMZN, NFLX, NVDA, GOOG
-    df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
+    ```python
+    # Load the M4 daily dataset using pandas
+    df = load_dataset('m4_daily')
     
     df
     ```
     
-    ```{python}
-    # Bike Sales CRM Sample Dataset
-    df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
-    
-    df
-    ```
-    
-    ```{python}
-    # Taylor 30-Minute Power Demand Dataset
-    df = tk.load_dataset('taylor_30_min', parse_dates = ['date'])
+    ```python
+    # Load the M4 daily dataset using polars
+    df = load_dataset('m4_daily', engine='polars')
     
     df
     ```    
     '''
-    
     # Return the list of available datasets
     dataset_list = get_available_datasets()
     
@@ -101,8 +93,12 @@ def load_dataset(
     package_path = files('pytimetk')
     # Reference to the a file within the package
     text_path = f"{package_path}/datasets/{name}.csv"
-    with open(text_path, 'r', encoding='utf-8') as f:
-        df = pd.read_csv(f, **kwargs)
+    
+    if engine == 'pandas':
+        with open(text_path, 'r', encoding='utf-8') as f:
+            df = pd.read_csv(f, **kwargs)
+    elif engine == 'polars':
+        df = pl.read_csv(text_path).to_pandas()
 
     return df
 
