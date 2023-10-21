@@ -16,7 +16,8 @@ def get_timeseries_signature(
     """
     Convert a timestamp to a set of 29 time series features.
 
-    The function `get_timeseries_signature` engineers **29 different date and time based features** from a single datetime index `idx`: 
+    The function `get_timeseries_signature` engineers **29 different date and 
+    time based features** from a single datetime index `idx`: 
 
     Parameters
     ----------
@@ -24,11 +25,14 @@ def get_timeseries_signature(
         The `idx` parameter is a pandas Series of DatetimeIndex.
 
     engine : str, optional
-        The `engine` parameter is used to specify the engine to use for augmenting datetime features. It can be either "pandas" or "polars". 
+        The `engine` parameter is used to specify the engine to use for 
+        augmenting datetime features. It can be either "pandas" or "polars". 
         
         - The default value is "pandas".
         
-        - When "polars", the function will internally use the `polars` library for feature generation. This is generally faster than using "pandas" for large datasets. 
+        - When "polars", the function will internally use the `polars` library 
+          for feature generation. This is generally faster than using "pandas" 
+          for large datasets. 
     
     Returns
     -------
@@ -153,22 +157,27 @@ def augment_timeseries_signature(
 ) -> pd.DataFrame:
     """
     The function `augment_timeseries_signature` takes a DataFrame and a date 
-    column as input and returns the original DataFrame with the **29 different date 
-    and time based features** added as new columns with the feature name based on 
-    the date_column.
+    column as input and returns the original DataFrame with the **29 different 
+    date and time based features** added as new columns with the feature name 
+    based on the date_column.
     
     Parameters
     ----------
     data : pd.DataFrame
-        The `data` parameter is a pandas DataFrame that contains the time series data.
+        The `data` parameter is a pandas DataFrame that contains the time series 
+        data.
     date_column : str
-        The `date_column` parameter is a string that represents the name of the date column in the `data` DataFrame.
+        The `date_column` parameter is a string that represents the name of the 
+        date column in the `data` DataFrame.
     engine : str, optional
-        The `engine` parameter is used to specify the engine to use for augmenting datetime features. It can be either "pandas" or "polars". 
+        The `engine` parameter is used to specify the engine to use for 
+        augmenting datetime features. It can be either "pandas" or "polars". 
         
         - The default value is "pandas".
         
-        - When "polars", the function will internally use the `polars` library for feature generation. This is generally faster than using "pandas" for large datasets. 
+        - When "polars", the function will internally use the `polars` library 
+          for feature generation. This is generally faster than using "pandas" 
+          for large datasets. 
     
     Returns
     -------
