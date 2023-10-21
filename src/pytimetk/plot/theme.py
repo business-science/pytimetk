@@ -3,25 +3,41 @@ from plotnine import *
 
     
 def theme_timetk(base_size: int = 11, base_family: list = ['Arial', 'Helvetica', 'sans-serif'], dpi: int = 100, width: int = 700, height: int = 500):
-    '''Returns a `plotnine` theme with timetk styles applied, allowing for customization of the appearance of plots in Python.
+    '''
+    Returns a `plotnine` theme with timetk styles applied, allowing for 
+    customization of the appearance of plots in Python.
     
     Parameters
     ----------
     base_size : int, optional
-        The `base_size` parameter determines the base font size for the theme. It is set to 11 by default, but you can change it to any desired value.
+        The `base_size` parameter determines the base font size for the theme. 
+        It is set to 11 by default, but you can change it to any desired value.
     base_family : list
-        The `base_family` parameter is a list of font families that will be used as the base font for the theme. The default value is `['Arial', 'Helvetica', 'sans-serif']`, which means that the theme will use Arial font if available, otherwise it will try Helvetica, and if that is not available either, it will use the generic sans-serif font.
+        The `base_family` parameter is a list of font families that will be used 
+        as the base font for the theme. The default value is `['Arial', 
+        'Helvetica', 'sans-serif']`, which means that the theme will use Arial 
+        font if available, otherwise it will try Helvetica, and if that is not 
+        available either, it will use the generic sans-serif font.
     dpi : int, optional
-        The `dpi` parameter stands for dots per inch and determines the resolution of the plot. It specifies the number of pixels per inch in the output image. Higher dpi values result in higher resolution images.
+        The `dpi` parameter stands for dots per inch and determines the 
+        resolution of the plot. It specifies the number of pixels per inch in 
+        the output image. Higher dpi values result in higher resolution images.
     width : int, optional
-        The `width` parameter is used to specify the width of the plot in pixels at dpi. It determines the horizontal size of the plot. The default value is 700 pixels.
+        The `width` parameter is used to specify the width of the plot in pixels 
+        at dpi. It determines the horizontal size of the plot. The default value 
+        is 700 pixels.
     height : int, optional
-        The `height` parameter is used to specify the height of the plot in inches. It is an optional parameter, so if you don't provide a value for it, the default height will be 5 inches (500 pixels).
+        The `height` parameter is used to specify the height of the plot in 
+        inches. It is an optional parameter, so if you don't provide a value for 
+        it, the default height will be 5 inches (500 pixels).
 
     
     Returns
     -------
-        A theme object that can be used to customize the appearance of plots in R. The theme object contains various elements such as line, rect, axis, panel, legend, strip, and plot, each with their own set of properties that can be customized.
+        A theme object that can be used to customize the appearance of plots in 
+        Python. The theme object contains various elements such as line, rect, 
+        axis, panel, legend, strip, and plot, each with their own set of 
+        properties that can be customized.
         
     Examples
     --------
@@ -127,7 +143,9 @@ def theme_timetk(base_size: int = 11, base_family: list = ['Arial', 'Helvetica',
     
         
 def palette_timetk():
-    '''The function `palette_timetk` returns a dictionary of color codes for various colors in the timetk theme.
+    '''
+    The function `palette_timetk` returns a dictionary of color codes for 
+    various colors in the timetk theme.
         
     - blue         = "#2c3e50", # blue
     - red          = "#e31a1c", # red
@@ -144,7 +162,8 @@ def palette_timetk():
     
     Returns
     -------
-        The function `palette_timetk` returns a dictionary containing color names as keys and their corresponding hexadecimal color codes as values:
+        The function `palette_timetk` returns a dictionary containing color 
+        names as keys and their corresponding hexadecimal color codes as values:
     
     Examples
     --------

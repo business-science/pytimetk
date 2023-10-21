@@ -15,21 +15,30 @@ def augment_ewm(
     alpha: float = None,
     **kwargs,
 ) -> pd.DataFrame:
-    """Add Exponential Weighted Moving (EWM) window functions to a DataFrame or GroupBy object.
+    """
+    Add Exponential Weighted Moving (EWM) window functions to a DataFrame or 
+    GroupBy object.
     
-    The `augment_ewm` function applies Exponential Weighted Moving (EWM) window functions to specified
-    value columns of a DataFrame and adds the results as new columns.
+    The `augment_ewm` function applies Exponential Weighted Moving (EWM) window 
+    functions to specified value columns of a DataFrame and adds the results as 
+    new columns.
     
     Parameters
     ----------
     data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
         The input DataFrame or GroupBy object.
     date_column : str
-        The name of the column containing date information in the input DataFrame or GroupBy object.
+        The name of the column containing date information in the input 
+        DataFrame or GroupBy object.
     value_column : Union[str, list]
-        The `value_column` parameter is used to specify the column(s) on which the Exponential Weighted Moving (EWM) calculations will be performed. It can be either a string or a list of strings, representing the name(s) of the column(s) in the input DataFrame or GroupBy
+        The `value_column` parameter is used to specify the column(s) on which 
+        the Exponential Weighted Moving (EWM) calculations will be performed. It 
+        can be either a string or a list of strings, representing the name(s) of 
+        the column(s) in the input DataFrame or GroupBy
     window_func : Union[str, list], optional
-        The `window_func` parameter is used to specify the Exponential Weighted Moving (EWM) window function(s) to apply. It can be a string or a list of strings. The possible values are:
+        The `window_func` parameter is used to specify the Exponential Weighted 
+        Moving (EWM) window function(s) to apply. It can be a string or a list 
+        of strings. The possible values are:
         
         - 'mean': Calculate the exponentially weighted mean.
         - 'median': Calculate the exponentially weighted median.
@@ -37,23 +46,31 @@ def augment_ewm(
         - 'var': Calculate the exponentially weighted variance.
         
     alpha : float
-        The `alpha` parameter is a float that represents the smoothing factor for the Exponential Weighted Moving (EWM) window function. It controls the rate at which the weights decrease exponentially as the data points move further away from the current point.
+        The `alpha` parameter is a float that represents the smoothing factor 
+        for the Exponential Weighted Moving (EWM) window function. It controls 
+        the rate at which the weights decrease exponentially as the data points 
+        move further away from the current point.
     **kwargs: 
-        Additional arguments that are directly passed to the pandas EWM method. For more details, refer to the "Notes" section below.
+        Additional arguments that are directly passed to the pandas EWM method. 
+        For more details, refer to the "Notes" section below.
     
     Returns
     -------
     pd.DataFrame
-        The function `augment_ewm` returns a DataFrame augmented with the results of the Exponential Weighted Moving (EWM) calculations.
+        The function `augment_ewm` returns a DataFrame augmented with the 
+        results of the Exponential Weighted Moving (EWM) calculations.
     
     Notes
     ------
-        Any additional arguments provided through **kwargs are directly passed to the pandas EWM method. These arguments 
-        can include parameters like 'com', 'span', 'halflife', 'ignore_na', 'adjust' and more.
+        Any additional arguments provided through **kwargs are directly passed 
+        to the pandas EWM method. These arguments can include parameters like 
+        'com', 'span', 'halflife', 'ignore_na', 'adjust' and more.
     
         For a comprehensive list and detailed description of these parameters:
-        - Refer to the official pandas documentation: https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.ewm.html
-        - Or, within an interactive Python environment, use: `?pandas.DataFrame.ewm` to display the method's docstring.
+        - Refer to the official pandas documentation: 
+          https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.ewm.html
+        - Or, within an interactive Python environment, use: 
+          `?pandas.DataFrame.ewm` to display the method's docstring.
 
     Examples
     --------
@@ -68,7 +85,8 @@ def augment_ewm(
 
     ```{python}
     # This example demonstrates the use of string-named functions on an EWM.
-    # The decay parameter used in this example is 'alpha', but other methods (e.g., 'com', 'span', 'halflife') can also be utilized.
+    # The decay parameter used in this example is 'alpha', but other methods 
+      (e.g., 'com', 'span', 'halflife') can also be utilized.
 
     ewm_df = (
         df
@@ -86,7 +104,6 @@ def augment_ewm(
     display(ewm_df)
     ```
     """
-
     # Ensure data is a DataFrame or a GroupBy object
     check_dataframe_or_groupby(data)
     
