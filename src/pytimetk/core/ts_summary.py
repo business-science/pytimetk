@@ -19,46 +19,73 @@ def ts_summary(
     threads = 1,
     show_progress = True,
 ) -> pd.DataFrame:
-    '''Computes summary statistics for a time series data, either for the entire dataset or grouped by a specific column.
+    '''
+    Computes summary statistics for a time series data, either for the entire 
+    dataset or grouped by a specific column.
     
     Parameters
     ----------
     data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter can be either a Pandas DataFrame or a Pandas DataFrameGroupBy object. It represents the data that you want to summarize.
+        The `data` parameter can be either a Pandas DataFrame or a Pandas 
+        DataFrameGroupBy object. It represents the data that you want to 
+        summarize.
     date_column : str
-        The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to compute summary statistics for the time series data.
+        The `date_column` parameter is a string that specifies the name of the 
+        column in the DataFrame that contains the dates. This column will be 
+        used to compute summary statistics for the time series data.
     
     Returns
     -------
     pd.DataFrame
-        The `ts_summary` function returns a summary of time series data. The summary includes the following statistics:
-        - If grouped data is provided, the returned data will contain the grouping columns first.
+        The `ts_summary` function returns a summary of time series data. The 
+        summary includes the following statistics:
+        - If grouped data is provided, the returned data will contain the 
+          grouping columns first.
         - `date_n`: The number of observations in the time series.
         - `date_tz`: The time zone of the time series.
         - `date_start`: The first date in the time series.
         - `date_end`: The last date in the time series.
-        - `freq_inferred_unit`: The inferred frequency of the time series from `pandas`.
-        - `freq_median_timedelta`: The median time difference between consecutive observations in the time series.
-        - `freq_median_scale`: The median time difference between consecutive observations in the time series, scaled to a common unit.
-        - `freq_median_unit`: The unit of the median time difference between consecutive observations in the time series.
-        - `diff_min`: The minimum time difference between consecutive observations in the time series as a timedelta.
-        - `diff_q25`: The 25th percentile of the time difference between consecutive observations in the time series as a timedelta.
-        - `diff_median`: The median time difference between consecutive observations in the time series as a timedelta.
-        - `diff_mean`: The mean time difference between consecutive observations in the time series as a timedelta.
-        - `diff_q75`: The 75th percentile of the time difference between consecutive observations in the time series as a timedelta.
-        - `diff_max`: The maximum time difference between consecutive observations in the time series as a timedelta.
-        - `diff_min_seconds`: The minimum time difference between consecutive observations in the time series in seconds.
-        - `diff_q25_seconds`: The 25th percentile of the time difference between consecutive observations in the time series in seconds.
-        - `diff_median_seconds`: The median time difference between consecutive observations in the time series in seconds.
-        - `diff_mean_seconds`: The mean time difference between consecutive observations in the time series in seconds.
-        - `diff_q75_seconds`: The 75th percentile of the time difference between consecutive observations in the time series in seconds.
-        - `diff_max_seconds`: The maximum time difference between consecutive observations in the time series in seconds.
+        - `freq_inferred_unit`: The inferred frequency of the time series from 
+                               `pandas`.
+        - `freq_median_timedelta`: The median time difference between 
+                                   consecutive observations in the time series.
+        - `freq_median_scale`: The median time difference between consecutive 
+                               observations in the time series, scaled to a 
+                              common unit.
+        - `freq_median_unit`: The unit of the median time difference between 
+                              consecutive observations in the time series.
+        - `diff_min`: The minimum time difference between consecutive 
+                      observations in the time series as a timedelta.
+        - `diff_q25`: The 25th percentile of the time difference between 
+                      consecutive observations in the time series as a timedelta.
+        - `diff_median`: The median time difference between consecutive 
+                         observations in the time series as a timedelta.
+        - `diff_mean`: The mean time difference between consecutive observations 
+                       in the time series as a timedelta.
+        - `diff_q75`: The 75th percentile of the time difference between 
+                      consecutive observations in the time series as a timedelta.
+        - `diff_max`: The maximum time difference between consecutive 
+                      observations in the time series as a timedelta.
+        - `diff_min_seconds`: The minimum time difference between consecutive 
+                              observations in the time series in seconds.
+        - `diff_q25_seconds`: The 25th percentile of the time difference between 
+                              consecutive observations in the time series in 
+                              seconds.
+        - `diff_median_seconds`: The median time difference between consecutive 
+                                 observations in the time series in seconds.
+        - `diff_mean_seconds`: The mean time difference between consecutive 
+                               observations in the time series in seconds.
+        - `diff_q75_seconds`: The 75th percentile of the time difference between 
+                              consecutive observations in the time series in seconds.
+        - `diff_max_seconds`: The maximum time difference between consecutive 
+                              observations in the time series in seconds.
     
     Notes
     -----
     ## Performance
     
-    This function uses parallel processing to speed up computation for large datasets with many time series groups: 
+    This function uses parallel processing to speed up computation for large 
+    datasets with many time series groups: 
     
     Parallel processing has overhead and may not be faster on small datasets.
     
@@ -173,41 +200,64 @@ def _ts_summary(group: pd.DataFrame, date_column: str) -> pd.DataFrame:
     return result
     
 def get_diff_summary(idx: Union[pd.Series, pd.DatetimeIndex], numeric: bool = False):
-    '''Calculates summary statistics of the time differences between consecutive values in a datetime index.
+    '''
+    Calculates summary statistics of the time differences between consecutive values in a datetime index.
     
     Parameters
     ----------
     idx : pd.Series or pd.DateTimeIndex
-        The `idx` parameter can be either a pandas Series or a pandas DateTimeIndex. It represents the index values for which you want to calculate the difference summary.
+        The `idx` parameter can be either a pandas Series or a pandas 
+        DateTimeIndex. It represents the index values for which you want to 
+        calculate the difference summary.
     numeric : bool, optional
-        The `numeric` parameter is a boolean flag that indicates whether the input index should be treated as numeric or not. 
+        The `numeric` parameter is a boolean flag that indicates whether the 
+        input index should be treated as numeric or not. 
         
-        - If `numeric` is set to `True`, the index values are converted to integers representing the number of seconds since the Unix epoch (January 1, 1970). 
+        - If `numeric` is set to `True`, the index values are converted to 
+          integers representing the number of seconds since the Unix epoch 
+          (January 1, 1970). 
         
-        - If `numeric` is set to `False`, the index values are treated as datetime values. The default value of `numeric` is `False`.
+        - If `numeric` is set to `False`, the index values are treated as 
+          datetime values. The default value of `numeric` is `False`.
     
     Returns
     -------
     pd.DataFrame
-        The function `get_diff_summary` returns a pandas DataFrame containing summary statistics including:
+        The function `get_diff_summary` returns a pandas DataFrame containing 
+        summary statistics including:
         
         If `numeric` is set to `False`, the column names are:
-        - `diff_min`: The minimum time difference between consecutive observations in the time series as a timedelta.
-        - `diff_q25`: The 25th percentile of the time difference between consecutive observations in the time series as a timedelta.
-        - `diff_median`: The median time difference between consecutive observations in the time series as a timedelta.
-        - `diff_mean`: The mean time difference between consecutive observations in the time series as a timedelta.
-        - `diff_q75`: The 75th percentile of the time difference between consecutive observations in the time series as a timedelta.
-        - `diff_max`: The maximum time difference between consecutive observations in the time series as a timedelta.
+        - `diff_min`: The minimum time difference between consecutive 
+                      observations in the time series as a timedelta.
+        - `diff_q25`: The 25th percentile of the time difference between 
+                      consecutive observations in the time series as a timedelta.
+        - `diff_median`: The median time difference between consecutive 
+                         observations in the time series as a timedelta.
+        - `diff_mean`: The mean time difference between consecutive observations 
+                       in the time series as a timedelta.
+        - `diff_q75`: The 75th percentile of the time difference between 
+                      consecutive observations in the time series as a timedelta.
+        - `diff_max`: The maximum time difference between consecutive 
+                      observations in the time series as a timedelta.
         
         If `numeric` is set to `True`, the column names are:
-        - `diff_min_seconds`: The minimum time difference between consecutive observations in the time series in seconds.
-        - `diff_q25_seconds`: The 25th percentile of the time difference between consecutive observations in the time series in seconds.
-        - `diff_median_seconds`: The median time difference between consecutive observations in the time series in seconds.
-        - `diff_mean_seconds`: The mean time difference between consecutive observations in the time series in seconds.
-        - `diff_q75_seconds`: The 75th percentile of the time difference between consecutive observations in the time series in seconds.
-        - `diff_max_seconds`: The maximum time difference between consecutive observations in the time series in seconds.
+        - `diff_min_seconds`: The minimum time difference between consecutive 
+                              observations in the time series in seconds.
+        - `diff_q25_seconds`: The 25th percentile of the time difference between 
+                              consecutive observations in the time series in 
+                              seconds.
+        - `diff_median_seconds`: The median time difference between consecutive 
+                                 observations in the time series in seconds.
+        - `diff_mean_seconds`: The mean time difference between consecutive 
+                               observations in the time series in seconds.
+        - `diff_q75_seconds`: The 75th percentile of the time difference between 
+                              consecutive observations in the time series in 
+                              seconds.
+        - `diff_max_seconds`: The maximum time difference between consecutive 
+                              observations in the time series in seconds.
 
     '''
+    
     
     # common checks
     check_series_or_datetime(idx)
@@ -244,13 +294,16 @@ def get_diff_summary(idx: Union[pd.Series, pd.DatetimeIndex], numeric: bool = Fa
     
     
 def get_date_summary(idx: Union[pd.Series, pd.DatetimeIndex]):
-    '''Returns a summary of the date-related information, including the number of dates, the time zone, the start
-    date, and the end date.
+    '''
+    Returns a summary of the date-related information, including the number of 
+    dates, the time zone, the start date, and the end date.
     
     Parameters
     ----------
     idx : pd.Series or pd.DateTimeIndex
-        The parameter `idx` can be either a pandas Series or a pandas DateTimeIndex. It represents the dates or timestamps for which we want to generate a summary.
+        The parameter `idx` can be either a pandas Series or a pandas 
+        DateTimeIndex. It represents the dates or timestamps for which we want 
+        to generate a summary.
     
     Returns
     -------
