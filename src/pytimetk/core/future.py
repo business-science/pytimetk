@@ -24,28 +24,49 @@ def future_frame(
     show_progress: bool = True,
     engine: str = 'pandas'
 ) -> pd.DataFrame:
-    '''Extend a DataFrame or GroupBy object with future dates.
+    '''
+    Extend a DataFrame or GroupBy object with future dates.
     
-    The `future_frame` function extends a given DataFrame or GroupBy object with future dates based on a specified length, optionally binding the original data.
+    The `future_frame` function extends a given DataFrame or GroupBy object with 
+    future dates based on a specified length, optionally binding the original data.
     
     
     Parameters
     ----------
     data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter is the input DataFrame or DataFrameGroupBy object that you want to extend with future dates.
+        The `data` parameter is the input DataFrame or DataFrameGroupBy object 
+        that you want to extend with future dates.
     date_column : str
-        The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to generate future dates.
+        The `date_column` parameter is a string that specifies the name of the 
+        column in the DataFrame that contains the dates. This column will be 
+        used to generate future dates.
     freq : str, optional
     length_out : int
-        The `length_out` parameter specifies the number of future dates to be added to the DataFrame.
+        The `length_out` parameter specifies the number of future dates to be 
+        added to the DataFrame.
     force_regular : bool, optional
-        The `force_regular` parameter is a boolean flag that determines whether the frequency of the future dates should be forced to be regular. If `force_regular` is set to `True`, the frequency of the future dates will be forced to be regular. If `force_regular` is set to `False`, the frequency of the future dates will be inferred from the input data (e.g. business calendars might be used). The default value is `False`.
+        The `force_regular` parameter is a boolean flag that determines whether 
+        the frequency of the future dates should be forced to be regular. If 
+        `force_regular` is set to `True`, the frequency of the future dates will 
+        be forced to be regular. If `force_regular` is set to `False`, the 
+        frequency of the future dates will be inferred from the input data (e.g. 
+        business calendars might be used). The default value is `False`.
     bind_data : bool, optional
-        The `bind_data` parameter is a boolean flag that determines whether the extended data should be concatenated with the original data or returned separately. If `bind_data` is set to `True`, the extended data will be concatenated with the original data using `pd.concat`. If `bind_data` is set to `False`, the extended data will be returned separately. The default value is `True`.
+        The `bind_data` parameter is a boolean flag that determines whether the 
+        extended data should be concatenated with the original data or returned 
+        separately. If `bind_data` is set to `True`, the extended data will be 
+        concatenated with the original data using `pd.concat`. If `bind_data` is 
+        set to `False`, the extended data will be returned separately. The 
+        default value is `True`.
     threads : int
-        The `threads` parameter specifies the number of threads to use for parallel processing. If `threads` is set to `None`, it will use all available processors. If `threads` is set to `-1`, it will use all available processors as well.
+        The `threads` parameter specifies the number of threads to use for 
+        parallel processing. If `threads` is set to `None`, it will use all 
+        available processors. If `threads` is set to `-1`, it will use all 
+        available processors as well.
     show_progress : bool, optional
-        A boolean parameter that determines whether to display progress using tqdm. If set to True, progress will be displayed. If set to False, progress will not be displayed.
+        A boolean parameter that determines whether to display progress using tqdm. 
+        If set to True, progress will be displayed. If set to False, progress 
+        will not be displayed.
     engine : str, optional
         The `engine` parameter specifies the engine to use for computation. 
         - Currently only `pandas` is supported.
@@ -61,10 +82,12 @@ def future_frame(
     
     ## Performance
     
-    This function uses a number of techniques to speed up computation for large datasets with many time series groups: 
+    This function uses a number of techniques to speed up computation for large 
+    datasets with many time series groups: 
     
     - We vectorize where possible and use parallel processing to speed up. 
-    - The `threads` parameter controls the number of threads to use for parallel processing.
+    - The `threads` parameter controls the number of threads to use for parallel 
+      processing.
     
         - Set threads = -1 to use all available processors. 
         - Set threads = 1 to disable parallel processing.
@@ -281,20 +304,34 @@ def make_future_timeseries(
     freq: Optional[str] = None,
     force_regular: bool = False,
 ) -> pd.Series:
-    '''Make future dates for a time series.
+    '''
+    Make future dates for a time series.
     
-    The function `make_future_timeseries` takes a pandas Series or DateTimeIndex and generates a future sequence of dates based on the frequency of the input series.
+    The function `make_future_timeseries` takes a pandas Series or DateTimeIndex 
+    and generates a future sequence of dates based on the frequency of the input 
+    series.
     
     Parameters
     ----------
     idx : pd.Series or pd.DateTimeIndex
-        The `idx` parameter is the input time series data. It can be either a pandas Series or a pandas DateTimeIndex. It represents the existing dates in the time series.
+        The `idx` parameter is the input time series data. It can be either a 
+        pandas Series or a pandas DateTimeIndex. It represents the existing dates 
+        in the time series.
     length_out : int
-        The parameter `length_out` is an integer that represents the number of future dates to generate for the time series.
+        The parameter `length_out` is an integer that represents the number of 
+        future dates to generate for the time series.
     freq : str, optional
-        The `frequency` parameter is a string that specifies the frequency of the future dates. If `frequency` is set to `None`, the frequency of the future dates will be inferred from the input data (e.g. business calendars might be used). The default value is `None`.
+        The `frequency` parameter is a string that specifies the frequency of the 
+        future dates. If `frequency` is set to `None`, the frequency of the future 
+        dates will be inferred from the input data (e.g. business calendars might 
+        be used). The default value is `None`.
     force_regular : bool, optional
-        The `force_regular` parameter is a boolean flag that determines whether the frequency of the future dates should be forced to be regular. If `force_regular` is set to `True`, the frequency of the future dates will be forced to be regular. If `force_regular` is set to `False`, the frequency of the future dates will be inferred from the input data (e.g. business calendars might be used). The default value is `False`.
+        The `force_regular` parameter is a boolean flag that determines whether 
+        the frequency of the future dates should be forced to be regular. If 
+        `force_regular` is set to `True`, the frequency of the future dates will 
+        be forced to be regular. If `force_regular` is set to `False`, the 
+        frequency of the future dates will be inferred from the input data (e.g. 
+        business calendars might be used). The default value is `False`.
     
     Returns
     -------
@@ -308,7 +345,8 @@ def make_future_timeseries(
     import pandas as pd
     import pytimetk as tk
     
-    # Works with a single date (must provide a length out and frequency if only 1 date is provided)
+    # Works with a single date (must provide a length out and frequency if only 
+    # 1 date is provided)
     tk.make_future_timeseries("2011-01-01", 5, "D")
     ```
     
