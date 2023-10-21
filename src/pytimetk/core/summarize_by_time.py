@@ -29,18 +29,29 @@ def summarize_by_time(
     '''
     Summarize a DataFrame or GroupBy object by time.
     
-    The `summarize_by_time` function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the time-based aggregation.
+    The `summarize_by_time` function aggregates data by a specified time period 
+    and one or more numeric columns, allowing for grouping and customization of 
+    the time-based aggregation.
     
     Parameters
     ----------
     data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        A pandas DataFrame or a pandas GroupBy object. This is the data that you want to summarize by time.
+        A pandas DataFrame or a pandas GroupBy object. This is the data that you 
+        want to summarize by time.
     date_column : str
-        The name of the column in the data frame that contains the dates or timestamps to be aggregated by. This column must be of type datetime64.
+        The name of the column in the data frame that contains the dates or 
+        timestamps to be aggregated by. This column must be of type datetime64.
     value_column : str or list
-        The `value_column` parameter is the name of one or more columns in the DataFrame that you want to aggregate by. It can be either a string representing a single column name, or a list of strings representing multiple column names.
+        The `value_column` parameter is the name of one or more columns in the 
+        DataFrame that you want to aggregate by. It can be either a string 
+        representing a single column name, or a list of strings representing 
+        multiple column names.
     freq : str, optional
-        The `freq` parameter specifies the frequency at which the data should be aggregated. It accepts a string representing a pandas frequency offset, such as "D" for daily or "MS" for month start. The default value is "D", which means the data will be aggregated on a daily basis. Some common frequency aliases include:
+        The `freq` parameter specifies the frequency at which the data should be 
+        aggregated. It accepts a string representing a pandas frequency offset, 
+        such as "D" for daily or "MS" for month start. The default value is "D", 
+        which means the data will be aggregated on a daily basis. Some common 
+        frequency aliases include:
         
         - S: secondly frequency
         - min: minute frequency
@@ -55,7 +66,11 @@ def summarize_by_time(
         - YS: year start frequency
         
     agg_func : list, optional
-        The `agg_func` parameter is used to specify one or more aggregating functions to apply to the value column(s) during the summarization process. It can be a single function or a list of functions. The default value is `"sum"`, which represents the sum function. Some common aggregating functions include:
+        The `agg_func` parameter is used to specify one or more aggregating 
+        functions to apply to the value column(s) during the summarization 
+        process. It can be a single function or a list of functions. The default 
+        value is `"sum"`, which represents the sum function. Some common 
+        aggregating functions include:
         
         - "sum": Sum of values
         - "mean": Mean of values
@@ -71,7 +86,8 @@ def summarize_by_time(
         - "corr": Correlation between values
         
         Pandas Engine Only:
-        Custom `lambda` aggregating functions can be used too. Here are several common examples:
+        Custom `lambda` aggregating functions can be used too. Here are several 
+        common examples:
         
         - ("q25", lambda x: x.quantile(0.25)): 25th percentile of values
         - ("q75", lambda x: x.quantile(0.75)): 75th percentile of values
@@ -79,15 +95,24 @@ def summarize_by_time(
         - ("range", lambda x: x.max() - x.min()): Range of values
         
     wide_format : bool, optional
-        A boolean parameter that determines whether the output should be in "wide" or "long" format. If set to `True`, the output will be in wide format, where each group is represented by a separate column. If set to False, the output will be in long format, where each group is represented by a separate row. The default value is `False`.
+        A boolean parameter that determines whether the output should be in 
+        "wide" or "long" format. If set to `True`, the output will be in wide 
+        format, where each group is represented by a separate column. If set to 
+        False, the output will be in long format, where each group is represented 
+        by a separate row. The default value is `False`.
     fillna : int, optional
-        The `fillna` parameter is used to specify the value to fill missing data with. By default, it is set to 0. If you want to keep missing values as NaN, you can use `np.nan` as the value for `fillna`.
+        The `fillna` parameter is used to specify the value to fill missing data 
+        with. By default, it is set to 0. If you want to keep missing values as 
+        NaN, you can use `np.nan` as the value for `fillna`.
     engine : str, optional
-        The `engine` parameter is used to specify the engine to use for summarizing the data. It can be either "pandas" or "polars". 
+        The `engine` parameter is used to specify the engine to use for 
+        summarizing the data. It can be either "pandas" or "polars". 
         
         - The default value is "pandas".
         
-        - When "polars", the function will internally use the `polars` library for summarizing the data. This can be faster than using "pandas" for large datasets. 
+        - When "polars", the function will internally use the `polars` library 
+          for summarizing the data. This can be faster than using "pandas" for 
+          large datasets. 
     
     Returns
     -------
