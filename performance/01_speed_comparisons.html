@@ -121,13 +121,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <meta property="og:title" content="pytimetk - Speed Comparisons">
 <meta property="og:description" content="">
-<meta property="og:image" content="https://business-science.github.io/pytimetk/performance/01_speed_comparisons_files/figure-html/cell-3-output-2.png">
+<meta property="og:image" content="https://business-science.github.io/pytimetk/performance/01_speed_comparisons_files/figure-html/cell-3-output-1.png">
 <meta property="og:site-name" content="pytimetk">
 <meta property="og:image:height" content="940">
 <meta property="og:image:width" content="1324">
 <meta name="twitter:title" content="pytimetk - Speed Comparisons">
 <meta name="twitter:description" content="">
-<meta name="twitter:image" content="https://business-science.github.io/pytimetk/performance/01_speed_comparisons_files/figure-html/cell-3-output-2.png">
+<meta name="twitter:image" content="https://business-science.github.io/pytimetk/performance/01_speed_comparisons_files/figure-html/cell-3-output-1.png">
 <meta name="twitter:image-height" content="940">
 <meta name="twitter:image-width" content="1324">
 <meta name="twitter:card" content="summary_large_image">
@@ -159,7 +159,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../performance/01_speed_comparisons.html">⚡ Performance:</a></li><li class="breadcrumb-item"><a href="../performance/01_speed_comparisons.html">Speed Comparisons</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../performance/01_speed_comparisons.html">🏎️ Performance:</a></li><li class="breadcrumb-item"><a href="../performance/01_speed_comparisons.html">Speed Comparisons</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -286,7 +286,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
- <span class="menu-text">⚡ Performance:</span></a>
+ <span class="menu-text">🏎️ Performance:</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -373,10 +373,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#rolling-calculations-augment_rolling" id="toc-rolling-calculations-augment_rolling" class="nav-link" data-scroll-target="#rolling-calculations-augment_rolling"><span class="header-section-number">3.2</span> Rolling Calculations <code>augment_rolling()</code></a></li>
   <li><a href="#augment-expanding-augment_expanding" id="toc-augment-expanding-augment_expanding" class="nav-link" data-scroll-target="#augment-expanding-augment_expanding"><span class="header-section-number">3.3</span> Augment Expanding <code>augment_expanding()</code></a></li>
   </ul></li>
-  <li><a href="#more-coming-soon" id="toc-more-coming-soon" class="nav-link" data-scroll-target="#more-coming-soon"><span class="header-section-number">4</span> More Coming Soon…</a>
-  <ul class="collapse">
-  <li><a href="#introducing-pytimetk-simplifying-time-series-analysis-for-everyone" id="toc-introducing-pytimetk-simplifying-time-series-analysis-for-everyone" class="nav-link" data-scroll-target="#introducing-pytimetk-simplifying-time-series-analysis-for-everyone"><span class="header-section-number">4.1</span> Introducing pytimetk: Simplifying Time Series Analysis for Everyone</a></li>
-  </ul></li>
+  <li><a href="#more-coming-soon" id="toc-more-coming-soon" class="nav-link" data-scroll-target="#more-coming-soon"><span class="header-section-number">4</span> More Coming Soon…</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/performance/01_speed_comparisons.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -416,8 +413,10 @@ How this guide benefits you
 </div>
 </div>
 </div>
+<p>Beginning in version 0.2.0 of <code>pytimetk</code>, we introduced new <code>polars</code> engines to many of our functions. This is aimed at leveraging the speed benefits of polars without requiring you (the user) to learn a new data manipulation framework.</p>
 <section id="pytimetk-speed-result-summary" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Pytimetk Speed Result Summary</h1>
+<p>It’s typical to see 2X to 15X speedups just by using the <code>polars</code> engine. Speedups of 500X to 3500X are possible by using efficient functions (e.g.&nbsp;staying away from lambdas).</p>
 <table class="table">
 <thead>
 <tr class="header">
@@ -447,7 +446,7 @@ How this guide benefits you
 </section>
 <section id="about-performance" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> About Performance</h1>
-<p>Beginning in version 0.2.0 of <code>pytimetk</code>, we introduced new <code>polars</code> engines to many of our functions. This is aimed at leveraging the speed benefits of polars without requiring you (the user) to learn a new data manipulation framework.</p>
+<p>In time series, data is often large (&lt;100M Rows), and contains many groups. Bbecause of this, computational efficiency is paramount. Beginning in pytimetk 0.2.0 we began introducing a new, <code>polars</code> backend to help improve the speed.</p>
 <section id="key-benefits" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="key-benefits"><span class="header-section-number">2.1</span> Key benefits:</h2>
 <ol type="1">
@@ -469,7 +468,7 @@ How this guide benefits you
 <h1 data-number="3"><span class="header-section-number">3</span> Speed Tests and Conclusions</h1>
 <p>Load the packages and datasets needed to replicate the speed tests (Click to Expand):</p>
 <div class="cell" data-execution_count="1">
-<details>
+<details open="">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Libraries</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
@@ -533,11 +532,8 @@ How this guide benefits you
 <li>Polars is 13.1X faster than Pandas</li>
 </ul>
 <div class="cell" data-execution_count="2">
-<div class="cell-output cell-output-display" data-execution_count="2">
-<pre><code>&lt;module 'matplotlib.pyplot' from '/Users/mdancho/opt/anaconda3/envs/pytimetk/lib/python3.9/site-packages/matplotlib/pyplot.py'&gt;</code></pre>
-</div>
 <div class="cell-output cell-output-display">
-<p><img src="01_speed_comparisons_files/figure-html/cell-3-output-2.png" width="662" height="470"></p>
+<p><img src="01_speed_comparisons_files/figure-html/cell-3-output-1.png" width="662" height="470"></p>
 </div>
 </div>
 <div class="tabset-margin-container"></div><div class="panel-tabset" data-groups="bbands-plotly-plotnine">
@@ -545,7 +541,27 @@ How this guide benefits you
 <div class="tab-content" data-groups="bbands-plotly-plotnine">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell" data-execution_count="3">
-<details>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit <span class="op">-</span>n <span class="dv">10</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_pytimetk <span class="op">=</span> expedia_df[[<span class="st">'site_name'</span>, <span class="st">'date_time'</span>, <span class="st">'cnt'</span>, <span class="st">'is_booking'</span>]] <span class="op">\</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'site_name'</span>) <span class="op">\</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    .summarize_by_time(</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        date_column <span class="op">=</span> <span class="st">'date_time'</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span> [<span class="st">'cnt'</span>, <span class="st">'is_booking'</span>],</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        freq <span class="op">=</span> <span class="st">'W'</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        agg_func <span class="op">=</span> [<span class="st">'sum'</span>, <span class="st">'count'</span>],</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        engine <span class="op">=</span> <span class="st">'polars'</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 50.8 ms ± 2.45 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell" data-execution_count="4">
+<details open="">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit <span class="op">-</span>n <span class="dv">10</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -556,30 +572,10 @@ How this guide benefits you
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span> [<span class="st">'cnt'</span>, <span class="st">'is_booking'</span>],</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        freq <span class="op">=</span> <span class="st">'W'</span>,</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        agg_func <span class="op">=</span> [<span class="st">'sum'</span>, <span class="st">'count'</span>],</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        engine <span class="op">=</span> <span class="st">'polars'</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        engine <span class="op">=</span> <span class="st">'pandas'</span></span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 50.8 ms ± 2.45 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-</div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="cell" data-execution_count="4">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit <span class="op">-</span>n <span class="dv">10</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_pytimetk <span class="op">=</span> expedia_df[[<span class="st">'site_name'</span>, <span class="st">'date_time'</span>, <span class="st">'cnt'</span>, <span class="st">'is_booking'</span>]] <span class="op">\</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'site_name'</span>) <span class="op">\</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    .summarize_by_time(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        date_column <span class="op">=</span> <span class="st">'date_time'</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span> [<span class="st">'cnt'</span>, <span class="st">'is_booking'</span>],</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        freq <span class="op">=</span> <span class="st">'W'</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        agg_func <span class="op">=</span> [<span class="st">'sum'</span>, <span class="st">'count'</span>],</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        engine <span class="op">=</span> <span class="st">'pandas'</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 668 ms ± 16.5 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 668 ms ± 16.5 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </div>
@@ -593,11 +589,8 @@ How this guide benefits you
 <li>Polars is 3,517X faster than Pandas with Lambdas</li>
 </ul>
 <div class="cell" data-execution_count="5">
-<div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>&lt;module 'matplotlib.pyplot' from '/Users/mdancho/opt/anaconda3/envs/pytimetk/lib/python3.9/site-packages/matplotlib/pyplot.py'&gt;</code></pre>
-</div>
 <div class="cell-output cell-output-display">
-<p><img src="01_speed_comparisons_files/figure-html/cell-6-output-2.png" width="660" height="470"></p>
+<p><img src="01_speed_comparisons_files/figure-html/cell-6-output-1.png" width="660" height="470"></p>
 </div>
 </div>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -606,7 +599,64 @@ How this guide benefits you
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <p>Uses <code>pl_quantile()</code> configurable function.</p>
 <div class="cell" data-execution_count="6">
-<details>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        .augment_rolling(</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            window <span class="op">=</span> (<span class="dv">1</span>,<span class="dv">10</span>),</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in std function</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'quantile_75'</span>, pl_quantile(quantile<span class="op">=</span><span class="fl">0.75</span>)),  <span class="co"># Configurable with all parameters found in polars.Expr.rolling_quantile</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>            ],</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'polars'</span>,</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 9.81 ms ± 116 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p>Uses <code>pd_quantile()</code> configurable function.</p>
+<div class="cell" data-execution_count="7">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        .augment_rolling(</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            window <span class="op">=</span> (<span class="dv">1</span>,<span class="dv">10</span>),</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in standard deviation function,</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>                <span class="co"># ('quantile_75', lambda x: pd.Series(x).quantile(0.75)),  # Custom quantile function</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'quantile_75'</span>, pd_quantile(q<span class="op">=</span><span class="fl">0.75</span>))</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>            ],</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'pandas'</span>,  <span class="co"># Utilize pandas for the underlying computations</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>            show_progress <span class="op">=</span> <span class="va">False</span>,</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co"># 106 ms ± 2.38 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<p>Uses <code>lambda x: pd.Series(x).quantile(0.75)</code>. Lambda functions are extremely inefficient.</p>
+<div class="cell" data-execution_count="8">
+<details open="">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -619,73 +669,16 @@ How this guide benefits you
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>            window <span class="op">=</span> (<span class="dv">1</span>,<span class="dv">10</span>),</span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in std function</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'quantile_75'</span>, pl_quantile(quantile<span class="op">=</span><span class="fl">0.75</span>)),  <span class="co"># Configurable with all parameters found in polars.Expr.rolling_quantile</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in standard deviation function,</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'quantile_75'</span>, <span class="kw">lambda</span> x: pd.Series(x).quantile(<span class="fl">0.75</span>)), <span class="co"># lambda slows things down</span></span>
 <span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>            ],</span>
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'polars'</span>,</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 9.81 ms ± 116 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-</div>
-<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
-<p>Uses <code>pd_quantile()</code> configurable function.</p>
-<div class="cell" data-execution_count="7">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        .augment_rolling(</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>            window <span class="op">=</span> (<span class="dv">1</span>,<span class="dv">10</span>),</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in standard deviation function,</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>                <span class="co"># ('quantile_75', lambda x: pd.Series(x).quantile(0.75)),  # Custom quantile function</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'quantile_75'</span>, pd_quantile(q<span class="op">=</span><span class="fl">0.75</span>))</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>            ],</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'pandas'</span>,  <span class="co"># Utilize pandas for the underlying computations</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>            show_progress <span class="op">=</span> <span class="va">False</span>,</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="co"># 106 ms ± 2.38 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-</div>
-<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
-<p>Uses <code>lambda x: pd.Series(x).quantile(0.75)</code>. Lambda functions are extremely inefficient.</p>
-<div class="cell" data-execution_count="8">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        .augment_rolling(</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>            window <span class="op">=</span> (<span class="dv">1</span>,<span class="dv">10</span>),</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in standard deviation function,</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'quantile_75'</span>, <span class="kw">lambda</span> x: pd.Series(x).quantile(<span class="fl">0.75</span>)), <span class="co"># lambda slows things down</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>            ],</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'pandas'</span>,  </span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>            show_progress <span class="op">=</span> <span class="va">False</span>,</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co"># 34.5 s ± 236 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'pandas'</span>,  </span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>            show_progress <span class="op">=</span> <span class="va">False</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co"># 34.5 s ± 236 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </div>
@@ -699,11 +692,8 @@ How this guide benefits you
 <li>Polars is 515X faster than Pandas with lambda functions</li>
 </ul>
 <div class="cell" data-execution_count="9">
-<div class="cell-output cell-output-display" data-execution_count="4">
-<pre><code>&lt;module 'matplotlib.pyplot' from '/Users/mdancho/opt/anaconda3/envs/pytimetk/lib/python3.9/site-packages/matplotlib/pyplot.py'&gt;</code></pre>
-</div>
 <div class="cell-output cell-output-display">
-<p><img src="01_speed_comparisons_files/figure-html/cell-10-output-2.png" width="660" height="470"></p>
+<p><img src="01_speed_comparisons_files/figure-html/cell-10-output-1.png" width="660" height="470"></p>
 </div>
 </div>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -712,81 +702,81 @@ How this guide benefits you
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <p>Uses <code>pl_quantile()</code> configurable function.</p>
 <div class="cell" data-execution_count="10">
-<details>
+<details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        .augment_expanding(</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in std function</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'quantile_75'</span>, pl_quantile(quantile<span class="op">=</span><span class="fl">0.75</span>)),  <span class="co"># Configurable with all parameters found in polars.Expr.rolling_quantile</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>            ],</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'polars'</span>,</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 6.95 ms ± 163 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        .augment_expanding(</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in std function</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'quantile_75'</span>, pl_quantile(quantile<span class="op">=</span><span class="fl">0.75</span>)),  <span class="co"># Configurable with all parameters found in polars.Expr.rolling_quantile</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>            ],</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'polars'</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 6.95 ms ± 163 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </div>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <p>Uses <code>pd_quantile()</code> configurable function.</p>
 <div class="cell" data-execution_count="11">
-<details>
+<details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        .augment_expanding(</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in standard deviation function,</span></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>                <span class="co"># ('quantile_75', lambda x: pd.Series(x).quantile(0.75)),  # Custom quantile function</span></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'quantile_75'</span>, pd_quantile(q<span class="op">=</span><span class="fl">0.75</span>))</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>            ],</span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'pandas'</span>,  <span class="co"># Utilize pandas for the underlying computations</span></span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="co"># 20.8 ms ± 1.51 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        .augment_expanding(</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in standard deviation function,</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                <span class="co"># ('quantile_75', lambda x: pd.Series(x).quantile(0.75)),  # Custom quantile function</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'quantile_75'</span>, pd_quantile(q<span class="op">=</span><span class="fl">0.75</span>))</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>            ],</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'pandas'</span>,  <span class="co"># Utilize pandas for the underlying computations</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co"># 20.8 ms ± 1.51 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </div>
 <div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
 <p>Uses <code>lambda x: pd.Series(x).quantile(0.75)</code>. Lambda functions are extremely inefficient.</p>
 <div class="cell" data-execution_count="12">
-<details>
+<details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        .augment_expanding(</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in standard deviation function,</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'quantile_75'</span>, <span class="kw">lambda</span> x: pd.Series(x).quantile(<span class="fl">0.75</span>)), <span class="co"># lambda slows things down</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>            ],</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'pandas'</span>,  </span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.58 s ± 110 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        .augment_expanding(</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>            window_func <span class="op">=</span> [</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>,  <span class="co"># Built-in mean function</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'std'</span>,   <span class="co"># Built-in standard deviation function,</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'quantile_75'</span>, <span class="kw">lambda</span> x: pd.Series(x).quantile(<span class="fl">0.75</span>)), <span class="co"># lambda slows things down</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>            ],</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>            min_periods <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'pandas'</span>,  </span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.58 s ± 110 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </div>
@@ -802,60 +792,8 @@ How this guide benefits you
 <li>To make requests, please see our <a href="https://github.com/business-science/pytimetk/issues/2">Project Roadmap GH Issue #2</a>. You can make requests there.</li>
 <li>Want to contribute? <a href="../contributing.html">See our contributing guide here.</a></li>
 </ul>
-<p>Certainly! Here’s a markdown comparison table and a persuasive introduction for the <code>pytimetk</code> homepage:</p>
-<hr>
-<section id="introducing-pytimetk-simplifying-time-series-analysis-for-everyone" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="introducing-pytimetk-simplifying-time-series-analysis-for-everyone"><span class="header-section-number">4.1</span> Introducing pytimetk: Simplifying Time Series Analysis for Everyone</h2>
-<p>Time series analysis is fundamental in many fields, from business forecasting to scientific research. While the Python ecosystem offers tools like <code>pandas</code>, they sometimes can be verbose and not optimized for all operations, especially for complex time-based aggregations and visualizations.</p>
-<p>Enter <strong>pytimetk</strong>. Crafted with a blend of ease-of-use and computational efficiency, <code>pytimetk</code> significantly simplifies the process of time series manipulation and visualization. By leveraging the <code>polars</code> backend, you can experience speed improvements ranging from 3X to a whopping 30X. Let’s dive into a comparative analysis.</p>
-<table class="table">
-<colgroup>
-<col style="width: 23%">
-<col style="width: 34%">
-<col style="width: 42%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Features/Properties</th>
-<th><strong>pytimetk</strong></th>
-<th><strong>pandas (+matplotlib)</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Speed</strong></td>
-<td>🚀 3X to 30X Faster</td>
-<td>🐢 Standard</td>
-</tr>
-<tr class="even">
-<td><strong>Code Simplicity</strong></td>
-<td>🎉 Concise, readable syntax</td>
-<td>📜 Often verbose</td>
-</tr>
-<tr class="odd">
-<td><code>summarize_by_time()</code></td>
-<td>🕐 2 lines, 13.4X faster</td>
-<td>🕐 6 lines, 2 for-loops</td>
-</tr>
-<tr class="even">
-<td><code>plot_timeseries()</code></td>
-<td>🎨 2 lines, no customization</td>
-<td>🎨 16 lines, customization needed</td>
-</tr>
-</tbody>
-</table>
-<p>As evident from the table:</p>
-<ul>
-<li><p><code>summarize_by_time()</code> in <strong>pytimetk</strong> is not just about speed; it also simplifies your codebase, converting a 6-line, double for-loop routine in <code>pandas</code> into a concise 2-line operation.</p></li>
-<li><p>Similarly, <code>plot_timeseries()</code> dramatically streamlines the plotting process, encapsulating what would typically require 16 lines of <code>matplotlib</code> code into a mere 2-line command in <strong>pytimetk</strong>, without sacrificing customization or quality.</p></li>
-</ul>
-<p>Join the revolution in time series analysis. Reduce your code complexity, increase your productivity, and harness the speed that <strong>pytimetk</strong> brings to your workflows.</p>
-<p>Explore more at <a href="https://business-science.github.io/pytimetk/">pytimetk homepage</a>.</p>
-<hr>
-<p>Feel free to modify the content as per your requirements or branding guidelines.</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

@@ -285,7 +285,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
- <span class="menu-text">⚡ Performance:</span></a>
+ <span class="menu-text">🏎️ Performance:</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -443,7 +443,7 @@ How this guide benefits you
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>m4_daily_df <span class="op">=</span> tk.load_dataset(<span class="st">"m4_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>m4_daily_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="1">
+<div class="cell-output cell-output-display" data-execution_count="21">
 <div>
 
 
@@ -654,28 +654,22 @@ Inspect the DataFrame
 </div>
 <div id="callout-7" class="callout-7-contents callout-collapse collapse show">
 <div class="callout-body-container callout-body">
-<p>Use Pandas <code>info()</code> method to check compliance.</p>
+<p>Use the <code>tk.glimpse()</code> method to check compliance.</p>
 </div>
 </div>
 </div>
-<p>Using pandas <code>info()</code> method, we can see that we have a compliant data frame with a <code>date</code> column containing <code>datetime64</code> and a <code>value</code> column containing <code>float64</code>. For grouped analysis we have the <code>id</code> column containing <code>object</code> dtype.</p>
+<p>Using pytimetk <code>glimpse()</code> method, we can see that we have a compliant data frame with a <code>date</code> column containing <code>datetime64</code> and a <code>value</code> column containing <code>float64</code>. For grouped analysis we have the <code>id</code> column containing <code>object</code> dtype.</p>
 <div class="cell" data-execution_count="2">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tip: Inspect for compliance with info()</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tip: Inspect for compliance with glimpse()</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
-RangeIndex: 9743 entries, 0 to 9742
-Data columns (total 3 columns):
- #   Column  Non-Null Count  Dtype         
----  ------  --------------  -----         
- 0   id      9743 non-null   object        
- 1   date    9743 non-null   datetime64[ns]
- 2   value   9743 non-null   float64       
-dtypes: datetime64[ns](1), float64(1), object(1)
-memory usage: 228.5+ KB</code></pre>
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 9743 rows of 3 columns
+id:     object           ['D10', 'D10', 'D10', 'D10', 'D10', 'D10', 'D10 ...
+date:   datetime64[ns]   [Timestamp('2014-07-03 00:00:00'), Timestamp('2 ...
+value:  float64          [2076.2, 2073.4, 2048.7, 2048.9, 2006.4, 2017.6 ...</code></pre>
 </div>
 </div>
 </section>
@@ -734,7 +728,7 @@ Help Doc Info: <code>summarize_by_time()</code>
 <span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>df_summarized</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="24">
 <div>
 
 
@@ -929,7 +923,7 @@ Key Takeaways: <code>summarize_by_time()</code>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>df_augmented.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="25">
 <div>
 
 
@@ -1125,10 +1119,10 @@ Key Takeaways: <code>augment_timeseries_signature()</code>
 </details>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"b6e04767cf934ef6b00793b97f4aabf0","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"a91d2a85ec74443ba40451557f069e8c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<div class="cell-output cell-output-display" data-execution_count="26">
 <div>
 
 
@@ -1442,7 +1436,7 @@ Key Takeaways: <code>augment_timeseries_signature()</code>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>future_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<div class="cell-output cell-output-display" data-execution_count="27">
 <div>
 
 
@@ -1767,7 +1761,7 @@ Key Takeaways: <code>augment_timeseries_signature()</code>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>dates_dt <span class="op">=</span> pd.date_range(<span class="st">"2023-01"</span>, <span class="st">"2024-01"</span>, freq<span class="op">=</span><span class="st">"MS"</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>dates_dt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="8">
+<div class="cell-output cell-output-display" data-execution_count="28">
 <pre><code>DatetimeIndex(['2023-01-01', '2023-02-01', '2023-03-01', '2023-04-01',
                '2023-05-01', '2023-06-01', '2023-07-01', '2023-08-01',
                '2023-09-01', '2023-10-01', '2023-11-01', '2023-12-01',
@@ -1787,7 +1781,7 @@ Key Takeaways: <code>augment_timeseries_signature()</code>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>future_series <span class="op">=</span> pd.Series(dates_dt).make_future_timeseries(<span class="dv">12</span>)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>future_series</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="9">
+<div class="cell-output cell-output-display" data-execution_count="29">
 <pre><code>0    2024-02-01
 1    2024-03-01
 2    2024-04-01
@@ -1815,7 +1809,7 @@ dtype: datetime64[ns]</code></pre>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>future_dt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="10">
+<div class="cell-output cell-output-display" data-execution_count="30">
 <pre><code>0    2024-02-01
 1    2024-03-01
 2    2024-04-01
@@ -1849,7 +1843,7 @@ dtype: datetime64[ns]</code></pre>
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>combined_timeseries</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="11">
+<div class="cell-output cell-output-display" data-execution_count="31">
 <pre><code>0    2023-01-01
 1    2023-02-01
 2    2023-03-01
@@ -1894,7 +1888,7 @@ dtype: datetime64[ns]</code></pre>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Monthly flooring rounds dates down to 1st of the month</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df[<span class="st">'date'</span>].floor_date(unit <span class="op">=</span> <span class="st">"M"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="12">
+<div class="cell-output cell-output-display" data-execution_count="32">
 <pre><code>0      2014-07-01
 1      2014-07-01
 2      2014-07-01
@@ -1917,7 +1911,7 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Before Flooring</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>m4_daily_df[<span class="st">'date'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="13">
+<div class="cell-output cell-output-display" data-execution_count="33">
 <pre><code>0      2014-07-03
 1      2014-07-03
 2      2014-07-03
@@ -1947,7 +1941,7 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 <span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>dates_grouped_by_month</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="14">
+<div class="cell-output cell-output-display" data-execution_count="34">
 <div>
 
 
@@ -2061,7 +2055,7 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 <span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>summary_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="15">
+<div class="cell-output cell-output-display" data-execution_count="35">
 <div>
 
 
@@ -2120,7 +2114,7 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 <span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="16">
+<div class="cell-output cell-output-display" data-execution_count="36">
 <div>
 
 
@@ -2192,7 +2186,7 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>timestamps_dt <span class="op">=</span> pd.date_range(<span class="st">"2023"</span>, <span class="st">"2024"</span>, freq <span class="op">=</span> <span class="st">"D"</span>)</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>timestamps_dt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="17">
+<div class="cell-output cell-output-display" data-execution_count="37">
 <pre><code>DatetimeIndex(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04',
                '2023-01-05', '2023-01-06', '2023-01-07', '2023-01-08',
                '2023-01-09', '2023-01-10',
@@ -2210,7 +2204,7 @@ Name: date, Length: 9743, dtype: datetime64[ns]</code></pre>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>timestamps_series <span class="op">=</span> pd.Series(timestamps_dt)</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>timestamps_series</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="18">
+<div class="cell-output cell-output-display" data-execution_count="38">
 <pre><code>0     2023-01-01
 1     2023-01-02
 2     2023-01-03
@@ -2236,7 +2230,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pandas series: get_timeseries_signature</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>timestamps_series.get_timeseries_signature()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="19">
+<div class="cell-output cell-output-display" data-execution_count="39">
 <div>
 
 
@@ -2244,32 +2238,33 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">index_num</th>
-<th data-quarto-table-cell-role="th">year</th>
-<th data-quarto-table-cell-role="th">year_iso</th>
-<th data-quarto-table-cell-role="th">yearstart</th>
-<th data-quarto-table-cell-role="th">yearend</th>
-<th data-quarto-table-cell-role="th">leapyear</th>
-<th data-quarto-table-cell-role="th">half</th>
-<th data-quarto-table-cell-role="th">quarter</th>
-<th data-quarto-table-cell-role="th">quarteryear</th>
-<th data-quarto-table-cell-role="th">quarterstart</th>
+<th data-quarto-table-cell-role="th">idx</th>
+<th data-quarto-table-cell-role="th">idx_index_num</th>
+<th data-quarto-table-cell-role="th">idx_year</th>
+<th data-quarto-table-cell-role="th">idx_year_iso</th>
+<th data-quarto-table-cell-role="th">idx_yearstart</th>
+<th data-quarto-table-cell-role="th">idx_yearend</th>
+<th data-quarto-table-cell-role="th">idx_leapyear</th>
+<th data-quarto-table-cell-role="th">idx_half</th>
+<th data-quarto-table-cell-role="th">idx_quarter</th>
+<th data-quarto-table-cell-role="th">idx_quarteryear</th>
 <th data-quarto-table-cell-role="th">...</th>
-<th data-quarto-table-cell-role="th">mday</th>
-<th data-quarto-table-cell-role="th">qday</th>
-<th data-quarto-table-cell-role="th">yday</th>
-<th data-quarto-table-cell-role="th">weekend</th>
-<th data-quarto-table-cell-role="th">hour</th>
-<th data-quarto-table-cell-role="th">minute</th>
-<th data-quarto-table-cell-role="th">second</th>
-<th data-quarto-table-cell-role="th">msecond</th>
-<th data-quarto-table-cell-role="th">nsecond</th>
-<th data-quarto-table-cell-role="th">am_pm</th>
+<th data-quarto-table-cell-role="th">idx_mday</th>
+<th data-quarto-table-cell-role="th">idx_qday</th>
+<th data-quarto-table-cell-role="th">idx_yday</th>
+<th data-quarto-table-cell-role="th">idx_weekend</th>
+<th data-quarto-table-cell-role="th">idx_hour</th>
+<th data-quarto-table-cell-role="th">idx_minute</th>
+<th data-quarto-table-cell-role="th">idx_second</th>
+<th data-quarto-table-cell-role="th">idx_msecond</th>
+<th data-quarto-table-cell-role="th">idx_nsecond</th>
+<th data-quarto-table-cell-role="th">idx_am_pm</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
+<td>2023-01-01</td>
 <td>1672531200</td>
 <td>2023</td>
 <td>2022</td>
@@ -2279,7 +2274,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>1</td>
 <td>1</td>
 <td>2023Q1</td>
-<td>1</td>
 <td>...</td>
 <td>1</td>
 <td>1</td>
@@ -2294,6 +2288,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
+<td>2023-01-02</td>
 <td>1672617600</td>
 <td>2023</td>
 <td>2023</td>
@@ -2303,7 +2298,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>1</td>
 <td>1</td>
 <td>2023Q1</td>
-<td>0</td>
 <td>...</td>
 <td>2</td>
 <td>2</td>
@@ -2318,6 +2312,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
+<td>2023-01-03</td>
 <td>1672704000</td>
 <td>2023</td>
 <td>2023</td>
@@ -2327,7 +2322,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>1</td>
 <td>1</td>
 <td>2023Q1</td>
-<td>0</td>
 <td>...</td>
 <td>3</td>
 <td>3</td>
@@ -2342,6 +2336,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
+<td>2023-01-04</td>
 <td>1672790400</td>
 <td>2023</td>
 <td>2023</td>
@@ -2351,7 +2346,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>1</td>
 <td>1</td>
 <td>2023Q1</td>
-<td>0</td>
 <td>...</td>
 <td>4</td>
 <td>4</td>
@@ -2366,6 +2360,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
+<td>2023-01-05</td>
 <td>1672876800</td>
 <td>2023</td>
 <td>2023</td>
@@ -2375,7 +2370,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>1</td>
 <td>1</td>
 <td>2023Q1</td>
-<td>0</td>
 <td>...</td>
 <td>5</td>
 <td>5</td>
@@ -2414,6 +2408,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">361</td>
+<td>2023-12-28</td>
 <td>1703721600</td>
 <td>2023</td>
 <td>2023</td>
@@ -2423,7 +2418,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>2</td>
 <td>4</td>
 <td>2023Q4</td>
-<td>0</td>
 <td>...</td>
 <td>28</td>
 <td>89</td>
@@ -2438,6 +2432,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">362</td>
+<td>2023-12-29</td>
 <td>1703808000</td>
 <td>2023</td>
 <td>2023</td>
@@ -2447,7 +2442,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>2</td>
 <td>4</td>
 <td>2023Q4</td>
-<td>0</td>
 <td>...</td>
 <td>29</td>
 <td>90</td>
@@ -2462,6 +2456,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">363</td>
+<td>2023-12-30</td>
 <td>1703894400</td>
 <td>2023</td>
 <td>2023</td>
@@ -2471,7 +2466,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>2</td>
 <td>4</td>
 <td>2023Q4</td>
-<td>0</td>
 <td>...</td>
 <td>30</td>
 <td>91</td>
@@ -2486,6 +2480,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">364</td>
+<td>2023-12-31</td>
 <td>1703980800</td>
 <td>2023</td>
 <td>2023</td>
@@ -2495,7 +2490,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>2</td>
 <td>4</td>
 <td>2023Q4</td>
-<td>0</td>
 <td>...</td>
 <td>31</td>
 <td>92</td>
@@ -2510,6 +2504,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">365</td>
+<td>2024-01-01</td>
 <td>1704067200</td>
 <td>2024</td>
 <td>2024</td>
@@ -2519,7 +2514,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>1</td>
 <td>1</td>
 <td>2024Q1</td>
-<td>1</td>
 <td>...</td>
 <td>1</td>
 <td>1</td>
@@ -2535,7 +2529,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tbody>
 </table>
 
-<p>366 rows × 29 columns</p>
+<p>366 rows × 30 columns</p>
 </div>
 </div>
 </div>
@@ -2547,7 +2541,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DateTimeIndex: get_timeseries_signature</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>tk.get_timeseries_signature(timestamps_dt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="20">
+<div class="cell-output cell-output-display" data-execution_count="40">
 <div>
 
 
@@ -2555,32 +2549,33 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">index_num</th>
-<th data-quarto-table-cell-role="th">year</th>
-<th data-quarto-table-cell-role="th">year_iso</th>
-<th data-quarto-table-cell-role="th">yearstart</th>
-<th data-quarto-table-cell-role="th">yearend</th>
-<th data-quarto-table-cell-role="th">leapyear</th>
-<th data-quarto-table-cell-role="th">half</th>
-<th data-quarto-table-cell-role="th">quarter</th>
-<th data-quarto-table-cell-role="th">quarteryear</th>
-<th data-quarto-table-cell-role="th">quarterstart</th>
+<th data-quarto-table-cell-role="th">idx</th>
+<th data-quarto-table-cell-role="th">idx_index_num</th>
+<th data-quarto-table-cell-role="th">idx_year</th>
+<th data-quarto-table-cell-role="th">idx_year_iso</th>
+<th data-quarto-table-cell-role="th">idx_yearstart</th>
+<th data-quarto-table-cell-role="th">idx_yearend</th>
+<th data-quarto-table-cell-role="th">idx_leapyear</th>
+<th data-quarto-table-cell-role="th">idx_half</th>
+<th data-quarto-table-cell-role="th">idx_quarter</th>
+<th data-quarto-table-cell-role="th">idx_quarteryear</th>
 <th data-quarto-table-cell-role="th">...</th>
-<th data-quarto-table-cell-role="th">mday</th>
-<th data-quarto-table-cell-role="th">qday</th>
-<th data-quarto-table-cell-role="th">yday</th>
-<th data-quarto-table-cell-role="th">weekend</th>
-<th data-quarto-table-cell-role="th">hour</th>
-<th data-quarto-table-cell-role="th">minute</th>
-<th data-quarto-table-cell-role="th">second</th>
-<th data-quarto-table-cell-role="th">msecond</th>
-<th data-quarto-table-cell-role="th">nsecond</th>
-<th data-quarto-table-cell-role="th">am_pm</th>
+<th data-quarto-table-cell-role="th">idx_mday</th>
+<th data-quarto-table-cell-role="th">idx_qday</th>
+<th data-quarto-table-cell-role="th">idx_yday</th>
+<th data-quarto-table-cell-role="th">idx_weekend</th>
+<th data-quarto-table-cell-role="th">idx_hour</th>
+<th data-quarto-table-cell-role="th">idx_minute</th>
+<th data-quarto-table-cell-role="th">idx_second</th>
+<th data-quarto-table-cell-role="th">idx_msecond</th>
+<th data-quarto-table-cell-role="th">idx_nsecond</th>
+<th data-quarto-table-cell-role="th">idx_am_pm</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
+<td>2023-01-01</td>
 <td>1672531200</td>
 <td>2023</td>
 <td>2022</td>
@@ -2590,7 +2585,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>1</td>
 <td>1</td>
 <td>2023Q1</td>
-<td>1</td>
 <td>...</td>
 <td>1</td>
 <td>1</td>
@@ -2605,6 +2599,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
+<td>2023-01-02</td>
 <td>1672617600</td>
 <td>2023</td>
 <td>2023</td>
@@ -2614,7 +2609,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>1</td>
 <td>1</td>
 <td>2023Q1</td>
-<td>0</td>
 <td>...</td>
 <td>2</td>
 <td>2</td>
@@ -2629,6 +2623,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
+<td>2023-01-03</td>
 <td>1672704000</td>
 <td>2023</td>
 <td>2023</td>
@@ -2638,7 +2633,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>1</td>
 <td>1</td>
 <td>2023Q1</td>
-<td>0</td>
 <td>...</td>
 <td>3</td>
 <td>3</td>
@@ -2653,6 +2647,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
+<td>2023-01-04</td>
 <td>1672790400</td>
 <td>2023</td>
 <td>2023</td>
@@ -2662,7 +2657,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>1</td>
 <td>1</td>
 <td>2023Q1</td>
-<td>0</td>
 <td>...</td>
 <td>4</td>
 <td>4</td>
@@ -2677,6 +2671,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
+<td>2023-01-05</td>
 <td>1672876800</td>
 <td>2023</td>
 <td>2023</td>
@@ -2686,7 +2681,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>1</td>
 <td>1</td>
 <td>2023Q1</td>
-<td>0</td>
 <td>...</td>
 <td>5</td>
 <td>5</td>
@@ -2725,6 +2719,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">361</td>
+<td>2023-12-28</td>
 <td>1703721600</td>
 <td>2023</td>
 <td>2023</td>
@@ -2734,7 +2729,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>2</td>
 <td>4</td>
 <td>2023Q4</td>
-<td>0</td>
 <td>...</td>
 <td>28</td>
 <td>89</td>
@@ -2749,6 +2743,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">362</td>
+<td>2023-12-29</td>
 <td>1703808000</td>
 <td>2023</td>
 <td>2023</td>
@@ -2758,7 +2753,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>2</td>
 <td>4</td>
 <td>2023Q4</td>
-<td>0</td>
 <td>...</td>
 <td>29</td>
 <td>90</td>
@@ -2773,6 +2767,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">363</td>
+<td>2023-12-30</td>
 <td>1703894400</td>
 <td>2023</td>
 <td>2023</td>
@@ -2782,7 +2777,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>2</td>
 <td>4</td>
 <td>2023Q4</td>
-<td>0</td>
 <td>...</td>
 <td>30</td>
 <td>91</td>
@@ -2797,6 +2791,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">364</td>
+<td>2023-12-31</td>
 <td>1703980800</td>
 <td>2023</td>
 <td>2023</td>
@@ -2806,7 +2801,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>2</td>
 <td>4</td>
 <td>2023Q4</td>
-<td>0</td>
 <td>...</td>
 <td>31</td>
 <td>92</td>
@@ -2821,6 +2815,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">365</td>
+<td>2024-01-01</td>
 <td>1704067200</td>
 <td>2024</td>
 <td>2024</td>
@@ -2830,7 +2825,6 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 <td>1</td>
 <td>1</td>
 <td>2024Q1</td>
-<td>1</td>
 <td>...</td>
 <td>1</td>
 <td>1</td>
@@ -2846,7 +2840,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 </tbody>
 </table>
 
-<p>366 rows × 29 columns</p>
+<p>366 rows × 30 columns</p>
 </div>
 </div>
 </div>
@@ -2874,7 +2868,7 @@ Length: 366, dtype: datetime64[ns]</code></pre>
 
 </main> <!-- /main -->
 <script type="application/vnd.jupyter.widget-state+json">
-{"state":{"0888855a64d84905b8083af12f598c6e":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"2c25565ee16046e3a40e3171d0ecf7b6":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_0888855a64d84905b8083af12f598c6e","placeholder":"​","style":"IPY_MODEL_6b3da1d10a1f4c70a7699eeef507cd72","tabbable":null,"tooltip":null,"value":" 4/4 [00:00&lt;00:00, 241.69it/s]"}},"6165427b6e894d67bf29619b581e35b1":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"6b3da1d10a1f4c70a7699eeef507cd72":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"729f5ffbdc1d4173a9d3dc4985f25007":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_6165427b6e894d67bf29619b581e35b1","placeholder":"​","style":"IPY_MODEL_8fb2c131fbcb45c1878ec172cb0cd6a7","tabbable":null,"tooltip":null,"value":"Future framing...: 100%"}},"8fb2c131fbcb45c1878ec172cb0cd6a7":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"adfc7e20195641f9bcf81715d1642bf5":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"success","description":"","description_allow_html":false,"layout":"IPY_MODEL_c743acd737f54cd69746b9ead7b33206","max":4,"min":0,"orientation":"horizontal","style":"IPY_MODEL_f487628823d7463ebb37dce127b680cf","tabbable":null,"tooltip":null,"value":4}},"b6e04767cf934ef6b00793b97f4aabf0":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HBoxModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HBoxModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HBoxView","box_style":"","children":["IPY_MODEL_729f5ffbdc1d4173a9d3dc4985f25007","IPY_MODEL_adfc7e20195641f9bcf81715d1642bf5","IPY_MODEL_2c25565ee16046e3a40e3171d0ecf7b6"],"layout":"IPY_MODEL_e652577b35e34bfea313d42aa6dc5d57","tabbable":null,"tooltip":null}},"c743acd737f54cd69746b9ead7b33206":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"e652577b35e34bfea313d42aa6dc5d57":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"f487628823d7463ebb37dce127b680cf":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":null,"description_width":""}}},"version_major":2,"version_minor":0}
+{"state":{"04dad0c2d5eb43c1b6d5cfb8a6da886d":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"07f87c7cff9843659160df4ab8827de2":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_f22fc0ccf51e41ab94d7836394b4d9ae","placeholder":"​","style":"IPY_MODEL_e656f1c7073642b4b6a5bdd9f32356e8","tabbable":null,"tooltip":null,"value":"Future framing...: 100%"}},"0b5dda8eaf5d4b40aeaa30400467cf60":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"success","description":"","description_allow_html":false,"layout":"IPY_MODEL_5d862a85098c4667935adc0da10d6f48","max":4,"min":0,"orientation":"horizontal","style":"IPY_MODEL_73bb9c8020ee4d7a89ea990bddc47d0c","tabbable":null,"tooltip":null,"value":4}},"0e15e2a996894cd79150b38a2261ce98":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"success","description":"","description_allow_html":false,"layout":"IPY_MODEL_4ff212b9a6c047c4a528c6ba13fa2bac","max":4,"min":0,"orientation":"horizontal","style":"IPY_MODEL_c3f2ac4b0d4e469da80b6b27921adf1b","tabbable":null,"tooltip":null,"value":4}},"1a145d739f0147e69ae09802417ac230":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_8c843daba2184bd9b1b2cb6fc4efdadb","placeholder":"​","style":"IPY_MODEL_233c46be6cfe47d2b8140bb2c7c7bad9","tabbable":null,"tooltip":null,"value":" 4/4 [00:00&lt;00:00, 343.82it/s]"}},"233c46be6cfe47d2b8140bb2c7c7bad9":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"30e455facdb9440b9cb95dab80a7ce85":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"4ff212b9a6c047c4a528c6ba13fa2bac":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"5d862a85098c4667935adc0da10d6f48":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"73bb9c8020ee4d7a89ea990bddc47d0c":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":null,"description_width":""}},"78026fa4389c43069dfbc993cbf1591b":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"7c09ab76aeb940ab959f598a69150a88":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"8c843daba2184bd9b1b2cb6fc4efdadb":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"95f85ebe0db042709649616502ce886d":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_30e455facdb9440b9cb95dab80a7ce85","placeholder":"​","style":"IPY_MODEL_d701089db16a4a64b117dd0afa845269","tabbable":null,"tooltip":null,"value":" 4/4 [00:00&lt;00:00, 208.67it/s]"}},"96395bc761a049ec8c1dfc3f7d5ae26e":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"9d94d5d541f64c5f8633442a879cf432":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HBoxModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HBoxModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HBoxView","box_style":"","children":["IPY_MODEL_07f87c7cff9843659160df4ab8827de2","IPY_MODEL_0b5dda8eaf5d4b40aeaa30400467cf60","IPY_MODEL_95f85ebe0db042709649616502ce886d"],"layout":"IPY_MODEL_7c09ab76aeb940ab959f598a69150a88","tabbable":null,"tooltip":null}},"a91d2a85ec74443ba40451557f069e8c":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HBoxModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HBoxModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HBoxView","box_style":"","children":["IPY_MODEL_faa8db96dc5849cb845e8ce181c6732e","IPY_MODEL_0e15e2a996894cd79150b38a2261ce98","IPY_MODEL_1a145d739f0147e69ae09802417ac230"],"layout":"IPY_MODEL_04dad0c2d5eb43c1b6d5cfb8a6da886d","tabbable":null,"tooltip":null}},"c3f2ac4b0d4e469da80b6b27921adf1b":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":null,"description_width":""}},"d701089db16a4a64b117dd0afa845269":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"e656f1c7073642b4b6a5bdd9f32356e8":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"f22fc0ccf51e41ab94d7836394b4d9ae":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"faa8db96dc5849cb845e8ce181c6732e":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_96395bc761a049ec8c1dfc3f7d5ae26e","placeholder":"​","style":"IPY_MODEL_78026fa4389c43069dfbc993cbf1591b","tabbable":null,"tooltip":null,"value":"Future framing...: 100%"}}},"version_major":2,"version_minor":0}
 </script>
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
