@@ -818,6 +818,8 @@ def _plot_timeseries_plotnine(
         
         data["_color_group_names"] =  data[color_column].agg(" | ".join, axis=1)
         
+        data["_color_group_names"] = pd.Categorical(data["_color_group_names"], categories=data["_color_group_names"].unique(), ordered=True)
+        
     if group_names is not None:
         
         if not isinstance(group_names, list):
@@ -826,6 +828,8 @@ def _plot_timeseries_plotnine(
         data[group_names] = data[group_names].astype(str) 
         
         data["_group_names"] =  data[group_names].agg(" | ".join, axis=1)
+        
+        data['_group_names'] = pd.Categorical(data['_group_names'], categories=data['_group_names'].unique(), ordered=True)
     
     
     # Plot setup
