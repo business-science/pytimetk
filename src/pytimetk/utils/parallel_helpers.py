@@ -53,6 +53,11 @@ def progress_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Calla
     
     tqdm.pandas(desc = desc,)
     
+    # BugFix: prior to pandas 2.0.0 the group_keys parameter was set to _NoDefault.no_default. After 2.0.0 group_keys is set to True by default. This causes an error when trying to apply a function to a grouped dataframe. The following code fixes this issue. 
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        if data.group_keys is not True:
+            data.group_keys = True
+    
     if show_progress:
         ret = data.progress_apply(func,  **kwargs)
     else:
