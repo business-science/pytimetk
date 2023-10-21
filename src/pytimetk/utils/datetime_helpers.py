@@ -389,8 +389,7 @@ def is_holiday(
 
     Parameters
     ----------
-    idx : Union[str, datetime, List[Union[str, datetime]], pd.DatetimeIndex, 
-    pd.Series]
+    idx : Union[str, datetime, List[Union[str, datetime]], pd.DatetimeIndex, pd.Series]
         The dates to check for holiday status.
     country_name (str, optional):
         The name of the country for which to check the holiday status. Defaults 

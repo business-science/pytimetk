@@ -48,7 +48,7 @@ def get_frequency_summary(idx: Union[pd.Series, pd.DatetimeIndex]):
     dates = pd.to_datetime(["2021-01-01", "2021-02-01"])
         
     # Returns None
-    tk.get_pandas_frequency(dates)
+    dates.inferred_freq == None
         
     # Returns '1MS'
     tk.get_frequency(dates)

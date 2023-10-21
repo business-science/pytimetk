@@ -239,10 +239,8 @@ def get_holiday_signature(
 
     Parameters
     ----------
-    data (pd.DataFrame): 
-        The input DataFrame.
-    date_column (str or pd.Series): 
-        The name of the datetime-like column in the DataFrame.
+    idx (Union[pd.DatetimeIndex, pd.Series]): 
+        The input series.
     country_name (str): 
         The name of the country for which to generate holiday features. Defaults 
         to United States holidays, but the following countries are currently 

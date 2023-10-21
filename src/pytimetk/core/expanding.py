@@ -494,9 +494,9 @@ def augment_expanding_apply(
         - A tuple where the first element is a string representing the function's name and the second element is the callable function itself.
         - A list of such tuples for multiple functions.
     
-    Note: For functions targeting only a single value column without the need for 
-          contextual data from other columns, consider using the `augment_expanding` 
-          function in this library.
+        Note: For functions targeting only a single value column without the need for 
+        contextual data from other columns, consider using the `augment_expanding` 
+        function in this library.
     min_periods : int, optional, default None
           Minimum observations in the window to have a value. Defaults to the window 
           size. If set, a value will be produced even if fewer observations are 

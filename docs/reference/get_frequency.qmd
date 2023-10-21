@@ -4,15 +4,18 @@
 
 Get the frequency of a pandas Series or DatetimeIndex.
 
-The function `get_frequency` first attempts to get a pandas inferred frequency. If the inferred frequency is None, it will attempt calculate the frequency manually. If the frequency cannot be determined, the function will raise a ValueError.
+The function `get_frequency` first attempts to get a pandas inferred 
+frequency. If the inferred frequency is None, it will attempt calculate the 
+frequency manually. If the frequency cannot be determined, the function will 
+raise a ValueError.
 
 ## Parameters
 
-| Name            | Type                          | Description                                                                                                                                                                                                                                                                                                                                              | Default    |
-|-----------------|-------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `idx`           | pd.Series or pd.DatetimeIndex | The `idx` parameter can be either a `pd.Series` or a `pd.DatetimeIndex`. It represents the index or the time series data for which we want to determine the frequency.                                                                                                                                                                                   | _required_ |
-| `force_regular` | bool                          | The `force_regular` parameter is a boolean flag that determines whether to force the frequency to be regular. If set to `True`, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is 'B' (business days), it will be converted to 'D' (calendar days). The default value is `False`. | `False`    |
-| `numeric`       | bool                          | The `numeric` parameter is a boolean flag that indicates whether a numeric value for the median timestamps per pandas frequency or the pandas string frequency alias.                                                                                                                                                                                    | `False`    |
+| Name            | Type                          | Description                                                                                                                                                                                                                                                                                                                                                  | Default    |
+|-----------------|-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `idx`           | pd.Series or pd.DatetimeIndex | The `idx` parameter can be either a `pd.Series` or a `pd.DatetimeIndex`.  It represents the index or the time series data for which we want to  determine the frequency.                                                                                                                                                                                     | _required_ |
+| `force_regular` | bool                          | The `force_regular` parameter is a boolean flag that determines whether  to force the frequency to be regular. If set to `True`, the function  will convert irregular frequencies to their regular counterparts. For  example, if the inferred frequency is 'B' (business days), it will be  converted to 'D' (calendar days). The default value is `False`. | `False`    |
+| `numeric`       | bool                          | The `numeric` parameter is a boolean flag that indicates whether a  numeric value for the median timestamps per pandas frequency or the  pandas string frequency alias.                                                                                                                                                                                      | `False`    |
 
 ## Returns
 

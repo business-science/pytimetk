@@ -2,32 +2,34 @@
 
 `augment_rolling_apply(data, date_column, window_func, window=2, min_periods=None, center=False, threads=1, show_progress=True)`
 
-Apply one or more DataFrame-based rolling functions and window sizes to one or more columns of a DataFrame.
+Apply one or more DataFrame-based rolling functions and window sizes to one 
+or more columns of a DataFrame.
 
 ## Parameters
 
-| Name            | Type                                                            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Default    |
-|-----------------|-----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `data`          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | Input data to be processed. Can be a Pandas DataFrame or a GroupBy object.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | _required_ |
-| `date_column`   | str                                                             | Name of the datetime column. Data is sorted by this column within each group.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | _required_ |
-| `window_func`   | Union\[Tuple\[str, Callable\], List\[Tuple\[str, Callable\]\]\] | The `window_func` parameter in the `augment_rolling_apply` function specifies the function(s) that operate on a rolling window with the consideration of multiple columns.  The specification can be: - A tuple where the first element is a string representing the function's name and the second element is the callable function itself. - A list of such tuples for multiple functions.  (See more Examples below.)  Note: For functions targeting only a single value column without the need for contextual data from other columns, consider using the `augment_rolling` function in this library. | _required_ |
-| `window`        | Union\[int, tuple, list\]                                       | Specifies the size of the rolling windows. - An integer applies the same window size to all columns in `value_column`. - A tuple generates windows from the first to the second value (inclusive). - A list of integers designates multiple window sizes for each respective column.                                                                                                                                                                                                                                                                                                                       | `2`        |
-| `min_periods`   | int                                                             | Minimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.                                                                                                                                                                                                                                                                                                                                                                                                                             | `None`     |
-| `center`        | bool                                                            | If `True`, the rolling window will be centered on the current value. For even-sized windows, the window will be left-biased. Otherwise, it uses a trailing window.                                                                                                                                                                                                                                                                                                                                                                                                                                         | `False`    |
-| `threads`       | int                                                             | Number of threads to use for parallel processing. If `threads` is set to 1, parallel processing will be disabled. Set to -1 to use all available CPU cores.                                                                                                                                                                                                                                                                                                                                                                                                                                                | `1`        |
-| `show_progress` | bool                                                            | If `True`, a progress bar will be displayed during parallel processing.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | `True`     |
+| Name            | Type                                                            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Default    |
+|-----------------|-----------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `data`          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | Input data to be processed. Can be a Pandas DataFrame or a GroupBy object.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | _required_ |
+| `date_column`   | str                                                             | Name of the datetime column. Data is sorted by this column within each  group.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | _required_ |
+| `window_func`   | Union\[Tuple\[str, Callable\], List\[Tuple\[str, Callable\]\]\] | The `window_func` parameter in the `augment_rolling_apply` function  specifies the function(s) that operate on a rolling window with the  consideration of multiple columns.  The specification can be: - A tuple where the first element is a string representing the function's    name and the second element is the callable function itself. - A list of such tuples for multiple functions.  (See more Examples below.)  Note: For functions targeting only a single value column without the  need for contextual data from other columns, consider using the  `augment_rolling` function in this library. | _required_ |
+| `window`        | Union\[int, tuple, list\]                                       | Specifies the size of the rolling windows. - An integer applies the same window size to all columns in `value_column`. - A tuple generates windows from the first to the second value (inclusive). - A list of integers designates multiple window sizes for each respective    column.                                                                                                                                                                                                                                                                                                                           | `2`        |
+| `min_periods`   | int                                                             | Minimum observations in the window to have a value. Defaults to the  window size. If set, a value will be produced even if fewer observations  are present than the window size.                                                                                                                                                                                                                                                                                                                                                                                                                                  | `None`     |
+| `center`        | bool                                                            | If `True`, the rolling window will be centered on the current value. For  even-sized windows, the window will be left-biased. Otherwise, it uses a  trailing window.                                                                                                                                                                                                                                                                                                                                                                                                                                              | `False`    |
+| `threads`       | int                                                             | Number of threads to use for parallel processing. If `threads` is set to  1, parallel processing will be disabled. Set to -1 to use all available  CPU cores.                                                                                                                                                                                                                                                                                                                                                                                                                                                     | `1`        |
+| `show_progress` | bool                                                            | If `True`, a progress bar will be displayed during parallel processing.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `True`     |
 
 ## Returns
 
-| Type         | Description                                                                                                                   |
-|--------------|-------------------------------------------------------------------------------------------------------------------------------|
-| pd.DataFrame | The `augment_rolling` function returns a DataFrame with new columns for each applied function, window size, and value column. |
+| Type         | Description                                                                                                                    |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------|
+| pd.DataFrame | The `augment_rolling` function returns a DataFrame with new columns for  each applied function, window size, and value column. |
 
 ## Notes
 
 ## Performance
 
-This function uses parallel processing to speed up computation for large datasets with many time series groups: 
+This function uses parallel processing to speed up computation for large 
+datasets with many time series groups: 
 
 Parallel processing has overhead and may not be faster on small datasets.
 
@@ -40,7 +42,8 @@ import pytimetk as tk
 import pandas as pd
 import numpy as np
 
-# Example 1 - showcasing the rolling correlation between two columns (`value1` and `value2`).
+# Example 1 - showcasing the rolling correlation between two columns 
+# (`value1` and `value2`).
 # The correlation requires both columns as input.
 
 # Sample DataFrame with id, date, value1, and value2 columns.
@@ -52,7 +55,8 @@ df = pd.DataFrame({
 })
 
 # Compute the rolling correlation for each group of 'id'
-# Using a rolling window of size 3 and a lambda function to calculate the correlation.
+# Using a rolling window of size 3 and a lambda function to calculate the 
+# correlation.
 
 rolled_df = (
     df.groupby('id')
@@ -68,8 +72,10 @@ display(rolled_df)
 ```
 
 ```{python}
-# Example 2 - Rolling Regression Example: Using `value1` as the dependent variable and `value2` and `value3` as the independent variables.
-# This example demonstrates how to perform a rolling regression using two independent variables.
+# Example 2 - Rolling Regression Example: Using `value1` as the dependent 
+# variable and `value2` and `value3` as the independent variables. This 
+# example demonstrates how to perform a rolling regression using two 
+# independent variables.
 
 # Sample DataFrame with `id`, `date`, `value1`, `value2`, and `value3` columns.
 df = pd.DataFrame({
@@ -107,7 +113,8 @@ rolled_df = (
     .dropna()
 )
 
-# Format the results to have each regression output (slope and intercept) in separate columns.
+# Format the results to have each regression output (slope and intercept) in 
+# separate columns.
 
 regression_wide_df = pd.concat(rolled_df['rolling_regression_win_3'].to_list(), axis=1).T
 

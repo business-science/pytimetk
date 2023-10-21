@@ -4,14 +4,15 @@
 
 Convert a timestamp to a set of 29 time series features.
 
-The function `get_timeseries_signature` engineers **29 different date and time based features** from a single datetime index `idx`: 
+The function `get_timeseries_signature` engineers **29 different date and 
+time based features** from a single datetime index `idx`: 
 
 ## Parameters
 
-| Name     | Type         | Description                                                                                                                                                                                                                                                                                                                              | Default    |
-|----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `idx`    | pd.DataFrame | The `idx` parameter is a pandas Series of DatetimeIndex.                                                                                                                                                                                                                                                                                 | _required_ |
-| `engine` | str          | The `engine` parameter is used to specify the engine to use for augmenting datetime features. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library for feature generation. This is generally faster than using "pandas" for large datasets. | `'pandas'` |
+| Name     | Type         | Description                                                                                                                                                                                                                                                                                                                                     | Default    |
+|----------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `idx`    | pd.DataFrame | The `idx` parameter is a pandas Series of DatetimeIndex.                                                                                                                                                                                                                                                                                        | _required_ |
+| `engine` | str          | The `engine` parameter is used to specify the engine to use for  augmenting datetime features. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library    for feature generation. This is generally faster than using "pandas"    for large datasets. | `'pandas'` |
 
 ## Returns
 

@@ -2,19 +2,20 @@
 
 `time_scale_template(wide_format=False)`
 
-The function `time_scale_template` returns a table with time scale information in either wide or long format.
+The function `time_scale_template` returns a table with time scale 
+information in either wide or long format.
 
 ## Parameters
 
-| Name          | Type   | Description                                                                                                                                                                                                                                                                          | Default   |
-|---------------|--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
-| `wide_format` | bool   | The wide_format parameter determines the format of the output table. If wide_format is set to True, the table will be transposed with the median_unit column as the index. If wide_format is set to False (default), the table will have the median_unit column as a regular column. | `False`   |
+| Name          | Type   | Description                                                                                                                                                                                                                                                                             | Default   |
+|---------------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `wide_format` | bool   | The wide_format parameter determines the format of the output table. If  wide_format is set to True, the table will be transposed with the  median_unit column as the index. If wide_format is set to False (default),  the table will have the median_unit column as a regular column. | `False`   |
 
 ## Returns
 
-| Type         | Description                                                                                                                                                                                     |
-|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| pd.DataFrame | A pandas DataFrame containing information about different time scales. If the `wide_format` parameter is set to `True`, the DataFrame is transposed with the 'median_unit' column as the index. |
+| Type         | Description                                                                                                                                                                                       |
+|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| pd.DataFrame | A pandas DataFrame containing information about different time scales.  If the `wide_format` parameter is set to `True`, the DataFrame is  transposed with the 'median_unit' column as the index. |
 
 ## Examples
 

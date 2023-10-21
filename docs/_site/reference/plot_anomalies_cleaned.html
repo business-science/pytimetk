@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>pytimetk – plot_anomalies_cleaned</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=330861489"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '330861489', { 'anonymize_ip': true});
+</script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-76139189-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-76139189-2');
+</script>
+
+<!-- SUMO -->
+<script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.26.0.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="https://www.business-science.io/img/business-science-logo.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">pytimetk</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools ms-auto">
+    <a href="https://github.com/business-science/pytimetk" rel="" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">plot_anomalies_cleaned</li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PyTimeTK 📈</span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+ <span class="menu-text">🏁 Getting Started:</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../getting-started/01_installation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Install</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../getting-started/02_quick_start.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quick Start</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+ <span class="menu-text">🗺️ Beginner Guides:</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/01_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Visualization</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/02_timetk_concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PyTimeTK Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/03_pandas_frequency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pandas Frequencies</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/04_wrangling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Wrangling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/05_augmenting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Adding Features (Augmenting)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+ <span class="menu-text">📘 Applied Tutorials:</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/01_sales_crm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sales Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/02_finance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Finance Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/03_demand_forecasting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Demand Forecasting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/04_anomaly_detection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Anomaly Detection</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/05_clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Clustering</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+ <span class="menu-text">🏎️ Performance:</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../performance/01_speed_comparisons.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Speed Comparisons</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📄 API Reference</span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://github.com/business-science/pytimetk" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">⭐ PyTimeTK on Github</span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../contributing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🍻 Contributing</span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../changelog-news.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📧 Change Log</span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">📚 More References:</span></span>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://www.business-science.io/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Business Science</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://www.quantscience.io/" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quant Science</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://business-science.github.io/timetk/" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Timetk (R Version)</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#see-also" id="toc-see-also" class="nav-link" data-scroll-target="#see-also">See Also</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/plot_anomalies_cleaned.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">plot_anomalies_cleaned</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p><code>plot_anomalies_cleaned(data, date_column, facet_ncol=1, line_color='#2c3e50', line_color_cleaned='#e31a1c', line_size=None, line_type='solid', line_alpha=1.0, y_intercept=None, y_intercept_color='#2c3e50', x_intercept=None, x_intercept_color='#2c3e50', title='Anomalies Cleaned Plot', x_lab='', y_lab='', x_axis_date_labels='%b %Y', base_size=11, width=None, height=None, engine='plotly')</code></p>
+<p>The <code>plot_anomalies_cleaned</code> function takes in data from the <code>anomalize()</code> function, and returns a plot of the anomalies cleaned.</p>
+<section id="parameters" class="level2">
+<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<table class="table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 16%">
+<col style="width: 71%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>data</code></td>
+<td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
+<td>The input data for the plot from <code>anomalize</code>. It can be either a pandas DataFrame or a pandas DataFrameGroupBy object.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td><code>date_column</code></td>
+<td>str</td>
+<td>The name of the column in the data that contains the dates.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td><code>facet_ncol</code></td>
+<td>int</td>
+<td>The number of columns in the facet grid. It is an optional parameter,</td>
+<td><code>1</code></td>
+</tr>
+<tr class="even">
+<td><code>line_color</code></td>
+<td>str</td>
+<td>The color of the line in the plot. It is specified as a hexadecimal color code. The default value is “#2c3e50”.</td>
+<td><code>'#2c3e50'</code></td>
+</tr>
+<tr class="odd">
+<td><code>line_color_cleaned</code></td>
+<td>str</td>
+<td>The color of the line in the plot. It is specified as a hexadecimal or a matplotlib color name. The default value is “#e31a1c”.</td>
+<td><code>'#e31a1c'</code></td>
+</tr>
+<tr class="even">
+<td><code>line_size</code></td>
+<td>Optional[float]</td>
+<td>The line_size parameter determines the thickness of the lines in the plot. It is an optional parameter, so if you don’t specify a value, the default line size will be used.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td><code>line_type</code></td>
+<td>str</td>
+<td>The <code>line_type</code> parameter specifies the type of line to be used in the plot. It can take the following values: - “solid” (default): a solid line - “dashed”: a dashed line</td>
+<td><code>'solid'</code></td>
+</tr>
+<tr class="even">
+<td><code>line_alpha</code></td>
+<td>float</td>
+<td>The <code>line_alpha</code> parameter controls the transparency of the lines in the plot. It accepts a float value between 0 and 1, where 0 means completely transparent and 1 means completely opaque.</td>
+<td><code>1.0</code></td>
+</tr>
+<tr class="odd">
+<td><code>y_intercept</code></td>
+<td>Optional[float]</td>
+<td>The <code>y_intercept</code> parameter is an optional float value that specifies the y-coordinate of a horizontal line to be plotted on the graph. This line can be used to indicate a specific threshold or reference value. If not specified, no horizontal line will be plotted.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td><code>y_intercept_color</code></td>
+<td>str</td>
+<td>The <code>y_intercept_color</code> parameter is used to specify the color of the y-intercept line on the plot. By default, it is set to <code>"#2c3e50"</code>, which is a dark blue color. You can change this parameter to any valid color code or name to change the color of the line.</td>
+<td><code>'#2c3e50'</code></td>
+</tr>
+<tr class="odd">
+<td><code>x_intercept</code></td>
+<td>Optional[str]</td>
+<td>The <code>x_intercept</code> parameter is used to specify the value on the x-axis where you want to draw a vertical line. This can be useful for highlighting a specific point or event in the data.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td><code>x_intercept_color</code></td>
+<td>str</td>
+<td>The <code>x_intercept_color</code> parameter is used to specify the color of the vertical line representing the x-intercept on the plot. By default, it is set to “#2c3e50”, which is a dark blue color. You can change this parameter to any valid color code or name to change the color of the line.</td>
+<td><code>'#2c3e50'</code></td>
+</tr>
+<tr class="odd">
+<td><code>title</code></td>
+<td>str</td>
+<td>The title of the plot. It is set to “Anomalies Cleaned Plot” by default.</td>
+<td><code>'Anomalies Cleaned Plot'</code></td>
+</tr>
+<tr class="even">
+<td><code>x_lab</code></td>
+<td>str</td>
+<td>The x_lab parameter is used to specify the label for the x-axis of the plot. It is a string that represents the label text.</td>
+<td><code>''</code></td>
+</tr>
+<tr class="odd">
+<td><code>y_lab</code></td>
+<td>str</td>
+<td>The <code>y_lab</code> parameter is used to specify the label for the y-axis of the plot. It is a string that represents the label text.</td>
+<td><code>''</code></td>
+</tr>
+<tr class="even">
+<td><code>x_axis_date_labels</code></td>
+<td>str</td>
+<td>The <code>x_axis_date_labels</code> parameter is used to specify the format of the date labels on the x-axis of the plot. It accepts a string representing the format of the date labels. For example, “%b %Y” would display the month abbreviation and year (e.g., Jan 2019).</td>
+<td><code>'%b %Y'</code></td>
+</tr>
+<tr class="odd">
+<td><code>base_size</code></td>
+<td>float</td>
+<td>The <code>base_size</code> parameter determines the base font size for the plot. It is used to control the size of the text elements in the plot, such as axis labels, titles, and tick labels. The default value is 11, but you can adjust it to make the text larger or smaller</td>
+<td><code>11</code></td>
+</tr>
+<tr class="even">
+<td><code>width</code></td>
+<td>Optional[int]</td>
+<td>The width parameter determines the width of the plot in pixels. It is an optional parameter, so if you don’t specify a value, the plot will be displayed with the default width.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td><code>height</code></td>
+<td>Optional[int]</td>
+<td>The height parameter determines the height of the plot in pixels. It is an optional parameter, so if you don’t specify a value, the plot will be displayed with a default height.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td><code>engine</code></td>
+<td>str</td>
+<td>The <code>engine</code> parameter specifies the plotting engine to use. It can be set to either “plotly”, “plotnine”, or “matplotlib”.</td>
+<td><code>'plotly'</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns" class="level2">
+<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A plotly, plotnine, or matplotlib plot.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="see-also" class="level2">
+<h2 class="anchored" data-anchor-id="see-also">See Also</h2>
+<ol type="1">
+<li>anomalize : Function that calculates the anomalies and formats the data for visualization.</li>
+<li>plot_anomalies : Function that plots the anomalies.</li>
+</ol>
+</section>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># EXAMPLE 1: SINGLE TIME SERIES</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a date range</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>date_rng <span class="op">=</span> pd.date_range(start<span class="op">=</span><span class="st">'2021-01-01'</span>, end<span class="op">=</span><span class="st">'2024-01-01'</span>, freq<span class="op">=</span><span class="st">'MS'</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate some random data with a few outliers</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> np.random.randn(<span class="bu">len</span>(date_rng)) <span class="op">*</span> <span class="dv">10</span> <span class="op">+</span> <span class="dv">25</span>  </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>data[<span class="dv">3</span>] <span class="op">=</span> <span class="dv">100</span>  <span class="co"># outlier</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a DataFrame</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(date_rng, columns<span class="op">=</span>[<span class="st">'date'</span>])</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'value'</span>] <span class="op">=</span> data</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Anomalize the data</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>anomalize_df <span class="op">=</span> tk.anomalize(</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    df, <span class="st">"date"</span>, <span class="st">"value"</span>,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    method <span class="op">=</span> <span class="st">"twitter"</span>, </span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    iqr_alpha <span class="op">=</span> <span class="fl">0.10</span>, </span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    clean_alpha <span class="op">=</span> <span class="fl">0.75</span>,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    clean <span class="op">=</span> <span class="st">"min_max"</span>,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    verbose <span class="op">=</span> <span class="va">True</span>,</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the results</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>anomalize_df.plot_anomalies_cleaned(<span class="st">"date"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Using seasonal frequency of 12 observations
+Using trend frequency of 37 observations</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+<div>                            <div id="8a631594-20a0-47a7-8575-f9c172946d73" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("8a631594-20a0-47a7-8575-f9c172946d73")) {                    Plotly.newPlot(                        "8a631594-20a0-47a7-8575-f9c172946d73",                        [{"legendgroup":"observed","line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"observed","x":["2021-01-01T00:00:00","2021-02-01T00:00:00","2021-03-01T00:00:00","2021-04-01T00:00:00","2021-05-01T00:00:00","2021-06-01T00:00:00","2021-07-01T00:00:00","2021-08-01T00:00:00","2021-09-01T00:00:00","2021-10-01T00:00:00","2021-11-01T00:00:00","2021-12-01T00:00:00","2022-01-01T00:00:00","2022-02-01T00:00:00","2022-03-01T00:00:00","2022-04-01T00:00:00","2022-05-01T00:00:00","2022-06-01T00:00:00","2022-07-01T00:00:00","2022-08-01T00:00:00","2022-09-01T00:00:00","2022-10-01T00:00:00","2022-11-01T00:00:00","2022-12-01T00:00:00","2023-01-01T00:00:00","2023-02-01T00:00:00","2023-03-01T00:00:00","2023-04-01T00:00:00","2023-05-01T00:00:00","2023-06-01T00:00:00","2023-07-01T00:00:00","2023-08-01T00:00:00","2023-09-01T00:00:00","2023-10-01T00:00:00","2023-11-01T00:00:00","2023-12-01T00:00:00","2024-01-01T00:00:00"],"y":[29.96714153011233,23.617356988288154,31.476885381006923,100.0,22.65846625276664,22.658630430508193,40.79212815507391,32.67434729152909,20.305256140650478,30.425600435859646,20.365823071875376,20.34270246429743,27.419622715660342,5.86719755342202,7.750821674869673,19.377124707590273,14.871688796655762,28.14247332595274,15.91975924478789,10.876962986647085,39.65648768921554,22.742236995134643,25.67528204687924,10.752518137865433,19.556172754748175,26.10922589709866,13.490064225776973,28.75698018345672,18.99361310081195,22.083062502067232,18.98293387770603,43.522781845089376,24.865027752620662,14.422890710440996,33.225449121031886,12.791563500289778,27.088635950047554],"type":"scatter","hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"observed_clean","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"observed_clean","x":["2021-01-01T00:00:00","2021-02-01T00:00:00","2021-03-01T00:00:00","2021-04-01T00:00:00","2021-05-01T00:00:00","2021-06-01T00:00:00","2021-07-01T00:00:00","2021-08-01T00:00:00","2021-09-01T00:00:00","2021-10-01T00:00:00","2021-11-01T00:00:00","2021-12-01T00:00:00","2022-01-01T00:00:00","2022-02-01T00:00:00","2022-03-01T00:00:00","2022-04-01T00:00:00","2022-05-01T00:00:00","2022-06-01T00:00:00","2022-07-01T00:00:00","2022-08-01T00:00:00","2022-09-01T00:00:00","2022-10-01T00:00:00","2022-11-01T00:00:00","2022-12-01T00:00:00","2023-01-01T00:00:00","2023-02-01T00:00:00","2023-03-01T00:00:00","2023-04-01T00:00:00","2023-05-01T00:00:00","2023-06-01T00:00:00","2023-07-01T00:00:00","2023-08-01T00:00:00","2023-09-01T00:00:00","2023-10-01T00:00:00","2023-11-01T00:00:00","2023-12-01T00:00:00","2024-01-01T00:00:00"],"y":[29.96714153011233,23.617356988288154,31.476885381006923,52.72083752487272,22.65846625276664,22.658630430508193,40.79212815507391,32.67434729152909,20.305256140650478,30.425600435859646,20.365823071875376,20.34270246429743,27.419622715660342,5.86719755342202,7.750821674869673,25.99992588144197,14.871688796655762,28.14247332595274,15.91975924478789,11.117962279389218,39.65648768921554,22.742236995134643,25.67528204687924,10.752518137865433,19.556172754748175,26.10922589709866,13.490064225776973,25.99992588144197,18.99361310081195,22.083062502067232,18.98293387770603,43.522781845089376,24.865027752620662,14.422890710440996,33.225449121031886,12.791563500289778,27.088635950047554],"type":"scatter","hoverlabel":{"font":{"size":8.8}}}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":""},"tickformat":"%b %Y","showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":""},"tickfont":{"size":8.8}},"legend":{"title":{"text":"Legend","font":{"size":8.8}},"font":{"size":8.8}},"title":{"text":"Anomalies Cleaned Plot","font":{"size":13.2}},"margin":{"l":10,"r":10,"t":40,"b":40},"font":{"size":11},"autosize":true},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('8a631594-20a0-47a7-8575-f9c172946d73');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># EXAMPLE 2: MULTIPLE TIME SERIES</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"walmart_sales_weekly"</span>, parse_dates<span class="op">=</span>[<span class="st">"Date"</span>])[[<span class="st">"id"</span>, <span class="st">"Date"</span>, <span class="st">"Weekly_Sales"</span>]]</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>anomalize_df <span class="op">=</span> (</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>) </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        .anomalize(</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Date"</span>, <span class="st">"Weekly_Sales"</span>, </span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>            period <span class="op">=</span> <span class="dv">52</span>, </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>            trend <span class="op">=</span> <span class="dv">52</span>, </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>            threads <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        ) </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the decomposition results</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    anomalize_df</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">"id"</span>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>        .plot_anomalies_cleaned(</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">"Date"</span>,</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>            line_color <span class="op">=</span> <span class="st">"steelblue"</span>,</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>            width <span class="op">=</span> <span class="dv">600</span>,</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>            height <span class="op">=</span> <span class="dv">1000</span>,</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>            x_axis_date_labels <span class="op">=</span> <span class="st">"%y"</span>,</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'plotly'</span>,                </span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"e8198313e119486ab965738067a3413c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+
+<div>                            <div id="32aebb8d-53ac-441c-a14b-b71f7dfe0856" class="plotly-graph-div" style="height:1000px; width:600px;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("32aebb8d-53ac-441c-a14b-b71f7dfe0856")) {                    Plotly.newPlot(                        "32aebb8d-53ac-441c-a14b-b71f7dfe0856",                        [{"legendgroup":"observed","line":{"color":"rgba(70, 130, 180, 1.0)","width":0.65},"mode":"lines","name":"observed","x":["2010-02-05T00:00:00","2010-02-12T00:00:00","2010-02-19T00:00:00","2010-02-26T00:00:00","2010-03-05T00:00:00","2010-03-12T00:00:00","2010-03-19T00:00:00","2010-03-26T00:00:00","2010-04-02T00:00:00","2010-04-09T00:00:00","2010-04-16T00:00:00","2010-04-23T00:00:00","2010-04-30T00:00:00","2010-05-07T00:00:00","2010-05-14T00:00:00","2010-05-21T00:00:00","2010-05-28T00:00:00","2010-06-04T00:00:00","2010-06-11T00:00:00","2010-06-18T00:00:00","2010-06-25T00:00:00","2010-07-02T00:00:00","2010-07-09T00:00:00","2010-07-16T00:00:00","2010-07-23T00:00:00","2010-07-30T00:00:00","2010-08-06T00:00:00","2010-08-13T00:00:00","2010-08-20T00:00:00","2010-08-27T00:00:00","2010-09-03T00:00:00","2010-09-10T00:00:00","2010-09-17T00:00:00","2010-09-24T00:00:00","2010-10-01T00:00:00","2010-10-08T00:00:00","2010-10-15T00:00:00","2010-10-22T00:00:00","2010-10-29T00:00:00","2010-11-05T00:00:00","2010-11-12T00:00:00","2010-11-19T00:00:00","2010-11-26T00:00:00","2010-12-03T00:00:00","2010-12-10T00:00:00","2010-12-17T00:00:00","2010-12-24T00:00:00","2010-12-31T00:00:00","2011-01-07T00:00:00","2011-01-14T00:00:00","2011-01-21T00:00:00","2011-01-28T00:00:00","2011-02-04T00:00:00","2011-02-11T00:00:00","2011-02-18T00:00:00","2011-02-25T00:00:00","2011-03-04T00:00:00","2011-03-11T00:00:00","2011-03-18T00:00:00","2011-03-25T00:00:00","2011-04-01T00:00:00","2011-04-08T00:00:00","2011-04-15T00:00:00","2011-04-22T00:00:00","2011-04-29T00:00:00","2011-05-06T00:00:00","2011-05-13T00:00:00","2011-05-20T00:00:00","2011-05-27T00:00:00","2011-06-03T00:00:00","2011-06-10T00:00:00","2011-06-17T00:00:00","2011-06-24T00:00:00","2011-07-01T00:00:00","2011-07-08T00:00:00","2011-07-15T00:00:00","2011-07-22T00:00:00","2011-07-29T00:00:00","2011-08-05T00:00:00","2011-08-12T00:00:00","2011-08-19T00:00:00","2011-08-26T00:00:00","2011-09-02T00:00:00","2011-09-09T00:00:00","2011-09-16T00:00:00","2011-09-23T00:00:00","2011-09-30T00:00:00","2011-10-07T00:00:00","2011-10-14T00:00:00","2011-10-21T00:00:00","2011-10-28T00:00:00","2011-11-04T00:00:00","2011-11-11T00:00:00","2011-11-18T00:00:00","2011-11-25T00:00:00","2011-12-02T00:00:00","2011-12-09T00:00:00","2011-12-16T00:00:00","2011-12-23T00:00:00","2011-12-30T00:00:00","2012-01-06T00:00:00","2012-01-13T00:00:00","2012-01-20T00:00:00","2012-01-27T00:00:00","2012-02-03T00:00:00","2012-02-10T00:00:00","2012-02-17T00:00:00","2012-02-24T00:00:00","2012-03-02T00:00:00","2012-03-09T00:00:00","2012-03-16T00:00:00","2012-03-23T00:00:00","2012-03-30T00:00:00","2012-04-06T00:00:00","2012-04-13T00:00:00","2012-04-20T00:00:00","2012-04-27T00:00:00","2012-05-04T00:00:00","2012-05-11T00:00:00","2012-05-18T00:00:00","2012-05-25T00:00:00","2012-06-01T00:00:00","2012-06-08T00:00:00","2012-06-15T00:00:00","2012-06-22T00:00:00","2012-06-29T00:00:00","2012-07-06T00:00:00","2012-07-13T00:00:00","2012-07-20T00:00:00","2012-07-27T00:00:00","2012-08-03T00:00:00","2012-08-10T00:00:00","2012-08-17T00:00:00","2012-08-24T00:00:00","2012-08-31T00:00:00","2012-09-07T00:00:00","2012-09-14T00:00:00","2012-09-21T00:00:00","2012-09-28T00:00:00","2012-10-05T00:00:00","2012-10-12T00:00:00","2012-10-19T00:00:00","2012-10-26T00:00:00"],"y":[24924.5,46039.49,41595.55,19403.54,21827.9,21043.39,22136.64,26229.21,57258.43,42960.91,17596.96,16145.35,16555.11,17413.94,18926.74,14773.04,15580.43,17558.09,16637.62,16216.27,16328.72,16333.14,17688.76,17150.84,15360.45,15381.82,17508.41,15536.4,15740.13,15793.87,16241.78,18194.74,19354.23,18122.52,20094.19,23388.03,26978.34,25543.04,38640.93,34238.88,19549.39,19552.84,18820.29,22517.56,31497.65,44912.86,55931.23,19124.58,15984.24,17359.7,17341.47,18461.18,21665.76,37887.17,46845.87,19363.83,20327.61,21280.4,20334.23,20881.1,20398.09,23873.79,28762.37,50510.31,41512.39,20138.19,17235.15,15136.78,15741.6,16434.15,15883.52,14978.09,15682.81,15363.5,16148.87,15654.85,15766.6,15922.41,15295.55,14539.79,14689.24,14537.37,15277.27,17746.68,18535.48,17859.3,18337.68,20797.58,23077.55,23351.8,31579.9,39886.06,18689.54,19050.66,20911.25,25293.49,33305.92,45773.03,46788.75,23350.88,16567.69,16894.4,18365.1,18378.16,23510.49,36988.49,54060.1,20124.22,20113.03,21140.07,22366.88,22107.7,28952.86,57592.12,34684.21,16976.19,16347.6,17147.44,18164.2,18517.79,16963.55,16065.49,17666.0,17558.82,16633.41,15722.82,17823.37,16566.18,16348.06,15731.18,16628.31,16119.92,17330.7,16286.4,16680.24,18322.37,19616.22,19251.5,18947.81,21904.47,22764.01,24185.27,27390.81],"type":"scatter","xaxis":"x","yaxis":"y","hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"observed_clean","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"observed_clean","x":["2010-02-05T00:00:00","2010-02-12T00:00:00","2010-02-19T00:00:00","2010-02-26T00:00:00","2010-03-05T00:00:00","2010-03-12T00:00:00","2010-03-19T00:00:00","2010-03-26T00:00:00","2010-04-02T00:00:00","2010-04-09T00:00:00","2010-04-16T00:00:00","2010-04-23T00:00:00","2010-04-30T00:00:00","2010-05-07T00:00:00","2010-05-14T00:00:00","2010-05-21T00:00:00","2010-05-28T00:00:00","2010-06-04T00:00:00","2010-06-11T00:00:00","2010-06-18T00:00:00","2010-06-25T00:00:00","2010-07-02T00:00:00","2010-07-09T00:00:00","2010-07-16T00:00:00","2010-07-23T00:00:00","2010-07-30T00:00:00","2010-08-06T00:00:00","2010-08-13T00:00:00","2010-08-20T00:00:00","2010-08-27T00:00:00","2010-09-03T00:00:00","2010-09-10T00:00:00","2010-09-17T00:00:00","2010-09-24T00:00:00","2010-10-01T00:00:00","2010-10-08T00:00:00","2010-10-15T00:00:00","2010-10-22T00:00:00","2010-10-29T00:00:00","2010-11-05T00:00:00","2010-11-12T00:00:00","2010-11-19T00:00:00","2010-11-26T00:00:00","2010-12-03T00:00:00","2010-12-10T00:00:00","2010-12-17T00:00:00","2010-12-24T00:00:00","2010-12-31T00:00:00","2011-01-07T00:00:00","2011-01-14T00:00:00","2011-01-21T00:00:00","2011-01-28T00:00:00","2011-02-04T00:00:00","2011-02-11T00:00:00","2011-02-18T00:00:00","2011-02-25T00:00:00","2011-03-04T00:00:00","2011-03-11T00:00:00","2011-03-18T00:00:00","2011-03-25T00:00:00","2011-04-01T00:00:00","2011-04-08T00:00:00","2011-04-15T00:00:00","2011-04-22T00:00:00","2011-04-29T00:00:00","2011-05-06T00:00:00","2011-05-13T00:00:00","2011-05-20T00:00:00","2011-05-27T00:00:00","2011-06-03T00:00:00","2011-06-10T00:00:00","2011-06-17T00:00:00","2011-06-24T00:00:00","2011-07-01T00:00:00","2011-07-08T00:00:00","2011-07-15T00:00:00","2011-07-22T00:00:00","2011-07-29T00:00:00","2011-08-05T00:00:00","2011-08-12T00:00:00","2011-08-19T00:00:00","2011-08-26T00:00:00","2011-09-02T00:00:00","2011-09-09T00:00:00","2011-09-16T00:00:00","2011-09-23T00:00:00","2011-09-30T00:00:00","2011-10-07T00:00:00","2011-10-14T00:00:00","2011-10-21T00:00:00","2011-10-28T00:00:00","2011-11-04T00:00:00","2011-11-11T00:00:00","2011-11-18T00:00:00","2011-11-25T00:00:00","2011-12-02T00:00:00","2011-12-09T00:00:00","2011-12-16T00:00:00","2011-12-23T00:00:00","2011-12-30T00:00:00","2012-01-06T00:00:00","2012-01-13T00:00:00","2012-01-20T00:00:00","2012-01-27T00:00:00","2012-02-03T00:00:00","2012-02-10T00:00:00","2012-02-17T00:00:00","2012-02-24T00:00:00","2012-03-02T00:00:00","2012-03-09T00:00:00","2012-03-16T00:00:00","2012-03-23T00:00:00","2012-03-30T00:00:00","2012-04-06T00:00:00","2012-04-13T00:00:00","2012-04-20T00:00:00","2012-04-27T00:00:00","2012-05-04T00:00:00","2012-05-11T00:00:00","2012-05-18T00:00:00","2012-05-25T00:00:00","2012-06-01T00:00:00","2012-06-08T00:00:00","2012-06-15T00:00:00","2012-06-22T00:00:00","2012-06-29T00:00:00","2012-07-06T00:00:00","2012-07-13T00:00:00","2012-07-20T00:00:00","2012-07-27T00:00:00","2012-08-03T00:00:00","2012-08-10T00:00:00","2012-08-17T00:00:00","2012-08-24T00:00:00","2012-08-31T00:00:00","2012-09-07T00:00:00","2012-09-14T00:00:00","2012-09-21T00:00:00","2012-09-28T00:00:00","2012-10-05T00:00:00","2012-10-12T00:00:00","2012-10-19T00:00:00","2012-10-26T00:00:00"],"y":[24924.5,33308.61553559716,33633.181961553244,19403.54,21827.9,21043.39,22136.64,26229.21,29722.32001148769,42960.91,18285.252907900664,18946.8988495114,16674.192747852903,17413.94,18926.74,14773.04,15580.43,17558.09,16637.62,16216.27,16328.72,16333.14,17688.76,17150.84,15360.45,15381.82,17508.41,15536.4,15740.13,15793.87,16241.78,18194.74,19354.23,18122.52,20094.19,23388.03,26978.34,25543.04,27428.821123696995,25871.986367142606,19549.39,19552.84,18820.29,22517.56,31497.65,44912.86,41625.14767366265,19124.58,15984.24,17359.7,17341.47,18461.18,21665.76,37887.17,46845.87,19363.83,20327.61,21280.4,20334.23,20881.1,24095.519788341284,28557.37572995202,28762.37,23456.046359597363,21183.340257938868,20138.19,17235.15,15136.78,15741.6,16434.15,15883.52,14978.09,15682.81,15363.5,16148.87,15654.85,15766.6,15922.41,15295.55,14539.79,14689.24,14537.37,15277.27,17746.68,18535.48,17859.3,18337.68,20797.58,23077.55,23351.8,31579.9,39886.06,18689.54,19050.66,20911.25,25293.49,33305.92,45773.03,36623.79081398812,23350.88,16567.69,16894.4,18365.1,18378.16,23510.49,28307.258675922625,38767.77283511109,20124.22,20113.03,21140.07,22366.88,22107.7,24720.96315181316,34250.79296004008,23419.843781458505,19013.515856453057,16740.809754794565,17147.44,18164.2,18517.79,16963.55,16065.49,17666.0,17558.82,16633.41,15722.82,17823.37,16566.18,16348.06,15731.18,16628.31,16119.92,17330.7,16286.4,16680.24,18322.37,19616.22,19251.5,18947.81,21904.47,22764.01,24185.27,22427.46426402247],"type":"scatter","xaxis":"x","yaxis":"y","hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"observed","line":{"color":"rgba(70, 130, 180, 1.0)","width":0.65},"mode":"lines","name":"observed","x":["2010-02-05T00:00:00","2010-02-12T00:00:00","2010-02-19T00:00:00","2010-02-26T00:00:00","2010-03-05T00:00:00","2010-03-12T00:00:00","2010-03-19T00:00:00","2010-03-26T00:00:00","2010-04-02T00:00:00","2010-04-09T00:00:00","2010-04-16T00:00:00","2010-04-23T00:00:00","2010-04-30T00:00:00","2010-05-07T00:00:00","2010-05-14T00:00:00","2010-05-21T00:00:00","2010-05-28T00:00:00","2010-06-04T00:00:00","2010-06-11T00:00:00","2010-06-18T00:00:00","2010-06-25T00:00:00","2010-07-02T00:00:00","2010-07-09T00:00:00","2010-07-16T00:00:00","2010-07-23T00:00:00","2010-07-30T00:00:00","2010-08-06T00:00:00","2010-08-13T00:00:00","2010-08-20T00:00:00","2010-08-27T00:00:00","2010-09-03T00:00:00","2010-09-10T00:00:00","2010-09-17T00:00:00","2010-09-24T00:00:00","2010-10-01T00:00:00","2010-10-08T00:00:00","2010-10-15T00:00:00","2010-10-22T00:00:00","2010-10-29T00:00:00","2010-11-05T00:00:00","2010-11-12T00:00:00","2010-11-19T00:00:00","2010-11-26T00:00:00","2010-12-03T00:00:00","2010-12-10T00:00:00","2010-12-17T00:00:00","2010-12-24T00:00:00","2010-12-31T00:00:00","2011-01-07T00:00:00","2011-01-14T00:00:00","2011-01-21T00:00:00","2011-01-28T00:00:00","2011-02-04T00:00:00","2011-02-11T00:00:00","2011-02-18T00:00:00","2011-02-25T00:00:00","2011-03-04T00:00:00","2011-03-11T00:00:00","2011-03-18T00:00:00","2011-03-25T00:00:00","2011-04-01T00:00:00","2011-04-08T00:00:00","2011-04-15T00:00:00","2011-04-22T00:00:00","2011-04-29T00:00:00","2011-05-06T00:00:00","2011-05-13T00:00:00","2011-05-20T00:00:00","2011-05-27T00:00:00","2011-06-03T00:00:00","2011-06-10T00:00:00","2011-06-17T00:00:00","2011-06-24T00:00:00","2011-07-01T00:00:00","2011-07-08T00:00:00","2011-07-15T00:00:00","2011-07-22T00:00:00","2011-07-29T00:00:00","2011-08-05T00:00:00","2011-08-12T00:00:00","2011-08-19T00:00:00","2011-08-26T00:00:00","2011-09-02T00:00:00","2011-09-09T00:00:00","2011-09-16T00:00:00","2011-09-23T00:00:00","2011-09-30T00:00:00","2011-10-07T00:00:00","2011-10-14T00:00:00","2011-10-21T00:00:00","2011-10-28T00:00:00","2011-11-04T00:00:00","2011-11-11T00:00:00","2011-11-18T00:00:00","2011-11-25T00:00:00","2011-12-02T00:00:00","2011-12-09T00:00:00","2011-12-16T00:00:00","2011-12-23T00:00:00","2011-12-30T00:00:00","2012-01-06T00:00:00","2012-01-13T00:00:00","2012-01-20T00:00:00","2012-01-27T00:00:00","2012-02-03T00:00:00","2012-02-10T00:00:00","2012-02-17T00:00:00","2012-02-24T00:00:00","2012-03-02T00:00:00","2012-03-09T00:00:00","2012-03-16T00:00:00","2012-03-23T00:00:00","2012-03-30T00:00:00","2012-04-06T00:00:00","2012-04-13T00:00:00","2012-04-20T00:00:00","2012-04-27T00:00:00","2012-05-04T00:00:00","2012-05-11T00:00:00","2012-05-18T00:00:00","2012-05-25T00:00:00","2012-06-01T00:00:00","2012-06-08T00:00:00","2012-06-15T00:00:00","2012-06-22T00:00:00","2012-06-29T00:00:00","2012-07-06T00:00:00","2012-07-13T00:00:00","2012-07-20T00:00:00","2012-07-27T00:00:00","2012-08-03T00:00:00","2012-08-10T00:00:00","2012-08-17T00:00:00","2012-08-24T00:00:00","2012-08-31T00:00:00","2012-09-07T00:00:00","2012-09-14T00:00:00","2012-09-21T00:00:00","2012-09-28T00:00:00","2012-10-05T00:00:00","2012-10-12T00:00:00","2012-10-19T00:00:00","2012-10-26T00:00:00"],"y":[41969.29,36476.4,37857.68,37467.32,40423.95,35833.07,36807.21,35431.73,38104.53,37638.44,36663.26,36058.1,36717.2,40113.4,36499.93,38569.83,38347.52,41388.81,39657.1,39165.29,38697.24,41214.94,41056.4,40150.0,40552.37,38018.99,42038.03,37869.12,41509.62,41175.86,44863.15,39525.93,38416.22,37293.43,40474.22,42139.25,38749.62,34712.4,37762.12,41085.66,36817.35,38446.26,38371.99,36170.88,34749.11,35237.93,37099.47,34081.52,39764.56,33668.55,35961.99,36321.69,38065.42,36883.13,37604.79,37838.4,42277.37,37577.97,36930.48,36745.46,37630.13,38076.86,35263.45,35464.71,34311.69,40581.52,35378.71,35816.48,36203.13,39884.82,38080.39,39020.06,37316.12,37414.14,38193.09,36966.32,37990.15,34910.1,42542.66,37593.97,38533.7,38727.3,42713.81,38045.63,38382.65,37645.66,37928.28,41151.28,37531.43,38272.21,37117.02,41907.62,37255.89,37077.82,38625.48,37507.93,36404.7,32782.17,36950.91,32871.95,41411.4,38000.25,37433.66,34312.26,43478.58,43041.97,38622.92,40079.43,44565.32,40001.72,38322.83,37801.64,38696.88,44270.3,39099.61,39499.85,39077.84,43561.17,38895.18,37857.88,38541.76,41462.8,42304.47,39024.74,38945.0,40099.49,43326.92,39276.05,39396.59,37423.21,44708.45,42241.23,41658.4,39231.62,40940.78,44373.19,38759.47,39746.87,39793.41,43746.89,38015.36,38341.15,38512.48],"type":"scatter","xaxis":"x2","yaxis":"y2","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"observed_clean","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"observed_clean","x":["2010-02-05T00:00:00","2010-02-12T00:00:00","2010-02-19T00:00:00","2010-02-26T00:00:00","2010-03-05T00:00:00","2010-03-12T00:00:00","2010-03-19T00:00:00","2010-03-26T00:00:00","2010-04-02T00:00:00","2010-04-09T00:00:00","2010-04-16T00:00:00","2010-04-23T00:00:00","2010-04-30T00:00:00","2010-05-07T00:00:00","2010-05-14T00:00:00","2010-05-21T00:00:00","2010-05-28T00:00:00","2010-06-04T00:00:00","2010-06-11T00:00:00","2010-06-18T00:00:00","2010-06-25T00:00:00","2010-07-02T00:00:00","2010-07-09T00:00:00","2010-07-16T00:00:00","2010-07-23T00:00:00","2010-07-30T00:00:00","2010-08-06T00:00:00","2010-08-13T00:00:00","2010-08-20T00:00:00","2010-08-27T00:00:00","2010-09-03T00:00:00","2010-09-10T00:00:00","2010-09-17T00:00:00","2010-09-24T00:00:00","2010-10-01T00:00:00","2010-10-08T00:00:00","2010-10-15T00:00:00","2010-10-22T00:00:00","2010-10-29T00:00:00","2010-11-05T00:00:00","2010-11-12T00:00:00","2010-11-19T00:00:00","2010-11-26T00:00:00","2010-12-03T00:00:00","2010-12-10T00:00:00","2010-12-17T00:00:00","2010-12-24T00:00:00","2010-12-31T00:00:00","2011-01-07T00:00:00","2011-01-14T00:00:00","2011-01-21T00:00:00","2011-01-28T00:00:00","2011-02-04T00:00:00","2011-02-11T00:00:00","2011-02-18T00:00:00","2011-02-25T00:00:00","2011-03-04T00:00:00","2011-03-11T00:00:00","2011-03-18T00:00:00","2011-03-25T00:00:00","2011-04-01T00:00:00","2011-04-08T00:00:00","2011-04-15T00:00:00","2011-04-22T00:00:00","2011-04-29T00:00:00","2011-05-06T00:00:00","2011-05-13T00:00:00","2011-05-20T00:00:00","2011-05-27T00:00:00","2011-06-03T00:00:00","2011-06-10T00:00:00","2011-06-17T00:00:00","2011-06-24T00:00:00","2011-07-01T00:00:00","2011-07-08T00:00:00","2011-07-15T00:00:00","2011-07-22T00:00:00","2011-07-29T00:00:00","2011-08-05T00:00:00","2011-08-12T00:00:00","2011-08-19T00:00:00","2011-08-26T00:00:00","2011-09-02T00:00:00","2011-09-09T00:00:00","2011-09-16T00:00:00","2011-09-23T00:00:00","2011-09-30T00:00:00","2011-10-07T00:00:00","2011-10-14T00:00:00","2011-10-21T00:00:00","2011-10-28T00:00:00","2011-11-04T00:00:00","2011-11-11T00:00:00","2011-11-18T00:00:00","2011-11-25T00:00:00","2011-12-02T00:00:00","2011-12-09T00:00:00","2011-12-16T00:00:00","2011-12-23T00:00:00","2011-12-30T00:00:00","2012-01-06T00:00:00","2012-01-13T00:00:00","2012-01-20T00:00:00","2012-01-27T00:00:00","2012-02-03T00:00:00","2012-02-10T00:00:00","2012-02-17T00:00:00","2012-02-24T00:00:00","2012-03-02T00:00:00","2012-03-09T00:00:00","2012-03-16T00:00:00","2012-03-23T00:00:00","2012-03-30T00:00:00","2012-04-06T00:00:00","2012-04-13T00:00:00","2012-04-20T00:00:00","2012-04-27T00:00:00","2012-05-04T00:00:00","2012-05-11T00:00:00","2012-05-18T00:00:00","2012-05-25T00:00:00","2012-06-01T00:00:00","2012-06-08T00:00:00","2012-06-15T00:00:00","2012-06-22T00:00:00","2012-06-29T00:00:00","2012-07-06T00:00:00","2012-07-13T00:00:00","2012-07-20T00:00:00","2012-07-27T00:00:00","2012-08-03T00:00:00","2012-08-10T00:00:00","2012-08-17T00:00:00","2012-08-24T00:00:00","2012-08-31T00:00:00","2012-09-07T00:00:00","2012-09-14T00:00:00","2012-09-21T00:00:00","2012-09-28T00:00:00","2012-10-05T00:00:00","2012-10-12T00:00:00","2012-10-19T00:00:00","2012-10-26T00:00:00"],"y":[41969.29,36476.4,37857.68,37467.32,40423.95,35833.07,36807.21,35431.73,38104.53,37638.44,36663.26,36058.1,36717.2,40113.4,36499.93,38569.83,38347.52,41388.81,39657.1,39165.29,38697.24,41214.94,41056.4,40150.0,40552.37,38018.99,42038.03,37869.12,41509.62,41175.86,44863.15,39525.93,38416.22,37293.43,40474.22,42139.25,38749.62,34712.4,37762.12,41085.66,36817.35,38446.26,38371.99,36170.88,34749.11,35237.93,37099.47,34081.52,39764.56,33668.55,35961.99,36321.69,38065.42,36883.13,37604.79,37838.4,42277.37,37577.97,36930.48,36745.46,37630.13,38076.86,35263.45,35464.71,34311.69,40581.52,35378.71,35816.48,36203.13,39884.82,38080.39,39020.06,37316.12,37414.14,38193.09,36966.32,37990.15,34910.1,42542.66,37593.97,38533.7,38727.3,42713.81,38045.63,38382.65,37645.66,37928.28,41151.28,37531.43,38272.21,37117.02,41907.62,37255.89,37077.82,38625.48,37507.93,36404.7,32782.17,36950.91,32871.95,41411.4,38000.25,37433.66,34312.26,43478.58,43041.97,38622.92,40079.43,44565.32,40001.72,38322.83,37801.64,38696.88,44270.3,39099.61,39499.85,39077.84,43561.17,38895.18,37857.88,38541.76,41462.8,42304.47,39024.74,38945.0,40099.49,43326.92,39276.05,39396.59,37423.21,44708.45,42241.23,41658.4,39231.62,40940.78,44373.19,38759.47,39746.87,39793.41,43746.89,38015.36,38341.15,38512.48],"type":"scatter","xaxis":"x2","yaxis":"y2","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"observed","line":{"color":"rgba(70, 130, 180, 1.0)","width":0.65},"mode":"lines","name":"observed","x":["2010-02-05T00:00:00","2010-02-12T00:00:00","2010-02-19T00:00:00","2010-02-26T00:00:00","2010-03-05T00:00:00","2010-03-12T00:00:00","2010-03-19T00:00:00","2010-03-26T00:00:00","2010-04-02T00:00:00","2010-04-09T00:00:00","2010-04-16T00:00:00","2010-04-23T00:00:00","2010-04-30T00:00:00","2010-05-07T00:00:00","2010-05-14T00:00:00","2010-05-21T00:00:00","2010-05-28T00:00:00","2010-06-04T00:00:00","2010-06-11T00:00:00","2010-06-18T00:00:00","2010-06-25T00:00:00","2010-07-02T00:00:00","2010-07-09T00:00:00","2010-07-16T00:00:00","2010-07-23T00:00:00","2010-07-30T00:00:00","2010-08-06T00:00:00","2010-08-13T00:00:00","2010-08-20T00:00:00","2010-08-27T00:00:00","2010-09-03T00:00:00","2010-09-10T00:00:00","2010-09-17T00:00:00","2010-09-24T00:00:00","2010-10-01T00:00:00","2010-10-08T00:00:00","2010-10-15T00:00:00","2010-10-22T00:00:00","2010-10-29T00:00:00","2010-11-05T00:00:00","2010-11-12T00:00:00","2010-11-19T00:00:00","2010-11-26T00:00:00","2010-12-03T00:00:00","2010-12-10T00:00:00","2010-12-17T00:00:00","2010-12-24T00:00:00","2010-12-31T00:00:00","2011-01-07T00:00:00","2011-01-14T00:00:00","2011-01-21T00:00:00","2011-01-28T00:00:00","2011-02-04T00:00:00","2011-02-11T00:00:00","2011-02-18T00:00:00","2011-02-25T00:00:00","2011-03-04T00:00:00","2011-03-11T00:00:00","2011-03-18T00:00:00","2011-03-25T00:00:00","2011-04-01T00:00:00","2011-04-08T00:00:00","2011-04-15T00:00:00","2011-04-22T00:00:00","2011-04-29T00:00:00","2011-05-06T00:00:00","2011-05-13T00:00:00","2011-05-20T00:00:00","2011-05-27T00:00:00","2011-06-03T00:00:00","2011-06-10T00:00:00","2011-06-17T00:00:00","2011-06-24T00:00:00","2011-07-01T00:00:00","2011-07-08T00:00:00","2011-07-15T00:00:00","2011-07-22T00:00:00","2011-07-29T00:00:00","2011-08-05T00:00:00","2011-08-12T00:00:00","2011-08-19T00:00:00","2011-08-26T00:00:00","2011-09-02T00:00:00","2011-09-09T00:00:00","2011-09-16T00:00:00","2011-09-23T00:00:00","2011-09-30T00:00:00","2011-10-07T00:00:00","2011-10-14T00:00:00","2011-10-21T00:00:00","2011-10-28T00:00:00","2011-11-04T00:00:00","2011-11-11T00:00:00","2011-11-18T00:00:00","2011-11-25T00:00:00","2011-12-02T00:00:00","2011-12-09T00:00:00","2011-12-16T00:00:00","2011-12-23T00:00:00","2011-12-30T00:00:00","2012-01-06T00:00:00","2012-01-13T00:00:00","2012-01-20T00:00:00","2012-01-27T00:00:00","2012-02-03T00:00:00","2012-02-10T00:00:00","2012-02-17T00:00:00","2012-02-24T00:00:00","2012-03-02T00:00:00","2012-03-09T00:00:00","2012-03-16T00:00:00","2012-03-23T00:00:00","2012-03-30T00:00:00","2012-04-06T00:00:00","2012-04-13T00:00:00","2012-04-20T00:00:00","2012-04-27T00:00:00","2012-05-04T00:00:00","2012-05-11T00:00:00","2012-05-18T00:00:00","2012-05-25T00:00:00","2012-06-01T00:00:00","2012-06-08T00:00:00","2012-06-15T00:00:00","2012-06-22T00:00:00","2012-06-29T00:00:00","2012-07-06T00:00:00","2012-07-13T00:00:00","2012-07-20T00:00:00","2012-07-27T00:00:00","2012-08-03T00:00:00","2012-08-10T00:00:00","2012-08-17T00:00:00","2012-08-24T00:00:00","2012-08-31T00:00:00","2012-09-07T00:00:00","2012-09-14T00:00:00","2012-09-21T00:00:00","2012-09-28T00:00:00","2012-10-05T00:00:00","2012-10-12T00:00:00","2012-10-19T00:00:00","2012-10-26T00:00:00"],"y":[13740.12,10887.84,11523.47,11135.17,12275.58,10123.45,9001.37,10366.85,11157.08,10179.29,9226.8,8868.93,9337.44,9372.8,7919.86,7813.91,8412.69,8001.41,7742.75,8201.06,6591.22,7857.88,8112.67,13751.3,16930.62,20915.95,26719.02,30640.54,41101.93,51159.17,19081.8,12134.69,10722.46,8097.92,9775.17,10081.8,9735.73,8614.41,9283.09,9825.22,9146.77,9202.11,10706.81,10856.85,11219.78,11986.84,12080.36,8266.14,15808.15,13275.87,12532.94,11983.34,11012.52,11428.25,11724.98,10473.78,11039.12,10689.97,8148.69,9049.02,8734.19,10417.33,8212.97,8468.72,8653.62,10420.92,8732.46,7939.01,8120.7,8853.89,7508.71,7658.75,6165.73,8070.64,7366.5,11578.11,16069.5,21331.51,31248.98,32148.93,41603.11,49775.52,19604.47,12778.28,10412.88,9755.56,10434.83,9977.96,9870.22,10136.78,9421.2,9189.2,9959.64,10104.36,9317.56,10146.54,12955.55,13180.05,13667.88,8848.44,13926.04,13822.49,11702.08,10613.17,12485.78,12388.85,10237.78,10502.4,11387.31,11925.71,8845.73,7910.22,9129.23,9335.24,7927.73,8647.36,8635.62,10655.35,10342.72,8609.82,8345.33,7175.77,8614.64,8016.26,7301.41,7577.59,8473.71,13126.15,20126.95,22716.7,30331.69,28257.3,31905.97,43712.78,50701.3,18368.51,14288.22,13403.63,13085.95,11676.98,10487.17,8548.87,9350.9],"type":"scatter","xaxis":"x3","yaxis":"y3","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"observed_clean","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"observed_clean","x":["2010-02-05T00:00:00","2010-02-12T00:00:00","2010-02-19T00:00:00","2010-02-26T00:00:00","2010-03-05T00:00:00","2010-03-12T00:00:00","2010-03-19T00:00:00","2010-03-26T00:00:00","2010-04-02T00:00:00","2010-04-09T00:00:00","2010-04-16T00:00:00","2010-04-23T00:00:00","2010-04-30T00:00:00","2010-05-07T00:00:00","2010-05-14T00:00:00","2010-05-21T00:00:00","2010-05-28T00:00:00","2010-06-04T00:00:00","2010-06-11T00:00:00","2010-06-18T00:00:00","2010-06-25T00:00:00","2010-07-02T00:00:00","2010-07-09T00:00:00","2010-07-16T00:00:00","2010-07-23T00:00:00","2010-07-30T00:00:00","2010-08-06T00:00:00","2010-08-13T00:00:00","2010-08-20T00:00:00","2010-08-27T00:00:00","2010-09-03T00:00:00","2010-09-10T00:00:00","2010-09-17T00:00:00","2010-09-24T00:00:00","2010-10-01T00:00:00","2010-10-08T00:00:00","2010-10-15T00:00:00","2010-10-22T00:00:00","2010-10-29T00:00:00","2010-11-05T00:00:00","2010-11-12T00:00:00","2010-11-19T00:00:00","2010-11-26T00:00:00","2010-12-03T00:00:00","2010-12-10T00:00:00","2010-12-17T00:00:00","2010-12-24T00:00:00","2010-12-31T00:00:00","2011-01-07T00:00:00","2011-01-14T00:00:00","2011-01-21T00:00:00","2011-01-28T00:00:00","2011-02-04T00:00:00","2011-02-11T00:00:00","2011-02-18T00:00:00","2011-02-25T00:00:00","2011-03-04T00:00:00","2011-03-11T00:00:00","2011-03-18T00:00:00","2011-03-25T00:00:00","2011-04-01T00:00:00","2011-04-08T00:00:00","2011-04-15T00:00:00","2011-04-22T00:00:00","2011-04-29T00:00:00","2011-05-06T00:00:00","2011-05-13T00:00:00","2011-05-20T00:00:00","2011-05-27T00:00:00","2011-06-03T00:00:00","2011-06-10T00:00:00","2011-06-17T00:00:00","2011-06-24T00:00:00","2011-07-01T00:00:00","2011-07-08T00:00:00","2011-07-15T00:00:00","2011-07-22T00:00:00","2011-07-29T00:00:00","2011-08-05T00:00:00","2011-08-12T00:00:00","2011-08-19T00:00:00","2011-08-26T00:00:00","2011-09-02T00:00:00","2011-09-09T00:00:00","2011-09-16T00:00:00","2011-09-23T00:00:00","2011-09-30T00:00:00","2011-10-07T00:00:00","2011-10-14T00:00:00","2011-10-21T00:00:00","2011-10-28T00:00:00","2011-11-04T00:00:00","2011-11-11T00:00:00","2011-11-18T00:00:00","2011-11-25T00:00:00","2011-12-02T00:00:00","2011-12-09T00:00:00","2011-12-16T00:00:00","2011-12-23T00:00:00","2011-12-30T00:00:00","2012-01-06T00:00:00","2012-01-13T00:00:00","2012-01-20T00:00:00","2012-01-27T00:00:00","2012-02-03T00:00:00","2012-02-10T00:00:00","2012-02-17T00:00:00","2012-02-24T00:00:00","2012-03-02T00:00:00","2012-03-09T00:00:00","2012-03-16T00:00:00","2012-03-23T00:00:00","2012-03-30T00:00:00","2012-04-06T00:00:00","2012-04-13T00:00:00","2012-04-20T00:00:00","2012-04-27T00:00:00","2012-05-04T00:00:00","2012-05-11T00:00:00","2012-05-18T00:00:00","2012-05-25T00:00:00","2012-06-01T00:00:00","2012-06-08T00:00:00","2012-06-15T00:00:00","2012-06-22T00:00:00","2012-06-29T00:00:00","2012-07-06T00:00:00","2012-07-13T00:00:00","2012-07-20T00:00:00","2012-07-27T00:00:00","2012-08-03T00:00:00","2012-08-10T00:00:00","2012-08-17T00:00:00","2012-08-24T00:00:00","2012-08-31T00:00:00","2012-09-07T00:00:00","2012-09-14T00:00:00","2012-09-21T00:00:00","2012-09-28T00:00:00","2012-10-05T00:00:00","2012-10-12T00:00:00","2012-10-19T00:00:00","2012-10-26T00:00:00"],"y":[13740.12,10887.84,11523.47,11135.17,12275.58,10123.45,9001.37,10366.85,11157.08,10179.29,9226.8,8868.93,9337.44,9372.8,7919.86,7813.91,8412.69,8001.41,7742.75,8201.06,6591.22,7857.88,8112.67,13751.3,16930.62,20915.95,26719.02,30640.54,41101.93,51159.17,20212.866400255778,12134.69,10722.46,8097.92,9775.17,10081.8,9735.73,8614.41,9283.09,9825.22,9146.77,9202.11,10706.81,10856.85,11219.78,11986.84,12080.36,8266.14,15808.15,13275.87,12532.94,11983.34,11012.52,11428.25,11724.98,10473.78,11039.12,10689.97,8148.69,9049.02,8734.19,10417.33,8212.97,8468.72,8653.62,10420.92,8732.46,7939.01,8120.7,8853.89,7508.71,7658.75,6165.73,8070.64,7366.5,11578.11,16069.5,21331.51,31248.98,32148.93,41603.11,49775.52,20044.003642002906,12778.28,10412.88,9755.56,10434.83,9977.96,9870.22,10136.78,9421.2,9189.2,9959.64,10104.36,9317.56,10146.54,12955.55,13180.05,13667.88,8848.44,13926.04,13822.49,11702.08,10613.17,12485.78,12388.85,10237.78,10502.4,11387.31,11925.71,8845.73,7910.22,9129.23,9335.24,7927.73,8647.36,8635.62,10655.35,10342.72,8609.82,8345.33,7175.77,8614.64,8016.26,7301.41,7577.59,8473.71,13126.15,20126.95,22716.7,30331.69,28257.3,26668.342959357185,34179.41652705953,25256.082139296348,13724.709432960237,14288.22,13403.63,13085.95,11676.98,10487.17,8548.87,9350.9],"type":"scatter","xaxis":"x3","yaxis":"y3","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"observed","line":{"color":"rgba(70, 130, 180, 1.0)","width":0.65},"mode":"lines","name":"observed","x":["2010-02-05T00:00:00","2010-02-12T00:00:00","2010-02-19T00:00:00","2010-02-26T00:00:00","2010-03-05T00:00:00","2010-03-12T00:00:00","2010-03-19T00:00:00","2010-03-26T00:00:00","2010-04-02T00:00:00","2010-04-09T00:00:00","2010-04-16T00:00:00","2010-04-23T00:00:00","2010-04-30T00:00:00","2010-05-07T00:00:00","2010-05-14T00:00:00","2010-05-21T00:00:00","2010-05-28T00:00:00","2010-06-04T00:00:00","2010-06-11T00:00:00","2010-06-18T00:00:00","2010-06-25T00:00:00","2010-07-02T00:00:00","2010-07-09T00:00:00","2010-07-16T00:00:00","2010-07-23T00:00:00","2010-07-30T00:00:00","2010-08-06T00:00:00","2010-08-13T00:00:00","2010-08-20T00:00:00","2010-08-27T00:00:00","2010-09-03T00:00:00","2010-09-10T00:00:00","2010-09-17T00:00:00","2010-09-24T00:00:00","2010-10-01T00:00:00","2010-10-08T00:00:00","2010-10-15T00:00:00","2010-10-22T00:00:00","2010-10-29T00:00:00","2010-11-05T00:00:00","2010-11-12T00:00:00","2010-11-19T00:00:00","2010-11-26T00:00:00","2010-12-03T00:00:00","2010-12-10T00:00:00","2010-12-17T00:00:00","2010-12-24T00:00:00","2010-12-31T00:00:00","2011-01-07T00:00:00","2011-01-14T00:00:00","2011-01-21T00:00:00","2011-01-28T00:00:00","2011-02-04T00:00:00","2011-02-11T00:00:00","2011-02-18T00:00:00","2011-02-25T00:00:00","2011-03-04T00:00:00","2011-03-11T00:00:00","2011-03-18T00:00:00","2011-03-25T00:00:00","2011-04-01T00:00:00","2011-04-08T00:00:00","2011-04-15T00:00:00","2011-04-22T00:00:00","2011-04-29T00:00:00","2011-05-06T00:00:00","2011-05-13T00:00:00","2011-05-20T00:00:00","2011-05-27T00:00:00","2011-06-03T00:00:00","2011-06-10T00:00:00","2011-06-17T00:00:00","2011-06-24T00:00:00","2011-07-01T00:00:00","2011-07-08T00:00:00","2011-07-15T00:00:00","2011-07-22T00:00:00","2011-07-29T00:00:00","2011-08-05T00:00:00","2011-08-12T00:00:00","2011-08-19T00:00:00","2011-08-26T00:00:00","2011-09-02T00:00:00","2011-09-09T00:00:00","2011-09-16T00:00:00","2011-09-23T00:00:00","2011-09-30T00:00:00","2011-10-07T00:00:00","2011-10-14T00:00:00","2011-10-21T00:00:00","2011-10-28T00:00:00","2011-11-04T00:00:00","2011-11-11T00:00:00","2011-11-18T00:00:00","2011-11-25T00:00:00","2011-12-02T00:00:00","2011-12-09T00:00:00","2011-12-16T00:00:00","2011-12-23T00:00:00","2011-12-30T00:00:00","2012-01-06T00:00:00","2012-01-13T00:00:00","2012-01-20T00:00:00","2012-01-27T00:00:00","2012-02-03T00:00:00","2012-02-10T00:00:00","2012-02-17T00:00:00","2012-02-24T00:00:00","2012-03-02T00:00:00","2012-03-09T00:00:00","2012-03-16T00:00:00","2012-03-23T00:00:00","2012-03-30T00:00:00","2012-04-06T00:00:00","2012-04-13T00:00:00","2012-04-20T00:00:00","2012-04-27T00:00:00","2012-05-04T00:00:00","2012-05-11T00:00:00","2012-05-18T00:00:00","2012-05-25T00:00:00","2012-06-01T00:00:00","2012-06-08T00:00:00","2012-06-15T00:00:00","2012-06-22T00:00:00","2012-06-29T00:00:00","2012-07-06T00:00:00","2012-07-13T00:00:00","2012-07-20T00:00:00","2012-07-27T00:00:00","2012-08-03T00:00:00","2012-08-10T00:00:00","2012-08-17T00:00:00","2012-08-24T00:00:00","2012-08-31T00:00:00","2012-09-07T00:00:00","2012-09-14T00:00:00","2012-09-21T00:00:00","2012-09-28T00:00:00","2012-10-05T00:00:00","2012-10-12T00:00:00","2012-10-19T00:00:00","2012-10-26T00:00:00"],"y":[115564.35,94136.35,98672.59,92755.59,108282.86,98175.35,71165.72,95855.41,101566.87,98689.46,77602.0,87205.88,127811.89,107634.21,91179.51,80273.34,87937.0,96137.67,105539.53,86860.94,79026.15,100958.25,87346.14,80431.55,66892.44,76542.81,93809.75,78915.6,70299.21,77852.74,90990.93,78481.32,76162.38,87720.98,112126.81,73963.61,73027.2,71814.32,70733.35,77547.67,82395.79,73121.25,55973.77,87338.34,69386.52,81069.74,57718.48,67182.76,85242.8,80921.16,79827.55,71672.01,86132.01,70151.05,75224.27,66624.1,89649.84,65990.45,69452.49,69677.06,74614.02,84294.6,76028.75,66718.84,82034.82,87761.73,100494.82,84842.8,70061.97,89269.8,73273.96,72699.23,69283.24,68879.85,70660.17,81709.41,65138.27,68425.21,96719.55,69572.84,71090.57,60459.08,86374.76,77634.79,73226.9,71469.16,72839.02,83059.47,67590.65,76702.9,67148.18,115249.43,86946.05,70210.07,57562.29,98037.09,83237.41,77567.96,65636.08,63659.49,90770.82,73539.46,78264.14,67827.4,89029.26,78072.5,91386.12,72314.41,93103.43,88138.04,68900.29,76834.09,83931.07,98092.62,74197.08,74827.84,66399.89,90029.42,70261.48,81332.67,76300.01,74849.19,80344.44,69071.96,73529.71,67658.22,80117.78,66232.11,68235.73,70457.7,85329.19,74483.32,85392.47,71295.77,80706.16,70644.8,82186.59,74195.35,75484.17,74894.95,82276.59,68794.43,66526.76],"type":"scatter","xaxis":"x4","yaxis":"y4","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"observed_clean","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"observed_clean","x":["2010-02-05T00:00:00","2010-02-12T00:00:00","2010-02-19T00:00:00","2010-02-26T00:00:00","2010-03-05T00:00:00","2010-03-12T00:00:00","2010-03-19T00:00:00","2010-03-26T00:00:00","2010-04-02T00:00:00","2010-04-09T00:00:00","2010-04-16T00:00:00","2010-04-23T00:00:00","2010-04-30T00:00:00","2010-05-07T00:00:00","2010-05-14T00:00:00","2010-05-21T00:00:00","2010-05-28T00:00:00","2010-06-04T00:00:00","2010-06-11T00:00:00","2010-06-18T00:00:00","2010-06-25T00:00:00","2010-07-02T00:00:00","2010-07-09T00:00:00","2010-07-16T00:00:00","2010-07-23T00:00:00","2010-07-30T00:00:00","2010-08-06T00:00:00","2010-08-13T00:00:00","2010-08-20T00:00:00","2010-08-27T00:00:00","2010-09-03T00:00:00","2010-09-10T00:00:00","2010-09-17T00:00:00","2010-09-24T00:00:00","2010-10-01T00:00:00","2010-10-08T00:00:00","2010-10-15T00:00:00","2010-10-22T00:00:00","2010-10-29T00:00:00","2010-11-05T00:00:00","2010-11-12T00:00:00","2010-11-19T00:00:00","2010-11-26T00:00:00","2010-12-03T00:00:00","2010-12-10T00:00:00","2010-12-17T00:00:00","2010-12-24T00:00:00","2010-12-31T00:00:00","2011-01-07T00:00:00","2011-01-14T00:00:00","2011-01-21T00:00:00","2011-01-28T00:00:00","2011-02-04T00:00:00","2011-02-11T00:00:00","2011-02-18T00:00:00","2011-02-25T00:00:00","2011-03-04T00:00:00","2011-03-11T00:00:00","2011-03-18T00:00:00","2011-03-25T00:00:00","2011-04-01T00:00:00","2011-04-08T00:00:00","2011-04-15T00:00:00","2011-04-22T00:00:00","2011-04-29T00:00:00","2011-05-06T00:00:00","2011-05-13T00:00:00","2011-05-20T00:00:00","2011-05-27T00:00:00","2011-06-03T00:00:00","2011-06-10T00:00:00","2011-06-17T00:00:00","2011-06-24T00:00:00","2011-07-01T00:00:00","2011-07-08T00:00:00","2011-07-15T00:00:00","2011-07-22T00:00:00","2011-07-29T00:00:00","2011-08-05T00:00:00","2011-08-12T00:00:00","2011-08-19T00:00:00","2011-08-26T00:00:00","2011-09-02T00:00:00","2011-09-09T00:00:00","2011-09-16T00:00:00","2011-09-23T00:00:00","2011-09-30T00:00:00","2011-10-07T00:00:00","2011-10-14T00:00:00","2011-10-21T00:00:00","2011-10-28T00:00:00","2011-11-04T00:00:00","2011-11-11T00:00:00","2011-11-18T00:00:00","2011-11-25T00:00:00","2011-12-02T00:00:00","2011-12-09T00:00:00","2011-12-16T00:00:00","2011-12-23T00:00:00","2011-12-30T00:00:00","2012-01-06T00:00:00","2012-01-13T00:00:00","2012-01-20T00:00:00","2012-01-27T00:00:00","2012-02-03T00:00:00","2012-02-10T00:00:00","2012-02-17T00:00:00","2012-02-24T00:00:00","2012-03-02T00:00:00","2012-03-09T00:00:00","2012-03-16T00:00:00","2012-03-23T00:00:00","2012-03-30T00:00:00","2012-04-06T00:00:00","2012-04-13T00:00:00","2012-04-20T00:00:00","2012-04-27T00:00:00","2012-05-04T00:00:00","2012-05-11T00:00:00","2012-05-18T00:00:00","2012-05-25T00:00:00","2012-06-01T00:00:00","2012-06-08T00:00:00","2012-06-15T00:00:00","2012-06-22T00:00:00","2012-06-29T00:00:00","2012-07-06T00:00:00","2012-07-13T00:00:00","2012-07-20T00:00:00","2012-07-27T00:00:00","2012-08-03T00:00:00","2012-08-10T00:00:00","2012-08-17T00:00:00","2012-08-24T00:00:00","2012-08-31T00:00:00","2012-09-07T00:00:00","2012-09-14T00:00:00","2012-09-21T00:00:00","2012-09-28T00:00:00","2012-10-05T00:00:00","2012-10-12T00:00:00","2012-10-19T00:00:00","2012-10-26T00:00:00"],"y":[115564.35,94136.35,98672.59,92755.59,108282.86,98175.35,71165.72,95855.41,101566.87,98689.46,77602.0,87205.88,127811.89,107634.21,91179.51,80273.34,87937.0,96137.67,105539.53,86860.94,79026.15,100958.25,87346.14,80431.55,66892.44,76542.81,93809.75,78915.6,70299.21,77852.74,90990.93,78481.32,76162.38,87720.98,112126.81,73963.61,73027.2,71814.32,70733.35,58257.85806792199,82395.79,73121.25,55973.77,87338.34,69386.52,81069.74,57718.48,67182.76,85242.8,80921.16,79827.55,71672.01,86132.01,70151.05,75224.27,66624.1,89649.84,65990.45,69452.49,69677.06,74614.02,84294.6,76028.75,66718.84,82034.82,87761.73,100494.82,84842.8,70061.97,89269.8,73273.96,72699.23,69283.24,68879.85,70660.17,81709.41,65138.27,68425.21,96719.55,69572.84,71090.57,60459.08,86374.76,77634.79,73226.9,71469.16,72839.02,83059.47,67590.65,76702.9,67148.18,115249.43,86946.05,70210.07,57562.29,98037.09,83237.41,77567.96,65636.08,63659.49,90770.82,73539.46,78264.14,67827.4,89029.26,78072.5,91386.12,72314.41,93103.43,88138.04,68900.29,76834.09,83931.07,98092.62,74197.08,74827.84,66399.89,90029.42,70261.48,81332.67,76300.01,74849.19,80344.44,69071.96,73529.71,67658.22,80117.78,66232.11,68235.73,70457.7,85329.19,74483.32,85392.47,71295.77,80706.16,70644.8,82186.59,74195.35,75484.17,74894.95,82276.59,68794.43,66526.76],"type":"scatter","xaxis":"x4","yaxis":"y4","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"observed","line":{"color":"rgba(70, 130, 180, 1.0)","width":0.65},"mode":"lines","name":"observed","x":["2010-02-05T00:00:00","2010-02-12T00:00:00","2010-02-19T00:00:00","2010-02-26T00:00:00","2010-03-05T00:00:00","2010-03-12T00:00:00","2010-03-19T00:00:00","2010-03-26T00:00:00","2010-04-02T00:00:00","2010-04-09T00:00:00","2010-04-16T00:00:00","2010-04-23T00:00:00","2010-04-30T00:00:00","2010-05-07T00:00:00","2010-05-14T00:00:00","2010-05-21T00:00:00","2010-05-28T00:00:00","2010-06-04T00:00:00","2010-06-11T00:00:00","2010-06-18T00:00:00","2010-06-25T00:00:00","2010-07-02T00:00:00","2010-07-09T00:00:00","2010-07-16T00:00:00","2010-07-23T00:00:00","2010-07-30T00:00:00","2010-08-06T00:00:00","2010-08-13T00:00:00","2010-08-20T00:00:00","2010-08-27T00:00:00","2010-09-03T00:00:00","2010-09-10T00:00:00","2010-09-17T00:00:00","2010-09-24T00:00:00","2010-10-01T00:00:00","2010-10-08T00:00:00","2010-10-15T00:00:00","2010-10-22T00:00:00","2010-10-29T00:00:00","2010-11-05T00:00:00","2010-11-12T00:00:00","2010-11-19T00:00:00","2010-11-26T00:00:00","2010-12-03T00:00:00","2010-12-10T00:00:00","2010-12-17T00:00:00","2010-12-24T00:00:00","2010-12-31T00:00:00","2011-01-07T00:00:00","2011-01-14T00:00:00","2011-01-21T00:00:00","2011-01-28T00:00:00","2011-02-04T00:00:00","2011-02-11T00:00:00","2011-02-18T00:00:00","2011-02-25T00:00:00","2011-03-04T00:00:00","2011-03-11T00:00:00","2011-03-18T00:00:00","2011-03-25T00:00:00","2011-04-01T00:00:00","2011-04-08T00:00:00","2011-04-15T00:00:00","2011-04-22T00:00:00","2011-04-29T00:00:00","2011-05-06T00:00:00","2011-05-13T00:00:00","2011-05-20T00:00:00","2011-05-27T00:00:00","2011-06-03T00:00:00","2011-06-10T00:00:00","2011-06-17T00:00:00","2011-06-24T00:00:00","2011-07-01T00:00:00","2011-07-08T00:00:00","2011-07-15T00:00:00","2011-07-22T00:00:00","2011-07-29T00:00:00","2011-08-05T00:00:00","2011-08-12T00:00:00","2011-08-19T00:00:00","2011-08-26T00:00:00","2011-09-02T00:00:00","2011-09-09T00:00:00","2011-09-16T00:00:00","2011-09-23T00:00:00","2011-09-30T00:00:00","2011-10-07T00:00:00","2011-10-14T00:00:00","2011-10-21T00:00:00","2011-10-28T00:00:00","2011-11-04T00:00:00","2011-11-11T00:00:00","2011-11-18T00:00:00","2011-11-25T00:00:00","2011-12-02T00:00:00","2011-12-09T00:00:00","2011-12-16T00:00:00","2011-12-23T00:00:00","2011-12-30T00:00:00","2012-01-06T00:00:00","2012-01-13T00:00:00","2012-01-20T00:00:00","2012-01-27T00:00:00","2012-02-03T00:00:00","2012-02-10T00:00:00","2012-02-17T00:00:00","2012-02-24T00:00:00","2012-03-02T00:00:00","2012-03-09T00:00:00","2012-03-16T00:00:00","2012-03-23T00:00:00","2012-03-30T00:00:00","2012-04-06T00:00:00","2012-04-13T00:00:00","2012-04-20T00:00:00","2012-04-27T00:00:00","2012-05-04T00:00:00","2012-05-11T00:00:00","2012-05-18T00:00:00","2012-05-25T00:00:00","2012-06-01T00:00:00","2012-06-08T00:00:00","2012-06-15T00:00:00","2012-06-22T00:00:00","2012-06-29T00:00:00","2012-07-06T00:00:00","2012-07-13T00:00:00","2012-07-20T00:00:00","2012-07-27T00:00:00","2012-08-03T00:00:00","2012-08-10T00:00:00","2012-08-17T00:00:00","2012-08-24T00:00:00","2012-08-31T00:00:00","2012-09-07T00:00:00","2012-09-14T00:00:00","2012-09-21T00:00:00","2012-09-28T00:00:00","2012-10-05T00:00:00","2012-10-12T00:00:00","2012-10-19T00:00:00","2012-10-26T00:00:00"],"y":[40129.01,37334.83,38717.6,35318.2,38776.09,34342.64,34188.52,33581.72,38151.58,34145.96,32890.54,32946.13,34168.23,35393.78,33131.69,34442.73,35046.1,35181.47,34036.53,33387.48,33731.24,35580.01,34721.25,33171.72,34350.12,33568.19,34833.35,32326.19,32249.35,31272.68,35562.68,32737.89,33762.32,31381.97,34658.25,35966.67,33747.68,32659.74,34917.77,36182.58,35527.64,35759.26,34099.53,36222.74,35188.54,36961.11,41864.0,32751.73,36599.46,34228.3,34547.4,35110.75,39903.33,36011.09,35386.72,34195.37,36369.58,34415.39,33301.63,32558.92,35319.05,34442.29,32224.01,32832.06,32827.42,37360.03,34727.2,35631.59,35972.12,36767.22,36099.62,34338.33,34014.16,34063.23,35582.39,33336.29,34006.29,31981.72,35484.32,31061.21,32707.8,32668.5,34963.68,34246.67,35018.8,33157.11,34173.84,36759.96,34131.81,32631.25,34429.75,36959.48,34003.52,33169.55,33243.85,35886.92,38226.32,37149.3,41062.58,32419.78,36797.0,34033.89,35356.12,34644.25,40069.47,38317.89,37244.73,37204.72,40307.19,36553.82,36141.27,33758.45,37745.71,41917.56,37295.29,36930.94,38531.76,41589.1,37702.53,37817.25,39067.0,41039.74,40236.23,38163.76,37693.88,37647.44,41524.67,36130.01,37797.31,36981.9,40098.84,37269.92,36294.18,33855.28,37666.92,38666.21,37346.83,36404.63,37254.84,42663.75,37248.47,38668.75,39255.35],"type":"scatter","xaxis":"x5","yaxis":"y5","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"observed_clean","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"observed_clean","x":["2010-02-05T00:00:00","2010-02-12T00:00:00","2010-02-19T00:00:00","2010-02-26T00:00:00","2010-03-05T00:00:00","2010-03-12T00:00:00","2010-03-19T00:00:00","2010-03-26T00:00:00","2010-04-02T00:00:00","2010-04-09T00:00:00","2010-04-16T00:00:00","2010-04-23T00:00:00","2010-04-30T00:00:00","2010-05-07T00:00:00","2010-05-14T00:00:00","2010-05-21T00:00:00","2010-05-28T00:00:00","2010-06-04T00:00:00","2010-06-11T00:00:00","2010-06-18T00:00:00","2010-06-25T00:00:00","2010-07-02T00:00:00","2010-07-09T00:00:00","2010-07-16T00:00:00","2010-07-23T00:00:00","2010-07-30T00:00:00","2010-08-06T00:00:00","2010-08-13T00:00:00","2010-08-20T00:00:00","2010-08-27T00:00:00","2010-09-03T00:00:00","2010-09-10T00:00:00","2010-09-17T00:00:00","2010-09-24T00:00:00","2010-10-01T00:00:00","2010-10-08T00:00:00","2010-10-15T00:00:00","2010-10-22T00:00:00","2010-10-29T00:00:00","2010-11-05T00:00:00","2010-11-12T00:00:00","2010-11-19T00:00:00","2010-11-26T00:00:00","2010-12-03T00:00:00","2010-12-10T00:00:00","2010-12-17T00:00:00","2010-12-24T00:00:00","2010-12-31T00:00:00","2011-01-07T00:00:00","2011-01-14T00:00:00","2011-01-21T00:00:00","2011-01-28T00:00:00","2011-02-04T00:00:00","2011-02-11T00:00:00","2011-02-18T00:00:00","2011-02-25T00:00:00","2011-03-04T00:00:00","2011-03-11T00:00:00","2011-03-18T00:00:00","2011-03-25T00:00:00","2011-04-01T00:00:00","2011-04-08T00:00:00","2011-04-15T00:00:00","2011-04-22T00:00:00","2011-04-29T00:00:00","2011-05-06T00:00:00","2011-05-13T00:00:00","2011-05-20T00:00:00","2011-05-27T00:00:00","2011-06-03T00:00:00","2011-06-10T00:00:00","2011-06-17T00:00:00","2011-06-24T00:00:00","2011-07-01T00:00:00","2011-07-08T00:00:00","2011-07-15T00:00:00","2011-07-22T00:00:00","2011-07-29T00:00:00","2011-08-05T00:00:00","2011-08-12T00:00:00","2011-08-19T00:00:00","2011-08-26T00:00:00","2011-09-02T00:00:00","2011-09-09T00:00:00","2011-09-16T00:00:00","2011-09-23T00:00:00","2011-09-30T00:00:00","2011-10-07T00:00:00","2011-10-14T00:00:00","2011-10-21T00:00:00","2011-10-28T00:00:00","2011-11-04T00:00:00","2011-11-11T00:00:00","2011-11-18T00:00:00","2011-11-25T00:00:00","2011-12-02T00:00:00","2011-12-09T00:00:00","2011-12-16T00:00:00","2011-12-23T00:00:00","2011-12-30T00:00:00","2012-01-06T00:00:00","2012-01-13T00:00:00","2012-01-20T00:00:00","2012-01-27T00:00:00","2012-02-03T00:00:00","2012-02-10T00:00:00","2012-02-17T00:00:00","2012-02-24T00:00:00","2012-03-02T00:00:00","2012-03-09T00:00:00","2012-03-16T00:00:00","2012-03-23T00:00:00","2012-03-30T00:00:00","2012-04-06T00:00:00","2012-04-13T00:00:00","2012-04-20T00:00:00","2012-04-27T00:00:00","2012-05-04T00:00:00","2012-05-11T00:00:00","2012-05-18T00:00:00","2012-05-25T00:00:00","2012-06-01T00:00:00","2012-06-08T00:00:00","2012-06-15T00:00:00","2012-06-22T00:00:00","2012-06-29T00:00:00","2012-07-06T00:00:00","2012-07-13T00:00:00","2012-07-20T00:00:00","2012-07-27T00:00:00","2012-08-03T00:00:00","2012-08-10T00:00:00","2012-08-17T00:00:00","2012-08-24T00:00:00","2012-08-31T00:00:00","2012-09-07T00:00:00","2012-09-14T00:00:00","2012-09-21T00:00:00","2012-09-28T00:00:00","2012-10-05T00:00:00","2012-10-12T00:00:00","2012-10-19T00:00:00","2012-10-26T00:00:00"],"y":[40129.01,37334.83,38717.6,35318.2,38776.09,34342.64,34188.52,33581.72,38151.58,34145.96,32890.54,32946.13,34168.23,35393.78,33131.69,34442.73,35046.1,35181.47,34036.53,33387.48,33731.24,35580.01,34721.25,33171.72,34350.12,33568.19,34833.35,32326.19,32249.35,31272.68,35562.68,32737.89,33762.32,31381.97,34658.25,35966.67,33747.68,32659.74,34917.77,36182.58,35527.64,35759.26,34099.53,36222.74,35188.54,36961.11,41864.0,32751.73,36599.46,34228.3,34547.4,35110.75,39903.33,36011.09,35386.72,34195.37,36369.58,34415.39,33301.63,32558.92,35319.05,34442.29,32224.01,32832.06,32827.42,37360.03,34727.2,35631.59,35972.12,36767.22,36099.62,34338.33,34014.16,34063.23,35582.39,33336.29,34006.29,31981.72,35484.32,31061.21,32707.8,32668.5,34963.68,34246.67,35018.8,33157.11,34173.84,36759.96,34131.81,32631.25,34429.75,36959.48,34003.52,33169.55,33243.85,35886.92,38226.32,37149.3,41062.58,32419.78,36797.0,34033.89,35356.12,34644.25,40069.47,38317.89,37244.73,37204.72,40307.19,36553.82,36141.27,33758.45,37745.71,41917.56,37295.29,36930.94,38531.76,41589.1,37702.53,37817.25,39067.0,41039.74,40236.23,38163.76,37693.88,37647.44,41524.67,36130.01,37797.31,36981.9,40098.84,37269.92,36294.18,33855.28,37666.92,38666.21,37346.83,36404.63,37254.84,42663.75,37248.47,38668.75,39255.35],"type":"scatter","xaxis":"x5","yaxis":"y5","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"observed","line":{"color":"rgba(70, 130, 180, 1.0)","width":0.65},"mode":"lines","name":"observed","x":["2010-02-05T00:00:00","2010-02-12T00:00:00","2010-02-19T00:00:00","2010-02-26T00:00:00","2010-03-05T00:00:00","2010-03-12T00:00:00","2010-03-19T00:00:00","2010-03-26T00:00:00","2010-04-02T00:00:00","2010-04-09T00:00:00","2010-04-16T00:00:00","2010-04-23T00:00:00","2010-04-30T00:00:00","2010-05-07T00:00:00","2010-05-14T00:00:00","2010-05-21T00:00:00","2010-05-28T00:00:00","2010-06-04T00:00:00","2010-06-11T00:00:00","2010-06-18T00:00:00","2010-06-25T00:00:00","2010-07-02T00:00:00","2010-07-09T00:00:00","2010-07-16T00:00:00","2010-07-23T00:00:00","2010-07-30T00:00:00","2010-08-06T00:00:00","2010-08-13T00:00:00","2010-08-20T00:00:00","2010-08-27T00:00:00","2010-09-03T00:00:00","2010-09-10T00:00:00","2010-09-17T00:00:00","2010-09-24T00:00:00","2010-10-01T00:00:00","2010-10-08T00:00:00","2010-10-15T00:00:00","2010-10-22T00:00:00","2010-10-29T00:00:00","2010-11-05T00:00:00","2010-11-12T00:00:00","2010-11-19T00:00:00","2010-11-26T00:00:00","2010-12-03T00:00:00","2010-12-10T00:00:00","2010-12-17T00:00:00","2010-12-24T00:00:00","2010-12-31T00:00:00","2011-01-07T00:00:00","2011-01-14T00:00:00","2011-01-21T00:00:00","2011-01-28T00:00:00","2011-02-04T00:00:00","2011-02-11T00:00:00","2011-02-18T00:00:00","2011-02-25T00:00:00","2011-03-04T00:00:00","2011-03-11T00:00:00","2011-03-18T00:00:00","2011-03-25T00:00:00","2011-04-01T00:00:00","2011-04-08T00:00:00","2011-04-15T00:00:00","2011-04-22T00:00:00","2011-04-29T00:00:00","2011-05-06T00:00:00","2011-05-13T00:00:00","2011-05-20T00:00:00","2011-05-27T00:00:00","2011-06-03T00:00:00","2011-06-10T00:00:00","2011-06-17T00:00:00","2011-06-24T00:00:00","2011-07-01T00:00:00","2011-07-08T00:00:00","2011-07-15T00:00:00","2011-07-22T00:00:00","2011-07-29T00:00:00","2011-08-05T00:00:00","2011-08-12T00:00:00","2011-08-19T00:00:00","2011-08-26T00:00:00","2011-09-02T00:00:00","2011-09-09T00:00:00","2011-09-16T00:00:00","2011-09-23T00:00:00","2011-09-30T00:00:00","2011-10-07T00:00:00","2011-10-14T00:00:00","2011-10-21T00:00:00","2011-10-28T00:00:00","2011-11-04T00:00:00","2011-11-11T00:00:00","2011-11-18T00:00:00","2011-11-25T00:00:00","2011-12-02T00:00:00","2011-12-09T00:00:00","2011-12-16T00:00:00","2011-12-23T00:00:00","2011-12-30T00:00:00","2012-01-06T00:00:00","2012-01-13T00:00:00","2012-01-20T00:00:00","2012-01-27T00:00:00","2012-02-03T00:00:00","2012-02-10T00:00:00","2012-02-17T00:00:00","2012-02-24T00:00:00","2012-03-02T00:00:00","2012-03-09T00:00:00","2012-03-16T00:00:00","2012-03-23T00:00:00","2012-03-30T00:00:00","2012-04-06T00:00:00","2012-04-13T00:00:00","2012-04-20T00:00:00","2012-04-27T00:00:00","2012-05-04T00:00:00","2012-05-11T00:00:00","2012-05-18T00:00:00","2012-05-25T00:00:00","2012-06-01T00:00:00","2012-06-08T00:00:00","2012-06-15T00:00:00","2012-06-22T00:00:00","2012-06-29T00:00:00","2012-07-06T00:00:00","2012-07-13T00:00:00","2012-07-20T00:00:00","2012-07-27T00:00:00","2012-08-03T00:00:00","2012-08-10T00:00:00","2012-08-17T00:00:00","2012-08-24T00:00:00","2012-08-31T00:00:00","2012-09-07T00:00:00","2012-09-14T00:00:00","2012-09-21T00:00:00","2012-09-28T00:00:00","2012-10-05T00:00:00","2012-10-12T00:00:00","2012-10-19T00:00:00","2012-10-26T00:00:00"],"y":[64494.87,70202.02,62581.64,57630.02,63550.08,63593.12,62781.44,55082.4,63245.0,66795.56,67716.6,55781.92,55901.42,70383.0,68273.13,60163.57,60155.18,71718.04,74300.41,69326.03,57418.46,69962.56,78068.53,65960.35,59219.34,55362.08,69274.95,73460.08,61192.75,55448.05,68070.49,74834.54,68491.35,57661.06,58034.24,73532.13,72397.15,58959.85,56830.05,69542.18,77214.95,79474.21,81660.77,56070.53,72089.33,75554.92,85323.12,56721.18,72231.45,74864.89,62937.08,57342.51,77342.47,74956.08,72548.7,59336.68,68960.09,73648.53,74159.07,64882.37,61488.24,76943.85,76596.92,71114.52,63144.61,79231.58,80678.85,67912.16,66607.96,74984.12,81251.13,78948.63,64541.85,68650.5,80746.97,75611.67,67458.01,58927.26,74028.8,77994.13,75368.89,61528.93,73692.87,83809.26,81435.22,67516.27,61812.32,83366.17,76235.47,67370.04,61848.68,77943.57,84183.85,87401.82,87760.1,62296.23,83931.76,85789.38,90573.65,59286.64,78517.16,84485.05,73504.68,63776.99,76847.82,78427.95,80472.09,67829.2,73085.02,79749.8,81227.75,66710.4,67092.89,91384.05,82109.08,70763.97,66850.39,74929.53,81146.85,79074.91,69792.6,76925.54,84258.97,85257.31,70235.34,66443.41,97979.96,86203.09,75292.57,63025.1,73486.9,84119.12,84700.68,65398.77,71195.75,90651.47,81007.78,72668.61,63262.59,81868.04,84659.27,75214.29,66622.89],"type":"scatter","xaxis":"x6","yaxis":"y6","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"observed_clean","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"observed_clean","x":["2010-02-05T00:00:00","2010-02-12T00:00:00","2010-02-19T00:00:00","2010-02-26T00:00:00","2010-03-05T00:00:00","2010-03-12T00:00:00","2010-03-19T00:00:00","2010-03-26T00:00:00","2010-04-02T00:00:00","2010-04-09T00:00:00","2010-04-16T00:00:00","2010-04-23T00:00:00","2010-04-30T00:00:00","2010-05-07T00:00:00","2010-05-14T00:00:00","2010-05-21T00:00:00","2010-05-28T00:00:00","2010-06-04T00:00:00","2010-06-11T00:00:00","2010-06-18T00:00:00","2010-06-25T00:00:00","2010-07-02T00:00:00","2010-07-09T00:00:00","2010-07-16T00:00:00","2010-07-23T00:00:00","2010-07-30T00:00:00","2010-08-06T00:00:00","2010-08-13T00:00:00","2010-08-20T00:00:00","2010-08-27T00:00:00","2010-09-03T00:00:00","2010-09-10T00:00:00","2010-09-17T00:00:00","2010-09-24T00:00:00","2010-10-01T00:00:00","2010-10-08T00:00:00","2010-10-15T00:00:00","2010-10-22T00:00:00","2010-10-29T00:00:00","2010-11-05T00:00:00","2010-11-12T00:00:00","2010-11-19T00:00:00","2010-11-26T00:00:00","2010-12-03T00:00:00","2010-12-10T00:00:00","2010-12-17T00:00:00","2010-12-24T00:00:00","2010-12-31T00:00:00","2011-01-07T00:00:00","2011-01-14T00:00:00","2011-01-21T00:00:00","2011-01-28T00:00:00","2011-02-04T00:00:00","2011-02-11T00:00:00","2011-02-18T00:00:00","2011-02-25T00:00:00","2011-03-04T00:00:00","2011-03-11T00:00:00","2011-03-18T00:00:00","2011-03-25T00:00:00","2011-04-01T00:00:00","2011-04-08T00:00:00","2011-04-15T00:00:00","2011-04-22T00:00:00","2011-04-29T00:00:00","2011-05-06T00:00:00","2011-05-13T00:00:00","2011-05-20T00:00:00","2011-05-27T00:00:00","2011-06-03T00:00:00","2011-06-10T00:00:00","2011-06-17T00:00:00","2011-06-24T00:00:00","2011-07-01T00:00:00","2011-07-08T00:00:00","2011-07-15T00:00:00","2011-07-22T00:00:00","2011-07-29T00:00:00","2011-08-05T00:00:00","2011-08-12T00:00:00","2011-08-19T00:00:00","2011-08-26T00:00:00","2011-09-02T00:00:00","2011-09-09T00:00:00","2011-09-16T00:00:00","2011-09-23T00:00:00","2011-09-30T00:00:00","2011-10-07T00:00:00","2011-10-14T00:00:00","2011-10-21T00:00:00","2011-10-28T00:00:00","2011-11-04T00:00:00","2011-11-11T00:00:00","2011-11-18T00:00:00","2011-11-25T00:00:00","2011-12-02T00:00:00","2011-12-09T00:00:00","2011-12-16T00:00:00","2011-12-23T00:00:00","2011-12-30T00:00:00","2012-01-06T00:00:00","2012-01-13T00:00:00","2012-01-20T00:00:00","2012-01-27T00:00:00","2012-02-03T00:00:00","2012-02-10T00:00:00","2012-02-17T00:00:00","2012-02-24T00:00:00","2012-03-02T00:00:00","2012-03-09T00:00:00","2012-03-16T00:00:00","2012-03-23T00:00:00","2012-03-30T00:00:00","2012-04-06T00:00:00","2012-04-13T00:00:00","2012-04-20T00:00:00","2012-04-27T00:00:00","2012-05-04T00:00:00","2012-05-11T00:00:00","2012-05-18T00:00:00","2012-05-25T00:00:00","2012-06-01T00:00:00","2012-06-08T00:00:00","2012-06-15T00:00:00","2012-06-22T00:00:00","2012-06-29T00:00:00","2012-07-06T00:00:00","2012-07-13T00:00:00","2012-07-20T00:00:00","2012-07-27T00:00:00","2012-08-03T00:00:00","2012-08-10T00:00:00","2012-08-17T00:00:00","2012-08-24T00:00:00","2012-08-31T00:00:00","2012-09-07T00:00:00","2012-09-14T00:00:00","2012-09-21T00:00:00","2012-09-28T00:00:00","2012-10-05T00:00:00","2012-10-12T00:00:00","2012-10-19T00:00:00","2012-10-26T00:00:00"],"y":[64494.87,70202.02,62581.64,57630.02,63550.08,63593.12,62781.44,55082.4,63245.0,66795.56,67716.6,55781.92,55901.42,70383.0,68273.13,60163.57,60155.18,71718.04,74300.41,69326.03,57418.46,69962.56,78068.53,65960.35,59219.34,55362.08,69274.95,73460.08,61192.75,55448.05,68070.49,74834.54,68491.35,57661.06,58034.24,73532.13,72397.15,58959.85,56830.05,69542.18,77214.95,79474.21,81660.77,56070.53,72089.33,75554.92,85323.12,56721.18,72231.45,74864.89,62937.08,57342.51,77342.47,74956.08,72548.7,59336.68,68960.09,73648.53,74159.07,64882.37,61488.24,76943.85,76596.92,71114.52,63144.61,79231.58,80678.85,67912.16,66607.96,74984.12,81251.13,78948.63,64541.85,68650.5,80746.97,75611.67,67458.01,58927.26,74028.8,77994.13,75368.89,61528.93,73692.87,83809.26,81435.22,67516.27,61812.32,83366.17,76235.47,67370.04,61848.68,77943.57,84183.85,87401.82,87760.1,62296.23,83931.76,85789.38,90573.65,59286.64,78517.16,84485.05,73504.68,63776.99,76847.82,78427.95,80472.09,67829.2,73085.02,79749.8,81227.75,66710.4,67092.89,91384.05,82109.08,70763.97,66850.39,74929.53,81146.85,79074.91,69792.6,76925.54,84258.97,85257.31,70235.34,66443.41,97979.96,86203.09,75292.57,63025.1,73486.9,84119.12,84700.68,65398.77,71195.75,90651.47,81007.78,72668.61,63262.59,81868.04,84659.27,75214.29,66622.89],"type":"scatter","xaxis":"x6","yaxis":"y6","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"observed","line":{"color":"rgba(70, 130, 180, 1.0)","width":0.65},"mode":"lines","name":"observed","x":["2010-02-05T00:00:00","2010-02-12T00:00:00","2010-02-19T00:00:00","2010-02-26T00:00:00","2010-03-05T00:00:00","2010-03-12T00:00:00","2010-03-19T00:00:00","2010-03-26T00:00:00","2010-04-02T00:00:00","2010-04-09T00:00:00","2010-04-16T00:00:00","2010-04-23T00:00:00","2010-04-30T00:00:00","2010-05-07T00:00:00","2010-05-14T00:00:00","2010-05-21T00:00:00","2010-05-28T00:00:00","2010-06-04T00:00:00","2010-06-11T00:00:00","2010-06-18T00:00:00","2010-06-25T00:00:00","2010-07-02T00:00:00","2010-07-09T00:00:00","2010-07-16T00:00:00","2010-07-23T00:00:00","2010-07-30T00:00:00","2010-08-06T00:00:00","2010-08-13T00:00:00","2010-08-20T00:00:00","2010-08-27T00:00:00","2010-09-03T00:00:00","2010-09-10T00:00:00","2010-09-17T00:00:00","2010-09-24T00:00:00","2010-10-01T00:00:00","2010-10-08T00:00:00","2010-10-15T00:00:00","2010-10-22T00:00:00","2010-10-29T00:00:00","2010-11-05T00:00:00","2010-11-12T00:00:00","2010-11-19T00:00:00","2010-11-26T00:00:00","2010-12-03T00:00:00","2010-12-10T00:00:00","2010-12-17T00:00:00","2010-12-24T00:00:00","2010-12-31T00:00:00","2011-01-07T00:00:00","2011-01-14T00:00:00","2011-01-21T00:00:00","2011-01-28T00:00:00","2011-02-04T00:00:00","2011-02-11T00:00:00","2011-02-18T00:00:00","2011-02-25T00:00:00","2011-03-04T00:00:00","2011-03-11T00:00:00","2011-03-18T00:00:00","2011-03-25T00:00:00","2011-04-01T00:00:00","2011-04-08T00:00:00","2011-04-15T00:00:00","2011-04-22T00:00:00","2011-04-29T00:00:00","2011-05-06T00:00:00","2011-05-13T00:00:00","2011-05-20T00:00:00","2011-05-27T00:00:00","2011-06-03T00:00:00","2011-06-10T00:00:00","2011-06-17T00:00:00","2011-06-24T00:00:00","2011-07-01T00:00:00","2011-07-08T00:00:00","2011-07-15T00:00:00","2011-07-22T00:00:00","2011-07-29T00:00:00","2011-08-05T00:00:00","2011-08-12T00:00:00","2011-08-19T00:00:00","2011-08-26T00:00:00","2011-09-02T00:00:00","2011-09-09T00:00:00","2011-09-16T00:00:00","2011-09-23T00:00:00","2011-09-30T00:00:00","2011-10-07T00:00:00","2011-10-14T00:00:00","2011-10-21T00:00:00","2011-10-28T00:00:00","2011-11-04T00:00:00","2011-11-11T00:00:00","2011-11-18T00:00:00","2011-11-25T00:00:00","2011-12-02T00:00:00","2011-12-09T00:00:00","2011-12-16T00:00:00","2011-12-23T00:00:00","2011-12-30T00:00:00","2012-01-06T00:00:00","2012-01-13T00:00:00","2012-01-20T00:00:00","2012-01-27T00:00:00","2012-02-03T00:00:00","2012-02-10T00:00:00","2012-02-17T00:00:00","2012-02-24T00:00:00","2012-03-02T00:00:00","2012-03-09T00:00:00","2012-03-16T00:00:00","2012-03-23T00:00:00","2012-03-30T00:00:00","2012-04-06T00:00:00","2012-04-13T00:00:00","2012-04-20T00:00:00","2012-04-27T00:00:00","2012-05-04T00:00:00","2012-05-11T00:00:00","2012-05-18T00:00:00","2012-05-25T00:00:00","2012-06-01T00:00:00","2012-06-08T00:00:00","2012-06-15T00:00:00","2012-06-22T00:00:00","2012-06-29T00:00:00","2012-07-06T00:00:00","2012-07-13T00:00:00","2012-07-20T00:00:00","2012-07-27T00:00:00","2012-08-03T00:00:00","2012-08-10T00:00:00","2012-08-17T00:00:00","2012-08-24T00:00:00","2012-08-31T00:00:00","2012-09-07T00:00:00","2012-09-14T00:00:00","2012-09-21T00:00:00","2012-09-28T00:00:00","2012-10-05T00:00:00","2012-10-12T00:00:00","2012-10-19T00:00:00","2012-10-26T00:00:00"],"y":[106690.06,111390.36,107952.07,103652.58,112807.75,112048.41,117716.13,113117.35,111466.37,116770.82,126341.84,110204.77,107648.14,125592.28,120247.9,120036.99,121902.19,133056.97,131995.0,134118.05,120172.47,124821.44,126241.2,121386.73,116256.35,108781.57,131128.96,131288.83,124601.48,117929.58,124220.1,125027.49,124372.9,114702.69,113009.41,120764.22,123510.99,110052.15,105793.4,110332.92,110209.31,107544.02,106015.41,100834.31,111384.36,116521.67,121695.13,93676.95,107317.32,109955.9,103724.16,99043.34,114270.08,117548.75,112165.8,107742.95,116225.68,120621.32,123405.41,122280.13,112905.09,126746.25,126834.3,118632.26,111764.31,120882.84,124953.94,112581.2,119815.67,135260.49,136364.46,135197.63,121814.84,128054.88,133213.04,127906.5,121483.11,117284.94,138538.47,138567.1,133260.84,122721.92,130446.34,133762.77,133939.4,116165.28,115663.78,132805.42,125954.3,116931.34,108018.21,114793.92,115047.16,113966.34,112688.97,102798.99,119053.8,120721.07,125041.39,93358.91,116427.93,118685.12,113021.23,102202.04,115507.25,125038.09,119807.63,110870.94,118406.27,125840.82,132318.5,117030.73,127706.0,137958.76,129438.22,123172.79,118589.44,130920.36,131341.85,129031.19,127603.0,130573.37,139857.1,140806.36,124594.4,131935.56,148798.05,129724.74,126861.49,121030.79,134832.22,137408.2,136264.68,118845.34,124741.33,140657.4,128542.73,119121.35,115326.47,127009.22,124559.93,123346.24,117375.38],"type":"scatter","xaxis":"x7","yaxis":"y7","showlegend":false,"hoverlabel":{"font":{"size":8.8}}},{"legendgroup":"observed_clean","line":{"color":"rgba(227, 26, 28, 1.0)","width":0.65},"mode":"lines","name":"observed_clean","x":["2010-02-05T00:00:00","2010-02-12T00:00:00","2010-02-19T00:00:00","2010-02-26T00:00:00","2010-03-05T00:00:00","2010-03-12T00:00:00","2010-03-19T00:00:00","2010-03-26T00:00:00","2010-04-02T00:00:00","2010-04-09T00:00:00","2010-04-16T00:00:00","2010-04-23T00:00:00","2010-04-30T00:00:00","2010-05-07T00:00:00","2010-05-14T00:00:00","2010-05-21T00:00:00","2010-05-28T00:00:00","2010-06-04T00:00:00","2010-06-11T00:00:00","2010-06-18T00:00:00","2010-06-25T00:00:00","2010-07-02T00:00:00","2010-07-09T00:00:00","2010-07-16T00:00:00","2010-07-23T00:00:00","2010-07-30T00:00:00","2010-08-06T00:00:00","2010-08-13T00:00:00","2010-08-20T00:00:00","2010-08-27T00:00:00","2010-09-03T00:00:00","2010-09-10T00:00:00","2010-09-17T00:00:00","2010-09-24T00:00:00","2010-10-01T00:00:00","2010-10-08T00:00:00","2010-10-15T00:00:00","2010-10-22T00:00:00","2010-10-29T00:00:00","2010-11-05T00:00:00","2010-11-12T00:00:00","2010-11-19T00:00:00","2010-11-26T00:00:00","2010-12-03T00:00:00","2010-12-10T00:00:00","2010-12-17T00:00:00","2010-12-24T00:00:00","2010-12-31T00:00:00","2011-01-07T00:00:00","2011-01-14T00:00:00","2011-01-21T00:00:00","2011-01-28T00:00:00","2011-02-04T00:00:00","2011-02-11T00:00:00","2011-02-18T00:00:00","2011-02-25T00:00:00","2011-03-04T00:00:00","2011-03-11T00:00:00","2011-03-18T00:00:00","2011-03-25T00:00:00","2011-04-01T00:00:00","2011-04-08T00:00:00","2011-04-15T00:00:00","2011-04-22T00:00:00","2011-04-29T00:00:00","2011-05-06T00:00:00","2011-05-13T00:00:00","2011-05-20T00:00:00","2011-05-27T00:00:00","2011-06-03T00:00:00","2011-06-10T00:00:00","2011-06-17T00:00:00","2011-06-24T00:00:00","2011-07-01T00:00:00","2011-07-08T00:00:00","2011-07-15T00:00:00","2011-07-22T00:00:00","2011-07-29T00:00:00","2011-08-05T00:00:00","2011-08-12T00:00:00","2011-08-19T00:00:00","2011-08-26T00:00:00","2011-09-02T00:00:00","2011-09-09T00:00:00","2011-09-16T00:00:00","2011-09-23T00:00:00","2011-09-30T00:00:00","2011-10-07T00:00:00","2011-10-14T00:00:00","2011-10-21T00:00:00","2011-10-28T00:00:00","2011-11-04T00:00:00","2011-11-11T00:00:00","2011-11-18T00:00:00","2011-11-25T00:00:00","2011-12-02T00:00:00","2011-12-09T00:00:00","2011-12-16T00:00:00","2011-12-23T00:00:00","2011-12-30T00:00:00","2012-01-06T00:00:00","2012-01-13T00:00:00","2012-01-20T00:00:00","2012-01-27T00:00:00","2012-02-03T00:00:00","2012-02-10T00:00:00","2012-02-17T00:00:00","2012-02-24T00:00:00","2012-03-02T00:00:00","2012-03-09T00:00:00","2012-03-16T00:00:00","2012-03-23T00:00:00","2012-03-30T00:00:00","2012-04-06T00:00:00","2012-04-13T00:00:00","2012-04-20T00:00:00","2012-04-27T00:00:00","2012-05-04T00:00:00","2012-05-11T00:00:00","2012-05-18T00:00:00","2012-05-25T00:00:00","2012-06-01T00:00:00","2012-06-08T00:00:00","2012-06-15T00:00:00","2012-06-22T00:00:00","2012-06-29T00:00:00","2012-07-06T00:00:00","2012-07-13T00:00:00","2012-07-20T00:00:00","2012-07-27T00:00:00","2012-08-03T00:00:00","2012-08-10T00:00:00","2012-08-17T00:00:00","2012-08-24T00:00:00","2012-08-31T00:00:00","2012-09-07T00:00:00","2012-09-14T00:00:00","2012-09-21T00:00:00","2012-09-28T00:00:00","2012-10-05T00:00:00","2012-10-12T00:00:00","2012-10-19T00:00:00","2012-10-26T00:00:00"],"y":[106690.06,111390.36,107952.07,103652.58,112807.75,112048.41,117716.13,113117.35,111466.37,116770.82,126341.84,110204.77,107648.14,125592.28,120247.9,120036.99,121902.19,133056.97,131995.0,134118.05,120172.47,124821.44,126241.2,121386.73,116256.35,108781.57,131128.96,131288.83,124601.48,117929.58,124220.1,125027.49,124372.9,114702.69,113009.41,120764.22,123510.99,110052.15,105793.4,110332.92,110209.31,107544.02,106015.41,100834.31,111384.36,116521.67,121695.13,93676.95,107317.32,109955.9,103724.16,99043.34,114270.08,117548.75,112165.8,107742.95,116225.68,120621.32,123405.41,122280.13,112905.09,126746.25,126834.3,118632.26,111764.31,120882.84,124953.94,112581.2,119815.67,135260.49,136364.46,135197.63,121814.84,128054.88,133213.04,127906.5,121483.11,117284.94,138538.47,138567.1,133260.84,122721.92,130446.34,133762.77,133939.4,116165.28,115663.78,132805.42,125954.3,116931.34,108018.21,114793.92,115047.16,113966.34,112688.97,102798.99,119053.8,120721.07,125041.39,93358.91,116427.93,118685.12,113021.23,102202.04,115507.25,125038.09,119807.63,110870.94,118406.27,125840.82,132318.5,117030.73,127706.0,137958.76,129438.22,123172.79,118589.44,130920.36,131341.85,129031.19,127603.0,130573.37,139857.1,140806.36,124594.4,131935.56,148798.05,129724.74,126861.49,121030.79,134832.22,137408.2,136264.68,118845.34,124741.33,140657.4,128542.73,119121.35,115326.47,127009.22,124559.93,123346.24,117375.38],"type":"scatter","xaxis":"x7","yaxis":"y7","showlegend":false,"hoverlabel":{"font":{"size":8.8}}}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"showticklabels":true,"title":{"text":""},"tickformat":"%y","visible":true,"tickfont":{"size":8.8}},"yaxis":{"anchor":"x","domain":[0.9183673469387754,0.9999999999999999],"title":{"text":""},"tickfont":{"size":8.8}},"xaxis2":{"anchor":"y2","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis2":{"anchor":"x2","domain":[0.7653061224489794,0.8469387755102039],"tickfont":{"size":8.8}},"xaxis3":{"anchor":"y3","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis3":{"anchor":"x3","domain":[0.6122448979591837,0.6938775510204082],"tickfont":{"size":8.8}},"xaxis4":{"anchor":"y4","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis4":{"anchor":"x4","domain":[0.4591836734693877,0.5408163265306122],"tickfont":{"size":8.8}},"xaxis5":{"anchor":"y5","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis5":{"anchor":"x5","domain":[0.30612244897959184,0.3877551020408163],"tickfont":{"size":8.8}},"xaxis6":{"anchor":"y6","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis6":{"anchor":"x6","domain":[0.15306122448979592,0.2346938775510204],"tickfont":{"size":8.8}},"xaxis7":{"anchor":"y7","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis7":{"anchor":"x7","domain":[0.0,0.08163265306122448],"tickfont":{"size":8.8}},"annotations":[{"font":{"size":8.8},"showarrow":false,"text":"1_1","x":0.5,"xanchor":"center","xref":"paper","y":0.9999999999999999,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"1_13","x":0.5,"xanchor":"center","xref":"paper","y":0.8469387755102039,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"1_3","x":0.5,"xanchor":"center","xref":"paper","y":0.6938775510204082,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"1_38","x":0.5,"xanchor":"center","xref":"paper","y":0.5408163265306122,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"1_8","x":0.5,"xanchor":"center","xref":"paper","y":0.3877551020408163,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"1_93","x":0.5,"xanchor":"center","xref":"paper","y":0.2346938775510204,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"1_95","x":0.5,"xanchor":"center","xref":"paper","y":0.08163265306122448,"yanchor":"bottom","yref":"paper"}],"legend":{"title":{"text":"Legend","font":{"size":8.8}},"font":{"size":8.8}},"title":{"text":"Anomalies Cleaned Plot","font":{"size":13.2}},"margin":{"l":10,"r":10,"t":40,"b":40},"font":{"size":11},"autosize":true,"width":600,"height":1000},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('32aebb8d-53ac-441c-a14b-b71f7dfe0856');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script type="application/vnd.jupyter.widget-state+json">
+{"state":{"233e1329a0e94ea298c8bc136e0bbebf":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_bc121b11d78347a087a1bcc7aec0d970","placeholder":"​","style":"IPY_MODEL_c920058d8c914f26b9e00a3ba9760c44","tabbable":null,"tooltip":null,"value":" 7/7 [00:00&lt;00:00, 72.97it/s]"}},"3b8644e80d49416cbbe7daea89a996ac":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"success","description":"","description_allow_html":false,"layout":"IPY_MODEL_736a8ffcae644cf283955c1e2b06b91c","max":7,"min":0,"orientation":"horizontal","style":"IPY_MODEL_ea0f255502e2442bbae759381c19b8c5","tabbable":null,"tooltip":null,"value":7}},"547f6cd10d284d26ba73f01ac52be656":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"59c364589f3d4c56aec78a2c8038cb3a":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"736a8ffcae644cf283955c1e2b06b91c":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"918fe1d7706d40fd8368129a34a4e380":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"bc121b11d78347a087a1bcc7aec0d970":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"c920058d8c914f26b9e00a3ba9760c44":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"d05621a98aad4ec599f445957c28563b":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_547f6cd10d284d26ba73f01ac52be656","placeholder":"​","style":"IPY_MODEL_918fe1d7706d40fd8368129a34a4e380","tabbable":null,"tooltip":null,"value":"Anomalizing...: 100%"}},"e8198313e119486ab965738067a3413c":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HBoxModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HBoxModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HBoxView","box_style":"","children":["IPY_MODEL_d05621a98aad4ec599f445957c28563b","IPY_MODEL_3b8644e80d49416cbbe7daea89a996ac","IPY_MODEL_233e1329a0e94ea298c8bc136e0bbebf"],"layout":"IPY_MODEL_59c364589f3d4c56aec78a2c8038cb3a","tabbable":null,"tooltip":null}},"ea0f255502e2442bbae759381c19b8c5":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":null,"description_width":""}}},"version_major":2,"version_minor":0}
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

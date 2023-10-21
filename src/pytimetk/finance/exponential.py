@@ -86,7 +86,7 @@ def augment_ewm(
     ```{python}
     # This example demonstrates the use of string-named functions on an EWM.
     # The decay parameter used in this example is 'alpha', but other methods 
-      (e.g., 'com', 'span', 'halflife') can also be utilized.
+    #  (e.g., 'com', 'span', 'halflife') can also be utilized.
 
     ewm_df = (
         df

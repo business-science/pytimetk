@@ -8,11 +8,11 @@ Note: This function requires the `holidays` package to be installed.
 
 ## Parameters
 
-| Name           | Type                                                                                | Description                                                                                                 | Default          |
-|----------------|-------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|------------------|
-| `idx`          | Union\[str, datetime, List\[Union\[str, datetime\]\], pd.DatetimeIndex, pd.Series\] | The dates to check for holiday status.                                                                      | _required_       |
-| `country_name` | str                                                                                 | The name of the country for which to check the holiday status. Defaults to 'UnitedStates' if not specified. | `'UnitedStates'` |
-| `country`      | str                                                                                 | An alternative parameter to specify the country for holiday checking, overriding country_name.              | `None`           |
+| Name           | Type                                                                                | Description                                                                                                  | Default          |
+|----------------|-------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|------------------|
+| `idx`          | Union\[str, datetime, List\[Union\[str, datetime\]\], pd.DatetimeIndex, pd.Series\] | The dates to check for holiday status.                                                                       | _required_       |
+| `country_name` | str                                                                                 | The name of the country for which to check the holiday status. Defaults  to 'UnitedStates' if not specified. | `'UnitedStates'` |
+| `country`      | str                                                                                 | An alternative parameter to specify the country for holiday checking,  overriding country_name.              | `None`           |
 
 ## Returns:
 

@@ -2,14 +2,14 @@
 
 `get_date_summary(idx)`
 
-Returns a summary of the date-related information, including the number of dates, the time zone, the start
-date, and the end date.
+Returns a summary of the date-related information, including the number of 
+dates, the time zone, the start date, and the end date.
 
 ## Parameters
 
-| Name   | Type                          | Description                                                                                                                                                 | Default    |
-|--------|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `idx`  | pd.Series or pd.DateTimeIndex | The parameter `idx` can be either a pandas Series or a pandas DateTimeIndex. It represents the dates or timestamps for which we want to generate a summary. | _required_ |
+| Name   | Type                          | Description                                                                                                                                                   | Default    |
+|--------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `idx`  | pd.Series or pd.DateTimeIndex | The parameter `idx` can be either a pandas Series or a pandas  DateTimeIndex. It represents the dates or timestamps for which we want  to generate a summary. | _required_ |
 
 ## Returns
 

@@ -59,7 +59,7 @@ def make_weekday_sequence(
     # and Israel holidays)
     tk.make_weekday_sequence("2023-01-01", "2023-01-15", 
                               sunday_to_thursday = True, 
-                              remove_holidays.   = True, 
+                              remove_holidays    = True, 
                               country            = 'Israel')
     ```
     """ 

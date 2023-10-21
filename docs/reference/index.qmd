@@ -6,7 +6,7 @@ Visualize time series data with one line of code.
 
 | | |
 | --- | --- |
-| [plot_timeseries](plot_timeseries.qmd#pytimetk.plot_timeseries) | Creates time series plots using different plotting engines such as Plotnine, Matplotlib, and Plotly. |
+| [plot_timeseries](plot_timeseries.qmd#pytimetk.plot_timeseries) | Creates time series plots using different plotting engines such as Plotnine,  |
 
 ## 🔥 Wrangling Pandas Time Series DataFrames
 
@@ -25,9 +25,10 @@ Detect anomalies in time series data.
 
 | | |
 | --- | --- |
-| [anomalize](anomalize.qmd#pytimetk.anomalize) | The `anomalize` function is used to detect anomalies in time series data, either for a single time |
-| [plot_anomalies](plot_anomalies.qmd#pytimetk.plot_anomalies) | The `plot_anomalies` function is used to plot anomalies in a time series data using either Plotly, |
-| [plot_anomalies_decomp](plot_anomalies_decomp.qmd#pytimetk.plot_anomalies_decomp) | The `plot_anomalies_decomp` function takes in data from the `anomalize()` function, and |
+| [anomalize](anomalize.qmd#pytimetk.anomalize) | The `anomalize` function is used to detect anomalies in time series data,  |
+| [plot_anomalies](plot_anomalies.qmd#pytimetk.plot_anomalies) | The `plot_anomalies` function is used to plot anomalies in a time series  |
+| [plot_anomalies_decomp](plot_anomalies_decomp.qmd#pytimetk.plot_anomalies_decomp) | The `plot_anomalies_decomp` function takes in data from the `anomalize()`  |
+| [plot_anomalies_cleaned](plot_anomalies_cleaned.qmd#pytimetk.plot_anomalies_cleaned) | The `plot_anomalies_cleaned` function takes in data from the `anomalize()`  |
 
 ## 🏗️ Adding Features to Time Series DataFrames (Augmenting)
 
@@ -38,9 +39,9 @@ Add one or more feature columns to time series data.
 | [augment_timeseries_signature](augment_timeseries_signature.qmd#pytimetk.augment_timeseries_signature) | The function `augment_timeseries_signature` takes a DataFrame and a date  |
 | [augment_holiday_signature](augment_holiday_signature.qmd#pytimetk.augment_holiday_signature) | Engineers 4 different holiday features from a single datetime for 80+ countries. |
 | [augment_lags](augment_lags.qmd#pytimetk.augment_lags) | Adds lags to a Pandas DataFrame or DataFrameGroupBy object. |
-| [augment_leads](augment_leads.qmd#pytimetk.augment_leads) | Adds lags to a Pandas DataFrame or DataFrameGroupBy object. |
+| [augment_leads](augment_leads.qmd#pytimetk.augment_leads) | Adds leads to a Pandas DataFrame or DataFrameGroupBy object. |
 | [augment_rolling](augment_rolling.qmd#pytimetk.augment_rolling) | Apply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame. |
-| [augment_rolling_apply](augment_rolling_apply.qmd#pytimetk.augment_rolling_apply) | Apply one or more DataFrame-based rolling functions and window sizes to one or more columns of a DataFrame. |
+| [augment_rolling_apply](augment_rolling_apply.qmd#pytimetk.augment_rolling_apply) | Apply one or more DataFrame-based rolling functions and window sizes to one  |
 | [augment_expanding](augment_expanding.qmd#pytimetk.augment_expanding) | Apply one or more Series-based expanding functions to one or more columns of a DataFrame. |
 | [augment_expanding_apply](augment_expanding_apply.qmd#pytimetk.augment_expanding_apply) | Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame. |
 
@@ -51,7 +52,7 @@ Python implementation of the R package `tsfeatures`.
 | | |
 | --- | --- |
 | [ts_features](ts_features.qmd#pytimetk.ts_features) | Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the `tsfeatures` package. |
-| [ts_summary](ts_summary.qmd#pytimetk.ts_summary) | Computes summary statistics for a time series data, either for the entire dataset or grouped by a specific column. |
+| [ts_summary](ts_summary.qmd#pytimetk.ts_summary) | Computes summary statistics for a time series data, either for the entire  |
 
 ## 💹 Finance Module
 
@@ -59,7 +60,7 @@ Functions for working with financial time series data.
 
 | | |
 | --- | --- |
-| [augment_ewm](augment_ewm.qmd#pytimetk.augment_ewm) | Add Exponential Weighted Moving (EWM) window functions to a DataFrame or GroupBy object. |
+| [augment_ewm](augment_ewm.qmd#pytimetk.augment_ewm) | Add Exponential Weighted Moving (EWM) window functions to a DataFrame or  |
 
 ## 🐼 Time Series for Pandas Series
 
@@ -68,14 +69,14 @@ Time series functions that generate / manipulate Pandas Series.
 | | |
 | --- | --- |
 | [make_future_timeseries](make_future_timeseries.qmd#pytimetk.make_future_timeseries) | Make future dates for a time series. |
-| [make_weekday_sequence](make_weekday_sequence.qmd#pytimetk.make_weekday_sequence) | Generate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays. |
-| [make_weekend_sequence](make_weekend_sequence.qmd#pytimetk.make_weekend_sequence) | Generate a sequence of weekend dates within a specified date range, optionally excluding holidays. |
-| [get_date_summary](get_date_summary.qmd#pytimetk.get_date_summary) | Returns a summary of the date-related information, including the number of dates, the time zone, the start |
+| [make_weekday_sequence](make_weekday_sequence.qmd#pytimetk.make_weekday_sequence) | Generate a sequence of weekday dates within a specified date range,  |
+| [make_weekend_sequence](make_weekend_sequence.qmd#pytimetk.make_weekend_sequence) | Generate a sequence of weekend dates within a specified date range,  |
+| [get_date_summary](get_date_summary.qmd#pytimetk.get_date_summary) | Returns a summary of the date-related information, including the number of  |
 | [get_frequency_summary](get_frequency_summary.qmd#pytimetk.get_frequency_summary) | More robust version of pandas inferred frequency. |
 | [get_diff_summary](get_diff_summary.qmd#pytimetk.get_diff_summary) | Calculates summary statistics of the time differences between consecutive values in a datetime index. |
 | [get_frequency](get_frequency.qmd#pytimetk.get_frequency) | Get the frequency of a pandas Series or DatetimeIndex. |
-| [get_seasonal_frequency](get_seasonal_frequency.qmd#pytimetk.get_seasonal_frequency) | The `get_seasonal_frequency` function returns the seasonal period of a given time series or datetime index. |
-| [get_trend_frequency](get_trend_frequency.qmd#pytimetk.get_trend_frequency) | The `get_trend_frequency` function returns the trend period of a given time series or datetime index. |
+| [get_seasonal_frequency](get_seasonal_frequency.qmd#pytimetk.get_seasonal_frequency) | The `get_seasonal_frequency` function returns the seasonal period of a given  |
+| [get_trend_frequency](get_trend_frequency.qmd#pytimetk.get_trend_frequency) | The `get_trend_frequency` function returns the trend period of a given time  |
 | [get_timeseries_signature](get_timeseries_signature.qmd#pytimetk.get_timeseries_signature) | Convert a timestamp to a set of 29 time series features. |
 | [get_holiday_signature](get_holiday_signature.qmd#pytimetk.get_holiday_signature) | Engineers 4 different holiday features from a single datetime for 80+ countries. |
 
@@ -88,9 +89,9 @@ Helper functions to make your life easier.
 | [floor_date](floor_date.qmd#pytimetk.floor_date) | Robust date flooring. |
 | [ceil_date](ceil_date.qmd#pytimetk.ceil_date) | Robust date ceiling. |
 | [is_holiday](is_holiday.qmd#pytimetk.is_holiday) | Check if a given list of dates are holidays for a specified country. |
-| [week_of_month](week_of_month.qmd#pytimetk.week_of_month) | The "week_of_month" function calculates the week number of a given date within its month. |
-| [timeseries_unit_frequency_table](timeseries_unit_frequency_table.qmd#pytimetk.timeseries_unit_frequency_table) | The function `timeseries_unit_frequency_table` returns a pandas DataFrame with units of time and their corresponding frequencies in seconds. |
-| [time_scale_template](time_scale_template.qmd#pytimetk.time_scale_template) | The function `time_scale_template` returns a table with time scale information in either wide or long format. |
+| [week_of_month](week_of_month.qmd#pytimetk.week_of_month) | The "week_of_month" function calculates the week number of a given date  |
+| [timeseries_unit_frequency_table](timeseries_unit_frequency_table.qmd#pytimetk.timeseries_unit_frequency_table) | The function `timeseries_unit_frequency_table` returns a pandas DataFrame  |
+| [time_scale_template](time_scale_template.qmd#pytimetk.time_scale_template) | The function `time_scale_template` returns a table with time scale  |
 
 ## 🛠️ Visualization Utilities
 
@@ -98,15 +99,15 @@ Helper functions to make your life easier.
 
 | | |
 | --- | --- |
-| [theme_timetk](theme_timetk.qmd#pytimetk.theme_timetk) | Returns a `plotnine` theme with timetk styles applied, allowing for customization of the appearance of plots in Python. |
-| [palette_timetk](palette_timetk.qmd#pytimetk.palette_timetk) | The function `palette_timetk` returns a dictionary of color codes for various colors in the timetk theme. |
+| [theme_timetk](theme_timetk.qmd#pytimetk.theme_timetk) | Returns a `plotnine` theme with timetk styles applied, allowing for  |
+| [palette_timetk](palette_timetk.qmd#pytimetk.palette_timetk) | The function `palette_timetk` returns a dictionary of color codes for  |
 
 ## Extra Pandas Helpers (That Help Beyond Just Time Series)
 
 | | |
 | --- | --- |
-| [glimpse](glimpse.qmd#pytimetk.glimpse) | Takes a pandas DataFrame and prints a summary of |
-| [parallel_apply](parallel_apply.qmd#pytimetk.parallel_apply) | The `parallel_apply` function parallelizes the application of a function on grouped dataframes using |
+| [glimpse](glimpse.qmd#pytimetk.glimpse) | Takes a pandas DataFrame and prints a summary of its dimensions, column  |
+| [parallel_apply](parallel_apply.qmd#pytimetk.parallel_apply) | The `parallel_apply` function parallelizes the application of a function on  |
 | [progress_apply](progress_apply.qmd#pytimetk.progress_apply) | Adds a progress bar to pandas apply(). |
 | [flatten_multiindex_column_names](flatten_multiindex_column_names.qmd#pytimetk.flatten_multiindex_column_names) | Takes a DataFrame as input and flattens the column |
 
