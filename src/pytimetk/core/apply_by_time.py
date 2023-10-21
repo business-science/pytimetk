@@ -15,17 +15,24 @@ def apply_by_time(
     fillna: int = 0,
     **named_funcs
 ) -> pd.DataFrame:
-    '''Apply for time series.
-    
+    '''
+    Apply for time series.
+        
     Parameters
     ----------
     data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        The `data` parameter can be either a pandas DataFrame or a pandas DataFrameGroupBy object. It represents the data on which the apply operation will be performed.
+        The `data` parameter can be either a pandas DataFrame or a pandas 
+        DataFrameGroupBy object. It represents the data on which the apply operation 
+        will be performed.
     date_column : str
         The name of the column in the DataFrame that contains the dates.
     freq : str, optional
-        The `freq` parameter specifies the frequency at which the data should be resampled. It accepts a string representing a time frequency, such as "D" for daily, "W" for weekly, "M" for monthly, etc. The default value is "D", which means the data will be resampled on a daily basis. Some common frequency aliases include:
-        
+        The `freq` parameter specifies the frequency at which the data should be 
+        resampled. It accepts a string representing a time frequency, such as "D" 
+        for daily, "W" for weekly, "M" for monthly, etc. The default value is "D", 
+        which means the data will be resampled on a daily basis. Some common 
+        frequency aliases include:
+            
         - S: secondly frequency
         - min: minute frequency
         - H: hourly frequency
@@ -37,92 +44,100 @@ def apply_by_time(
         - QS: quarter start frequency
         - Y: year end frequency
         - YS: year start frequency
-        
+            
     wide_format : bool, optional
-        The `wide_format` parameter is a boolean flag that determines whether the output should be in wide format or not. If `wide_format` is set to `True`, the output will have a multi-index column structure, where the first level represents the original columns and the second level represents the group names
+        The `wide_format` parameter is a boolean flag that determines whether the 
+        output should be in wide format or not. If `wide_format` is set to `True`, 
+        the output will have a multi-index column structure, where the first level 
+        represents the original columns and the second level represents the group 
+        names.
     fillna : int, optional
-        The `fillna` parameter is used to specify the value that will be used to fill missing values in the resulting DataFrame. By default, it is set to 0.
+        The `fillna` parameter is used to specify the value that will be used to 
+        fill missing values in the resulting DataFrame. By default, it is set to 0.
     **named_funcs
-        The `**named_funcs` parameter is used to specify one or more custom aggregation functions to apply to the data. It accepts named functions in the format:
-        
+        The `**named_funcs` parameter is used to specify one or more custom 
+        aggregation functions to apply to the data. It accepts named functions 
+        in the format:
+            
         ``` python
-        name = lambda df: df['column1'].corr(df['column2']])
+            name = lambda df: df['column1'].corr(df['column2']])
         ```
+            
+        Where `name` is the name of the function and `df` is the DataFrame that will 
+        be passed to the function. The function must return a single value.
+            
+            
         
-        Where `name` is the name of the function and `df` is the DataFrame that will be passed to the function. The function must return a single value.
-        
-        
-    
     Returns
     -------
     pd.DataFrame
         The function `apply_by_time` returns a pandas DataFrame object.
-    
+        
     Examples
     --------
     ```{python}
     import pytimetk as tk
     import pandas as pd
-    
+        
     df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
-    
+        
     df.glimpse()
     ```
-    
-    ```{python}    
-    # Apply by time with a DataFrame object
-    # Allows access to multiple columns at once
-    ( 
-        df[['order_date', 'price', 'quantity']] 
-            .apply_by_time(
-                
-                # Named apply functions
-                price_quantity_sum = lambda df: (df['price'] * df['quantity']).sum(),
-                price_quantity_mean = lambda df: (df['price'] * df['quantity']).mean(),
-                
-                # Parameters
-                date_column  = 'order_date', 
-                freq         = "MS",
-                
-            )
-    )
-    ```
-    
-    ```{python}    
-    # Apply by time with a GroupBy object
-    ( 
-        df[['category_1', 'order_date', 'price', 'quantity']] 
-            .groupby('category_1')
-            .apply_by_time(
-                
-                # Named functions
-                price_quantity_sum = lambda df: (df['price'] * df['quantity']).sum(),
-                price_quantity_mean = lambda df: (df['price'] * df['quantity']).mean(),
-                
-                # Parameters
-                date_column  = 'order_date', 
-                freq         = "MS",
-                
-            )
-    )
-    ```
-    
-    ```{python}    
-    # Return complex objects
-    ( 
-        df[['order_date', 'price', 'quantity']] 
-            .apply_by_time(
-                
-                # Named apply functions
-                complex_object = lambda df: [df],
-                
-                # Parameters
-                date_column  = 'order_date', 
-                freq         = "MS",
-                
-            )
-    )
-    ```
+        
+        ```{python}    
+        # Apply by time with a DataFrame object
+        # Allows access to multiple columns at once
+        ( 
+            df[['order_date', 'price', 'quantity']] 
+                .apply_by_time(
+                    
+                    # Named apply functions
+                    price_quantity_sum = lambda df: (df['price'] * df['quantity']).sum(),
+                    price_quantity_mean = lambda df: (df['price'] * df['quantity']).mean(),
+                    
+                    # Parameters
+                    date_column  = 'order_date', 
+                    freq         = "MS",
+                    
+                )
+        )
+        ```
+        
+        ```{python}    
+        # Apply by time with a GroupBy object
+        ( 
+            df[['category_1', 'order_date', 'price', 'quantity']] 
+                .groupby('category_1')
+                .apply_by_time(
+                    
+                    # Named functions
+                    price_quantity_sum = lambda df: (df['price'] * df['quantity']).sum(),
+                    price_quantity_mean = lambda df: (df['price'] * df['quantity']).mean(),
+                    
+                    # Parameters
+                    date_column  = 'order_date', 
+                    freq         = "MS",
+                    
+                )
+        )
+        ```
+        
+        ```{python}    
+        # Return complex objects
+        ( 
+            df[['order_date', 'price', 'quantity']] 
+                .apply_by_time(
+                    
+                    # Named apply functions
+                    complex_object = lambda df: [df],
+                    
+                    # Parameters
+                    date_column  = 'order_date', 
+                    freq         = "MS",
+                    
+                )
+        )
+        ```
     '''
     
     # Run common checks
