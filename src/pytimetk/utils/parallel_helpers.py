@@ -9,20 +9,29 @@ from typing import Iterable, Callable
 
 
 def progress_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Callable, show_progress: bool=True, desc: str="Processing...", **kwargs):
-    '''Adds a progress bar to pandas apply().
+    '''
+    Adds a progress bar to pandas apply().
     
     Parameters
     ----------
     data : pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter is a pandas DataFrameGroupBy object. It represents a grouped DataFrame, where the data is grouped based on one or more columns.
+        The `data` parameter is a pandas DataFrameGroupBy object. It represents 
+        a grouped DataFrame, where the data is grouped based on one or more 
+        columns.
     func : Callable
-        The `func` parameter is a callable function that will be applied to each group in the `data` DataFrameGroupBy object. This function will be applied to each group separately.
+        The `func` parameter is a callable function that will be applied to each 
+        group in the `data` DataFrameGroupBy object. This function will be 
+        applied to each group separately.
     show_progress : bool
-        A boolean value indicating whether to show the progress bar or not. If set to True, a progress bar will be displayed while the function is being applied. If set to False, no progress bar will be displayed.
+        A boolean value indicating whether to show the progress bar or not. If 
+        set to True, a progress bar will be displayed while the function is 
+        being applied. If set to False, no progress bar will be displayed.
     desc : str
-        The `desc` parameter is used to provide a description for the progress bar. It is displayed as a prefix to the progress bar.
+        The `desc` parameter is used to provide a description for the progress 
+        bar. It is displayed as a prefix to the progress bar.
     **kwargs
-        The `**kwargs` parameter is a dictionary of keyword arguments that are passed to the `func` function.
+        The `**kwargs` parameter is a dictionary of keyword arguments that are 
+        passed to the `func` function.
     
     Returns
     -------
@@ -70,26 +79,42 @@ pd.core.groupby.generic.DataFrameGroupBy.progress_apply = progress_apply
 
 
 def parallel_apply(data : pd.core.groupby.generic.DataFrameGroupBy, func : Callable, show_progress: bool=True, threads: int=None, desc="Processing...", **kwargs):
-    '''The `parallel_apply` function parallelizes the application of a function on grouped dataframes using
+    '''
+    The `parallel_apply` function parallelizes the application of a function on 
+    grouped dataframes using
     concurrent.futures.
     
     Parameters
     ----------
     data : pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter is a Pandas DataFrameGroupBy object, which is the result of grouping a DataFrame by one or more columns. It represents the grouped data that you want to apply the function to.
+        The `data` parameter is a Pandas DataFrameGroupBy object, which is the 
+        result of grouping a DataFrame by one or more columns. It represents the 
+        grouped data that you want to apply the function to.
     func : Callable
-        The `func` parameter is the function that you want to apply to each group in the grouped dataframe. This function should take a single argument, which is a dataframe representing a group, and return a result. The result can be a scalar value, a pandas Series, or a pandas DataFrame.
+        The `func` parameter is the function that you want to apply to each 
+        group in the grouped dataframe. This function should take a single 
+        argument, which is a dataframe representing a group, and return a result. 
+        The result can be a scalar value, a pandas Series, or a pandas DataFrame.
     show_progress : bool, optional
-        A boolean parameter that determines whether to display progress using tqdm. If set to True, progress will be displayed. If set to False, progress will not be displayed.
+        A boolean parameter that determines whether to display progress using 
+        tqdm. If set to True, progress will be displayed. If set to False, 
+        progress will not be displayed.
     threads : int
-        The `threads` parameter specifies the number of threads to use for parallel processing. If `threads` is set to `None`, it will use all available processors. If `threads` is set to `-1`, it will use all available processors as well.
+        The `threads` parameter specifies the number of threads to use for 
+        parallel processing. If `threads` is set to `None`, it will use all 
+        available processors. If `threads` is set to `-1`, it will use all 
+        available processors as well.
     **kwargs
-        The `**kwargs` parameter is a dictionary of keyword arguments that are passed to the `func` function.
+        The `**kwargs` parameter is a dictionary of keyword arguments that are 
+        passed to the `func` function.
     
     Returns
     -------
     pd.DataFrame
-        The `parallel_apply` function returns a combined result after applying the specified function on all groups in the grouped dataframe. The result can be a pandas DataFrame or a pandas Series, depending on the function applied.
+        The `parallel_apply` function returns a combined result after applying 
+        the specified function on all groups in the grouped dataframe. The 
+        result can be a pandas DataFrame or a pandas Series, depending on the 
+        function applied.
     
         
     Examples:
