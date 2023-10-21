@@ -631,7 +631,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            freq        <span class="op">=</span> <span class="st">'D'</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        .assign(<span class="bu">id</span> <span class="op">=</span> <span class="kw">lambda</span> x: x[<span class="st">'symbol'</span>].ffill())</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        .assign(symbol <span class="op">=</span> <span class="kw">lambda</span> x: x[<span class="st">'symbol'</span>].ffill())</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>padded_df </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
@@ -650,7 +650,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">adjusted</th>
-<th data-quarto-table-cell-role="th">id</th>
 </tr>
 </thead>
 <tbody>
@@ -664,7 +663,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>19.608213</td>
 <td>560518000.0</td>
 <td>16.791180</td>
-<td>AAPL</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
@@ -676,7 +674,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>19.360714</td>
 <td>352965200.0</td>
 <td>16.579241</td>
-<td>AAPL</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
@@ -688,35 +685,31 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>18.821428</td>
 <td>594333600.0</td>
 <td>16.117437</td>
-<td>AAPL</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2013-01-05</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
 <td>AAPL</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2013-01-06</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
 <td>AAPL</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -729,14 +722,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td data-quarto-table-cell-role="th">3910</td>
 <td>2023-09-17</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
 <td>AAPL</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3911</td>
@@ -748,7 +740,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>177.970001</td>
 <td>67257600.0</td>
 <td>177.970001</td>
-<td>AAPL</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">3912</td>
@@ -760,7 +751,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>179.070007</td>
 <td>51826900.0</td>
 <td>179.070007</td>
-<td>AAPL</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3913</td>
@@ -772,7 +762,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>175.490005</td>
 <td>58436200.0</td>
 <td>175.490005</td>
-<td>AAPL</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">3914</td>
@@ -784,12 +773,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>173.929993</td>
 <td>63047900.0</td>
 <td>173.929993</td>
-<td>AAPL</td>
 </tr>
 </tbody>
 </table>
 
-<p>3915 rows × 9 columns</p>
+<p>3915 rows × 8 columns</p>
 </div>
 </div>
 </div>

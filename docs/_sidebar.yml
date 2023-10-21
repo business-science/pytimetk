@@ -14,6 +14,7 @@ website:
     - contents:
       - reference/anomalize.qmd
       - reference/plot_anomalies.qmd
+      - reference/plot_anomaly_decomp.qmd
       section: "\U0001F50D Anomaly Detection"
     - contents:
       - reference/augment_timeseries_signature.qmd

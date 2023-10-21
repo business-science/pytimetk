@@ -32,6 +32,9 @@ series or for multiple time series grouped by a specific column.
 | pd.DataFrame | The `anomalize` function returns a pandas DataFrame containing the original data with additional                                                                                                                                                                                                                                                                                                                                                                                                   |
 | pd.DataFrame | - observed: original data - seasonal: seasonal component - seasadaj: seasonal adjusted - trend: trend component - remainder: residual component - anomaly: Yes/No flag for outlier detection - anomaly score: distance from centerline - anomaly direction: -1, 0, 1 inidicator for direction of the anomaly - recomposed_l1: lower level bound of recomposed time series - recomposed_l2: upper level bound of recomposed time series - observed_clean: original data with anomalies interpolated |
 
+
+
+
 ## Notes
 
 ## Performance
@@ -77,12 +80,7 @@ anomalize_df.glimpse()
 
 ``` {python}
 # Visualize the results
-(
-    anomalize_df[["date", "observed", "seasonal", "trend", "remainder"]] 
-        .melt(id_vars = "date", value_name='val') 
-        .groupby("variable") 
-        .plot_timeseries("date", "val", color_column = "variable", smooth = False)   
-)
+anomalize_df.plot_anomaly_decomp("date")
 ```
 
 ``` {python}
@@ -133,18 +131,18 @@ anomalize_df = (
         ) 
 )
 
-# Visualize the results
+# Visualize the decomposition results
+
 (
-    anomalize_df[["id", "Date", "observed", "seasonal", "trend", "remainder"]] 
-        .melt(id_vars = ["id", "Date"], value_name='val') 
-        .groupby(["id", "variable"]) 
-        .plot_timeseries(
-            "Date", "val", 
-            facet_ncol = 7, 
-            smooth = False,
+    anomalize_df
+        .groupby("id")
+        .plot_anomaly_decomp(
+            date_column = "Date",
+            line_color = "steelblue",
             width = 1200,
             height = 800,
-            color_palette = ["#2c3e50", "#e31a1c", "#e31a1c"]
+            x_axis_date_labels = "%y",
+            engine = 'plotnine',                
         )
 )
 ```
