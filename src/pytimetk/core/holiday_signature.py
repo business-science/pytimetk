@@ -19,10 +19,11 @@ def augment_holiday_signature(
     date_column: str,
     country_name: str = 'UnitedStates'
 ) -> pd.DataFrame:
-    """
+        """
     Engineers 4 different holiday features from a single datetime for 80+ countries.
     
-    Note: Requires the `holidays` package to be installed. See https://pypi.org/project/holidays/ for more information.
+    Note: Requires the `holidays` package to be installed. See 
+          https://pypi.org/project/holidays/ for more information.
 
     Parameters
     ----------
@@ -31,7 +32,9 @@ def augment_holiday_signature(
     date_column (str or pd.Series): 
         The name of the datetime-like column in the DataFrame.
     country_name (str): 
-        The name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code:
+        The name of the country for which to generate holiday features. Defaults 
+        to United States holidays, but the following countries are currently 
+        available and accessible by the full name or ISO code:
             
         Any of the following are acceptable keys for `country_name`:
 
@@ -228,17 +231,21 @@ def get_holiday_signature(
     idx: Union[pd.DatetimeIndex, pd.Series],
     country_name: str = 'UnitedStates'
 ) -> pd.DataFrame:
-    """
+        """
     Engineers 4 different holiday features from a single datetime for 80+ countries.
     
-    Note: Requires the `holidays` package to be installed. See https://pypi.org/project/holidays/ for more information.
+    Note: Requires the `holidays` package to be installed. See 
+          https://pypi.org/project/holidays/ for more information.
 
     Parameters
     ----------
     idx : pd.DatetimeIndex or pd.Series
-        A pandas DatetimeIndex or Series containing the dates for which you want to get the holiday signature.
+        A pandas DatetimeIndex or Series containing the dates for which you want 
+        to get the holiday signature.
     country_name (str): 
-        The name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code:
+        The name of the country for which to generate holiday features. Defaults 
+        to United States holidays, but the following countries are currently 
+        available and accessible by the full name or ISO code:
             
         Any of the following are acceptable keys for `country_name`:
 
