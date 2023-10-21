@@ -22,7 +22,8 @@ def augment_holiday_signature(
     """
     Engineers 4 different holiday features from a single datetime for 80+ countries.
     
-    Note: Requires the `holidays` package to be installed. See https://pypi.org/project/holidays/ for more information.
+    Note: Requires the `holidays` package to be installed. See 
+          https://pypi.org/project/holidays/ for more information.
 
     Parameters
     ----------
@@ -31,7 +32,9 @@ def augment_holiday_signature(
     date_column (str or pd.Series): 
         The name of the datetime-like column in the DataFrame.
     country_name (str): 
-        The name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code:
+        The name of the country for which to generate holiday features. Defaults 
+        to United States holidays, but the following countries are currently 
+        available and accessible by the full name or ISO code:
             
         Any of the following are acceptable keys for `country_name`:
 
@@ -231,14 +234,19 @@ def get_holiday_signature(
     """
     Engineers 4 different holiday features from a single datetime for 80+ countries.
     
-    Note: Requires the `holidays` package to be installed. See https://pypi.org/project/holidays/ for more information.
+    Note: Requires the `holidays` package to be installed. See 
+    https://pypi.org/project/holidays/ for more information.
 
     Parameters
     ----------
-    idx : pd.DatetimeIndex or pd.Series
-        A pandas DatetimeIndex or Series containing the dates for which you want to get the holiday signature.
+    data (pd.DataFrame): 
+        The input DataFrame.
+    date_column (str or pd.Series): 
+        The name of the datetime-like column in the DataFrame.
     country_name (str): 
-        The name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code:
+        The name of the country for which to generate holiday features. Defaults 
+        to United States holidays, but the following countries are currently 
+        available and accessible by the full name or ISO code:
             
         Any of the following are acceptable keys for `country_name`:
 
@@ -344,21 +352,16 @@ def get_holiday_signature(
     # Make a DataFrame with a date column
     start_date = '2023-01-01'
     end_date = '2023-01-10'
-    dates = pd.date_range(start=start_date, end=end_date)
+    df = pd.DataFrame(pd.date_range(start=start_date, end=end_date), columns=['date'])
     
-    # Get holiday features for US
-    tk.get_holiday_signature(dates, 'UnitedStates')
+    # Add holiday features for US
+    tk.augment_holiday_signature(df, 'date', 'UnitedStates')
     ```
     
     ```{python}
-    # Get holiday features for France
-    tk.get_holiday_signature(dates, 'France')
+    # Add holiday features for France
+    tk.augment_holiday_signature(df, 'date', 'France')
     ```
-    
-    ```{python}
-    # Pandas Series
-    pd.Series(dates, name='dates').get_holiday_signature('UnitedStates')
-    ```    
     """
     # Common checks
     check_series_or_datetime(idx)
