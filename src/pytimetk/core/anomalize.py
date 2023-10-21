@@ -30,74 +30,117 @@ def anomalize(
     show_progress: bool = True,
     verbose = False,
 ) -> pd.DataFrame:
-    '''The `anomalize` function is used to detect anomalies in time series data, either for a single time
-    series or for multiple time series grouped by a specific column.
+    '''
+The `anomalize` function is used to detect anomalies in time series data, 
+either for a single time
+series or for multiple time series grouped by a specific column.
     
-    Parameters
-    ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        The input data, which can be either a pandas DataFrame or a pandas DataFrameGroupBy object.
-    date_column : str
-        The name of the column in the data that contains the dates or timestamps.
-    value_column : str
-        The name of the column in the data that contains the values to be analyzed for anomalies.
-    period : Optional[int]
-        The `period` parameter specifies the length of the seasonal component in the time series. It is used in the decomposition process to separate the time series into its seasonal, trend, and remainder components. If not specified, the function will automatically determine the period based on the data.
-    trend : Optional[int]
-        The `trend` parameter is an optional integer that specifies the length of the moving average window used for trend estimation. If `trend` is set to `None`, no trend estimation will be performed.
-    method : str
-        The `method` parameter determines the method used for anomaly detection. The available options are 'twitter' and 'seasonal_decompose'. The default value is 'twitter'.
-    decomp : str
-        The `decomp` parameter specifies the type of decomposition to use for time series decomposition. It can take two values:
-        1. 'additive' - This is the default value. It specifies that the time series will be decomposed using an additive model.
-        2. 'multiplicative' - This specifies that the time series will be decomposed using a multiplicative model.        
-    clean : str
-        The `clean` parameter specifies the method used to clean the anomalies. It can take two values:
-        
-        1. 'min_max' - This specifies that the anomalies will be cleaned using the min-max method. This method replaces the anomalies with the 0.75 * lower or upper bound of the recomposed time series, depending on the direction of the anomaly. The 0.75 multiplier can be adjusted using the `clean_alpha` parameter.
-        2. 'linear' - This specifies that the anomalies will be cleaned using linear interpolation.
-        
-    iqr_alpha : float
-        The `iqr_alpha` parameter is used to determine the threshold for detecting outliers. It is the significance level used in the interquartile range (IQR) method for outlier detection. 
-        - The default value is 0.05, which corresponds to a 5% significance level. 
-        - A lower significance level will result in a higher threshold, which means fewer outliers will be detected.
-        - A higher significance level will result in a lower threshold, which means more outliers will be detected.
-    clean_alpha : float
-        The `clean_alpha` parameter is used to determine the threshold for cleaning the outliers. The default is 0.75, which means that the anomalies will be cleaned using the 0.75 * lower or upper bound of the recomposed time series, depending on the direction of the anomaly.
-    max_anomalies : float
-        The `max_anomalies` parameter is used to specify the maximum percentage of anomalies allowed in the data. It is a float value between 0 and 1. For example, if `max_anomalies` is set to 0.2, it means that the function will identify and remove outliers until the percentage of outliers in the data is less than or equal to 20%. The default value is 0.2.
-    bind_data : bool
-        The `bind_data` parameter determines whether the original data will be included in the output. If set to `True`, the original data will be included in the output dataframe. If set to `False`, only the anomalous data will be included.
-    threads : int
-        The `threads` parameter specifies the number of threads to use for parallel processing. By default, it is set to `1`, which means no parallel processing is used. If you set `threads` to `-1`, it will use all available processors for parallel processing.
-    show_progress : bool
-        A boolean parameter that determines whether to show a progress bar during the execution of the function. If set to True, a progress bar will be displayed. If set to False, no progress bar will be shown.
-    verbose: bool
-        The `verbose` parameter is a boolean flag that determines whether or not to display additional information and progress updates during the execution of the `anomalize` function. If `verbose` is set to `True`, you will see more detailed output. 
+Parameters
+----------
+data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    The input data, which can be either a pandas DataFrame or a pandas 
+    DataFrameGroupBy object.
+date_column : str
+    The name of the column in the data that contains the dates or timestamps.
+value_column : str
+    The name of the column in the data that contains the values to be analyzed 
+    for anomalies.
+period : Optional[int]
+    The `period` parameter specifies the length of the seasonal component in the 
+    time series. It is used in the decomposition process to separate the time 
+    series into its seasonal, trend, and remainder components. If not specified, 
+    the function will automatically determine the period based on the data.
+trend : Optional[int]
+    The `trend` parameter is an optional integer that specifies the length of 
+    the moving average window used for trend estimation. If `trend` is set to 
+    `None`, no trend estimation will be performed.
+method : str
+    The `method` parameter determines the method used for anomaly detection. 
+    The available options are 'twitter' and 'seasonal_decompose'. The default 
+    value is 'twitter'.
+decomp : str
+    The `decomp` parameter specifies the type of decomposition to use for time 
+    series decomposition. It can take two values:
+    1. 'additive' - This is the default value. It specifies that the time series 
+        will be decomposed using an additive model.
+    2. 'multiplicative' - This specifies that the time series will be decomposed 
+        using a multiplicative model.        
+clean : str
+    The `clean` parameter specifies the method used to clean the anomalies. 
+    It can take two values:
+      
+    1. 'min_max' - This specifies that the anomalies will be cleaned using the 
+        min-max method. This method replaces the anomalies with the 0.75 * lower 
+        or upper bound of the recomposed time series, depending on the direction 
+        of the anomaly. The 0.75 multiplier can be adjusted using the 
+        `clean_alpha` parameter.
+    2. 'linear' - This specifies that the anomalies will be cleaned using 
+                  linear interpolation.
+iqr_alpha : float
+    The `iqr_alpha` parameter is used to determine the threshold for detecting 
+    outliers. It is the significance level used in the interquartile range (IQR) 
+    method for outlier detection. 
+    - The default value is 0.05, which corresponds to a 5% significance level. 
+    - A lower significance level will result in a higher threshold, which means 
+      fewer outliers will be detected.
+    - A higher significance level will result in a lower threshold, which means 
+      more outliers will be detected.
+clean_alpha : float
+    The `clean_alpha` parameter is used to determine the threshold for cleaning 
+    the outliers. The default is 0.75, which means that the anomalies will be 
+    cleaned using the 0.75 * lower or upper bound of the recomposed time series, 
+    depending on the direction of the anomaly.
+max_anomalies : float
+    The `max_anomalies` parameter is used to specify the maximum percentage of 
+    anomalies allowed in the data. It is a float value between 0 and 1. For 
+    example, if `max_anomalies` is set to 0.2, it means that the function will 
+    identify and remove outliers until the percentage of outliers in the data is 
+    less than or equal to 20%. The default value is 0.2.
+bind_data : bool
+    The `bind_data` parameter determines whether the original data will be 
+    included in the output. If set to `True`, the original data will be included 
+    in the output dataframe. If set to `False`, only the anomalous data will be 
+    included.
+threads : int
+    The `threads` parameter specifies the number of threads to use for parallel 
+    processing. By default, it is set to `1`, which means no parallel processing 
+    is used. If you set `threads` to `-1`, it will use all available processors 
+    for parallel processing.
+show_progress : bool
+    A boolean parameter that determines whether to show a progress bar during 
+    the execution of the function. If set to True, a progress bar will be 
+    displayed. If set to False, no progress bar will be shown.
+verbose: bool
+    The `verbose` parameter is a boolean flag that determines whether or not to 
+    display additional information and progress updates during the execution of 
+    the `anomalize` function. If `verbose` is set to `True`, you will see more 
+    detailed output. 
     
-    Returns
-    -------
-    pd.DataFrame
-        The `anomalize` function returns a pandas DataFrame containing the original data with additional
-    columns:
-        - observed: original data
-        - seasonal: seasonal component
-        - seasadaj: seasonal adjusted
-        - trend: trend component
-        - remainder: residual component
-        - anomaly: Yes/No flag for outlier detection
-        - anomaly score: distance from centerline
-        - anomaly direction: -1, 0, 1 inidicator for direction of the anomaly
-        - recomposed_l1: lower level bound of recomposed time series
-        - recomposed_l2: upper level bound of recomposed time series
-        - observed_clean: original data with anomalies interpolated
+Returns
+-------
+pd.DataFrame
+    The `anomalize` function returns a pandas DataFrame containing the original 
+    data with additional
+columns:
+    - observed: original data
+    - seasonal: seasonal component
+    - seasadaj: seasonal adjusted
+    - trend: trend component
+    - remainder: residual component
+    - anomaly: Yes/No flag for outlier detection
+    - anomaly score: distance from centerline
+    - anomaly direction: -1, 0, 1 inidicator for direction of the anomaly
+    - recomposed_l1: lower level bound of recomposed time series
+    - recomposed_l2: upper level bound of recomposed time series
+    - observed_clean: original data with anomalies interpolated
     
     
     Notes
     -----
     ## Performance
     
-    This function uses parallel processing to speed up computation for large datasets with many time series groups: 
+    This function uses parallel processing to speed up computation for large 
+    datasets with many time series groups: 
     
     Parallel processing has overhead and may not be faster on small datasets.
     
