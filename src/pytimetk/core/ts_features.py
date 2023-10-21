@@ -43,20 +43,27 @@ def ts_features(
     threads: Optional[int] = 1,
     show_progress: bool = True,
 ) -> pd.DataFrame:
-    '''Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the `tsfeatures` package.
+    '''
+    Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the `tsfeatures` package.
     
     Note: Requires the `tsfeatures` package to be installed.
     
     Parameters
     ----------
     data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter is the input data that can be either a Pandas DataFrame or a grouped DataFrame. It contains the time series data that you want to extract features from.
+        The `data` parameter is the input data that can be either a Pandas 
+        DataFrame or a grouped DataFrame. It contains the time series data that 
+        you want to extract features from.
     date_column : str
-        The `date_column` parameter is the name of the column in the input data that contains the dates or timestamps of the time series data.
+        The `date_column` parameter is the name of the column in the input data 
+        that contains the dates or timestamps of the time series data.
     value_column : str
-        The `value_column` parameter is the name of the column in the DataFrame that contains the time series values.
+        The `value_column` parameter is the name of the column in the DataFrame 
+        that contains the time series values.
     features : list
-        The `features` parameter is a list of functions that represent the time series features to be extracted. Each function should take a time series as input and return a scalar value as output. 
+        The `features` parameter is a list of functions that represent the time 
+        series features to be extracted. Each function should take a time series 
+        as input and return a scalar value as output. 
         
         When `None`, uses the default list of features:
         - acf_features
@@ -78,32 +85,44 @@ def ts_features(
         - hurst
         
     freq : str
-        The `freq` parameter specifies the frequency of the time series data. It is used to calculate features that are dependent on the frequency, such as seasonal features. 
+        The `freq` parameter specifies the frequency of the time series data. 
+        It is used to calculate features that are dependent on the frequency, 
+        such as seasonal features. 
         
-        - The frequency can be specified as a string, such as 'D' for daily, 'W' for weekly, 'M' for monthly.
+        - The frequency can be specified as a string, such as 'D' for daily, 'W' 
+          for weekly, 'M' for monthly.
         
-        - The frequency can be a numeric value representing the number of observations per year, such as 365 for daily, 52 for weekly, 12 for monthly.
+        - The frequency can be a numeric value representing the number of 
+          observations per year, such as 365 for daily, 52 for weekly, 12 for 
+          monthly.
     scale : bool, optional
-        The `scale` parameter in the `ts_features` function determines whether or not to scale the extracted features. 
-        - If `scale` is set to `True`, the features will be scaled using z-score normalization. 
+        The `scale` parameter in the `ts_features` function determines whether 
+        or not to scale the extracted features. 
+        - If `scale` is set to `True`, the features will be scaled using z-score 
+          normalization. 
         - If `scale` is set to `False`, the features will not be scaled.
     threads : Optional[int]
-        The `threads` parameter is an optional parameter that specifies the number of threads to use for parallel processing. 
+        The `threads` parameter is an optional parameter that specifies the 
+        number of threads to use for parallel processing. 
         - If is `None`, tthe function will use all available threads on the system.
         - If is -1, the function will use all available threads on the system.
     show_progress : bool
-        The `show_progress` parameter is a boolean parameter that determines whether or not to show a progress bar when extracting features.
+        The `show_progress` parameter is a boolean parameter that determines 
+        whether or not to show a progress bar when extracting features.
     
     Returns
     -------
     pd.DataFrame
-        The function `ts_features` returns a pandas DataFrame containing the extracted time series features. If grouped data is provided, the DataFrame will contain the grouping columns as well.
+        The function `ts_features` returns a pandas DataFrame containing the 
+        extracted time series features. If grouped data is provided, the DataFrame 
+        will contain the grouping columns as well.
     
     Notes
     -----
     ## Performance
     
-    This function uses parallel processing to speed up computation for large datasets with many time series groups: 
+    This function uses parallel processing to speed up computation for large 
+    datasets with many time series groups: 
     
     Parallel processing has overhead and may not be faster on small datasets.
     
