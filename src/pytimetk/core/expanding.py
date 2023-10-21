@@ -20,8 +20,9 @@ def augment_expanding(
     engine: str = 'pandas',
     **kwargs,
 ) -> pd.DataFrame:
-    '''Apply one or more Series-based expanding functions to one or more columns of a DataFrame.
-    
+    '''
+    Apply one or more Series-based expanding functions to one or more columns of a DataFrame.
+        
     Parameters
     ----------
     data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
@@ -29,52 +30,63 @@ def augment_expanding(
     date_column : str
         Name of the datetime column. Data is sorted by this column within each group.
     value_column : Union[str, list]
-        Column(s) to which the expanding window functions should be applied. Can be a single column name or a list.
+        Column(s) to which the expanding window functions should be applied. Can be 
+        a single column name or a list.
     window_func : Union[str, list, Tuple[str, Callable]], optional, default 'mean'
-        The `window_func` parameter in the `augment_expanding` function specifies the function(s) to be applied to the expanding windows of the value column(s).
-
+        The `window_func` parameter in the `augment_expanding` function specifies 
+        the function(s) to be applied to the expanding windows of the value column(s).
+    
         1. It can be either:
             - A string representing the name of a standard function (e.g., 'mean', 'sum').
-            
+                
         2. For custom functions:
-            - Provide a list of tuples. Each tuple should contain a custom name for the function and the function itself.
-            - Each custom function should accept a Pandas Series as its input and operate on that series.
-              Example: ("range", lambda x: x.max() - x.min())
-        
+            - Provide a list of tuples. Each tuple should contain a custom name for 
+              the function and the function itself.
+            - Each custom function should accept a Pandas Series as its input and 
+              operate on that series. Example: ("range", lambda x: x.max() - x.min())
+            
         (See more Examples below.)
-
-        Note: If your function needs to operate on multiple columns (i.e., it requires access to a DataFrame rather than just a Series), consider using the `augment_expanding_apply` function in this library.   
-    min_periods : int, optional, default None
-        Minimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.
-    engine : str, optional, default 'pandas'
-        Specifies the backend computation library for augmenting expanding window functions. 
     
+        Note: If your function needs to operate on multiple columns (i.e., it 
+              requires access to a DataFrame rather than just a Series), consider 
+              using the `augment_expanding_apply` function in this library.   
+    min_periods : int, optional, default None
+        Minimum observations in the window to have a value. Defaults to the window 
+        size. If set, a value will be produced even if fewer observations are 
+        present than the window size.
+    engine : str, optional, default 'pandas'
+        Specifies the backend computation library for augmenting expanding window 
+        functions. 
+        
         The options are:
             - "pandas" (default): Uses the `pandas` library.
-            - "polars": Uses the `polars` library, which may offer performance benefits for larger datasets.
-    
+            - "polars": Uses the `polars` library, which may offer performance 
+               benefits for larger datasets.
+        
     **kwargs : additional keyword arguments
-        Additional arguments passed to the `pandas.Series.expanding` method when using the Pandas engine.
-    
+        Additional arguments passed to the `pandas.Series.expanding` method when 
+        using the Pandas engine.
+        
     Returns
     -------
     pd.DataFrame
-        The `augment_expanding` function returns a DataFrame with new columns for each applied function, window size, and value column.
-    
+        The `augment_expanding` function returns a DataFrame with new columns for 
+        each applied function, window size, and value column.
+        
     Examples
     --------
-
+    
     ```{python}
     # Example 1 - Pandas Backend for Expanding Window Functions
     # This example demonstrates the use of string-named functions 
     # on an expanding window using the Pandas backend for computations.
-    
+        
     import pytimetk as tk
     import pandas as pd
     import numpy as np
-
+    
     df = tk.load_dataset("m4_daily", parse_dates = ['date'])
-
+    
     expanded_df = (
         df
             .groupby('id')
@@ -84,81 +96,82 @@ def augment_expanding(
                 window_func = [
                     'mean',  # Built-in mean function
                     'std',   # Built-in standard deviation function,
-                    ('quantile_75', lambda x: pd.Series(x).quantile(0.75)),  # Custom quantile function
-                    
+                     ('quantile_75', lambda x: pd.Series(x).quantile(0.75)),  # Custom quantile function
+                        
                 ],
                 min_periods = 1,
                 engine = 'pandas',  # Utilize pandas for the underlying computations
-            )
-    )
+                )
+        )
     display(expanded_df)
     ```
-
-
-    ```{python}
-    # Example 2 - Polars Backend for Expanding Window Functions using Built-Ins (538X Faster than Pandas)
-    # This example demonstrates the use of string-named functions and configurable functions 
-    # using the Polars backend for computations.
-    # Configurable functions, like pl_quantile, allow the use of specific parameters associated 
-    # with their corresponding polars.Expr.rolling_<function_name> method.
-    # For instance, pl_quantile corresponds to polars.Expr.rolling_quantile.
     
-    import pytimetk as tk
-    import pandas as pd
-    import polars as pl
-    import numpy as np
-    from pytimetk.utils.polars_helpers import pl_quantile
-    from pytimetk.utils.pandas_helpers import pd_quantile
-    
-    df = tk.load_dataset("m4_daily", parse_dates = ['date'])
-
-    expanded_df = (
-        df
-            .groupby('id')
-            .augment_expanding(
-                date_column = 'date', 
-                value_column = 'value', 
-                window_func = [
-                    'mean',  # Built-in mean function
-                    'std',   # Built-in std function
-                    ('quantile_75', pl_quantile(quantile=0.75)),  # Configurable with all parameters found in polars.Expr.rolling_quantile
-                ],
-                min_periods = 1,
-                engine = 'polars',  # Utilize Polars for the underlying computations
-            )
-    )
-    display(expanded_df)
-    ```
     
     ```{python}
-    # Example 3 - Lambda Functions for Expanding Window Functions are faster in Pandas than Polars
-    # This example demonstrates the use of lambda functions of the form lambda x: x
-    # Identity lambda functions, while convenient, have signficantly slower performance.
-    # When using lambda functions the Pandas backend will likely be faster than Polars.
+    # Example 2 - Polars Backend for Expanding Window Functions using Built-Ins 
+    #             (538X Faster than Pandas)
+      This example demonstrates the use of string-named functions and configurable 
+      functions using the Polars backend for computations. Configurable functions, 
+      like pl_quantile, allow the use of specific parameters associated with their 
+      corresponding polars.Expr.rolling_<function_name> method.
+      For instance, pl_quantile corresponds to polars.Expr.rolling_quantile.
+        
+        import pytimetk as tk
+        import pandas as pd
+        import polars as pl
+        import numpy as np
+        from pytimetk.utils.polars_helpers import pl_quantile
+        from pytimetk.utils.pandas_helpers import pd_quantile
+        
+        df = tk.load_dataset("m4_daily", parse_dates = ['date'])
     
-    import pytimetk as tk
-    import pandas as pd
-    import polars as pl
-    import numpy as np
+        expanded_df = (
+            df
+                .groupby('id')
+                .augment_expanding(
+                    date_column = 'date', 
+                    value_column = 'value', 
+                    window_func = [
+                        'mean',  # Built-in mean function
+                        'std',   # Built-in std function
+                        ('quantile_75', pl_quantile(quantile=0.75)),  # Configurable with all parameters found in polars.Expr.rolling_quantile
+                    ],
+                    min_periods = 1,
+                    engine = 'polars',  # Utilize Polars for the underlying computations
+                )
+        )
+        display(expanded_df)
+        ```
+        
+        ```{python}
+        # Example 3 - Lambda Functions for Expanding Window Functions are faster in Pandas than Polars
+        # This example demonstrates the use of lambda functions of the form lambda x: x
+        # Identity lambda functions, while convenient, have signficantly slower performance.
+        # When using lambda functions the Pandas backend will likely be faster than Polars.
+        
+        import pytimetk as tk
+        import pandas as pd
+        import polars as pl
+        import numpy as np
+        
+        df = tk.load_dataset("m4_daily", parse_dates = ['date'])
     
-    df = tk.load_dataset("m4_daily", parse_dates = ['date'])
-
-    expanded_df = (
-        df
-            .groupby('id')
-            .augment_expanding(
-                date_column = 'date', 
-                value_column = 'value', 
-                window_func = [
-                    
-                    ('range', lambda x: x.max() - x.min()),  # Identity lambda function: can be slower, especially in Polars
-                ],
-                min_periods = 1,
-                engine = 'pandas',  # Utilize pandas for the underlying computations
-            )
-    )
-    display(expanded_df)
-    ```
+        expanded_df = (
+            df
+                .groupby('id')
+                .augment_expanding(
+                    date_column = 'date', 
+                    value_column = 'value', 
+                    window_func = [
+                        
+                        ('range', lambda x: x.max() - x.min()),  # Identity lambda function: can be slower, especially in Polars
+                    ],
+                    min_periods = 1,
+                    engine = 'pandas',  # Utilize pandas for the underlying computations
+                )
+        )
+        display(expanded_df)
+        ```
     '''
     # Ensure data is a DataFrame or a GroupBy object
     check_dataframe_or_groupby(data)
@@ -463,8 +476,9 @@ def augment_expanding_apply(
     window_func: Union[Tuple[str, Callable], List[Tuple[str, Callable]]], 
     min_periods: Optional[int] = None,
 ) -> pd.DataFrame:
-    '''Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame.
-    
+    '''
+    Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame.
+        
     Parameters
     ----------
     data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
@@ -472,21 +486,28 @@ def augment_expanding_apply(
     date_column : str
         Name of the datetime column. Data is sorted by this column within each group.
     window_func : Union[Tuple[str, Callable], List[Tuple[str, Callable]]]
-        The `window_func` parameter in the `augment_expanding_apply` function specifies the function(s) that operate on a expanding window with the consideration of multiple columns.
-
+        The `window_func` parameter in the `augment_expanding_apply` function 
+        specifies the function(s) that operate on a expanding window with the 
+        consideration of multiple columns.
+    
         The specification can be:
         - A tuple where the first element is a string representing the function's name and the second element is the callable function itself.
         - A list of such tuples for multiple functions.
-
-        Note: For functions targeting only a single value column without the need for contextual data from other columns, consider using the `augment_expanding` function in this library.
-    min_periods : int, optional, default None
-        Minimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.
     
+    Note: For functions targeting only a single value column without the need for 
+          contextual data from other columns, consider using the `augment_expanding` 
+          function in this library.
+    min_periods : int, optional, default None
+          Minimum observations in the window to have a value. Defaults to the window 
+          size. If set, a value will be produced even if fewer observations are 
+          present than the window size.
+        
     Returns
     -------
     pd.DataFrame
-        The `augment_expanding` function returns a DataFrame with new columns for each applied function, window size, and value column.
-    
+        The `augment_expanding` function returns a DataFrame with new columns 
+        for each applied function, window size, and value column.
+        
     Examples
     --------
     ```{python}
@@ -494,34 +515,37 @@ def augment_expanding_apply(
     import pandas as pd
     import numpy as np
     ```
-    
+        
     ```{python}
-    # Example showcasing the expanding correlation between two columns (`value1` and `value2`).
+    # Example showcasing the expanding correlation between two columns (`value1` and 
+    # `value2`).
     # The correlation requires both columns as input.
-    
+        
     # Sample DataFrame with id, date, value1, and value2 columns.
     df = pd.DataFrame({
         'id': [1, 1, 1, 2, 2, 2],
         'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),
         'value1': [10, 20, 29, 42, 53, 59],
         'value2': [2, 16, 20, 40, 41, 50],
-    })
-    
+        })
+        
     # Compute the expanding correlation for each group of 'id'
     expanding_df = (
         df.groupby('id')
-        .augment_expanding_apply(
+          .augment_expanding_apply(
             date_column='date',
             window_func=[('corr', lambda x: x['value1'].corr(x['value2']))],  # Lambda function for correlation
+            )
         )
-    )
     display(expanding_df)
     ```
-    
+        
     ```{python}
-    # expanding Regression Example: Using `value1` as the dependent variable and `value2` and `value3` as the independent variables.
-    # This example demonstrates how to perform a expanding regression using two independent variables.
-
+    # expanding Regression Example: Using `value1` as the dependent variable and 
+    # `value2` and `value3` as the independent variables.
+    # This example demonstrates how to perform a expanding regression using two 
+    # independent variables.
+    
     # Sample DataFrame with `id`, `date`, `value1`, `value2`, and `value3` columns.
     df = pd.DataFrame({
         'id': [1, 1, 1, 2, 2, 2],
@@ -529,22 +553,22 @@ def augment_expanding_apply(
         'value1': [10, 20, 29, 42, 53, 59],
         'value2': [5, 16, 24, 35, 45, 58],
         'value3': [2, 3, 6, 9, 10, 13]
-    })
-    
+        })
+        
     # Define Regression Function to be applied on the expanding window.
     def regression(df):
-    
+        
         # Required module (scikit-learn) for regression.
         from sklearn.linear_model import LinearRegression
-    
+        
         model = LinearRegression()
         X = df[['value2', 'value3']]  # Independent variables
         y = df['value1']  # Dependent variable
         model.fit(X, y)
         ret = pd.Series([model.intercept_, model.coef_[0]], index=['Intercept', 'Slope'])
-        
+            
         return ret # Return intercept and slope as a Series
-        
+            
     # Compute the expanding regression for each group of `id`
     result_df = (
         df.groupby('id')
@@ -554,8 +578,9 @@ def augment_expanding_apply(
         )
         .dropna()
     )
-
-    # Format the results to have each regression output (slope and intercept) in separate columns.
+    
+    # Format the results to have each regression output (slope and intercept) in 
+    #  separate columns.
     regression_wide_df = pd.concat(result_df['expanding_regression'].to_list(), axis=1).T
     regression_wide_df = pd.concat([result_df.reset_index(drop = True), regression_wide_df], axis=1)
     display(regression_wide_df)
