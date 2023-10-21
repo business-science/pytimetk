@@ -12,7 +12,9 @@ def load_dataset(
     '''
     Load one of 12 Time Series Datasets.
     
-    The `load_dataset` function is used to load various time series datasets by name, with options to print the available datasets and pass additional arguments to `pandas.read_csv`. The available datasets are:
+    The `load_dataset` function is used to load various time series datasets by 
+    name, with options to print the available datasets and pass additional 
+    arguments to `pandas.read_csv`. The available datasets are:
     
     - `m4_hourly`: The M4 hourly dataset
     - `m4_daily`: The M4 daily dataset
@@ -28,21 +30,32 @@ def load_dataset(
     - `stocks_daily`: The MAANNG stocks dataset
     - `expedia`: Expedia Hotel Time Series Dataset
     
-    The datasets can be loaded with `pytimetk.load_dataset(name)`, where `name` is the name of the dataset that you want to load. The default value is set to "m4_daily", which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned above.
+    The datasets can be loaded with `pytimetk.load_dataset(name)`, where `name` 
+    is the name of the dataset that you want to load. The default value is set 
+    to "m4_daily", which is the M4 daily dataset. However, you can choose from 
+    a list of available datasets mentioned above.
     
     Parameters
     ----------
     name : str, optional
-        The `name` parameter is used to specify the name of the dataset that you want to load. The default value is set to "m4_daily", which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned in the function's docstring.
+        The `name` parameter is used to specify the name of the dataset that you 
+        want to load. The default value is set to "m4_daily", which is the M4 
+        daily dataset. However, you can choose from a list of available datasets 
+        mentioned in the function's docstring.
     verbose : bool, optional
-        The `verbose` parameter is a boolean flag that determines whether or not to print the names of the available datasets. If `verbose` is set to `True`, the function will print the names of the available datasets. If `verbose` is set to `False`, the function will not print anything.
+        The `verbose` parameter is a boolean flag that determines whether or not 
+        to print the names of the available datasets. If `verbose` is set to `
+        True`, the function will print the names of the available datasets. If 
+        `verbose` is set to `False`, the function will not print anything.
     **kwargs
-        The `**kwargs` parameter is used to pass additional arguments to `pandas.read_csv`.
+        The `**kwargs` parameter is used to pass additional arguments to 
+        `pandas.read_csv`.
     
     Returns
     -------
     pd.DataFrame
-        The `load_dataset` function returns the requested dataset as a pandas DataFrame.
+        The `load_dataset` function returns the requested dataset as a pandas 
+        DataFrame.
         
         
     Examples
@@ -97,14 +110,16 @@ def load_dataset(
 def get_available_datasets():
     '''Get a list of 12 datasets that can be loaded with `pytimetk.load_dataset`.
     
-    The `get_available_datasets` function returns a sorted list of available dataset names from the `pytimetk.datasets` module. The available datasets are:
+    The `get_available_datasets` function returns a sorted list of available 
+    dataset names from the `pytimetk.datasets` module. The available datasets are:
     
     
     
     Returns
     -------
     list
-        The function `get_available_datasets` returns a sorted list of available dataset names from the `pytimetk.datasets` module.
+        The function `get_available_datasets` returns a sorted list of available 
+        dataset names from the `pytimetk.datasets` module.
     
     Examples
     --------
