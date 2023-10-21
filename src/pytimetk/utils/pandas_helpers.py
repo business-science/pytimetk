@@ -8,15 +8,19 @@ from pytimetk.utils.checks import check_dataframe_or_groupby
 def glimpse(
     data: pd.DataFrame, max_width: int = 76
 ) -> None:
-    '''Takes a pandas DataFrame and prints a summary of
-    its dimensions, column names, data types, and the first few values of each column.
+    '''
+    Takes a pandas DataFrame and prints a summary of its dimensions, column 
+    names, data types, and the first few values of each column.
     
     Parameters
     ----------
     data : pd.DataFrame
-        The `data` parameter is a pandas DataFrame that contains the data you want to glimpse at. It is the main input to the `glimpse` function.
+        The `data` parameter is a pandas DataFrame that contains the data you 
+        want to glimpse at. It is the main input to the `glimpse` function.
     max_width : int, optional
-        The `max_width` parameter is an optional parameter that specifies the maximum width of each line when printing the glimpse of the DataFrame. If not provided, the default value is set to 76.
+        The `max_width` parameter is an optional parameter that specifies the 
+        maximum width of each line when printing the glimpse of the DataFrame. 
+        If not provided, the default value is set to 76.
     
     Examples
     --------
