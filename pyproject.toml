@@ -2,8 +2,22 @@
 name = "pytimetk"
 version = "0.1.0.9000"
 description = "The time series toolkit for Python."
-authors = ["Matt Dancho <mdancho@business-science.io>"]
+authors = [
+    "Business Science <info@business-science.io",
+    "Quant Science <info@quantscience.io>",
+    "Matt Dancho <mdancho@business-science.io>",
+    "Justin B. Kurland <justin.b.kurland@gmail.com>"
+]
+maintainers = [
+    "Matt Dancho",
+    "Justin B. Kurland",
+    "Jeff Tackes",
+    "Samuel Macêdo",
+    "Lucas Okwudishu",
+]
+license = "LICENSE"
 readme = "README.md"
+keywords = ["time series", "forecasting", "machine learning", "data science"]
 
 [tool.poetry.dependencies]
 python = ">=3.9"
