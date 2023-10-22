@@ -91,3 +91,4 @@ padded_df = (
         )
 )
 padded_df.query('symbol == "AAPL"')
+```

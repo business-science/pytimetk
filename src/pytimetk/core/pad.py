@@ -132,6 +132,7 @@ def pad_by_time(
             )
     )
     padded_df.query('symbol == "AAPL"')
+    ```
     '''
     # Common checks
     check_dataframe_or_groupby(data)

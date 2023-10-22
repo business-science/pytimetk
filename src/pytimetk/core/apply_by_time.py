@@ -84,60 +84,60 @@ def apply_by_time(
     df.glimpse()
     ```
         
-        ```{python}    
-        # Apply by time with a DataFrame object
-        # Allows access to multiple columns at once
-        ( 
-            df[['order_date', 'price', 'quantity']] 
-                .apply_by_time(
-                    
-                    # Named apply functions
-                    price_quantity_sum = lambda df: (df['price'] * df['quantity']).sum(),
-                    price_quantity_mean = lambda df: (df['price'] * df['quantity']).mean(),
-                    
-                    # Parameters
-                    date_column  = 'order_date', 
-                    freq         = "MS",
-                    
-                )
-        )
-        ```
-        
-        ```{python}    
-        # Apply by time with a GroupBy object
-        ( 
-            df[['category_1', 'order_date', 'price', 'quantity']] 
-                .groupby('category_1')
-                .apply_by_time(
-                    
-                    # Named functions
-                    price_quantity_sum = lambda df: (df['price'] * df['quantity']).sum(),
-                    price_quantity_mean = lambda df: (df['price'] * df['quantity']).mean(),
-                    
-                    # Parameters
-                    date_column  = 'order_date', 
-                    freq         = "MS",
-                    
-                )
-        )
-        ```
-        
-        ```{python}    
-        # Return complex objects
-        ( 
-            df[['order_date', 'price', 'quantity']] 
-                .apply_by_time(
-                    
-                    # Named apply functions
-                    complex_object = lambda df: [df],
-                    
-                    # Parameters
-                    date_column  = 'order_date', 
-                    freq         = "MS",
-                    
-                )
-        )
-        ```
+    ```{python}    
+    # Apply by time with a DataFrame object
+    # Allows access to multiple columns at once
+    ( 
+        df[['order_date', 'price', 'quantity']] 
+            .apply_by_time(
+                
+                # Named apply functions
+                price_quantity_sum = lambda df: (df['price'] * df['quantity']).sum(),
+                price_quantity_mean = lambda df: (df['price'] * df['quantity']).mean(),
+                
+                # Parameters
+                date_column  = 'order_date', 
+                freq         = "MS",
+                
+            )
+    )
+    ```
+    
+    ```{python}    
+    # Apply by time with a GroupBy object
+    ( 
+        df[['category_1', 'order_date', 'price', 'quantity']] 
+            .groupby('category_1')
+            .apply_by_time(
+                
+                # Named functions
+                price_quantity_sum = lambda df: (df['price'] * df['quantity']).sum(),
+                price_quantity_mean = lambda df: (df['price'] * df['quantity']).mean(),
+                
+                # Parameters
+                date_column  = 'order_date', 
+                freq         = "MS",
+                
+            )
+    )
+    ```
+    
+    ```{python}    
+    # Return complex objects
+    ( 
+        df[['order_date', 'price', 'quantity']] 
+            .apply_by_time(
+                
+                # Named apply functions
+                complex_object = lambda df: [df],
+                
+                # Parameters
+                date_column  = 'order_date', 
+                freq         = "MS",
+                
+            )
+    )
+    ```
     '''
     
     # Run common checks

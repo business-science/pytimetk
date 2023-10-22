@@ -149,8 +149,13 @@ def plot_anomalies_decomp(
         verbose = True,
     )
     
-    # Visualize the results
-    anomalize_df.plot_anomalies_decomp("date")
+    # Visualize the results, plotly
+    anomalize_df.plot_anomalies_decomp("date", engine = 'plotly')
+    ```
+    
+    ```{python}
+    # Visualize the results, plotnine
+    anomalize_df.plot_anomalies_decomp("date", engine = "plotnine")
     ```
     
     ``` {python}
@@ -171,7 +176,23 @@ def plot_anomalies_decomp(
             ) 
     )
     
-    # Visualize the decomposition results
+    # Visualize the decomposition results, plotly
+    (
+        anomalize_df
+            .groupby("id")
+            .plot_anomalies_decomp(
+                date_column = "Date",
+                line_color = "steelblue",
+                width = 1200,
+                height = 800,
+                x_axis_date_labels = "%y",
+                engine = 'plotly',                
+            )
+    )
+    ```
+    
+    ```{python}
+    # Visualize the decomposition results, plotnine
     
     (
         anomalize_df
@@ -186,7 +207,6 @@ def plot_anomalies_decomp(
             )
     )
     ```
-    
     '''
     
     check_dataframe_or_groupby(data)
