@@ -21,7 +21,8 @@ jobs:
         config:
           - { os: ubuntu-latest, python-version: '3.9', pandas-version: '1.5.0' }
           - { os: ubuntu-latest, python-version: '3.9', pandas-version: '2.0.0' }
-    
+          - { os: ubuntu-latest, python-version: '3.9', pandas-version: 'latest' }
+
     defaults:
       run:
         shell: bash
@@ -47,8 +48,12 @@ jobs:
 
       - name: Install package
         run: |
-          poetry install
+        poetry install
+        if [ "${{ matrix.config.pandas-version }}" == "latest" ]; then
+          poetry add pandas
+        else
           poetry add pandas==${{ matrix.config.pandas-version }}
+        fi
       
       - run: |
           source $VENV
