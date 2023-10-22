@@ -48,12 +48,12 @@ jobs:
 
       - name: Install package
         run: |
-        poetry install
-        if [ "${{ matrix.config.pandas-version }}" == "latest" ]; then
-          poetry add pandas
-        else
-          poetry add pandas==${{ matrix.config.pandas-version }}
-        fi
+          poetry install
+          if [ "${{ matrix.config.pandas-version }}" == "latest" ]; then
+            poetry add pandas
+          else
+            poetry add pandas==${{ matrix.config.pandas-version }}
+          fi
       
       - run: |
           source $VENV
