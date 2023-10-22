@@ -1,6 +1,7 @@
 import pytest
 import pandas as pd
 from pytimetk import ts_summary, get_frequency
+from pytimetk import load_dataset
 
 from pytimetk.core.frequency import _get_manual_frequency  # Adjust the module name accordingly
 
@@ -298,6 +299,85 @@ def test_custom_offset():
     result = _get_manual_frequency(dates)
     
     assert result == '821D' 
+    
+def test_examples_01():
+    
+    dates = pd.to_datetime(["2023-10-02", "2023-10-03", "2023-10-04", "2023-10-05", "2023-10-06", "2023-10-09", "2023-10-10"])
+    df = pd.DataFrame(dates, columns = ["date"])
+    
+    test_1 = df.ts_summary(date_column = 'date')
+    
+    expected_columns = [
+        'date_n',
+        'date_tz',
+        'date_start',
+        'date_end',
+        'freq_inferred_unit',
+        'freq_median_timedelta',
+        'freq_median_scale',
+        'freq_median_unit',
+        'diff_min',
+        'diff_q25',
+        'diff_median',
+        'diff_mean',
+        'diff_q75',
+        'diff_max',
+        'diff_min_seconds',
+        'diff_q25_seconds',
+        'diff_median_seconds',
+        'diff_mean_seconds',
+        'diff_q75_seconds',
+        'diff_max_seconds'
+    ]
+    
+    assert list(test_1.columns) == expected_columns
+        
+
+def test_examples_02():
+    
+    df = load_dataset('stocks_daily', parse_dates = ['date'])
+     
+    test_1 = df.groupby('symbol').ts_summary(date_column = 'date') 
+   
+    # Parallelized grouped ts_summary 
+    test_2 = (
+        df 
+            .groupby('symbol') 
+            .ts_summary(
+                date_column = 'date', 
+                threads = 2, 
+                show_progress = True
+            ) 
+    ) 
+    
+    expected_columns = [
+        'symbol',
+        'date_n',
+        'date_tz',
+        'date_start',
+        'date_end',
+        'freq_inferred_unit',
+        'freq_median_timedelta',
+        'freq_median_scale',
+        'freq_median_unit',
+        'diff_min',
+        'diff_q25',
+        'diff_median',
+        'diff_mean',
+        'diff_q75',
+        'diff_max',
+        'diff_min_seconds',
+        'diff_q25_seconds',
+        'diff_median_seconds',
+        'diff_mean_seconds',
+        'diff_q75_seconds',
+        'diff_max_seconds'
+    ]
+    
+    assert test_1.equals(test_2)
+    
+    assert list(test_1.columns) == expected_columns
+    
     
     
 

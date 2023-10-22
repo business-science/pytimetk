@@ -98,7 +98,7 @@ def ts_summary(
     import pytimetk as tk
     import pandas as pd
     
-    dates = pd.to_datetime(["2023-10-02", "2023-10-03", "2023-10-04", "2023-10-05", "2023-10-06", "2023-10-09", "2023-10-10"])
+    dates = pd.to_datetime(["2023-10-02", "2023-10-03", "2023-10-04", "2023-10-05", "2023-10-06", "2023-10-09", "2023-10-10"]) 
     df = pd.DataFrame(dates, columns = ["date"])
     
     df.ts_summary(date_column = 'date')
@@ -123,18 +123,6 @@ def ts_summary(
             ) 
     )
     ```
-    
-    ```{python}
-    # See also:
-    tk.get_date_summary(df['date'])
-    
-    tk.get_frequency_summary(df['date'])
-    
-    tk.get_diff_summary(df['date'])
-    
-    tk.get_diff_summary(df['date'], numeric = True)
-
-    ```
     '''
     
     # Run common checks
@@ -147,6 +135,8 @@ def ts_summary(
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         
+        group_names = data.grouper.names
+        
         # Get threads
         threads = get_threads(threads)
         
@@ -154,7 +144,8 @@ def ts_summary(
             
             result = progress_apply(
                 data,
-                func = lambda group: _ts_summary(group, date_column),
+                func = _ts_summary,
+                date_column = date_column,
                 show_progress = show_progress,
                 desc = "TS Summarizing..."
             )
@@ -163,13 +154,14 @@ def ts_summary(
         
             result = parallel_apply(
                 data,
-                func = lambda group: _ts_summary(group, date_column),
+                func = _ts_summary,
+                date_column = date_column,
                 threads = threads,
                 show_progress = show_progress,
                 desc = "TS Summarizing..."
             )
             
-        result = result.reset_index(drop=True)
+        result = result.reset_index(level=group_names)
         return result
         
 # Monkey patch the method to pandas groupby objects
@@ -194,8 +186,8 @@ def _ts_summary(group: pd.DataFrame, date_column: str) -> pd.DataFrame:
     result = pd.concat([date_summary, frequency_summary, diff_summary, diff_summary_num], axis=1)
     
     # Add group columns back
-    for col in group.columns.difference([date_column]):
-        result[col] = group[col].iloc[0]
+    # for col in group.columns.difference([date_column]):
+    #     result[col] = group[col].iloc[0]
 
     return result
     
