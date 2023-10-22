@@ -356,7 +356,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
   <li><a href="#performance" id="toc-performance" class="nav-link" data-scroll-target="#performance">Performance</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
-  <li><a href="#pad-with-end-dates-specified" id="toc-pad-with-end-dates-specified" class="nav-link" data-scroll-target="#pad-with-end-dates-specified">Pad with end dates specified</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/pad_by_time.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -939,10 +938,166 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 </div>
-</section>
-<section id="pad-with-end-dates-specified" class="level1">
-<h1>Pad with end dates specified</h1>
-<p>padded_df = ( df .groupby(‘symbol’) .pad_by_time( date_column = ‘date’, freq = ‘D’, start_date = ‘2013-01-01’, end_date = ‘2023-09-22’ ) ) padded_df.query(‘symbol == “AAPL”’)</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pad with end dates specified</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>padded_df <span class="op">=</span> (</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .pad_by_time(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            freq        <span class="op">=</span> <span class="st">'D'</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            start_date  <span class="op">=</span> <span class="st">'2013-01-01'</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            end_date    <span class="op">=</span> <span class="st">'2023-09-22'</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>padded_df.query(<span class="st">'symbol == "AAPL"'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">adjusted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AAPL</td>
+<td>2013-01-01</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>AAPL</td>
+<td>2013-01-02</td>
+<td>19.779285</td>
+<td>19.821428</td>
+<td>19.343929</td>
+<td>19.608213</td>
+<td>560518000.0</td>
+<td>16.791180</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>AAPL</td>
+<td>2013-01-03</td>
+<td>19.567142</td>
+<td>19.631071</td>
+<td>19.321428</td>
+<td>19.360714</td>
+<td>352965200.0</td>
+<td>16.579241</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>AAPL</td>
+<td>2013-01-04</td>
+<td>19.177500</td>
+<td>19.236786</td>
+<td>18.779642</td>
+<td>18.821428</td>
+<td>594333600.0</td>
+<td>16.117437</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>AAPL</td>
+<td>2013-01-05</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3912</td>
+<td>AAPL</td>
+<td>2023-09-18</td>
+<td>176.479996</td>
+<td>179.380005</td>
+<td>176.169998</td>
+<td>177.970001</td>
+<td>67257600.0</td>
+<td>177.970001</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3913</td>
+<td>AAPL</td>
+<td>2023-09-19</td>
+<td>177.520004</td>
+<td>179.630005</td>
+<td>177.130005</td>
+<td>179.070007</td>
+<td>51826900.0</td>
+<td>179.070007</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3914</td>
+<td>AAPL</td>
+<td>2023-09-20</td>
+<td>179.259995</td>
+<td>179.699997</td>
+<td>175.399994</td>
+<td>175.490005</td>
+<td>58436200.0</td>
+<td>175.490005</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3915</td>
+<td>AAPL</td>
+<td>2023-09-21</td>
+<td>174.550003</td>
+<td>176.300003</td>
+<td>173.860001</td>
+<td>173.929993</td>
+<td>63047900.0</td>
+<td>173.929993</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3916</td>
+<td>AAPL</td>
+<td>2023-09-22</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>3917 rows × 8 columns</p>
+</div>
+</div>
+</div>
 
 
 </section>
