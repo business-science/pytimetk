@@ -551,10 +551,13 @@ def _plot_anomalies_plotly(
                 
         
     # 2.0 Add Ribbon
-    
+
     # Create lists to store the indices of the traces
     indices_l1 = [i for i, trace in enumerate(fig.data) if trace.name == 'recomposed_l1']
     indices_l2 = [i for i, trace in enumerate(fig.data) if trace.name == 'recomposed_l2']
+
+    # Transparent color for the line (line will be invisible)
+    transparent_rgba = 'rgba(0,0,0,0)'
 
     # Iterate through the pairs of indices and update the fig.data list
     for i_l1, i_l2 in zip(indices_l1, indices_l2):
@@ -563,8 +566,9 @@ def _plot_anomalies_plotly(
             i_l1, i_l2 = i_l2, i_l1  # Swap the indices
             fig.data[i_l1], fig.data[i_l2] = fig.data[i_l2], fig.data[i_l1]  # Swap the traces
 
-        # Update the 'recomposed_l2' trace to fill towards 'recomposed_l1'
-        fig.data[i_l2].update(fill='tonexty', fillcolor=ribbon_color_rgba)  # Adjust fill color as needed
+        # Update the 'recomposed_l1' and 'recomposed_l2' traces to have transparent lines
+        fig.data[i_l1].update(line=dict(color=transparent_rgba))
+        fig.data[i_l2].update(line=dict(color=transparent_rgba), fill='tonexty', fillcolor=ribbon_color_rgba)  # Adjust fill color as needed
 
     # 3.0 Add Anomaly Dots
     
