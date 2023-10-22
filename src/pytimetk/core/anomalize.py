@@ -9,7 +9,6 @@ from pytimetk.core.frequency import get_frequency, get_seasonal_frequency, get_t
 
 from pytimetk.utils.parallel_helpers import parallel_apply, get_threads, progress_apply
 
-from statsmodels.tsa.seasonal import STL
 from statsmodels.tsa.seasonal import seasonal_decompose
 
 @pf.register_dataframe_method
@@ -478,6 +477,7 @@ def _twitter_decompose(
      
     
     # Need to add freq, trend, and kwargs
+    # TODO - Median Seasonal Trend (More robust to outliers)
     result = seasonal_decompose(
         series, 
         period=period,
@@ -530,24 +530,6 @@ def _seasonal_decompose(
     two_sided=True, 
     extrapolate_trend = 'freq'
 ):
-    '''
-    This is an internal function that is not meant to be called directly by the user.
-    
-    Examples 
-    --------
-    ``` {python}
-    import pytimetk as tk
-    import pandas as pd
-    import numpy as np
-    
-    df = pd.DataFrame({
-        'date': pd.date_range(start='2023-01-01', periods=365),
-        'value': np.sin(np.linspace(0, 365, 365)) + np.random.normal(scale=0.5, size=365) + np.linspace(0, 5, 365)
-    })
-    
-    
-    ```
-    '''
     
     orig_index = data.index
         
@@ -582,64 +564,6 @@ def _seasonal_decompose(
     result_df.index = orig_index
 
     return result_df 
-
-def _stl_decompose(
-    data, date_column, value_column, period = None, seasonal_span = None, trend_span = None, robust = True, **kwargs):
-    '''
-    This is an internal function that is not meant to be called directly by the user.
-    
-    Examples 
-    --------
-    ``` {python}
-    import pytimetk as tk
-    import pandas as pd
-    import numpy as np
-    
-    df = pd.DataFrame({
-        'date': pd.date_range(start='2023-01-01', periods=365),
-        'value': np.sin(np.linspace(0, 365, 365)) + np.random.normal(scale=0.5, size=365) + np.linspace(0, 5, 365)
-    })
-    
-    tk.stl_decompose(df, "date", "value")
-    ```
-    '''
-    
-    orig_index = data.index
-        
-    series = data.set_index(date_column)[value_column]
-    
-    def make_odd(n):
-        return n + 1 if n % 2 == 0 else n   
-    
-    # Need to add freq, trend, and kwargs
-    result = STL(
-        series, 
-        period = period, 
-        seasonal = make_odd(seasonal_span), 
-        trend = make_odd(trend_span),
-        robust = robust,
-    ).fit()
-    
-    # Construct TS Decomposition DataFrame
-    observed = series
-    
-    seasadj = series - result.seasonal
-    
-    result_df = pd.concat([observed, result.seasonal, seasadj, result.trend, result.resid], axis=1)
-    
-    result_df.columns = ['observed', 'seasonal', 'seasadj', 'trend', 'remainder']
-    
-    result_df.reset_index(inplace=True)
-    
-    result_df.index = orig_index
-
-    
-    return result_df 
-   
-    
-    
-    
-
 
 def _iqr(data, target, alpha=0.05, max_anoms=0.2):
     """
