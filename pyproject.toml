@@ -6,8 +6,8 @@ authors = ["Matt Dancho <mdancho@business-science.io>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.9"
-pandas = "^1.5.0"
+python = ">=3.9"
+pandas = ">=1.5.0"
 pandas-flavor = "^0.6.0"
 matplotlib = "^3.8.0"
 plotnine = "^0.12.3"
