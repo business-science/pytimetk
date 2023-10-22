@@ -1817,7 +1817,7 @@
     "href": "reference/augment_ewm.html#notes",
     "title": "augment_ewm",
     "section": "Notes",
-    "text": "Notes\nAny additional arguments provided through **kwargs are directly passed \nto the pandas EWM method. These arguments can include parameters like \n'com', 'span', 'halflife', 'ignore_na', 'adjust' and more.\n\nFor a comprehensive list and detailed description of these parameters:\n- Refer to the official pandas documentation: \n  https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.ewm.html\n- Or, within an interactive Python environment, use: \n  `?pandas.DataFrame.ewm` to display the method's docstring."
+    "text": "Notes\nAny additional arguments provided through **kwargs are directly passed to the pandas EWM method. These arguments can include parameters like ‘com’, ‘span’, ‘halflife’, ‘ignore_na’, ‘adjust’ and more.\nFor a comprehensive list and detailed description of these parameters:\n\nRefer to the official pandas documentation: https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.ewm.html\nOr, within an interactive Python environment, use: ?pandas.DataFrame.ewm to display the method’s docstring."
   },
   {
     "objectID": "reference/augment_ewm.html#examples",

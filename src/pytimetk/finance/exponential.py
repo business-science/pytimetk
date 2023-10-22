@@ -62,15 +62,17 @@ def augment_ewm(
     
     Notes
     ------
-        Any additional arguments provided through **kwargs are directly passed 
-        to the pandas EWM method. These arguments can include parameters like 
-        'com', 'span', 'halflife', 'ignore_na', 'adjust' and more.
+    Any additional arguments provided through **kwargs are directly passed 
+    to the pandas EWM method. These arguments can include parameters like 
+    'com', 'span', 'halflife', 'ignore_na', 'adjust' and more.
+
+    For a comprehensive list and detailed description of these parameters:
     
-        For a comprehensive list and detailed description of these parameters:
-        - Refer to the official pandas documentation: 
-          https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.ewm.html
-        - Or, within an interactive Python environment, use: 
-          `?pandas.DataFrame.ewm` to display the method's docstring.
+    - Refer to the official pandas documentation: 
+        https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.ewm.html
+    
+    - Or, within an interactive Python environment, use: 
+        `?pandas.DataFrame.ewm` to display the method's docstring.
 
     Examples
     --------
