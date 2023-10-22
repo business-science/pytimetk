@@ -3,10 +3,10 @@ name = "pytimetk"
 version = "0.1.0.9000"
 description = "The time series toolkit for Python."
 authors = [
-    "Business Science <info@business-science.io",
+    "Business Science <info@business-science.io>",
     "Quant Science <info@quantscience.io>",
     "Matt Dancho <mdancho@business-science.io>",
-    "Justin B. Kurland <justin.b.kurland@gmail.com>"
+    "Justin B. Kurland <justin.b.kurland@gmail.com>",
 ]
 maintainers = [
     "Matt Dancho <mdancho@business-science.io>",
@@ -14,6 +14,7 @@ maintainers = [
     "Jeff Tackes <tackes@gmail.com>",
     "Samuel Macêdo <dmmada@gmail.com>",
     "Lucas Okwudishu <clfo2014@gmail.com>",
+    "Alex Riggio <alexmriggio@gmail.com>",
 ]
 license = "LICENSE"
 readme = "README.md"
