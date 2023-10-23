@@ -3,6 +3,43 @@ import numpy as np
 import pandas_flavor as pf
 from typing import Union, List
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
+from pytimetk.core.ts_summary import ts_summary
+
+
+
+def fourier_vec(x, period, type: str, scale_factor, K = 1):
+    """
+    type = sin or cos
+    """
+
+    if scale_factor == 0:
+        raise ValueError('Time difference between observations is zero. Try arranging data to have a positive time difference between observations. If working with time series groups, arrange by groups first, then date.')
+
+    x_scaled = x / scale_factor
+    return calc_fourier(x = x_scaled, period = period, type = type, K = K)
+
+
+def calc_fourier(x, period, type: str, K = 1): 
+    term = K / period
+    type = type[1].lower()
+    return np.sin(2 * np.pi * term * x) if type == "sin" else np.cos(2 * np.pi * term * x)
+
+
+def date_to_seq_scale_factor(data: pd.DataFrame, date_var: str) -> Union[None, float]:
+    return ts_summary(data[date_var])['diff_median']
+
+
+def tk_augment_fourier_dataframe(data: pd.DataFrame, date_var: str, periods=1, K=1, names="auto"):
+    
+    df = data.copy()
+
+    scale_factor = date_to_seq_scale_factor(data, date_var)
+    
+    for type_val in ("sin", "cos"):
+        for K_val in range(1, K + 1):
+            for period_val in range(1, periods + 1):
+                df[f'{date_var}_fourier_{type_val}_{period_val}_{K}'] = fourier_vec(date_var, period_val, type_val, scale_factor, K_val)
+
 
 @pf.register_dataframe_method
 def augment_fourier(
