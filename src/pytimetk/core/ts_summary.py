@@ -285,18 +285,28 @@ def get_diff_summary(idx: Union[pd.Series, pd.DatetimeIndex], numeric: bool = Fa
     return ret
     
     
-def get_date_summary(idx: Union[pd.Series, pd.DatetimeIndex]):
-    '''
+def get_date_summary(
+    idx: Union[pd.Series, pd.DatetimeIndex],
+    engine: str = 'pandas'):
+    """
     Returns a summary of the date-related information, including the number of 
     dates, the time zone, the start date, and the end date.
-    
+
     Parameters
     ----------
     idx : pd.Series or pd.DateTimeIndex
         The parameter `idx` can be either a pandas Series or a pandas 
         DateTimeIndex. It represents the dates or timestamps for which we want 
         to generate a summary.
-    
+    engine : str, optional
+        The `engine` parameter is used to specify the engine to use for 
+        generating a date summary. It can be either "pandas" or "polars". 
+        
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library 
+          for generating a date summary. 
+
     Returns
     -------
     pd.DataFrame
@@ -305,9 +315,17 @@ def get_date_summary(idx: Union[pd.Series, pd.DatetimeIndex]):
         - `date_tz`: The time zone of the dates in the index.
         - `date_start`: The first date in the index.
         - `date_end`: The last date in the index.
-    
-    '''
-    
+    """
+
+    if engine == 'pandas':
+        return _get_date_summary_pandas(idx)
+    elif engine == 'polars':
+        return _get_date_summary_polars(idx)
+    else:
+        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+
+def _get_date_summary_pandas(idx: Union[pd.Series, pd.DatetimeIndex]):
+
     # If idx is a DatetimeIndex, convert to Series
     if isinstance(idx, pd.DatetimeIndex):
         idx = pd.Series(idx, name="idx")
@@ -323,6 +341,21 @@ def get_date_summary(idx: Union[pd.Series, pd.DatetimeIndex]):
         "date_start": [_date_start],
         "date_end": [_date_end],
     })  
-   
+
+def _get_date_summary_polars(idx: Union[pd.Series, pd.DatetimeIndex]):
+  
+    # If idx is a DatetimeIndex, convert to Series
+    if isinstance(idx, pd.DatetimeIndex):
+        idx = pd.Series(idx, name="idx")
     
+    _n = len(pl.DataFrame(df))
+    _tz = idx.dt.tz
+    _date_start = pl.Series(df['order_date']).min()
+    _date_end = pl.Series(df['order_date']).max()
     
+    return pd.DataFrame({
+        "date_n": [_n], 
+        "date_tz": [_tz], # "America/New_York
+        "date_start": [_date_start],
+        "date_end": [_date_end],
+    })  
