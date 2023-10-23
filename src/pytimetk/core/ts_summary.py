@@ -315,6 +315,18 @@ def get_date_summary(
         - `date_tz`: The time zone of the dates in the index.
         - `date_start`: The first date in the index.
         - `date_end`: The last date in the index.
+        
+    Examples
+    --------
+    ```{python}
+    ```{python}
+    import pytimetk as tk
+    import pandas as pd
+    
+    df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
+    
+    tk.get_date_summary_pandas(df['order_date'], engine='pandas')
+    ```
     """
 
     if engine == 'pandas':
