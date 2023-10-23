@@ -104,7 +104,7 @@ def augment_fourier_v2(
         for type_val in ("sin", "cos"):
             for K_val in range(1, max_order + 1):
                 for period_val in range(1, num_periods + 1):
-                    df[f'fourier_{type_val}_{K_val}_{period_val}'] = fourier_vec(df['radians'], period_val, type_val, scale_factor, K_val)
+                    df[f'{date_column}_{type_val}_{K_val}_{period_val}'] = fourier_vec(df['radians'], period_val, type_val, scale_factor, K_val)
 
 
     # GROUPED EXTENSION - If data is a GroupBy object, add Fourier transforms by group
