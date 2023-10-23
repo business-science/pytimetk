@@ -6,6 +6,8 @@ import pandas_flavor as pf
 from pytimetk.utils.datetime_helpers import is_holiday
 from typing import Union
 
+import holidays
+
 @pf.register_series_method
 def make_weekday_sequence(
     start_date: Union[str, datetime, pd.DatetimeIndex],
@@ -71,9 +73,19 @@ def make_weekday_sequence(
     # and Israel holidays)
     tk.make_weekday_sequence("2023-01-01", "2023-01-15", 
                               sunday_to_thursday = True, 
-                              remove_holidays.   = True, 
+                              remove_holidays    = True, 
                               country            = 'Israel',
                               engine             = 'pandas')
+    ```
+    
+    ```{python}   
+    # Israel has Sunday to Thursday as weekdays (excluding Friday and Saturday 
+    # and Israel holidays)
+    tk.make_weekday_sequence("2023-01-01", "2023-01-15", 
+                              sunday_to_thursday = True, 
+                              remove_holidays    = True, 
+                              country            = 'Israel',
+                              engine             = 'polars')
     ```
     """
 
@@ -241,6 +253,14 @@ def make_weekend_sequence(
                              country         = 'SaudiArabia',
                              engine          = 'pandas')
     ```
+    
+     # Saudi Arabia has Friday and Saturday as weekends, polars engine
+    tk.make_weekend_sequence("2023-01-01", "2023-01-31", 
+                             friday_saturday = True, 
+                             remove_holidays = True, 
+                             country         = 'SaudiArabia',
+                             engine          = '')
+    ```
     """
     
     if engine == 'pandas':
@@ -287,10 +307,7 @@ def _make_weekend_sequence_pandas(
 
     return df['Weekend Dates']
 
-import polars as pl
-import pandas as pd
-import holidays
-from typing import Union, List
+
 
 def _make_weekend_sequence_polars(
     start_date: Union[str, datetime, pd.DatetimeIndex],
