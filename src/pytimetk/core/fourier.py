@@ -7,17 +7,14 @@ from pytimetk.core.ts_summary import ts_summary
 
 
 
-def fourier_vec(x: pd.Series, period, type: str, scale_factor, K = 1):
+def fourier_vec(x: pd.Series, period, type: str, K = 1):
     """
     type = sin or cos
     """
 
-    x = x.astype(int)
+    # apply scaling
+    x_scaled = x
 
-    if scale_factor == 0:
-        raise ValueError('Time difference between observations is zero. Try arranging data to have a positive time difference between observations. If working with time series groups, arrange by groups first, then date.')
-
-    x_scaled = x / scale_factor
     return calc_fourier(x = x_scaled, period = period, type = type, K = K)
 
 
@@ -97,14 +94,16 @@ def augment_fourier_v2(
 
         # Calculate radians for the date values
         min_date = df[date_column].min()
-        df['radians'] = 2 * np.pi * (df[date_column] - min_date).dt.total_seconds() / (24 * 3600)
 
-        scale_factor = date_to_seq_scale_factor(df, date_column).iloc[0].total_seconds() / (24 * 3600)
+        scale_factor = date_to_seq_scale_factor(df, date_column).iloc[0]
+        # if scale_factor == 0:
+        #     raise ValueError("Time difference between observations is zero. Try arranging data to have a positive time difference between observations. If working with time series groups, arrange by groups first, then date.")
+        df['radians'] = 2 * np.pi * (df[date_column] - min_date).dt.total_seconds() / scale_factor.total_seconds()
         
         for type_val in ("sin", "cos"):
             for K_val in range(1, max_order + 1):
                 for period_val in range(1, num_periods + 1):
-                    df[f'{date_column}_{type_val}_{K_val}_{period_val}'] = fourier_vec(df['radians'], period_val, type_val, scale_factor, K_val)
+                    df[f'{date_column}_{type_val}_{K_val}_{period_val}'] = fourier_vec(df['radians'], period_val, type_val, K_val)
 
 
     # GROUPED EXTENSION - If data is a GroupBy object, add Fourier transforms by group
