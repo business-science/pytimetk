@@ -7,19 +7,20 @@ optionally excluding holidays.
 
 ## Parameters
 
-| Name              | Type                                | Description                                                                                                                                         | Default    |
-|-------------------|-------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `start_date`      | str or datetime or pd.DatetimeIndex | The start date of the date range.                                                                                                                   | _required_ |
-| `end_date`        | str or datetime or pd.DatetimeIndex | The end date of the date range.                                                                                                                     | _required_ |
-| `friday_saturday` | bool                                | If True, generates a sequence with Friday and Saturday as weekends.If  False (default), generates a sequence with Saturday and Sunday as  weekends. | `False`    |
-| `remove_holidays` | bool                                | If True, excludes holidays (based on the specified country) from the  generated sequence. If False (default), includes holidays in the  sequence.   | `False`    |
-| `country`         | str                                 | The name of the country for which to generate holiday-specific sequences.  Defaults to None, which uses the United States as the default country.   | `None`     |
+| Name              | Type                                | Description                                                                                                                                                                                                                                                                                                                              | Default    |
+|-------------------|-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `start_date`      | str or datetime or pd.DatetimeIndex | The start date of the date range.                                                                                                                                                                                                                                                                                                        | _required_ |
+| `end_date`        | str or datetime or pd.DatetimeIndex | The end date of the date range.                                                                                                                                                                                                                                                                                                          | _required_ |
+| `friday_saturday` | bool                                | If True, generates a sequence with Friday and Saturday as weekends.If  False (default), generates a sequence with Saturday and Sunday as  weekends.                                                                                                                                                                                      | `False`    |
+| `remove_holidays` | bool                                | If True, excludes holidays (based on the specified country) from the  generated sequence. If False (default), includes holidays in the  sequence.                                                                                                                                                                                        | `False`    |
+| `country`         | str                                 | The name of the country for which to generate holiday-specific sequences.  Defaults to None, which uses the United States as the default country.                                                                                                                                                                                        | `None`     |
+| `engine`          | str                                 | The `engine` parameter is used to specify the engine to use for generating a weekdend series. It can be either "pandas" or "polars". - The default value is "pandas". - When "polars", the function will internally use the `polars` library for generating a weekend series. This can be faster than using "pandas" for large datasets. | `'pandas'` | 
 
 ## Returns
 
 | Type      | Description                                      |
 |-----------|--------------------------------------------------|
-| pd.Series | A Series containing the generated weekday dates. |
+| pd.Series | A Series containing the generated weekend dates. |
 
 ## Examples
 
@@ -31,7 +32,8 @@ import pytimetk as tk
 tk.make_weekend_sequence("2023-01-01", "2023-01-31", 
                          friday_saturday = False, 
                          remove_holidays = True, 
-                         country         = 'UnitedStates')
+                         country         = 'UnitedStates',
+                         engine          = 'pandas')
 ```
 
 ```{python}
@@ -39,5 +41,6 @@ tk.make_weekend_sequence("2023-01-01", "2023-01-31",
 tk.make_weekend_sequence("2023-01-01", "2023-01-31", 
                          friday_saturday = True, 
                          remove_holidays = True, 
-                         country         = 'SaudiArabia')
+                         country         = 'SaudiArabia',
+                         engine          = 'pandas')
 ```
