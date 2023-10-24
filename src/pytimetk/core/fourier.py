@@ -6,18 +6,6 @@ from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column,
 from pytimetk.core.ts_summary import ts_summary
 
 
-
-def fourier_vec(x: pd.Series, period, type: str, K = 1):
-    """
-    type = sin or cos
-    """
-
-    # apply scaling
-    x_scaled = x
-
-    return calc_fourier(x = x_scaled, period = period, type = type, K = K)
-
-
 def calc_fourier(x, period, type: str, K = 1): 
     term = K / period
     return np.sin(2 * np.pi * term * x) if type == "sin" else np.cos(2 * np.pi * term * x)
