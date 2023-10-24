@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
 import pandas_flavor as pf
-from typing import Union, List, Tuple
+from typing import Tuple
+from typing import Union, List
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.core.ts_summary import ts_summary
 
@@ -69,6 +70,8 @@ def augment_fourier_v2(
     """
 
     # Common checks
+    if not (isinstance(data, pd.DataFrame) or isinstance(data, pd.core.groupby.generic.DataFrameGroupBy)):
+        raise TypeError('Input must be of type pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy')
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
     
@@ -79,34 +82,35 @@ def augment_fourier_v2(
     elif not isinstance(periods, list):
         raise TypeError(f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list.")
 
-    # DATAFRAME EXTENSION - If data is a Pandas DataFrame, extend with Fourier transforms
-    if isinstance(data, pd.DataFrame):
-
-        df = data.copy()
-        df.sort_values(by=[date_column], inplace=True)
-
-        # Calculate radians for the date values
-        min_date = df[date_column].min()
-
-        scale_factor = date_to_seq_scale_factor(df, date_column).iloc[0].total_seconds()
-        if scale_factor == 0:
-            raise ValueError("Time difference between observations is zero. Try arranging data to have a positive time difference between observations. If working with time series groups, arrange by groups first, then date.")
-        
-        df['radians'] = 2 * np.pi * (df[date_column] - min_date).dt.total_seconds() / scale_factor
-        
-        for type_val in ("sin", "cos"):
-            for K_val in range(1, max_order + 1):
-                for period_val in periods:
-                    df[f'{date_column}_{type_val}_{K_val}_{period_val}'] = calc_fourier(x = df['radians'], period = period_val, type = type_val, K = K_val)
-
-
     # GROUPED EXTENSION - If data is a GroupBy object, add Fourier transforms by group
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
 
-        raise NotImplementedError()
+        # Get the group names and original ungrouped data
+        group_names = data.grouper.names
+        data = data.obj
+
+    df = data.copy()
+
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        df.sort_values(by=[*group_names, date_column], inplace=True)
+    else:
+        df.sort_values(by=[date_column], inplace=True)
+
+    scale_factor = date_to_seq_scale_factor(df, date_column).iloc[0].total_seconds()
+    if scale_factor == 0:
+        raise ValueError("Time difference between observations is zero. Try arranging data to have a positive time difference between observations. If working with time series groups, arrange by groups first, then date.")
+    
+    # Calculate radians for the date values
+    min_date = df[date_column].min()
+    df['radians'] = 2 * np.pi * (df[date_column] - min_date).dt.total_seconds() / scale_factor
+    
+    for type_val in ("sin", "cos"):
+        for K_val in range(1, max_order + 1):
+            for period_val in periods:
+                df[f'{date_column}_{type_val}_{K_val}_{period_val}'] = calc_fourier(x = df['radians'], period = period_val, type = type_val, K = K_val)
 
     # Drop the temporary 'radians' column
-    # df.drop(columns=['radians'], inplace=True)
+    df.drop(columns=['radians'], inplace=True)
 
     return df
 
