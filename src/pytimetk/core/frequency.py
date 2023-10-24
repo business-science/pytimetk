@@ -172,7 +172,10 @@ def get_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool =
     
     return freq
 
-def timeseries_unit_frequency_table(wide_format: bool = False) -> pd.DataFrame:
+def timeseries_unit_frequency_table(
+    wide_format: bool = False,
+    engine: str = 'pandas'
+    ) -> pd.DataFrame:
     '''
     The function `timeseries_unit_frequency_table` returns a pandas DataFrame 
     with units of time and their corresponding frequencies in seconds.
@@ -184,7 +187,15 @@ def timeseries_unit_frequency_table(wide_format: bool = False) -> pd.DataFrame:
         "unit" column contains the units of time (seconds, minutes, hours, etc.), 
         and the "freq" column contains the corresponding frequencies in seconds 
         for each unit.
-    
+    engine : str, optional
+        The `engine` parameter is used to specify the engine to use for 
+        generating a date summary. It can be either "pandas" or "polars". 
+        
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library 
+          for generating a date summary. 
+
     Examples
     --------
     ```{python}
@@ -194,6 +205,14 @@ def timeseries_unit_frequency_table(wide_format: bool = False) -> pd.DataFrame:
     ```
     
     '''
+    if engine == 'pandas':
+        return _timeseries_unit_frequency_table_pandas(wide_format)
+    elif engine == 'polars':
+        return _timeseries_unit_frequency_table_polars(wide_format)
+    else:
+        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+
+def _timeseries_unit_frequency_table_pandas(wide_format: bool = False) -> pd.DataFrame:
     
     _table = pd.DataFrame({
         "unit" : ["sec", "min", "hour", "day", "week", "month", "quarter", "year"],
@@ -206,6 +225,24 @@ def timeseries_unit_frequency_table(wide_format: bool = False) -> pd.DataFrame:
         _table = _table.set_index('unit').T
     
     return _table
+
+def _timeseries_unit_frequency_table_polars(wide_format: bool = False) -> pd.DataFrame:
+
+    _table = pl.DataFrame({
+        "unit" :    ["sec", "min", "hour", "day", "week", "month", "quarter", "year"],
+        "freq" :    [0, 60, 3600, 86400, 604800, 2678400, 7948800, 31622400],
+        "freq_min": [0, 60, 3600, 86400, 604800, 2419200, 7689600, 31536000],
+        "freq_max": [0, 60, 3600, 86400, 604800, 2678400, 8035200, 31622400],
+    })
+    
+    if wide_format:
+        col_names = _table.columns
+        _table = _table.transpose().with_columns(pl.Series(name='unit', values=col_names))
+        _table.columns=_table.iter_rows().__next__()
+        _table = _table.slice(1)
+        _table = _table[['unit'] + [col for col in _table.columns if col != 'unit']]
+        
+    return _table.to_pandas()
 
 def time_scale_template(wide_format: bool = False):
     '''
