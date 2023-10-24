@@ -1,6 +1,7 @@
 import pandas as pd
 import pandas_flavor as pf
 import numpy as np
+import polars as pl
 
 from typing import Union
 
@@ -317,8 +318,7 @@ def _time_scale_template_polars(wide_format: bool = False):
         _table = _table[['median_unit'] + [col for col in _table.columns if col != 'median_unit']]
         
     return _table.to_pandas()
-    
-    return _table
+
  
 @pf.register_series_method
 def get_seasonal_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool = False, numeric: bool = False):
@@ -363,7 +363,6 @@ def get_seasonal_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regula
     
     tk.get_seasonal_frequency(dates)
     ```
-    
     '''
     
     check_series_or_datetime(idx)
