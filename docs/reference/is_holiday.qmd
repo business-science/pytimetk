@@ -1,6 +1,6 @@
 # is_holiday { #pytimetk.is_holiday }
 
-`is_holiday(idx, country_name='UnitedStates', country=None)`
+`is_holiday(idx, country_name='UnitedStates', country=None, engine='pandas')`
 
 Check if a given list of dates are holidays for a specified country.
 
@@ -8,11 +8,12 @@ Note: This function requires the `holidays` package to be installed.
 
 ## Parameters
 
-| Name           | Type                                                                                | Description                                                                                                  | Default          |
-|----------------|-------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|------------------|
-| `idx`          | Union\[str, datetime, List\[Union\[str, datetime\]\], pd.DatetimeIndex, pd.Series\] | The dates to check for holiday status.                                                                       | _required_       |
-| `country_name` | str                                                                                 | The name of the country for which to check the holiday status. Defaults  to 'UnitedStates' if not specified. | `'UnitedStates'` |
-| `country`      | str                                                                                 | An alternative parameter to specify the country for holiday checking,  overriding country_name.              | `None`           |
+| Name           | Type                                                                                | Description                                                                                                                                                                                                                                                                                                                      | Default          |
+|----------------|-------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
+| `idx`          | Union\[str, datetime, List\[Union\[str, datetime\]\], pd.DatetimeIndex, pd.Series\] | The dates to check for holiday status.                                                                                                                                                                                                                                                                                           | _required_       |
+| `country_name` | str                                                                                 | The name of the country for which to check the holiday status. Defaults  to 'UnitedStates' if not specified.                                                                                                                                                                                                                     | `'UnitedStates'` |
+| `country`      | str                                                                                 | An alternative parameter to specify the country for holiday checking,  overriding country_name.                                                                                                                                                                                                                                  | `None`           |
+| `engine`       | str                                                                                 | The `engine` parameter is used to specify the engine to use for checking the holiday status. It can be either "pandas" or "polars". - The default value is "pandas". - When "polars", the function will internally use the `polars` library for identifying holidays. This can be faster than using "pandas" for large datasets. | `'pandas'`       | 
 
 ## Returns:
 
@@ -34,23 +35,23 @@ ValueError:
 import pandas as pd
 import pytimetk as tk
 
-tk.is_holiday('2023-01-01', country_name='UnitedStates')
+tk.is_holiday('2023-01-01', country_name='UnitedStates', engine='pandas')
 ```
 
 ```{python}
 # List of dates
-tk.is_holiday(['2023-01-01', '2023-01-02', '2023-01-03'], country_name='UnitedStates')
+tk.is_holiday(['2023-01-01', '2023-01-02', '2023-01-03'], country_name='UnitedStates', engine='pandas')
 ```
 
 ```{python}
 # DatetimeIndex
-tk.is_holiday(pd.date_range("2023-01-01", "2023-01-03"), country_name='UnitedStates')
+tk.is_holiday(pd.date_range("2023-01-01", "2023-01-03"), country_name='UnitedStates', engine='pandas')
 ```
 
 ```{python}
 # Pandas Series Method
 ( 
     pd.Series(pd.date_range("2023-01-01", "2023-01-03"))
-        .is_holiday(country_name='UnitedStates')
+        .is_holiday(country_name='UnitedStates', engine='pandas')
 )
 ```
