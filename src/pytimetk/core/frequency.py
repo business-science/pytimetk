@@ -5,9 +5,7 @@ import numpy as np
 from typing import Union
 
 from pytimetk.utils.checks import check_series_or_datetime
-
 from pytimetk.utils.datetime_helpers import floor_date
-
 
 def get_frequency_summary(idx: Union[pd.Series, pd.DatetimeIndex]):  
     '''
@@ -179,7 +177,22 @@ def timeseries_unit_frequency_table(
     '''
     The function `timeseries_unit_frequency_table` returns a pandas DataFrame 
     with units of time and their corresponding frequencies in seconds.
-    
+ 
+    Parameters
+    ----------
+    wide_format : bool, optional
+      The wide_format parameter determines the format of the output table. If 
+      wide_format is set to True, the table will be transposed.
+    engine : str, optional
+      The `engine` parameter is used to specify the engine to use for 
+      generating the timeseries unit frequency table. It can be either "pandas" 
+      or "polars". 
+        
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library 
+          for generating a timeseries unit frequency table. 
+
     Returns
     -------
     pd.DataFrame
@@ -187,14 +200,7 @@ def timeseries_unit_frequency_table(
         "unit" column contains the units of time (seconds, minutes, hours, etc.), 
         and the "freq" column contains the corresponding frequencies in seconds 
         for each unit.
-    engine : str, optional
-        The `engine` parameter is used to specify the engine to use for 
-        generating a date summary. It can be either "pandas" or "polars". 
-        
-        - The default value is "pandas".
-        
-        - When "polars", the function will internally use the `polars` library 
-          for generating a date summary. 
+
 
     Examples
     --------
@@ -244,34 +250,45 @@ def _timeseries_unit_frequency_table_polars(wide_format: bool = False) -> pd.Dat
         
     return _table.to_pandas()
 
-def time_scale_template(wide_format: bool = False):
+def time_scale_template(
+    wide_format: bool = False,
+    engine: str = 'pandas'
+    ) -> pd.DataFrame:
     '''
     The function `time_scale_template` returns a table with time scale 
     information in either wide or long format.
     
     Parameters
-    ----------
+    -------
     wide_format : bool, optional
         The wide_format parameter determines the format of the output table. If 
-        wide_format is set to True, the table will be transposed with the 
-        median_unit column as the index. If wide_format is set to False (default), 
-        the table will have the median_unit column as a regular column.
-    
-    Returns
-    -------
-    pd.DataFrame
-        A pandas DataFrame containing information about different time scales. 
-        If the `wide_format` parameter is set to `True`, the DataFrame is 
-        transposed with the 'median_unit' column as the index.
+        wide_format is set to True, the table will be transposed.
+    engine : str, optional
+        The `engine` parameter is used to specify the engine to use for 
+        generating a date summary. It can be either "pandas" or "polars". 
         
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library 
+          for generating the time scale information. 
+
     Examples
     --------
     ```{python}
     import pytimetk as tk
     
-    tk.time_scale_template()
-    ```    
+    tk.timeseries_unit_frequency_table()
+    ```
+    
     '''
+    if engine == 'pandas':
+        return _time_scale_template_pandas(wide_format)
+    elif engine == 'polars':
+        return _time_scale_template_polars(wide_format)
+    else:
+        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+
+def _time_scale_template_pandas(wide_format: bool = False):
     
     _table = pd.DataFrame({
         "median_unit": ["S", "T", "H", "D", "W", "M", "Q", "Y"],
@@ -283,8 +300,26 @@ def time_scale_template(wide_format: bool = False):
         _table = _table.set_index('median_unit').T
     
     return _table
+
+def _time_scale_template_polars(wide_format: bool = False):
+
+    _table = pl.DataFrame({
+        "median_unit": ["S", "T", "H", "D", "W", "M", "Q", "Y"],
+        "seasonal_period" : ["1H", "1D", "1D", "1W", "1Q", "1Y", "1Y", "5Y"],
+        "trend_period" : ["12H", "14D", "1M", "3M", "1Y", "5Y", "10Y", "30Y"],
+    })
     
+    if wide_format:
+        col_names = _table.columns
+        _table = _table.transpose().with_columns(pl.Series(name='median_unit', values=col_names))
+        _table.columns=_table.iter_rows().__next__()
+        _table = _table.slice(1)
+        _table = _table[['median_unit'] + [col for col in _table.columns if col != 'median_unit']]
+        
+    return _table.to_pandas()
     
+    return _table
+ 
 @pf.register_series_method
 def get_seasonal_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool = False, numeric: bool = False):
     '''
