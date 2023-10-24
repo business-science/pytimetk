@@ -68,7 +68,7 @@ def augment_hilbert(
     Examples
     --------
     ```{python}
-    # Example 1: Using Pandas Engine
+    # Example 1: Using Pandas Engine on a pandas groupby object
     import pytimetk as tk
     import pandas as pd
     
@@ -88,14 +88,48 @@ def augment_hilbert(
     ```
     
     ```{python}
-    # Example 2: Using Polars Engine
-
+    # Example 2: Using Polars Engine on a pandas groupby object
+    import pytimetk as tk
+    import pandas as pd
+    
+    df = tk.load_dataset('walmart_sales_weekly', parse_dates=['Date'])
     df_hilbert = (df
             .groupby('id')
             .augment_hilbert(
                 date_column = 'Date',
                 value_column = ['Weekly_Sales'],
                 engine = 'polars'
+            )
+    )
+
+    df_hilbert.head()
+    ```
+
+    # Example 3: Using Polars Engine on a pandas dataframe
+    import pytimetk as tk
+    import pandas as pd
+    
+    df = tk.load_dataset('taylor_30_min', parse_dates=['date'])
+    df_hilbert = (df
+            .augment_hilbert(
+                date_column = 'date',
+                value_column = ['value'],
+                engine = 'polars'
+            )
+    )
+
+    df_hilbert.head()
+    ```
+    # Example 4: Using Polars Engine on a groupby object
+    import pytimetk as tk
+    import pandas as pd
+    
+    df = tk.load_dataset('taylor_30_min', parse_dates=['date'])
+    df_hilbert_pd = (df
+            .augment_hilbert(
+                date_column = 'date',
+                value_column = ['value'],
+                engine = 'pandas'
             )
     )
 
@@ -133,7 +167,9 @@ def _augment_hilbert_pandas(
         if any(col not in data.columns for col in value_column):
             missing_cols = [col for col in value_column if col not in data.columns]
             raise KeyError(f"Columns {missing_cols} do not exist in the DataFrame")
-        data = data.groupby(np.zeros(len(data))).sort(by=date_column)
+        #data = data.groupby(np.zeros(len(data))).sort(by=date_column)
+        data = data.sort_values(by=date_column)
+        data = data.groupby(np.zeros(len(data)))
 
     
     # Function to apply Hilbert transform to each group
@@ -181,37 +217,9 @@ def _augment_hilbert_polars(
     date_column: str,
     value_column: Union[str, List[str]], 
 ):
-    # Check if the input data is a DataFrame or a GroupBy object
-    grouped = False
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        grouped = True
-        # Extract names from groupby object
-        groups = data.grouper.names  # This can be a list of group names
+    
 
-        # Convert the GroupBy object into a Polars DataFrame
-        df_pl = (
-            pl.from_pandas(data.apply(lambda x: x))
-                 .groupby(groups, maintain_order=True)
-                 .agg(pl.all().sort_by(date_column))
-        )
-
-        # Create a list of column names to explode
-        columns_to_explode = [col for col in df_pl.columns if col not in groups]
-
-        # Explode the selected columns
-        exploded_df = df_pl.explode(columns=columns_to_explode)
-        
-        # Group by groups and date
-        data = (
-            exploded_df
-                .select(groups + [date_column] + value_column)
-                .with_columns(pl.col(date_column))
-                .groupby(groups + [date_column])
-                .agg(pl.all())
-                .sort(groups + [date_column])
-        )
-
-    # Function to apply Hilbert transform
+        # Function to apply Hilbert transform
     def apply_hilbert(pl_df):
         
         for col in value_column:
@@ -241,10 +249,50 @@ def _augment_hilbert_polars(
             pl_df = pl_df.with_columns(real_series).with_columns(imag_series)
         return pl_df
 
-    # Apply the Hilbert transform function
-    #result_pl_df = apply_hilbert(data)
-    grouped = data.groupby(groups)
-    result_pl_df = grouped.apply(apply_hilbert)
+    # Check if the input data is a DataFrame or a GroupBy object
+    grouped = False
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        grouped = True
+        # Extract names from groupby object
+        groups = data.grouper.names  # This can be a list of group names
+
+        # Convert the GroupBy object into a Polars DataFrame
+        df_pl = (
+            pl.from_pandas(data.apply(lambda x: x))
+                 .groupby(groups, maintain_order=True)
+                 .agg(pl.all().sort_by(date_column))
+        )
+
+        # Create a list of column names to explode
+        columns_to_explode = [col for col in df_pl.columns if col not in groups]
+
+        # Explode the selected columns
+        exploded_df = df_pl.explode(columns=columns_to_explode)
+        
+        #df_temp = pl.DataFrame(data)
+        # Group by groups and date
+        data = (
+            exploded_df
+                #.select(groups + [date_column] + value_column)
+                #.select(pl.all() )
+                #.with_columns(pl.col(date_column))
+                .sort(*groups ,date_column)
+                #.groupby(groups + [date_column], maintain_order=True)
+                #.agg(pl.all().flatten())
+                #.sort(groups + [date_column])
+                #.explode(columns_to_explode)
+        )
+        grouped = data.groupby(groups)
+        result_pl_df = grouped.apply(apply_hilbert)
+        
+    else:
+        data = (
+            pl.from_pandas(data)
+                 .sort(date_column)
+        )
+        result_pl_df = apply_hilbert(data)
+
+
     # Convert the Polars DataFrame back to a Pandas DataFrame
     result_pd_df = result_pl_df.to_pandas()                               
 
