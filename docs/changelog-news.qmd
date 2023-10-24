@@ -21,11 +21,14 @@ number-sections: false
 - `augment_rolling_apply()`: For complex rolling operations using apply-style data frame functions.  
 - `augment_expanding()`: For expanding calculations with single-column functions (e.g. mean). 
 - `augment_expanding_apply()`: For complex expanding operations with apply-style data frame functions.
+- `augment_hilbert()`: For signal processing.
 - `get_frequency()`: Infer a pandas-like frequency. More robust than `pandas.infer_freq`.
 - `get_seasonal_frequency()`: Infer the pandas-like seasonal frequency (periodicity) for the time series. 
 - `get_trend_frequency()`: Infer the pandas-like trend for the time series. 
 
 ### New Finance Module
+
+More coming soon.
 
 - `augment_ewm()`: Exponentially weighted augmentation
 
@@ -37,9 +40,9 @@ number-sections: false
   - 3X to 10X speed improvements. 
 - `augment_lags()` and `augment_leads()`: Gains a polars engine. Speed improvements increase with number of lags/leads. 
   - 6.5X speed improvement with 100 lags. 
-- `augment_rolling()`: Gains a polars engine.
+- `augment_rolling()`: Gains a polars engine. 10X speed improvement.
 - `augment_expanding()`: Gains a polars engine. 
-- `augment_timeseries_signature()`: Gains a polars engine.
+- `augment_timeseries_signature()`: Gains a polars engine. 3X speed improvement.
 
 #### Parallel Processing and Vectorized Optimizations:
 

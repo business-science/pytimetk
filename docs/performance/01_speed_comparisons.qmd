@@ -29,7 +29,7 @@ It's typical to see 2X to 15X speedups just by using the `polars` engine. Speedu
 |---------------------|------------|----------------------|
 | `summarize_by_time()` | 🚀 13X Faster | 🐢 Standard |
 | `augment_rolling()` | 🚀 10X to 3500X Faster | 🐢 Standard  |
-| `augment_expanding()` | 🚀 2X to 500X Faster | 🐢 Standard |
+| `augment_expanding()` | 🚀 3X to 500X Faster | 🐢 Standard |
 
 
 # About Performance
