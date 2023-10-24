@@ -1,6 +1,7 @@
 import pandas as pd
 import pandas_flavor as pf
 import numpy as np
+import polars as pl
 
 from typing import Union
 
@@ -319,13 +320,14 @@ def get_date_summary(
     Examples
     --------
     ```{python}
-    ```{python}
     import pytimetk as tk
     import pandas as pd
     
     df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
     
-    tk.get_date_summary_pandas(df['order_date'], engine='pandas')
+    tk.get_date_summary(df['order_date'], engine='pandas')
+    
+    tk.get_date_summary(df['order_date'], engine='polars')
     ```
     """
 
@@ -358,12 +360,14 @@ def _get_date_summary_polars(idx: Union[pd.Series, pd.DatetimeIndex]):
   
     # If idx is a DatetimeIndex, convert to Series
     if isinstance(idx, pd.DatetimeIndex):
-        idx = pd.Series(idx, name="idx")
+        idx = pl.Series(idx, name="idx")
     
-    _n = len(pl.DataFrame(df))
+    
+    
+    _n = len(idx)
     _tz = idx.dt.tz
-    _date_start = pl.Series(df['order_date']).min()
-    _date_end = pl.Series(df['order_date']).max()
+    _date_start = idx.min()
+    _date_end = idx.max()
     
     return pd.DataFrame({
         "date_n": [_n], 

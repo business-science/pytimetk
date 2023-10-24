@@ -189,7 +189,8 @@ def summarize_by_time(
                 agg_func     = [
                     'sum', 
                     'mean', 
-                    ('q25', lambda x: x.quantile(0.25)), ('q75', lambda x: x.quantile(0.75))
+                    ('q25', lambda x: x.quantile(0.25)), 
+                    ('q75', lambda x: x.quantile(0.75))
                 ],
                 wide_format  = False,
                 engine       = 'pandas' 
