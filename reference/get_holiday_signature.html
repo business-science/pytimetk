@@ -353,6 +353,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <ul>
   <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
   <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/get_holiday_signature.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
@@ -378,16 +379,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </header>
 
 <p><code>get_holiday_signature(idx, country_name='UnitedStates')</code></p>
-<p>Engineers 4 different holiday features from a single datetime for 80+ countries.</p>
+<p>Engineers 4 different holiday features from a single datetime for 137 countries and 2 financial markets.</p>
 <p>Note: Requires the <code>holidays</code> package to be installed. See https://pypi.org/project/holidays/ for more information.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 98%">
-<col style="width: 0%">
+<col style="width: 5%">
+<col style="width: 13%">
+<col style="width: 74%">
+<col style="width: 6%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -407,7 +408,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="even">
 <td><code>country_name</code></td>
 <td>str</td>
-<td>The name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code: Any of the following are acceptable keys for <code>country_name</code>: Available Countries: Full Country, Abrv. #1, #2, #3 Angola: Angola, AO, AGO, Argentina: Argentina, AR, ARG, Aruba: Aruba, AW, ABW, Australia: Australia, AU, AUS, Austria: Austria, AT, AUT, Bangladesh: Bangladesh, BD, BGD, Belarus: Belarus, BY, BLR, Belgium: Belgium, BE, BEL, Botswana: Botswana, BW, BWA, Brazil: Brazil, BR, BRA, Bulgaria: Bulgaria, BG, BLG, Burundi: Burundi, BI, BDI, Canada: Canada, CA, CAN, Chile: Chile, CL, CHL, Colombia: Colombia, CO, COL, Croatia: Croatia, HR, HRV, Curacao: Curacao, CW, CUW, Czechia: Czechia, CZ, CZE, Denmark: Denmark, DK, DNK, Djibouti: Djibouti, DJ, DJI, Dominican Republic: DominicanRepublic, DO, DOM, Egypt: Egypt, EG, EGY, England: England, Estonia: Estonia, EE, EST, European Central Bank: EuropeanCentralBank, Finland: Finland, FI, FIN, France: France, FR, FRA, Georgia: Georgia, GE, GEO, Germany: Germany, DE, DEU, Greece: Greece, GR, GRC, Honduras: Honduras, HN, HND, Hong Kong: HongKong, HK, HKG, Hungary: Hungary, HU, HUN, Iceland: Iceland, IS, ISL, India: India, IN, IND, Ireland: Ireland, IE, IRL, Isle Of Man: IsleOfMan, Israel: Israel, IL, ISR, Italy: Italy, IT, ITA, Jamaica: Jamaica, JM, JAM, Japan: Japan, JP, JPN, Kenya: Kenya, KE, KEN, Korea: Korea, KR, KOR, Latvia: Latvia, LV, LVA, Lithuania: Lithuania, LT, LTU, Luxembourg: Luxembourg, LU, LUX, Malaysia: Malaysia, MY, MYS, Malawi: Malawi, MW, MWI, Mexico: Mexico, MX, MEX, Morocco: Morocco, MA, MOR, Mozambique: Mozambique, MZ, MOZ, Netherlands: Netherlands, NL, NLD, NewZealand: NewZealand, NZ, NZL, Nicaragua: Nicaragua, NI, NIC, Nigeria: Nigeria, NG, NGA, Northern Ireland: NorthernIreland, Norway: Norway, NO, NOR, Paraguay: Paraguay, PY, PRY, Peru: Peru, PE, PER, Poland: Poland, PL, POL, Portugal: Portugal, PT, PRT, Portugal Ext: PortugalExt, PTE, Romania: Romania, RO, ROU, Russia: Russia, RU, RUS, Saudi Arabia: SaudiArabia, SA, SAU, Scotland: Scotland, Serbia: Serbia, RS, SRB, Singapore: Singapore, SG, SGP, Slovokia: Slovokia, SK, SVK, Slovenia: Slovenia, SI, SVN, South Africa: SouthAfrica, ZA, ZAF, Spain: Spain, ES, ESP, Sweden: Sweden, SE, SWE, Switzerland: Switzerland, CH, CHE, Turkey: Turkey, TR, TUR, Ukraine: Ukraine, UA, UKR, United Arab Emirates: UnitedArabEmirates, AE, ARE, United Kingdom: UnitedKingdom, GB, GBR, UK, United States: UnitedStates, US, USA, Venezuela: Venezuela, YV, VEN, Vietnam: Vietnam, VN, VNM, Wales: Wales</td>
+<td>The name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code: See NOTES.</td>
 <td><code>'UnitedStates'</code></td>
 </tr>
 </tbody>
@@ -430,6 +431,508 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td>pd.DataFrame:</td>
 <td>A pandas DataFrame with three holiday-specific features: - is_holiday: (0, 1) indicator for holiday - before_holiday: (0, 1) indicator for day before holiday - after_holiday: (0, 1) indicator for day after holiday - holiday_name: name of the holiday</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="notes" class="level2">
+<h2 class="anchored" data-anchor-id="notes">Notes</h2>
+<p>Any of the following are acceptable keys for <code>country_name</code>:</p>
+<table class="table">
+<colgroup>
+<col style="width: 51%">
+<col style="width: 40%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Available Countries</th>
+<th style="text-align: center;">Full Country</th>
+<th style="text-align: center;">Code</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Albania</td>
+<td style="text-align: center;">Albania</td>
+<td style="text-align: center;">AL</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Algeria</td>
+<td style="text-align: center;">Algeria</td>
+<td style="text-align: center;">DZ</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">American Samoa</td>
+<td style="text-align: center;">AmericanSamoa</td>
+<td style="text-align: center;">AS</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Andorra</td>
+<td style="text-align: center;">Andorra</td>
+<td style="text-align: center;">AD</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Angola</td>
+<td style="text-align: center;">Angola</td>
+<td style="text-align: center;">AO</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Argentina</td>
+<td style="text-align: center;">Argentina</td>
+<td style="text-align: center;">AR</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Armenia</td>
+<td style="text-align: center;">Armenia</td>
+<td style="text-align: center;">AM</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Aruba</td>
+<td style="text-align: center;">Aruba</td>
+<td style="text-align: center;">AW</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Australia</td>
+<td style="text-align: center;">Australia</td>
+<td style="text-align: center;">AU</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Austria</td>
+<td style="text-align: center;">Austria</td>
+<td style="text-align: center;">AT</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Azerbaijan</td>
+<td style="text-align: center;">Azerbaijan</td>
+<td style="text-align: center;">AZ</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Bahrain</td>
+<td style="text-align: center;">Bahrain</td>
+<td style="text-align: center;">BH</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Bangladesh</td>
+<td style="text-align: center;">Bangladesh</td>
+<td style="text-align: center;">BD</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Barbados</td>
+<td style="text-align: center;">Barbados</td>
+<td style="text-align: center;">BB</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Belarus</td>
+<td style="text-align: center;">Belarus</td>
+<td style="text-align: center;">BY</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Belgium</td>
+<td style="text-align: center;">Belgium</td>
+<td style="text-align: center;">BE</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Belize</td>
+<td style="text-align: center;">Belize</td>
+<td style="text-align: center;">BZ</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Bolivia</td>
+<td style="text-align: center;">Bolivia</td>
+<td style="text-align: center;">BO</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Bosnia and Herzegovina</td>
+<td style="text-align: center;">BosniaandHerzegovina</td>
+<td style="text-align: center;">BA</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Botswana</td>
+<td style="text-align: center;">Botswana</td>
+<td style="text-align: center;">BW</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Brazil</td>
+<td style="text-align: center;">Brazil</td>
+<td style="text-align: center;">BR</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Brunei</td>
+<td style="text-align: center;">Brunei</td>
+<td style="text-align: center;">BN</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Bulgaria</td>
+<td style="text-align: center;">Bulgaria</td>
+<td style="text-align: center;">BG</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Burkina Faso</td>
+<td style="text-align: center;">BurkinaFaso</td>
+<td style="text-align: center;">BF</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Burundi</td>
+<td style="text-align: center;">Burundi</td>
+<td style="text-align: center;">BI</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Laos</td>
+<td style="text-align: center;">Laos</td>
+<td style="text-align: center;">LA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Latvia</td>
+<td style="text-align: center;">Latvia</td>
+<td style="text-align: center;">LV</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Lesotho</td>
+<td style="text-align: center;">Lesotho</td>
+<td style="text-align: center;">LS</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Liechtenstein</td>
+<td style="text-align: center;">Liechtenstein</td>
+<td style="text-align: center;">LI</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Lithuania</td>
+<td style="text-align: center;">Lithuania</td>
+<td style="text-align: center;">LT</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Luxembourg</td>
+<td style="text-align: center;">Luxembourg</td>
+<td style="text-align: center;">LU</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Madagascar</td>
+<td style="text-align: center;">Madagascar</td>
+<td style="text-align: center;">MG</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Malawi</td>
+<td style="text-align: center;">Malawi</td>
+<td style="text-align: center;">MW</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Malaysia</td>
+<td style="text-align: center;">Malaysia</td>
+<td style="text-align: center;">MY</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Maldives</td>
+<td style="text-align: center;">Maldives</td>
+<td style="text-align: center;">MV</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Malta</td>
+<td style="text-align: center;">Malta</td>
+<td style="text-align: center;">MT</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Marshall Islands</td>
+<td style="text-align: center;">MarshallIslands</td>
+<td style="text-align: center;">MH</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Mexico</td>
+<td style="text-align: center;">Mexico</td>
+<td style="text-align: center;">MX</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Moldova</td>
+<td style="text-align: center;">Moldova</td>
+<td style="text-align: center;">MD</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Monaco</td>
+<td style="text-align: center;">Monaco</td>
+<td style="text-align: center;">MC</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Montenegro</td>
+<td style="text-align: center;">Montenegro</td>
+<td style="text-align: center;">ME</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Morocco</td>
+<td style="text-align: center;">Morocco</td>
+<td style="text-align: center;">MA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Mozambique</td>
+<td style="text-align: center;">Mozambique</td>
+<td style="text-align: center;">MZ</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Namibia</td>
+<td style="text-align: center;">Namibia</td>
+<td style="text-align: center;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Netherlands</td>
+<td style="text-align: center;">Netherlands</td>
+<td style="text-align: center;">NL</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">New Zealand</td>
+<td style="text-align: center;">NewZealand</td>
+<td style="text-align: center;">NZ</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Nicaragua</td>
+<td style="text-align: center;">Nicaragua</td>
+<td style="text-align: center;">NI</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Nigeria</td>
+<td style="text-align: center;">Nigeria</td>
+<td style="text-align: center;">NG</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Northern Mariana Islands</td>
+<td style="text-align: center;">NorthernMarianaIslands</td>
+<td style="text-align: center;">MP</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">North Macedonia</td>
+<td style="text-align: center;">NorthMacedonia</td>
+<td style="text-align: center;">MK</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Norway</td>
+<td style="text-align: center;">Norway</td>
+<td style="text-align: center;">NO</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Pakistan</td>
+<td style="text-align: center;">Pakistan</td>
+<td style="text-align: center;">PK</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Panama</td>
+<td style="text-align: center;">Panama</td>
+<td style="text-align: center;">PA</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Paraguay</td>
+<td style="text-align: center;">Paraguay</td>
+<td style="text-align: center;">PY</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Peru</td>
+<td style="text-align: center;">Peru</td>
+<td style="text-align: center;">PE</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Philippines</td>
+<td style="text-align: center;">Philippines</td>
+<td style="text-align: center;">PH</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Poland</td>
+<td style="text-align: center;">Poland</td>
+<td style="text-align: center;">PL</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Portugal</td>
+<td style="text-align: center;">Portugal</td>
+<td style="text-align: center;">PT</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Puerto Rico</td>
+<td style="text-align: center;">PuertoRico</td>
+<td style="text-align: center;">PR</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Romania</td>
+<td style="text-align: center;">Romania</td>
+<td style="text-align: center;">RO</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Russia</td>
+<td style="text-align: center;">Russia</td>
+<td style="text-align: center;">RU</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">San Marino</td>
+<td style="text-align: center;">SanMarino</td>
+<td style="text-align: center;">SM</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Saudi Arabia</td>
+<td style="text-align: center;">SaudiArabia</td>
+<td style="text-align: center;">SA</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Serbia</td>
+<td style="text-align: center;">Serbia</td>
+<td style="text-align: center;">RS</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Singapore</td>
+<td style="text-align: center;">Singapore</td>
+<td style="text-align: center;">SG</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Slovakia</td>
+<td style="text-align: center;">Slovakia</td>
+<td style="text-align: center;">SK</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Slovenia</td>
+<td style="text-align: center;">Slovenia</td>
+<td style="text-align: center;">SI</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">South Africa</td>
+<td style="text-align: center;">SouthAfrica</td>
+<td style="text-align: center;">ZA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">South Korea</td>
+<td style="text-align: center;">SouthKorea</td>
+<td style="text-align: center;">KR</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Spain</td>
+<td style="text-align: center;">Spain</td>
+<td style="text-align: center;">ES</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Sweden</td>
+<td style="text-align: center;">Sweden</td>
+<td style="text-align: center;">SE</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Switzerland</td>
+<td style="text-align: center;">Switzerland</td>
+<td style="text-align: center;">CH</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Taiwan</td>
+<td style="text-align: center;">Taiwan</td>
+<td style="text-align: center;">TW</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Tanzania</td>
+<td style="text-align: center;">Tanzania</td>
+<td style="text-align: center;">TZ</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Thailand</td>
+<td style="text-align: center;">Thailand</td>
+<td style="text-align: center;">TH</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Tunisia</td>
+<td style="text-align: center;">Tunisia</td>
+<td style="text-align: center;">TN</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Turkey</td>
+<td style="text-align: center;">Turkey</td>
+<td style="text-align: center;">TR</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Ukraine</td>
+<td style="text-align: center;">Ukraine</td>
+<td style="text-align: center;">UA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">United Arab Emirates</td>
+<td style="text-align: center;">UnitedArabEmirates</td>
+<td style="text-align: center;">AE</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">United Kingdom</td>
+<td style="text-align: center;">UnitedKingdom</td>
+<td style="text-align: center;">GB</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">United States Minor Outlying Islands</td>
+<td style="text-align: center;">UnitedStatesMinorOutlyingIslands</td>
+<td style="text-align: center;">UM</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">United States of America</td>
+<td style="text-align: center;">UnitedStatesofAmerica</td>
+<td style="text-align: center;">US</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">United States Virgin Islands</td>
+<td style="text-align: center;">UnitedStatesVirginIslands</td>
+<td style="text-align: center;">VI</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Uruguay</td>
+<td style="text-align: center;">Uruguay</td>
+<td style="text-align: center;">UY</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Uzbekistan</td>
+<td style="text-align: center;">Uzbekistan</td>
+<td style="text-align: center;">UZ</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Vanuatu</td>
+<td style="text-align: center;">Vanuatu</td>
+<td style="text-align: center;">VU</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Vatican City</td>
+<td style="text-align: center;">VaticanCity</td>
+<td style="text-align: center;">VA</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuela</td>
+<td style="text-align: center;">Venezuela</td>
+<td style="text-align: center;">VE</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Vietnam</td>
+<td style="text-align: center;">Vietnam</td>
+<td style="text-align: center;">VN</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Virgin Islands (U.S.)</td>
+<td style="text-align: center;">VirginIslandsUS</td>
+<td style="text-align: center;">VI</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Zambia</td>
+<td style="text-align: center;">Zambia</td>
+<td style="text-align: center;">ZM</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Zimbabwe</td>
+<td style="text-align: center;">Zimbabwe</td>
+<td style="text-align: center;">ZW</td>
+</tr>
+</tbody>
+</table>
+<p>These are the Available Financial Markets:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Available Financial Markets</th>
+<th style="text-align: center;">Full Country</th>
+<th style="text-align: center;">Code</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">European Central Bank</td>
+<td style="text-align: center;">EuropeanCentralBank</td>
+<td style="text-align: center;">ECB</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">New York Stock Exchange</td>
+<td style="text-align: center;">NewYorkStockExchange</td>
+<td style="text-align: center;">XNYS</td>
 </tr>
 </tbody>
 </table>

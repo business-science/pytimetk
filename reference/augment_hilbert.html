@@ -355,7 +355,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
-  <li><a href="#example-3-using-polars-engine-on-a-pandas-dataframe" id="toc-example-3-using-polars-engine-on-a-pandas-dataframe" class="nav-link" data-scroll-target="#example-3-using-polars-engine-on-a-pandas-dataframe">Example 3: Using Polars Engine on a pandas dataframe</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_hilbert.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -665,11 +664,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>1_13</td>
+<td>1_1</td>
 <td>1</td>
-<td>13</td>
+<td>1</td>
 <td>2010-02-05</td>
-<td>41969.29</td>
+<td>24924.50</td>
 <td>False</td>
 <td>A</td>
 <td>151315</td>
@@ -682,16 +681,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>NaN</td>
 <td>211.096358</td>
 <td>8.106</td>
-<td>41969.29</td>
-<td>3457.617320</td>
+<td>24924.50</td>
+<td>-12764.088716</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>1_13</td>
+<td>1_1</td>
 <td>1</td>
-<td>13</td>
+<td>1</td>
 <td>2010-02-12</td>
-<td>36476.40</td>
+<td>46039.49</td>
 <td>True</td>
 <td>A</td>
 <td>151315</td>
@@ -704,16 +703,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>NaN</td>
 <td>211.242170</td>
 <td>8.106</td>
-<td>36476.40</td>
-<td>3978.237053</td>
+<td>46039.49</td>
+<td>-13469.209506</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>1_13</td>
+<td>1_1</td>
 <td>1</td>
-<td>13</td>
+<td>1</td>
 <td>2010-02-19</td>
-<td>37857.68</td>
+<td>41595.55</td>
 <td>False</td>
 <td>A</td>
 <td>151315</td>
@@ -726,16 +725,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>NaN</td>
 <td>211.289143</td>
 <td>8.106</td>
-<td>37857.68</td>
-<td>1506.013274</td>
+<td>41595.55</td>
+<td>16686.889086</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>1_13</td>
+<td>1_1</td>
 <td>1</td>
-<td>13</td>
+<td>1</td>
 <td>2010-02-26</td>
-<td>37467.32</td>
+<td>19403.54</td>
 <td>False</td>
 <td>A</td>
 <td>151315</td>
@@ -748,16 +747,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>NaN</td>
 <td>211.319643</td>
 <td>8.106</td>
-<td>37467.32</td>
-<td>740.265191</td>
+<td>19403.54</td>
+<td>9378.223595</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>1_13</td>
+<td>1_1</td>
 <td>1</td>
-<td>13</td>
+<td>1</td>
 <td>2010-03-05</td>
-<td>40423.95</td>
+<td>21827.90</td>
 <td>False</td>
 <td>A</td>
 <td>151315</td>
@@ -770,8 +769,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>NaN</td>
 <td>211.350143</td>
 <td>8.106</td>
-<td>40423.95</td>
-<td>2346.635848</td>
+<td>21827.90</td>
+<td>2552.133165</td>
 </tr>
 </tbody>
 </table>
@@ -779,26 +778,148 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 </div>
-</section>
-<section id="example-3-using-polars-engine-on-a-pandas-dataframe" class="level1">
-<h1>Example 3: Using Polars Engine on a pandas dataframe</h1>
-<p>import pytimetk as tk import pandas as pd</p>
-<p>df = tk.load_dataset(‘taylor_30_min’, parse_dates=[‘date’]) df_hilbert = (df .augment_hilbert( date_column = ‘date’, value_column = [‘value’], engine = ‘polars’ ) )</p>
-<p>df_hilbert.head()</p>
-<pre><code># Example 4: Using Polars Engine on a groupby object
-import pytimetk as tk
-import pandas as pd
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3: Using Polars Engine on a pandas dataframe</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'taylor_30_min'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>df_hilbert <span class="op">=</span> (df</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        .augment_hilbert(</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> [<span class="st">'value'</span>],</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'polars'</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>df_hilbert.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
 
-df = tk.load_dataset('taylor_30_min', parse_dates=['date'])
-df_hilbert_pd = (df
-        .augment_hilbert(
-            date_column = 'date',
-            value_column = ['value'],
-            engine = 'pandas'
-        )
-)
 
-df_hilbert.head()</code></pre>
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+<th data-quarto-table-cell-role="th">value_hilbert_real</th>
+<th data-quarto-table-cell-role="th">value_hilbert_imag</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2000-06-05 00:00:00+00:00</td>
+<td>22262</td>
+<td>22262.0</td>
+<td>-1269.805182</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2000-06-05 00:30:00+00:00</td>
+<td>21756</td>
+<td>21756.0</td>
+<td>-2755.227462</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2000-06-05 01:00:00+00:00</td>
+<td>22247</td>
+<td>22247.0</td>
+<td>-4077.813213</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2000-06-05 01:30:00+00:00</td>
+<td>22759</td>
+<td>22759.0</td>
+<td>-4404.573458</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2000-06-05 02:00:00+00:00</td>
+<td>22549</td>
+<td>22549.0</td>
+<td>-4629.981251</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 4: Using Polars Engine on a groupby object</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'taylor_30_min'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>df_hilbert_pd <span class="op">=</span> (df</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        .augment_hilbert(</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> [<span class="st">'value'</span>],</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'pandas'</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>df_hilbert.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+<th data-quarto-table-cell-role="th">value_hilbert_real</th>
+<th data-quarto-table-cell-role="th">value_hilbert_imag</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2000-06-05 00:00:00+00:00</td>
+<td>22262</td>
+<td>22262.0</td>
+<td>-1269.805182</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2000-06-05 00:30:00+00:00</td>
+<td>21756</td>
+<td>21756.0</td>
+<td>-2755.227462</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2000-06-05 01:00:00+00:00</td>
+<td>22247</td>
+<td>22247.0</td>
+<td>-4077.813213</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2000-06-05 01:30:00+00:00</td>
+<td>22759</td>
+<td>22759.0</td>
+<td>-4404.573458</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2000-06-05 02:00:00+00:00</td>
+<td>22549</td>
+<td>22549.0</td>
+<td>-4629.981251</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
 
 
 </section>
