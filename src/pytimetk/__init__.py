@@ -9,21 +9,21 @@ from .plot.theme import *
 
 from .core.summarize_by_time import *
 from .core.apply_by_time import *
-from .core.timeseries_signature import *
-from .core.holiday_signature import *
+from .feature_engineering.timeseries_signature import *
+from .feature_engineering.holiday_signature import *
 from .core.future import *
 from .core.make_timeseries_sequence import *
-from .core.lags import *
-from .core.leads import *
+from .feature_engineering.lags import *
+from .feature_engineering.leads import *
 from .core.pad import *
-from .core.rolling import *
-from .core.expanding import *
-from .core.fourier import *
+from .feature_engineering.rolling import *
+from .feature_engineering.expanding import *
+from .feature_engineering.fourier import *
 from .core.ts_features import *
 from .core.ts_summary import *
 from .core.anomalize import *
 from .core.frequency import *
-from .core.hilbert import *
+from .feature_engineering.hilbert import *
 
 from .finance.exponential import *
 
@@ -63,10 +63,13 @@ from .core.summarize_by_time import (
 from .core.apply_by_time import (
     apply_by_time
 )
-from .core.timeseries_signature import (
+from .feature_engineering.timeseries_signature import (
     get_timeseries_signature, augment_timeseries_signature
 )
-from .core.holiday_signature import (
+from .feature_engineering.hilbert import (
+    augment_hilbert
+)
+from .feature_engineering.holiday_signature import (
     augment_holiday_signature, get_holiday_signature
 )
 from .core.future import (
@@ -75,22 +78,22 @@ from .core.future import (
 from .core.make_timeseries_sequence import (
     make_weekday_sequence, make_weekend_sequence
 )
-from .core.lags import (
+from .feature_engineering.lags import (
     augment_lags
 )
-from .core.leads import (
+from .feature_engineering.leads import (
     augment_leads
 )
 from .core.pad import (
     pad_by_time
 )
-from .core.rolling import (
+from .feature_engineering.rolling import (
     augment_rolling, augment_rolling_apply
 )
-from .core.expanding import (
+from .feature_engineering.expanding import (
     augment_expanding, augment_expanding_apply
 )
-from .core.fourier import (
+from .feature_engineering.fourier import (
     augment_fourier
 )
 from .core.ts_features import (

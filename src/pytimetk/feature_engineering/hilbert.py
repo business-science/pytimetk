@@ -70,6 +70,8 @@ def augment_hilbert(
     # Example 1: Using Polars Engine
     import pytimetk as tk
     import pandas as pd
+    
+    df = tk.load_dataset('walmart_sales_weekly', parse_dates=['Date'])
 
 
     df_hilbert = (df
@@ -78,12 +80,13 @@ def augment_hilbert(
                 date_column = 'Date',
                 value_column = ['Weekly_Sales'],
                 engine = 'polars'
-                            )
-                )
+            )
+    )
 
     df_hilbert.head()
     ```
- ```{python}
+    
+    ```{python}
     # Example 2: Using Pandas Engine
     import pytimetk as tk
     import pandas as pd
@@ -95,15 +98,16 @@ def augment_hilbert(
                 date_column = 'Date',
                 value_column = ['Weekly_Sales'],
                 engine = 'pandas'
-                            )
-                )
+            )
+    )
 
     df_hilbert.head()
     ```
-"""
+    """
     # Run common checks
     check_dataframe_or_groupby(data)
     check_value_column(data, value_column)
+    check_date_column(data, date_column)
         
     if engine == 'pandas':
         return _augment_hilbert_pandas(data, date_column, value_column)
