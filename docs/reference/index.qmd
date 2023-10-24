@@ -30,9 +30,9 @@ Detect anomalies in time series data.
 | [plot_anomalies_decomp](plot_anomalies_decomp.qmd#pytimetk.plot_anomalies_decomp) | The `plot_anomalies_decomp` function takes in data from the `anomalize()`  |
 | [plot_anomalies_cleaned](plot_anomalies_cleaned.qmd#pytimetk.plot_anomalies_cleaned) | The `plot_anomalies_cleaned` function takes in data from the `anomalize()`  |
 
-## 🏗️ Adding Features to Time Series DataFrames (Augmenting)
+## 🏗️ Feature Engineereing
 
-Add one or more feature columns to time series data.
+Adding Features to Time Series DataFrames (Augmenting)
 
 | | |
 | --- | --- |
@@ -44,6 +44,7 @@ Add one or more feature columns to time series data.
 | [augment_rolling_apply](augment_rolling_apply.qmd#pytimetk.augment_rolling_apply) | Apply one or more DataFrame-based rolling functions and window sizes to one  |
 | [augment_expanding](augment_expanding.qmd#pytimetk.augment_expanding) | Apply one or more Series-based expanding functions to one or more columns of a DataFrame. |
 | [augment_expanding_apply](augment_expanding_apply.qmd#pytimetk.augment_expanding_apply) | Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame. |
+| [augment_hilbert](augment_hilbert.qmd#pytimetk.augment_hilbert) | Apply the Hilbert transform to specified columns of a DataFrame or  |
 
 ## 📎 TS Features
 

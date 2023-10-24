@@ -182,17 +182,17 @@ def timeseries_unit_frequency_table(
     Parameters
     ----------
     wide_format : bool, optional
-      The wide_format parameter determines the format of the output table. If 
-      wide_format is set to True, the table will be transposed.
+        The wide_format parameter determines the format of the output table. If 
+        wide_format is set to True, the table will be transposed.
     engine : str, optional
-      The `engine` parameter is used to specify the engine to use for 
-      generating the timeseries unit frequency table. It can be either "pandas" 
-      or "polars". 
-        
-        - The default value is "pandas".
-        
-        - When "polars", the function will internally use the `polars` library 
-          for generating a timeseries unit frequency table. 
+        The `engine` parameter is used to specify the engine to use for 
+        generating the timeseries unit frequency table. It can be either "pandas" 
+        or "polars". 
+            
+            - The default value is "pandas".
+            
+            - When "polars", the function will internally use the `polars` library 
+            for generating a timeseries unit frequency table. 
 
     Returns
     -------

@@ -374,16 +374,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>make_weekday_sequence(start_date, end_date, sunday_to_thursday=False, remove_holidays=False, country=None)</code></p>
+<p><code>make_weekday_sequence(start_date, end_date, sunday_to_thursday=False, remove_holidays=False, country=None, engine='pandas')</code></p>
 <p>Generate a sequence of weekday dates within a specified date range, optionally excluding weekends and holidays.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
+<col style="width: 5%">
 <col style="width: 9%">
-<col style="width: 15%">
-<col style="width: 70%">
-<col style="width: 4%">
+<col style="width: 82%">
+<col style="width: 2%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -424,6 +424,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>The name of the country for which to generate holiday-specific sequences. Defaults to None, which uses the United States as the default country.</td>
 <td><code>None</code></td>
 </tr>
+<tr class="even">
+<td><code>engine</code></td>
+<td>str</td>
+<td>The <code>engine</code> parameter is used to specify the engine to use for generating a weekday series. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for generating a weekday series. This can be faster than using “pandas” for large datasets.</td>
+<td><code>'pandas'</code></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -455,7 +461,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>tk.make_weekday_sequence(<span class="st">"2023-01-01"</span>, <span class="st">"2023-01-15"</span>, </span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                          sunday_to_thursday <span class="op">=</span> <span class="va">False</span>, </span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                          remove_holidays    <span class="op">=</span> <span class="va">True</span>, </span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                          country            <span class="op">=</span> <span class="st">'UnitedStates'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                          country            <span class="op">=</span> <span class="st">'UnitedStates'</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                          engine             <span class="op">=</span> <span class="st">'pandas'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>0   2023-01-03
 1   2023-01-04
@@ -475,7 +482,8 @@ Name: Weekday Dates, dtype: datetime64[ns]</code></pre>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>tk.make_weekday_sequence(<span class="st">"2023-01-01"</span>, <span class="st">"2023-01-15"</span>, </span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                          sunday_to_thursday <span class="op">=</span> <span class="va">True</span>, </span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                          remove_holidays    <span class="op">=</span> <span class="va">True</span>, </span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                          country            <span class="op">=</span> <span class="st">'Israel'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                          country            <span class="op">=</span> <span class="st">'Israel'</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                          engine             <span class="op">=</span> <span class="st">'pandas'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>0    2023-01-01
 1    2023-01-02
@@ -488,6 +496,26 @@ Name: Weekday Dates, dtype: datetime64[ns]</code></pre>
 8    2023-01-11
 9    2023-01-12
 10   2023-01-15
+Name: Weekday Dates, dtype: datetime64[ns]</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Israel has Sunday to Thursday as weekdays (excluding Friday and Saturday </span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># and Israel holidays)</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>tk.make_weekday_sequence(<span class="st">"2023-01-01"</span>, <span class="st">"2023-01-15"</span>, </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                          sunday_to_thursday <span class="op">=</span> <span class="va">True</span>, </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                          remove_holidays    <span class="op">=</span> <span class="va">True</span>, </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                          country            <span class="op">=</span> <span class="st">'Israel'</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                          engine             <span class="op">=</span> <span class="st">'polars'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>0   2023-01-02
+1   2023-01-03
+2   2023-01-04
+3   2023-01-05
+4   2023-01-09
+5   2023-01-10
+6   2023-01-11
+7   2023-01-12
 Name: Weekday Dates, dtype: datetime64[ns]</code></pre>
 </div>
 </div>

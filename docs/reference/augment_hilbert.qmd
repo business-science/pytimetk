@@ -1,0 +1,77 @@
+# augment_hilbert { #pytimetk.augment_hilbert }
+
+`augment_hilbert(data, date_column, value_column, engine='pandas')`
+
+Apply the Hilbert transform to specified columns of a DataFrame or 
+DataFrameGroupBy object.
+
+## Parameters
+
+| Name           | Type                                                     | Description                                                                                                                                                                                                                                                                                                                     | Default    |
+|----------------|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `data`         | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | Input DataFrame or DataFrameGroupBy object with one or more columns of  real-valued signals.                                                                                                                                                                                                                                    | _required_ |
+| `value_column` | str or list                                              | List of column names in 'data' to which the Hilbert transform will be  applied.                                                                                                                                                                                                                                                 | _required_ |
+| `engine`       | str                                                      | The `engine` parameter is used to specify the engine to use for  summarizing the data. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library  for summarizing the data. This can be faster than using "pandas" for  large datasets. | `'pandas'` |
+
+## Returns
+
+| Type         | Description                                                                                                                         |
+|--------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| pd.DataFrame | A new DataFrame with the 2 Hilbert-transformed columns added, 1 for the  real and 1 for imaginary (original columns are preserved). |
+
+## Notes
+
+The Hilbert transform is used in time series analysis primarily for:
+
+1. Creating Analytic Signals: Forms a complex-valued signal whose 
+properties (magnitude and phase) provide valuable insights into the 
+original signal's structure.
+
+2. Determining Instantaneous Phase/Frequency: Offers real-time signal 
+characteristics, crucial for non-stationary signals whose properties 
+change over time.
+
+3. Extracting Amplitude Envelope: Helps in identifying signal's 
+amplitude variations, useful in various analysis tasks.
+
+4. Enhancing Signal Analysis: Assists in tasks like demodulation, trend 
+analysis, feature extraction for machine learning, and improving 
+signal-to-noise ratio, providing a deeper understanding of underlying 
+patterns and trends.
+
+## Examples
+
+```{python}
+# Example 1: Using Pandas Engine
+import pytimetk as tk
+import pandas as pd
+
+df = tk.load_dataset('walmart_sales_weekly', parse_dates=['Date'])
+
+
+df_hilbert = (df
+        .groupby('id')
+        .augment_hilbert(
+            date_column = 'Date',
+            value_column = ['Weekly_Sales'],
+            engine = 'pandas'
+        )
+)
+
+df_hilbert.head()
+```
+
+```{python}
+# Example 2: Using Polars Engine
+
+df_hilbert = (df
+        .groupby('id')
+        .augment_hilbert(
+            date_column = 'Date',
+            value_column = ['Weekly_Sales'],
+            engine = 'polars'
+        )
+)
+
+df_hilbert.head()
+```

@@ -26,7 +26,8 @@ website:
       - reference/augment_rolling_apply.qmd
       - reference/augment_expanding.qmd
       - reference/augment_expanding_apply.qmd
-      section: "\U0001F3D7\uFE0F Adding Features to Time Series DataFrames (Augmenting)"
+      - reference/augment_hilbert.qmd
+      section: "\U0001F3D7\uFE0F Feature Engineereing"
     - contents:
       - reference/ts_features.qmd
       - reference/ts_summary.qmd

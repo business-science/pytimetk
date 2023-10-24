@@ -376,6 +376,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </li>
 <li><code>augment_expanding()</code>: For expanding calculations with single-column functions (e.g.&nbsp;mean).</li>
 <li><code>augment_expanding_apply()</code>: For complex expanding operations with apply-style data frame functions.</li>
+<li><code>augment_hilbert()</code>: For signal processing.</li>
 <li><code>get_frequency()</code>: Infer a pandas-like frequency. More robust than <code>pandas.infer_freq</code>.</li>
 <li><code>get_seasonal_frequency()</code>: Infer the pandas-like seasonal frequency (periodicity) for the time series.</li>
 <li><code>get_trend_frequency()</code>: Infer the pandas-like trend for the time series.</li>
@@ -383,6 +384,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </section>
 <section id="new-finance-module" class="level3">
 <h3 class="anchored" data-anchor-id="new-finance-module">New Finance Module</h3>
+<p>More coming soon.</p>
 <ul>
 <li><code>augment_ewm()</code>: Exponentially weighted augmentation</li>
 </ul>
@@ -400,9 +402,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <ul>
 <li>6.5X speed improvement with 100 lags.</li>
 </ul></li>
-<li><code>augment_rolling()</code>: Gains a polars engine.</li>
+<li><code>augment_rolling()</code>: Gains a polars engine. 10X speed improvement.</li>
 <li><code>augment_expanding()</code>: Gains a polars engine.</li>
-<li><code>augment_timeseries_signature()</code>: Gains a polars engine.</li>
+<li><code>augment_timeseries_signature()</code>: Gains a polars engine. 3X speed improvement.</li>
 </ul>
 </section>
 <section id="parallel-processing-and-vectorized-optimizations" class="level4">

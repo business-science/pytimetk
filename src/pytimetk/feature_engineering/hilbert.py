@@ -47,21 +47,22 @@ def augment_hilbert(
     Notes
     -----
     The Hilbert transform is used in time series analysis primarily for:
-        1. Creating Analytic Signals: Forms a complex-valued signal whose 
-        properties (magnitude and phase) provide valuable insights into the 
-        original signal's structure.
+    
+    1. Creating Analytic Signals: Forms a complex-valued signal whose 
+    properties (magnitude and phase) provide valuable insights into the 
+    original signal's structure.
 
-        2. Determining Instantaneous Phase/Frequency: Offers real-time signal 
-        characteristics, crucial for non-stationary signals whose properties 
-        change over time.
+    2. Determining Instantaneous Phase/Frequency: Offers real-time signal 
+    characteristics, crucial for non-stationary signals whose properties 
+    change over time.
 
-        3. Extracting Amplitude Envelope: Helps in identifying signal's 
-        amplitude variations, useful in various analysis tasks.
+    3. Extracting Amplitude Envelope: Helps in identifying signal's 
+    amplitude variations, useful in various analysis tasks.
 
-        4. Enhancing Signal Analysis: Assists in tasks like demodulation, trend 
-        analysis, feature extraction for machine learning, and improving 
-        signal-to-noise ratio, providing a deeper understanding of underlying 
-        patterns and trends.
+    4. Enhancing Signal Analysis: Assists in tasks like demodulation, trend 
+    analysis, feature extraction for machine learning, and improving 
+    signal-to-noise ratio, providing a deeper understanding of underlying 
+    patterns and trends.
 
 
     Examples
