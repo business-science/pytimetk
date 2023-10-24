@@ -352,7 +352,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
    
   <ul>
   <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
-  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/time_scale_template.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
@@ -377,7 +376,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>time_scale_template(wide_format=False)</code></p>
+<p><code>time_scale_template(wide_format=False, engine='pandas')</code></p>
 <p>The function <code>time_scale_template</code> returns a table with time scale information in either wide or long format.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
@@ -400,29 +399,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td><code>wide_format</code></td>
 <td>bool</td>
-<td>The wide_format parameter determines the format of the output table. If wide_format is set to True, the table will be transposed with the median_unit column as the index. If wide_format is set to False (default), the table will have the median_unit column as a regular column.</td>
+<td>The wide_format parameter determines the format of the output table. If wide_format is set to True, the table will be transposed.</td>
 <td><code>False</code></td>
 </tr>
-</tbody>
-</table>
-</section>
-<section id="returns" class="level2">
-<h2 class="anchored" data-anchor-id="returns">Returns</h2>
-<table class="table">
-<colgroup>
-<col style="width: 6%">
-<col style="width: 93%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>pd.DataFrame</td>
-<td>A pandas DataFrame containing information about different time scales. If the <code>wide_format</code> parameter is set to <code>True</code>, the DataFrame is transposed with the ‘median_unit’ column as the index.</td>
+<tr class="even">
+<td><code>engine</code></td>
+<td>str</td>
+<td>The <code>engine</code> parameter is used to specify the engine to use for generating a date summary. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for generating the time scale information.</td>
+<td><code>'pandas'</code></td>
 </tr>
 </tbody>
 </table>
@@ -432,7 +416,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>tk.time_scale_template()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>tk.timeseries_unit_frequency_table()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -441,59 +425,68 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">median_unit</th>
-<th data-quarto-table-cell-role="th">seasonal_period</th>
-<th data-quarto-table-cell-role="th">trend_period</th>
+<th data-quarto-table-cell-role="th">unit</th>
+<th data-quarto-table-cell-role="th">freq</th>
+<th data-quarto-table-cell-role="th">freq_min</th>
+<th data-quarto-table-cell-role="th">freq_max</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>S</td>
-<td>1H</td>
-<td>12H</td>
+<td>sec</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>T</td>
-<td>1D</td>
-<td>14D</td>
+<td>min</td>
+<td>60</td>
+<td>60</td>
+<td>60</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>H</td>
-<td>1D</td>
-<td>1M</td>
+<td>hour</td>
+<td>3600</td>
+<td>3600</td>
+<td>3600</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>D</td>
-<td>1W</td>
-<td>3M</td>
+<td>day</td>
+<td>86400</td>
+<td>86400</td>
+<td>86400</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>W</td>
-<td>1Q</td>
-<td>1Y</td>
+<td>week</td>
+<td>604800</td>
+<td>604800</td>
+<td>604800</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
-<td>M</td>
-<td>1Y</td>
-<td>5Y</td>
+<td>month</td>
+<td>2678400</td>
+<td>2419200</td>
+<td>2678400</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
-<td>Q</td>
-<td>1Y</td>
-<td>10Y</td>
+<td>quarter</td>
+<td>7948800</td>
+<td>7689600</td>
+<td>8035200</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">7</td>
-<td>Y</td>
-<td>5Y</td>
-<td>30Y</td>
+<td>year</td>
+<td>31622400</td>
+<td>31536000</td>
+<td>31622400</td>
 </tr>
 </tbody>
 </table>

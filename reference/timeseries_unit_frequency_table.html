@@ -351,7 +351,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#returns" id="toc-returns" class="nav-link active" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/timeseries_unit_frequency_table.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
@@ -376,8 +377,41 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>timeseries_unit_frequency_table(wide_format=False)</code></p>
+<p><code>timeseries_unit_frequency_table(wide_format=False, engine='pandas')</code></p>
 <p>The function <code>timeseries_unit_frequency_table</code> returns a pandas DataFrame with units of time and their corresponding frequencies in seconds.</p>
+<section id="parameters" class="level2">
+<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<table class="table">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 2%">
+<col style="width: 90%">
+<col style="width: 3%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>wide_format</code></td>
+<td>bool</td>
+<td>The wide_format parameter determines the format of the output table. If wide_format is set to True, the table will be transposed.</td>
+<td><code>False</code></td>
+</tr>
+<tr class="even">
+<td><code>engine</code></td>
+<td>str</td>
+<td>The <code>engine</code> parameter is used to specify the engine to use for generating the timeseries unit frequency table. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for generating a timeseries unit frequency table.</td>
+<td><code>'pandas'</code></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="returns" class="level2">
 <h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
