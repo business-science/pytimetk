@@ -70,37 +70,40 @@ def augment_fourier_v2(
     """
 
     # Common checks
+    if not (isinstance(data, pd.DataFrame) or isinstance(data, pd.core.groupby.generic.DataFrameGroupBy)):
+        raise NotImplementedError('Input data must be a DataFrame or a DataFrameGroupBy object.')
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
 
-    # DATAFRAME EXTENSION - If data is a Pandas DataFrame, extend with Fourier transforms
-    if isinstance(data, pd.DataFrame):
-
-        df = data.copy()
-        df.sort_values(by=[date_column], inplace=True)
-
-        # Calculate radians for the date values
-        min_date = df[date_column].min()
-
-        scale_factor = date_to_seq_scale_factor(df, date_column).iloc[0].total_seconds()
-        if scale_factor == 0:
-            raise ValueError("Time difference between observations is zero. Try arranging data to have a positive time difference between observations. If working with time series groups, arrange by groups first, then date.")
-        
-        df['radians'] = 2 * np.pi * (df[date_column] - min_date).dt.total_seconds() / scale_factor
-        
-        for type_val in ("sin", "cos"):
-            for K_val in range(1, max_order + 1):
-                for period_val in range(1, num_periods + 1):
-                    df[f'{date_column}_{type_val}_{K_val}_{period_val}'] = calc_fourier(x = df['radians'], period = period_val, type = type_val, K = K_val)
-
+    # Define scale factor
+    scale_factor = date_to_seq_scale_factor(data, date_column).iloc[0].total_seconds()
+    if scale_factor == 0:
+        raise ValueError("Time difference between observations is zero. Try arranging data to have a positive time difference between observations. If working with time series groups, arrange by groups first, then date.")
 
     # GROUPED EXTENSION - If data is a GroupBy object, add Fourier transforms by group
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        # Get the group names and original ungrouped data
+        group_names = data.grouper.names
+        data = data.obj
+    df = data.copy()
 
-        raise NotImplementedError()
+    # Calculate radians for the date values
+    min_date = df[date_column].min()
+    df['radians'] = 2 * np.pi * (df[date_column] - min_date).dt.total_seconds() / scale_factor
+    
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        df.sort_values(by=[*group_names, date_column], inplace=True)
+    else:
+        df.sort_values(by=[date_column], inplace=True)
+
+    # Compute Fourier components
+    for type_val in ("sin", "cos"):
+        for K_val in range(1, max_order + 1):
+            for period_val in range(1, num_periods + 1):
+                df[f'{date_column}_{type_val}_{K_val}_{period_val}'] = calc_fourier(x = df['radians'], period = period_val, type = type_val, K = K_val)
 
     # Drop the temporary 'radians' column
-    # df.drop(columns=['radians'], inplace=True)
+    df.drop(columns=['radians'], inplace=True)
 
     return df
 
