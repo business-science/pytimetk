@@ -23,6 +23,7 @@ from .core.ts_features import *
 from .core.ts_summary import *
 from .core.anomalize import *
 from .core.frequency import *
+from .core.hilbert import *
 
 from .finance.exponential import *
 

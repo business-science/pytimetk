@@ -14,3 +14,4 @@ from .ts_features import *
 from .ts_summary import *
 from .anomalize import *
 from .frequency import *
+from .hilbert import *
