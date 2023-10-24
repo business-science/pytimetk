@@ -20,7 +20,6 @@ def fourier_vec(x: pd.Series, period, type: str, K = 1):
 
 def calc_fourier(x, period, type: str, K = 1): 
     term = K / period
-    type = type[1].lower()
     return np.sin(2 * np.pi * term * x) if type == "sin" else np.cos(2 * np.pi * term * x)
 
 
@@ -95,15 +94,16 @@ def augment_fourier_v2(
         # Calculate radians for the date values
         min_date = df[date_column].min()
 
-        scale_factor = date_to_seq_scale_factor(df, date_column).iloc[0]
-        # if scale_factor == 0:
-        #     raise ValueError("Time difference between observations is zero. Try arranging data to have a positive time difference between observations. If working with time series groups, arrange by groups first, then date.")
-        df['radians'] = 2 * np.pi * (df[date_column] - min_date).dt.total_seconds() / scale_factor.total_seconds()
+        scale_factor = date_to_seq_scale_factor(df, date_column).iloc[0].total_seconds()
+        if scale_factor == 0:
+            raise ValueError("Time difference between observations is zero. Try arranging data to have a positive time difference between observations. If working with time series groups, arrange by groups first, then date.")
+        
+        df['radians'] = 2 * np.pi * (df[date_column] - min_date).dt.total_seconds() / scale_factor
         
         for type_val in ("sin", "cos"):
             for K_val in range(1, max_order + 1):
                 for period_val in range(1, num_periods + 1):
-                    df[f'{date_column}_{type_val}_{K_val}_{period_val}'] = fourier_vec(df['radians'], period_val, type_val, K_val)
+                    df[f'{date_column}_{type_val}_{K_val}_{period_val}'] = calc_fourier(x = df['radians'], period = period_val, type = type_val, K = K_val)
 
 
     # GROUPED EXTENSION - If data is a GroupBy object, add Fourier transforms by group
@@ -112,7 +112,7 @@ def augment_fourier_v2(
         raise NotImplementedError()
 
     # Drop the temporary 'radians' column
-    df.drop(columns=['radians'], inplace=True)
+    # df.drop(columns=['radians'], inplace=True)
 
     return df
 
