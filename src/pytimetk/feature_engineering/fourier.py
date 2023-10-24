@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import pandas_flavor as pf
-from typing import Union, List
+from typing import Union, List, Tuple
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.core.ts_summary import ts_summary
 
@@ -19,7 +19,7 @@ def date_to_seq_scale_factor(data: pd.DataFrame, date_var: str) -> pd.Series:
 def augment_fourier_v2(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
-    num_periods: int = 1,
+    periods: Union[int, Tuple[int, int], List[int]] = 1,
     max_order: int = 1
 ) -> pd.DataFrame:
     """
@@ -33,10 +33,8 @@ def augment_fourier_v2(
         The `data` parameter is the input DataFrame or DataFrameGroupBy object that you want to add Fourier-transformed columns to.
     date_column : str
         The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to compute the Fourier transforms.
-    value_column : str or list
-        The `value_column` parameter is the column(s) in the DataFrame that you want to apply Fourier transforms to. It can be either a single column name (string) or a list of column names.
-    num_periods : int, optional
-        The `num_periods` parameter specifies the number of periods for the Fourier series. Default is 1.
+    periods : int or list, optional
+        The `periods` parameter specifies how many timesteps between each peak in the fourier series. Default is 1.
     max_order : int, optional
         The `max_order` parameter specifies the maximum Fourier order to calculate. Default is 1.
 
@@ -56,15 +54,16 @@ def augment_fourier_v2(
     # Add Fourier transforms for a single column
     fourier_df = (
         df
-            .groupby('id')
-            .augment_fourier(
+            .query("id == 'D10'")
+            .augment_fourier_v2(
                 date_column='date',
-                value_column='value',
-                num_periods=7,
+                periods=[1, 7],
                 max_order=1
             )
     )
     fourier_df.head()
+    
+    fourier_df.plot_timeseries("date", "date_sin_1_7", x_axis_date_labels = "%B %d, %Y",)
     ```
 
     """
@@ -72,6 +71,13 @@ def augment_fourier_v2(
     # Common checks
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
+    
+    if isinstance(periods, int):
+        periods = [periods]
+    elif isinstance(periods, tuple):
+        periods = list(range(periods[0], periods[1] + 1))
+    elif not isinstance(periods, list):
+        raise TypeError(f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list.")
 
     # DATAFRAME EXTENSION - If data is a Pandas DataFrame, extend with Fourier transforms
     if isinstance(data, pd.DataFrame):
@@ -90,7 +96,7 @@ def augment_fourier_v2(
         
         for type_val in ("sin", "cos"):
             for K_val in range(1, max_order + 1):
-                for period_val in range(1, num_periods + 1):
+                for period_val in periods:
                     df[f'{date_column}_{type_val}_{K_val}_{period_val}'] = calc_fourier(x = df['radians'], period = period_val, type = type_val, K = K_val)
 
 
