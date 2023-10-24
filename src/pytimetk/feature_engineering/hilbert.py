@@ -104,7 +104,8 @@ def augment_hilbert(
 
     df_hilbert.head()
     ```
-
+    
+    ```{python}
     # Example 3: Using Polars Engine on a pandas dataframe
     import pytimetk as tk
     import pandas as pd
@@ -120,6 +121,8 @@ def augment_hilbert(
 
     df_hilbert.head()
     ```
+    
+    ```{python}
     # Example 4: Using Polars Engine on a groupby object
     import pytimetk as tk
     import pandas as pd

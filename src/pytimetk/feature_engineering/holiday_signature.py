@@ -37,108 +37,109 @@ def augment_holiday_signature(
         to United States holidays, but the following countries are currently 
         available and accessible by the full name or ISO code:
             
-        | Available Countries        | Full Country           | Code |
-        |:--------------------------:|:----------------------:|:----:|
-        | Albania                   | Albania                | AL   |
-        | Algeria                   | Algeria                | DZ   |
-        | American Samoa            | AmericanSamoa          | AS   |
-        | Andorra                   | Andorra                | AD   |
-        | Angola                    | Angola                 | AO   |
-        | Argentina                 | Argentina              | AR   |
-        | Armenia                   | Armenia                | AM   |
-        | Aruba                     | Aruba                  | AW   |
-        | Australia                 | Australia              | AU   |
-        | Austria                   | Austria                | AT   |
-        | Azerbaijan                | Azerbaijan             | AZ   |
-        | Bahrain                   | Bahrain                | BH   |
-        | Bangladesh                | Bangladesh             | BD   |
-        | Barbados                  | Barbados               | BB   |
-        | Belarus                   | Belarus                | BY   |
-        | Belgium                   | Belgium                | BE   |
-        | Belize                    | Belize                 | BZ   |
-        | Bolivia                   | Bolivia                | BO   |
-        | Bosnia and Herzegovina    | BosniaandHerzegovina   | BA   |
-        | Botswana                  | Botswana               | BW   |
-        | Brazil                    | Brazil                 | BR   |
-        | Brunei                    | Brunei                 | BN   |
-        | Bulgaria                  | Bulgaria               | BG   |
-        | Burkina Faso              | BurkinaFaso            | BF   |
-        | Burundi                   | Burundi                | BI   |
-        | Laos                                 | Laos                             |  LA  |
-        | Latvia                               | Latvia                           |  LV  |
-        | Lesotho                              | Lesotho                          |  LS  |
-        | Liechtenstein                        | Liechtenstein                    |  LI  |
-        | Lithuania                            | Lithuania                        |  LT  |
-        | Luxembourg                           | Luxembourg                       |  LU  |
-        | Madagascar                           | Madagascar                       |  MG  |
-        | Malawi                               | Malawi                           |  MW  |
-        | Malaysia                             | Malaysia                         |  MY  |
-        | Maldives                             | Maldives                         |  MV  |
-        | Malta                                | Malta                            |  MT  |
-        | Marshall Islands                     | MarshallIslands                  |  MH  |
-        | Mexico                               | Mexico                           |  MX  |
-        | Moldova                              | Moldova                          |  MD  |
-        | Monaco                               | Monaco                           |  MC  |
-        | Montenegro                           | Montenegro                       |  ME  |
-        | Morocco                              | Morocco                          |  MA  |
-        | Mozambique                           | Mozambique                       |  MZ  |
-        | Namibia                              | Namibia                          |  NA  |
-        | Netherlands                          | Netherlands                      |  NL  |
-        | New Zealand                          | NewZealand                       |  NZ  |
-        | Nicaragua                           | Nicaragua                        |  NI  |
-        | Nigeria                              | Nigeria                          |  NG  |
-        | Northern Mariana Islands             | NorthernMarianaIslands           |  MP  |
-        | North Macedonia                      | NorthMacedonia                   |  MK  |
-        | Norway                               | Norway                           |  NO  |
-        | Pakistan                             | Pakistan                         |  PK  |
-        | Panama                               | Panama                           |  PA  |
-        | Paraguay                             | Paraguay                         |  PY  |
-        | Peru                                 | Peru                             |  PE  |
-        | Philippines                          | Philippines                      |  PH  |
-        | Poland                               | Poland                           |  PL  |
-        | Portugal                             | Portugal                         |  PT  |
-        | Puerto Rico                          | PuertoRico                       |  PR  |
-        | Romania                              | Romania                          |  RO  |
-        | Russia                               | Russia                           |  RU  |
-        | San Marino                           | SanMarino                        |  SM  |
-        | Saudi Arabia                         | SaudiArabia                      |  SA  |
-        | Serbia                               | Serbia                           |  RS  |
-        | Singapore                            | Singapore                        |  SG  |
-        | Slovakia                             | Slovakia                         |  SK  |
-        | Slovenia                             | Slovenia                         |  SI  |
-        | South Africa                         | SouthAfrica                      |  ZA  |
-        | South Korea                          | SouthKorea                       |  KR  |
-        | Spain                                | Spain                            |  ES  |
-        | Sweden                               | Sweden                           |  SE  |
-        | Switzerland                          | Switzerland                      |  CH  |
-        | Taiwan                               | Taiwan                           |  TW  |
-        | Tanzania                             | Tanzania                         |  TZ  |
-        | Thailand                             | Thailand                         |  TH  |
-        | Tunisia                              | Tunisia                          |  TN  |
-        | Turkey                               | Turkey                           |  TR  |
-        | Ukraine                              | Ukraine                          |  UA  |
-        | United Arab Emirates                 | UnitedArabEmirates               |  AE  |
-        | United Kingdom                       | UnitedKingdom                    |  GB  |
-        | United States Minor Outlying Islands | UnitedStatesMinorOutlyingIslands |  UM  |
-        | United States of America             | UnitedStatesofAmerica            |  US  |
-        | United States Virgin Islands         | UnitedStatesVirginIslands        |  VI  |
-        | Uruguay                              | Uruguay                          |  UY  |
-        | Uzbekistan                           | Uzbekistan                       |  UZ  |
-        | Vanuatu                              | Vanuatu                          |  VU  |
-        | Vatican City                         | VaticanCity                      |  VA  |
-        | Venezuela                            | Venezuela                        |  VE  |
-        | Vietnam                              | Vietnam                          |  VN  |
-        | Virgin Islands (U.S.)                | VirginIslandsUS                  |  VI  |
-        | Zambia                               | Zambia                           |  ZM  |
-        | Zimbabwe                             | Zimbabwe                         |  ZW  |
+        | Available Countries                       | Full Country                     | Code |
+        |:-----------------------------------------:|:--------------------------------:|:----:|
+        | Albania                                   | Albania                          | AL   |
+        | Algeria                                   | Algeria                          | DZ   |
+        | American Samoa                            | AmericanSamoa                    | AS   |
+        | Andorra                                   | Andorra                          | AD   |
+        | Angola                                    | Angola                           | AO   |
+        | Argentina                                 | Argentina                        | AR   |
+        | Armenia                                   | Armenia                          | AM   |
+        | Aruba                                     | Aruba                            | AW   |
+        | Australia                                 | Australia                        | AU   |
+        | Austria                                   | Austria                          | AT   |
+        | Azerbaijan                                | Azerbaijan                       | AZ   |
+        | Bahrain                                   | Bahrain                          | BH   |
+        | Bangladesh                                | Bangladesh                       | BD   |
+        | Barbados                                  | Barbados                         | BB   |
+        | Belarus                                   | Belarus                          | BY   |
+        | Belgium                                   | Belgium                          | BE   |
+        | Belize                                    | Belize                           | BZ   |
+        | Bolivia                                   | Bolivia                          | BO   |
+        | Bosnia and Herzegovina                    | BosniaandHerzegovina             | BA   |
+        | Botswana                                  | Botswana                         | BW   |
+        | Brazil                                    | Brazil                           | BR   |
+        | Brunei                                    | Brunei                           | BN   |
+        | Bulgaria                                  | Bulgaria                         | BG   |
+        | Burkina Faso                              | BurkinaFaso                      | BF   |
+        | Burundi                                   | Burundi                          | BI   |
+        | Laos                                      | Laos                             | LA   |
+        | Latvia                                    | Latvia                           | LV   |
+        | Lesotho                                   | Lesotho                          | LS   |
+        | Liechtenstein                             | Liechtenstein                    | LI   |
+        | Lithuania                                 | Lithuania                        | LT   |
+        | Luxembourg                                | Luxembourg                       | LU   |
+        | Madagascar                                | Madagascar                       | MG   |
+        | Malawi                                    | Malawi                           | MW   |
+        | Malaysia                                  | Malaysia                         | MY   |
+        | Maldives                                  | Maldives                         | MV   |
+        | Malta                                     | Malta                            | MT   |
+        | Marshall Islands                          | MarshallIslands                  | MH   |
+        | Mexico                                    | Mexico                           | MX   |
+        | Moldova                                   | Moldova                          | MD   |
+        | Monaco                                    | Monaco                           | MC   |
+        | Montenegro                                | Montenegro                       | ME   |
+        | Morocco                                   | Morocco                          | MA   |
+        | Mozambique                                | Mozambique                       | MZ   |
+        | Namibia                                   | Namibia                          | NA   |
+        | Netherlands                               | Netherlands                      | NL   |
+        | New Zealand                               | NewZealand                       | NZ   |
+        | Nicaragua                                 | Nicaragua                        | NI   |
+        | Nigeria                                   | Nigeria                          | NG   |
+        | Northern Mariana Islands                  | NorthernMarianaIslands           | MP   |
+        | North Macedonia                           | NorthMacedonia                   | MK   |
+        | Norway                                    | Norway                           | NO   |
+        | Pakistan                                  | Pakistan                         | PK   |
+        | Panama                                    | Panama                           | PA   |
+        | Paraguay                                  | Paraguay                         | PY   |
+        | Peru                                      | Peru                             | PE   |
+        | Philippines                               | Philippines                      | PH   |
+        | Poland                                    | Poland                           | PL   |
+        | Portugal                                  | Portugal                         | PT   |
+        | Puerto Rico                               | PuertoRico                       | PR   |
+        | Romania                                   | Romania                          | RO   |
+        | Russia                                    | Russia                           | RU   |
+        | San Marino                                | SanMarino                        | SM   |
+        | Saudi Arabia                              | SaudiArabia                      | SA   |
+        | Serbia                                    | Serbia                           | RS   |
+        | Singapore                                 | Singapore                        | SG   |
+        | Slovakia                                  | Slovakia                         | SK   |
+        | Slovenia                                  | Slovenia                         | SI   |
+        | South Africa                              | SouthAfrica                      | ZA   |
+        | South Korea                               | SouthKorea                       | KR   |
+        | Spain                                     | Spain                            | ES   |
+        | Sweden                                    | Sweden                           | SE   |
+        | Switzerland                               | Switzerland                      | CH   |
+        | Taiwan                                    | Taiwan                           | TW   |
+        | Tanzania                                  | Tanzania                         | TZ   |
+        | Thailand                                  | Thailand                         | TH   |
+        | Tunisia                                   | Tunisia                          | TN   |
+        | Turkey                                    | Turkey                           | TR   |
+        | Ukraine                                   | Ukraine                          | UA   |
+        | United Arab Emirates                      | UnitedArabEmirates               | AE   |
+        | United Kingdom                            | UnitedKingdom                    | GB   |
+        | United States Minor Outlying Islands      | UnitedStatesMinorOutlyingIslands | UM   |
+        | United States of America                  | UnitedStatesofAmerica            | US   |
+        | United States Virgin Islands              | UnitedStatesVirginIslands        | VI   |
+        | Uruguay                                   | Uruguay                          | UY   |
+        | Uzbekistan                                | Uzbekistan                       | UZ   |
+        | Vanuatu                                   | Vanuatu                          | VU   |
+        | Vatican City                              | VaticanCity                      | VA   |
+        | Venezuela                                 | Venezuela                        | VE   |
+        | Vietnam                                   | Vietnam                          | VN   |
+        | Virgin Islands (U.S.)                     | VirginIslandsUS                  | VI   |
+        | Zambia                                    | Zambia                           | ZM   |
+        | Zimbabwe                                  | Zimbabwe                         | ZW   |
+
     
         
         These are the Available Financial Markets:
         
         | Available Financial Markets  | Full Country           | Code |
         |:----------------------------:|:----------------------:|:----:|
-        | European Central Bank       | EuropeanCentralBank    | ECB  |
-        | New York Stock Exchange     | NewYorkStockExchange   | XNYS |
+        | European Central Bank        | EuropeanCentralBank    | ECB  |
+        | New York Stock Exchange      | NewYorkStockExchange   | XNYS |
     
     
     
@@ -269,110 +270,110 @@ def get_holiday_signature(
         available and accessible by the full name or ISO code:
             
         Any of the following are acceptable keys for `country_name`:
-
     
-        | Available Countries        | Full Country           | Code |
-        |:--------------------------:|:----------------------:|:----:|
-        | Albania                   | Albania                | AL   |
-        | Algeria                   | Algeria                | DZ   |
-        | American Samoa            | AmericanSamoa          | AS   |
-        | Andorra                   | Andorra                | AD   |
-        | Angola                    | Angola                 | AO   |
-        | Argentina                 | Argentina              | AR   |
-        | Armenia                   | Armenia                | AM   |
-        | Aruba                     | Aruba                  | AW   |
-        | Australia                 | Australia              | AU   |
-        | Austria                   | Austria                | AT   |
-        | Azerbaijan                | Azerbaijan             | AZ   |
-        | Bahrain                   | Bahrain                | BH   |
-        | Bangladesh                | Bangladesh             | BD   |
-        | Barbados                  | Barbados               | BB   |
-        | Belarus                   | Belarus                | BY   |
-        | Belgium                   | Belgium                | BE   |
-        | Belize                    | Belize                 | BZ   |
-        | Bolivia                   | Bolivia                | BO   |
-        | Bosnia and Herzegovina    | BosniaandHerzegovina   | BA   |
-        | Botswana                  | Botswana               | BW   |
-        | Brazil                    | Brazil                 | BR   |
-        | Brunei                    | Brunei                 | BN   |
-        | Bulgaria                  | Bulgaria               | BG   |
-        | Burkina Faso              | BurkinaFaso            | BF   |
-        | Burundi                   | Burundi                | BI   |
-        | Laos                                 | Laos                             |  LA  |
-        | Latvia                               | Latvia                           |  LV  |
-        | Lesotho                              | Lesotho                          |  LS  |
-        | Liechtenstein                        | Liechtenstein                    |  LI  |
-        | Lithuania                            | Lithuania                        |  LT  |
-        | Luxembourg                           | Luxembourg                       |  LU  |
-        | Madagascar                           | Madagascar                       |  MG  |
-        | Malawi                               | Malawi                           |  MW  |
-        | Malaysia                             | Malaysia                         |  MY  |
-        | Maldives                             | Maldives                         |  MV  |
-        | Malta                                | Malta                            |  MT  |
-        | Marshall Islands                     | MarshallIslands                  |  MH  |
-        | Mexico                               | Mexico                           |  MX  |
-        | Moldova                              | Moldova                          |  MD  |
-        | Monaco                               | Monaco                           |  MC  |
-        | Montenegro                           | Montenegro                       |  ME  |
-        | Morocco                              | Morocco                          |  MA  |
-        | Mozambique                           | Mozambique                       |  MZ  |
-        | Namibia                              | Namibia                          |  NA  |
-        | Netherlands                          | Netherlands                      |  NL  |
-        | New Zealand                          | NewZealand                       |  NZ  |
-        | Nicaragua                           | Nicaragua                        |  NI  |
-        | Nigeria                              | Nigeria                          |  NG  |
-        | Northern Mariana Islands             | NorthernMarianaIslands           |  MP  |
-        | North Macedonia                      | NorthMacedonia                   |  MK  |
-        | Norway                               | Norway                           |  NO  |
-        | Pakistan                             | Pakistan                         |  PK  |
-        | Panama                               | Panama                           |  PA  |
-        | Paraguay                             | Paraguay                         |  PY  |
-        | Peru                                 | Peru                             |  PE  |
-        | Philippines                          | Philippines                      |  PH  |
-        | Poland                               | Poland                           |  PL  |
-        | Portugal                             | Portugal                         |  PT  |
-        | Puerto Rico                          | PuertoRico                       |  PR  |
-        | Romania                              | Romania                          |  RO  |
-        | Russia                               | Russia                           |  RU  |
-        | San Marino                           | SanMarino                        |  SM  |
-        | Saudi Arabia                         | SaudiArabia                      |  SA  |
-        | Serbia                               | Serbia                           |  RS  |
-        | Singapore                            | Singapore                        |  SG  |
-        | Slovakia                             | Slovakia                         |  SK  |
-        | Slovenia                             | Slovenia                         |  SI  |
-        | South Africa                         | SouthAfrica                      |  ZA  |
-        | South Korea                          | SouthKorea                       |  KR  |
-        | Spain                                | Spain                            |  ES  |
-        | Sweden                               | Sweden                           |  SE  |
-        | Switzerland                          | Switzerland                      |  CH  |
-        | Taiwan                               | Taiwan                           |  TW  |
-        | Tanzania                             | Tanzania                         |  TZ  |
-        | Thailand                             | Thailand                         |  TH  |
-        | Tunisia                              | Tunisia                          |  TN  |
-        | Turkey                               | Turkey                           |  TR  |
-        | Ukraine                              | Ukraine                          |  UA  |
-        | United Arab Emirates                 | UnitedArabEmirates               |  AE  |
-        | United Kingdom                       | UnitedKingdom                    |  GB  |
-        | United States Minor Outlying Islands | UnitedStatesMinorOutlyingIslands |  UM  |
-        | United States of America             | UnitedStatesofAmerica            |  US  |
-        | United States Virgin Islands         | UnitedStatesVirginIslands        |  VI  |
-        | Uruguay                              | Uruguay                          |  UY  |
-        | Uzbekistan                           | Uzbekistan                       |  UZ  |
-        | Vanuatu                              | Vanuatu                          |  VU  |
-        | Vatican City                         | VaticanCity                      |  VA  |
-        | Venezuela                            | Venezuela                        |  VE  |
-        | Vietnam                              | Vietnam                          |  VN  |
-        | Virgin Islands (U.S.)                | VirginIslandsUS                  |  VI  |
-        | Zambia                               | Zambia                           |  ZM  |
-        | Zimbabwe                             | Zimbabwe                         |  ZW  |
+        | Available Countries                       | Full Country                     | Code |
+        |:-----------------------------------------:|:--------------------------------:|:----:|
+        | Albania                                   | Albania                          | AL   |
+        | Algeria                                   | Algeria                          | DZ   |
+        | American Samoa                            | AmericanSamoa                    | AS   |
+        | Andorra                                   | Andorra                          | AD   |
+        | Angola                                    | Angola                           | AO   |
+        | Argentina                                 | Argentina                        | AR   |
+        | Armenia                                   | Armenia                          | AM   |
+        | Aruba                                     | Aruba                            | AW   |
+        | Australia                                 | Australia                        | AU   |
+        | Austria                                   | Austria                          | AT   |
+        | Azerbaijan                                | Azerbaijan                       | AZ   |
+        | Bahrain                                   | Bahrain                          | BH   |
+        | Bangladesh                                | Bangladesh                       | BD   |
+        | Barbados                                  | Barbados                         | BB   |
+        | Belarus                                   | Belarus                          | BY   |
+        | Belgium                                   | Belgium                          | BE   |
+        | Belize                                    | Belize                           | BZ   |
+        | Bolivia                                   | Bolivia                          | BO   |
+        | Bosnia and Herzegovina                    | BosniaandHerzegovina             | BA   |
+        | Botswana                                  | Botswana                         | BW   |
+        | Brazil                                    | Brazil                           | BR   |
+        | Brunei                                    | Brunei                           | BN   |
+        | Bulgaria                                  | Bulgaria                         | BG   |
+        | Burkina Faso                              | BurkinaFaso                      | BF   |
+        | Burundi                                   | Burundi                          | BI   |
+        | Laos                                      | Laos                             | LA   |
+        | Latvia                                    | Latvia                           | LV   |
+        | Lesotho                                   | Lesotho                          | LS   |
+        | Liechtenstein                             | Liechtenstein                    | LI   |
+        | Lithuania                                 | Lithuania                        | LT   |
+        | Luxembourg                                | Luxembourg                       | LU   |
+        | Madagascar                                | Madagascar                       | MG   |
+        | Malawi                                    | Malawi                           | MW   |
+        | Malaysia                                  | Malaysia                         | MY   |
+        | Maldives                                  | Maldives                         | MV   |
+        | Malta                                     | Malta                            | MT   |
+        | Marshall Islands                          | MarshallIslands                  | MH   |
+        | Mexico                                    | Mexico                           | MX   |
+        | Moldova                                   | Moldova                          | MD   |
+        | Monaco                                    | Monaco                           | MC   |
+        | Montenegro                                | Montenegro                       | ME   |
+        | Morocco                                   | Morocco                          | MA   |
+        | Mozambique                                | Mozambique                       | MZ   |
+        | Namibia                                   | Namibia                          | NA   |
+        | Netherlands                               | Netherlands                      | NL   |
+        | New Zealand                               | NewZealand                       | NZ   |
+        | Nicaragua                                 | Nicaragua                        | NI   |
+        | Nigeria                                   | Nigeria                          | NG   |
+        | Northern Mariana Islands                  | NorthernMarianaIslands           | MP   |
+        | North Macedonia                           | NorthMacedonia                   | MK   |
+        | Norway                                    | Norway                           | NO   |
+        | Pakistan                                  | Pakistan                         | PK   |
+        | Panama                                    | Panama                           | PA   |
+        | Paraguay                                  | Paraguay                         | PY   |
+        | Peru                                      | Peru                             | PE   |
+        | Philippines                               | Philippines                      | PH   |
+        | Poland                                    | Poland                           | PL   |
+        | Portugal                                  | Portugal                         | PT   |
+        | Puerto Rico                               | PuertoRico                       | PR   |
+        | Romania                                   | Romania                          | RO   |
+        | Russia                                    | Russia                           | RU   |
+        | San Marino                                | SanMarino                        | SM   |
+        | Saudi Arabia                              | SaudiArabia                      | SA   |
+        | Serbia                                    | Serbia                           | RS   |
+        | Singapore                                 | Singapore                        | SG   |
+        | Slovakia                                  | Slovakia                         | SK   |
+        | Slovenia                                  | Slovenia                         | SI   |
+        | South Africa                              | SouthAfrica                      | ZA   |
+        | South Korea                               | SouthKorea                       | KR   |
+        | Spain                                     | Spain                            | ES   |
+        | Sweden                                    | Sweden                           | SE   |
+        | Switzerland                               | Switzerland                      | CH   |
+        | Taiwan                                    | Taiwan                           | TW   |
+        | Tanzania                                  | Tanzania                         | TZ   |
+        | Thailand                                  | Thailand                         | TH   |
+        | Tunisia                                   | Tunisia                          | TN   |
+        | Turkey                                    | Turkey                           | TR   |
+        | Ukraine                                   | Ukraine                          | UA   |
+        | United Arab Emirates                      | UnitedArabEmirates               | AE   |
+        | United Kingdom                            | UnitedKingdom                    | GB   |
+        | United States Minor Outlying Islands      | UnitedStatesMinorOutlyingIslands | UM   |
+        | United States of America                  | UnitedStatesofAmerica            | US   |
+        | United States Virgin Islands              | UnitedStatesVirginIslands        | VI   |
+        | Uruguay                                   | Uruguay                          | UY   |
+        | Uzbekistan                                | Uzbekistan                       | UZ   |
+        | Vanuatu                                   | Vanuatu                          | VU   |
+        | Vatican City                              | VaticanCity                      | VA   |
+        | Venezuela                                 | Venezuela                        | VE   |
+        | Vietnam                                   | Vietnam                          | VN   |
+        | Virgin Islands (U.S.)                     | VirginIslandsUS                  | VI   |
+        | Zambia                                    | Zambia                           | ZM   |
+        | Zimbabwe                                  | Zimbabwe                         | ZW   |
+
     
         
         These are the Available Financial Markets:
         
         | Available Financial Markets  | Full Country           | Code |
         |:----------------------------:|:----------------------:|:----:|
-        | European Central Bank       | EuropeanCentralBank    | ECB  |
-        | New York Stock Exchange     | NewYorkStockExchange   | XNYS |
+        | European Central Bank        | EuropeanCentralBank    | ECB  |
+        | New York Stock Exchange      | NewYorkStockExchange   | XNYS |
 
     
     Returns

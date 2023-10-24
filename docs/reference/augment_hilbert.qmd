@@ -42,7 +42,7 @@ patterns and trends.
 ## Examples
 
 ```{python}
-# Example 1: Using Pandas Engine
+# Example 1: Using Pandas Engine on a pandas groupby object
 import pytimetk as tk
 import pandas as pd
 
@@ -62,14 +62,51 @@ df_hilbert.head()
 ```
 
 ```{python}
-# Example 2: Using Polars Engine
+# Example 2: Using Polars Engine on a pandas groupby object
+import pytimetk as tk
+import pandas as pd
 
+df = tk.load_dataset('walmart_sales_weekly', parse_dates=['Date'])
 df_hilbert = (df
         .groupby('id')
         .augment_hilbert(
             date_column = 'Date',
             value_column = ['Weekly_Sales'],
             engine = 'polars'
+        )
+)
+
+df_hilbert.head()
+```
+
+```{python}
+# Example 3: Using Polars Engine on a pandas dataframe
+import pytimetk as tk
+import pandas as pd
+
+df = tk.load_dataset('taylor_30_min', parse_dates=['date'])
+df_hilbert = (df
+        .augment_hilbert(
+            date_column = 'date',
+            value_column = ['value'],
+            engine = 'polars'
+        )
+)
+
+df_hilbert.head()
+```
+
+```{python}
+# Example 4: Using Polars Engine on a groupby object
+import pytimetk as tk
+import pandas as pd
+
+df = tk.load_dataset('taylor_30_min', parse_dates=['date'])
+df_hilbert_pd = (df
+        .augment_hilbert(
+            date_column = 'date',
+            value_column = ['value'],
+            engine = 'pandas'
         )
 )
 

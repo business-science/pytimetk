@@ -378,16 +378,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </header>
 
 <p><code>get_holiday_signature(idx, country_name='UnitedStates')</code></p>
-<p>Engineers 4 different holiday features from a single datetime for 80+ countries.</p>
+<p>Engineers 4 different holiday features from a single datetime for 137 countries and 2 financial markets.</p>
 <p>Note: Requires the <code>holidays</code> package to be installed. See https://pypi.org/project/holidays/ for more information.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 0%">
-<col style="width: 0%">
-<col style="width: 98%">
-<col style="width: 0%">
+<col style="width: 4%">
+<col style="width: 11%">
+<col style="width: 78%">
+<col style="width: 5%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -407,11 +407,113 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="even">
 <td><code>country_name</code></td>
 <td>str</td>
-<td>The name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code: Any of the following are acceptable keys for <code>country_name</code>: Available Countries: Full Country, Abrv. #1, #2, #3 Angola: Angola, AO, AGO, Argentina: Argentina, AR, ARG, Aruba: Aruba, AW, ABW, Australia: Australia, AU, AUS, Austria: Austria, AT, AUT, Bangladesh: Bangladesh, BD, BGD, Belarus: Belarus, BY, BLR, Belgium: Belgium, BE, BEL, Botswana: Botswana, BW, BWA, Brazil: Brazil, BR, BRA, Bulgaria: Bulgaria, BG, BLG, Burundi: Burundi, BI, BDI, Canada: Canada, CA, CAN, Chile: Chile, CL, CHL, Colombia: Colombia, CO, COL, Croatia: Croatia, HR, HRV, Curacao: Curacao, CW, CUW, Czechia: Czechia, CZ, CZE, Denmark: Denmark, DK, DNK, Djibouti: Djibouti, DJ, DJI, Dominican Republic: DominicanRepublic, DO, DOM, Egypt: Egypt, EG, EGY, England: England, Estonia: Estonia, EE, EST, European Central Bank: EuropeanCentralBank, Finland: Finland, FI, FIN, France: France, FR, FRA, Georgia: Georgia, GE, GEO, Germany: Germany, DE, DEU, Greece: Greece, GR, GRC, Honduras: Honduras, HN, HND, Hong Kong: HongKong, HK, HKG, Hungary: Hungary, HU, HUN, Iceland: Iceland, IS, ISL, India: India, IN, IND, Ireland: Ireland, IE, IRL, Isle Of Man: IsleOfMan, Israel: Israel, IL, ISR, Italy: Italy, IT, ITA, Jamaica: Jamaica, JM, JAM, Japan: Japan, JP, JPN, Kenya: Kenya, KE, KEN, Korea: Korea, KR, KOR, Latvia: Latvia, LV, LVA, Lithuania: Lithuania, LT, LTU, Luxembourg: Luxembourg, LU, LUX, Malaysia: Malaysia, MY, MYS, Malawi: Malawi, MW, MWI, Mexico: Mexico, MX, MEX, Morocco: Morocco, MA, MOR, Mozambique: Mozambique, MZ, MOZ, Netherlands: Netherlands, NL, NLD, NewZealand: NewZealand, NZ, NZL, Nicaragua: Nicaragua, NI, NIC, Nigeria: Nigeria, NG, NGA, Northern Ireland: NorthernIreland, Norway: Norway, NO, NOR, Paraguay: Paraguay, PY, PRY, Peru: Peru, PE, PER, Poland: Poland, PL, POL, Portugal: Portugal, PT, PRT, Portugal Ext: PortugalExt, PTE, Romania: Romania, RO, ROU, Russia: Russia, RU, RUS, Saudi Arabia: SaudiArabia, SA, SAU, Scotland: Scotland, Serbia: Serbia, RS, SRB, Singapore: Singapore, SG, SGP, Slovokia: Slovokia, SK, SVK, Slovenia: Slovenia, SI, SVN, South Africa: SouthAfrica, ZA, ZAF, Spain: Spain, ES, ESP, Sweden: Sweden, SE, SWE, Switzerland: Switzerland, CH, CHE, Turkey: Turkey, TR, TUR, Ukraine: Ukraine, UA, UKR, United Arab Emirates: UnitedArabEmirates, AE, ARE, United Kingdom: UnitedKingdom, GB, GBR, UK, United States: UnitedStates, US, USA, Venezuela: Venezuela, YV, VEN, Vietnam: Vietnam, VN, VNM, Wales: Wales</td>
+<td>The name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code: Any of the following are acceptable keys for <code>country_name</code>:</td>
 <td><code>'UnitedStates'</code></td>
 </tr>
 </tbody>
 </table>
+<pre><code>| Available Countries        | Full Country           | Code |
+|:--------------------------:|:----------------------:|:----:|
+| Albania                   | Albania                | AL   |
+| Algeria                   | Algeria                | DZ   |
+| American Samoa            | AmericanSamoa          | AS   |
+| Andorra                   | Andorra                | AD   |
+| Angola                    | Angola                 | AO   |
+| Argentina                 | Argentina              | AR   |
+| Armenia                   | Armenia                | AM   |
+| Aruba                     | Aruba                  | AW   |
+| Australia                 | Australia              | AU   |
+| Austria                   | Austria                | AT   |
+| Azerbaijan                | Azerbaijan             | AZ   |
+| Bahrain                   | Bahrain                | BH   |
+| Bangladesh                | Bangladesh             | BD   |
+| Barbados                  | Barbados               | BB   |
+| Belarus                   | Belarus                | BY   |
+| Belgium                   | Belgium                | BE   |
+| Belize                    | Belize                 | BZ   |
+| Bolivia                   | Bolivia                | BO   |
+| Bosnia and Herzegovina    | BosniaandHerzegovina   | BA   |
+| Botswana                  | Botswana               | BW   |
+| Brazil                    | Brazil                 | BR   |
+| Brunei                    | Brunei                 | BN   |
+| Bulgaria                  | Bulgaria               | BG   |
+| Burkina Faso              | BurkinaFaso            | BF   |
+| Burundi                   | Burundi                | BI   |
+| Laos                                 | Laos                             |  LA  |
+| Latvia                               | Latvia                           |  LV  |
+| Lesotho                              | Lesotho                          |  LS  |
+| Liechtenstein                        | Liechtenstein                    |  LI  |
+| Lithuania                            | Lithuania                        |  LT  |
+| Luxembourg                           | Luxembourg                       |  LU  |
+| Madagascar                           | Madagascar                       |  MG  |
+| Malawi                               | Malawi                           |  MW  |
+| Malaysia                             | Malaysia                         |  MY  |
+| Maldives                             | Maldives                         |  MV  |
+| Malta                                | Malta                            |  MT  |
+| Marshall Islands                     | MarshallIslands                  |  MH  |
+| Mexico                               | Mexico                           |  MX  |
+| Moldova                              | Moldova                          |  MD  |
+| Monaco                               | Monaco                           |  MC  |
+| Montenegro                           | Montenegro                       |  ME  |
+| Morocco                              | Morocco                          |  MA  |
+| Mozambique                           | Mozambique                       |  MZ  |
+| Namibia                              | Namibia                          |  NA  |
+| Netherlands                          | Netherlands                      |  NL  |
+| New Zealand                          | NewZealand                       |  NZ  |
+| Nicaragua                           | Nicaragua                        |  NI  |
+| Nigeria                              | Nigeria                          |  NG  |
+| Northern Mariana Islands             | NorthernMarianaIslands           |  MP  |
+| North Macedonia                      | NorthMacedonia                   |  MK  |
+| Norway                               | Norway                           |  NO  |
+| Pakistan                             | Pakistan                         |  PK  |
+| Panama                               | Panama                           |  PA  |
+| Paraguay                             | Paraguay                         |  PY  |
+| Peru                                 | Peru                             |  PE  |
+| Philippines                          | Philippines                      |  PH  |
+| Poland                               | Poland                           |  PL  |
+| Portugal                             | Portugal                         |  PT  |
+| Puerto Rico                          | PuertoRico                       |  PR  |
+| Romania                              | Romania                          |  RO  |
+| Russia                               | Russia                           |  RU  |
+| San Marino                           | SanMarino                        |  SM  |
+| Saudi Arabia                         | SaudiArabia                      |  SA  |
+| Serbia                               | Serbia                           |  RS  |
+| Singapore                            | Singapore                        |  SG  |
+| Slovakia                             | Slovakia                         |  SK  |
+| Slovenia                             | Slovenia                         |  SI  |
+| South Africa                         | SouthAfrica                      |  ZA  |
+| South Korea                          | SouthKorea                       |  KR  |
+| Spain                                | Spain                            |  ES  |
+| Sweden                               | Sweden                           |  SE  |
+| Switzerland                          | Switzerland                      |  CH  |
+| Taiwan                               | Taiwan                           |  TW  |
+| Tanzania                             | Tanzania                         |  TZ  |
+| Thailand                             | Thailand                         |  TH  |
+| Tunisia                              | Tunisia                          |  TN  |
+| Turkey                               | Turkey                           |  TR  |
+| Ukraine                              | Ukraine                          |  UA  |
+| United Arab Emirates                 | UnitedArabEmirates               |  AE  |
+| United Kingdom                       | UnitedKingdom                    |  GB  |
+| United States Minor Outlying Islands | UnitedStatesMinorOutlyingIslands |  UM  |
+| United States of America             | UnitedStatesofAmerica            |  US  |
+| United States Virgin Islands         | UnitedStatesVirginIslands        |  VI  |
+| Uruguay                              | Uruguay                          |  UY  |
+| Uzbekistan                           | Uzbekistan                       |  UZ  |
+| Vanuatu                              | Vanuatu                          |  VU  |
+| Vatican City                         | VaticanCity                      |  VA  |
+| Venezuela                            | Venezuela                        |  VE  |
+| Vietnam                              | Vietnam                          |  VN  |
+| Virgin Islands (U.S.)                | VirginIslandsUS                  |  VI  |
+| Zambia                               | Zambia                           |  ZM  |
+| Zimbabwe                             | Zimbabwe                         |  ZW  |
+
+
+These are the Available Financial Markets:
+
+| Available Financial Markets  | Full Country           | Code |
+|:----------------------------:|:----------------------:|:----:|
+| European Central Bank       | EuropeanCentralBank    | ECB  |
+| New York Stock Exchange     | NewYorkStockExchange   | XNYS |</code></pre>
 </section>
 <section id="returns" class="level2">
 <h2 class="anchored" data-anchor-id="returns">Returns</h2>
@@ -437,16 +539,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <section id="example" class="level2">
 <h2 class="anchored" data-anchor-id="example">Example</h2>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Make a DataFrame with a date column</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>start_date <span class="op">=</span> <span class="st">'2023-01-01'</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>end_date <span class="op">=</span> <span class="st">'2023-01-10'</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(pd.date_range(start<span class="op">=</span>start_date, end<span class="op">=</span>end_date), columns<span class="op">=</span>[<span class="st">'date'</span>])</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Add holiday features for US</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>tk.augment_holiday_signature(df, <span class="st">'date'</span>, <span class="st">'UnitedStates'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Make a DataFrame with a date column</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>start_date <span class="op">=</span> <span class="st">'2023-01-01'</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>end_date <span class="op">=</span> <span class="st">'2023-01-10'</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(pd.date_range(start<span class="op">=</span>start_date, end<span class="op">=</span>end_date), columns<span class="op">=</span>[<span class="st">'date'</span>])</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Add holiday features for US</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>tk.augment_holiday_signature(df, <span class="st">'date'</span>, <span class="st">'UnitedStates'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -550,8 +652,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add holiday features for France</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>tk.augment_holiday_signature(df, <span class="st">'date'</span>, <span class="st">'France'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add holiday features for France</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tk.augment_holiday_signature(df, <span class="st">'date'</span>, <span class="st">'France'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
