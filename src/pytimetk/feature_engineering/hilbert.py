@@ -67,7 +67,7 @@ def augment_hilbert(
     Examples
     --------
     ```{python}
-    # Example 1: Using Polars Engine
+    # Example 1: Using Pandas Engine
     import pytimetk as tk
     import pandas as pd
     
@@ -79,7 +79,7 @@ def augment_hilbert(
             .augment_hilbert(
                 date_column = 'Date',
                 value_column = ['Weekly_Sales'],
-                engine = 'polars'
+                engine = 'pandas'
             )
     )
 
@@ -87,17 +87,14 @@ def augment_hilbert(
     ```
     
     ```{python}
-    # Example 2: Using Pandas Engine
-    import pytimetk as tk
-    import pandas as pd
-
+    # Example 2: Using Polars Engine
 
     df_hilbert = (df
             .groupby('id')
             .augment_hilbert(
                 date_column = 'Date',
                 value_column = ['Weekly_Sales'],
-                engine = 'pandas'
+                engine = 'polars'
             )
     )
 
