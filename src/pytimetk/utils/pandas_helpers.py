@@ -1,5 +1,6 @@
 import pandas as pd
 import pandas_flavor as pf
+import polars as pl
 
 from pytimetk.utils.checks import check_dataframe_or_groupby
 
@@ -49,9 +50,9 @@ def glimpse(
     check_dataframe_or_groupby(data)
     
     if engine == 'pandas':
-        return _glimpse_polars(df, max_width)
+        return _glimpse_pandas(data, max_width)
     elif engine == 'polars':
-        return _glimpse_polars(df, max_width)
+        return _glimpse_polars(data, max_width)
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
 
