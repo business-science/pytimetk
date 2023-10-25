@@ -6,7 +6,9 @@ from pytimetk.utils.checks import check_dataframe_or_groupby
 
 @pf.register_dataframe_method
 def glimpse(
-    data: pd.DataFrame, max_width: int = 76
+    data: pd.DataFrame, 
+    max_width: int = 76,
+    engine: str = 'pandas'
 ) -> None:
     '''
     Takes a pandas DataFrame and prints a summary of its dimensions, column 
@@ -21,6 +23,14 @@ def glimpse(
         The `max_width` parameter is an optional parameter that specifies the 
         maximum width of each line when printing the glimpse of the DataFrame. 
         If not provided, the default value is set to 76.
+    engine : str, optional
+        The `engine` parameter is used to specify the engine to use for 
+        generating a glimpse. It can be either "pandas" or "polars". 
+        
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library 
+          for generating the glimpse. 
     
     Examples
     --------
@@ -34,14 +44,25 @@ def glimpse(
     ```
     
     '''
+
     # Common checks 
     check_dataframe_or_groupby(data)
     
+    if engine == 'pandas':
+        return _glimpse_polars(df, max_width)
+    elif engine == 'polars':
+        return _glimpse_polars(df, max_width)
+    else:
+        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+
+def _glimpse_pandas(
+    data: pd.DataFrame, max_width: int = 76
+) -> None:
     df = data.copy()
 
     # find the max string lengths of the column names and dtypes for formatting
-    _max_len = max([len(col) for col in df])
-    _max_dtype_label_len = max([len(str(df[col].dtype)) for col in df])
+    _max_len = len(max(df.columns, key=len))
+    _max_dtype_label_len = 15
 
     # print the dimensions of the dataframe
     print(f"{type(df)}: {df.shape[0]} rows of {df.shape[1]} columns")
@@ -65,7 +86,28 @@ def glimpse(
     
     return None
 
+def _glimpse_polars(df, max_width=76):
+    
+    _max_len = len(max(df.columns, key=len))
+    
+    final_df = (
+        ((pl.DataFrame(df.columns.to_list()).rename({'column_0': ''}))
+    .hstack(pl.DataFrame((pd.Series(df.dtypes.to_list())).astype('string').to_frame()))
+    .hstack(pl.DataFrame(df).select(pl.all().head(15).implode()).transpose())
+    ).to_pandas()
+    ).rename(columns={'0': ' ', 'column_0': '  '})
+    
+    final_df['  '] = final_df['  '].astype(str).str.slice(stop=(max_width-_max_len-15)).fillna('') + '...'
 
+    def make_lalign_formatter(df, cols=None):
+        if cols is None:
+            cols = df.columns[df.dtypes == 'object'] 
+        return {col: f'{{:<{df[col].str.len().max()}s}}'.format for col in cols}
+
+    print(f"{type(df)}: {len(df)} rows of {len(df.columns)} columns", end="")
+    print(final_df.to_string(formatters=make_lalign_formatter(final_df), index=False, justify='left'))
+    
+    return None
 
 @pf.register_dataframe_method
 def flatten_multiindex_column_names(data: pd.DataFrame, sep = '_') -> pd.DataFrame:
