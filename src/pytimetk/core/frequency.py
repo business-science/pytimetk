@@ -8,7 +8,10 @@ from typing import Union
 from pytimetk.utils.checks import check_series_or_datetime
 from pytimetk.utils.datetime_helpers import floor_date
 
-def get_frequency_summary(idx: Union[pd.Series, pd.DatetimeIndex]):  
+def get_frequency_summary(
+        idx: Union[pd.Series, pd.DatetimeIndex],
+        force_regular: bool = False
+):  
     '''
     More robust version of pandas inferred frequency.
         
@@ -18,6 +21,12 @@ def get_frequency_summary(idx: Union[pd.Series, pd.DatetimeIndex]):
         The `idx` parameter is either a `pd.Series` or a `pd.DateTimeIndex`. It 
         represents the index of a pandas DataFrame or Series, which contains 
         datetime values.
+    force_regular : bool, optional
+        The `force_regular` parameter is a boolean flag that determines whether 
+        to force the frequency to be regular. If set to `True`, the function 
+        will convert irregular frequencies to their regular counterparts. For 
+        example, if the inferred frequency is 'B' (business days), it will be 
+        converted to 'D' (calendar days). The default value is `False`.
         
     Returns
     -------
@@ -62,7 +71,7 @@ def get_frequency_summary(idx: Union[pd.Series, pd.DatetimeIndex]):
     if isinstance(idx, pd.DatetimeIndex):
         idx = pd.Series(idx, name="idx")
     
-    _freq_inferred = _get_pandas_frequency(idx)
+    _freq_inferred = _get_pandas_frequency(idx, force_regular = force_regular)
     
     _freq_median = idx.diff().median()
     
@@ -587,6 +596,8 @@ def _get_pandas_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular
     #         raise ValueError("The frequency could not be detectied.")
     
     if force_regular:
+        if freq == 'A-DEC':
+            freq = 'Y' 
         if freq == 'B':
             freq = 'D'
         if freq == 'BM':
