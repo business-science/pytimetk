@@ -21,7 +21,7 @@ number-depth: 2
 
 # PyTimeTK <img src="logo-timetk.png" align="right" height="138" />
 
-> The Time Series Toolkit for Python
+> Time series easier, faster, more fun. Pytimetk.
 
 **PyTimetk's Mission:** To make time series analysis easier, faster, and more enjoyable in Python.
 
@@ -29,7 +29,7 @@ number-depth: 2
 
 Time series analysis is fundamental in many fields, from business forecasting to scientific research. While the Python ecosystem offers tools like `pandas`, they sometimes can be verbose and not optimized for all operations, especially for complex time-based aggregations and visualizations.
 
-Enter **pytimetk**. Crafted with a blend of ease-of-use and computational efficiency, `pytimetk` significantly simplifies the process of time series manipulation and visualization. By leveraging the `polars` backend, you can experience speed improvements ranging from 3X to a whopping 30X. Let's dive into a comparative analysis.
+Enter **pytimetk**. Crafted with a blend of ease-of-use and computational efficiency, `pytimetk` significantly simplifies the process of time series manipulation and visualization. By leveraging the `polars` backend, you can experience speed improvements ranging from 3X to a whopping 3500X. Let's dive into a comparative analysis.
 
 
 | Features/Properties | **pytimetk**                  | **pandas (+matplotlib)**               |

@@ -16,7 +16,7 @@
 
 # pytimetk
 
-> The time series toolkit for Python
+> Time series easier, faster, more fun. Pytimetk.
 
 **Please ⭐ us on GitHub (it takes 2-seconds and means a lot).**
 
@@ -24,11 +24,11 @@
 
 Time series analysis is fundamental in many fields, from business forecasting to scientific research. While the Python ecosystem offers tools like `pandas`, they sometimes can be verbose and not optimized for all operations, especially for complex time-based aggregations and visualizations.
 
-Enter **pytimetk**. Crafted with a blend of ease-of-use and computational efficiency, `pytimetk` significantly simplifies the process of time series manipulation and visualization. By leveraging the `polars` backend, you can experience speed improvements ranging from 3X to a whopping 30X. Let's dive into a comparative analysis.
+Enter **pytimetk**. Crafted with a blend of ease-of-use and computational efficiency, `pytimetk` significantly simplifies the process of time series manipulation and visualization. By leveraging the `polars` backend, you can experience speed improvements ranging from 3X to a whopping 3500X. Let's dive into a comparative analysis.
 
 | Features/Properties | **pytimetk**                  | **pandas (+matplotlib)**               |
 |---------------------|-------------------------------|---------------------------------------|
-| **Speed**           | 🚀 3X to 500X Faster          | 🐢 Standard                           |
+| **Speed**           | 🚀 3X to 3500X Faster          | 🐢 Standard                           |
 | **Code Simplicity** | 🎉 Concise, readable syntax    | 📜 Often verbose                      |
 | `plot_timeseries()` | 🎨 2 lines, no customization  | 🎨 16 lines, customization needed    |
 | `summarize_by_time()` | 🕐 2 lines, 13.4X faster     | 🕐 6 lines, 2 for-loops               |
