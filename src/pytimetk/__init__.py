@@ -70,6 +70,9 @@ from .feature_engineering.timeseries_signature import (
 from .feature_engineering.hilbert import (
     augment_hilbert
 )
+from .feature_engineering.wavelet import (
+    augment_wavelet
+)
 from .feature_engineering.holiday_signature import (
     augment_holiday_signature, get_holiday_signature
 )

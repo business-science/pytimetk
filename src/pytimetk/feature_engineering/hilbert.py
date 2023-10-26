@@ -19,6 +19,8 @@ def augment_hilbert(
     """
     Apply the Hilbert transform to specified columns of a DataFrame or 
     DataFrameGroupBy object.
+    
+    Signal Processing: The Hilbert transform is used in various signal processing techniques, including phase and amplitude modulation and demodulation, and in the analysis of signals with time-varying amplitude and frequency.
 
     Parameters
     ----------
@@ -75,7 +77,8 @@ def augment_hilbert(
     df = tk.load_dataset('walmart_sales_weekly', parse_dates=['Date'])
 
 
-    df_hilbert = (df
+    df_hilbert = (
+        df
             .groupby('id')
             .augment_hilbert(
                 date_column = 'Date',
@@ -93,7 +96,8 @@ def augment_hilbert(
     import pandas as pd
     
     df = tk.load_dataset('walmart_sales_weekly', parse_dates=['Date'])
-    df_hilbert = (df
+    df_hilbert = (
+        df
             .groupby('id')
             .augment_hilbert(
                 date_column = 'Date',
@@ -111,7 +115,8 @@ def augment_hilbert(
     import pandas as pd
     
     df = tk.load_dataset('taylor_30_min', parse_dates=['date'])
-    df_hilbert = (df
+    df_hilbert = (
+        df
             .augment_hilbert(
                 date_column = 'date',
                 value_column = ['value'],
@@ -128,7 +133,8 @@ def augment_hilbert(
     import pandas as pd
     
     df = tk.load_dataset('taylor_30_min', parse_dates=['date'])
-    df_hilbert_pd = (df
+    df_hilbert_pd = (
+        df
             .augment_hilbert(
                 date_column = 'date',
                 value_column = ['value'],

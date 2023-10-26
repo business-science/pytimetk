@@ -374,16 +374,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>get_frequency_summary(idx)</code></p>
+<p><code>get_frequency_summary(idx, force_regular=False)</code></p>
 <p>More robust version of pandas inferred frequency.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 3%">
-<col style="width: 14%">
-<col style="width: 75%">
-<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 7%">
+<col style="width: 85%">
+<col style="width: 2%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -399,6 +399,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>pd.Series or pd.DateTimeIndex</td>
 <td>The <code>idx</code> parameter is either a <code>pd.Series</code> or a <code>pd.DateTimeIndex</code>. It represents the index of a pandas DataFrame or Series, which contains datetime values.</td>
 <td><em>required</em></td>
+</tr>
+<tr class="even">
+<td><code>force_regular</code></td>
+<td>bool</td>
+<td>The <code>force_regular</code> parameter is a boolean flag that determines whether to force the frequency to be regular. If set to <code>True</code>, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is ‘B’ (business days), it will be converted to ‘D’ (calendar days). The default value is <code>False</code>.</td>
+<td><code>False</code></td>
 </tr>
 </tbody>
 </table>

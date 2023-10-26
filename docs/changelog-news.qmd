@@ -21,7 +21,8 @@ number-sections: false
 - `augment_rolling_apply()`: For complex rolling operations using apply-style data frame functions.  
 - `augment_expanding()`: For expanding calculations with single-column functions (e.g. mean). 
 - `augment_expanding_apply()`: For complex expanding operations with apply-style data frame functions.
-- `augment_hilbert()`: For signal processing.
+- `augment_hilbert()`: Hilbert features for signal processing.
+- `augment_wavelet()`: Wavelet transform features. 
 - `get_frequency()`: Infer a pandas-like frequency. More robust than `pandas.infer_freq`.
 - `get_seasonal_frequency()`: Infer the pandas-like seasonal frequency (periodicity) for the time series. 
 - `get_trend_frequency()`: Infer the pandas-like trend for the time series. 

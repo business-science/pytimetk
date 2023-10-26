@@ -18,11 +18,18 @@ def augment_wavelet(
     method: str, 
     sample_rate: str,
     scales: Union[str, List[str]],
-    #engine: str = 'pandas'
-    ):
+) -> pd.DataFrame:
     """
     Apply the Wavely transform to specified columns of a DataFrame or 
     DataFrameGroupBy object.
+    
+    A wavelet transform is a mathematical tool used to decompose a signal or function into different frequency components and then study each component with a resolution matched to its scale. The wavelet transform uses wavelets, which are functions that are localized in both time and frequency. 
+    
+    Uses:
+    
+    1. Noise Reduction: Wavelet transform can be used to filter out noise from signals. By transforming a noisy signal and then zeroing out the wavelet coefficients that correspond to noise, the inverse wavelet transform can produce a denoised version of the original signal.
+    
+    2. Feature Extraction: In pattern recognition and machine learning, wavelet transforms can be used to extract features from signals which can be fed to forecasting algorithms.
 
     Parameters
     ----------
@@ -32,15 +39,6 @@ def augment_wavelet(
     value_column : str or list
         List of column names in 'data' to which the Hilbert transform will be 
         applied.
-    engine : str, optional
-        The `engine` parameter is used to specify the engine to use for 
-        summarizing the data. It can be either "pandas" or "polars". 
-        
-        - The default value is "pandas".
-        
-        - When "polars", the function will internally use the `polars` library 
-        for summarizing the data. This can be faster than using "pandas" for 
-        large datasets. 
     sample_rate : 
         Sampling rate of the input data.
         For time-series data, the sample rate (sample_rate) typically refers 
@@ -50,8 +48,6 @@ def augment_wavelet(
         data in terms of "samples per hour", the sample rate would be:
 
         sample_rate = samples / hour = 1 / 0.5 = 2
-
-
     scales : str or list 
         Array of scales to use in the transform.
         The choice of scales in wavelet analysis determines which frequencies 
@@ -108,39 +104,42 @@ def augment_wavelet(
     Let's look at the three wavelet methods:
 
     1. Morlet Wavelet:
-    Characteristics:
-    Essentially a complex sinusoid modulated by a Gaussian window.
-    It provides a good balance between time localization and frequency 
-    localization.
+        
+        Characteristics:
+        Essentially a complex sinusoid modulated by a Gaussian window.
+        It provides a good balance between time localization and frequency 
+        localization.
     
-    When to use:
-    When you want a good compromise between time and frequency localization.
-    Particularly useful when you're interested in sinusoidal components or 
-    oscillatory patterns of your data. Commonly used in time-frequency analysis 
-    because of its simplicity and effectiveness.
+        When to use:
+        When you want a good compromise between time and frequency localization.
+        Particularly useful when you're interested in sinusoidal components or 
+        oscillatory patterns of your data. Commonly used in time-frequency analysis 
+        because of its simplicity and effectiveness.
 
     2. Bump Wavelet:
-    Characteristics:
-    Has an oscillating behavior similar to the Morlet but has sharper time 
-    localization. Its frequency localization isn't as sharp as its time 
-    localization.
+        
+        Characteristics:
+        Has an oscillating behavior similar to the Morlet but has sharper time 
+        localization. Its frequency localization isn't as sharp as its time 
+        localization.
 
-    When to use:
-    When you are more interested in precisely identifying when certain events or 
-    anomalies occur in your data. It can be especially useful for detecting 
-    sharp spikes or short-lived events in your signal.
+        When to use:
+        When you are more interested in precisely identifying when certain events or 
+        anomalies occur in your data. It can be especially useful for detecting 
+        sharp spikes or short-lived events in your signal.
 
     3. Analytic Morlet Wavelet:
-    Characteristics:
-    A variation of the Morlet wavelet that is designed to have no negative 
-    frequencies when transformed. This means it's "analytic." Offers slightly 
-    better frequency localization than the standard Morlet wavelet.
+        
+        Characteristics:
+        A variation of the Morlet wavelet that is designed to have no negative 
+        frequencies when transformed. This means it's "analytic." Offers slightly 
+        better frequency localization than the standard Morlet wavelet.
 
-    When to use:
-    When you're interested in phase properties of your signal.
-    Can be used when you need to avoid negative frequencies in your analysis, 
-    making it useful for certain types of signals, like analytic signals.
-    Offers a cleaner spectrum in the frequency domain than the standard Morlet.
+        When to use:
+        When you're interested in phase properties of your signal.
+        Can be used when you need to avoid negative frequencies in your analysis, 
+        making it useful for certain types of signals, like analytic signals.
+        Offers a cleaner spectrum in the frequency domain than the standard Morlet.
 
     Examples
     --------

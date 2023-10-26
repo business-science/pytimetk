@@ -45,6 +45,7 @@ Adding Features to Time Series DataFrames (Augmenting)
 | [augment_expanding](augment_expanding.qmd#pytimetk.augment_expanding) | Apply one or more Series-based expanding functions to one or more columns of a DataFrame. |
 | [augment_expanding_apply](augment_expanding_apply.qmd#pytimetk.augment_expanding_apply) | Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame. |
 | [augment_hilbert](augment_hilbert.qmd#pytimetk.augment_hilbert) | Apply the Hilbert transform to specified columns of a DataFrame or  |
+| [augment_wavelet](augment_wavelet.qmd#pytimetk.augment_wavelet) | Apply the Wavely transform to specified columns of a DataFrame or  |
 
 ## 📎 TS Features
 

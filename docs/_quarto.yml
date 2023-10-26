@@ -143,6 +143,7 @@ quartodoc:
         - augment_expanding
         - augment_expanding_apply
         - augment_hilbert
+        - augment_wavelet
     - title: 📎 TS Features
       desc: Python implementation of the R package `tsfeatures`.
       package: pytimetk
