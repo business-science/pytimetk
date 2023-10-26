@@ -56,8 +56,8 @@ def anomalize(
         `None`, no trend estimation will be performed.
     method : str
         The `method` parameter determines the method used for anomaly detection. 
-        The available options are 'twitter' and 'seasonal_decompose'. The default 
-        value is 'twitter'.
+        The only available method is `twitter`, which is the default value. 
+        More anomaly detection methods will be added in upcoming releases.
     decomp : str
         The `decomp` parameter specifies the type of decomposition to use for time 
         series decomposition. It can take two values:
@@ -408,13 +408,14 @@ def _anomalize(
             model=decomp,
         )
     else:
-        result = _stl_decompose(
-            data=data, 
-            date_column=date_column, 
-            value_column=value_column, 
-            period=period,
-            robust = True,
-        )
+        raise ValueError(f"Method {method} is not supported. Please use 'twitter'.")
+        # result = _stl_decompose(
+        #     data=data, 
+        #     date_column=date_column, 
+        #     value_column=value_column, 
+        #     period=period,
+        #     robust = True,
+        # )
     
     # STEP 2: Identify the outliers
     
