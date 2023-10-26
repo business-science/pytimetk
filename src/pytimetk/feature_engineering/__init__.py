@@ -1,4 +1,5 @@
 from .hilbert import *
+from .wavelet import *
 from .timeseries_signature import *
 from .holiday_signature import *
 from .lags import *

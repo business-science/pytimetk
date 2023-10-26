@@ -24,6 +24,7 @@ from .core.ts_summary import *
 from .core.anomalize import *
 from .core.frequency import *
 from .feature_engineering.hilbert import *
+from .feature_engineering.wavelet import *
 
 from .finance.exponential import *
 
