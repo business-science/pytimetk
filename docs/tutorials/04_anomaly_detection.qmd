@@ -7,4 +7,98 @@ number-sections: true
 number-depth: 2
 ---
 
-Coming soon...
+The `anomalize()` function is a feature rich tool for performing anomaly detection. It’s geared towards time series analysis, which is one of the biggest needs for understanding when anomalies occur. We have a quick start section called “5-Minutes to Anomalize” for those looking to jump right in. We also have a detailed section on parameter adjustment for those looking to understand what nobs they can turn. 
+
+# 5 Minutes to Anomalize
+
+Load libraries. 
+
+```{python}
+import pytimetk as tk
+import pandas as pd
+```
+
+Get some data. We'll use the `walmart_sales_weekly` data set that comes with anomalize. We'll `glimpse()` the data to get a sense of what we are working with. 
+
+
+```{python}
+df = tk.load_dataset("walmart_sales_weekly", parse_dates = ['Date'])
+
+df.glimpse()
+```
+
+The key features needed are:
+
+- `id`: Grouping feature, combination of store and department
+- `Date`: The timestamp information
+- `Weekly_Sales`: The sales values for the given week for the store-department combination
+
+Next, plot the time series. 
+
+
+```{python}
+df = df[['id', 'Date', 'Weekly_Sales']]
+
+df \
+    .groupby('id') \
+    .plot_timeseries(
+        date_column = "Date", 
+        value_column = "Weekly_Sales",
+        facet_ncol = 2,
+        width = 800,
+        height = 800,
+    )
+```
+
+We can see there are some spikes, but are these anomalies? Let's use `anomalize()` to detect. Anomalize is group-aware, so we can use this as part of a normal pandas groupby chain. 
+
+
+```{python}
+anomalize_df = df \
+    .groupby('id', sort = False) \
+    .anomalize(
+        "Date", "Weekly_Sales", 
+        period = 52,
+        trend = 52,
+        method = "seasonal_decompose",
+        verbose = True
+    )
+
+anomalize_df.glimpse()
+```
+
+The `anomalize()` function returns:
+
+1. The original grouping and datetime columns. 
+2. The seasonal decomposition: `observed`, `seasonal`, `seasadj`, `trend`, and `remainder`. The objective is to remove trend and seasonality such that the remainder is stationary and representative of normal variation and anomalous variations.
+3. Anomaly identification and scoring: `anomaly`, `anomaly_score`, `anomaly_direction`. These identify the anomaly decision (Yes/No), score the anomaly as a distance from the centerline, and label the direction (-1 (down), zero (not anomalous), +1 (up)).
+4. Recomposition: `recomposed_l1` and `recomposed_l2`. Think of these as the lower and upper bands. Any `observed` data that is below l1 or above l2 is anomalous. 
+5. Cleaned data: `observed_clean`. Cleaned data is automatically provided, which has the outliers replaced with data that is within the recomposed l1/l2 boundaries. With that said, you should always first seek to understand why data is being considered anomalous before simply removing outliers and using the cleaned data. 
+
+The most important aspect is that this data is ready to be visualized, inspected, and modifications can then be made to address any tweaks you would like to make. 
+
+## Visualization 1: Anomalies Plot
+
+
+```{python}
+anomalize_df \
+    .groupby("id") \
+    .plot_anomalies(
+        date_column = "Date", 
+        facet_ncol = 2, 
+        width = 800,
+        height = 800,
+    )
+
+
+```
+
+```{python}
+anomalize_df \
+    .groupby("id") \
+    .plot_anomalies_decomp(
+        date_column = "Date", 
+        width = 800,
+        height = 800,
+    )
+```

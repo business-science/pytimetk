@@ -10,6 +10,7 @@ from pytimetk.core.frequency import get_frequency, get_seasonal_frequency, get_t
 from pytimetk.utils.parallel_helpers import parallel_apply, get_threads, progress_apply
 
 from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.tsa.seasonal import STL
 
 @pf.register_dataframe_method
 def anomalize(
@@ -407,13 +408,12 @@ def _anomalize(
             model=decomp,
         )
     else:
-        result = _seasonal_decompose(
+        result = _stl_decompose(
             data=data, 
             date_column=date_column, 
             value_column=value_column, 
             period=period,
-            model=decomp,
-            extrapolate_trend = 'freq'
+            robust = True,
         )
     
     # STEP 2: Identify the outliers
@@ -545,6 +545,48 @@ def _seasonal_decompose(
         two_sided=two_sided,
         extrapolate_trend = extrapolate_trend,
     )
+    
+    # Construct TS Decomposition DataFrame
+    observed = series
+    
+    seasadj = series - result.seasonal
+    
+    trend = result.trend
+    
+    resid = seasadj - trend
+        
+    result_df = pd.concat([observed, result.seasonal, seasadj, trend, resid], axis=1)
+    
+    result_df.columns = ['observed', 'seasonal', 'seasadj', 'trend', 'remainder']
+    
+    result_df.reset_index(inplace=True)
+    
+    result_df.index = orig_index
+
+    return result_df 
+
+
+def _stl_decompose(
+    data, 
+    date_column, 
+    value_column, 
+    period = None, 
+    **kwargs
+):
+    
+    orig_index = data.index
+        
+    series = data.set_index(date_column)[value_column]
+     
+    
+    # Need to add freq, trend, and kwargs
+    stl = STL(
+        series, 
+        period = period,
+        **kwargs
+    )
+    
+    result = stl.fit()
     
     # Construct TS Decomposition DataFrame
     observed = series
