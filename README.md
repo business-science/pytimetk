@@ -28,20 +28,24 @@ Enter **pytimetk**. Crafted with a blend of ease-of-use and computational effici
 
 | Features/Properties | **pytimetk**                  | **pandas (+matplotlib)**               |
 |---------------------|-------------------------------|---------------------------------------|
-| **Speed**           | 🚀 3X to 30X Faster            | 🐢 Standard                           |
+| **Speed**           | 🚀 3X to 500X Faster          | 🐢 Standard                           |
 | **Code Simplicity** | 🎉 Concise, readable syntax    | 📜 Often verbose                      |
+| `plot_timeseries()` | 🎨 2 lines, no customization  | 🎨 16 lines, customization needed    |
 | `summarize_by_time()` | 🕐 2 lines, 13.4X faster     | 🕐 6 lines, 2 for-loops               |
-| `plot_timeseries()`  | 🎨 2 lines, no customization  | 🎨 16 lines, customization needed    |
+| `pad_by_time()`     | ⛳ 2 lines, fills gaps in timeseries        | ❌ No equivalent    |
+| `anomalize()`       | 📈 2 lines, detects and corrects anomalies  | ❌ No equivalent    |
+| `augment_timeseries_signature()` | 📅 1 line, all calendar features    | 🕐 29 lines of `dt` extractors |
+| `augment_rolling()` | 🏎️ 10X to 3500X faster     | 🐢 Slow Rolling Operations |
 
-As evident from the table:
-
-- `summarize_by_time()` in **pytimetk** is not just about speed; it also simplifies your codebase, converting a 6-line, double for-loop routine in `pandas` into a concise 2-line operation.
+As evident from the table, **pytimetk** is not just about speed; it also simplifies your codebase. For example, `summarize_by_time()`, converts a 6-line, double for-loop routine in `pandas` into a concise 2-line operation. And with the `polars` engine, get results 13.4X faster than `pandas`!
   
-- Similarly, `plot_timeseries()` dramatically streamlines the plotting process, encapsulating what would typically require 16 lines of `matplotlib` code into a mere 2-line command in **pytimetk**, without sacrificing customization or quality.
+Similarly, `plot_timeseries()` dramatically streamlines the plotting process, encapsulating what would typically require 16 lines of `matplotlib` code into a mere 2-line command in **pytimetk**, without sacrificing customization or quality. And with `plotly` and `plotnine` engines, you can create interactive plots and beautiful static visualizations with just a few lines of code.
+
+For calendar features, **pytimetk** offers `augment_timeseries_signature()` which cuts down on over 30 lines of `pandas` dt extractions. For rolling features, **pytimetk** offers `augment_rolling()`, which is 10X to 3500X faster than `pandas`. It also offers `pad_by_time()` to fill gaps in your time series data, and `anomalize()` to detect and correct anomalies in your time series data.
 
 Join the revolution in time series analysis. Reduce your code complexity, increase your productivity, and harness the speed that **pytimetk** brings to your workflows.
 
-Explore more at [pytimetk homepage](https://business-science.github.io/pytimetk/).
+Explore more at our [pytimetk homepage](https://business-science.github.io/pytimetk/).
 
 # Installation
 
