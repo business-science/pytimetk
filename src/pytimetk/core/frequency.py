@@ -598,6 +598,10 @@ def _get_pandas_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular
     if force_regular:
         if freq == 'A-DEC':
             freq = 'Y' 
+        if freq == 'Q-DEC':
+            freq = 'Q'     
+        if freq == 'W-SUN':
+            freq = 'W'        
         if freq == 'B':
             freq = 'D'
         if freq == 'BM':
