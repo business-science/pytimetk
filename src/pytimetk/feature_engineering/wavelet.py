@@ -6,7 +6,6 @@ import polars as pl
 from typing import Union, List
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 
-from pytimetk.utils.pandas_helpers import flatten_multiindex_column_names
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.utils.polars_helpers import pandas_to_polars_frequency, pandas_to_polars_aggregation_mapping
 
@@ -152,35 +151,40 @@ def augment_wavelet(
     
     df = tk.datasets.load_dataset('walmart_sales_weekly', parse_dates = ['Date'])
 
-    wavelet_df = (df.groupby('id').augment_wavelet(
-                    date_column = 'Date',
-                    value_column ='Weekly_Sales', 
-                    scales = [15],
-                    sample_rate =1,
-                    method = 'bump'
-                                )
-                )
+    wavelet_df = (
+        df
+            .groupby('id')
+            .augment_wavelet(
+                date_column = 'Date',
+                value_column ='Weekly_Sales', 
+                scales = [15],
+                sample_rate =1,
+                method = 'bump'
+            )
+        )
     wavelet_df.head()
-
 
     ```
 
     ```{python}
     # Example 2: Using Pandas Engine on a pandas dataframe
-    import pyti??metk as tk
+    import pytimetk as tk
     import pandas as pd
 
     df = tk.load_dataset('taylor_30_min', parse_dates = ['date'])
 
-    result_df = (augment_wavelet(
-                df, 
-                date_column = 'date',
-                value_column ='value', 
-                scales = [15],
-                sample_rate =1000,
-                method = 'morlet'
-                            )
-            )
+    result_df = (
+        tk.augment_wavelet(
+            df, 
+            date_column = 'date',
+            value_column ='value', 
+            scales = [15],
+            sample_rate =1000,
+            method = 'morlet'
+        )
+    )
+    
+    result_df
     ```
     """
     # Run common checks
@@ -190,9 +194,9 @@ def augment_wavelet(
 
 
     wavelet_functions = {
-    'morlet': morlet_wavelet,
-    'bump': bump_wavelet,
-    'analytic_morlet': analytic_morlet_wavelet
+        'morlet': morlet_wavelet,
+        'bump': bump_wavelet,
+        'analytic_morlet': analytic_morlet_wavelet
     }
 
     # Sort the DataFrame by the date column before applying the CWT
@@ -252,31 +256,3 @@ def analytic_morlet_wavelet(t, w=5.0):
     return s1 * s2
 
 
-# import pytimetk as tk
-
-# df = tk.load_dataset('taylor_30_min', parse_dates = ['date'])
-# df.head()
-
-# result_df = (augment_wavelet(
-#                 df, 
-#                 date_column = 'date',
-#                 value_column ='value', 
-#                 scales = [48,336],
-#                 sample_rate = 2,
-#                 method = 'morlet'
-#                             )
-#             )
-# import pytimetk as tk
-# from scipy import signal
-# signal.cwt(result_df.value, signal.ricker, [15])
-
-# df = tk.datasets.load_dataset('walmart_sales_weekly', parse_dates = ['Date'])
-
-# result_df = (df.groupby('id').augment_wavelet(
-#                 date_column = 'Date',
-#                 value_column ='Weekly_Sales', 
-#                 scales = [52],
-#                 sample_rate =1/(24*7),
-#                 method = 'bump'
-#                             )
-#             )
