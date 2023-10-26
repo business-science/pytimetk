@@ -32,16 +32,19 @@ def check_anomalize_data(data: Union[pd.DataFrame, pd.core.groupby.generic.DataF
     return None
 
 
-def check_data_type(data, authorized_dtypes: list):
+def check_data_type(data, authorized_dtypes: list, error_str=None):
+    if not error_str:
+        error_str = f'Input type must be one of {authorized_dtypes}'
     if not sum(map(lambda dtype: isinstance(data, dtype), authorized_dtypes)) > 0:
-        raise TypeError(f'Input type must be one of {authorized_dtypes}')
+        raise TypeError(error_str)
 
 
 def check_dataframe_or_groupby(data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]) -> None:
-    check_data_type(data, authorized_dtypes = [
+    check_data_type(
+        data, authorized_dtypes = [
         pd.DataFrame,
         pd.core.groupby.generic.DataFrameGroupBy
-    ])
+    ], error_str='`data` is not a Pandas DataFrame or GroupBy object.')
 
 
 def check_dataframe_or_groupby_polar(data: Union[pl.DataFrame, pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]) -> None:
