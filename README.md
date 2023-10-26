@@ -127,3 +127,11 @@ or you can create a virtualenv with poetry and install the dependencies
 poetry shell
 poetry install
 ```
+
+# 🏆 More Coming Soon...
+
+We are in the early stages of development. But it's obvious the potential for `pytimetk` now in Python. 🐍
+
+- Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). 
+- To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 
+- Want to contribute? [See our contributing guide here.](/contributing.html) 

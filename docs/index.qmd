@@ -25,6 +25,8 @@ number-depth: 2
 
 **PyTimetk's Mission:** To make time series analysis easier, faster, and more enjoyable in Python.
 
+**Please ⭐ us on GitHub (it takes 2-seconds and means a lot).**
+
 # Introducing pytimetk: Simplifying Time Series Analysis for Everyone
 
 Time series analysis is fundamental in many fields, from business forecasting to scientific research. While the Python ecosystem offers tools like `pandas`, they sometimes can be verbose and not optimized for all operations, especially for complex time-based aggregations and visualizations.
