@@ -1,6 +1,7 @@
 
 import pandas as pd
 import numpy as np
+import polars as pl
 
 from importlib.metadata import distribution, PackageNotFoundError
 
@@ -30,13 +31,26 @@ def check_anomalize_data(data: Union[pd.DataFrame, pd.core.groupby.generic.DataF
     
     return None
 
+
+def check_data_type(data, authorized_dtypes: list):
+    if not sum(map(lambda dtype: isinstance(data, dtype), authorized_dtypes)) > 0:
+        raise TypeError(f'Input type must be one of {authorized_dtypes}')
+
+
 def check_dataframe_or_groupby(data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]) -> None:
-    
-    if not isinstance(data, pd.DataFrame):
-        if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-            raise TypeError("`data` is not a Pandas DataFrame or GroupBy object.")
-        
-    return None
+    check_data_type(data, authorized_dtypes = [
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy
+    ])
+
+
+def check_dataframe_or_groupby_polar(data: Union[pl.DataFrame, pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]) -> None:
+    check_data_type(data, authorized_dtypes = [
+        pl.DataFrame,
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy
+    ])
+
 
 def check_date_column(data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], date_column: str) -> None:
     
