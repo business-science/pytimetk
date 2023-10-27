@@ -13,7 +13,9 @@ code-tools:
 
 Anomalies, often called outliers, are data points that deviate significantly from the general trend or pattern in the data. In the context of time series, they can appear as sudden spikes, drops, or any abrupt change in a sequence of values. 
 
-Anomaly detection for time series is a technique used to identify unusual patterns that do not conform to expected behavior. It is especially relevant for sequential data (like stock prices, sensor data, sales data, etc.) where the temporal aspect is crucial.
+Anomaly detection for time series is a technique used to identify unusual patterns that do not conform to expected behavior. It is especially relevant for sequential data (like stock prices, sensor data, sales data, etc.) where the temporal aspect is crucial. Anomalies can identify important events or be the cause of noise that can hinder forecasting performance.
+
+# This applied tutorial covers the use of:
 
 - `tk.anomalize()`: A single function that integrates time series decomposition, anomaly identification (scoring), and outlier cleaning.
 - `tk.plot_anomalies_decomp()`: The first step towards identifying if your anomalization is detecting outliers to your needs. 
