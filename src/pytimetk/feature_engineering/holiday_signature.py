@@ -17,7 +17,6 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 
 @pf.register_dataframe_method
-#@pf.register_dataframe_method
 def augment_holiday_signature(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
@@ -307,8 +306,8 @@ def _augment_holiday_signature_polars(
     df_pl = pl.DataFrame(data)
 
     # Get Start and End Dates
-    start_date = df_pl.sort('date').row(0)[0]
-    end_date   = df_pl.sort('date').row(-1)[0]
+    start_date = df_pl.sort(date_column).row(0)[0]
+    end_date   = df_pl.sort(date_column).row(-1)[0]
 
     # Get List of Holidays (0/1)
     start         = pl.date(start_date.year, start_date.month, start_date.day)
@@ -357,7 +356,8 @@ def _augment_holiday_signature_polars(
 @pf.register_series_method
 def get_holiday_signature(
     idx: Union[pd.DatetimeIndex, pd.Series],
-    country_name: str = 'UnitedStates'
+    country_name: str = 'UnitedStates',
+    engine: str = 'pandas',
 ) -> pd.DataFrame:
     """
     Engineers 4 different holiday features from a single datetime for 137 countries 
@@ -374,8 +374,16 @@ def get_holiday_signature(
         The name of the country for which to generate holiday features. Defaults 
         to United States holidays, but the following countries are currently 
         available and accessible by the full name or ISO code: See NOTES.
+    engine : str, optional
+        The `engine` parameter is used to specify the engine to use for 
+        getting holidays. It can be either "pandas" or "polars". 
+        
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library 
+          for getting holidays. This can be faster than using "pandas" for 
+          large datasets. 
 
-    
     Returns
     -------
     pd.DataFrame: 
@@ -504,16 +512,28 @@ def get_holiday_signature(
     df = pd.DataFrame(pd.date_range(start=start_date, end=end_date), columns=['date'])
     
     # Add holiday features for US
-    tk.augment_holiday_signature(df, 'date', 'UnitedStates')
+    tk.get_holiday_signature(df['date'], 'UnitedStates')
     ```
     
     ```{python}
     # Add holiday features for France
-    tk.augment_holiday_signature(df, 'date', 'France')
+    tk.get_holiday_signature(df['date'], 'France')
     ```
     """
     # Common checks
     check_series_or_datetime(idx)
+    
+    if engine == 'pandas':
+        return _get_holiday_signature_pandas(idx, country_name)
+    elif engine == 'polars':
+        return _get_holiday_signature_pandas(idx, country_name)
+    else:
+        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+
+def _get_holiday_signature_pandas(
+    idx: Union[pd.DatetimeIndex, pd.Series],
+    country_name: str = 'UnitedStates'
+) -> pd.DataFrame:
     
     # This function requires the holidays package to be installed
     try:
@@ -530,3 +550,22 @@ def get_holiday_signature(
 
     return ret
 
+def _get_holiday_signature_polars(
+    idx: Union[pd.DatetimeIndex, pd.Series],
+    country_name: str = 'UnitedStates'
+) -> pd.DataFrame:
+    
+    # This function requires the holidays package to be installed
+    try:
+        import holidays
+    except ImportError:
+        raise ImportError("The 'holidays' package is not installed. Please install it by running 'pip install holidays'.")
+    
+    df = pd.DataFrame(idx)
+    
+    if df.columns[0] == 0:
+        df.columns = ['idx']
+    
+    ret = augment_holiday_signature(df, date_column = df.columns[0], country_name = country_name, engine='polars')
+
+    return ret
