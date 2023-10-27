@@ -489,3 +489,5 @@ This was a great example of how pytimetk can help Data Analysts and Data Scienti
 - And, we learned how to add many features with augment functions including `tk.augment_timeseries_signature` ant `tk.agument_lags`
 
 All of these `pytimetk` skills and techniques were necessary to produce a good sales forecast with `sklearn`. 
+
+{{< include ../_includes/_footer.qmd >}}

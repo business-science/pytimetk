@@ -809,3 +809,4 @@ The `pytimetk` package offers a wide range of versatile time series functions, m
 - `tk.augment_rolling()`: Moving averages
 - `tk.augment_rolling_apply()`: Rolling correlations and rolling regressions
 
+{{< include ../_includes/_footer.qmd >}}
