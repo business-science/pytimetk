@@ -326,11 +326,16 @@ def _time_scale_template_polars(wide_format: bool = False):
         _table = _table.slice(1)
         _table = _table[['median_unit'] + [col for col in _table.columns if col != 'median_unit']]
         
-    return _table.to_pandas()
+    return _table.to_pandas().set_index('median_unit')
 
  
 @pf.register_series_method
-def get_seasonal_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool = False, numeric: bool = False):
+def get_seasonal_frequency(
+    idx: Union[pd.Series, pd.DatetimeIndex],
+    force_regular: bool = False,
+    numeric: bool = False,
+    engine: str = 'pandas'
+):
     '''
     The `get_seasonal_frequency` function returns the seasonal period of a given 
     time series or datetime index.
@@ -352,6 +357,14 @@ def get_seasonal_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regula
         If `numeric` is set to `True`, the output will be a numeric representation 
         of the seasonal period. If `numeric` is set to `False` (default), the 
         output will
+    engine : str, optional
+        The `engine` parameter is used to specify the engine to use for 
+        generating a date summary. It can be either "pandas" or "polars". 
+        
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library 
+          for generating the time scale information. 
     
     Returns
     -------
@@ -380,7 +393,7 @@ def get_seasonal_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regula
     if isinstance(idx, pd.DatetimeIndex):
         idx = pd.Series(idx, name="idx")
     
-    summary_freq = get_frequency_summary(idx)
+    summary_freq = get_frequency_summary(idx, force_regular = force_regular)
     
     scale = summary_freq['freq_median_scale'].values[0]
     unit = summary_freq['freq_median_unit'].values[0]
@@ -397,7 +410,7 @@ def get_seasonal_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regula
                 unit = "M"  
     
     def _lookup_seasonal_period(unit):
-        return time_scale_template(wide_format=True)[unit]['seasonal_period']
+        return time_scale_template(wide_format = True, engine = engine)[unit]['seasonal_period']
     
     _period = _lookup_seasonal_period(unit)
     
