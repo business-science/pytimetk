@@ -5,102 +5,245 @@ toc: true
 toc-depth: 3
 number-sections: true
 number-depth: 2
+code-fold: show
+code-tools: 
+    source: false
+    toggle: true
 ---
 
-The `anomalize()` function is a feature rich tool for performing anomaly detection. It’s geared towards time series analysis, which is one of the biggest needs for understanding when anomalies occur. We have a quick start section called “5-Minutes to Anomalize” for those looking to jump right in. We also have a detailed section on parameter adjustment for those looking to understand what nobs they can turn. 
+Anomalies, often called outliers, are data points that deviate significantly from the general trend or pattern in the data. In the context of time series, they can appear as sudden spikes, drops, or any abrupt change in a sequence of values. 
 
-# 5 Minutes to Anomalize
+Anomaly detection for time series is a technique used to identify unusual patterns that do not conform to expected behavior. It is especially relevant for sequential data (like stock prices, sensor data, sales data, etc.) where the temporal aspect is crucial.
 
-Load libraries. 
+- `tk.anomalize()`: A single function that integrates time series decomposition, anomaly identification (scoring), and outlier cleaning.
+- `tk.plot_anomalies_decomp()`: The first step towards identifying if your anomalization is detecting outliers to your needs. 
+- `tk.plot_anomalies()`: The second step to visualize the anomalies. 
+- `tk.plot_anomalies_cleaned()`: If desired, visualize the data with anomalies removed
+
+::: {.callout-note collapse="false"}
+## How to navigate this guide
+
+This applied tutorial is separated into 2 parts:
+
+1.  We have a quick start section called “5-Minutes to Anomalize” for those looking to jump right in. 
+2.  We also have a detailed section on parameter adjustment for those looking to understand what nobs they can turn. 
+:::
+
+# Five (5) Minutes to Anomalize
+
+Load these libraries to get started. 
 
 ```{python}
 import pytimetk as tk
 import pandas as pd
 ```
 
-Get some data. We'll use the `walmart_sales_weekly` data set that comes with anomalize. We'll `glimpse()` the data to get a sense of what we are working with. 
+Next, get some data. We'll use the `wikipedia_traffic_daily` data set that comes with anomalize. This contains data on various websites 
+
+We'll `glimpse()` the data to get a sense of what we are working with. 
 
 
 ```{python}
-df = tk.load_dataset("walmart_sales_weekly", parse_dates = ['Date'])
+df = tk.load_dataset("wikipedia_traffic_daily", parse_dates = ['date'])
 
 df.glimpse()
 ```
 
-The key features needed are:
+::: {.callout-note collapse="false"}
+## 3 Core Properties of Time Series Data
 
-- `id`: Grouping feature, combination of store and department
-- `Date`: The timestamp information
-- `Weekly_Sales`: The sales values for the given week for the store-department combination
+We can see that the `wikipedia_traffic_daily` dataset has:
+
+1. *Time Series Index:* `date`
+2. *Value Column(s):* The `value` column
+3. *Group Column(s):* The `Page` column
+:::
+
 
 Next, plot the time series. 
 
+:::{.panel-tabset }
+
+## Plotly
 
 ```{python}
-df = df[['id', 'Date', 'Weekly_Sales']]
-
 df \
-    .groupby('id') \
+    .groupby('Page') \
     .plot_timeseries(
-        date_column = "Date", 
-        value_column = "Weekly_Sales",
+        date_column = "date", 
+        value_column = "value",
         facet_ncol = 2,
         width = 800,
         height = 800,
+        engine = 'plotly'
     )
 ```
 
-We can see there are some spikes, but are these anomalies? Let's use `anomalize()` to detect. Anomalize is group-aware, so we can use this as part of a normal pandas groupby chain. 
+## Plotnine
+
+```{python}
+df \
+    .groupby('Page') \
+    .plot_timeseries(
+        date_column = "date", 
+        value_column = "value",
+        facet_ncol = 2,
+        width = 800,
+        height = 800,
+        engine = 'plotnine'
+    )
+```
+
+:::
+
+We can see there are some spikes, but are these anomalies? Let's use `anomalize()` to detect. 
+
+## Anomalize: breakdown, identify, and clean in 1 easy step
+
+The `anomalize()` function is a feature rich tool for performing anomaly detection. Anomalize is group-aware, so we can use this as part of a normal pandas groupby chain. In one easy step:
+
+- We breakdown (decompose) the time series
+- Analyze it's remainder (residuals) for spikes (anomalies)
+- Clean the anomalies if desired
 
 
 ```{python}
 anomalize_df = df \
-    .groupby('id', sort = False) \
+    .groupby('Page', sort = False) \
     .anomalize(
-        "Date", "Weekly_Sales", 
-        period = 1,
-        trend = 52,
-        method = "twitter",
-        verbose = True
+        date_column = "date", 
+        value_column = "value", 
     )
 
 anomalize_df.glimpse()
 ```
 
-The `anomalize()` function returns:
+::: {.callout-note collapse="false"}
+## The `anomalize()` function returns:
 
 1. The original grouping and datetime columns. 
 2. The seasonal decomposition: `observed`, `seasonal`, `seasadj`, `trend`, and `remainder`. The objective is to remove trend and seasonality such that the remainder is stationary and representative of normal variation and anomalous variations.
 3. Anomaly identification and scoring: `anomaly`, `anomaly_score`, `anomaly_direction`. These identify the anomaly decision (Yes/No), score the anomaly as a distance from the centerline, and label the direction (-1 (down), zero (not anomalous), +1 (up)).
 4. Recomposition: `recomposed_l1` and `recomposed_l2`. Think of these as the lower and upper bands. Any `observed` data that is below l1 or above l2 is anomalous. 
-5. Cleaned data: `observed_clean`. Cleaned data is automatically provided, which has the outliers replaced with data that is within the recomposed l1/l2 boundaries. With that said, you should always first seek to understand why data is being considered anomalous before simply removing outliers and using the cleaned data. 
+5. Cleaned data: `observed_clean`. Cleaned data is automatically provided, which has the outliers replaced with data that is within the recomposed l1/l2 boundaries. With that said, you should always first seek to understand why data is being considered anomalous before simply removing outliers and using the cleaned data.
+:::
 
 The most important aspect is that this data is ready to be visualized, inspected, and modifications can then be made to address any tweaks you would like to make. 
 
 ## Visualization 1: Seasonal Decomposition Plot
 
+The first step in my normal process is to analyze the seasonal decomposition. I want to see what the remainders look like, and make sure that the trend and seasonality are being removed such that the remainder is centered around zero. 
+
+::: {.callout-note collapse="false"}
+## What to do when the remainders have trend or seasonality?
+
+We'll cover how to tweak the nobs of `anomalize()` in the next section aptly named "How to tweak the nobs on `anomalize`". 
+:::
+
+:::{.panel-tabset }
+
+## Plotly
+
 ```{python}
 anomalize_df \
-    .groupby("id") \
+    .groupby("Page") \
     .plot_anomalies_decomp(
-        date_column = "Date", 
-        width = 800,
-        height = 800,
+        date_column = "date", 
+        width = 1800,
+        height = 1000,
+        engine = 'plotly'
     )
 ```
 
+## Plotnine
 
 ```{python}
 anomalize_df \
-    .groupby("id") \
-    .plot_anomalies(
-        date_column = "Date", 
-        facet_ncol = 2, 
-        width = 800,
-        height = 800,
+    .groupby("Page") \
+    .plot_anomalies_decomp(
+        date_column = "date", 
+        width = 1800,
+        height = 1000,
+        x_axis_date_labels = "%Y",
+        engine = 'plotnine'
     )
-
-
 ```
 
+:::
 
+## Visualization 2: Anomaly Detection Plot
+
+Once I'm satisfied with the remainders, my next step is to visualize the anomalies. Here I'm looking to see if I need to grow or shrink the remainder l1 and l2 bands, which classify anomalies. 
+
+:::{.panel-tabset }
+
+## Plotly
+
+```{python}
+anomalize_df \
+    .groupby("Page") \
+    .plot_anomalies(
+        date_column = "date", 
+        facet_ncol = 2, 
+        width = 1000,
+        height = 1000,
+    )
+```
+
+## Plotnine
+
+```{python}
+anomalize_df \
+    .groupby("Page") \
+    .plot_anomalies(
+        date_column = "date", 
+        facet_ncol = 2, 
+        width = 1000,
+        height = 1000,
+        x_axis_date_labels = "%Y",
+        engine = 'plotnine'
+    )
+```
+
+:::
+
+## Visualization 3: Anomalies Cleaned Plot
+
+There are pros and cons to cleaning anomalies. I'll leave that discussion for another time. But, should you be interested in seeing what your data looks like cleaned (with outliers removed), this plot will help you compare before and after. 
+
+:::{.panel-tabset }
+
+## Plotly
+
+```{python}
+anomalize_df \
+    .groupby("Page") \
+    .plot_anomalies_cleaned(
+        date_column = "date", 
+        facet_ncol = 2, 
+        width = 1000,
+        height = 1000,
+        engine = "plotly"
+    )
+```
+
+## Plotnine
+
+```{python}
+anomalize_df \
+    .groupby("Page") \
+    .plot_anomalies_cleaned(
+        date_column = "date", 
+        facet_ncol = 2, 
+        width = 1000,
+        height = 1000,
+        x_axis_date_labels = "%Y",
+        engine = 'plotnine'
+    )
+```
+
+:::
+
+# How to tweak the nobs on `anomalize`
+
+Coming soon... 

@@ -165,6 +165,7 @@ sales_by_week \
         engine = 'plotly'
     )
 ```
+
 ## Plotnine
 
 ```{python}
