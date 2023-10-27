@@ -1,5 +1,7 @@
 # Dependencies
 import pandas as pd
+import numpy as np
+import polars as pl
 import math
 import pandas_flavor as pf
 
@@ -184,6 +186,11 @@ def augment_holiday_signature(
     ```{python}
     # Add holiday features for France
     tk.augment_holiday_signature(df, 'date', 'France')
+    ```
+    
+    ```{python}
+    # Add holiday features for France
+    tk.augment_holiday_signature(df, 'date', 'France', engine='polars')
     ```
     """
     # This function requires the holidays package to be installed
