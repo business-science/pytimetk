@@ -106,7 +106,7 @@ def test_floor_date_robust_examples():
     
     dates = pd.date_range("2011", "2025", freq = "1Q")
     
-    result = tk.floor_date(dates, "5Y").unique()
+    result = tk.floor_date(dates, "5Y")
     
     result = pd.DatetimeIndex(result.unique())
     
