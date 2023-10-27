@@ -211,31 +211,31 @@ def anomalize(
     import pytimetk as tk
     import pandas as pd
     
-    df = tk.load_dataset("walmart_sales_weekly", parse_dates=["Date"])[["id", "Date", "Weekly_Sales"]]
+    df = tk.load_dataset("wikipedia_traffic_daily", parse_dates = ['date'])
     
     anomalize_df = (
-        df
-            .groupby('id') 
+        df 
+            .groupby('Page', sort = False) 
             .anomalize(
-                "Date", "Weekly_Sales", 
-                period = 13, 
-                trend = 52, 
-                threads = 1
-            ) 
+                date_column = "date", 
+                value_column = "value",
+                method = "stl", 
+                iqr_alpha = 0.025,
+                verbose = True,
+            )
     )
     
     # Visualize the decomposition results
     
     (
-        anomalize_df
-            .groupby("id")
+        anomalize_df 
+            .groupby("Page") 
             .plot_anomalies_decomp(
-                date_column = "Date",
-                line_color = "steelblue",
-                width = 1200,
-                height = 800,
-                x_axis_date_labels = "%y",
-                engine = 'plotnine',                
+                date_column = "date", 
+                width = 1800,
+                height = 1000,
+                x_axis_date_labels = "%Y",
+                engine = 'plotnine'
             )
     )
     ```
@@ -244,13 +244,12 @@ def anomalize(
     # Visualize the anomaly bands
     (
         anomalize_df 
-            .groupby(["id"]) 
+            .groupby("Page") 
             .plot_anomalies(
-                date_column = "Date", 
+                date_column = "date", 
                 facet_ncol = 2, 
-                width = 800,
-                height = 800,
-                engine = "plotly",
+                width = 1000,
+                height = 1000,
             )
     )
     ```
@@ -377,15 +376,15 @@ def _anomalize(
     if period is None:
         period = get_seasonal_frequency(data[date_column], numeric=True)
         period = int(period)
-        if verbose:
-            print(f"Using seasonal frequency of {period} observations")
+    if verbose:
+        print(f"Using seasonal frequency of {period} observations")
     
     
     if trend is None:   
         trend = get_trend_frequency(data[date_column], numeric=True)
         trend = int(trend)
-        if verbose:
-            print(f"Using trend frequency of {trend} observations")
+    if verbose:
+        print(f"Using trend frequency of {trend} observations")
     
     # STEP 1: Decompose the time series
     if method == 'twitter':
