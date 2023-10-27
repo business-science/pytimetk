@@ -88,9 +88,9 @@ def test_floor_date_robust_examples():
     
     result = tk.floor_date(dates, "4H")
     
-    result = pd.to_datetime(result.unique())
+    result = pd.DatetimeIndex(result.unique())
     
-    expect = pd.to_datetime(
+    expect = pd.DatetimeIndex(
         ['2011-01-01 00:00:00', 
          '2011-01-01 04:00:00',
         '2011-01-01 08:00:00', 
@@ -106,11 +106,11 @@ def test_floor_date_robust_examples():
     
     dates = pd.date_range("2011", "2025", freq = "1Q")
     
-    result = tk.floor_date(dates, "5Y")
+    result = tk.floor_date(dates, "5Y").unique()
     
-    result = pd.to_datetime(result.unique())
+    result = pd.DatetimeIndex(result.unique())
     
-    expect = pd.to_datetime(['2010-01-01', '2015-01-01','2020-01-01'])
+    expect = pd.DatetimeIndex(['2010-01-01', '2015-01-01','2020-01-01'])
     
     assert result.equals(expect)
     
@@ -120,9 +120,9 @@ def test_floor_date_robust_examples():
     
     result = tk.floor_date(dates, "2M")
     
-    result = pd.to_datetime(result.unique())
+    result = pd.DatetimeIndex(result.unique())
     
-    expect = pd.to_datetime(
+    expect = pd.DatetimeIndex(
         ['2011-01-01', 
          '2011-03-01', 
          '2011-05-01', 
@@ -140,9 +140,9 @@ def test_floor_date_robust_examples():
     
     result = tk.floor_date(dates, "2Q")
     
-    result = pd.to_datetime(result.unique())
+    result = pd.DatetimeIndex(result.unique())
     
-    expect = pd.to_datetime(
+    expect = pd.DatetimeIndex(
         ['2011-01-01', '2011-07-01', '2012-01-01']
     )
     
