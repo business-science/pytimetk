@@ -5,6 +5,7 @@ import pandas_flavor as pf
 from typing import Union, List, Tuple
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
+from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 @pf.register_dataframe_method
 def augment_lags(
@@ -149,7 +150,7 @@ def _augment_lags_pandas(
     # DATAFRAME EXTENSION - If data is a Pandas DataFrame, extend with future dates
     if isinstance(data, pd.DataFrame):
 
-        df = data.copy()
+        df = reduce_memory_usage(data.copy())
 
         df.sort_values(by=[date_column], inplace=True)
 
@@ -172,7 +173,7 @@ def _augment_lags_pandas(
             for lag in lags:
                 df[f'{col}_lag_{lag}'] = df.groupby(group_names)[col].shift(lag)
 
-    return df
+    return reduce_memory_usage(df)
 
 def _augment_lags_polars(
     data: Union[pl.DataFrame, pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -186,10 +187,7 @@ def _augment_lags_polars(
         pandas_df = data.apply(lambda x: x)
     elif isinstance(data, pd.DataFrame):
         # Data is already a DataFrame
-        pandas_df = data
-    elif isinstance(data, pl.DataFrame):
-        # Data is already a Polars DataFrame
-        pandas_df = data.to_pandas()
+        pandas_df = reduce_memory_usage(data)
     else:
         raise ValueError("data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame")
 
@@ -219,7 +217,7 @@ def _augment_lags_polars(
     selected_columns = selected_columns[1:]
 
     # Select the columns
-    df = pl.DataFrame(pandas_df)
+    df = pl.DataFrame(reduce_memory_usage(pandas_df))
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         out_df = df.group_by(data.grouper.names, maintain_order=True).agg(selected_columns)
         out_df = out_df.explode(out_df.columns[1:])
@@ -230,4 +228,4 @@ def _augment_lags_polars(
     # Concatenate the DataFrames horizontally
     df = pl.concat([df, out_df], how="horizontal").to_pandas()
 
-    return df
+    return reduce_memory_usage(df)
