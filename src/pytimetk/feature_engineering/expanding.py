@@ -220,7 +220,7 @@ def _augment_expanding_pandas(
     """
     
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
+    data_copy = reduce_memory_usage(data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy())
     
     # Group data if it's a GroupBy object; otherwise, prepare it for the expanding calculations
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -329,7 +329,7 @@ def _augment_expanding_polars(
     """
     
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
+    data_copy = reduce_memory_usage(data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy())
     
     # Retrieve the group column names if the input data is a GroupBy object
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -588,7 +588,7 @@ def augment_expanding_apply(
     ```
     '''
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
+    data_copy = reduce_memory_usage(data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy())
     
     # Group data if it's a GroupBy object; otherwise, prepare it for the expanding calculations
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
