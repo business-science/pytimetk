@@ -17,5 +17,5 @@ information in either wide or long format.
 ```{python}
 import pytimetk as tk
 
-tk.timeseries_unit_frequency_table()
+tk.time_scale_template()
 ```

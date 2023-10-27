@@ -416,7 +416,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>tk.timeseries_unit_frequency_table()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>tk.time_scale_template()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -425,68 +425,59 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">unit</th>
-<th data-quarto-table-cell-role="th">freq</th>
-<th data-quarto-table-cell-role="th">freq_min</th>
-<th data-quarto-table-cell-role="th">freq_max</th>
+<th data-quarto-table-cell-role="th">median_unit</th>
+<th data-quarto-table-cell-role="th">seasonal_period</th>
+<th data-quarto-table-cell-role="th">trend_period</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>sec</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
+<td>S</td>
+<td>1H</td>
+<td>12H</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>min</td>
-<td>60</td>
-<td>60</td>
-<td>60</td>
+<td>T</td>
+<td>1D</td>
+<td>14D</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>hour</td>
-<td>3600</td>
-<td>3600</td>
-<td>3600</td>
+<td>H</td>
+<td>1D</td>
+<td>1M</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>day</td>
-<td>86400</td>
-<td>86400</td>
-<td>86400</td>
+<td>D</td>
+<td>1W</td>
+<td>3M</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>week</td>
-<td>604800</td>
-<td>604800</td>
-<td>604800</td>
+<td>W</td>
+<td>1Q</td>
+<td>1Y</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
-<td>month</td>
-<td>2678400</td>
-<td>2419200</td>
-<td>2678400</td>
+<td>M</td>
+<td>1Y</td>
+<td>5Y</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
-<td>quarter</td>
-<td>7948800</td>
-<td>7689600</td>
-<td>8035200</td>
+<td>Q</td>
+<td>1Y</td>
+<td>10Y</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">7</td>
-<td>year</td>
-<td>31622400</td>
-<td>31536000</td>
-<td>31622400</td>
+<td>Y</td>
+<td>5Y</td>
+<td>30Y</td>
 </tr>
 </tbody>
 </table>
