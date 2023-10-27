@@ -1,14 +1,3 @@
----
-title: "Clustering"
-jupyter: python3
-toc: true
-toc-depth: 3
-number-sections: true
-number-depth: 2
----
-
-Coming soon...
-
 # More Coming Soon...
 
 We are in the early stages of development. But it's obvious the potential for `pytimetk` now in Python. 🐍

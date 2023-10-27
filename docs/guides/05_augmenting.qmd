@@ -374,6 +374,7 @@ m4_daily_df \
 
 ```
 
+<!--
 
 ## Visualizing Fourier Series
 
@@ -452,3 +453,6 @@ fourlier_long_df \
 	)
 
 ```
+-->
+
+{{< include ../_includes/_footer.qmd >}}
