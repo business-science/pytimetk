@@ -90,7 +90,7 @@ def augment_fourier_v2(
         group_names = data.grouper.names
         data = data.obj
 
-    df = data.copy()
+    df = reduce_memory_usage(data.copy())
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         df.sort_values(by=[*group_names, date_column], inplace=True)
@@ -186,7 +186,7 @@ def augment_fourier(
         min_date = data[date_column].min()
         data['radians'] = 2 * np.pi * (data[date_column] - min_date).dt.total_seconds() / (24 * 3600)
 
-        df = data.copy()
+        df = reduce_memory_usage(data.copy())
 
         df.sort_values(by=[date_column], inplace=True)
 
