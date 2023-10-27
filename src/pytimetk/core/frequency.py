@@ -287,7 +287,7 @@ def time_scale_template(
     ```{python}
     import pytimetk as tk
     
-    tk.timeseries_unit_frequency_table()
+    tk.time_scale_template()
     ```
     
     '''

@@ -4,9 +4,11 @@ import pytest
 
 from itertools import product
 
+METHODS = ["stl", "twitter"] # Add more methods in here as they are implemented
+
+
 threads = [1, 2]
-methods = ["twitter"] # Add more methods in here as they are implemented
-combinations = list(product(threads, methods))
+combinations = list(product(threads, METHODS))
 
 @pytest.mark.parametrize("threads, method", combinations)
 def test_01_grouped_anomalize(threads, method):
@@ -47,8 +49,7 @@ def test_01_grouped_anomalize(threads, method):
     assert expected_colnames == list(anomalize_df.columns)
     
 threads = [1]
-methods = ["twitter"]
-combinations = list(product(threads, methods))
+combinations = list(product(threads, METHODS))
 
 @pytest.mark.parametrize("threads, method", combinations)
 def test_02_ungrouped_anomalize(threads, method):

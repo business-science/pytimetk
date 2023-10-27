@@ -19,7 +19,7 @@ def anomalize(
     value_column: str,
     period: Optional[int] = None,
     trend: Optional[int] = None,
-    method: str = 'twitter',
+    method: str = 'stl',
     decomp: str = 'additive',
     clean: str = 'min_max',
     iqr_alpha: float = 0.05,
@@ -218,7 +218,7 @@ def anomalize(
             .groupby('id') 
             .anomalize(
                 "Date", "Weekly_Sales", 
-                period = 52, 
+                period = 13, 
                 trend = 52, 
                 threads = 1
             ) 
@@ -357,7 +357,7 @@ def _anomalize(
     value_column: str,
     period: Optional[int] = None,
     trend: Optional[int] = None,
-    method: str = 'twitter',
+    method: str = 'stl',
     decomp: str = 'additive',
     clean: str = 'linear',
     iqr_alpha: float = 0.05,
@@ -375,21 +375,15 @@ def _anomalize(
     
     # STEP 0: Get the seasonal period and trend frequency
     if period is None:
-        
         period = get_seasonal_frequency(data[date_column], numeric=True)
-        
         period = int(period)
-        
         if verbose:
             print(f"Using seasonal frequency of {period} observations")
     
     
-    if trend is None:
-            
+    if trend is None:   
         trend = get_trend_frequency(data[date_column], numeric=True)
-        
         trend = int(trend)
-        
         if verbose:
             print(f"Using trend frequency of {trend} observations")
     
@@ -407,15 +401,25 @@ def _anomalize(
             median_span=median_span, 
             model=decomp,
         )
+    elif method == 'stl':
+        
+        def make_odd(n):
+            return n + 1 if n % 2 == 0 else n
+        
+        seasonal = make_odd(period)
+        trend = make_odd(trend)
+        
+        result = _stl_decompose(
+            data=data, 
+            date_column=date_column, 
+            value_column=value_column, 
+            period=period,
+            seasonal=seasonal,
+            trend=trend,
+            robust = True,
+        )
     else:
-        raise ValueError(f"Method {method} is not supported. Please use 'twitter'.")
-        # result = _stl_decompose(
-        #     data=data, 
-        #     date_column=date_column, 
-        #     value_column=value_column, 
-        #     period=period,
-        #     robust = True,
-        # )
+        raise ValueError(f"Method {method} is not supported. Please use one of 'stl' or 'twitter'.")
     
     # STEP 2: Identify the outliers
     
