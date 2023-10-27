@@ -9,6 +9,7 @@ from typing import Union, Optional, Callable, Tuple, List
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.utils.polars_helpers import update_dict
+from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 @pf.register_dataframe_method
 def augment_expanding(
@@ -313,7 +314,7 @@ def _augment_expanding_pandas(
     # Combine processed dataframes and sort by index
     result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
     
-    return result_df
+    return reduce_memory_usage(result_df)
 
 def _augment_expanding_polars(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
@@ -466,7 +467,7 @@ def _augment_expanding_polars(
             .drop('index') \
             .to_pandas()
                 
-    return df
+    return reduce_memory_usage(df)
 
 
 @pf.register_dataframe_method
@@ -628,7 +629,7 @@ def augment_expanding_apply(
     # Combine processed dataframes and sort by index
     result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
     
-    return result_df
+    return reduce_memory_usage(result_df)
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.augment_expanding_apply = augment_expanding_apply
