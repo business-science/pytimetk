@@ -80,3 +80,59 @@ def test_ceil_date():
     result = tk.ceil_date(dates, 'Y')
     
     assert_series_equal(result, pd.Series(pd.to_datetime(['2023-01-01', '2023-01-01', '2023-01-01'])), check_freq=False, check_names=False)
+    
+def test_floor_date_robust_examples():
+    
+    # Yearly Flooring with Multiple Years
+    
+    dates = pd.date_range("2011", "2025", freq = "1Q")
+    
+    result = tk.floor_date(dates, "5Y")
+    
+    result = pd.to_datetime(result.unique())
+    
+    expect = pd.to_datetime(['2010-01-01', '2015-01-01','2020-01-01'])
+    
+    assert result.equals(expect)
+    
+    # Flooring with multiple hours
+    dates = pd.date_range("2011-01-01", "2011-01-02", freq = "1H")
+    
+    result = tk.floor_date(dates, "4H")
+    
+    result = pd.to_datetime(result.unique())
+    
+    expect = pd.to_datetime(
+        ['2011-01-01 00:00:00', 
+         '2011-01-01 04:00:00',
+        '2011-01-01 08:00:00', 
+        '2011-01-01 12:00:00',
+        '2011-01-01 16:00:00', 
+        '2011-01-01 20:00:00',
+        '2011-01-02 00:00:00']
+    )
+    
+    assert result.equals(expect)
+    
+    # Flooring with multiple months
+    
+    dates = pd.date_range("2011-02-01", "2012-02-01", freq = "1MS")
+    
+    result = tk.floor_date(dates, "2M")
+    
+    result = pd.to_datetime(result.unique())
+    
+    expect = pd.to_datetime(
+        ['2011-01-01', 
+         '2011-03-01', 
+         '2011-05-01', 
+         '2011-07-01',
+         '2011-09-01', 
+         '2011-11-01', 
+         '2012-01-01']
+    )
+    
+    assert result.equals(expect)
+    
+    
+    

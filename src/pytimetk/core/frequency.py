@@ -303,7 +303,7 @@ def _time_scale_template_pandas(wide_format: bool = False):
     _table = pd.DataFrame({
         "median_unit": ["S", "T", "H", "D", "W", "M", "Q", "Y"],
         "seasonal_period" : ["1H", "1D", "1D", "1W", "1Q", "1Y", "1Y", "5Y"],
-        "trend_period" : ["12H", "14D", "1M", "3M", "1Y", "5Y", "10Y", "30Y"],
+        "trend_period" : ["12H", "14D", "1M", "1Q", "1Y", "5Y", "10Y", "30Y"],
     })
     
     if wide_format:
@@ -316,7 +316,7 @@ def _time_scale_template_polars(wide_format: bool = False):
     _table = pl.DataFrame({
         "median_unit": ["S", "T", "H", "D", "W", "M", "Q", "Y"],
         "seasonal_period" : ["1H", "1D", "1D", "1W", "1Q", "1Y", "1Y", "5Y"],
-        "trend_period" : ["12H", "14D", "1M", "3M", "1Y", "5Y", "10Y", "30Y"],
+        "trend_period" : ["12H", "14D", "1M", "1Q", "1Y", "5Y", "10Y", "30Y"],
     })
     
     if wide_format:

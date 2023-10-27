@@ -97,6 +97,8 @@ def _floor_date_pandas(
     # If idx is a DatetimeIndex, convert to Series
     if isinstance(idx, pd.DatetimeIndex):
         idx = pd.Series(idx, name="idx")
+        
+    nm = idx.name
     
     # Fix for pandas bug: When unit is greater than the length of the index, the floor function returns the first day of the year
     days_in_sequence = idx.iloc[-1] - idx.iloc[0]
@@ -105,13 +107,48 @@ def _floor_date_pandas(
     if days_in_unit > days_in_sequence:
         # fill series with first value
         idx.iloc[1:] = idx.iloc[0]
-        
-    # Convert to period
-    nm = idx.name
-    date = pd.Series(
-        pd.PeriodIndex(idx.values, freq = unit).to_timestamp(),
-        name=nm
-    )       
+    
+    # Parse frequency string
+    quantity, unit_2 = parse_freq_str(unit)
+    quantity = int(quantity) if quantity else 1
+    
+    if quantity == 1:
+        # DOESN'T WORK WITH MULTIPLES OF FREQUENCIES "2M" "3D" "4H" 
+        date = pd.Series(
+            pd.PeriodIndex(idx.values, freq = unit).to_timestamp(),
+            name=nm
+        ) 
+    else:
+        if unit_2 == "M":
+            # Floor to N-month intervals using vectorized operations
+            floored_months = ((idx.dt.month - 1) // quantity) * quantity + 1
+            date = pd.to_datetime({
+                'year': idx.dt.year,
+                'month': floored_months,
+                'day': 1
+            })
+            date = pd.Series(date, name=nm)
+        elif unit_2 == "Q":
+            # Floor to N-quarter intervals using vectorized operations
+            floored_months = ((idx.dt.month - 1) // (3*quantity) ) * (3*quantity) + 1            
+            date = pd.to_datetime({
+                'year': idx.dt.year,
+                'month': floored_months,
+                'day': 1
+            })
+            date = pd.Series(date, name=nm)
+        elif unit_2 == "Y":
+            # Floor to N-year intervals using vectorized operations
+            floored_years = (idx.dt.year // quantity) * quantity
+            date = pd.to_datetime({
+                'year': floored_years,
+                'month': 1,
+                'day': 1
+            })
+            date = pd.Series(date, name=nm)
+        else:
+            # DOESN'T WORK WITH IRREGULAR FREQUENCIES (MONTH, QUARTER, YEAR, ETC)
+            date = idx.dt.floor(unit)    
 
     return date
 
