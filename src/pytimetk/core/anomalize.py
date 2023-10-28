@@ -6,6 +6,7 @@ from typing import Union, Optional
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.core.frequency import get_frequency, get_seasonal_frequency, get_trend_frequency
+from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 from pytimetk.utils.parallel_helpers import parallel_apply, get_threads, progress_apply
 
@@ -368,7 +369,7 @@ def _anomalize(
     
     orig_date_column = data[date_column]
     
-    data = data.copy()
+    data = reduce_memory_usage(data.copy())
     
     
     
@@ -464,7 +465,7 @@ def _anomalize(
     if bind_data:
         result = pd.concat([data, result.drop(date_column, axis=1)], axis=1)
     
-    return result
+    return reduce_memory_usage(result)
 
  
 def _twitter_decompose(
