@@ -48,7 +48,7 @@ def get_frequency_summary(
         
     dates = pd.date_range(start = '2020-01-01', end = '2020-01-10', freq = 'D')
         
-    tk.get_frequency(dates)
+    tk.get_frequency_summary(dates)
     ```
         
     ```{python}
@@ -59,7 +59,7 @@ def get_frequency_summary(
     dates.inferred_freq == None
         
     # Returns '1MS'
-    tk.get_frequency(dates)
+    tk.get_frequency_summary(dates)
         
     ``` 
     '''
