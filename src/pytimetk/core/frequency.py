@@ -564,9 +564,6 @@ def _get_manual_frequency(idx: Union[pd.Series, pd.DatetimeIndex]) -> str:
     
     return freq_alias
     
-    
-
-
 def _get_pandas_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool = False) -> str:
     '''
     This is an internal function and not meant to be called directly.
@@ -590,51 +587,32 @@ def _get_pandas_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular
         The frequency of the given pandas series or datetime index.
     
     '''
-    
-    # common checks    
-    # check_series_or_datetime(idx)
-   
     if isinstance(idx, pd.Series):
         idx = idx.values
         
-    _len = len(idx)
-    if _len > 10:
-        _len = 10
-    
-    dt_index = pd.DatetimeIndex(idx[0:_len])
+    if isinstance(idx, pd.DatetimeIndex):
+        dt_index = idx
+    else:
+        _len = min(len(idx), 10)
+        dt_index = pd.DatetimeIndex(idx[0:_len])
     
     freq = dt_index.inferred_freq
     
-    # if freq is None:
-    #         raise ValueError("The frequency could not be detectied.")
-    
-    if force_regular:
-        if freq == 'A-DEC':
-            freq = 'Y' 
-        if freq == 'Q-DEC':
-            freq = 'Q'     
-        if freq == 'W-SUN':
-            freq = 'W'        
-        if freq == 'B':
-            freq = 'D'
-        if freq == 'BM':
-            freq = 'M'
-        if freq == 'BQ':
-            freq = 'Q'
-        if freq == 'BA':
-            freq = 'A'
-        if freq == 'BY':
-            freq = 'Y'
-        if freq == 'BMS':
-            freq = 'MS'
-        if freq == 'BQS':
-            freq = 'QS'
-        if freq == 'BYS':
-            freq = 'YS'
-        if freq == 'BAS':
-            freq = 'AS'
-        
+    if force_regular and freq:
+        irregular_to_regular = {
+            'A-DEC': 'Y',
+            'Q-DEC': 'Q',
+            'W-SUN': 'W',
+            'B'    : 'D',
+            'BM'   : 'M',
+            'BQ'   : 'Q',
+            'BA'   : 'A',
+            'BY'   : 'Y',
+            'BMS'  : 'MS',
+            'BQS'  : 'QS',
+            'BYS'  : 'YS',
+            'BAS'  : 'AS'
+        }
+        freq = irregular_to_regular.get(freq, freq)
     
     return freq
-
-
