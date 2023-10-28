@@ -4,6 +4,7 @@ from typing import Union
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column
 from pytimetk.utils.pandas_helpers import flatten_multiindex_column_names
+from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 
 @pf.register_dataframe_method
@@ -146,11 +147,11 @@ def apply_by_time(
 
     # Start by setting the index of data to the date_column
     if isinstance(data, pd.DataFrame):
-        data = data.set_index(date_column)
+        data = reduce_memory_usage(data.set_index(date_column))
     elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
         if date_column not in group_names:
-            data = data.obj.set_index(date_column).groupby(group_names)
+            data = reduce_memory_usage(data.obj.set_index(date_column).groupby(group_names))
 
     # Resample data based on the specified freq and kind
     grouped = data.resample(rule=freq, kind="timestamp")
@@ -180,7 +181,7 @@ def apply_by_time(
     # Reset the index of data   
     data.reset_index(inplace=True)
 
-    return data
+    return reduce_memory_usage(data)
 
 
 # Monkey patch the method to pandas groupby objects
