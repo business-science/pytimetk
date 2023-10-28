@@ -233,8 +233,8 @@ def _timeseries_unit_frequency_table_pandas(wide_format: bool = False) -> pd.Dat
     _table = pd.DataFrame({
         "unit" : ["sec", "min", "hour", "day", "week", "month", "quarter", "year"],
         "freq" : [0, 60, 3600, 86400, 604800, 2678400, 7948800, 31622400],
-        "freq_min": [0, 60, 3600, 86400, 604800, 2419200, 7689600, 31536000],
-        "freq_max": [0, 60, 3600, 86400, 604800, 2678400, 8035200, 31622400],
+        "freq_min": [0, 60, 3600, 86400, 604800, 2419200, 7776000, 31536000],
+        "freq_max": [0, 60, 3600, 86400, 604800, 2678400, 7948800, 31622400],
     })
     
     if wide_format:
@@ -247,8 +247,8 @@ def _timeseries_unit_frequency_table_polars(wide_format: bool = False) -> pd.Dat
     _table = pl.DataFrame({
         "unit" :    ["sec", "min", "hour", "day", "week", "month", "quarter", "year"],
         "freq" :    [0, 60, 3600, 86400, 604800, 2678400, 7948800, 31622400],
-        "freq_min": [0, 60, 3600, 86400, 604800, 2419200, 7689600, 31536000],
-        "freq_max": [0, 60, 3600, 86400, 604800, 2678400, 8035200, 31622400],
+        "freq_min": [0, 60, 3600, 86400, 604800, 2419200, 7776000, 31536000],
+        "freq_max": [0, 60, 3600, 86400, 604800, 2678400, 7948800, 31622400],
     })
     
     if wide_format:
