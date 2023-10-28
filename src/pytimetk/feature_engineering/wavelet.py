@@ -8,6 +8,7 @@ from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column,
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.utils.polars_helpers import pandas_to_polars_frequency, pandas_to_polars_aggregation_mapping
+from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 
 #@pf.register_dataframe_method
@@ -200,7 +201,7 @@ def augment_wavelet(
 
     # Sort the DataFrame by the date column before applying the CWT
     if isinstance(data, pd.DataFrame):
-        data = data.sort_values(by=date_column)
+        data = reduce_memory_usage(data.sort_values(by=date_column))
     
     if method not in wavelet_functions:
         raise ValueError(f"Invalid method '{method}'. Available methods are {list(wavelet_functions.keys())}")
@@ -230,9 +231,9 @@ def augment_wavelet(
 
     # Check if data is a groupby object
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        return pd.concat([_apply_cwt(group.sort_values(by=date_column)) for _, group in data]).reset_index(drop=True)
+        return reduce_memory_usage(pd.concat([_apply_cwt(group.sort_values(by=date_column)) for _, group in data]).reset_index(drop=True))
 
-    return _apply_cwt(data)
+    return reduce_memory_usage(_apply_cwt(data))
 
 # Monkey-patch the method to the DataFrameGroupBy class
 pd.core.groupby.DataFrameGroupBy.augment_wavelet = augment_wavelet
