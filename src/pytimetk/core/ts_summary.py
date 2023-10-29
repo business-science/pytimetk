@@ -85,6 +85,7 @@ def ts_summary(
     date_column: str,
     threads = 1,
     show_progress = True,
+    engine : str = 'pandas'
 ) -> pd.DataFrame:
     '''
     Computes summary statistics for a time series data, either for the entire 
@@ -192,6 +193,9 @@ def ts_summary(
     ```
     '''
     
+    if not engine in ['pandas', 'polars']: 
+        raise ValueError(f"Supported engines are 'pandas' or 'polars'. Found {engine}. Please select an authorized engine.")
+
     # Run common checks
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)

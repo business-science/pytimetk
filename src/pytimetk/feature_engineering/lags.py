@@ -12,7 +12,7 @@ def augment_lags(
     date_column: str,
     value_column: Union[str, List[str]], 
     lags: Union[int, Tuple[int, int], List[int]] = 1,
-    engine: str = 'pandas',
+    engine: str = 'pandas'
 ) -> pd.DataFrame:
     """
     Adds lags to a Pandas DataFrame or DataFrameGroupBy object.
