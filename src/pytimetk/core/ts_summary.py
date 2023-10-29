@@ -2,15 +2,81 @@ import pandas as pd
 import pandas_flavor as pf
 import numpy as np
 import polars as pl
+from polars.dataframe.group_by import GroupBy
 
 from typing import Union
 
 from pytimetk.core.frequency import get_frequency_summary
 
-from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_series_or_datetime
+from pytimetk.utils.checks import check_dataframe_or_groupby, check_dataframe_or_groupby_polars, check_date_column, check_series_or_datetime
 
 from pytimetk.utils.parallel_helpers import parallel_apply, get_threads, progress_apply
 
+
+# TODO: finish conversion of subfunctions to polars
+def _ts_summary_polars(group: pl.DataFrame, date_column: str) -> pl.DataFrame:
+    """Compute time series summary for a single group."""
+    
+    # Make sure date is sorted
+    group = group.sort(by=[date_column], descending=False, nulls_last=True)
+    date = group[date_column]
+
+    # Compute summary statistics
+    date = date.to_pandas()
+    date_summary = get_date_summary(date)
+    frequency_summary = get_frequency_summary(date)
+    diff_summary = get_diff_summary(date)
+    diff_summary_num = get_diff_summary(date, numeric=True)
+    
+    # Combine summary statistics into a single DataFrame
+    result = pd.concat([date_summary, frequency_summary, diff_summary, diff_summary_num], axis=1)
+
+    return pl.from_pandas(result)
+
+
+def ts_summary_polars(
+    data: Union[pl.DataFrame, GroupBy],
+    date_column: str,
+    threads = 1,
+    show_progress = True,
+) -> pl.DataFrame:
+    
+    # Run common checks
+    check_dataframe_or_groupby_polars(data)
+    check_date_column(data.to_pandas(), date_column)
+        
+    if isinstance(data, pl.DataFrame):
+        return _ts_summary_polars(data, date_column)
+
+    if isinstance(data, pl.core.groupby.generic.DataFrameGroupBy):
+        group_names = data.by
+        
+        # Get threads
+        threads = get_threads(threads)
+        
+        if threads == 1:
+            
+            result = progress_apply(
+                data,
+                func = _ts_summary,
+                date_column = date_column,
+                show_progress = show_progress,
+                desc = "TS Summarizing..."
+            )
+            
+        else:
+        
+            result = parallel_apply(
+                data,
+                func = _ts_summary,
+                date_column = date_column,
+                threads = threads,
+                show_progress = show_progress,
+                desc = "TS Summarizing..."
+            )
+            
+        result = result.reset_index(level=group_names)
+        return result
 
     
 @pf.register_dataframe_method
