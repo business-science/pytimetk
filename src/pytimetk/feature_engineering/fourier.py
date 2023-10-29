@@ -102,6 +102,14 @@ def augment_fourier_v2(
         The `periods` parameter specifies how many timesteps between each peak in the fourier series. Default is 1.
     max_order : int, optional
         The `max_order` parameter specifies the maximum Fourier order to calculate. Default is 1.
+    engine : str, optional
+        The `engine` parameter is used to specify the engine to use for 
+        augmenting lags. It can be either "pandas" or "polars". 
+        
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library. 
+        This can be faster than using "pandas" for large datasets. 
 
     Returns
     -------
@@ -133,6 +141,9 @@ def augment_fourier_v2(
 
     """
 
+    if not engine in ['pandas', 'polars']: 
+        raise ValueError(f"Supported engines are 'pandas' or 'polars'. Found {engine}. Please select an authorized engine.")
+    
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
     
@@ -148,10 +159,8 @@ def augment_fourier_v2(
 
     if engine == "pandas":
         return _augment_fourier_pandas(data, date_column, periods, max_order)
-    elif engine == "polars":
-        return _augment_fourier_polars(data, date_column, periods, max_order)
     else:
-        raise ValueError(f"Supported engines are 'pandas' or 'polars'. Found {engine}. Please select an authorized engine.")
+        return _augment_fourier_polars(data, date_column, periods, max_order)
 
 
 @pf.register_dataframe_method

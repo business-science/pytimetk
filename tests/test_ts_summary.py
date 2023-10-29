@@ -1,6 +1,7 @@
 import pytest
+import polars as pl
 import pandas as pd
-from pytimetk import ts_summary, get_frequency
+from pytimetk import ts_summary, get_frequency, ts_summary_polars
 from pytimetk import load_dataset
 
 from pytimetk.core.frequency import _get_manual_frequency  # Adjust the module name accordingly
@@ -378,7 +379,10 @@ def test_examples_02():
     
     assert list(test_1.columns) == expected_columns
     
-    
+def test_ts_summary_polars_df():
+    pd_output = df_sample.ts_summary(date_column='date')
+    pl_output = ts_summary_polars(pl.from_pandas(df_sample), date_column='date').to_pandas()
+    pd.testing.assert_frame_equal(pd_output, pl_output)
     
 
 if __name__ == "__main__":
