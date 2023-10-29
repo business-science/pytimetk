@@ -11,6 +11,7 @@ from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 
 from concurrent.futures import ProcessPoolExecutor
 
+from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 @pf.register_dataframe_method
 def future_frame(
@@ -292,9 +293,7 @@ def _future_frame_pandas(
         else:
             extended_df = future_dates_df
             
-        return extended_df
-
-
+        return reduce_memory_usage(extended_df)
 
 
 @pf.register_series_method
