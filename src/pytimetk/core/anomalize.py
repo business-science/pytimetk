@@ -222,7 +222,7 @@ def anomalize(
                 value_column = "value",
                 method = "stl", 
                 iqr_alpha = 0.025,
-                verbose = True,
+                verbose = False,
             )
     )
     
@@ -236,7 +236,7 @@ def anomalize(
                 width = 1800,
                 height = 1000,
                 x_axis_date_labels = "%Y",
-                engine = 'plotnine'
+                engine = 'plotly'
             )
     )
     ```
@@ -450,10 +450,10 @@ def _anomalize(
         # min_max
         result['observed_clean'] = np.where(
             result['anomaly_direction'] == -1, 
-            clean_alpha*result['recomposed_l1'],
+            result['recomposed_l1'] + (1-clean_alpha)*result['anomaly_score'],
             np.where(
                 result['anomaly_direction'] == 1, 
-                clean_alpha*result['recomposed_l2'], 
+                result['recomposed_l2'] - (1-clean_alpha)*result['anomaly_score'], 
                 result['observed']
             )
         )
@@ -642,7 +642,6 @@ def _iqr(data, target, alpha=0.05, max_anoms=0.2):
 
     # Identify the outliers
     outlier_idx = (data[target] < limits[0]) | (data[target] > limits[1])
-    outlier_vals = data.loc[outlier_idx, target]
 
     # Calculate the anomaly_score from the centerline
     centerline = sum(limits) / 2
