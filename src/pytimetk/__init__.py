@@ -17,7 +17,9 @@ from .feature_engineering.lags import *
 from .feature_engineering.leads import *
 from .core.pad import *
 from .feature_engineering.rolling import *
+from .feature_engineering.rolling_apply import *
 from .feature_engineering.expanding import *
+from .feature_engineering.expanding_apply import *
 from .feature_engineering.fourier import *
 from .core.ts_features import *
 from .core.ts_summary import *
@@ -92,10 +94,16 @@ from .core.pad import (
     pad_by_time
 )
 from .feature_engineering.rolling import (
-    augment_rolling, augment_rolling_apply
+    augment_rolling, 
+)
+from .feature_engineering.rolling_apply import (
+    augment_rolling_apply, 
 )
 from .feature_engineering.expanding import (
-    augment_expanding, augment_expanding_apply
+    augment_expanding,
+)
+from .feature_engineering.expanding_apply import (
+    augment_expanding_apply
 )
 from .feature_engineering.fourier import (
     augment_fourier

@@ -5,5 +5,7 @@ from .holiday_signature import *
 from .lags import *
 from .leads import *
 from .rolling import *
+from .rolling_apply import *
 from .expanding import *
+from .expanding_apply import *
 from .fourier import *
