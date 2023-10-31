@@ -85,6 +85,17 @@ def test_example_1():
         window=3,
         window_func=[('corr', lambda x: x['value1'].corr(x['value2']))],
         center=False,
+        threads=1
+    )
+    assert 'rolling_corr_win_3' in result.columns
+
+def test_example_1_parallel():
+    df = generate_sample_data_1()
+    result = df.groupby('id').augment_rolling_apply(
+        date_column='date',
+        window=3,
+        window_func=[('corr', lambda x: x['value1'].corr(x['value2']))],
+        center=False,
         threads=2
     )
     assert 'rolling_corr_win_3' in result.columns
@@ -95,6 +106,22 @@ def test_example_2():
         date_column='date',
         window=3,
         window_func=[('regression', regression)]
+    ).dropna()
+
+    wide_result = pd.concat(result['rolling_regression_win_3'].to_list(), axis=1).T
+    combined_result = pd.concat([result.reset_index(drop=True), wide_result], axis=1)
+
+    assert 'Intercept' in combined_result.columns
+    assert 'Slope' in combined_result.columns
+
+
+def test_example_2_parallel():
+    df = generate_sample_data_2()
+    result = df.groupby('id').augment_rolling_apply(
+        date_column='date',
+        window=3,
+        window_func=[('regression', regression)],
+        threads=2
     ).dropna()
 
     wide_result = pd.concat(result['rolling_regression_win_3'].to_list(), axis=1).T
