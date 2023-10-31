@@ -7,7 +7,11 @@ import warnings
 
 from typing import Union, Optional, Callable, Tuple, List
 
+from pathos.multiprocessing import ProcessingPool
+from functools import partial
+
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
+from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 from pytimetk.utils.polars_helpers import update_dict
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 
@@ -19,6 +23,8 @@ def augment_expanding(
     window_func: Union[str, list, Tuple[str, Callable]] = 'mean',
     min_periods: Optional[int] = None,
     engine: str = 'pandas',
+    threads: int = 1,
+    show_progress: bool = True,
     **kwargs,
 ) -> pd.DataFrame:
     '''
@@ -63,6 +69,11 @@ def augment_expanding(
             - "pandas" (default): Uses the `pandas` library.
             - "polars": Uses the `polars` library, which may offer performance 
                benefits for larger datasets.
+    threads : int, optional, default 1
+        Number of threads to use for parallel processing. If `threads` is set to 
+        1, parallel processing will be disabled. Set to -1 to use all available CPU cores.
+    show_progress : bool, optional, default True
+        If `True`, a progress bar will be displayed during parallel processing.
         
     **kwargs : additional keyword arguments
         Additional arguments passed to the `pandas.Series.expanding` method when 
@@ -73,7 +84,25 @@ def augment_expanding(
     pd.DataFrame
         The `augment_expanding` function returns a DataFrame with new columns for 
         each applied function, window size, and value column.
-        
+    
+     Notes
+    -----
+    
+    ## Performance
+    
+    ### Polars Engine (3X faster than Pandas)
+    
+    In most cases, the `polars` engine will be faster than the `pandas` engine. Speed tests indicate 3X or more. 
+    
+    ### Parallel Processing (Pandas Engine Only)
+    
+    This function uses parallel processing to speed up computation for large 
+    datasets with many time series groups: 
+    
+    Parallel processing has overhead and may not be faster on small datasets.
+    
+    To use parallel processing, set `threads = -1` to use all available processors.
+    
     Examples
     --------
     
@@ -102,8 +131,10 @@ def augment_expanding(
                 ],
                 min_periods = 1,
                 engine = 'pandas',  # Utilize pandas for the underlying computations
+                threads = 1,  # Disable parallel processing
+                show_progress = True,  # Display a progress bar
                 )
-        )
+    )
     display(expanded_df)
     ```
     
@@ -174,13 +205,9 @@ def augment_expanding(
     display(expanded_df)
     ```
     '''
-    # Ensure data is a DataFrame or a GroupBy object
+    # Checks
     check_dataframe_or_groupby(data)
-    
-    # Ensure date column exists and is properly formatted
     check_date_column(data, date_column)
-    
-    # Ensure value column(s) exist
     check_value_column(data, value_column)
     
     # Convert string value column to list for consistency
@@ -196,9 +223,29 @@ def augment_expanding(
     
     # Call the function to augment expanding window columns using the specified engine
     if engine == 'pandas':
-        return _augment_expanding_pandas(data, date_column, value_column, window_func, min_periods, **kwargs)
+        
+        # Get threads
+        threads = get_threads(threads)  
+        
+        return _augment_expanding_pandas(
+            data, 
+            date_column, 
+            value_column, 
+            window_func, 
+            min_periods, 
+            threads, 
+            show_progress,
+            **kwargs
+        )
     elif engine == 'polars':
-        return _augment_expanding_polars(data, date_column, value_column, window_func, min_periods, **kwargs)
+        return _augment_expanding_polars(
+            data, 
+            date_column, 
+            value_column, 
+            window_func, 
+            min_periods, 
+            **kwargs
+        )
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
 
@@ -213,6 +260,8 @@ def _augment_expanding_pandas(
     value_column: Union[str, list],  
     window_func: Union[str, list, Tuple[str, Callable]] = 'mean',
     min_periods: Optional[int] = None,
+    threads: int = 1,
+    show_progress: bool = True,
     **kwargs,
 ) -> pd.DataFrame:
     """
@@ -220,7 +269,7 @@ def _augment_expanding_pandas(
     """
     
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = reduce_memory_usage(data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy())
+    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
     
     # Group data if it's a GroupBy object; otherwise, prepare it for the expanding calculations
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -231,90 +280,121 @@ def _augment_expanding_pandas(
         grouped = [([], data_copy.sort_values(by=[date_column]))]
     
     # Apply Series-based expanding window functions
-    result_dfs = []
-    for _, group_df in grouped:
-        for col in value_column:
-            for func in window_func:
-                if isinstance(func, tuple):
-                    # Ensure the tuple is of length 2 and begins with a string
-                    if len(func) != 2:
-                        raise ValueError(f"Expected tuple of length 2, but `window_func` received tuple of length {len(func)}.")
-                    if not isinstance(func[0], str):
-                        raise TypeError(f"Expected first element of tuple to be type 'str', but `window_func` received {type(func[0])}.")
-                
-                    user_func_name, func = func
-                    new_column_name = f"{col}_expanding_{user_func_name}"
-                        
-                    # Try handling a lambda function of the form lambda x: x
-                    if inspect.isfunction(func) and len(inspect.signature(func).parameters) == 1:
-                        try:
-                            # Construct expanding window column
-                            group_df[new_column_name] = group_df[col].expanding(min_periods=min_periods, **kwargs).apply(func, raw=True)
-                        except Exception as e:
-                            raise Exception(f"An error occurred during the operation of the `{user_func_name}` function in Pandas. Error: {e}")
+    if threads == 1:
+        func = partial(
+            _process_expanding_window, 
+            value_column=value_column, 
+            window_func=window_func, 
+            min_periods=min_periods, 
+            **kwargs
+        )
 
-                    # Try handling a configurable function (e.g. pd_quantile)
-                    elif isinstance(func, tuple) and func[0] == 'configurable':
-                        try:
-                            # Configurable function should return 4 objects
-                            _, func_name, default_kwargs, user_kwargs = func
-                        except Exception as e:
-                            raise ValueError(f"Unexpected function format. Expected a tuple with format ('configurable', func_name, default_kwargs, user_kwargs). Received: {func}. Original error: {e}")
-                        
-                        try:
-                            # Define local values that may be required by configurable functions.
-                            # If adding a new configurable function in utils.pandas_helpers that necessitates 
-                            # additional local values, consider updating this dictionary accordingly.
-                            local_values = {}
-                            # Combine local values with user-provided parameters for the configurable function
-                            user_kwargs.update(local_values)
-                            # Update the default configurable parameters (without adding new keys)
-                            default_kwargs = update_dict(default_kwargs, user_kwargs)
-                        except Exception as e:
-                            raise ValueError("Error encountered while updating parameters for the configurable function `{func_name}` passed to `window_func`: {e}")
-                        
-                        try:
-                            # Get the expanding window function 
-                            expanding_function = getattr(group_df[col].expanding(min_periods=min_periods, **kwargs), func_name, None)
-                        except Exception as e:
-                            raise AttributeError(f"The function `{func_name}` tried to access a non-existent attribute or method in Pandas. Error: {e}")
+        # Use tqdm to display progress for the loop
+        result_dfs = [func(group) for _, group in conditional_tqdm(grouped, total=len(grouped), desc="Calculating Expanding...", display=show_progress)]
+    else:
+        # Prepare to use pathos.multiprocessing
+        pool = ProcessingPool(threads)
 
-                        if expanding_function:
-                            try:
-                                # Apply expanding function to data and store in new column
-                                group_df[new_column_name] = expanding_function(**default_kwargs)
-                            except Exception as e:
-                                raise Exception(f"Failed to construct the expanding window column using function `{user_func_name}`. Error: {e}")
-                    else:
-                        raise TypeError(f"Unexpected function format for `{user_func_name}`.")
+        # Use partial to "freeze" arguments for _process_single_roll
+        func = partial(
+            _process_expanding_window, 
+            value_column=value_column, 
+            window_func=window_func, 
+            min_periods=min_periods, 
+            **kwargs
+        )
+
+        result_dfs = list(conditional_tqdm(pool.map(func, (group for _, group in grouped)), 
+                                            total=len(grouped), 
+                                            desc="Calculating Expanding...", 
+                                            display=show_progress))
     
-                elif isinstance(func, str):
-                    new_column_name = f"{col}_expanding_{func}"
-                    # Get the expanding function (like mean, sum, etc.) specified by `func` for the given column and window settings
-                    if func == "quantile":
-                        new_column_name = f"{col}_expanding_{func}_50"
-                        group_df[new_column_name] = group_df[col].expanding(min_periods=min_periods, **kwargs).quantile(q=0.5)
-                        warnings.warn(
-                            "You passed 'quantile' as a string-based function, so it defaulted to a 50 percent quantile (0.5). "
-                            "For more control over the quantile value, consider using the function `pd_quantile()`. "
-                            "For example: ('quantile_75', pd_quantile(q=0.75))."
-                        )
-                    else:
-                        expanding_function = getattr(group_df[col].expanding(min_periods=min_periods, **kwargs), func, None)
-                        # Apply expanding function to data and store in new column
-                        if expanding_function:
-                            group_df[new_column_name] = expanding_function()
-                        else:
-                            raise ValueError(f"Invalid function name: {func}")
+    result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
+    
+    return result_df
+
+def _process_expanding_window(group_df, value_column, window_func, min_periods, **kwargs):
+    
+    result_dfs = []
+    for col in value_column:
+        for func in window_func:
+            if isinstance(func, tuple):
+                # Ensure the tuple is of length 2 and begins with a string
+                if len(func) != 2:
+                    raise ValueError(f"Expected tuple of length 2, but `window_func` received tuple of length {len(func)}.")
+                if not isinstance(func[0], str):
+                    raise TypeError(f"Expected first element of tuple to be type 'str', but `window_func` received {type(func[0])}.")
+            
+                user_func_name, func = func
+                new_column_name = f"{col}_expanding_{user_func_name}"
+                    
+                # Try handling a lambda function of the form lambda x: x
+                if inspect.isfunction(func) and len(inspect.signature(func).parameters) == 1:
+                    try:
+                        # Construct expanding window column
+                        group_df[new_column_name] = group_df[col].expanding(min_periods=min_periods, **kwargs).apply(func, raw=True)
+                    except Exception as e:
+                        raise Exception(f"An error occurred during the operation of the `{user_func_name}` function in Pandas. Error: {e}")
+
+                # Try handling a configurable function (e.g. pd_quantile)
+                elif isinstance(func, tuple) and func[0] == 'configurable':
+                    try:
+                        # Configurable function should return 4 objects
+                        _, func_name, default_kwargs, user_kwargs = func
+                    except Exception as e:
+                        raise ValueError(f"Unexpected function format. Expected a tuple with format ('configurable', func_name, default_kwargs, user_kwargs). Received: {func}. Original error: {e}")
+                    
+                    try:
+                        # Define local values that may be required by configurable functions.
+                        # If adding a new configurable function in utils.pandas_helpers that necessitates 
+                        # additional local values, consider updating this dictionary accordingly.
+                        local_values = {}
+                        # Combine local values with user-provided parameters for the configurable function
+                        user_kwargs.update(local_values)
+                        # Update the default configurable parameters (without adding new keys)
+                        default_kwargs = update_dict(default_kwargs, user_kwargs)
+                    except Exception as e:
+                        raise ValueError("Error encountered while updating parameters for the configurable function `{func_name}` passed to `window_func`: {e}")
+                    
+                    try:
+                        # Get the expanding window function 
+                        expanding_function = getattr(group_df[col].expanding(min_periods=min_periods, **kwargs), func_name, None)
+                    except Exception as e:
+                        raise AttributeError(f"The function `{func_name}` tried to access a non-existent attribute or method in Pandas. Error: {e}")
+
+                    if expanding_function:
+                        try:
+                            # Apply expanding function to data and store in new column
+                            group_df[new_column_name] = expanding_function(**default_kwargs)
+                        except Exception as e:
+                            raise Exception(f"Failed to construct the expanding window column using function `{user_func_name}`. Error: {e}")
                 else:
-                    raise TypeError(f"Invalid function type: {type(func)}")
+                    raise TypeError(f"Unexpected function format for `{user_func_name}`.")
+
+            elif isinstance(func, str):
+                new_column_name = f"{col}_expanding_{func}"
+                # Get the expanding function (like mean, sum, etc.) specified by `func` for the given column and window settings
+                if func == "quantile":
+                    new_column_name = f"{col}_expanding_{func}_50"
+                    group_df[new_column_name] = group_df[col].expanding(min_periods=min_periods, **kwargs).quantile(q=0.5)
+                    warnings.warn(
+                        "You passed 'quantile' as a string-based function, so it defaulted to a 50 percent quantile (0.5). "
+                        "For more control over the quantile value, consider using the function `pd_quantile()`. "
+                        "For example: ('quantile_75', pd_quantile(q=0.75))."
+                    )
+                else:
+                    expanding_function = getattr(group_df[col].expanding(min_periods=min_periods, **kwargs), func, None)
+                    # Apply expanding function to data and store in new column
+                    if expanding_function:
+                        group_df[new_column_name] = expanding_function()
+                    else:
+                        raise ValueError(f"Invalid function name: {func}")
+            else:
+                raise TypeError(f"Invalid function type: {type(func)}")
                     
         result_dfs.append(group_df)
     
-    # Combine processed dataframes and sort by index
-    result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
-    
-    return reduce_memory_usage(result_df)
+    return pd.concat(result_dfs)
 
 def _augment_expanding_polars(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
@@ -329,7 +409,7 @@ def _augment_expanding_polars(
     """
     
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = reduce_memory_usage(data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy())
+    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
     
     # Retrieve the group column names if the input data is a GroupBy object
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -467,7 +547,7 @@ def _augment_expanding_polars(
             .drop('index') \
             .to_pandas()
                 
-    return reduce_memory_usage(df)
+    return df
 
 
 @pf.register_dataframe_method
@@ -554,7 +634,7 @@ def augment_expanding_apply(
         'value1': [10, 20, 29, 42, 53, 59],
         'value2': [5, 16, 24, 35, 45, 58],
         'value3': [2, 3, 6, 9, 10, 13]
-        })
+    })
         
     # Define Regression Function to be applied on the expanding window.
     def regression(df):
@@ -588,7 +668,7 @@ def augment_expanding_apply(
     ```
     '''
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = reduce_memory_usage(data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy())
+    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
     
     # Group data if it's a GroupBy object; otherwise, prepare it for the expanding calculations
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -629,7 +709,7 @@ def augment_expanding_apply(
     # Combine processed dataframes and sort by index
     result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
     
-    return reduce_memory_usage(result_df)
+    return result_df
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.augment_expanding_apply = augment_expanding_apply
