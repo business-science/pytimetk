@@ -183,7 +183,6 @@ def augment_expanding(
     
     import pytimetk as tk
     import pandas as pd
-    import polars as pl
     import numpy as np
     
     df = tk.load_dataset("m4_daily", parse_dates = ['date'])
@@ -556,6 +555,8 @@ def augment_expanding_apply(
     date_column: str,
     window_func: Union[Tuple[str, Callable], List[Tuple[str, Callable]]], 
     min_periods: Optional[int] = None,
+    threads: int = 1,
+    show_progress: bool = True,
 ) -> pd.DataFrame:
     '''
     Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame.
@@ -579,9 +580,15 @@ def augment_expanding_apply(
         contextual data from other columns, consider using the `augment_expanding` 
         function in this library.
     min_periods : int, optional, default None
-          Minimum observations in the window to have a value. Defaults to the window 
-          size. If set, a value will be produced even if fewer observations are 
-          present than the window size.
+        Minimum observations in the window to have a value. Defaults to the window 
+        size. If set, a value will be produced even if fewer observations are 
+        present than the window size.
+    threads : int, optional, default 1
+        Number of threads to use for parallel processing. If `threads` is set to 
+        1, parallel processing will be disabled. Set to -1 to use all available CPU cores.
+    show_progress : bool, optional, default True
+        If `True`, a progress bar will be displayed during parallel processing.
+
         
     Returns
     -------
@@ -608,7 +615,7 @@ def augment_expanding_apply(
         'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),
         'value1': [10, 20, 29, 42, 53, 59],
         'value2': [2, 16, 20, 40, 41, 50],
-        })
+    })
         
     # Compute the expanding correlation for each group of 'id'
     expanding_df = (
@@ -616,8 +623,9 @@ def augment_expanding_apply(
           .augment_expanding_apply(
             date_column='date',
             window_func=[('corr', lambda x: x['value1'].corr(x['value2']))],  # Lambda function for correlation
-            )
+            threads = 1,  # Disable parallel processing
         )
+    )
     display(expanding_df)
     ```
         
@@ -655,7 +663,8 @@ def augment_expanding_apply(
         df.groupby('id')
         .augment_expanding_apply(
             date_column='date',
-            window_func=[('regression', regression)]
+            window_func=[('regression', regression)],
+            threads = 1
         )
         .dropna()
     )
@@ -667,8 +676,15 @@ def augment_expanding_apply(
     display(regression_wide_df)
     ```
     '''
+    # Checks
+    check_dataframe_or_groupby(data)
+    check_date_column(data, date_column)
+    
     # Create a fresh copy of the data, leaving the original untouched
     data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
+    
+    # Get threads
+    threads = get_threads(threads)
     
     # Group data if it's a GroupBy object; otherwise, prepare it for the expanding calculations
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -681,30 +697,22 @@ def augment_expanding_apply(
      # Set min_periods to 1 if not specified
     min_periods = 1 if min_periods is None else min_periods
     
-    # Helper function to apply expanding calculations on a dataframe
-    def expanding_apply(func, df, min_periods):
-        num_rows = len(df)
-        results = [np.nan] * num_rows
-        
-        for end_point in range(1, num_rows + 1):
-            window_df = df.iloc[: end_point]
-            if len(window_df) >= min_periods:
-                results[end_point - 1] = func(window_df)
-
-        return pd.DataFrame({'result': results}, index=df.index)
+    # Process each group in parallel
+    if threads == 1:
+        result_dfs = []
+        for group in conditional_tqdm(grouped, total=len(grouped), desc="Processing rolling apply...", display= show_progress):
+            args = group, window_func, min_periods 
+            result_dfs.append(_process_single_expanding_apply_group(args))
+    else:
+        # Prepare to use pathos.multiprocessing
+        pool = ProcessingPool(threads)
+        args = [(group, window_func, min_periods) for group in grouped]
+        result_dfs = list(conditional_tqdm(pool.map(_process_single_expanding_apply_group, args), 
+                                        total=len(grouped), 
+                                        desc="Processing rolling apply...", 
+                                        display=show_progress))
     
-    # Apply DataFrame-based expanding window functions
-    result_dfs = []
-    for _, group_df in grouped:
-        for func in window_func:
-            if isinstance(func, tuple):
-                func_name, func = func
-                new_column_name = f"expanding_{func_name}"
-                group_df[new_column_name] = expanding_apply(func, group_df, min_periods=min_periods)
-            else:
-                raise TypeError(f"Expected 'tuple', but got invalid function type: {type(func)}")     
-                
-        result_dfs.append(group_df)
+    
     
     # Combine processed dataframes and sort by index
     result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
@@ -714,6 +722,36 @@ def augment_expanding_apply(
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.augment_expanding_apply = augment_expanding_apply
 
+def _process_single_expanding_apply_group(args):
+    
+    group, window_func, min_periods = args
+    
+    # Apply DataFrame-based expanding window functions
+    name, group_df = group
+    result_dfs = []
+    for func in window_func:
+        if isinstance(func, tuple):
+            func_name, func = func
+            new_column_name = f"expanding_{func_name}"
+            group_df[new_column_name] = _expanding_apply(func, group_df, min_periods=min_periods)
+        else:
+            raise TypeError(f"Expected 'tuple', but got invalid function type: {type(func)}")     
+                
+        result_dfs.append(group_df)
+        
+    return pd.concat(result_dfs)
+    
+    
 
+# Helper function to apply expanding calculations on a dataframe
+def _expanding_apply(func, df, min_periods):
+    num_rows = len(df)
+    results = [np.nan] * num_rows
+    
+    for end_point in range(1, num_rows + 1):
+        window_df = df.iloc[: end_point]
+        if len(window_df) >= min_periods:
+            results[end_point - 1] = func(window_df)
 
+    return pd.DataFrame({'result': results}, index=df.index)
 
