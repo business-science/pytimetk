@@ -301,6 +301,88 @@ def _augment_rolling_pandas(
     result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
     return result_df
 
+def _process_single_roll(group_df, value_column, window_func, window, min_periods, center, **kwargs):
+    result_dfs = []
+    for value_col in value_column:
+        for window_size in window:
+            min_periods = window_size if min_periods is None else min_periods
+            for func in window_func:
+                if isinstance(func, tuple):
+                    # Ensure the tuple is of length 2 and begins with a string
+                    if len(func) != 2:
+                        raise ValueError(f"Expected tuple of length 2, but `window_func` received tuple of length {len(func)}.")
+                    if not isinstance(func[0], str):
+                        raise TypeError(f"Expected first element of tuple to be type 'str', but `window_func` received {type(func[0])}.")
+                
+                    user_func_name, func = func
+                    new_column_name = f"{value_col}_rolling_{user_func_name}_win_{window_size}"
+                        
+                    # Try handling a lambda function of the form lambda x: x
+                    if inspect.isfunction(func) and len(inspect.signature(func).parameters) == 1:
+                        try:
+                            # Construct rolling window column
+                            group_df[new_column_name] = group_df[value_col].rolling(window=window_size, min_periods=min_periods, center=center, **kwargs).apply(func, raw=True)
+                        except Exception as e:
+                            raise Exception(f"An error occurred during the operation of the `{user_func_name}` function in Pandas. Error: {e}")
+
+                    # Try handling a configurable function (e.g. pd_quantile)
+                    elif isinstance(func, tuple) and func[0] == 'configurable':
+                        try:
+                            # Configurable function should return 4 objects
+                            _, func_name, default_kwargs, user_kwargs = func
+                        except Exception as e:
+                            raise ValueError(f"Unexpected function format. Expected a tuple with format ('configurable', func_name, default_kwargs, user_kwargs). Received: {func}. Original error: {e}")
+                        
+                        try:
+                            # Define local values that may be required by configurable functions.
+                            # If adding a new configurable function in utils.pandas_helpers that necessitates 
+                            # additional local values, consider updating this dictionary accordingly.
+                            local_values = {}
+                            # Combine local values with user-provided parameters for the configurable function
+                            user_kwargs.update(local_values)
+                            # Update the default configurable parameters (without adding new keys)
+                            default_kwargs = update_dict(default_kwargs, user_kwargs)
+                        except Exception as e:
+                            raise ValueError("Error encountered while updating parameters for the configurable function `{func_name}` passed to `window_func`: {e}")
+                        
+                        try:
+                            # Get the rolling window function 
+                            rolling_function = getattr(group_df[value_col].rolling(window=window_size, min_periods=min_periods, center=center, **kwargs), func_name, None)
+                        except Exception as e:
+                            raise AttributeError(f"The function `{func_name}` tried to access a non-existent attribute or method in Pandas. Error: {e}")
+
+                        if rolling_function:
+                            try:
+                                # Apply rolling function to data and store in new column
+                                group_df[new_column_name] = rolling_function(**default_kwargs)
+                            except Exception as e:
+                                raise Exception(f"Failed to construct the rolling window column using function `{user_func_name}`. Error: {e}")
+                    else:
+                        raise TypeError(f"Unexpected function format for `{user_func_name}`.")
+            
+                elif isinstance(func, str):
+                    new_column_name = f"{value_col}_rolling_{func}_win_{window_size}"
+                    # Get the rolling function (like mean, sum, etc.) specified by `func` for the given column and window settings
+                    if func == "quantile":
+                        new_column_name = f"{value_col}_rolling_{func}_50_win_{window_size}"
+                        group_df[new_column_name] = group_df[value_col].rolling(window=window_size, min_periods=min_periods, center=center, **kwargs).quantile(q=0.5)
+                        warnings.warn(
+                            "You passed 'quantile' as a string-based function, so it defaulted to a 50 percent quantile (0.5). "
+                            "For more control over the quantile value, consider using the function `pd_quantile()`. "
+                            "For example: ('quantile_75', pd_quantile(q=0.75))."
+                        )
+                    else:
+                        rolling_function = getattr(group_df[value_col].rolling(window=window_size, min_periods=min_periods, center=center, **kwargs), func, None)
+                        # Apply rolling function to data and store in new column
+                        if rolling_function:
+                            group_df[new_column_name] = rolling_function()
+                        else:
+                            raise ValueError(f"Invalid function name: {func}")
+                else:
+                    raise TypeError(f"Invalid function type: {type(func)}") 
+          
+        result_dfs.append(group_df)
+    return pd.concat(result_dfs)
 
 def _augment_rolling_polars(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
@@ -623,10 +705,8 @@ def augment_rolling_apply(
     display(regression_wide_df)
     ```
     '''
-    # Ensure data is a DataFrame or a GroupBy object
+    # Checks
     check_dataframe_or_groupby(data)
-    
-    # Ensure date column exists and is properly formatted
     check_date_column(data, date_column)
     
     # Get threads
@@ -661,12 +741,12 @@ def augment_rolling_apply(
         result_dfs = []
         for group in conditional_tqdm(grouped, total=len(grouped), desc="Processing rolling apply...", display= show_progress):
             args = group, window, window_func, min_periods, center
-            result_dfs.append(_process_single_apply_group(args))
+            result_dfs.append(_process_single_rolling_apply_group(args))
     else:
         # Prepare to use pathos.multiprocessing
         pool = ProcessingPool(threads)
         args = [(group, window, window_func, min_periods, center) for group in grouped]
-        result_dfs = list(conditional_tqdm(pool.map(_process_single_apply_group, args), 
+        result_dfs = list(conditional_tqdm(pool.map(_process_single_rolling_apply_group, args), 
                                         total=len(grouped), 
                                         desc="Processing rolling apply...", 
                                         display=show_progress))
@@ -684,10 +764,7 @@ def augment_rolling_apply(
 pd.core.groupby.generic.DataFrameGroupBy.augment_rolling_apply = augment_rolling_apply
 
 
-
-# UTILITIES
-# ---------
-def _process_single_apply_group(args):
+def _process_single_rolling_apply_group(args):
     
     group, window, window_func, min_periods, center = args
     
@@ -732,85 +809,4 @@ def _rolling_apply(func, df, window_size, center, min_periods):
     
     return pd.DataFrame({'result': results}, index=df.index)
 
-def _process_single_roll(group_df, value_column, window_func, window, min_periods, center, **kwargs):
-    result_dfs = []
-    for value_col in value_column:
-        for window_size in window:
-            min_periods = window_size if min_periods is None else min_periods
-            for func in window_func:
-                if isinstance(func, tuple):
-                    # Ensure the tuple is of length 2 and begins with a string
-                    if len(func) != 2:
-                        raise ValueError(f"Expected tuple of length 2, but `window_func` received tuple of length {len(func)}.")
-                    if not isinstance(func[0], str):
-                        raise TypeError(f"Expected first element of tuple to be type 'str', but `window_func` received {type(func[0])}.")
-                
-                    user_func_name, func = func
-                    new_column_name = f"{value_col}_rolling_{user_func_name}_win_{window_size}"
-                        
-                    # Try handling a lambda function of the form lambda x: x
-                    if inspect.isfunction(func) and len(inspect.signature(func).parameters) == 1:
-                        try:
-                            # Construct rolling window column
-                            group_df[new_column_name] = group_df[value_col].rolling(window=window_size, min_periods=min_periods, center=center, **kwargs).apply(func, raw=True)
-                        except Exception as e:
-                            raise Exception(f"An error occurred during the operation of the `{user_func_name}` function in Pandas. Error: {e}")
 
-                    # Try handling a configurable function (e.g. pd_quantile)
-                    elif isinstance(func, tuple) and func[0] == 'configurable':
-                        try:
-                            # Configurable function should return 4 objects
-                            _, func_name, default_kwargs, user_kwargs = func
-                        except Exception as e:
-                            raise ValueError(f"Unexpected function format. Expected a tuple with format ('configurable', func_name, default_kwargs, user_kwargs). Received: {func}. Original error: {e}")
-                        
-                        try:
-                            # Define local values that may be required by configurable functions.
-                            # If adding a new configurable function in utils.pandas_helpers that necessitates 
-                            # additional local values, consider updating this dictionary accordingly.
-                            local_values = {}
-                            # Combine local values with user-provided parameters for the configurable function
-                            user_kwargs.update(local_values)
-                            # Update the default configurable parameters (without adding new keys)
-                            default_kwargs = update_dict(default_kwargs, user_kwargs)
-                        except Exception as e:
-                            raise ValueError("Error encountered while updating parameters for the configurable function `{func_name}` passed to `window_func`: {e}")
-                        
-                        try:
-                            # Get the rolling window function 
-                            rolling_function = getattr(group_df[value_col].rolling(window=window_size, min_periods=min_periods, center=center, **kwargs), func_name, None)
-                        except Exception as e:
-                            raise AttributeError(f"The function `{func_name}` tried to access a non-existent attribute or method in Pandas. Error: {e}")
-
-                        if rolling_function:
-                            try:
-                                # Apply rolling function to data and store in new column
-                                group_df[new_column_name] = rolling_function(**default_kwargs)
-                            except Exception as e:
-                                raise Exception(f"Failed to construct the rolling window column using function `{user_func_name}`. Error: {e}")
-                    else:
-                        raise TypeError(f"Unexpected function format for `{user_func_name}`.")
-            
-                elif isinstance(func, str):
-                    new_column_name = f"{value_col}_rolling_{func}_win_{window_size}"
-                    # Get the rolling function (like mean, sum, etc.) specified by `func` for the given column and window settings
-                    if func == "quantile":
-                        new_column_name = f"{value_col}_rolling_{func}_50_win_{window_size}"
-                        group_df[new_column_name] = group_df[value_col].rolling(window=window_size, min_periods=min_periods, center=center, **kwargs).quantile(q=0.5)
-                        warnings.warn(
-                            "You passed 'quantile' as a string-based function, so it defaulted to a 50 percent quantile (0.5). "
-                            "For more control over the quantile value, consider using the function `pd_quantile()`. "
-                            "For example: ('quantile_75', pd_quantile(q=0.75))."
-                        )
-                    else:
-                        rolling_function = getattr(group_df[value_col].rolling(window=window_size, min_periods=min_periods, center=center, **kwargs), func, None)
-                        # Apply rolling function to data and store in new column
-                        if rolling_function:
-                            group_df[new_column_name] = rolling_function()
-                        else:
-                            raise ValueError(f"Invalid function name: {func}")
-                else:
-                    raise TypeError(f"Invalid function type: {type(func)}") 
-          
-        result_dfs.append(group_df)
-    return pd.concat(result_dfs)
