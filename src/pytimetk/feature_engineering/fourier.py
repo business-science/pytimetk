@@ -1,20 +1,85 @@
 import pandas as pd
+import polars as pl
 import numpy as np
 import pandas_flavor as pf
 from typing import Tuple
 from typing import Union, List
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
+
+from pytimetk.core.ts_summary import ts_summary, ts_summary_polars
 from pytimetk.utils.memory_helpers import reduce_memory_usage
-from pytimetk.core.ts_summary import ts_summary
+
 
 def calc_fourier(x, period, type: str, K = 1): 
     term = K / period
     return np.sin(2 * np.pi * term * x) if type == "sin" else np.cos(2 * np.pi * term * x)
 
 
-def date_to_seq_scale_factor(data: pd.DataFrame, date_var: str) -> pd.Series:
+def date_to_seq_scale_factor(data: pd.DataFrame, date_var: str) -> pd.DataFrame:
     return ts_summary(data, date_column=date_var)['diff_median']
+
+
+def date_to_seq_scale_factor_polars(data: pl.DataFrame, date_var: str) -> pl.DataFrame:
+    return ts_summary_polars(data, date_column=date_var)['diff_median']
+
+
+def _augment_fourier_pandas(
+    data: pd.DataFrame, 
+    date_column: str,
+    periods: Union[int, Tuple[int, int], List[int]],
+    max_order: int
+) -> pd.DataFrame:
+
+    df = data.copy()
+    df.sort_values(by=[date_column], inplace=True)
+
+    scale_factor = date_to_seq_scale_factor(df, date_column).iloc[0].total_seconds()
+    if scale_factor == 0:
+        raise ValueError("Time difference between observations is zero. Try arranging data to have a positive time difference between observations. If working with time series groups, arrange by groups first, then date.")
+    
+    # Calculate radians for the date values
+    min_date = df[date_column].min()
+    df['radians'] = 2 * np.pi * (df[date_column] - min_date).dt.total_seconds() / scale_factor
+    
+    for type_val in ("sin", "cos"):
+        for K_val in range(1, max_order + 1):
+            for period_val in periods:
+                df[f'{date_column}_{type_val}_{K_val}_{period_val}'] = calc_fourier(x = df['radians'], period = period_val, type = type_val, K = K_val)
+
+    # Drop the temporary 'radians' column
+    return df.drop(columns=['radians'])
+
+
+def _augment_fourier_polars(
+        data: pd.DataFrame, 
+        date_column: str,
+        periods: Union[int, Tuple[int, int], List[int]],
+        max_order: int
+    ) -> pd.DataFrame:
+    """ Takes pandas objects as inputs and converts them into polars object internally.
+    """
+
+    # Convert to polars
+    df = pl.from_pandas(data) \
+        .sort(by=[date_column], descending=False, nulls_last=True) 
+
+    # Compute scale factor
+    scale_factor = date_to_seq_scale_factor_polars(df, date_column)[0].total_seconds()
+    if scale_factor == 0:
+        raise ValueError("Time difference between observations is zero. Try arranging data to have a positive time difference between observations. If working with time series groups, arrange by groups first, then date.")
+    
+    # Convert dates to numeric representation
+    min_date = df[date_column].min()
+    df = df.with_columns((2 * np.pi * (df[date_column] - min_date).dt.seconds() / scale_factor).rename('radians'))
+    
+    # Compute Fourier series
+    for type_val in ("sin", "cos"):
+        for K_val in range(1, max_order + 1):
+            for period_val in periods:
+                df = df.with_columns(calc_fourier(x = df['radians'], period = period_val, type = type_val, K = K_val).rename(f'{date_column}_{type_val}_{K_val}_{period_val}'))
+        
+    return df.drop(columns=['radians']).to_pandas()
 
 
 @pf.register_dataframe_method
@@ -22,7 +87,8 @@ def augment_fourier_v2(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
     periods: Union[int, Tuple[int, int], List[int]] = 1,
-    max_order: int = 1
+    max_order: int = 1,
+    engine: str = 'pandas'
 ) -> pd.DataFrame:
     """
     Adds Fourier transforms to a Pandas DataFrame or DataFrameGroupBy object.
@@ -39,6 +105,14 @@ def augment_fourier_v2(
         The `periods` parameter specifies how many timesteps between each peak in the fourier series. Default is 1.
     max_order : int, optional
         The `max_order` parameter specifies the maximum Fourier order to calculate. Default is 1.
+    engine : str, optional
+        The `engine` parameter is used to specify the engine to use for 
+        augmenting lags. It can be either "pandas" or "polars". 
+        
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library. 
+        This can be faster than using "pandas" for large datasets. 
 
     Returns
     -------
@@ -70,9 +144,9 @@ def augment_fourier_v2(
 
     """
 
-    # Common checks
-    if not (isinstance(data, pd.DataFrame) or isinstance(data, pd.core.groupby.generic.DataFrameGroupBy)):
-        raise TypeError('Input must be of type pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy')
+    if not engine in ['pandas', 'polars']: 
+        raise ValueError(f"Supported engines are 'pandas' or 'polars'. Found {engine}. Please select an authorized engine.")
+    
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
     
@@ -83,37 +157,14 @@ def augment_fourier_v2(
     elif not isinstance(periods, list):
         raise TypeError(f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list.")
 
-    # GROUPED EXTENSION - If data is a GroupBy object, add Fourier transforms by group
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):  
+        data = data.apply(lambda x: x).reset_index(drop=True)  
 
-        # Get the group names and original ungrouped data
-        group_names = data.grouper.names
-        data = data.obj
-
-    df = reduce_memory_usage(data.copy())
-
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        df.sort_values(by=[*group_names, date_column], inplace=True)
+    if engine == "pandas":
+        return _augment_fourier_pandas(data, date_column, periods, max_order)
     else:
-        df.sort_values(by=[date_column], inplace=True)
+        return _augment_fourier_polars(data, date_column, periods, max_order)
 
-    scale_factor = date_to_seq_scale_factor(df, date_column).iloc[0].total_seconds()
-    if scale_factor == 0:
-        raise ValueError("Time difference between observations is zero. Try arranging data to have a positive time difference between observations. If working with time series groups, arrange by groups first, then date.")
-    
-    # Calculate radians for the date values
-    min_date = df[date_column].min()
-    df['radians'] = 2 * np.pi * (df[date_column] - min_date).dt.total_seconds() / scale_factor
-    
-    for type_val in ("sin", "cos"):
-        for K_val in range(1, max_order + 1):
-            for period_val in periods:
-                df[f'{date_column}_{type_val}_{K_val}_{period_val}'] = calc_fourier(x = df['radians'], period = period_val, type = type_val, K = K_val)
-
-    # Drop the temporary 'radians' column
-    df.drop(columns=['radians'], inplace=True)
-
-    return reduce_memory_usage(df)
 
 
 @pf.register_dataframe_method

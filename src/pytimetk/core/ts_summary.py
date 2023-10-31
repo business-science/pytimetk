@@ -2,6 +2,7 @@ import pandas as pd
 import pandas_flavor as pf
 import numpy as np
 import polars as pl
+from polars.dataframe.group_by import GroupBy
 
 from typing import Union
 
@@ -12,6 +13,15 @@ from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column,
 from pytimetk.utils.parallel_helpers import parallel_apply, get_threads, progress_apply
 
 
+def ts_summary_polars(
+    data: pl.DataFrame,
+    date_column: str,
+    threads = 1,
+    show_progress = True
+) -> pl.DataFrame:
+    
+    return pl.from_pandas(ts_summary(data.to_pandas(), date_column, threads, show_progress))
+
     
 @pf.register_dataframe_method
 def ts_summary(
@@ -19,6 +29,7 @@ def ts_summary(
     date_column: str,
     threads = 1,
     show_progress = True,
+    engine : str = 'pandas'
 ) -> pd.DataFrame:
     '''
     Computes summary statistics for a time series data, either for the entire 
@@ -34,6 +45,14 @@ def ts_summary(
         The `date_column` parameter is a string that specifies the name of the 
         column in the DataFrame that contains the dates. This column will be 
         used to compute summary statistics for the time series data.
+    engine : str, optional
+        The `engine` parameter is used to specify the engine to use for 
+        augmenting lags. It can be either "pandas" or "polars". 
+        
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library. 
+        This can be faster than using "pandas" for large datasets. 
     
     Returns
     -------
@@ -126,6 +145,11 @@ def ts_summary(
     ```
     '''
     
+    if not engine in ['pandas', 'polars']: 
+        raise ValueError(f"Supported engines are 'pandas' or 'polars'. Found {engine}. Please select an authorized engine.")
+    elif engine == "polars":
+        raise NotImplementedError('ts_summary with polars backend has not yet been implemented')
+
     # Run common checks
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
