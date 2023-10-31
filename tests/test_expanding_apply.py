@@ -50,11 +50,33 @@ def test_example_parallel():
     
 def test_example_2():
     df = generate_sample_data_2()
-    result = df.groupby('id').augment_expanding_apply(
-        date_column='date',
-        window_func=[('regression', regression)],
-        threads=1
-    ).dropna()
+    result_df = (
+        df.groupby('id')
+        .augment_expanding_apply(
+            date_column='date',
+            window_func=[('regression', regression)],
+            threads = 1
+        )
+        .dropna()
+    )
+
+    regression_wide_df = pd.concat(result_df['expanding_regression'].to_list(), axis=1).T
+    regression_wide_df = pd.concat([result_df.reset_index(drop = True), regression_wide_df], axis=1)
+
+    assert 'Intercept' in regression_wide_df.columns
+    assert 'Slope' in regression_wide_df.columns
+
+def test_example_2_parallel():
+    df = generate_sample_data_2()
+    result_df = (
+        df.groupby('id')
+        .augment_expanding_apply(
+            date_column='date',
+            window_func=[('regression', regression)],
+            threads = 2
+        )
+        .dropna()
+    )
 
     regression_wide_df = pd.concat(result_df['expanding_regression'].to_list(), axis=1).T
     regression_wide_df = pd.concat([result_df.reset_index(drop = True), regression_wide_df], axis=1)
