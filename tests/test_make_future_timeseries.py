@@ -75,6 +75,7 @@ def test_make_future_timeseries_compound_freq():
     
     # TODO : WORK ON COMPOUND FREQUENCIES
     # result_2 = tk.make_future_timeseries(["2010-12-31 22:30:00", "2011-01-01 00:00:00"], 5)
+    # tk.make_future_timeseries(["2010-12-31 21:00:00", "2010-12-31 22:30:00", "2011-01-01 00:00:00"], 5)
     
     expect = pd.date_range("2011-01-01 01:30:00", periods=5, freq="1H30min")
     expect = pd.Series(expect)
