@@ -2,6 +2,7 @@ import pytest
 import pandas as pd
 import numpy as np
 from pytimetk import augment_rolling  
+import pytimetk as tk
 
 # Sample data for testing
 df = pd.DataFrame({
@@ -79,3 +80,72 @@ def test_augment_rolling_invalid_func_type():
     with pytest.raises(TypeError):
         df.augment_rolling(date_column='date', value_column='value', window=2, window_func=123)
 
+def test_example_1():
+    
+    df = tk.load_dataset("m4_daily", parse_dates = ['date'])
+    
+    rolled_df = (
+        df
+            .groupby('id')
+            .augment_rolling(
+                date_column = 'date', 
+                value_column = 'value', 
+                window = [2,7],  # Specifying multiple window sizes
+                window_func = [
+                    'mean',  # Built-in mean function
+                    ('std', lambda x: x.std())  # Lambda function to compute standard deviation
+                ],
+                threads = 1,  # Disabling parallel processing
+                engine = 'pandas'  # Using pandas engine
+            )
+    )
+    
+    assert rolled_df.shape[1] == 7
+    assert rolled_df.shape[0] == df.shape[0]
+    
+def test_example_1_parallel():
+    # Set threads to 2
+    
+    df = tk.load_dataset("m4_daily", parse_dates = ['date'])
+    
+    rolled_df = (
+        df
+            .groupby('id')
+            .augment_rolling(
+                date_column = 'date', 
+                value_column = 'value', 
+                window = [2,7],  # Specifying multiple window sizes
+                window_func = [
+                    'mean',  # Built-in mean function
+                    ('std', lambda x: x.std())  # Lambda function to compute standard deviation
+                ],
+                threads = 2,  # Threads = 2
+                engine = 'pandas'  # Using pandas engine
+            )
+    )
+    
+    assert rolled_df.shape[1] == 7
+    assert rolled_df.shape[0] == df.shape[0]
+    
+def test_example_1_polars():
+    # Set threads to 2
+    
+    df = tk.load_dataset("m4_daily", parse_dates = ['date'])
+    
+    rolled_df = (
+        df
+            .groupby('id')
+            .augment_rolling(
+                date_column = 'date', 
+                value_column = 'value', 
+                window = [2,7],  # Specifying multiple window sizes
+                window_func = [
+                    'mean',  # Built-in mean function
+                    ('std', lambda x: x.std())  # Lambda function to compute standard deviation
+                ],
+                engine = 'polars'  # Using pandas engine
+            )
+    )
+    
+    assert rolled_df.shape[1] == 7
+    assert rolled_df.shape[0] == df.shape[0]
