@@ -85,7 +85,7 @@ def augment_expanding(
         The `augment_expanding` function returns a DataFrame with new columns for 
         each applied function, window size, and value column.
     
-     Notes
+    Notes
     -----
     
     ## Performance

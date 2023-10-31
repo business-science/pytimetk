@@ -112,31 +112,31 @@ anomalize_df.plot_anomalies_cleaned("date")
 import pytimetk as tk
 import pandas as pd
 
-df = tk.load_dataset("walmart_sales_weekly", parse_dates=["Date"])[["id", "Date", "Weekly_Sales"]]
+df = tk.load_dataset("wikipedia_traffic_daily", parse_dates = ['date'])
 
 anomalize_df = (
-    df
-        .groupby('id') 
+    df 
+        .groupby('Page', sort = False) 
         .anomalize(
-            "Date", "Weekly_Sales", 
-            period = 13, 
-            trend = 52, 
-            threads = 1
-        ) 
+            date_column = "date", 
+            value_column = "value",
+            method = "stl", 
+            iqr_alpha = 0.025,
+            verbose = False,
+        )
 )
 
 # Visualize the decomposition results
 
 (
-    anomalize_df
-        .groupby("id")
+    anomalize_df 
+        .groupby("Page") 
         .plot_anomalies_decomp(
-            date_column = "Date",
-            line_color = "steelblue",
-            width = 1200,
-            height = 800,
-            x_axis_date_labels = "%y",
-            engine = 'plotnine',                
+            date_column = "date", 
+            width = 1800,
+            height = 1000,
+            x_axis_date_labels = "%Y",
+            engine = 'plotly'
         )
 )
 ```
@@ -145,13 +145,12 @@ anomalize_df = (
 # Visualize the anomaly bands
 (
     anomalize_df 
-        .groupby(["id"]) 
+        .groupby("Page") 
         .plot_anomalies(
-            date_column = "Date", 
+            date_column = "date", 
             facet_ncol = 2, 
-            width = 800,
-            height = 800,
-            engine = "plotly",
+            width = 1000,
+            height = 1000,
         )
 )
 ```
@@ -165,10 +164,12 @@ anomalize_df.query("anomaly=='Yes'")
 # Visualize observed vs cleaned
 (
     anomalize_df
-        .groupby(["id"]) 
+        .groupby("Page") 
         .plot_anomalies_cleaned(
-            "Date", 
-            facet_ncol = 2
+            "date", 
+            facet_ncol = 2, 
+            width = 1000,
+            height = 1000,
         )
 )
 ```
