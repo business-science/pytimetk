@@ -264,10 +264,12 @@ def anomalize(
     # Visualize observed vs cleaned
     (
         anomalize_df
-            .groupby(["id"]) 
+            .groupby("Page") 
             .plot_anomalies_cleaned(
-                "Date", 
-                facet_ncol = 2
+                "date", 
+                facet_ncol = 2, 
+                width = 1000,
+                height = 1000,
             )
     )
     ```
@@ -450,10 +452,10 @@ def _anomalize(
         # min_max
         result['observed_clean'] = np.where(
             result['anomaly_direction'] == -1, 
-            result['recomposed_l1'] + (1-clean_alpha)*result['anomaly_score'],
+            result['recomposed_l1'] + ((1-clean_alpha)*(result['recomposed_l2'] - result['recomposed_l1'])/2),
             np.where(
                 result['anomaly_direction'] == 1, 
-                result['recomposed_l2'] - (1-clean_alpha)*result['anomaly_score'], 
+                result['recomposed_l2'] - ((1-clean_alpha)*(result['recomposed_l2'] - result['recomposed_l1'])/2), 
                 result['observed']
             )
         )
