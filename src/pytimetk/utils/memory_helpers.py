@@ -18,14 +18,21 @@ def reduce_memory_usage(data: pd.DataFrame):
 
   """
 
-  def _convert_boolean_to_int8(data,col):
-    """
-    Convert a boolean column to int8 to save memory.
-    """
-    if data[col].dtype != bool:
-      return data
-    data[col] = data[col].astype(np.int8)
-    return data
+  try:
+    data = _reduce_memory(data, convert_string_to_categorical = False)
+  except:
+    data = data
+
+  return data
+
+
+def _reduce_memory(
+  data: pd.DataFrame, 
+  convert_string_to_categorical: bool = True,
+  categorical_threshold: int = 100
+):
+  
+  data = data.copy()
   
   # Iterate over each column in the dataframe
   for col in data.columns:
@@ -60,15 +67,23 @@ def reduce_memory_usage(data: pd.DataFrame):
             break
 
     # If the column is an object type, convert it to categorical type to save memory
-    # TODO - NEED TO BE CAREFUL HERE: 
+    else:
+      # TODO - NEED TO BE CAREFUL HERE: 
       # - Some object columns could be lists
       # - Some object columns could be dates
-    # else:
-      # data[col] = data[col].astype('category')
-    
-  # Return the memory optimized
+      # - Some users may expect string data returned
+      if convert_string_to_categorical:
+        if pd.api.types.is_string_dtype(data[col]):
+          if data[col].nunique() <= categorical_threshold:
+            data[col] = data[col].astype('category')
+  
   return data
 
-
-
-
+def _convert_boolean_to_int8(data, col):
+    """
+    Convert a boolean column to int8 to save memory.
+    """
+    if data[col].dtype != bool:
+      return data
+    data[col] = data[col].astype(np.int8)
+    return data
