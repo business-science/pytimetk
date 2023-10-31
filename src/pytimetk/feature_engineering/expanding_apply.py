@@ -148,7 +148,7 @@ def augment_expanding_apply(
     check_date_column(data, date_column)
     
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
+    data_copy = reduce_memory_usage(data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy())
     
     # Get threads
     threads = get_threads(threads)
@@ -184,7 +184,7 @@ def augment_expanding_apply(
     # Combine processed dataframes and sort by index
     result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
     
-    return result_df
+    return reduce_memory_usage(result_df)
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.augment_expanding_apply = augment_expanding_apply

@@ -13,6 +13,7 @@ from functools import partial
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 from pytimetk.utils.polars_helpers import update_dict
+from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 @pf.register_dataframe_method
 def augment_rolling(
@@ -261,7 +262,7 @@ def _augment_rolling_pandas(
 ) -> pd.DataFrame:
     
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
+    data_copy = reduce_memory_usage(data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy())
     
     # Group data if it's a GroupBy object; otherwise, prepare it for the rolling calculations
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -299,7 +300,7 @@ def _augment_rolling_pandas(
         result_dfs = [_process_single_roll(data_copy, value_column, window_func, window, min_periods, center, **kwargs)]
     
     result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
-    return result_df
+    return reduce_memory_usage(result_df)
 
 def _process_single_roll(group_df, value_column, window_func, window, min_periods, center, **kwargs):
     result_dfs = []
@@ -398,7 +399,7 @@ def _augment_rolling_polars(
 ) -> pd.DataFrame:
     
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
+    data_copy = reduce_memory_usage(data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy())
     
     # Retrieve the group column names if the input data is a GroupBy object
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -538,5 +539,5 @@ def _augment_rolling_polars(
             .drop('index') \
             .to_pandas()
                 
-    return df
+    return reduce_memory_usage(df)
 

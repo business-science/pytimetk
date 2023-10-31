@@ -60,8 +60,11 @@ def reduce_memory_usage(data: pd.DataFrame):
             break
 
     # If the column is an object type, convert it to categorical type to save memory
-    else:
-      data[col] = data[col].astype('category')
+    # TODO - NEED TO BE CAREFUL HERE: 
+      # - Some object columns could be lists
+      # - Some object columns could be dates
+    # else:
+      # data[col] = data[col].astype('category')
     
   # Return the memory optimized
   return data

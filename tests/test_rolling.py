@@ -42,25 +42,53 @@ def test_custom_functions(sample_data):
     assert expected_column in df_rolled.columns
 
 def test_augment_rolling_single_window_single_func():
-    result = df.augment_rolling(date_column='date', value_column='value', window=2, window_func='mean')
+   
+    result = df.augment_rolling(
+        date_column='date', 
+        value_column='value', 
+        window=2, 
+        window_func='mean'
+    )
+    
     expected = df.copy()
     expected['value_rolling_mean_win_2'] = [np.nan, 1.5, 2.5]
+    expected = tk.reduce_memory_usage(expected)
+    
     pd.testing.assert_frame_equal(result, expected)
 
 def test_augment_rolling_multi_window_multi_func():
-    result = df.augment_rolling(date_column='date', value_column='value', window=[2, 3], window_func=['mean', 'sum'])
+    
+    result = df.augment_rolling(
+        date_column='date', 
+        value_column='value', 
+        window=[2, 3], 
+        window_func=['mean', 'sum']
+    )
+    
     expected = df.copy()
     expected['value_rolling_mean_win_2'] = [np.nan, 1.5, 2.5]
     expected['value_rolling_sum_win_2'] = [np.nan, 3.0, 5.0]
     expected['value_rolling_mean_win_3'] = [np.nan, 1.5, 2.0]
     expected['value_rolling_sum_win_3'] = [np.nan, 3.0, 6.0]
+    
+    expected = tk.reduce_memory_usage(expected)
+    
     pd.testing.assert_frame_equal(result, expected)
 
 def test_augment_rolling_custom_func():
     #custom_func = ('custom', lambda x: x.max() - x.min())
-    result = df.augment_rolling(date_column='date', value_column='value', window=2, window_func=[('custom', lambda x: x.max() - x.min())])
+    
+    result = df.augment_rolling(
+        date_column='date', 
+        value_column='value', 
+        window=2, 
+        window_func=[('custom', lambda x: x.max() - x.min())]
+    )
+    
     expected = df.copy()
     expected['value_rolling_custom_win_2'] = [np.nan, 1.0, 1.0]
+    expected = tk.reduce_memory_usage(expected)
+    
     pd.testing.assert_frame_equal(result, expected)
 
 def test_augment_rolling_invalid_data_type():
