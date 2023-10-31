@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytimetk"
-version = "0.1.0.9000"
+version = "0.1.0.9001"
 description = "The time series toolkit for Python."
 authors = [
     "Business Science <info@business-science.io>",
@@ -34,7 +34,7 @@ holidays = "^0.33"
 tsfeatures = "^0.4.5"
 statsmodels = "^0.14.0"
 tqdm = "^4.66.1"
-polars = "^0.19.8"
+polars = ">=0.19.8"
 pyarrow = "^13.0.0"
 pathos = "^0.3.1"
 

@@ -5,6 +5,7 @@ import pandas_flavor as pf
 from typing import Union, List, Tuple
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
+from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 @pf.register_dataframe_method
 def augment_lags(
@@ -172,7 +173,7 @@ def _augment_lags_pandas(
             for lag in lags:
                 df[f'{col}_lag_{lag}'] = df.groupby(group_names)[col].shift(lag)
 
-    return df
+    return reduce_memory_usage(df)
 
 def _augment_lags_polars(
     data: Union[pl.DataFrame, pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -230,4 +231,4 @@ def _augment_lags_polars(
     # Concatenate the DataFrames horizontally
     df = pl.concat([df, out_df], how="horizontal").to_pandas()
 
-    return df
+    return reduce_memory_usage(df)

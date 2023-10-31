@@ -8,6 +8,7 @@ from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column,
 from pytimetk.utils.pandas_helpers import flatten_multiindex_column_names
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.utils.polars_helpers import pandas_to_polars_frequency, pandas_to_polars_aggregation_mapping
+from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 @pf.register_dataframe_method
 def augment_hilbert(
@@ -176,8 +177,7 @@ def _augment_hilbert_pandas(
         if any(col not in data.columns for col in value_column):
             missing_cols = [col for col in value_column if col not in data.columns]
             raise KeyError(f"Columns {missing_cols} do not exist in the DataFrame")
-        #data = data.groupby(np.zeros(len(data))).sort(by=date_column)
-        data = data.sort_values(by=date_column)
+        data = reduce_memory_usage(data.sort_values(by=date_column))
         data = data.groupby(np.zeros(len(data)))
 
     
@@ -218,7 +218,7 @@ def _augment_hilbert_pandas(
     # Apply the Hilbert transform to each group and concatenate the results
     df_hilbert = pd.concat((apply_hilbert(group) for _, group in data), ignore_index=True)
 
-    return df_hilbert
+    return reduce_memory_usage(df_hilbert)
 
 
 def _augment_hilbert_polars(    
@@ -267,7 +267,7 @@ def _augment_hilbert_polars(
 
         # Convert the GroupBy object into a Polars DataFrame
         df_pl = (
-            pl.from_pandas(data.apply(lambda x: x))
+            pl.from_pandas(reduce_memory_usage(data.apply(lambda x: x)))
                  .groupby(groups, maintain_order=True)
                  .agg(pl.all().sort_by(date_column))
         )
@@ -278,25 +278,17 @@ def _augment_hilbert_polars(
         # Explode the selected columns
         exploded_df = df_pl.explode(columns=columns_to_explode)
         
-        #df_temp = pl.DataFrame(data)
         # Group by groups and date
         data = (
             exploded_df
-                #.select(groups + [date_column] + value_column)
-                #.select(pl.all() )
-                #.with_columns(pl.col(date_column))
                 .sort(*groups ,date_column)
-                #.groupby(groups + [date_column], maintain_order=True)
-                #.agg(pl.all().flatten())
-                #.sort(groups + [date_column])
-                #.explode(columns_to_explode)
         )
         grouped = data.groupby(groups)
         result_pl_df = grouped.apply(apply_hilbert)
         
     else:
         data = (
-            pl.from_pandas(data)
+            pl.from_pandas(reduce_memory_usage(data))
                  .sort(date_column)
         )
         result_pl_df = apply_hilbert(data)
@@ -305,6 +297,6 @@ def _augment_hilbert_polars(
     # Convert the Polars DataFrame back to a Pandas DataFrame
     result_pd_df = result_pl_df.to_pandas()                               
 
-    return result_pd_df
+    return reduce_memory_usage(result_pd_df)
 
 

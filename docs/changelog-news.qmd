@@ -44,6 +44,7 @@ More coming soon.
 - `augment_rolling()`: Gains a polars engine. 10X speed improvement.
 - `augment_expanding()`: Gains a polars engine. 
 - `augment_timeseries_signature()`: Gains a polars engine. 3X speed improvement.
+- `augment_holiday_signature()`: Gains a polars engine.
 
 #### Parallel Processing and Vectorized Optimizations:
 

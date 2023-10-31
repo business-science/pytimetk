@@ -1,6 +1,6 @@
 # get_holiday_signature { #pytimetk.get_holiday_signature }
 
-`get_holiday_signature(idx, country_name='UnitedStates')`
+`get_holiday_signature(idx, country_name='UnitedStates', engine='pandas')`
 
 Engineers 4 different holiday features from a single datetime for 137 countries 
 and 2 financial markets.
@@ -10,10 +10,11 @@ https://pypi.org/project/holidays/ for more information.
 
 ## Parameters
 
-| Name           | Type                                 | Description                                                                                                                                                                                                       | Default          |
-|----------------|--------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
-| `idx`          | Union\[pd.DatetimeIndex, pd.Series\] | The input series.                                                                                                                                                                                                 | _required_       |
-| `country_name` | str                                  | The name of the country for which to generate holiday features. Defaults  to United States holidays, but the following countries are currently  available and accessible by the full name or ISO code: See NOTES. | `'UnitedStates'` |
+| Name           | Type                                 | Description                                                                                                                                                                                                                                                                                                                 | Default          |
+|----------------|--------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
+| `idx`          | Union\[pd.DatetimeIndex, pd.Series\] | The input series.                                                                                                                                                                                                                                                                                                           | _required_       |
+| `country_name` | str                                  | The name of the country for which to generate holiday features. Defaults  to United States holidays, but the following countries are currently  available and accessible by the full name or ISO code: See NOTES.                                                                                                           | `'UnitedStates'` |
+| `engine`       | str                                  | The `engine` parameter is used to specify the engine to use for  getting holidays. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library    for getting holidays. This can be faster than using "pandas" for    large datasets. | `'pandas'`       |
 
 ## Returns
 
@@ -142,10 +143,10 @@ end_date = '2023-01-10'
 df = pd.DataFrame(pd.date_range(start=start_date, end=end_date), columns=['date'])
 
 # Add holiday features for US
-tk.augment_holiday_signature(df, 'date', 'UnitedStates')
+tk.get_holiday_signature(df['date'], 'UnitedStates')
 ```
 
 ```{python}
 # Add holiday features for France
-tk.augment_holiday_signature(df, 'date', 'France')
+tk.get_holiday_signature(df['date'], 'France')
 ```

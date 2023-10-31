@@ -1,11 +1,14 @@
 import pandas as pd
+import polars as pl
 import numpy as np
 import pandas_flavor as pf
 from typing import Tuple
 from typing import Union, List
+
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
+
 from pytimetk.core.ts_summary import ts_summary, ts_summary_polars
-import polars as pl
+from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 
 def calc_fourier(x, period, type: str, K = 1): 
@@ -163,6 +166,7 @@ def augment_fourier_v2(
         return _augment_fourier_polars(data, date_column, periods, max_order)
 
 
+
 @pf.register_dataframe_method
 def augment_fourier(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
@@ -233,7 +237,7 @@ def augment_fourier(
         min_date = data[date_column].min()
         data['radians'] = 2 * np.pi * (data[date_column] - min_date).dt.total_seconds() / (24 * 3600)
 
-        df = data.copy()
+        df = reduce_memory_usage(data.copy())
 
         df.sort_values(by=[date_column], inplace=True)
 
@@ -271,7 +275,7 @@ def augment_fourier(
     # Drop the temporary 'radians' column
     df.drop(columns=['radians'], inplace=True)
 
-    return df
+    return reduce_memory_usage(df)
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.augment_fourier = augment_fourier

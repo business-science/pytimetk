@@ -48,7 +48,7 @@ def get_frequency_summary(
         
     dates = pd.date_range(start = '2020-01-01', end = '2020-01-10', freq = 'D')
         
-    tk.get_frequency(dates)
+    tk.get_frequency_summary(dates)
     ```
         
     ```{python}
@@ -59,7 +59,7 @@ def get_frequency_summary(
     dates.inferred_freq == None
         
     # Returns '1MS'
-    tk.get_frequency(dates)
+    tk.get_frequency_summary(dates)
         
     ``` 
     '''
@@ -233,8 +233,8 @@ def _timeseries_unit_frequency_table_pandas(wide_format: bool = False) -> pd.Dat
     _table = pd.DataFrame({
         "unit" : ["sec", "min", "hour", "day", "week", "month", "quarter", "year"],
         "freq" : [0, 60, 3600, 86400, 604800, 2678400, 7948800, 31622400],
-        "freq_min": [0, 60, 3600, 86400, 604800, 2419200, 7689600, 31536000],
-        "freq_max": [0, 60, 3600, 86400, 604800, 2678400, 8035200, 31622400],
+        "freq_min": [0, 60, 3600, 86400, 604800, 2419200, 7776000, 31536000],
+        "freq_max": [0, 60, 3600, 86400, 604800, 2678400, 7948800, 31622400],
     })
     
     if wide_format:
@@ -247,8 +247,8 @@ def _timeseries_unit_frequency_table_polars(wide_format: bool = False) -> pd.Dat
     _table = pl.DataFrame({
         "unit" :    ["sec", "min", "hour", "day", "week", "month", "quarter", "year"],
         "freq" :    [0, 60, 3600, 86400, 604800, 2678400, 7948800, 31622400],
-        "freq_min": [0, 60, 3600, 86400, 604800, 2419200, 7689600, 31536000],
-        "freq_max": [0, 60, 3600, 86400, 604800, 2678400, 8035200, 31622400],
+        "freq_min": [0, 60, 3600, 86400, 604800, 2419200, 7776000, 31536000],
+        "freq_max": [0, 60, 3600, 86400, 604800, 2678400, 7948800, 31622400],
     })
     
     if wide_format:
@@ -287,7 +287,7 @@ def time_scale_template(
     ```{python}
     import pytimetk as tk
     
-    tk.timeseries_unit_frequency_table()
+    tk.time_scale_template()
     ```
     
     '''
@@ -303,7 +303,7 @@ def _time_scale_template_pandas(wide_format: bool = False):
     _table = pd.DataFrame({
         "median_unit": ["S", "T", "H", "D", "W", "M", "Q", "Y"],
         "seasonal_period" : ["1H", "1D", "1D", "1W", "1Q", "1Y", "1Y", "5Y"],
-        "trend_period" : ["12H", "14D", "1M", "3M", "1Y", "5Y", "10Y", "30Y"],
+        "trend_period" : ["12H", "14D", "1M", "1Q", "1Y", "5Y", "10Y", "30Y"],
     })
     
     if wide_format:
@@ -316,7 +316,7 @@ def _time_scale_template_polars(wide_format: bool = False):
     _table = pl.DataFrame({
         "median_unit": ["S", "T", "H", "D", "W", "M", "Q", "Y"],
         "seasonal_period" : ["1H", "1D", "1D", "1W", "1Q", "1Y", "1Y", "5Y"],
-        "trend_period" : ["12H", "14D", "1M", "3M", "1Y", "5Y", "10Y", "30Y"],
+        "trend_period" : ["12H", "14D", "1M", "1Q", "1Y", "5Y", "10Y", "30Y"],
     })
     
     if wide_format:
@@ -326,11 +326,16 @@ def _time_scale_template_polars(wide_format: bool = False):
         _table = _table.slice(1)
         _table = _table[['median_unit'] + [col for col in _table.columns if col != 'median_unit']]
         
-    return _table.to_pandas()
+    return _table.to_pandas().set_index('median_unit')
 
  
 @pf.register_series_method
-def get_seasonal_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool = False, numeric: bool = False):
+def get_seasonal_frequency(
+    idx: Union[pd.Series, pd.DatetimeIndex],
+    force_regular: bool = False,
+    numeric: bool = False,
+    engine: str = 'pandas'
+):
     '''
     The `get_seasonal_frequency` function returns the seasonal period of a given 
     time series or datetime index.
@@ -352,6 +357,14 @@ def get_seasonal_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regula
         If `numeric` is set to `True`, the output will be a numeric representation 
         of the seasonal period. If `numeric` is set to `False` (default), the 
         output will
+    engine : str, optional
+        The `engine` parameter is used to specify the engine to use for 
+        generating a date summary. It can be either "pandas" or "polars". 
+        
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library 
+          for generating the time scale information. 
     
     Returns
     -------
@@ -380,7 +393,7 @@ def get_seasonal_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regula
     if isinstance(idx, pd.DatetimeIndex):
         idx = pd.Series(idx, name="idx")
     
-    summary_freq = get_frequency_summary(idx)
+    summary_freq = get_frequency_summary(idx, force_regular = force_regular)
     
     scale = summary_freq['freq_median_scale'].values[0]
     unit = summary_freq['freq_median_unit'].values[0]
@@ -397,7 +410,7 @@ def get_seasonal_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regula
                 unit = "M"  
     
     def _lookup_seasonal_period(unit):
-        return time_scale_template(wide_format=True)[unit]['seasonal_period']
+        return time_scale_template(wide_format = True, engine = engine)[unit]['seasonal_period']
     
     _period = _lookup_seasonal_period(unit)
     
@@ -551,9 +564,6 @@ def _get_manual_frequency(idx: Union[pd.Series, pd.DatetimeIndex]) -> str:
     
     return freq_alias
     
-    
-
-
 def _get_pandas_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool = False) -> str:
     '''
     This is an internal function and not meant to be called directly.
@@ -577,51 +587,32 @@ def _get_pandas_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular
         The frequency of the given pandas series or datetime index.
     
     '''
-    
-    # common checks    
-    # check_series_or_datetime(idx)
-   
     if isinstance(idx, pd.Series):
         idx = idx.values
         
-    _len = len(idx)
-    if _len > 10:
-        _len = 10
-    
-    dt_index = pd.DatetimeIndex(idx[0:_len])
+    if isinstance(idx, pd.DatetimeIndex):
+        dt_index = idx
+    else:
+        _len = min(len(idx), 10)
+        dt_index = pd.DatetimeIndex(idx[0:_len])
     
     freq = dt_index.inferred_freq
     
-    # if freq is None:
-    #         raise ValueError("The frequency could not be detectied.")
-    
-    if force_regular:
-        if freq == 'A-DEC':
-            freq = 'Y' 
-        if freq == 'Q-DEC':
-            freq = 'Q'     
-        if freq == 'W-SUN':
-            freq = 'W'        
-        if freq == 'B':
-            freq = 'D'
-        if freq == 'BM':
-            freq = 'M'
-        if freq == 'BQ':
-            freq = 'Q'
-        if freq == 'BA':
-            freq = 'A'
-        if freq == 'BY':
-            freq = 'Y'
-        if freq == 'BMS':
-            freq = 'MS'
-        if freq == 'BQS':
-            freq = 'QS'
-        if freq == 'BYS':
-            freq = 'YS'
-        if freq == 'BAS':
-            freq = 'AS'
-        
+    if force_regular and freq:
+        irregular_to_regular = {
+            'A-DEC': 'Y',
+            'Q-DEC': 'Q',
+            'W-SUN': 'W',
+            'B'    : 'D',
+            'BM'   : 'M',
+            'BQ'   : 'Q',
+            'BA'   : 'A',
+            'BY'   : 'Y',
+            'BMS'  : 'MS',
+            'BQS'  : 'QS',
+            'BYS'  : 'YS',
+            'BAS'  : 'AS'
+        }
+        freq = irregular_to_regular.get(freq, freq)
     
     return freq
-
-

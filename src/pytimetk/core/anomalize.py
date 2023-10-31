@@ -6,6 +6,7 @@ from typing import Union, Optional
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.core.frequency import get_frequency, get_seasonal_frequency, get_trend_frequency
+from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 from pytimetk.utils.parallel_helpers import parallel_apply, get_threads, progress_apply
 
@@ -19,7 +20,7 @@ def anomalize(
     value_column: str,
     period: Optional[int] = None,
     trend: Optional[int] = None,
-    method: str = 'twitter',
+    method: str = 'stl',
     decomp: str = 'additive',
     clean: str = 'min_max',
     iqr_alpha: float = 0.05,
@@ -211,31 +212,31 @@ def anomalize(
     import pytimetk as tk
     import pandas as pd
     
-    df = tk.load_dataset("walmart_sales_weekly", parse_dates=["Date"])[["id", "Date", "Weekly_Sales"]]
+    df = tk.load_dataset("wikipedia_traffic_daily", parse_dates = ['date'])
     
     anomalize_df = (
-        df
-            .groupby('id') 
+        df 
+            .groupby('Page', sort = False) 
             .anomalize(
-                "Date", "Weekly_Sales", 
-                period = 52, 
-                trend = 52, 
-                threads = 1
-            ) 
+                date_column = "date", 
+                value_column = "value",
+                method = "stl", 
+                iqr_alpha = 0.025,
+                verbose = False,
+            )
     )
     
     # Visualize the decomposition results
     
     (
-        anomalize_df
-            .groupby("id")
+        anomalize_df 
+            .groupby("Page") 
             .plot_anomalies_decomp(
-                date_column = "Date",
-                line_color = "steelblue",
-                width = 1200,
-                height = 800,
-                x_axis_date_labels = "%y",
-                engine = 'plotnine',                
+                date_column = "date", 
+                width = 1800,
+                height = 1000,
+                x_axis_date_labels = "%Y",
+                engine = 'plotly'
             )
     )
     ```
@@ -244,13 +245,12 @@ def anomalize(
     # Visualize the anomaly bands
     (
         anomalize_df 
-            .groupby(["id"]) 
+            .groupby("Page") 
             .plot_anomalies(
-                date_column = "Date", 
+                date_column = "date", 
                 facet_ncol = 2, 
-                width = 800,
-                height = 800,
-                engine = "plotly",
+                width = 1000,
+                height = 1000,
             )
     )
     ```
@@ -357,7 +357,7 @@ def _anomalize(
     value_column: str,
     period: Optional[int] = None,
     trend: Optional[int] = None,
-    method: str = 'twitter',
+    method: str = 'stl',
     decomp: str = 'additive',
     clean: str = 'linear',
     iqr_alpha: float = 0.05,
@@ -369,29 +369,23 @@ def _anomalize(
     
     orig_date_column = data[date_column]
     
-    data = data.copy()
+    data = reduce_memory_usage(data.copy())
     
     
     
     # STEP 0: Get the seasonal period and trend frequency
     if period is None:
-        
         period = get_seasonal_frequency(data[date_column], numeric=True)
-        
         period = int(period)
-        
-        if verbose:
-            print(f"Using seasonal frequency of {period} observations")
+    if verbose:
+        print(f"Using seasonal frequency of {period} observations")
     
     
-    if trend is None:
-            
+    if trend is None:   
         trend = get_trend_frequency(data[date_column], numeric=True)
-        
         trend = int(trend)
-        
-        if verbose:
-            print(f"Using trend frequency of {trend} observations")
+    if verbose:
+        print(f"Using trend frequency of {trend} observations")
     
     # STEP 1: Decompose the time series
     if method == 'twitter':
@@ -407,15 +401,25 @@ def _anomalize(
             median_span=median_span, 
             model=decomp,
         )
+    elif method == 'stl':
+        
+        def make_odd(n):
+            return n + 1 if n % 2 == 0 else n
+        
+        seasonal = make_odd(period)
+        trend = make_odd(trend)
+        
+        result = _stl_decompose(
+            data=data, 
+            date_column=date_column, 
+            value_column=value_column, 
+            period=period,
+            seasonal=seasonal,
+            trend=trend,
+            robust = True,
+        )
     else:
-        raise ValueError(f"Method {method} is not supported. Please use 'twitter'.")
-        # result = _stl_decompose(
-        #     data=data, 
-        #     date_column=date_column, 
-        #     value_column=value_column, 
-        #     period=period,
-        #     robust = True,
-        # )
+        raise ValueError(f"Method {method} is not supported. Please use one of 'stl' or 'twitter'.")
     
     # STEP 2: Identify the outliers
     
@@ -446,10 +450,10 @@ def _anomalize(
         # min_max
         result['observed_clean'] = np.where(
             result['anomaly_direction'] == -1, 
-            clean_alpha*result['recomposed_l1'],
+            result['recomposed_l1'] + (1-clean_alpha)*result['anomaly_score'],
             np.where(
                 result['anomaly_direction'] == 1, 
-                clean_alpha*result['recomposed_l2'], 
+                result['recomposed_l2'] - (1-clean_alpha)*result['anomaly_score'], 
                 result['observed']
             )
         )
@@ -461,7 +465,7 @@ def _anomalize(
     if bind_data:
         result = pd.concat([data, result.drop(date_column, axis=1)], axis=1)
     
-    return result
+    return reduce_memory_usage(result)
 
  
 def _twitter_decompose(
@@ -638,7 +642,6 @@ def _iqr(data, target, alpha=0.05, max_anoms=0.2):
 
     # Identify the outliers
     outlier_idx = (data[target] < limits[0]) | (data[target] > limits[1])
-    outlier_vals = data.loc[outlier_idx, target]
 
     # Calculate the anomaly_score from the centerline
     centerline = sum(limits) / 2

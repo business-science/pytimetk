@@ -374,7 +374,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>get_seasonal_frequency(idx, force_regular=False, numeric=False)</code></p>
+<p><code>get_seasonal_frequency(idx, force_regular=False, numeric=False, engine='pandas')</code></p>
 <p>The <code>get_seasonal_frequency</code> function returns the seasonal period of a given time series or datetime index.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
@@ -411,6 +411,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>bool</td>
 <td>The <code>numeric</code> parameter is a boolean flag that determines whether the output should be in numeric format or a string Pandas Frequency Alias. If <code>numeric</code> is set to <code>True</code>, the output will be a numeric representation of the seasonal period. If <code>numeric</code> is set to <code>False</code> (default), the output will</td>
 <td><code>False</code></td>
+</tr>
+<tr class="even">
+<td><code>engine</code></td>
+<td>str</td>
+<td>The <code>engine</code> parameter is used to specify the engine to use for generating a date summary. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for generating the time scale information.</td>
+<td><code>'pandas'</code></td>
 </tr>
 </tbody>
 </table>

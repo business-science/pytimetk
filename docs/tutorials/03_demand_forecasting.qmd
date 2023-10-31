@@ -350,3 +350,5 @@ This exemplifies the remarkable capabilities of pytimetk in aiding Data Scientis
 - To gain valuable insights into our final model's performance, we leveraged `tk.plot_timeseries()` to visualize our results.
 
 These pytimetk features provide incredibly powerful techniques with a very easy strcuture and minimal code.  They were indispensable in crafting a high-quality sales forecast, seamlessly integrated with sklearn.
+
+{{< include ../_includes/_footer.qmd >}}
