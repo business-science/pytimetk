@@ -83,7 +83,8 @@ def augment_leads(
             )
     )
     lead_df_single
-
+    ```
+    ```{python}
     # Example 2 - Add a single lead value of 2 for each GroupBy object, polars engine
     lead_df = (
         df 
