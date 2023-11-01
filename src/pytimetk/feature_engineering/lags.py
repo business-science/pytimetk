@@ -85,7 +85,7 @@ def augment_lags(
     )
     lagged_df_single
     ```
-
+    ```{python}
     # Example 2 - Add a single lagged value of 2 for each GroupBy object, polars engine
     lagged_df = (
         df 
