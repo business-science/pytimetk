@@ -32,8 +32,7 @@ def anomalize(
     verbose = False,
 ) -> pd.DataFrame:
     '''
-    The `anomalize` function is used to detect anomalies in time series data, 
-    either for a single time
+    Detects anomalies in time series data, either for a single time
     series or for multiple time series grouped by a specific column.
         
     Parameters
@@ -120,20 +119,19 @@ def anomalize(
     Returns
     -------
     pd.DataFrame
-        The `anomalize` function returns a pandas DataFrame containing the original 
-        data with additional
-    columns:
-        - observed: original data
-        - seasonal: seasonal component
-        - seasadaj: seasonal adjusted
-        - trend: trend component
-        - remainder: residual component
-        - anomaly: Yes/No flag for outlier detection
-        - anomaly score: distance from centerline
-        - anomaly direction: -1, 0, 1 inidicator for direction of the anomaly
-        - recomposed_l1: lower level bound of recomposed time series
-        - recomposed_l2: upper level bound of recomposed time series
-        - observed_clean: original data with anomalies interpolated
+        Returns a pandas DataFrame containing the original data with additional columns.
+        
+    - observed: original data
+    - seasonal: seasonal component
+    - seasadaj: seasonal adjusted
+    - trend: trend component
+    - remainder: residual component
+    - anomaly: Yes/No flag for outlier detection
+    - anomaly score: distance from centerline
+    - anomaly direction: -1, 0, 1 inidicator for direction of the anomaly
+    - recomposed_l1: lower level bound of recomposed time series
+    - recomposed_l2: upper level bound of recomposed time series
+    - observed_clean: original data with anomalies interpolated
     
     
     Notes
