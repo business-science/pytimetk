@@ -12,7 +12,6 @@ from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column,
 from pytimetk.plot.theme import theme_timetk
 
 
-    
 @pf.register_dataframe_method
 def plot_anomalies(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -55,9 +54,9 @@ def plot_anomalies(
     engine: str = 'plotly'
 ):
     '''
-    The `plot_anomalies` function is used to plot anomalies in a time series 
-    data using either Plotly, Matplotlib, or Plotnine. See `anomalize()` for the 
-    function to prepare the data for plotting.
+    Creates plot of anomalies in time series data using Plotly, Matplotlib, 
+    or Plotnine. See the `anomalize()` function required to prepare the 
+    data for plotting.
     
     Parameters
     ----------
