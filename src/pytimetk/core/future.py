@@ -115,7 +115,6 @@ def future_frame(
                 date_column = 'date', 
                 length_out  = 12
             )
-            .assign(id = lambda x: x['id'].ffill())
     )
     extended_df
     ```
@@ -241,7 +240,16 @@ def _future_frame_pandas(
             extended_df = pd.concat([data, new_rows], axis=0, ignore_index=True)
         else:
             extended_df = new_rows
-        
+
+        col_name = extended_df.columns[extended_df.nunique() == 1]
+        if not col_name.empty:
+            col_name = col_name[0]
+        else:
+            col_name = None
+
+        if col_name is not None:
+            extended_df = extended_df.assign(**{f'{col_name}': extended_df[col_name].ffill()})
+
         return extended_df  
     
     # If the data is grouped
