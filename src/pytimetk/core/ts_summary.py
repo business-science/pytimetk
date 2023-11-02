@@ -12,45 +12,6 @@ from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column,
 
 from pytimetk.utils.parallel_helpers import parallel_apply, get_threads, progress_apply
 
-
-def ts_summary_polars_df(
-    data: pd.DataFrame,
-    date_column: str,
-    threads = 1,
-    show_progress = True
-) -> pl.DataFrame:
-    
-    pl_df = pl.from_pandas(data)
-    date = pl_df[date_column].sort(descending=False)
-
-    # Compute summary statistics
-    date_summary = compute_date_summary_polars(date, data[date_column].dt.tz, output_type='polars')
-    frequency_summary = pl.from_pandas(get_frequency_summary(date.to_pandas()))
-    diff_summary = get_diff_summary_polars(date).cast(pl.Duration('ns'))
-    diff_summary_num = get_diff_summary_polars(date, numeric=True).cast(pl.Float64)
-    
-    # Combine summary statistics into a single DataFrame
-    return pl.concat([date_summary, frequency_summary, diff_summary, diff_summary_num], how="horizontal")
-
-def ts_summary_polars_groupby(
-    data: pl.DataFrame,
-    date_column: str,
-    threads = 1,
-    show_progress = True
-) -> pl.DataFrame:
-    
-   raise NotImplementedError('coming soon')
-
-def ts_summary_polars(
-    data: pl.DataFrame,
-    date_column: str,
-    threads = 1,
-    show_progress = True
-) -> pl.DataFrame:
-    """ Temporary function. To be replaced by a combination of ts_summary_polars_df and ts_summary_polars_groupby. """
-    
-    return pl.from_pandas(ts_summary(data.to_pandas(), date_column, threads, show_progress))
-
     
 @pf.register_dataframe_method
 def ts_summary(
@@ -176,16 +137,16 @@ def ts_summary(
     
     if not engine in ['pandas', 'polars']: 
         raise ValueError(f"Supported engines are 'pandas' or 'polars'. Found {engine}. Please select an authorized engine.")
-    elif engine == "polars":
-        raise NotImplementedError('ts_summary with polars backend has not yet been implemented')
 
     # Run common checks
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
+
+    summarize_func = _ts_summary if engine == "pandas" else _ts_summary_polars
         
     if isinstance(data, pd.DataFrame):
         
-        return _ts_summary(data, date_column)
+        return summarize_func(data, date_column)
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         
@@ -198,7 +159,7 @@ def ts_summary(
             
             result = progress_apply(
                 data,
-                func = _ts_summary,
+                func = summarize_func,
                 date_column = date_column,
                 show_progress = show_progress,
                 desc = "TS Summarizing..."
@@ -208,15 +169,14 @@ def ts_summary(
         
             result = parallel_apply(
                 data,
-                func = _ts_summary,
+                func = summarize_func,
                 date_column = date_column,
                 threads = threads,
                 show_progress = show_progress,
                 desc = "TS Summarizing..."
             )
             
-        result = result.reset_index(level=group_names)
-        return result
+        return result.reset_index(level=group_names)
         
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.ts_summary = ts_summary
@@ -226,9 +186,7 @@ def _ts_summary(group: pd.DataFrame, date_column: str) -> pd.DataFrame:
     """Compute time series summary for a single group."""
     
     # Make sure date is sorted
-    group = group.sort_values(by=date_column)
-
-    date = group[date_column]
+    date = group.sort_values(by=date_column)[date_column]
 
     # Compute summary statistics
     date_summary = get_date_summary(date)
@@ -238,6 +196,22 @@ def _ts_summary(group: pd.DataFrame, date_column: str) -> pd.DataFrame:
     
     # Combine summary statistics into a single DataFrame
     return pd.concat([date_summary, frequency_summary, diff_summary, diff_summary_num], axis=1)
+
+
+def _ts_summary_polars(data: pl.DataFrame, date_column: str) -> pl.DataFrame:
+    """Compute time series summary for a single group. Polars version."""
+    
+    # Make sure date is sorted
+    date = pl.from_pandas(data)[date_column].sort(descending=False)
+
+    # Compute summary statistics
+    date_summary = compute_date_summary_polars(date, data[date_column].dt.tz, output_type='polars')
+    frequency_summary = pl.from_pandas(get_frequency_summary(date.to_pandas()))
+    diff_summary = get_diff_summary_polars(date).cast(pl.Duration('ns'))
+    diff_summary_num = get_diff_summary_polars(date, numeric=True).cast(pl.Float64)
+    
+    # Combine summary statistics into a single DataFrame
+    return pl.concat([date_summary, frequency_summary, diff_summary, diff_summary_num], how="horizontal").to_pandas().replace(np.nan, None)
 
     
 def get_diff_summary(idx: Union[pd.Series, pd.DatetimeIndex], numeric: bool = False):
@@ -395,11 +369,8 @@ def get_diff_summary_polars(idx: pl.Series, numeric: bool = False):
     
     
     # common checks
-    # check_series_or_datetime(idx)
-    
-    # If idx is a DatetimeIndex, convert to Series
-    # if isinstance(idx, pd.DatetimeIndex):
-    #     idx = pd.Series(idx, name="idx")
+    if not isinstance(idx, pl.Series):
+        raise TypeError("Expected pl.Series, got {}.".format(type(idx)))
     
     keys = ["diff_min", "diff_q25", "diff_median", "diff_mean", "diff_q75", "diff_max"]
     if numeric:
@@ -410,10 +381,10 @@ def get_diff_summary_polars(idx: pl.Series, numeric: bool = False):
 
     values = [
         date_diff.min(),
-        date_diff.quantile(0.25),
+        date_diff.quantile(0.25, interpolation='linear'),
         date_diff.median(),
         date_diff.mean(),
-        date_diff.quantile(0.75),
+        date_diff.quantile(0.75, interpolation='linear'),
         date_diff.max()
     ]
 
@@ -465,7 +436,8 @@ def get_date_summary(
     ```
     """
 
-    assert isinstance(idx, pd.Series) or isinstance(idx, pd.DatetimeIndex), 'Input must be of type pd.Series or pd.DatetimeIndex. Got {}'.format(type(idx))
+    if not isinstance(idx, pd.Series) and not isinstance(idx, pd.DatetimeIndex):
+        raise TypeError('Input must be of type pd.Series or pd.DatetimeIndex. Got {}'.format(type(idx)))
 
     if engine == 'pandas':
         return compute_date_summary_pandas(pd.Series(idx, name="idx") if isinstance(idx, pd.DatetimeIndex) else idx)
@@ -533,7 +505,8 @@ def compute_date_summary_polars(idx: pl.Series, tz: None, output_type='pandas') 
         - `date_end`: The last date in the index.
     """
     
-    assert output_type in ['pandas', 'polars'], 'Output type can only be pandas or polars. Got {}.'.format(output_type)
+    if output_type not in ['pandas', 'polars']:
+        raise TypeError('Output type can only be pandas or polars. Got {}.'.format(output_type))
 
     data = {
         "date_n": [len(idx)], 

@@ -7,7 +7,7 @@ from typing import Union, List
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 
-from pytimetk.core.ts_summary import ts_summary, ts_summary_polars
+from pytimetk.core.ts_summary import ts_summary
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 
@@ -21,7 +21,7 @@ def date_to_seq_scale_factor(data: pd.DataFrame, date_var: str) -> pd.DataFrame:
 
 
 def date_to_seq_scale_factor_polars(data: pl.DataFrame, date_var: str) -> pl.DataFrame:
-    return ts_summary_polars(data, date_column=date_var)['diff_median']
+    return ts_summary(data, date_column=date_var, engine="polars")['diff_median']
 
 
 def _augment_fourier_pandas(
