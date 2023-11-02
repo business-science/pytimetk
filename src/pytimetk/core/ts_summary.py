@@ -369,6 +369,8 @@ def get_date_summary(
     ```
     """
 
+    assert isinstance(idx, pd.Series) or isinstance(idx, pd.DatetimeIndex), 'Input must be of type pd.Series or pd.DatetimeIndex. Got {}'.format(type(idx))
+
     if engine == 'pandas':
         return _get_date_summary_pandas(idx)
     elif engine == 'polars':
