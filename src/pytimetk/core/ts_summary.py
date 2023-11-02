@@ -217,7 +217,7 @@ def _ts_summary(group: pd.DataFrame, date_column: str) -> pd.DataFrame:
     
     # Make sure date is sorted
     group = group.sort_values(by=date_column)
-    
+
     date = group[date_column]
 
     # Compute summary statistics
@@ -227,13 +227,8 @@ def _ts_summary(group: pd.DataFrame, date_column: str) -> pd.DataFrame:
     diff_summary_num = get_diff_summary(date, numeric=True)
     
     # Combine summary statistics into a single DataFrame
-    result = pd.concat([date_summary, frequency_summary, diff_summary, diff_summary_num], axis=1)
-    
-    # Add group columns back
-    # for col in group.columns.difference([date_column]):
-    #     result[col] = group[col].iloc[0]
+    return pd.concat([date_summary, frequency_summary, diff_summary, diff_summary_num], axis=1)
 
-    return result
     
 def get_diff_summary(idx: Union[pd.Series, pd.DatetimeIndex], numeric: bool = False):
     '''
