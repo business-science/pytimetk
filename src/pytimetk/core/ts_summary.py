@@ -14,13 +14,23 @@ from pytimetk.utils.parallel_helpers import parallel_apply, get_threads, progres
 
 
 def ts_summary_polars_df(
-    data: pl.DataFrame,
+    data: pd.DataFrame,
     date_column: str,
     threads = 1,
     show_progress = True
 ) -> pl.DataFrame:
     
-    raise NotImplementedError('coming soon')
+    pl_df = pl.from_pandas(data)
+    date = pl_df[date_column].sort(descending=False)
+
+    # Compute summary statistics
+    date_summary = compute_date_summary_polars(date, data[date_column].dt.tz, output_type='polars')
+    frequency_summary = pl.from_pandas(get_frequency_summary(date.to_pandas()))
+    diff_summary = get_diff_summary_polars(date).cast(pl.Duration('ns'))
+    diff_summary_num = get_diff_summary_polars(date, numeric=True).cast(pl.Float64)
+    
+    # Combine summary statistics into a single DataFrame
+    return pl.concat([date_summary, frequency_summary, diff_summary, diff_summary_num], how="horizontal")
 
 def ts_summary_polars_groupby(
     data: pl.DataFrame,
@@ -322,6 +332,92 @@ def get_diff_summary(idx: Union[pd.Series, pd.DatetimeIndex], numeric: bool = Fa
         ret.columns = ["diff_min_seconds", "diff_q25_seconds", "diff_median_seconds", "diff_mean_seconds", "diff_q75_seconds", "diff_max_seconds"]
     
     return ret
+
+
+def get_diff_summary_polars(idx: pl.Series, numeric: bool = False):
+    '''
+    Calculates summary statistics of the time differences between consecutive values in a datetime index.
+    
+    Parameters
+    ----------
+    idx : pl.Series
+        The `idx` parameter can be either a pandas Series or a pandas 
+        DateTimeIndex. It represents the index values for which you want to 
+        calculate the difference summary.
+    numeric : bool, optional
+        The `numeric` parameter is a boolean flag that indicates whether the 
+        input index should be treated as numeric or not. 
+        
+        - If `numeric` is set to `True`, the index values are converted to 
+          integers representing the number of seconds since the Unix epoch 
+          (January 1, 1970). 
+        
+        - If `numeric` is set to `False`, the index values are treated as 
+          datetime values. The default value of `numeric` is `False`.
+    
+    Returns
+    -------
+    pl.DataFrame
+        The function `get_diff_summary` returns a polars DataFrame containing 
+        summary statistics including:
+        
+        If `numeric` is set to `False`, the column names are:
+        - `diff_min`: The minimum time difference between consecutive 
+                      observations in the time series as a timedelta.
+        - `diff_q25`: The 25th percentile of the time difference between 
+                      consecutive observations in the time series as a timedelta.
+        - `diff_median`: The median time difference between consecutive 
+                         observations in the time series as a timedelta.
+        - `diff_mean`: The mean time difference between consecutive observations 
+                       in the time series as a timedelta.
+        - `diff_q75`: The 75th percentile of the time difference between 
+                      consecutive observations in the time series as a timedelta.
+        - `diff_max`: The maximum time difference between consecutive 
+                      observations in the time series as a timedelta.
+        
+        If `numeric` is set to `True`, the column names are:
+        - `diff_min_seconds`: The minimum time difference between consecutive 
+                              observations in the time series in seconds.
+        - `diff_q25_seconds`: The 25th percentile of the time difference between 
+                              consecutive observations in the time series in 
+                              seconds.
+        - `diff_median_seconds`: The median time difference between consecutive 
+                                 observations in the time series in seconds.
+        - `diff_mean_seconds`: The mean time difference between consecutive 
+                               observations in the time series in seconds.
+        - `diff_q75_seconds`: The 75th percentile of the time difference between 
+                              consecutive observations in the time series in 
+                              seconds.
+        - `diff_max_seconds`: The maximum time difference between consecutive 
+                              observations in the time series in seconds.
+
+    '''
+    
+    
+    # common checks
+    # check_series_or_datetime(idx)
+    
+    # If idx is a DatetimeIndex, convert to Series
+    # if isinstance(idx, pd.DatetimeIndex):
+    #     idx = pd.Series(idx, name="idx")
+    
+    keys = ["diff_min", "diff_q25", "diff_median", "diff_mean", "diff_q75", "diff_max"]
+    if numeric:
+        keys = map(lambda s: s + '_seconds', keys)
+        idx = idx.dt.epoch(time_unit='s')
+
+    date_diff = idx.diff()
+
+    values = [
+        date_diff.min(),
+        date_diff.quantile(0.25),
+        date_diff.median(),
+        date_diff.mean(),
+        date_diff.quantile(0.75),
+        date_diff.max()
+    ]
+
+    return pl.DataFrame(dict(zip(keys, values)))
     
     
 def get_date_summary(
@@ -372,18 +468,34 @@ def get_date_summary(
     assert isinstance(idx, pd.Series) or isinstance(idx, pd.DatetimeIndex), 'Input must be of type pd.Series or pd.DatetimeIndex. Got {}'.format(type(idx))
 
     if engine == 'pandas':
-        return _get_date_summary_pandas(idx)
+        return compute_date_summary_pandas(pd.Series(idx, name="idx") if isinstance(idx, pd.DatetimeIndex) else idx)
     elif engine == 'polars':
-        return _get_date_summary_polars(idx)
+        return compute_date_summary_polars(pl.Series(idx, name="idx") if isinstance(idx, pd.DatetimeIndex) else pl.from_pandas(idx))
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
 
-def _get_date_summary_pandas(idx: Union[pd.Series, pd.DatetimeIndex]):
 
-    # If idx is a DatetimeIndex, convert to Series
-    if isinstance(idx, pd.DatetimeIndex):
-        idx = pd.Series(idx, name="idx")
-    
+def compute_date_summary_pandas(idx: pd.Series) -> pd.DataFrame:
+    """Returns a summary of the date-related information, including the number of 
+    dates, the time zone, the start date, and the end date.
+
+    Parameters
+    ----------
+    idx : pd.Series or pd.DateTimeIndex
+        The parameter `idx` can be either a pandas Series or a pandas 
+        DateTimeIndex. It represents the dates or timestamps for which we want 
+        to generate a summary.
+
+    Returns
+    -------
+    pd.DataFrame
+        A pandas DataFrame with the following columns: 
+        - `date_n`: The number of dates in the index.
+        - `date_tz`: The time zone of the dates in the index.
+        - `date_start`: The first date in the index.
+        - `date_end`: The last date in the index.
+    """
+
     _n = len(idx)
     _tz = idx.dt.tz
     _date_start = idx.min()
@@ -396,22 +508,38 @@ def _get_date_summary_pandas(idx: Union[pd.Series, pd.DatetimeIndex]):
         "date_end": [_date_end],
     })  
 
-def _get_date_summary_polars(idx: Union[pd.Series, pd.DatetimeIndex]):
-  
-    # If idx is a DatetimeIndex, convert to Series
-    if isinstance(idx, pd.DatetimeIndex):
-        idx = pl.Series(idx, name="idx")
+
+def compute_date_summary_polars(idx: pl.Series, tz: None, output_type='pandas') -> Union[pd.DataFrame, pl.DataFrame]:
+    """Returns a summary of the date-related information, including the number of 
+    dates, the time zone, the start date, and the end date.
+
+    Parameters
+    ----------
+    idx : pd.Series or pd.DateTimeIndex
+        The parameter `idx` can be either a pandas Series or a pandas 
+        DateTimeIndex. It represents the dates or timestamps for which we want 
+        to generate a summary.
+    tz : 
+        You need to pass this value as it is not supported in polars. The value 
+        is lost when converting a pandas Series to polars.
+
+    Returns
+    -------
+    pd.DataFrame
+        A pandas DataFrame with the following columns: 
+        - `date_n`: The number of dates in the index.
+        - `date_tz`: The time zone of the dates in the index.
+        - `date_start`: The first date in the index.
+        - `date_end`: The last date in the index.
+    """
     
-    
-    
-    _n = len(idx)
-    _tz = idx.dt.tz
-    _date_start = idx.min()
-    _date_end = idx.max()
-    
-    return pd.DataFrame({
-        "date_n": [_n], 
-        "date_tz": [_tz], # "America/New_York
-        "date_start": [_date_start],
-        "date_end": [_date_end],
-    })  
+    assert output_type in ['pandas', 'polars'], 'Output type can only be pandas or polars. Got {}.'.format(output_type)
+
+    data = {
+        "date_n": [len(idx)], 
+        "date_tz": [tz], # "America/New_York
+        "date_start": [idx.min()],
+        "date_end": [idx.max()],
+    }
+
+    return pd.DataFrame(data) if output_type == 'pandas' else pl.DataFrame(data)  
