@@ -13,12 +13,31 @@ from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column,
 from pytimetk.utils.parallel_helpers import parallel_apply, get_threads, progress_apply
 
 
+def ts_summary_polars_df(
+    data: pl.DataFrame,
+    date_column: str,
+    threads = 1,
+    show_progress = True
+) -> pl.DataFrame:
+    
+    raise NotImplementedError('coming soon')
+
+def ts_summary_polars_groupby(
+    data: pl.DataFrame,
+    date_column: str,
+    threads = 1,
+    show_progress = True
+) -> pl.DataFrame:
+    
+   raise NotImplementedError('coming soon')
+
 def ts_summary_polars(
     data: pl.DataFrame,
     date_column: str,
     threads = 1,
     show_progress = True
 ) -> pl.DataFrame:
+    """ Temporary function. To be replaced by a combination of ts_summary_polars_df and ts_summary_polars_groupby. """
     
     return pl.from_pandas(ts_summary(data.to_pandas(), date_column, threads, show_progress))
 
