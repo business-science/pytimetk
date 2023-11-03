@@ -372,8 +372,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#summarize-by-time-summarize_by_time" id="toc-summarize-by-time-summarize_by_time" class="nav-link" data-scroll-target="#summarize-by-time-summarize_by_time"><span class="header-section-number">3.1</span> Summarize By Time <code>summarize_by_time()</code></a></li>
   <li><a href="#rolling-calculations-augment_rolling" id="toc-rolling-calculations-augment_rolling" class="nav-link" data-scroll-target="#rolling-calculations-augment_rolling"><span class="header-section-number">3.2</span> Rolling Calculations <code>augment_rolling()</code></a></li>
   <li><a href="#augment-expanding-augment_expanding" id="toc-augment-expanding-augment_expanding" class="nav-link" data-scroll-target="#augment-expanding-augment_expanding"><span class="header-section-number">3.3</span> Augment Expanding <code>augment_expanding()</code></a></li>
+  <li><a href="#augment-lags-augment_lags" id="toc-augment-lags-augment_lags" class="nav-link" data-scroll-target="#augment-lags-augment_lags"><span class="header-section-number">3.4</span> Augment Lags <code>augment_lags()</code></a></li>
   </ul></li>
-  <li><a href="#more-coming-soon" id="toc-more-coming-soon" class="nav-link" data-scroll-target="#more-coming-soon"><span class="header-section-number">4</span> More Coming Soon…</a></li>
+  <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions"><span class="header-section-number">4</span> Conclusions</a></li>
+  <li><a href="#more-coming-soon" id="toc-more-coming-soon" class="nav-link" data-scroll-target="#more-coming-soon"><span class="header-section-number">5</span> More Coming Soon…</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/performance/01_speed_comparisons.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -439,6 +441,11 @@ How this guide benefits you
 <tr class="odd">
 <td><code>augment_expanding()</code></td>
 <td>🚀 3X to 500X Faster</td>
+<td>🐢 Standard</td>
+</tr>
+<tr class="even">
+<td><code>augment_lags()</code></td>
+<td>🚀 2X to 20X Faster</td>
 <td>🐢 Standard</td>
 </tr>
 </tbody>
@@ -783,9 +790,72 @@ How this guide benefits you
 </div>
 </div>
 </section>
+<section id="augment-lags-augment_lags" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="augment-lags-augment_lags"><span class="header-section-number">3.4</span> Augment Lags <code>augment_lags()</code></h2>
+<ul>
+<li>Polars is 1.9X faster than Pandas</li>
+<li>Speed improvement of Polars (vs Pandas) increases with number of lags</li>
+</ul>
+<div class="cell" data-execution_count="13">
+<div class="cell-output cell-output-display">
+<p><img src="01_speed_comparisons_files/figure-html/cell-14-output-1.png" width="662" height="470"></p>
+</div>
+</div>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-groups="bbands-plotly-plotnine">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">Polars</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Pandas</a></li></ul>
+<div class="tab-content" data-groups="bbands-plotly-plotnine">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="cell" data-execution_count="14">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit <span class="op">-</span>n <span class="dv">25</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        .augment_lags(</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>            lags <span class="op">=</span> (<span class="dv">2</span>,<span class="dv">30</span>),</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'polars'</span>,  </span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 37.7 ms ± 1.57 ms per loop (mean ± std. dev. of 7 runs, 25 loops each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="cell" data-execution_count="15">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit <span class="op">-</span>n <span class="dv">25</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>expanded_df <span class="op">=</span> (</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    m4_daily_df</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        .augment_lags(</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'value'</span>, </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>            lags <span class="op">=</span> (<span class="dv">2</span>,<span class="dv">30</span>),</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'pandas'</span>,  </span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 73.3 ms ± 3.29 ms per loop (mean ± std. dev. of 7 runs, 25 loops each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+</div>
+</div>
 </section>
-<section id="more-coming-soon" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> More Coming Soon…</h1>
+</section>
+<section id="conclusions" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Conclusions</h1>
+<p>In general, when speed and performance is needed, which is quite often the case in large-scale time series databases (e.g.&nbsp;finance, customer analytics), the polars engine can be a substantial performance enhancer. Almost every function has experienced a performance increase with the new <code>polars</code> engine. We’ve seen many functions gain 10X increases and beyond.</p>
+</section>
+<section id="more-coming-soon" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> More Coming Soon…</h1>
 <p>We are in the early stages of development. But it’s obvious the potential for <code>pytimetk</code> now in Python. 🐍</p>
 <ul>
 <li>Please <a href="https://github.com/business-science/pytimetk">⭐ us on GitHub</a> (it takes 2-seconds and means a lot).</li>

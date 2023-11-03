@@ -30,7 +30,7 @@ It's typical to see 2X to 15X speedups just by using the `polars` engine. Speedu
 | `summarize_by_time()` | 🚀 13X Faster | 🐢 Standard |
 | `augment_rolling()` | 🚀 10X to 3500X Faster | 🐢 Standard  |
 | `augment_expanding()` | 🚀 3X to 500X Faster | 🐢 Standard |
-
+| `augment_lags()` | 🚀 2X to 20X Faster | 🐢 Standard |
 
 # About Performance
 
@@ -396,12 +396,75 @@ expanded_df = (
 
 :::
 
-# More Coming Soon...
+## Augment Lags `augment_lags()`
 
-We are in the early stages of development. But it's obvious the potential for `pytimetk` now in Python. 🐍
+- Polars is 1.9X faster than Pandas
+- Speed improvement of Polars (vs Pandas) increases with number of lags
 
-- Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). 
-- To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 
-- Want to contribute? [See our contributing guide here.](/contributing.html) 
+
+```{python}
+# | echo: false
+
+# Data
+title = "Augment Lags"
+methods = ['Polars', 'Pandas']
+times = [37.7, 73.3]
+
+make_time_comparison_plot(title, methods, times, height_spacer=500)
+
+plt.show()
+```
+
+
+:::{.panel-tabset groups="bbands-plotly-plotnine"}
+
+## Polars
+
+```{python}
+# | eval: false
+%%timeit -n 25
+
+expanded_df = (
+    m4_daily_df
+        .groupby('id')
+        .augment_lags(
+            date_column = 'date', 
+            value_column = 'value', 
+            lags = (2,30),
+            engine = 'polars',  
+        )
+)
+
+# 37.7 ms ± 1.57 ms per loop (mean ± std. dev. of 7 runs, 25 loops each)
+```
+
+## Pandas
+
+```{python}
+# | eval: false
+%%timeit -n 25
+
+expanded_df = (
+    m4_daily_df
+        .groupby('id')
+        .augment_lags(
+            date_column = 'date', 
+            value_column = 'value', 
+            lags = (2,30),
+            engine = 'pandas',  
+        )
+)
+
+# 73.3 ms ± 3.29 ms per loop (mean ± std. dev. of 7 runs, 25 loops each)
+```
+
+:::
+
+# Conclusions
+
+In general, when speed and performance is needed, which is quite often the case in large-scale time series databases (e.g. finance, customer analytics), the polars engine can be a substantial performance enhancer. Almost every function has experienced a performance increase with the new `polars` engine. We've seen many functions gain 10X increases and beyond. 
+
+
+{{< include ../_includes/_footer.qmd >}}
 
 
