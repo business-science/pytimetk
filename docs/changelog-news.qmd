@@ -6,7 +6,7 @@ toc-depth: 3
 number-sections: false
 ---
 
-# pytimetk 0.1.0.9000 (in development)
+# pytimetk 0.2.0
 
 ### Anomaly Detection
 
@@ -72,6 +72,7 @@ More coming soon.
 1. [Sales Analysis Tutorial](/tutorials/01_sales_crm.html)
 2. [Finance Analysis Tutorial](/tutorials/02_finance.html)
 3. [Demand Forecasting Tutorial](/tutorials/03_demand_forecasting.html)
+4. [Anomaly Detection Tutorial](/tutorials/04_anomaly_detection.html)
 
 ### Final Deprecations:
 
