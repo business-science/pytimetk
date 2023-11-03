@@ -101,7 +101,6 @@ def pad_by_time(
                 date_column = 'date',
                 freq        = 'D'
             )
-            .assign(symbol = lambda x: x['symbol'].ffill())
     )
     padded_df 
     ```
