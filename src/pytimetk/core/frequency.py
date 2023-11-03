@@ -420,7 +420,12 @@ def get_seasonal_frequency(
     return _period
     
 @pf.register_series_method
-def get_trend_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool = False, numeric: bool = False):
+def get_trend_frequency(
+    idx: Union[pd.Series, pd.DatetimeIndex],
+    force_regular: bool = False,
+    numeric: bool = False,
+    engine: str = 'pandas'
+) -> str:
     '''
     The `get_trend_frequency` function returns the trend period of a given time 
     series or datetime index.
@@ -442,6 +447,14 @@ def get_trend_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: 
         If `numeric` is set to `True`, the output will be a numeric representation 
         of the trend period. If `numeric` is set to `False` (default), the output 
         will
+    engine : str, optional
+        The `engine` parameter is used to specify the engine to use for 
+        generating a date summary. It can be either "pandas" or "polars". 
+        
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library 
+          for generating the time scale information. 
     
     Returns
     -------
@@ -460,8 +473,7 @@ def get_trend_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: 
     
     dates = pd.date_range(start='2021-01-01', end='2024-01-01', freq='MS')
     
-    tk.get_trend_frequency(dates)
-    
+    tk.get_trend_frequency(dates)    
     ```
     '''
     
@@ -471,7 +483,7 @@ def get_trend_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: 
     if isinstance(idx, pd.DatetimeIndex):
         idx = pd.Series(idx, name="idx")
     
-    summary_freq = get_frequency_summary(idx)
+    summary_freq = get_frequency_summary(idx, force_regular = force_regular)
     
     scale = summary_freq['freq_median_scale'].values[0]
     unit = summary_freq['freq_median_unit'].values[0]
@@ -486,7 +498,7 @@ def get_trend_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: 
                 unit = "M"  
     
     def _lookup_trend_period(unit):
-        return time_scale_template(wide_format=True)[unit]['trend_period']
+        return time_scale_template(wide_format=True, engine = engine)[unit]['trend_period']
     
     _period = _lookup_trend_period(unit)
     
