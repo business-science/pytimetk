@@ -23,7 +23,6 @@ def date_to_seq_scale_factor(data: pd.DataFrame, date_var: str) -> pd.DataFrame:
 def date_to_seq_scale_factor_polars(data: pl.DataFrame, date_var: str) -> pl.DataFrame:
     return ts_summary_polars(data, date_column=date_var)['diff_median']
 
-
 def _augment_fourier_pandas(
     data: pd.DataFrame, 
     date_column: str,
@@ -42,14 +41,26 @@ def _augment_fourier_pandas(
     min_date = df[date_column].min()
     df['radians'] = 2 * np.pi * (df[date_column] - min_date).dt.total_seconds() / scale_factor
     
-    for type_val in ("sin", "cos"):
-        for K_val in range(1, max_order + 1):
-            for period_val in periods:
-                df[f'{date_column}_{type_val}_{K_val}_{period_val}'] = calc_fourier(x = df['radians'], period = period_val, type = type_val, K = K_val)
+    type_vals = ["sin", "cos"]
+    K_vals = range(1, max_order + 1)
 
+    new_cols = [
+        f'{date_column}_{type_val}_{K_val}_{period_val}'
+        for type_val in type_vals
+        for K_val in K_vals
+        for period_val in periods
+    ]
+
+    df_new = np.array([
+        calc_fourier(x=df['radians'], period=period_val, type=type_val, K=K_val)
+        for type_val in type_vals
+        for K_val in K_vals
+        for period_val in periods
+    ]).reshape(-1, len(df)).T
+
+    df[new_cols] = df_new
     # Drop the temporary 'radians' column
     return df.drop(columns=['radians'])
-
 
 def _augment_fourier_polars(
         data: pd.DataFrame, 
