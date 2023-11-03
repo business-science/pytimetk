@@ -2,8 +2,7 @@
 
 `anomalize(data, date_column, value_column, period=None, trend=None, method='stl', decomp='additive', clean='min_max', iqr_alpha=0.05, clean_alpha=0.75, max_anomalies=0.2, bind_data=False, threads=1, show_progress=True, verbose=False)`
 
-The `anomalize` function is used to detect anomalies in time series data, 
-either for a single time
+Detects anomalies in time series data, either for a single time
 series or for multiple time series grouped by a specific column.
     
 
@@ -29,10 +28,20 @@ series or for multiple time series grouped by a specific column.
 
 ## Returns
 
-| Type         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| pd.DataFrame | The `anomalize` function returns a pandas DataFrame containing the original  data with additional                                                                                                                                                                                                                                                                                                                                                                                                  |
-| pd.DataFrame | - observed: original data - seasonal: seasonal component - seasadaj: seasonal adjusted - trend: trend component - remainder: residual component - anomaly: Yes/No flag for outlier detection - anomaly score: distance from centerline - anomaly direction: -1, 0, 1 inidicator for direction of the anomaly - recomposed_l1: lower level bound of recomposed time series - recomposed_l2: upper level bound of recomposed time series - observed_clean: original data with anomalies interpolated |
+| Type                                                                  | Description                                                                      |
+|-----------------------------------------------------------------------|----------------------------------------------------------------------------------|
+| pd.DataFrame                                                          | Returns a pandas DataFrame containing the original data with additional columns. |
+| - observed: original data                                             |                                                                                  |
+| - seasonal: seasonal component                                        |                                                                                  |
+| - seasadaj: seasonal adjusted                                         |                                                                                  |
+| - trend: trend component                                              |                                                                                  |
+| - remainder: residual component                                       |                                                                                  |
+| - anomaly: Yes/No flag for outlier detection                          |                                                                                  |
+| - anomaly score: distance from centerline                             |                                                                                  |
+| - anomaly direction: -1, 0, 1 inidicator for direction of the anomaly |                                                                                  |
+| - recomposed_l1: lower level bound of recomposed time series          |                                                                                  |
+| - recomposed_l2: upper level bound of recomposed time series          |                                                                                  |
+| - observed_clean: original data with anomalies interpolated           |                                                                                  |
 
 
 

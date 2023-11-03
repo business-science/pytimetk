@@ -2,9 +2,9 @@
 
 `plot_anomalies(data, date_column, facet_ncol=1, facet_nrow=None, facet_scales='free_y', facet_dir='h', line_color='#2c3e50', line_size=None, line_type='solid', line_alpha=1.0, anom_color='#E31A1C', anom_alpha=1.0, anom_size=None, ribbon_fill='#646464', ribbon_alpha=0.2, y_intercept=None, y_intercept_color='#2c3e50', x_intercept=None, x_intercept_color='#2c3e50', legend_show=True, title='Anomaly Plot', x_lab='', y_lab='', color_lab='Legend', x_axis_date_labels='%b %Y', base_size=11, width=None, height=None, engine='plotly')`
 
-The `plot_anomalies` function is used to plot anomalies in a time series 
-data using either Plotly, Matplotlib, or Plotnine. See `anomalize()` for the 
-function to prepare the data for plotting.
+Creates plot of anomalies in time series data using Plotly, Matplotlib, 
+or Plotnine. See the `anomalize()` function required to prepare the 
+data for plotting.
 
 ## Parameters
 
