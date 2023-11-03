@@ -555,21 +555,192 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'pandas'</span></span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>lead_df_single</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Add a single lead value of 2 for each GroupBy object, polars engine</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>lead_df <span class="op">=</span> (</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    df </span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        .augment_leads(</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>            leads<span class="op">=</span><span class="dv">2</span>,</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'polars'</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>lead_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>lead_df_single</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+<th data-quarto-table-cell-role="th">value_lead_1</th>
+<th data-quarto-table-cell-role="th">value_lead_2</th>
+<th data-quarto-table-cell-role="th">value_lead_3</th>
+<th data-quarto-table-cell-role="th">value_lead_4</th>
+<th data-quarto-table-cell-role="th">value_lead_5</th>
+<th data-quarto-table-cell-role="th">value_lead_6</th>
+<th data-quarto-table-cell-role="th">value_lead_7</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>D10</td>
+<td>2014-07-03</td>
+<td>2076.0</td>
+<td>2074.0</td>
+<td>2048.0</td>
+<td>2048.0</td>
+<td>2006.0</td>
+<td>2018.0</td>
+<td>2019.0</td>
+<td>2007.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>D10</td>
+<td>2014-07-04</td>
+<td>2074.0</td>
+<td>2048.0</td>
+<td>2048.0</td>
+<td>2006.0</td>
+<td>2018.0</td>
+<td>2019.0</td>
+<td>2007.0</td>
+<td>2010.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>D10</td>
+<td>2014-07-05</td>
+<td>2048.0</td>
+<td>2048.0</td>
+<td>2006.0</td>
+<td>2018.0</td>
+<td>2019.0</td>
+<td>2007.0</td>
+<td>2010.0</td>
+<td>2002.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>D10</td>
+<td>2014-07-06</td>
+<td>2048.0</td>
+<td>2006.0</td>
+<td>2018.0</td>
+<td>2019.0</td>
+<td>2007.0</td>
+<td>2010.0</td>
+<td>2002.0</td>
+<td>1979.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>D10</td>
+<td>2014-07-07</td>
+<td>2006.0</td>
+<td>2018.0</td>
+<td>2019.0</td>
+<td>2007.0</td>
+<td>2010.0</td>
+<td>2002.0</td>
+<td>1979.0</td>
+<td>1988.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">669</td>
+<td>D10</td>
+<td>2016-05-02</td>
+<td>2630.0</td>
+<td>2650.0</td>
+<td>2632.0</td>
+<td>2622.0</td>
+<td>2620.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">670</td>
+<td>D10</td>
+<td>2016-05-03</td>
+<td>2650.0</td>
+<td>2632.0</td>
+<td>2622.0</td>
+<td>2620.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">671</td>
+<td>D10</td>
+<td>2016-05-04</td>
+<td>2632.0</td>
+<td>2622.0</td>
+<td>2620.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">672</td>
+<td>D10</td>
+<td>2016-05-05</td>
+<td>2622.0</td>
+<td>2620.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">673</td>
+<td>D10</td>
+<td>2016-05-06</td>
+<td>2620.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>674 rows × 10 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Add a single lead value of 2 for each GroupBy object, polars engine</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>lead_df <span class="op">=</span> (</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .augment_leads(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            leads<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'polars'</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>lead_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
@@ -588,36 +759,36 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">0</td>
 <td>D10</td>
 <td>2014-07-03</td>
-<td>2076.2</td>
-<td>2048.7</td>
+<td>2076.0</td>
+<td>2048.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>D10</td>
 <td>2014-07-04</td>
-<td>2073.4</td>
-<td>2048.9</td>
+<td>2074.0</td>
+<td>2048.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>D10</td>
 <td>2014-07-05</td>
-<td>2048.7</td>
-<td>2006.4</td>
+<td>2048.0</td>
+<td>2006.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>D10</td>
 <td>2014-07-06</td>
-<td>2048.9</td>
-<td>2017.6</td>
+<td>2048.0</td>
+<td>2018.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>D10</td>
 <td>2014-07-07</td>
-<td>2006.4</td>
-<td>2019.1</td>
+<td>2006.0</td>
+<td>2019.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -630,35 +801,35 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">9738</td>
 <td>D500</td>
 <td>2012-09-19</td>
-<td>9418.8</td>
-<td>9445.9</td>
+<td>9416.0</td>
+<td>9448.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9739</td>
 <td>D500</td>
 <td>2012-09-20</td>
-<td>9365.7</td>
-<td>9497.9</td>
+<td>9368.0</td>
+<td>9496.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9740</td>
 <td>D500</td>
 <td>2012-09-21</td>
-<td>9445.9</td>
-<td>9545.3</td>
+<td>9448.0</td>
+<td>9544.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9741</td>
 <td>D500</td>
 <td>2012-09-22</td>
-<td>9497.9</td>
+<td>9496.0</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9742</td>
 <td>D500</td>
 <td>2012-09-23</td>
-<td>9545.3</td>
+<td>9544.0</td>
 <td>NaN</td>
 </tr>
 </tbody>
@@ -668,20 +839,20 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 add 2 lead values, 2 and 4, for a single DataFrame object, pandas engine</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>lead_df_single_two <span class="op">=</span> (</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'id == "D10"'</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .augment_leads(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            leads<span class="op">=</span>[<span class="dv">2</span>, <span class="dv">4</span>],</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'pandas'</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>lead_df_single_two</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 add 2 lead values, 2 and 4, for a single DataFrame object, pandas engine</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>lead_df_single_two <span class="op">=</span> (</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'id == "D10"'</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .augment_leads(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            leads<span class="op">=</span>[<span class="dv">2</span>, <span class="dv">4</span>],</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'pandas'</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>lead_df_single_two</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
@@ -701,40 +872,40 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">0</td>
 <td>D10</td>
 <td>2014-07-03</td>
-<td>2076.2</td>
-<td>2048.7</td>
-<td>2006.4</td>
+<td>2076.0</td>
+<td>2048.0</td>
+<td>2006.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>D10</td>
 <td>2014-07-04</td>
-<td>2073.4</td>
-<td>2048.9</td>
-<td>2017.6</td>
+<td>2074.0</td>
+<td>2048.0</td>
+<td>2018.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>D10</td>
 <td>2014-07-05</td>
-<td>2048.7</td>
-<td>2006.4</td>
-<td>2019.1</td>
+<td>2048.0</td>
+<td>2006.0</td>
+<td>2019.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>D10</td>
 <td>2014-07-06</td>
-<td>2048.9</td>
-<td>2017.6</td>
-<td>2007.4</td>
+<td>2048.0</td>
+<td>2018.0</td>
+<td>2007.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>D10</td>
 <td>2014-07-07</td>
-<td>2006.4</td>
-<td>2019.1</td>
+<td>2006.0</td>
+<td>2019.0</td>
 <td>2010.0</td>
 </tr>
 <tr class="even">
@@ -749,31 +920,31 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">669</td>
 <td>D10</td>
 <td>2016-05-02</td>
-<td>2630.7</td>
-<td>2631.8</td>
-<td>2620.1</td>
+<td>2630.0</td>
+<td>2632.0</td>
+<td>2620.0</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">670</td>
 <td>D10</td>
 <td>2016-05-03</td>
-<td>2649.3</td>
-<td>2622.5</td>
+<td>2650.0</td>
+<td>2622.0</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">671</td>
 <td>D10</td>
 <td>2016-05-04</td>
-<td>2631.8</td>
-<td>2620.1</td>
+<td>2632.0</td>
+<td>2620.0</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">672</td>
 <td>D10</td>
 <td>2016-05-05</td>
-<td>2622.5</td>
+<td>2622.0</td>
 <td>NaN</td>
 <td>NaN</td>
 </tr>
@@ -781,7 +952,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">673</td>
 <td>D10</td>
 <td>2016-05-06</td>
-<td>2620.1</td>
+<td>2620.0</td>
 <td>NaN</td>
 <td>NaN</td>
 </tr>
