@@ -18,7 +18,7 @@
 
 > Time series easier, faster, more fun. Pytimetk.
 
-**Please ⭐ us on GitHub (it takes 2-seconds and means a lot).**
+[**Please ⭐ us on GitHub (it takes 2-seconds and means a lot).**](https://github.com/business-science/pytimetk)
 
 # Introducing pytimetk: Simplifying Time Series Analysis for Everyone
 
