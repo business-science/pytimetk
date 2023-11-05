@@ -522,29 +522,19 @@ def _augment_expanding_polars(
             expanding_exprs.append(expanding_expr)
             new_column_names.append(new_column_name)
 
-    # Convert Pandas DataFrame to Polars and ensure a consistent row order by resetting the index
-    df = pl.from_pandas(pandas_df.reset_index())
+    # Select the columns
+    selected_columns = expanding_exprs
     
-    # Evaluate the accumulated expanding expressions and convert back to a Pandas DataFrame
-    if group_names:
-        df_new_columns = df \
-            .sort(*group_names, date_column) \
-            .group_by(group_names) \
-            .agg(expanding_exprs) \
-            .sort(*group_names) \
-            .explode(new_column_names)
+    df = pl.DataFrame(pandas_df)
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        out_df = df.group_by(data.grouper.names, maintain_order=True).agg(selected_columns)
+        out_df = out_df.explode(out_df.columns[1:])
+        out_df = out_df.drop(data.grouper.names)
+    else: # a dataframe
+        out_df = df.select(selected_columns)
 
-        df = pl.concat([df, df_new_columns.drop(group_names)], how="horizontal") \
-                .sort('index') \
-                .drop('index') \
-                .to_pandas()
-    else:
-        df = df \
-            .sort(date_column) \
-            .with_columns(expanding_exprs) \
-            .sort('index') \
-            .drop('index') \
-            .to_pandas()
+    # Concatenate the DataFrames horizontally
+    df = pl.concat([df, out_df], how="horizontal").to_pandas()
                 
     return reduce_memory_usage(df)
 
