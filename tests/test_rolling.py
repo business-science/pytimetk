@@ -177,3 +177,110 @@ def test_example_1_polars():
     
     assert rolled_df.shape[1] == 7
     assert rolled_df.shape[0] == df.shape[0]
+
+
+def test_sort_pandas():
+    
+    import pandas as pd
+    import pytimetk as tk
+    import numpy as np
+
+    stocks_df = tk.load_dataset("stocks_daily")
+    stocks_df['date'] = pd.to_datetime(stocks_df['date'])
+    
+    rolled_df_pandas_fast = stocks_df[['symbol','date','adjusted']] \
+        .groupby('symbol') \
+        .augment_rolling(
+            date_column = 'date',
+            value_column = 'adjusted',
+            window = [20],
+            window_func = 'mean',
+            engine = 'pandas',
+            show_progress = False
+        )
+    
+    result = rolled_df_pandas_fast.groupby('symbol').apply(lambda x: x.tail(1))
+    
+    result['test'] = np.abs(result['adjusted'] - result['adjusted_rolling_mean_win_20']) / result['adjusted']
+    
+    assert result['test'].mean() < 0.10
+    
+
+def test_sort_pandas_lambda():
+    
+    import pandas as pd
+    import pytimetk as tk
+    import numpy as np
+
+    stocks_df = tk.load_dataset("stocks_daily")
+    stocks_df['date'] = pd.to_datetime(stocks_df['date'])
+    
+    rolled_df_pandas_fast = stocks_df[['symbol','date','adjusted']] \
+        .groupby('symbol') \
+        .augment_rolling(
+            date_column = 'date',
+            value_column = 'adjusted',
+            window = [20],
+            window_func = ('mean', lambda x: x.mean()),
+            engine = 'pandas',
+            show_progress = False
+        )
+    
+    result = rolled_df_pandas_fast.groupby('symbol').apply(lambda x: x.tail(1))
+    
+    result['test'] = np.abs(result['adjusted'] - result['adjusted_rolling_mean_win_20']) / result['adjusted']
+    
+    assert result['test'].mean() < 0.10
+
+def test_sort_pandas_parallel():
+    
+    import pandas as pd
+    import pytimetk as tk
+    import numpy as np
+
+    stocks_df = tk.load_dataset("stocks_daily")
+    stocks_df['date'] = pd.to_datetime(stocks_df['date'])
+    
+    rolled_df_pandas_fast = stocks_df[['symbol','date','adjusted']] \
+        .groupby('symbol') \
+        .augment_rolling(
+            date_column = 'date',
+            value_column = 'adjusted',
+            window = [20],
+            window_func = 'mean',
+            engine = 'pandas',
+            show_progress = False,
+            threads = 2
+        )
+    
+    result = rolled_df_pandas_fast.groupby('symbol').apply(lambda x: x.tail(1))
+    
+    result['test'] = np.abs(result['adjusted'] - result['adjusted_rolling_mean_win_20']) / result['adjusted']
+    
+    assert result['test'].mean() < 0.10
+
+def test_sort_polars():
+    
+    import pandas as pd
+    import pytimetk as tk
+    import numpy as np
+
+    stocks_df = tk.load_dataset("stocks_daily")
+    stocks_df['date'] = pd.to_datetime(stocks_df['date'])
+    
+    rolled_df_pandas_fast = stocks_df[['symbol','date','adjusted']] \
+        .groupby('symbol') \
+        .augment_rolling(
+            date_column = 'date',
+            value_column = 'adjusted',
+            window = [20],
+            window_func = 'mean',
+            engine = 'polars',
+            show_progress = False
+        )
+    
+    result = rolled_df_pandas_fast.groupby('symbol').apply(lambda x: x.tail(1))
+    
+    result['test'] = np.abs(result['adjusted'] - result['adjusted_rolling_mean_win_20']) / result['adjusted']
+    
+    assert result['test'].mean() < 0.10
