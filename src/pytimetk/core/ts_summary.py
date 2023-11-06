@@ -211,7 +211,9 @@ def _ts_summary_polars(data: pl.DataFrame, date_column: str) -> pl.DataFrame:
     diff_summary_num = get_diff_summary_polars(date, numeric=True).cast(pl.Float64)
     
     # Combine summary statistics into a single DataFrame
-    return pl.concat([date_summary, frequency_summary, diff_summary, diff_summary_num], how="horizontal").to_pandas().replace(np.nan, None)
+    df = pl.concat([date_summary, frequency_summary, diff_summary, diff_summary_num], how="horizontal").to_pandas()
+    df.date_tz = df.date_tz.astype(str).replace('nan', None)
+    return df
 
     
 def get_diff_summary(idx: Union[pd.Series, pd.DatetimeIndex], numeric: bool = False):
