@@ -510,11 +510,15 @@ def compute_date_summary_polars(idx: pl.Series, tz: None, output_type='pandas') 
     if output_type not in ['pandas', 'polars']:
         raise TypeError('Output type can only be pandas or polars. Got {}.'.format(output_type))
 
-    data = {
+
+    return pd.DataFrame({
         "date_n": [len(idx)], 
         "date_tz": [tz], # "America/New_York
         "date_start": [idx.min()],
         "date_end": [idx.max()],
-    }
-
-    return pd.DataFrame(data) if output_type == 'pandas' else pl.DataFrame(data)  
+    }) if output_type == 'pandas' else pl.DataFrame({
+        "date_n": pl.Series([len(idx)]), 
+        "date_tz": pl.Series([tz]), # "America/New_York
+        "date_start": pl.Series([idx.min()], dtype=pl.Datetime('ns')),
+        "date_end": pl.Series([idx.max()], dtype=pl.Datetime('ns')),
+    })  
