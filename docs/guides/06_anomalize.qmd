@@ -1,0 +1,226 @@
+---
+title: "Anomaly Detection"
+jupyter: python3
+toc: true
+toc-depth: 3
+number-sections: true
+number-depth: 2
+---
+
+Anomaly detection in time series analysis is a crucial process for identifying unusual patterns that deviate from expected behavior. These anomalies can signify critical, often unforeseen events in time series data. Effective anomaly detection helps in maintaining the quality and reliability of data, ensuring accurate forecasting and decision-making. The challenge lies in distinguishing between true anomalies and natural fluctuations, which demands sophisticated analytical techniques and a deep understanding of the underlying time series patterns. As a result, anomaly detection is an essential component of time series analysis, driving the proactive management of risks and opportunities in dynamic environments.
+
+Pytimetk uses the following methods to determine anomalies in time series data;
+
+1. **Decomposition of Time Series:**
+
+   * The first step is to decompose the time series into several components. Commonly, this includes **trend**, **seasonality**, and **remainder** (or residual) components.
+
+   * Trend represents the underlying pattern or direction in the data over time.
+	Seasonality captures recurring patterns or cycles over a specific period, such as daily, weekly, monthly, etc.
+
+   * The remainder (or residual) is what's left after the trend and seasonal components have been removed from the original time series.
+
+
+2. **Generating Remainders:**
+
+   * After decomposition, the remainder component is extracted. This component reflects the part of the time series that cannot be explained by the trend and seasonal components.
+
+   * The idea is that while trend and seasonality represent predictable and thus "normal" patterns, the remainder is where anomalies are most likely to manifest.
+
+
+There are 2 common techniques for seasonal decomposition; STL and Twitter;
+
+* **STL** (Seasonal and Trend Decomposition) is a versatile and robust method for decomposing time series. STL works very well in circumstances where a long term trend is present. The Loess algorithm typically does a very good job at detecting the trend. However, it circumstances when the seasonal component is more dominant than the trend, Twitter tends to perform better.
+
+* **Twitter** method is a similar decomposition method to that used in Twitter’s AnomalyDetection package. The Twitter method works identically to STL for removing the seasonal component. The main difference is in removing the trend, which is performed by removing the median of the data rather than fitting a smoother. The median works well when a long-term trend is less dominant that the short-term seasonal component. This is because the smoother tends to overfit the anomalies.
+
+# Anomaly Detection in Pytimetk
+This section will demonstrate how to use the set of `anomalize` functions for in pytimetk;
+
+* `anomalize()`
+* `plot_anomalies()`
+* `plot_anomalies_decomp()`
+* `plot_anomalies_cleaned()`
+
+## Setup
+To setup, import the necessary packages and the `m4_daily_df` dataset;
+
+```{python}
+
+# libraries
+import pytimetk as tk
+import pandas as pd
+import numpy as np
+
+# Import Data
+m4_daily_df = tk.load_dataset('m4_daily', parse_dates = ['date'])
+
+```
+
+
+ Let's first demonstrate with a single time series. We'll filter `m4_daily_df`
+ for `id` = `D10` and `date` within the year 2015.
+
+```{python}
+# Data filtering
+df = (
+	m4_daily_df
+		.query("id == 'D10'")
+		.query("date.dt.year == 2015")
+)
+```
+
+ We can plot this data to see the trend
+
+```{python}
+# Plot data
+tk.plot_timeseries(
+	data 		 = df,
+ 	date_column  = 'date',
+ 	value_column = 'value'
+)
+```
+
+## Seasonal Decomposition & Remainder
+First we perform seasonal decomposition and on the data and generate remainders using `anomalize()`.
+
+::: {.callout-tip collapse="false"}
+## Help Doc Info: `anomalize()`
+Use `help(tk.anomalize)` to review additional helpful documentation.
+:::
+
+```{python}
+# Anomalize
+anomalize_df = tk.anomalize(
+	data          = df,
+	date_column   = 'date',
+	value_column  = 'value',
+	period        = 7,
+    iqr_alpha     = 0.05, # using the default
+    clean_alpha   = 0.75, # using the default
+    clean         = "min_max"
+)
+
+anomalize_df.glimpse()
+
+```
+
+
+## Plot Seasonal Decomposition
+We plot the seaonal decomposition to get a visual representation;
+
+::: {.callout-tip collapse="false"}
+## Help Doc Info: `plot_anomalies_decomp()`
+Use `help(tk.plot_anomalies_decomp)` to review additional helpful documentation.
+:::
+
+```{python}
+# Plot seasonal decomposition
+tk.plot_anomalies_decomp(
+	data        = anomalize_df,
+	date_column = 'date',
+	engine      = 'plotly',
+	title       = 'Seasonal Decomposition'
+)
+```
+
+## Plot Anomalies
+Next we can plot the anomalies using `tk.plot_anomalies()`;
+
+::: {.callout-tip collapse="false"}
+## Help Doc Info: `plot_anomalies()`
+Use `help(tk.plot_anomalies)` to review additional helpful documentation.
+:::
+
+```{python}
+# Plot anomalies
+tk.plot_anomalies(
+	data        = anomalize_df,
+	date_column = 'date',
+	engine      = 'plotly',
+	title       = 'Plot Anomaly Bands'
+)
+```
+
+
+## Plot Cleaned Anomalies
+Finally we can also see a plot of the data with cleaned anomalies using `plot_anomalies_cleaned()`;
+
+::: {.callout-tip collapse="false"}
+## Help Doc Info: `plot_anomalies_cleaned()`
+Use `help(tk.plot_anomalies_cleaned)` to review additional helpful documentation.
+:::
+
+```{python}
+# Plot cleaned anomalies
+tk.plot_anomalies_cleaned(
+	data        = anomalize_df,
+	date_column = 'date'
+)
+
+```
+
+## Changing Parameters
+Some important parameters to hightlight in the `anomalize()` function include `iqr_alpha`.
+
+::: {.callout-important collapse="false"}
+`iqr_alpha` controls the threshold for detecting out
+## `anomalize()` parameter: `iqr_alpha`
+liers. it is the significance level used in the interquartile range (IQR) method for outlier detection. The default value is 0.05, which corresponds to a 5% significance level. - A lower significance level will result in a higher threshold, which means fewer outliers will be detected. - A higher significance level will result in a lower threshold, which means more outliers will be detected.
+:::
+
+Lets visualize the effect of changing the `iqr_alpha` parameter;
+
+### Changing `iqr_alpha`
+First, lets get a dataframe with multiple values for `iqr_alpha`;
+
+```{python}
+# Anomalized data with multiple iqr_alpha values
+
+# - Alpha values
+iqr_alpha_values = [0.05, 0.10, 0.15, 0.20]
+
+# - Empty dataframes list
+dfs = []
+
+for alpha in iqr_alpha_values:
+
+	# - Run anomalize function
+    anomalize_df = tk.anomalize(
+        data         = df,
+        date_column  = 'date',
+        value_column = 'value',
+        period       = 7,
+        iqr_alpha    = alpha
+    )
+
+    # - Add the iqr_alpha column
+    anomalize_df['iqr_alpha'] = f'iqr_alpha value of {alpha}'
+
+    # - Append to the list
+    dfs.append(anomalize_df)
+
+# - Concatenate all dataframes
+final_df = pd.concat(dfs)
+
+```
+
+Now we can visualize the anomalies;
+
+```{python}
+# Visualize
+(
+	final_df
+		.groupby('iqr_alpha')
+		.plot_anomalies(
+			date_column = 'date',
+			engine      = 'plotly',
+			facet_ncol  = 2
+		)
+)
+
+```
+
+# Anomaly Detection for Grouped Timeseries
+
+Coming soon...
