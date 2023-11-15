@@ -142,6 +142,7 @@ quartodoc:
         - augment_rolling_apply
         - augment_expanding
         - augment_expanding_apply
+        - augment_fourier
         - augment_hilbert
         - augment_wavelet
     - title: 📎 TS Features

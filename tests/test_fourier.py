@@ -7,7 +7,7 @@ def test_engine_equivalence():
     by = ['date', 'id']
 
     # test pandas + DataFrame 
-    output1 = df.augment_fourier_v2(
+    output1 = df.augment_fourier(
         date_column='date',
         periods=[1, 2],
         max_order=1,
@@ -15,7 +15,7 @@ def test_engine_equivalence():
     ).sort_values(by=by).reset_index(drop=True)
 
     # test pandas + groupby
-    output2 = df.groupby('id').augment_fourier_v2(
+    output2 = df.groupby('id').augment_fourier(
         date_column='date',
         periods=[1, 2],
         max_order=1,
@@ -23,7 +23,7 @@ def test_engine_equivalence():
     ).sort_values(by=by).reset_index(drop=True)
 
     # test polars + DataFrame 
-    output3 = df.augment_fourier_v2(
+    output3 = df.augment_fourier(
         date_column='date',
         periods=[1, 2],
         max_order=1,
@@ -31,7 +31,7 @@ def test_engine_equivalence():
     ).sort_values(by=by).reset_index(drop=True)
 
     # test polars + groupby
-    output4 = df.groupby('id').augment_fourier_v2(
+    output4 = df.groupby('id').augment_fourier(
         date_column='date',
         periods=[1, 2],
         max_order=1,
