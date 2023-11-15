@@ -1,0 +1,46 @@
+# augment_fourier { #pytimetk.augment_fourier }
+
+`augment_fourier(data, date_column, periods=1, max_order=1, engine='pandas')`
+
+Adds Fourier transforms to a Pandas DataFrame or DataFrameGroupBy object.
+
+The `augment_fourier` function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, the number of periods for the Fourier series, and the maximum Fourier order, and adds Fourier-transformed columns to the DataFrame.
+
+## Parameters
+
+| Name          | Type                                                     | Description                                                                                                                                                                                                                                                                                      | Default    |
+|---------------|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `data`        | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | The `data` parameter is the input DataFrame or DataFrameGroupBy object that you want to add Fourier-transformed columns to.                                                                                                                                                                      | _required_ |
+| `date_column` | str                                                      | The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to compute the Fourier transforms.                                                                                                              | _required_ |
+| `periods`     | int or list                                              | The `periods` parameter specifies how many timesteps between each peak in the fourier series. Default is 1.                                                                                                                                                                                      | `1`        |
+| `max_order`   | int                                                      | The `max_order` parameter specifies the maximum Fourier order to calculate. Default is 1.                                                                                                                                                                                                        | `1`        |
+| `engine`      | str                                                      | The `engine` parameter is used to specify the engine to use for  augmenting lags. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library.  This can be faster than using "pandas" for large datasets. | `'pandas'` |
+
+## Returns
+
+| Type         | Description                                                      |
+|--------------|------------------------------------------------------------------|
+| pd.DataFrame | A Pandas DataFrame with Fourier-transformed columns added to it. |
+
+## Examples
+
+```{python}
+import pandas as pd
+import pytimetk as tk
+
+df = tk.load_dataset('m4_daily', parse_dates=['date'])
+
+# Add Fourier transforms for a single column
+fourier_df = (
+    df
+        .query("id == 'D10'")
+        .augment_fourier(
+            date_column='date',
+            periods=[1, 7],
+            max_order=1
+        )
+)
+fourier_df.head()
+
+fourier_df.plot_timeseries("date", "date_sin_1_7", x_axis_date_labels = "%B %d, %Y",)
+```

@@ -66,7 +66,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2023-11-03T18:04:10.548Z</lastmod>
+    <lastmod>2023-11-15T16:40:39.850Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/palette_timetk.html</loc>
@@ -263,5 +263,13 @@
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/anomalize.html</loc>
     <lastmod>2023-11-03T18:04:50.217Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/augment_fourier.html</loc>
+    <lastmod>2023-11-15T16:40:50.685Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/guides/06_anomalize.html</loc>
+    <lastmod>2023-11-15T16:40:38.959Z</lastmod>
   </url>
 </urlset>

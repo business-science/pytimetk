@@ -26,6 +26,7 @@ website:
       - reference/augment_rolling_apply.qmd
       - reference/augment_expanding.qmd
       - reference/augment_expanding_apply.qmd
+      - reference/augment_fourier.qmd
       - reference/augment_hilbert.qmd
       - reference/augment_wavelet.qmd
       section: "\U0001F3D7\uFE0F Feature Engineereing"
