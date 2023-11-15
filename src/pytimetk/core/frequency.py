@@ -5,12 +5,133 @@ import polars as pl
 
 from typing import Union
 
-from pytimetk.utils.checks import check_series_or_datetime
+from pytimetk.utils.checks import check_series_or_datetime, check_series_polars
 from pytimetk.utils.datetime_helpers import floor_date
+
+
+# to convert irregular frequency into its regular counterpart
+IRREGULAR_TO_REGULAR = {
+    'A-DEC': 'Y',
+    'Q-DEC': 'Q',
+    'W-SUN': 'W',
+    'B'    : 'D',
+    'BM'   : 'M',
+    'BQ'   : 'Q',
+    'BA'   : 'A',
+    'BY'   : 'Y',
+    'BMS'  : 'MS',
+    'BQS'  : 'QS',
+    'BYS'  : 'YS',
+    'BAS'  : 'AS'
+}
+
+
+def get_unit_and_scale(freq_median_seconds, engine="pandas"):
+
+    # Use time series frequency table
+    _table = timeseries_unit_frequency_table(engine=engine).set_index('unit')
+    
+    def lookup_freq(unit, type='freq'):
+        return _table.loc[unit, type]
+    
+    if freq_median_seconds < lookup_freq('min'):
+        _unit = "S"
+        _scale = freq_median_seconds
+    elif freq_median_seconds < lookup_freq('hour'):
+        _unit = "T"
+        _scale = freq_median_seconds / lookup_freq('min')
+    elif freq_median_seconds < lookup_freq('day'):
+        _unit = "H"
+        _scale = freq_median_seconds / lookup_freq('hour')
+    elif freq_median_seconds < lookup_freq('week'):
+        _unit = "D"
+        _scale = freq_median_seconds / lookup_freq('day')
+    elif freq_median_seconds < lookup_freq('month', 'freq_min'):
+        _unit = "W"
+        _scale = freq_median_seconds / lookup_freq('week')
+    elif freq_median_seconds < lookup_freq('quarter', 'freq_min'):
+        _unit = "M"
+        _scale = np.round(freq_median_seconds / lookup_freq('month'),1)
+    elif freq_median_seconds < lookup_freq('year', 'freq_min'):
+        _unit = "Q"
+        _scale = np.round(freq_median_seconds / lookup_freq('quarter'),1)
+    else: 
+        _unit = "Y"
+        _scale = np.round(freq_median_seconds / lookup_freq('year'),1)
+
+    return _scale, _unit
+
+
+def _get_frequency_summary_polars(
+        idx: pl.Series,
+        force_regular: bool = False
+): 
+    check_series_polars(idx)
+
+    # TODO
+    _freq_inferred = _get_pandas_frequency(idx[:10].to_pandas(), force_regular = force_regular)
+
+    diff = idx.diff()
+
+    _freq_median_seconds = diff.dt.seconds().median()
+
+    _scale, _unit = get_unit_and_scale(_freq_median_seconds, engine="polars")
+
+    # SWITCH DAYS IF REMAINDER IS BETWEEN 0.1 AND 0.9
+    if _unit in ['M', 'Q', 'Y']:
+        remainder = _scale - int(_scale)
+        if 0.1 <= remainder <= 0.9:
+            _scale = diff.dt.days().median()  # Switch to days
+            _unit = "D"
+        
+    return pd.DataFrame({
+        "freq_inferred_unit": [_freq_inferred],
+        "freq_median_timedelta": [pd.Timedelta(_freq_median_seconds, unit='seconds')],
+        "freq_median_scale": [_scale],
+        "freq_median_unit": [_unit],
+    })
+
+
+def _get_frequency_summary_pandas(
+        idx: Union[pd.Series, pd.DatetimeIndex],
+        force_regular: bool = False
+):  
+    
+    # common checks
+    check_series_or_datetime(idx)
+    
+    # If idx is a DatetimeIndex, convert to Series
+    if isinstance(idx, pd.DatetimeIndex):
+        idx = pd.Series(idx, name="idx")
+    
+    _freq_inferred = _get_pandas_frequency(idx, force_regular = force_regular)
+    
+    _freq_median = idx.diff().median()
+    
+    _freq_median_seconds = _freq_median.total_seconds()
+    
+    _scale, _unit = get_unit_and_scale(_freq_median_seconds, engine="pandas")
+        
+    # SWITCH DAYS IF REMAINDER IS BETWEEN 0.1 AND 0.9
+    if _unit in ['M', 'Q', 'Y']:
+        remainder = _scale - int(_scale)
+        if 0.1 <= remainder <= 0.9:
+            # Switch to days
+            _scale = float(_freq_median.days)
+            _unit = "D"
+        
+    return pd.DataFrame({
+        "freq_inferred_unit": [_freq_inferred],
+        "freq_median_timedelta": [_freq_median],
+        "freq_median_scale": [_scale],
+        "freq_median_unit": [_unit],
+    })
+
 
 def get_frequency_summary(
         idx: Union[pd.Series, pd.DatetimeIndex],
-        force_regular: bool = False
+        force_regular: bool = False,
+        engine: str = 'pandas'
 ):  
     '''
     More robust version of pandas inferred frequency.
@@ -64,67 +185,12 @@ def get_frequency_summary(
     ``` 
     '''
     
-    # common checks
-    check_series_or_datetime(idx)
-    
-    # If idx is a DatetimeIndex, convert to Series
-    if isinstance(idx, pd.DatetimeIndex):
-        idx = pd.Series(idx, name="idx")
-    
-    _freq_inferred = _get_pandas_frequency(idx, force_regular = force_regular)
-    
-    _freq_median = idx.diff().median()
-    
-    _freq_median_seconds = _freq_median.total_seconds()
-    
-    # Use time series frequency table
-    _table = timeseries_unit_frequency_table().set_index('unit')
-    
-    def lookup_freq(unit, type='freq'):
-        return _table.loc[unit, type]
-    
-    
-    if _freq_median_seconds < lookup_freq('min'):
-        _unit = "S"
-        _scale = _freq_median_seconds
-    elif _freq_median_seconds < lookup_freq('hour'):
-        _unit = "T"
-        _scale = _freq_median_seconds / lookup_freq('min')
-    elif _freq_median_seconds < lookup_freq('day'):
-        _unit = "H"
-        _scale = _freq_median_seconds / lookup_freq('hour')
-    elif _freq_median_seconds < lookup_freq('week'):
-        _unit = "D"
-        _scale = _freq_median_seconds / lookup_freq('day')
-    elif _freq_median_seconds < lookup_freq('month', 'freq_min'):
-        _unit = "W"
-        _scale = _freq_median_seconds / lookup_freq('week')
-    elif _freq_median_seconds < lookup_freq('quarter', 'freq_min'):
-        _unit = "M"
-        _scale = np.round(_freq_median_seconds / lookup_freq('month'),1)
-    elif _freq_median_seconds < lookup_freq('year', 'freq_min'):
-        _unit = "Q"
-        _scale = np.round(_freq_median_seconds / lookup_freq('quarter'),1)
-    else: 
-        _unit = "Y"
-        _scale = np.round(_freq_median_seconds / lookup_freq('year'),1)
-        
-    # SWITCH DAYS IF REMAINDER IS BETWEEN 0.1 AND 0.9
-    if _unit in ['M', 'Q', 'Y']:
-        remainder = _scale - int(_scale)
-        if 0.1 <= remainder <= 0.9:
-            # Switch to days
-            _scale = float(_freq_median.days)
-            _unit = "D"
-        
-    ret = pd.DataFrame({
-        "freq_inferred_unit": [_freq_inferred],
-        "freq_median_timedelta": [_freq_median],
-        "freq_median_scale": [_scale],
-        "freq_median_unit": [_unit],
-    })
-    
-    return ret
+    if engine == "pandas":
+        return _get_frequency_summary_pandas(idx, force_regular)
+    elif engine == "polars":
+        return _get_frequency_summary_polars(idx, force_regular)
+    else:
+        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
     
 
 @pf.register_series_method
@@ -599,32 +665,9 @@ def _get_pandas_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular
         The frequency of the given pandas series or datetime index.
     
     '''
-    if isinstance(idx, pd.Series):
-        idx = idx.values
-        
-    if isinstance(idx, pd.DatetimeIndex):
-        dt_index = idx
-    else:
-        _len = min(len(idx), 10)
-        dt_index = pd.DatetimeIndex(idx[0:_len])
     
-    freq = dt_index.inferred_freq
+    check_series_or_datetime(idx)
+    freq = idx.inferred_freq if isinstance(idx, pd.DatetimeIndex) else pd.DatetimeIndex(idx.iloc[:min(len(idx), 10)]).inferred_freq
+    return IRREGULAR_TO_REGULAR.get(freq, freq) if force_regular and freq else freq
+
     
-    if force_regular and freq:
-        irregular_to_regular = {
-            'A-DEC': 'Y',
-            'Q-DEC': 'Q',
-            'W-SUN': 'W',
-            'B'    : 'D',
-            'BM'   : 'M',
-            'BQ'   : 'Q',
-            'BA'   : 'A',
-            'BY'   : 'Y',
-            'BMS'  : 'MS',
-            'BQS'  : 'QS',
-            'BYS'  : 'YS',
-            'BAS'  : 'AS'
-        }
-        freq = irregular_to_regular.get(freq, freq)
-    
-    return freq
