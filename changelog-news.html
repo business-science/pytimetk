@@ -85,8 +85,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 
 <meta property="og:title" content="pytimetk - Changelog for PyTimeTK">
+<meta property="og:description" content="">
 <meta property="og:site-name" content="pytimetk">
 <meta name="twitter:title" content="pytimetk - Changelog for PyTimeTK">
+<meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
 
@@ -324,10 +326,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#pytimetk-0.2.0" id="toc-pytimetk-0.2.0" class="nav-link active" data-scroll-target="#pytimetk-0.2.0">pytimetk 0.2.0</a>
+  <li><a href="#pytimetk-0.2.1.9000-development-version" id="toc-pytimetk-0.2.1.9000-development-version" class="nav-link active" data-scroll-target="#pytimetk-0.2.1.9000-development-version">pytimetk 0.2.1.9000 (Development Version)</a>
+  <ul class="collapse">
+  <li><a href="#new-functions" id="toc-new-functions" class="nav-link" data-scroll-target="#new-functions">New Functions:</a></li>
+  <li><a href="#finance-module" id="toc-finance-module" class="nav-link" data-scroll-target="#finance-module">Finance Module:</a></li>
+  <li><a href="#polars-backend" id="toc-polars-backend" class="nav-link" data-scroll-target="#polars-backend">Polars Backend:</a></li>
+  </ul></li>
+  <li><a href="#pytimetk-0.2.1" id="toc-pytimetk-0.2.1" class="nav-link" data-scroll-target="#pytimetk-0.2.1">pytimetk 0.2.1</a></li>
+  <li><a href="#pytimetk-0.2.0" id="toc-pytimetk-0.2.0" class="nav-link" data-scroll-target="#pytimetk-0.2.0">pytimetk 0.2.0</a>
   <ul class="collapse">
   <li><a href="#anomaly-detection" id="toc-anomaly-detection" class="nav-link" data-scroll-target="#anomaly-detection">Anomaly Detection</a></li>
-  <li><a href="#new-functions" id="toc-new-functions" class="nav-link" data-scroll-target="#new-functions">New Functions:</a></li>
+  <li><a href="#new-functions-1" id="toc-new-functions-1" class="nav-link" data-scroll-target="#new-functions-1">New Functions:</a></li>
   <li><a href="#new-finance-module" id="toc-new-finance-module" class="nav-link" data-scroll-target="#new-finance-module">New Finance Module</a></li>
   <li><a href="#speed-improvements" id="toc-speed-improvements" class="nav-link" data-scroll-target="#speed-improvements">Speed Improvements</a></li>
   <li><a href="#helpful-utilities" id="toc-helpful-utilities" class="nav-link" data-scroll-target="#helpful-utilities">Helpful Utilities:</a></li>
@@ -363,6 +372,30 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
+<section id="pytimetk-0.2.1.9000-development-version" class="level1">
+<h1>pytimetk 0.2.1.9000 (Development Version)</h1>
+<section id="new-functions" class="level3">
+<h3 class="anchored" data-anchor-id="new-functions">New Functions:</h3>
+<ul>
+<li><code>augment_diffs()</code> - Can now add differenced columns</li>
+<li><code>augment_fourier()</code> - Can now add fourier features.</li>
+</ul>
+</section>
+<section id="finance-module" class="level3">
+<h3 class="anchored" data-anchor-id="finance-module">Finance Module:</h3>
+</section>
+<section id="polars-backend" class="level3">
+<h3 class="anchored" data-anchor-id="polars-backend">Polars Backend:</h3>
+<ul>
+<li><code>augment_diffs()</code>- Gains a polars backend</li>
+<li><code>augment_fourier()</code> - Gains a polars backend</li>
+</ul>
+</section>
+</section>
+<section id="pytimetk-0.2.1" class="level1">
+<h1>pytimetk 0.2.1</h1>
+<p>Bugfix - Issue with <code>augment_rolling(engine='pandas')</code> and <code>augment_expanding(engine='pandas')</code> with concatinating rolled/expanded calc’s to the correct group</p>
+</section>
 <section id="pytimetk-0.2.0" class="level1">
 <h1>pytimetk 0.2.0</h1>
 <section id="anomaly-detection" class="level3">
@@ -374,8 +407,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <li><code>plot_anomalies_cleaned()</code>: A scalable visualization tool for showing the before and after transformation for the cleaned vs uncleaned anomalies.</li>
 </ul>
 </section>
-<section id="new-functions" class="level3">
-<h3 class="anchored" data-anchor-id="new-functions">New Functions:</h3>
+<section id="new-functions-1" class="level3">
+<h3 class="anchored" data-anchor-id="new-functions-1">New Functions:</h3>
 <ul>
 <li><code>apply_by_time()</code>: For complex apply-style aggregations by time.</li>
 <li><code>augment_rolling_apply()</code>: For complex rolling operations using apply-style data frame functions.<br>
