@@ -164,9 +164,7 @@ tk.plot_anomalies_cleaned(
 Some important parameters to hightlight in the `anomalize()` function include `iqr_alpha`.
 
 ::: {.callout-important collapse="false"}
-`iqr_alpha` controls the threshold for detecting out
-## `anomalize()` parameter: `iqr_alpha`
-liers. it is the significance level used in the interquartile range (IQR) method for outlier detection. The default value is 0.05, which corresponds to a 5% significance level. - A lower significance level will result in a higher threshold, which means fewer outliers will be detected. - A higher significance level will result in a lower threshold, which means more outliers will be detected.
+`iqr_alpha` controls the threshold for detecting outliers. It is the significance level used in the interquartile range (IQR) method for outlier detection. The default value is 0.05, which corresponds to a 5% significance level. A lower significance level will result in a higher threshold, which means fewer outliers will be detected. A higher significance level will result in a lower threshold, which means more outliers will be detected.
 :::
 
 Lets visualize the effect of changing the `iqr_alpha` parameter;
