@@ -1,0 +1,79 @@
+# augment_diffs { #pytimetk.augment_diffs }
+
+`augment_diffs(data, date_column, value_column, periods=1, engine='pandas')`
+
+Adds differences to a Pandas DataFrame or DataFrameGroupBy object.
+
+The `augment_diffs` function takes a Pandas DataFrame or GroupBy object, a 
+date column, a value column or list of value columns, and a period or list of 
+periods, and adds differenced versions of the value columns to the DataFrame.
+
+## Parameters
+
+| Name           | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Default    |
+|----------------|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `data`         | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | The `data` parameter is the input DataFrame or DataFrameGroupBy object  that you want to add differenced columns to.                                                                                                                                                                                                                                                                                                                                         | _required_ |
+| `date_column`  | str                                                      | The `date_column` parameter is a string that specifies the name of the  column in the DataFrame that contains the dates. This column will be  used to sort the data before adding the differenced values.                                                                                                                                                                                                                                                    | _required_ |
+| `value_column` | str or list                                              | The `value_column` parameter is the column(s) in the DataFrame that you  want to add differences values for. It can be either a single column name  (string) or a list of column names.                                                                                                                                                                                                                                                                      | _required_ |
+| `periods`      | int or tuple or list                                     | The `periods` parameter is an integer, tuple, or list that specifies the  periods to shift values when differencing.   - If it is an integer, the function will add that number of differences    values for each column specified in the `value_column` parameter.   - If it is a tuple, it will generate differences from the first to the second    value (inclusive).   - If it is a list, it will generate differences based on the values in the list. | `1`        |
+| `engine`       | str                                                      | The `engine` parameter is used to specify the engine to use for  augmenting differences. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library    for augmenting diffs. This can be faster than using "pandas" for large    datasets.                                                                                                                            | `'pandas'` |
+
+## Returns
+
+| Type         | Description                                              |
+|--------------|----------------------------------------------------------|
+| pd.DataFrame | A Pandas DataFrame with differenced columns added to it. |
+
+## Examples
+
+```{python}
+import pandas as pd
+import pytimetk as tk
+
+df = tk.load_dataset('m4_daily', parse_dates=['date'])
+df
+```
+
+```{python}
+# Example 1 - Add 7 differenced values for a single DataFrame object, pandas engine
+diffed_df_single = (
+    df 
+        .query('id == "D10"')
+        .augment_diffs(
+            date_column='date',
+            value_column='value',
+            periods=(1, 7),
+            engine='pandas'
+        )
+)
+diffed_df_single
+```
+```{python}
+# Example 2 - Add a single differenced value of 2 for each GroupBy object, polars engine
+diffed_df = (
+    df 
+        .groupby('id')
+        .augment_diffs(
+            date_column='date',
+            value_column='value',
+            periods=2,
+            engine='polars'
+        )
+)
+diffed_df
+```
+
+```{python}
+# Example 3 add 2 differenced values, 2 and 4, for a single DataFrame object, pandas engine
+diffed_df_single_two = (
+    df 
+        .query('id == "D10"')
+        .augment_diffs(
+            date_column='date',
+            value_column='value',
+            periods=[2, 4],
+            engine='pandas'
+        )
+)
+diffed_df_single_two
+```

@@ -92,6 +92,9 @@ from .feature_engineering.lags import (
 from .feature_engineering.leads import (
     augment_leads
 )
+from .feature_engineering.diffs import (
+    augment_diffs
+)
 from .core.pad import (
     pad_by_time
 )

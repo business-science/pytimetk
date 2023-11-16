@@ -61,6 +61,8 @@ def _reduce_memory(
       # Check if the column is a float type
       elif str(col_type)[:5] == 'float':
       # Iterate over possible float types and find the smallest type that can accomodate the column values
+        # TODO - NEED TO BE CAREFUL HERE:
+        # ISSUE #274 - Precision Effects Rounding
         for dtype in [np.float16, np.float32, np.float64]:
           if c_min > np.finfo(dtype).min and c_max < np.finfo(dtype).max:
             data[col] = data[col].astype(dtype)
