@@ -9,3 +9,4 @@ from .rolling_apply import *
 from .expanding import *
 from .expanding_apply import *
 from .fourier import *
+from .diffs import *

@@ -138,6 +138,7 @@ quartodoc:
         - augment_holiday_signature
         - augment_lags
         - augment_leads
+        - augment_diffs
         - augment_rolling
         - augment_rolling_apply
         - augment_expanding

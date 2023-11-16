@@ -9,22 +9,24 @@ from .plot.theme import *
 
 from .core.summarize_by_time import *
 from .core.apply_by_time import *
-from .feature_engineering.timeseries_signature import *
-from .feature_engineering.holiday_signature import *
+from .core.pad import *
 from .core.future import *
 from .core.make_timeseries_sequence import *
+from .core.ts_features import *
+from .core.ts_summary import *
+from .core.anomalize import *
+from .core.frequency import *
+
+from .feature_engineering.timeseries_signature import *
+from .feature_engineering.holiday_signature import *
 from .feature_engineering.lags import *
 from .feature_engineering.leads import *
-from .core.pad import *
+from .feature_engineering.diffs import *
 from .feature_engineering.rolling import *
 from .feature_engineering.rolling_apply import *
 from .feature_engineering.expanding import *
 from .feature_engineering.expanding_apply import *
 from .feature_engineering.fourier import *
-from .core.ts_features import *
-from .core.ts_summary import *
-from .core.anomalize import *
-from .core.frequency import *
 from .feature_engineering.hilbert import *
 from .feature_engineering.wavelet import *
 

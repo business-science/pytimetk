@@ -6,6 +6,25 @@ toc-depth: 3
 number-sections: false
 ---
 
+# pytimetk 0.2.1.9000 (Development Version)
+
+### New Functions:
+
+- `augment_diffs()` - Can now add differenced columns
+- `augment_fourier()` - Can now add fourier features. 
+
+### Finance Module:
+
+
+### Polars Backend:
+
+- `augment_diffs()`- Gains a polars backend
+- `augment_fourier()` - Gains a polars backend
+
+# pytimetk 0.2.1
+
+Bugfix - Issue with `augment_rolling(engine='pandas')` and `augment_expanding(engine='pandas')` with concatinating rolled/expanded calc's to the correct group
+
 # pytimetk 0.2.0
 
 ### Anomaly Detection
