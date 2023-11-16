@@ -54,6 +54,11 @@ def check_dataframe_or_groupby_polars(data: Union[pl.DataFrame, pl.dataframe.gro
     ], error_str='`data` is not a Polars DataFrame or GroupBy object.')
 
 
+def check_series_polars(data: pl.Series) -> None:
+    check_data_type(data, authorized_dtypes = [pl.Series], 
+                    error_str='Expected `data` to be a Polars Series.')
+
+
 def check_date_column(data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], date_column: str) -> None:
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
