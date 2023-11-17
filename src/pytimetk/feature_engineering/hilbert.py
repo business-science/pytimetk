@@ -15,6 +15,7 @@ def augment_hilbert(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str, 
     value_column: Union[str, List[str]], 
+    reduce_memory: bool = True,
     engine: str = 'pandas'):
 
     """
@@ -31,6 +32,8 @@ def augment_hilbert(
     value_column : str or list
         List of column names in 'data' to which the Hilbert transform will be 
         applied.
+    reduce_memory : bool, optional
+        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
     engine : str, optional
         The `engine` parameter is used to specify the engine to use for 
         summarizing the data. It can be either "pandas" or "polars". 
@@ -150,13 +153,23 @@ def augment_hilbert(
     check_dataframe_or_groupby(data)
     check_value_column(data, value_column)
     check_date_column(data, date_column)
+    
+    if reduce_memory:
+        data = reduce_memory_usage(data)
         
     if engine == 'pandas':
-        return _augment_hilbert_pandas(data, date_column, value_column)
+        ret = _augment_hilbert_pandas(data, date_column, value_column)
     elif engine == 'polars':
-        return _augment_hilbert_polars(data, date_column, value_column)
+        ret = _augment_hilbert_polars(data, date_column, value_column)
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    
+    if reduce_memory:
+        ret = reduce_memory_usage(ret)
+        
+    return ret
+    
+    
 # Monkey-patch the method to the DataFrameGroupBy class
 pd.core.groupby.DataFrameGroupBy.augment_hilbert = augment_hilbert
 
@@ -177,7 +190,7 @@ def _augment_hilbert_pandas(
         if any(col not in data.columns for col in value_column):
             missing_cols = [col for col in value_column if col not in data.columns]
             raise KeyError(f"Columns {missing_cols} do not exist in the DataFrame")
-        data = reduce_memory_usage(data.sort_values(by=date_column))
+        data = data.sort_values(by=date_column)
         data = data.groupby(np.zeros(len(data)))
 
     
@@ -218,7 +231,7 @@ def _augment_hilbert_pandas(
     # Apply the Hilbert transform to each group and concatenate the results
     df_hilbert = pd.concat((apply_hilbert(group) for _, group in data), ignore_index=True)
 
-    return reduce_memory_usage(df_hilbert)
+    return df_hilbert
 
 
 def _augment_hilbert_polars(    
@@ -267,7 +280,7 @@ def _augment_hilbert_polars(
 
         # Convert the GroupBy object into a Polars DataFrame
         df_pl = (
-            pl.from_pandas(reduce_memory_usage(data.apply(lambda x: x)))
+            pl.from_pandas(data.apply(lambda x: x))
                  .groupby(groups, maintain_order=True)
                  .agg(pl.all().sort_by(date_column))
         )
@@ -288,7 +301,7 @@ def _augment_hilbert_polars(
         
     else:
         data = (
-            pl.from_pandas(reduce_memory_usage(data))
+            pl.from_pandas(data)
                  .sort(date_column)
         )
         result_pl_df = apply_hilbert(data)
@@ -297,6 +310,6 @@ def _augment_hilbert_polars(
     # Convert the Polars DataFrame back to a Pandas DataFrame
     result_pd_df = result_pl_df.to_pandas()                               
 
-    return reduce_memory_usage(result_pd_df)
+    return result_pd_df
 
 
