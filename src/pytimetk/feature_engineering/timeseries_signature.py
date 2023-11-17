@@ -12,6 +12,7 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 @pf.register_series_method
 def get_timeseries_signature(
     idx: Union[pd.Series, pd.DatetimeIndex],
+    reduce_memory: bool = False,
     engine: str = 'pandas'
     ) -> pd.DataFrame:
     """
@@ -24,7 +25,8 @@ def get_timeseries_signature(
     ----------
     idx : pd.DataFrame
         The `idx` parameter is a pandas Series of DatetimeIndex.
-
+    reduce_memory : bool, optional
+        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.
     engine : str, optional
         The `engine` parameter is used to specify the engine to use for 
         augmenting datetime features. It can be either "pandas" or "polars". 
@@ -107,11 +109,16 @@ def get_timeseries_signature(
         raise TypeError('idx must be a pandas Series or DatetimeIndex object')
     
     if engine == 'pandas':
-        return _get_timeseries_signature_pandas(idx)
+        ret = _get_timeseries_signature_pandas(idx)
     elif engine == 'polars':
-        return _get_timeseries_signature_polars(idx)
+        ret = _get_timeseries_signature_polars(idx)
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    
+    if reduce_memory:
+        ret = reduce_memory_usage(ret)
+    
+    return ret
 
 # Monkey patch the method to Pandas Series objects
 pd.Series.get_timeseries_signature = get_timeseries_signature
@@ -154,6 +161,7 @@ def _get_timeseries_signature_polars(idx: Union[pd.Series, pd.DatetimeIndex]) ->
 def augment_timeseries_signature(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
+    reduce_memory: bool = False,
     engine: str = 'pandas',
 ) -> pd.DataFrame:
     """
@@ -170,6 +178,8 @@ def augment_timeseries_signature(
     date_column : str
         The `date_column` parameter is a string that represents the name of the 
         date column in the `data` DataFrame.
+    reduce_memory : bool, optional
+        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.
     engine : str, optional
         The `engine` parameter is used to specify the engine to use for 
         augmenting datetime features. It can be either "pandas" or "polars". 
@@ -249,8 +259,11 @@ def augment_timeseries_signature(
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         data = data.obj
     
+    if reduce_memory:
+        data = reduce_memory_usage(data)
+    
     if engine == 'pandas':
-        return pd.concat(
+        ret = pd.concat(
             [
                 data, 
                 data[date_column].get_timeseries_signature(engine=engine).drop(date_column, axis=1)
@@ -262,9 +275,14 @@ def augment_timeseries_signature(
         
         df_pl = _polars_timeseries_signature(df_pl, date_column = date_column)
         
-        return df_pl.to_pandas()
+        ret = df_pl.to_pandas()
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    
+    if reduce_memory:
+        ret = reduce_memory_usage(ret)
+        
+    return ret
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.augment_timeseries_signature = augment_timeseries_signature

@@ -19,6 +19,7 @@ def augment_wavelet(
     method: str, 
     sample_rate: str,
     scales: Union[str, List[str]],
+    reduce_memory: bool = False,
 ) -> pd.DataFrame:
     """
     Apply the Wavely transform to specified columns of a DataFrame or 
@@ -78,6 +79,8 @@ def augment_wavelet(
 
         Recommendation, use a range of values to cover both short term and long
         term patterns, then adjust accordingly.
+    reduce_memory : bool, optional
+        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.
 
 
     Returns
@@ -192,6 +195,8 @@ def augment_wavelet(
     check_value_column(data, value_column)
     check_date_column(data, date_column)
 
+    if reduce_memory:
+        data = reduce_memory_usage(data)
 
     wavelet_functions = {
         'morlet': morlet_wavelet,
@@ -201,7 +206,7 @@ def augment_wavelet(
 
     # Sort the DataFrame by the date column before applying the CWT
     if isinstance(data, pd.DataFrame):
-        data = reduce_memory_usage(data.sort_values(by=date_column))
+        data = data.sort_values(by=date_column)
     
     if method not in wavelet_functions:
         raise ValueError(f"Invalid method '{method}'. Available methods are {list(wavelet_functions.keys())}")
@@ -231,9 +236,14 @@ def augment_wavelet(
 
     # Check if data is a groupby object
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        return reduce_memory_usage(pd.concat([_apply_cwt(group.sort_values(by=date_column)) for _, group in data]).reset_index(drop=True))
+        ret = pd.concat([_apply_cwt(group.sort_values(by=date_column)) for _, group in data]).reset_index(drop=True)
+    else:
+        ret = _apply_cwt(data)
 
-    return reduce_memory_usage(_apply_cwt(data))
+    if reduce_memory:
+        ret = reduce_memory_usage(ret)
+    
+    return ret
 
 # Monkey-patch the method to the DataFrameGroupBy class
 pd.core.groupby.DataFrameGroupBy.augment_wavelet = augment_wavelet

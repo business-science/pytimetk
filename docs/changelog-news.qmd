@@ -21,6 +21,10 @@ number-sections: false
 - `augment_diffs()`- Gains a polars backend
 - `augment_fourier()` - Gains a polars backend
 
+### General
+
+- Make memory reduction optional #275
+
 # pytimetk 0.2.1
 
 Bugfix - Issue with `augment_rolling(engine='pandas')` and `augment_expanding(engine='pandas')` with concatinating rolled/expanded calc's to the correct group
