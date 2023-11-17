@@ -383,7 +383,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_diffs(data, date_column, value_column, periods=1, engine='pandas')</code></p>
+<p><code>augment_diffs(data, date_column, value_column, periods=1, reduce_memory=False, engine='pandas')</code></p>
 <p>Adds differences to a Pandas DataFrame or DataFrameGroupBy object.</p>
 <p>The <code>augment_diffs</code> function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a period or list of periods, and adds differenced versions of the value columns to the DataFrame.</p>
 <section id="parameters" class="level2">
@@ -429,6 +429,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><code>1</code></td>
 </tr>
 <tr class="odd">
+<td><code>reduce_memory</code></td>
+<td>bool</td>
+<td>The <code>reduce_memory</code> parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.</td>
+<td><code>False</code></td>
+</tr>
+<tr class="even">
 <td><code>engine</code></td>
 <td>str</td>
 <td>The <code>engine</code> parameter is used to specify the engine to use for augmenting differences. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for augmenting diffs. This can be faster than using “pandas” for large datasets.</td>
@@ -565,191 +571,34 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'pandas'</span></span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>diffed_df_single</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">id</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">value</th>
-<th data-quarto-table-cell-role="th">value_diff_1</th>
-<th data-quarto-table-cell-role="th">value_diff_2</th>
-<th data-quarto-table-cell-role="th">value_diff_3</th>
-<th data-quarto-table-cell-role="th">value_diff_4</th>
-<th data-quarto-table-cell-role="th">value_diff_5</th>
-<th data-quarto-table-cell-role="th">value_diff_6</th>
-<th data-quarto-table-cell-role="th">value_diff_7</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>D10</td>
-<td>2014-07-03</td>
-<td>2076.0</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>D10</td>
-<td>2014-07-04</td>
-<td>2074.0</td>
-<td>-2.800781</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>D10</td>
-<td>2014-07-05</td>
-<td>2048.0</td>
-<td>-24.703125</td>
-<td>-27.500000</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>D10</td>
-<td>2014-07-06</td>
-<td>2048.0</td>
-<td>0.199951</td>
-<td>-24.500000</td>
-<td>-27.296875</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>D10</td>
-<td>2014-07-07</td>
-<td>2006.0</td>
-<td>-42.500000</td>
-<td>-42.312500</td>
-<td>-67.000000</td>
-<td>-69.812500</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">669</td>
-<td>D10</td>
-<td>2016-05-02</td>
-<td>2630.0</td>
-<td>29.703125</td>
-<td>57.812500</td>
-<td>86.687500</td>
-<td>50.812500</td>
-<td>44.90625</td>
-<td>88.68750</td>
-<td>96.50000</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">670</td>
-<td>D10</td>
-<td>2016-05-03</td>
-<td>2650.0</td>
-<td>18.593750</td>
-<td>48.312500</td>
-<td>76.375000</td>
-<td>105.312500</td>
-<td>69.37500</td>
-<td>63.50000</td>
-<td>107.31250</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">671</td>
-<td>D10</td>
-<td>2016-05-04</td>
-<td>2632.0</td>
-<td>-17.500000</td>
-<td>1.099609</td>
-<td>30.796875</td>
-<td>58.906250</td>
-<td>87.81250</td>
-<td>51.90625</td>
-<td>46.00000</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">672</td>
-<td>D10</td>
-<td>2016-05-05</td>
-<td>2622.0</td>
-<td>-9.296875</td>
-<td>-26.796875</td>
-<td>-8.203125</td>
-<td>21.500000</td>
-<td>49.59375</td>
-<td>78.50000</td>
-<td>42.59375</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">673</td>
-<td>D10</td>
-<td>2016-05-06</td>
-<td>2620.0</td>
-<td>-2.400391</td>
-<td>-11.703125</td>
-<td>-29.203125</td>
-<td>-10.601562</td>
-<td>19.09375</td>
-<td>47.18750</td>
-<td>76.12500</td>
-</tr>
-</tbody>
-</table>
-
-<p>674 rows × 10 columns</p>
-</div>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>diffed_df_single.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 674 rows of 10 columns
+id:            object            ['D10', 'D10', 'D10', 'D10', 'D10', 'D1 ...
+date:          datetime64[ns]    [Timestamp('2014-07-03 00:00:00'), Time ...
+value:         float64           [2076.2, 2073.4, 2048.7, 2048.9, 2006.4 ...
+value_diff_1:  float64           [nan, -2.799999999999727, -24.700000000 ...
+value_diff_2:  float64           [nan, nan, -27.5, -24.5, -42.2999999999 ...
+value_diff_3:  float64           [nan, nan, nan, -27.299999999999727, -6 ...
+value_diff_4:  float64           [nan, nan, nan, nan, -69.79999999999973 ...
+value_diff_5:  float64           [nan, nan, nan, nan, nan, -58.599999999 ...
+value_diff_6:  float64           [nan, nan, nan, nan, nan, nan, -57.0999 ...
+value_diff_7:  float64           [nan, nan, nan, nan, nan, nan, nan, -68 ...</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Add a single differenced value of 2 for each GroupBy object, polars engine</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>diffed_df <span class="op">=</span> (</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .augment_diffs(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span><span class="dv">2</span>,</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'polars'</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>diffed_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Add a single differenced value of 2 for each GroupBy object, polars engine</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>diffed_df <span class="op">=</span> (</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .augment_diffs(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'polars'</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>diffed_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
@@ -769,36 +618,36 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">0</td>
 <td>D10</td>
 <td>2014-07-03</td>
-<td>2076.0</td>
+<td>2076.2</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>D10</td>
 <td>2014-07-04</td>
-<td>2074.0</td>
+<td>2073.4</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>D10</td>
 <td>2014-07-05</td>
-<td>2048.0</td>
-<td>-27.50000</td>
+<td>2048.7</td>
+<td>-27.5</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>D10</td>
 <td>2014-07-06</td>
-<td>2048.0</td>
-<td>-24.50000</td>
+<td>2048.9</td>
+<td>-24.5</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>D10</td>
 <td>2014-07-07</td>
-<td>2006.0</td>
-<td>-42.31250</td>
+<td>2006.4</td>
+<td>-42.3</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -811,36 +660,36 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">9738</td>
 <td>D500</td>
 <td>2012-09-19</td>
-<td>9416.0</td>
-<td>-18.90625</td>
+<td>9418.8</td>
+<td>-18.9</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9739</td>
 <td>D500</td>
 <td>2012-09-20</td>
-<td>9368.0</td>
-<td>-66.18750</td>
+<td>9365.7</td>
+<td>-66.2</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9740</td>
 <td>D500</td>
 <td>2012-09-21</td>
-<td>9448.0</td>
-<td>27.09375</td>
+<td>9445.9</td>
+<td>27.1</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9741</td>
 <td>D500</td>
 <td>2012-09-22</td>
-<td>9496.0</td>
-<td>132.25000</td>
+<td>9497.9</td>
+<td>132.2</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9742</td>
 <td>D500</td>
 <td>2012-09-23</td>
-<td>9544.0</td>
-<td>99.37500</td>
+<td>9545.3</td>
+<td>99.4</td>
 </tr>
 </tbody>
 </table>
@@ -850,18 +699,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 add 2 differenced values, 2 and 4, for a single DataFrame object, pandas engine</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>diffed_df_single_two <span class="op">=</span> (</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'id == "D10"'</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .augment_diffs(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">2</span>, <span class="dv">4</span>],</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'pandas'</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>diffed_df_single_two</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 add 2 differenced values, 2 and 4, for a single DataFrame object, pandas engine</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>diffed_df_single_two <span class="op">=</span> (</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'id == "D10"'</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        .augment_diffs(</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">2</span>, <span class="dv">4</span>],</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'pandas'</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>diffed_df_single_two</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
@@ -882,7 +731,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">0</td>
 <td>D10</td>
 <td>2014-07-03</td>
-<td>2076.0</td>
+<td>2076.2</td>
 <td>NaN</td>
 <td>NaN</td>
 </tr>
@@ -890,7 +739,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">1</td>
 <td>D10</td>
 <td>2014-07-04</td>
-<td>2074.0</td>
+<td>2073.4</td>
 <td>NaN</td>
 <td>NaN</td>
 </tr>
@@ -898,25 +747,25 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">2</td>
 <td>D10</td>
 <td>2014-07-05</td>
-<td>2048.0</td>
-<td>-27.500000</td>
+<td>2048.7</td>
+<td>-27.5</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>D10</td>
 <td>2014-07-06</td>
-<td>2048.0</td>
-<td>-24.500000</td>
+<td>2048.9</td>
+<td>-24.5</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>D10</td>
 <td>2014-07-07</td>
-<td>2006.0</td>
-<td>-42.312500</td>
-<td>-69.812500</td>
+<td>2006.4</td>
+<td>-42.3</td>
+<td>-69.8</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -930,41 +779,41 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">669</td>
 <td>D10</td>
 <td>2016-05-02</td>
-<td>2630.0</td>
-<td>57.812500</td>
-<td>50.812500</td>
+<td>2630.7</td>
+<td>57.8</td>
+<td>50.8</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">670</td>
 <td>D10</td>
 <td>2016-05-03</td>
-<td>2650.0</td>
-<td>48.312500</td>
-<td>105.312500</td>
+<td>2649.3</td>
+<td>48.3</td>
+<td>105.3</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">671</td>
 <td>D10</td>
 <td>2016-05-04</td>
-<td>2632.0</td>
-<td>1.099609</td>
-<td>58.906250</td>
+<td>2631.8</td>
+<td>1.1</td>
+<td>58.9</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">672</td>
 <td>D10</td>
 <td>2016-05-05</td>
-<td>2622.0</td>
-<td>-26.796875</td>
-<td>21.500000</td>
+<td>2622.5</td>
+<td>-26.8</td>
+<td>21.5</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">673</td>
 <td>D10</td>
 <td>2016-05-06</td>
-<td>2620.0</td>
-<td>-11.703125</td>
-<td>-10.601562</td>
+<td>2620.1</td>
+<td>-11.7</td>
+<td>-10.6</td>
 </tr>
 </tbody>
 </table>

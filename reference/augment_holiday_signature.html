@@ -384,14 +384,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_holiday_signature(data, date_column, country_name='UnitedStates', engine='pandas')</code></p>
+<p><code>augment_holiday_signature(data, date_column, country_name='UnitedStates', reduce_memory=False, engine='pandas')</code></p>
 <p>Engineers 4 different holiday features from a single datetime for 137 countries and 2 financial markets.</p>
 <p>Note: Requires the <code>holidays</code> package to be installed. See https://pypi.org/project/holidays/ for more information.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 3%">
+<col style="width: 4%">
 <col style="width: 15%">
 <col style="width: 76%">
 <col style="width: 4%">
@@ -424,6 +424,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><code>'UnitedStates'</code></td>
 </tr>
 <tr class="even">
+<td><code>reduce_memory</code></td>
+<td>bool</td>
+<td>The <code>reduce_memory</code> parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.</td>
+<td><code>False</code></td>
+</tr>
+<tr class="odd">
 <td><code>engine</code></td>
 <td>str</td>
 <td>The <code>engine</code> parameter is used to specify the engine to use for augmenting holidays. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for augmenting holidays. This can be faster than using “pandas” for large datasets.</td>

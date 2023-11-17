@@ -383,7 +383,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_lags(data, date_column, value_column, lags=1, engine='pandas')</code></p>
+<p><code>augment_lags(data, date_column, value_column, lags=1, reduce_memory=False, engine='pandas')</code></p>
 <p>Adds lags to a Pandas DataFrame or DataFrameGroupBy object.</p>
 <p>The <code>augment_lags</code> function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a lag or list of lags, and adds lagged versions of the value columns to the DataFrame.</p>
 <section id="parameters" class="level2">
@@ -587,7 +587,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">0</td>
 <td>D10</td>
 <td>2014-07-03</td>
-<td>2076.0</td>
+<td>2076.2</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -600,8 +600,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">1</td>
 <td>D10</td>
 <td>2014-07-04</td>
-<td>2074.0</td>
-<td>2076.0</td>
+<td>2073.4</td>
+<td>2076.2</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -613,9 +613,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">2</td>
 <td>D10</td>
 <td>2014-07-05</td>
-<td>2048.0</td>
-<td>2074.0</td>
-<td>2076.0</td>
+<td>2048.7</td>
+<td>2073.4</td>
+<td>2076.2</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -626,10 +626,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">3</td>
 <td>D10</td>
 <td>2014-07-06</td>
-<td>2048.0</td>
-<td>2048.0</td>
-<td>2074.0</td>
-<td>2076.0</td>
+<td>2048.9</td>
+<td>2048.7</td>
+<td>2073.4</td>
+<td>2076.2</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -639,11 +639,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">4</td>
 <td>D10</td>
 <td>2014-07-07</td>
-<td>2006.0</td>
-<td>2048.0</td>
-<td>2048.0</td>
-<td>2074.0</td>
-<td>2076.0</td>
+<td>2006.4</td>
+<td>2048.9</td>
+<td>2048.7</td>
+<td>2073.4</td>
+<td>2076.2</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -665,65 +665,65 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">669</td>
 <td>D10</td>
 <td>2016-05-02</td>
-<td>2630.0</td>
-<td>2600.0</td>
-<td>2572.0</td>
+<td>2630.7</td>
+<td>2601.0</td>
+<td>2572.9</td>
 <td>2544.0</td>
-<td>2580.0</td>
-<td>2586.0</td>
+<td>2579.9</td>
+<td>2585.8</td>
 <td>2542.0</td>
-<td>2534.0</td>
+<td>2534.2</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">670</td>
 <td>D10</td>
 <td>2016-05-03</td>
-<td>2650.0</td>
-<td>2630.0</td>
-<td>2600.0</td>
-<td>2572.0</td>
+<td>2649.3</td>
+<td>2630.7</td>
+<td>2601.0</td>
+<td>2572.9</td>
 <td>2544.0</td>
-<td>2580.0</td>
-<td>2586.0</td>
+<td>2579.9</td>
+<td>2585.8</td>
 <td>2542.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">671</td>
 <td>D10</td>
 <td>2016-05-04</td>
-<td>2632.0</td>
-<td>2650.0</td>
-<td>2630.0</td>
-<td>2600.0</td>
-<td>2572.0</td>
+<td>2631.8</td>
+<td>2649.3</td>
+<td>2630.7</td>
+<td>2601.0</td>
+<td>2572.9</td>
 <td>2544.0</td>
-<td>2580.0</td>
-<td>2586.0</td>
+<td>2579.9</td>
+<td>2585.8</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">672</td>
 <td>D10</td>
 <td>2016-05-05</td>
-<td>2622.0</td>
-<td>2632.0</td>
-<td>2650.0</td>
-<td>2630.0</td>
-<td>2600.0</td>
-<td>2572.0</td>
+<td>2622.5</td>
+<td>2631.8</td>
+<td>2649.3</td>
+<td>2630.7</td>
+<td>2601.0</td>
+<td>2572.9</td>
 <td>2544.0</td>
-<td>2580.0</td>
+<td>2579.9</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">673</td>
 <td>D10</td>
 <td>2016-05-06</td>
-<td>2620.0</td>
-<td>2622.0</td>
-<td>2632.0</td>
-<td>2650.0</td>
-<td>2630.0</td>
-<td>2600.0</td>
-<td>2572.0</td>
+<td>2620.1</td>
+<td>2622.5</td>
+<td>2631.8</td>
+<td>2649.3</td>
+<td>2630.7</td>
+<td>2601.0</td>
+<td>2572.9</td>
 <td>2544.0</td>
 </tr>
 </tbody>
@@ -765,36 +765,36 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">0</td>
 <td>D10</td>
 <td>2014-07-03</td>
-<td>2076.0</td>
+<td>2076.2</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>D10</td>
 <td>2014-07-04</td>
-<td>2074.0</td>
+<td>2073.4</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>D10</td>
 <td>2014-07-05</td>
-<td>2048.0</td>
-<td>2076.0</td>
+<td>2048.7</td>
+<td>2076.2</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>D10</td>
 <td>2014-07-06</td>
-<td>2048.0</td>
-<td>2074.0</td>
+<td>2048.9</td>
+<td>2073.4</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>D10</td>
 <td>2014-07-07</td>
-<td>2006.0</td>
-<td>2048.0</td>
+<td>2006.4</td>
+<td>2048.7</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -807,36 +807,36 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">9738</td>
 <td>D500</td>
 <td>2012-09-19</td>
-<td>9416.0</td>
-<td>9440.0</td>
+<td>9418.8</td>
+<td>9437.7</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9739</td>
 <td>D500</td>
 <td>2012-09-20</td>
-<td>9368.0</td>
-<td>9432.0</td>
+<td>9365.7</td>
+<td>9431.9</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9740</td>
 <td>D500</td>
 <td>2012-09-21</td>
-<td>9448.0</td>
-<td>9416.0</td>
+<td>9445.9</td>
+<td>9418.8</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9741</td>
 <td>D500</td>
 <td>2012-09-22</td>
-<td>9496.0</td>
-<td>9368.0</td>
+<td>9497.9</td>
+<td>9365.7</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9742</td>
 <td>D500</td>
 <td>2012-09-23</td>
-<td>9544.0</td>
-<td>9448.0</td>
+<td>9545.3</td>
+<td>9445.9</td>
 </tr>
 </tbody>
 </table>
@@ -878,7 +878,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">0</td>
 <td>D10</td>
 <td>2014-07-03</td>
-<td>2076.0</td>
+<td>2076.2</td>
 <td>NaN</td>
 <td>NaN</td>
 </tr>
@@ -886,7 +886,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">1</td>
 <td>D10</td>
 <td>2014-07-04</td>
-<td>2074.0</td>
+<td>2073.4</td>
 <td>NaN</td>
 <td>NaN</td>
 </tr>
@@ -894,25 +894,25 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">2</td>
 <td>D10</td>
 <td>2014-07-05</td>
-<td>2048.0</td>
-<td>2076.0</td>
+<td>2048.7</td>
+<td>2076.2</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>D10</td>
 <td>2014-07-06</td>
-<td>2048.0</td>
-<td>2074.0</td>
+<td>2048.9</td>
+<td>2073.4</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>D10</td>
 <td>2014-07-07</td>
-<td>2006.0</td>
-<td>2048.0</td>
-<td>2076.0</td>
+<td>2006.4</td>
+<td>2048.7</td>
+<td>2076.2</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -926,41 +926,41 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td data-quarto-table-cell-role="th">669</td>
 <td>D10</td>
 <td>2016-05-02</td>
-<td>2630.0</td>
-<td>2572.0</td>
-<td>2580.0</td>
+<td>2630.7</td>
+<td>2572.9</td>
+<td>2579.9</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">670</td>
 <td>D10</td>
 <td>2016-05-03</td>
-<td>2650.0</td>
-<td>2600.0</td>
+<td>2649.3</td>
+<td>2601.0</td>
 <td>2544.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">671</td>
 <td>D10</td>
 <td>2016-05-04</td>
-<td>2632.0</td>
-<td>2630.0</td>
-<td>2572.0</td>
+<td>2631.8</td>
+<td>2630.7</td>
+<td>2572.9</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">672</td>
 <td>D10</td>
 <td>2016-05-05</td>
-<td>2622.0</td>
-<td>2650.0</td>
-<td>2600.0</td>
+<td>2622.5</td>
+<td>2649.3</td>
+<td>2601.0</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">673</td>
 <td>D10</td>
 <td>2016-05-06</td>
-<td>2620.0</td>
-<td>2632.0</td>
-<td>2630.0</td>
+<td>2620.1</td>
+<td>2631.8</td>
+<td>2630.7</td>
 </tr>
 </tbody>
 </table>
