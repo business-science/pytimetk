@@ -1,8 +1,11 @@
 import numpy as np
 import pandas as pd
+import pandas_flavor as pf
 
+from typing import Union
 
-def reduce_memory_usage(data: pd.DataFrame):
+@pf.register_dataframe_method
+def reduce_memory_usage(data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]):
   """
   Iterate through all columns of a Pandas DataFrame and modify the dtypes to reduce memory usage.
 
@@ -17,19 +20,33 @@ def reduce_memory_usage(data: pd.DataFrame):
     Dataframe with reduced memory usage.
 
   """
+  
+  if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    try:
+      data.obj = _reduce_memory(data.obj, convert_string_to_categorical = True)
+    except:
+      try:
+        data.obj = _reduce_memory(data.obj, convert_string_to_categorical = False)
+      except:
+        data = data
+    return data
+  else:
+    try:
+      data = _reduce_memory(data, convert_string_to_categorical = True)
+    except:
+      try:
+        data.obj = _reduce_memory(data.obj, convert_string_to_categorical = False)
+      except:
+        data = data
+    return data
 
-  try:
-    data = _reduce_memory(data, convert_string_to_categorical = False)
-  except:
-    data = data
-
-  return data
-
+# Monkey patch the method to pandas groupby objects
+pd.core.groupby.generic.DataFrameGroupBy.reduce_memory_usage = reduce_memory_usage
 
 def _reduce_memory(
   data: pd.DataFrame, 
   convert_string_to_categorical: bool = True,
-  categorical_threshold: int = 100
+  # categorical_threshold: int = 100
 ):
   
   data = data.copy()
@@ -76,8 +93,8 @@ def _reduce_memory(
       # - Some users may expect string data returned
       if convert_string_to_categorical:
         if pd.api.types.is_string_dtype(data[col]):
-          if data[col].nunique() <= categorical_threshold:
-            data[col] = data[col].astype('category')
+          #if data[col].nunique() <= categorical_threshold:
+          data[col] = data[col].astype('category')
   
   return data
 
