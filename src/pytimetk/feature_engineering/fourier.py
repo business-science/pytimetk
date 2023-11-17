@@ -36,7 +36,7 @@ def augment_fourier(
     max_order : int, optional
         The `max_order` parameter specifies the maximum Fourier order to calculate. Default is 1.
     reduce_memory : bool, optional
-        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
+        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.
     engine : str, optional
         The `engine` parameter is used to specify the engine to use for 
         augmenting lags. It can be either "pandas" or "polars". 

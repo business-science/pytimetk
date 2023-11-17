@@ -13,6 +13,7 @@ def augment_leads(
     date_column: str,
     value_column: Union[str, List[str]], 
     leads: Union[int, Tuple[int, int], List[int]] = 1,
+    reduce_memory: bool = False,
     engine: str = 'pandas',
 ) -> pd.DataFrame:
     """
@@ -46,6 +47,8 @@ def augment_leads(
           value (inclusive). 
         
         - If it is a list, it will generate leads based on the values in the list.
+    reduce_memory : bool, optional
+        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.
     engine : str, optional
         The `engine` parameter is used to specify the engine to use for 
         augmenting lags. It can be either "pandas" or "polars". 
@@ -119,12 +122,20 @@ def augment_leads(
     check_value_column(data, value_column)
     check_date_column(data, date_column)
     
+    if reduce_memory:
+        data = reduce_memory_usage(data)
+    
     if engine == 'pandas':
-        return _augment_leads_pandas(data, date_column, value_column, leads)
+        ret = _augment_leads_pandas(data, date_column, value_column, leads)
     elif engine == 'polars':
-        return _augment_leads_polars(data, date_column, value_column, leads)
+        ret = _augment_leads_polars(data, date_column, value_column, leads)
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    
+    if reduce_memory:
+        ret = reduce_memory_usage(ret)
+    
+    return ret
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.augment_leads = augment_leads
@@ -172,7 +183,7 @@ def _augment_leads_pandas(
             for lead in leads:
                 df[f'{col}_lead_{lead}'] = df.groupby(group_names)[col].shift(-lead)
 
-    return reduce_memory_usage(df)
+    return df
 
 def _augment_leads_polars(
     data: Union[pl.DataFrame, pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -229,4 +240,4 @@ def _augment_leads_polars(
     # Concatenate the DataFrames horizontally
     df = pl.concat([df, out_df], how="horizontal").to_pandas()
 
-    return reduce_memory_usage(df)
+    return df
