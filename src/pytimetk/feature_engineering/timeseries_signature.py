@@ -129,7 +129,7 @@ def _get_timeseries_signature_pandas(idx: Union[pd.Series, pd.DatetimeIndex]) ->
 
     data = _pandas_timeseries_signature(data, date_column = name)
 
-    return reduce_memory_usage(data)
+    return data
 
 def _get_timeseries_signature_polars(idx: Union[pd.Series, pd.DatetimeIndex]) -> pl.DataFrame:
     
@@ -148,7 +148,7 @@ def _get_timeseries_signature_polars(idx: Union[pd.Series, pd.DatetimeIndex]) ->
     # Helper function that works with polars objects
     df_pl = _polars_timeseries_signature(df_pl, date_column = name)
 
-    return reduce_memory_usage(df_pl.to_pandas())
+    return df_pl.to_pandas()
 
 @pf.register_dataframe_method
 def augment_timeseries_signature(
@@ -449,4 +449,4 @@ def _polars_timeseries_signature(data: pl.DataFrame, date_column: str) -> pl.Dat
         )
     )
     
-    return reduce_memory_usage(df_pl)
+    return df_pl

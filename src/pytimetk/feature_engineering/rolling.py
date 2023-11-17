@@ -27,6 +27,7 @@ def augment_rolling(
     center: bool = False,
     threads: int = 1,
     show_progress: bool = True,
+    reduce_memory: bool = False,
     **kwargs,
 ) -> pd.DataFrame:
     '''
@@ -73,16 +74,7 @@ def augment_rolling(
     min_periods : int, optional, default None
         Minimum observations in the window to have a value. Defaults to the 
         window size. If set, a value will be produced even if fewer observations 
-        are present than the window size.
-    engine : str, optional, default 'pandas'
-        Specifies the backend computation library for augmenting expanding window 
-        functions. 
-    
-        The options are:
-            - "pandas" (default): Uses the `pandas` library.
-            - "polars": Uses the `polars` library, which may offer performance 
-               benefits for larger datasets.
-    
+        are present than the window size.    
     center : bool, optional, default False
         If `True`, the rolling window will be centered on the current value. For 
         even-sized windows, the window will be left-biased. Otherwise, it uses a trailing window.
@@ -91,6 +83,16 @@ def augment_rolling(
         1, parallel processing will be disabled. Set to -1 to use all available CPU cores.
     show_progress : bool, optional, default True
         If `True`, a progress bar will be displayed during parallel processing.
+    reduce_memory : bool, optional
+        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.
+    engine : str, optional, default 'pandas'
+        Specifies the backend computation library for augmenting expanding window 
+        functions. 
+    
+        The options are:
+            - "pandas" (default): Uses the `pandas` library.
+            - "polars": Uses the `polars` library, which may offer performance 
+               benefits for larger datasets.
     
     Returns
     -------
@@ -196,6 +198,9 @@ def augment_rolling(
     check_date_column(data, date_column)
     check_value_column(data, value_column)
     
+    if reduce_memory:
+        data = reduce_memory_usage(data)
+    
     # Convert string value column to list for consistency
     if isinstance(value_column, str):
         value_column = [value_column]
@@ -217,7 +222,7 @@ def augment_rolling(
     
     # Call the function to augment rolling window columns using the specified engine
     if engine == 'pandas':
-        return _augment_rolling_pandas(
+        ret = _augment_rolling_pandas(
             data, 
             date_column, 
             value_column, 
@@ -230,7 +235,7 @@ def augment_rolling(
             **kwargs
         )
     elif engine == 'polars':
-        return _augment_rolling_polars(
+        ret = _augment_rolling_polars(
             data, 
             date_column, 
             value_column, 
@@ -244,6 +249,11 @@ def augment_rolling(
         )
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    
+    if reduce_memory:
+        ret = reduce_memory_usage(ret)
+    
+    return ret
     
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.augment_rolling = augment_rolling
@@ -262,7 +272,7 @@ def _augment_rolling_pandas(
 ) -> pd.DataFrame:
     
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = reduce_memory_usage(data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy())
+    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
     
     # Group data if it's a GroupBy object; otherwise, prepare it for the rolling calculations
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -300,7 +310,7 @@ def _augment_rolling_pandas(
         result_dfs = [_process_single_roll(data_copy, value_column, window_func, window, min_periods, center, **kwargs)]
     
     result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
-    return reduce_memory_usage(result_df)
+    return result_df
 
 def _process_single_roll(group_df, value_column, window_func, window, min_periods, center, **kwargs):
     result_dfs = []
@@ -399,7 +409,7 @@ def _augment_rolling_polars(
 ) -> pd.DataFrame:
     
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = reduce_memory_usage(data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy())
+    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
     
     # Retrieve the group column names if the input data is a GroupBy object
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -529,5 +539,5 @@ def _augment_rolling_polars(
     # Concatenate the DataFrames horizontally
     df = pl.concat([df, out_df], how="horizontal").to_pandas()
                 
-    return reduce_memory_usage(df)
+    return df
 

@@ -52,7 +52,6 @@ def test_augment_rolling_single_window_single_func():
     
     expected = df.copy()
     expected['value_rolling_mean_win_2'] = [np.nan, 1.5, 2.5]
-    expected = tk.reduce_memory_usage(expected)
     
     pd.testing.assert_frame_equal(result, expected)
 
@@ -71,8 +70,6 @@ def test_augment_rolling_multi_window_multi_func():
     expected['value_rolling_mean_win_3'] = [np.nan, 1.5, 2.0]
     expected['value_rolling_sum_win_3'] = [np.nan, 3.0, 6.0]
     
-    expected = tk.reduce_memory_usage(expected)
-    
     pd.testing.assert_frame_equal(result, expected)
 
 def test_augment_rolling_custom_func():
@@ -87,7 +84,6 @@ def test_augment_rolling_custom_func():
     
     expected = df.copy()
     expected['value_rolling_custom_win_2'] = [np.nan, 1.0, 1.0]
-    expected = tk.reduce_memory_usage(expected)
     
     pd.testing.assert_frame_equal(result, expected)
 
