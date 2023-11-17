@@ -28,6 +28,7 @@ def anomalize(
     max_anomalies: float = 0.2,
     bind_data: bool = False,
     threads: int = 1,
+    reduce_memory: bool = False,
     show_progress: bool = True,
     verbose = False,
 ) -> pd.DataFrame:
@@ -106,6 +107,8 @@ def anomalize(
         processing. By default, it is set to `1`, which means no parallel processing 
         is used. If you set `threads` to `-1`, it will use all available processors 
         for parallel processing.
+    reduce_memory : bool, optional
+        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
     show_progress : bool
         A boolean parameter that determines whether to show a progress bar during 
         the execution of the function. If set to True, a progress bar will be 
@@ -277,6 +280,9 @@ def anomalize(
     check_date_column(data, date_column)
     check_value_column(data, value_column)
     
+    if reduce_memory:
+        data = reduce_memory_usage(data)
+    
     if isinstance(data, pd.DataFrame):
         result = _anomalize(
             data = data, 
@@ -345,6 +351,9 @@ def anomalize(
                 desc="Anomalizing...",
             ).reset_index(level=group_names)
     
+    if reduce_memory:
+        result = reduce_memory_usage(result)
+    
     return result
 
 # Monkey patch the method to pandas groupby objects
@@ -369,9 +378,7 @@ def _anomalize(
     
     orig_date_column = data[date_column]
     
-    data = reduce_memory_usage(data.copy())
-    
-    
+    data = data.copy()
     
     # STEP 0: Get the seasonal period and trend frequency
     if period is None:
@@ -379,7 +386,6 @@ def _anomalize(
         period = int(period)
     if verbose:
         print(f"Using seasonal frequency of {period} observations")
-    
     
     if trend is None:   
         trend = get_trend_frequency(data[date_column], numeric=True)
@@ -456,8 +462,7 @@ def _anomalize(
                 result['recomposed_l2'] - ((1-clean_alpha)*(result['recomposed_l2'] - result['recomposed_l1'])/2), 
                 result['observed']
             )
-        )
-        
+        )        
         
     result[date_column] = orig_date_column
     
@@ -465,7 +470,7 @@ def _anomalize(
     if bind_data:
         result = pd.concat([data, result.drop(date_column, axis=1)], axis=1)
     
-    return reduce_memory_usage(result)
+    return result
 
  
 def _twitter_decompose(
