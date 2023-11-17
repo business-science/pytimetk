@@ -13,6 +13,7 @@ def augment_diffs(
     date_column: str,
     value_column: Union[str, List[str]], 
     periods: Union[int, Tuple[int, int], List[int]] = 1,
+    reduce_memory: bool = False,
     engine: str = 'pandas'
 ) -> pd.DataFrame:
     """
@@ -46,6 +47,8 @@ def augment_diffs(
           value (inclusive). 
         
         - If it is a list, it will generate differences based on the values in the list.
+    reduce_memory : bool, optional
+        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
     engine : str, optional
         The `engine` parameter is used to specify the engine to use for 
         augmenting differences. It can be either "pandas" or "polars". 
@@ -83,7 +86,7 @@ def augment_diffs(
                 engine='pandas'
             )
     )
-    diffed_df_single
+    diffed_df_single.glimpse()
     ```
     ```{python}
     # Example 2 - Add a single differenced value of 2 for each GroupBy object, polars engine
@@ -120,12 +123,20 @@ def augment_diffs(
     check_value_column(data, value_column)
     check_date_column(data, date_column)
     
+    if reduce_memory:
+        data = reduce_memory_usage(data)
+    
     if engine == 'pandas':
-        return _augment_diffs_pandas(data, date_column, value_column, periods)
+        ret = _augment_diffs_pandas(data, date_column, value_column, periods)
     elif engine == 'polars':
-        return _augment_diffs_polars(data, date_column, value_column, periods)
+        ret = _augment_diffs_polars(data, date_column, value_column, periods)
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    
+    if reduce_memory:
+        ret = reduce_memory_usage(ret)
+    
+    return ret
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.augment_diffs = augment_diffs
@@ -174,7 +185,7 @@ def _augment_diffs_pandas(
             for period in periods:
                 df[f'{col}_diff_{period}'] = df.groupby(group_names)[col].diff(period)
 
-    return reduce_memory_usage(df)
+    return df
 
 def _augment_diffs_polars(
     data: Union[pl.DataFrame, pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -232,4 +243,4 @@ def _augment_diffs_polars(
     # Concatenate the DataFrames horizontally
     df = pl.concat([df, out_df], how="horizontal").to_pandas()
 
-    return reduce_memory_usage(df)
+    return df

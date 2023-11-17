@@ -25,6 +25,7 @@ def augment_expanding(
     engine: str = 'pandas',
     threads: int = 1,
     show_progress: bool = True,
+    reduce_memory: bool = False,
     **kwargs,
 ) -> pd.DataFrame:
     '''
@@ -74,7 +75,8 @@ def augment_expanding(
         1, parallel processing will be disabled. Set to -1 to use all available CPU cores.
     show_progress : bool, optional, default True
         If `True`, a progress bar will be displayed during parallel processing.
-        
+    reduce_memory : bool, optional
+        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.    
     **kwargs : additional keyword arguments
         Additional arguments passed to the `pandas.Series.expanding` method when 
         using the Pandas engine.
@@ -209,6 +211,9 @@ def augment_expanding(
     check_date_column(data, date_column)
     check_value_column(data, value_column)
     
+    if reduce_memory:
+        data = reduce_memory_usage(data)
+    
     # Convert string value column to list for consistency
     if isinstance(value_column, str):
         value_column = [value_column]
@@ -226,7 +231,7 @@ def augment_expanding(
         # Get threads
         threads = get_threads(threads)  
         
-        return _augment_expanding_pandas(
+        ret = _augment_expanding_pandas(
             data, 
             date_column, 
             value_column, 
@@ -236,8 +241,9 @@ def augment_expanding(
             show_progress,
             **kwargs
         )
+        
     elif engine == 'polars':
-        return _augment_expanding_polars(
+        ret = _augment_expanding_polars(
             data, 
             date_column, 
             value_column, 
@@ -247,6 +253,11 @@ def augment_expanding(
         )
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    
+    if reduce_memory:
+        ret = reduce_memory_usage(ret)
+        
+    return ret
 
 
 # Monkey patch the method to pandas groupby objects
@@ -268,7 +279,7 @@ def _augment_expanding_pandas(
     """
     
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = reduce_memory_usage(data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy())
+    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
     
     # Group data if it's a GroupBy object; otherwise, prepare it for the expanding calculations
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -310,7 +321,7 @@ def _augment_expanding_pandas(
     
     result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
     
-    return reduce_memory_usage(result_df)
+    return result_df
 
 def _process_expanding_window(group_df, value_column, window_func, min_periods, **kwargs):
     
@@ -408,7 +419,7 @@ def _augment_expanding_polars(
     """
     
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = reduce_memory_usage(data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy())
+    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
     
     # Retrieve the group column names if the input data is a GroupBy object
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -536,6 +547,6 @@ def _augment_expanding_polars(
     # Concatenate the DataFrames horizontally
     df = pl.concat([df, out_df], how="horizontal").to_pandas()
                 
-    return reduce_memory_usage(df)
+    return df
 
 

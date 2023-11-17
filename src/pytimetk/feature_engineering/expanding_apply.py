@@ -24,6 +24,7 @@ def augment_expanding_apply(
     min_periods: Optional[int] = None,
     threads: int = 1,
     show_progress: bool = True,
+    reduce_memory: bool = False, 
 ) -> pd.DataFrame:
     '''
     Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame.
@@ -55,6 +56,8 @@ def augment_expanding_apply(
         1, parallel processing will be disabled. Set to -1 to use all available CPU cores.
     show_progress : bool, optional, default True
         If `True`, a progress bar will be displayed during parallel processing.
+    reduce_memory : bool, optional
+        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
 
         
     Returns
@@ -148,7 +151,10 @@ def augment_expanding_apply(
     check_date_column(data, date_column)
     
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = reduce_memory_usage(data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy())
+    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
+    
+    if reduce_memory:
+        data_copy = reduce_memory_usage(data_copy)
     
     # Get threads
     threads = get_threads(threads)
@@ -184,7 +190,10 @@ def augment_expanding_apply(
     # Combine processed dataframes and sort by index
     result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
     
-    return reduce_memory_usage(result_df)
+    if reduce_memory:
+        result_df = reduce_memory_usage(result_df)
+    
+    return result_df
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.augment_expanding_apply = augment_expanding_apply
