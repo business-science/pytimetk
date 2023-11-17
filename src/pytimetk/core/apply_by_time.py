@@ -14,7 +14,7 @@ def apply_by_time(
     freq: str = "D",
     wide_format: bool = False,
     fillna: int = 0,
-    reduce_memory: bool = True,
+    reduce_memory: bool = False,
     **named_funcs
 ) -> pd.DataFrame:
     '''
