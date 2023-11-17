@@ -14,6 +14,7 @@ def apply_by_time(
     freq: str = "D",
     wide_format: bool = False,
     fillna: int = 0,
+    reduce_memory: bool = True,
     **named_funcs
 ) -> pd.DataFrame:
     '''
@@ -55,6 +56,8 @@ def apply_by_time(
     fillna : int, optional
         The `fillna` parameter is used to specify the value that will be used to 
         fill missing values in the resulting DataFrame. By default, it is set to 0.
+    reduce_memory : bool, optional
+        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
     **named_funcs
         The `**named_funcs` parameter is used to specify one or more custom 
         aggregation functions to apply to the data. It accepts named functions 
@@ -144,14 +147,17 @@ def apply_by_time(
     # Run common checks
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
+    
+    if reduce_memory:
+        data = reduce_memory_usage(data)
 
     # Start by setting the index of data to the date_column
     if isinstance(data, pd.DataFrame):
-        data = reduce_memory_usage(data.set_index(date_column))
+        data = data.set_index(date_column)
     elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
         if date_column not in group_names:
-            data = reduce_memory_usage(data.obj.set_index(date_column).groupby(group_names))
+            data = data.obj.set_index(date_column).groupby(group_names)
 
     # Resample data based on the specified freq and kind
     grouped = data.resample(rule=freq, kind="timestamp")
@@ -181,7 +187,10 @@ def apply_by_time(
     # Reset the index of data   
     data.reset_index(inplace=True)
 
-    return reduce_memory_usage(data)
+    if reduce_memory:
+        data = reduce_memory_usage(data)
+    
+    return data
 
 
 # Monkey patch the method to pandas groupby objects
