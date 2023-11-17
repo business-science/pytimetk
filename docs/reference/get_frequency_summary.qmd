@@ -1,6 +1,6 @@
 # get_frequency_summary { #pytimetk.get_frequency_summary }
 
-`get_frequency_summary(idx, force_regular=False)`
+`get_frequency_summary(idx, force_regular=False, engine='pandas')`
 
 More robust version of pandas inferred frequency.
     

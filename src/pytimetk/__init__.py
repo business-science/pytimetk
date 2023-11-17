@@ -30,7 +30,7 @@ from .feature_engineering.fourier import *
 from .feature_engineering.hilbert import *
 from .feature_engineering.wavelet import *
 
-from .finance.exponential import *
+from .finance.ewm import *
 
 from .datasets.get_datasets import *
 
@@ -122,7 +122,7 @@ from .core.ts_summary import (
 from .core.frequency import (
     get_frequency_summary, get_frequency, get_seasonal_frequency, get_trend_frequency, timeseries_unit_frequency_table, time_scale_template
 )
-from .finance.exponential import (
+from .finance.ewm import (
     augment_ewm
 )
 from .datasets.get_datasets import (
