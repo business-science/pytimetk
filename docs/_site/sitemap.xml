@@ -18,7 +18,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_timeseries_signature.html</loc>
-    <lastmod>2023-11-16T02:24:12.611Z</lastmod>
+    <lastmod>2023-11-17T22:39:34.645Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_holiday_signature.html</loc>
@@ -38,7 +38,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_hilbert.html</loc>
-    <lastmod>2023-11-16T02:24:03.416Z</lastmod>
+    <lastmod>2023-11-17T22:39:14.668Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/theme_timetk.html</loc>
@@ -50,7 +50,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/future_frame.html</loc>
-    <lastmod>2023-11-16T02:23:58.081Z</lastmod>
+    <lastmod>2023-11-17T22:39:03.552Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/week_of_month.html</loc>
@@ -210,7 +210,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2023-11-17T16:18:58.135Z</lastmod>
+    <lastmod>2023-11-17T22:38:48.865Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/plot_anomalies_decomp.html</loc>
@@ -242,7 +242,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_leads.html</loc>
-    <lastmod>2023-11-16T02:24:04.668Z</lastmod>
+    <lastmod>2023-11-17T22:39:25.104Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/load_dataset.html</loc>
@@ -262,18 +262,18 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_timeseries_signature.html</loc>
-    <lastmod>2023-11-16T02:24:13.463Z</lastmod>
+    <lastmod>2023-11-17T22:39:44.076Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_lags.html</loc>
-    <lastmod>2023-11-16T02:24:15.498Z</lastmod>
+    <lastmod>2023-11-17T22:39:53.999Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_holiday_signature.html</loc>
-    <lastmod>2023-11-16T02:24:18.363Z</lastmod>
+    <lastmod>2023-11-17T22:40:04.556Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/anomalize.html</loc>
-    <lastmod>2023-11-16T02:24:20.852Z</lastmod>
+    <lastmod>2023-11-17T22:40:22.906Z</lastmod>
   </url>
 </urlset>

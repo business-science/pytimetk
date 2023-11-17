@@ -1,6 +1,6 @@
 # future_frame { #pytimetk.future_frame }
 
-`future_frame(data, date_column, length_out, freq=None, force_regular=False, bind_data=True, threads=1, show_progress=True, engine='pandas')`
+`future_frame(data, date_column, length_out, freq=None, force_regular=False, bind_data=True, threads=1, show_progress=True, reduce_memory=False, engine='pandas')`
 
 Extend a DataFrame or GroupBy object with future dates.
 
@@ -19,6 +19,7 @@ future dates based on a specified length, optionally binding the original data.
 | `bind_data`     | bool                                                     | The `bind_data` parameter is a boolean flag that determines whether the  extended data should be concatenated with the original data or returned  separately. If `bind_data` is set to `True`, the extended data will be  concatenated with the original data using `pd.concat`. If `bind_data` is  set to `False`, the extended data will be returned separately. The  default value is `True`.                                        | `True`     |
 | `threads`       | int                                                      | The `threads` parameter specifies the number of threads to use for  parallel processing. If `threads` is set to `None`, it will use all  available processors. If `threads` is set to `-1`, it will use all  available processors as well.                                                                                                                                                                                              | `1`        |
 | `show_progress` | bool                                                     | A boolean parameter that determines whether to display progress using tqdm.  If set to True, progress will be displayed. If set to False, progress  will not be displayed.                                                                                                                                                                                                                                                              | `True`     |
+| `reduce_memory` | bool                                                     | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.                                                                                                                                  | `False`    |
 | `engine`        | str                                                      | The `engine` parameter specifies the engine to use for computation.  - Currently only `pandas` is supported. - `polars` will be supported in the future.                                                                                                                                                                                                                                                                                | `'pandas'` |
 
 ## Returns

@@ -384,7 +384,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_wavelet(data, date_column, value_column, method, sample_rate, scales)</code></p>
+<p><code>augment_wavelet(data, date_column, value_column, method, sample_rate, scales, reduce_memory=False)</code></p>
 <p>Apply the Wavely transform to specified columns of a DataFrame or DataFrameGroupBy object.</p>
 <p>A wavelet transform is a mathematical tool used to decompose a signal or function into different frequency components and then study each component with a resolution matched to its scale. The wavelet transform uses wavelets, which are functions that are localized in both time and frequency.</p>
 <p>Uses:</p>
@@ -433,6 +433,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>str or list</td>
 <td>Array of scales to use in the transform. The choice of scales in wavelet analysis determines which frequencies (or periodicities) in the data you want to analyze. In other words, the scales determine the “window size” or the “look-back period” the wavelet uses to analyze the data. Smaller scales: Correspond to analyzing high-frequency changes (short-term fluctuations) in the data. Larger scales: Correspond to analyzing low-frequency changes (long-term fluctuations) in the data. The specific values for scales depend on what frequencies or periodicities you expect in your data and wish to study. For instance, if you believe there are daily, weekly, and monthly patterns in your data, you’d choose scales that correspond to these periodicities given your sampling rate. For a daily pattern with data at 30-minute intervals: scales = 2 * 24 = 48 because there are 48 half hour intervals in a day For a weekly pattern with data at 30-minute intervals: scales = 48 * 7 = 336 because there are 336 half hour intervals in a week Recommendation, use a range of values to cover both short term and long term patterns, then adjust accordingly.</td>
 <td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td><code>reduce_memory</code></td>
+<td>bool</td>
+<td>The <code>reduce_memory</code> parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.</td>
+<td><code>False</code></td>
 </tr>
 </tbody>
 </table>

@@ -1,6 +1,6 @@
 # augment_lags { #pytimetk.augment_lags }
 
-`augment_lags(data, date_column, value_column, lags=1, engine='pandas')`
+`augment_lags(data, date_column, value_column, lags=1, reduce_memory=False, engine='pandas')`
 
 Adds lags to a Pandas DataFrame or DataFrameGroupBy object.
 

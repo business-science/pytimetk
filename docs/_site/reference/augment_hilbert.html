@@ -384,14 +384,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_hilbert(data, date_column, value_column, engine='pandas')</code></p>
+<p><code>augment_hilbert(data, date_column, value_column, reduce_memory=True, engine='pandas')</code></p>
 <p>Apply the Hilbert transform to specified columns of a DataFrame or DataFrameGroupBy object.</p>
 <p>Signal Processing: The Hilbert transform is used in various signal processing techniques, including phase and amplitude modulation and demodulation, and in the analysis of signals with time-varying amplitude and frequency.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 3%">
+<col style="width: 4%">
 <col style="width: 14%">
 <col style="width: 78%">
 <col style="width: 2%">
@@ -418,6 +418,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
+<td><code>reduce_memory</code></td>
+<td>bool</td>
+<td>The <code>reduce_memory</code> parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.</td>
+<td><code>True</code></td>
+</tr>
+<tr class="even">
 <td><code>engine</code></td>
 <td>str</td>
 <td>The <code>engine</code> parameter is used to specify the engine to use for summarizing the data. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for summarizing the data. This can be faster than using “pandas” for large datasets.</td>
@@ -514,21 +520,21 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>1</td>
 <td>1</td>
 <td>2010-02-05</td>
-<td>24924.50</td>
-<td>False</td>
+<td>24924.500000</td>
+<td>0</td>
 <td>A</td>
 <td>151315</td>
-<td>42.31</td>
+<td>42.310001</td>
 <td>2.572</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
-<td>211.096358</td>
+<td>211.096359</td>
 <td>8.106</td>
-<td>24924.50</td>
-<td>-12764.088716</td>
+<td>24924.500000</td>
+<td>-12764.087053</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
@@ -536,21 +542,21 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>1</td>
 <td>1</td>
 <td>2010-02-12</td>
-<td>46039.49</td>
-<td>True</td>
+<td>46039.488281</td>
+<td>1</td>
 <td>A</td>
 <td>151315</td>
-<td>38.51</td>
+<td>38.509998</td>
 <td>2.548</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
-<td>211.242170</td>
+<td>211.242172</td>
 <td>8.106</td>
-<td>46039.49</td>
-<td>-13469.209506</td>
+<td>46039.488281</td>
+<td>-13469.210227</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
@@ -558,21 +564,21 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>1</td>
 <td>1</td>
 <td>2010-02-19</td>
-<td>41595.55</td>
-<td>False</td>
+<td>41595.550781</td>
+<td>0</td>
 <td>A</td>
 <td>151315</td>
-<td>39.93</td>
+<td>39.930000</td>
 <td>2.514</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
-<td>211.289143</td>
+<td>211.289139</td>
 <td>8.106</td>
-<td>41595.55</td>
-<td>16686.889086</td>
+<td>41595.550781</td>
+<td>16686.888640</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
@@ -580,21 +586,21 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>1</td>
 <td>1</td>
 <td>2010-02-26</td>
-<td>19403.54</td>
-<td>False</td>
+<td>19403.539062</td>
+<td>0</td>
 <td>A</td>
 <td>151315</td>
-<td>46.63</td>
+<td>46.630001</td>
 <td>2.561</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
-<td>211.319643</td>
+<td>211.319641</td>
 <td>8.106</td>
-<td>19403.54</td>
-<td>9378.223595</td>
+<td>19403.539062</td>
+<td>9378.223680</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
@@ -602,11 +608,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>1</td>
 <td>1</td>
 <td>2010-03-05</td>
-<td>21827.90</td>
-<td>False</td>
+<td>21827.900391</td>
+<td>0</td>
 <td>A</td>
 <td>151315</td>
-<td>46.50</td>
+<td>46.500000</td>
 <td>2.625</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -615,8 +621,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>NaN</td>
 <td>211.350143</td>
 <td>8.106</td>
-<td>21827.90</td>
-<td>2552.133165</td>
+<td>21827.900391</td>
+<td>2552.131871</td>
 </tr>
 </tbody>
 </table>
@@ -677,21 +683,21 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>1</td>
 <td>1</td>
 <td>2010-02-05</td>
-<td>24924.50</td>
-<td>False</td>
+<td>24924.500000</td>
+<td>0</td>
 <td>A</td>
 <td>151315</td>
-<td>42.31</td>
+<td>42.310001</td>
 <td>2.572</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
-<td>211.096358</td>
+<td>211.096359</td>
 <td>8.106</td>
-<td>24924.50</td>
-<td>-12764.088716</td>
+<td>24924.500000</td>
+<td>-12764.087053</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
@@ -699,21 +705,21 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>1</td>
 <td>1</td>
 <td>2010-02-12</td>
-<td>46039.49</td>
-<td>True</td>
+<td>46039.488281</td>
+<td>1</td>
 <td>A</td>
 <td>151315</td>
-<td>38.51</td>
+<td>38.509998</td>
 <td>2.548</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
-<td>211.242170</td>
+<td>211.242172</td>
 <td>8.106</td>
-<td>46039.49</td>
-<td>-13469.209506</td>
+<td>46039.488281</td>
+<td>-13469.210227</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
@@ -721,21 +727,21 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>1</td>
 <td>1</td>
 <td>2010-02-19</td>
-<td>41595.55</td>
-<td>False</td>
+<td>41595.550781</td>
+<td>0</td>
 <td>A</td>
 <td>151315</td>
-<td>39.93</td>
+<td>39.930000</td>
 <td>2.514</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
-<td>211.289143</td>
+<td>211.289139</td>
 <td>8.106</td>
-<td>41595.55</td>
-<td>16686.889086</td>
+<td>41595.550781</td>
+<td>16686.888640</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
@@ -743,21 +749,21 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>1</td>
 <td>1</td>
 <td>2010-02-26</td>
-<td>19403.54</td>
-<td>False</td>
+<td>19403.539062</td>
+<td>0</td>
 <td>A</td>
 <td>151315</td>
-<td>46.63</td>
+<td>46.630001</td>
 <td>2.561</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
-<td>211.319643</td>
+<td>211.319641</td>
 <td>8.106</td>
-<td>19403.54</td>
-<td>9378.223595</td>
+<td>19403.539062</td>
+<td>9378.223680</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
@@ -765,11 +771,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>1</td>
 <td>1</td>
 <td>2010-03-05</td>
-<td>21827.90</td>
-<td>False</td>
+<td>21827.900391</td>
+<td>0</td>
 <td>A</td>
 <td>151315</td>
-<td>46.50</td>
+<td>46.500000</td>
 <td>2.625</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -778,8 +784,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>NaN</td>
 <td>211.350143</td>
 <td>8.106</td>
-<td>21827.90</td>
-<td>2552.133165</td>
+<td>21827.900391</td>
+<td>2552.131871</td>
 </tr>
 </tbody>
 </table>
@@ -823,35 +829,35 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2000-06-05 00:00:00+00:00</td>
 <td>22262</td>
 <td>22262.0</td>
-<td>-1269.805182</td>
+<td>-1269.805176</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2000-06-05 00:30:00+00:00</td>
 <td>21756</td>
 <td>21756.0</td>
-<td>-2755.227462</td>
+<td>-2755.227539</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2000-06-05 01:00:00+00:00</td>
 <td>22247</td>
 <td>22247.0</td>
-<td>-4077.813213</td>
+<td>-4077.813232</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2000-06-05 01:30:00+00:00</td>
 <td>22759</td>
 <td>22759.0</td>
-<td>-4404.573458</td>
+<td>-4404.573242</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2000-06-05 02:00:00+00:00</td>
 <td>22549</td>
 <td>22549.0</td>
-<td>-4629.981251</td>
+<td>-4629.981445</td>
 </tr>
 </tbody>
 </table>
@@ -895,35 +901,35 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>2000-06-05 00:00:00+00:00</td>
 <td>22262</td>
 <td>22262.0</td>
-<td>-1269.805182</td>
+<td>-1269.805176</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2000-06-05 00:30:00+00:00</td>
 <td>21756</td>
 <td>21756.0</td>
-<td>-2755.227462</td>
+<td>-2755.227539</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2000-06-05 01:00:00+00:00</td>
 <td>22247</td>
 <td>22247.0</td>
-<td>-4077.813213</td>
+<td>-4077.813232</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2000-06-05 01:30:00+00:00</td>
 <td>22759</td>
 <td>22759.0</td>
-<td>-4404.573458</td>
+<td>-4404.573242</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2000-06-05 02:00:00+00:00</td>
 <td>22549</td>
 <td>22549.0</td>
-<td>-4629.981251</td>
+<td>-4629.981445</td>
 </tr>
 </tbody>
 </table>

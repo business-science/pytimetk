@@ -1,6 +1,6 @@
 # augment_timeseries_signature { #pytimetk.augment_timeseries_signature }
 
-`augment_timeseries_signature(data, date_column, engine='pandas')`
+`augment_timeseries_signature(data, date_column, reduce_memory=False, engine='pandas')`
 
 The function `augment_timeseries_signature` takes a DataFrame and a date 
 column as input and returns the original DataFrame with the **29 different 
@@ -9,11 +9,12 @@ based on the date_column.
 
 ## Parameters
 
-| Name          | Type         | Description                                                                                                                                                                                                                                                                                                                                     | Default    |
-|---------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `data`        | pd.DataFrame | The `data` parameter is a pandas DataFrame that contains the time series  data.                                                                                                                                                                                                                                                                 | _required_ |
-| `date_column` | str          | The `date_column` parameter is a string that represents the name of the  date column in the `data` DataFrame.                                                                                                                                                                                                                                   | _required_ |
-| `engine`      | str          | The `engine` parameter is used to specify the engine to use for  augmenting datetime features. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library    for feature generation. This is generally faster than using "pandas"    for large datasets. | `'pandas'` |
+| Name            | Type         | Description                                                                                                                                                                                                                                                                                                                                     | Default    |
+|-----------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `data`          | pd.DataFrame | The `data` parameter is a pandas DataFrame that contains the time series  data.                                                                                                                                                                                                                                                                 | _required_ |
+| `date_column`   | str          | The `date_column` parameter is a string that represents the name of the  date column in the `data` DataFrame.                                                                                                                                                                                                                                   | _required_ |
+| `reduce_memory` | bool         | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.                                         | `False`    |
+| `engine`        | str          | The `engine` parameter is used to specify the engine to use for  augmenting datetime features. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library    for feature generation. This is generally faster than using "pandas"    for large datasets. | `'pandas'` |
 
 ## Returns
 
