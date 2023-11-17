@@ -12,6 +12,7 @@ from .core.apply_by_time import *
 from .core.pad import *
 from .core.future import *
 from .core.make_timeseries_sequence import *
+from .core.make_future_timeseries import *
 from .core.ts_features import *
 from .core.ts_summary import *
 from .core.anomalize import *
@@ -81,7 +82,10 @@ from .feature_engineering.holiday_signature import (
     augment_holiday_signature, get_holiday_signature
 )
 from .core.future import (
-    make_future_timeseries, future_frame
+    future_frame
+)
+from .core.make_future_timeseries import (
+    make_future_timeseries
 )
 from .core.make_timeseries_sequence import (
     make_weekday_sequence, make_weekend_sequence

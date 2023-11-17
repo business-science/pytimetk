@@ -2,6 +2,7 @@ from .summarize_by_time import *
 from .apply_by_time import *
 from .future import *
 from .make_timeseries_sequence import *
+from .make_future_timeseries import *
 from .pad import *
 from .ts_features import *
 from .ts_summary import *
