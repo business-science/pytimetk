@@ -13,6 +13,7 @@ def augment_lags(
     date_column: str,
     value_column: Union[str, List[str]], 
     lags: Union[int, Tuple[int, int], List[int]] = 1,
+    reduce_memory: bool = False,
     engine: str = 'pandas'
 ) -> pd.DataFrame:
     """
@@ -120,12 +121,20 @@ def augment_lags(
     check_value_column(data, value_column)
     check_date_column(data, date_column)
     
+    if reduce_memory:
+        data = reduce_memory_usage(data)
+    
     if engine == 'pandas':
-        return _augment_lags_pandas(data, date_column, value_column, lags)
+        ret = _augment_lags_pandas(data, date_column, value_column, lags)
     elif engine == 'polars':
-        return _augment_lags_polars(data, date_column, value_column, lags)
+        ret = _augment_lags_polars(data, date_column, value_column, lags)
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    
+    if reduce_memory:
+        ret = reduce_memory_usage(ret)
+    
+    return ret
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.augment_lags = augment_lags
@@ -174,7 +183,7 @@ def _augment_lags_pandas(
             for lag in lags:
                 df[f'{col}_lag_{lag}'] = df.groupby(group_names)[col].shift(lag)
 
-    return reduce_memory_usage(df)
+    return df
 
 def _augment_lags_polars(
     data: Union[pl.DataFrame, pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -232,4 +241,4 @@ def _augment_lags_polars(
     # Concatenate the DataFrames horizontally
     df = pl.concat([df, out_df], how="horizontal").to_pandas()
 
-    return reduce_memory_usage(df)
+    return df

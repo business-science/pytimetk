@@ -21,6 +21,7 @@ def augment_holiday_signature(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
     country_name: str = 'UnitedStates',
+    reduce_memory: bool = False,
     engine: str = 'pandas',
 ) -> pd.DataFrame:
     """
@@ -40,6 +41,8 @@ def augment_holiday_signature(
         The name of the country for which to generate holiday features. Defaults 
         to United States holidays, but the following countries are currently 
         available and accessible by the full name or ISO code: See NOTES.
+    reduce_memory : bool, optional
+        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
     engine : str, optional
         The `engine` parameter is used to specify the engine to use for 
         augmenting holidays. It can be either "pandas" or "polars". 
@@ -198,13 +201,21 @@ def augment_holiday_signature(
     check_installed('holidays')
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
+    
+    if reduce_memory:
+        data = reduce_memory_usage(data)
 
     if engine == 'pandas':
-        return _augment_holiday_signature_pandas(data, date_column, country_name)
+        ret = _augment_holiday_signature_pandas(data, date_column, country_name)
     elif engine == 'polars':
-        return _augment_holiday_signature_polars(data, date_column, country_name)
+        ret = _augment_holiday_signature_polars(data, date_column, country_name)
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+            
+    if reduce_memory:
+        ret = reduce_memory_usage(ret)
+        
+    return ret
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.augment_holiday_signature = augment_holiday_signature
@@ -224,6 +235,7 @@ def _augment_holiday_signature_pandas(
      
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         data = data.obj
+
     
     # Extract start and end years directly from the Series
     start_year = data[date_column].min().year
@@ -282,7 +294,7 @@ def _augment_holiday_signature_pandas(
 
     merged_data.index = data.index
     
-    ret = reduce_memory_usage(pd.concat([data, merged_data[['is_holiday', 'before_holiday', 'after_holiday', 'holiday_name']]], axis=1))
+    ret = pd.concat([data, merged_data[['is_holiday', 'before_holiday', 'after_holiday', 'holiday_name']]], axis=1)
     
     return ret
 
@@ -526,7 +538,7 @@ def get_holiday_signature(
     if engine == 'pandas':
         return _get_holiday_signature_pandas(idx, country_name)
     elif engine == 'polars':
-        return _get_holiday_signature_pandas(idx, country_name)
+        return _get_holiday_signature_polars(idx, country_name)
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
 
