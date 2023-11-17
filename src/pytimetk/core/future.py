@@ -210,13 +210,15 @@ def future_frame(
             threads=threads,
             show_progress=show_progress
         )
-        if reduce_memory:
-            ret = reduce_memory_usage(ret)
-        return ret
     elif engine == 'polars':
         raise NotImplementedError("Polars engine is not yet supported.")
     else:
         raise ValueError(f"Unknown engine: {engine}")
+    
+    if reduce_memory:
+        ret = reduce_memory_usage(ret)
+        
+    return ret
     
     
     
@@ -269,7 +271,9 @@ def _future_frame_pandas(
         # If freq is None, infer the frequency from the first series in the data
         if freq is None:
             label_of_first_group = list(data.groups.keys())[0]
+            
             first_group = data.get_group(label_of_first_group)
+            
             freq = get_frequency(first_group[date_column].sort_values(), force_regular=force_regular)
         
         last_dates_df = data.agg({date_column: 'max'}).reset_index()

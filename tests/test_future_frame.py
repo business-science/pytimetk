@@ -63,6 +63,113 @@ def test_future_frame():
 
     assert_frame_equal(extended_df_irregular, expected_df_irregular, check_dtype=False)
 
+
+def test_example_1():
+    
+    import pandas as pd
+    import pytimetk as tk
+    
+    df = tk.load_dataset('m4_hourly', parse_dates = ['date'])
+    df
+
+    # Example 1 - Extend the data for a single time series group by 12 hours
+    extended_df = (
+        df
+            .query('id == "H10"')
+            .future_frame(
+                date_column = 'date', 
+                length_out  = 12
+            )
+    )
+    
+    assert extended_df.shape[0] == 712
+    
+def test_example_2():
+    
+    import pandas as pd
+    import pytimetk as tk
+    
+    df = tk.load_dataset('m4_hourly', parse_dates = ['date'])
+
+    extended_df = (
+        df
+            .groupby('id', sort = False) # Use sort = False to preserve the original order of the data
+            .future_frame(
+                date_column = 'date', 
+                length_out  = 12,
+                threads     = 1 # Use 2 threads for parallel processing
+            )
+    )    
+    
+    assert extended_df.shape[0] == 3108
+    
+def test_example_3():
+    
+    import pandas as pd
+    import pytimetk as tk
+    
+    df = tk.load_dataset('m4_hourly', parse_dates = ['date'])
+
+    extended_df = (
+        df
+            .groupby('id', sort = False)
+            .future_frame(
+                date_column = 'date', 
+                length_out  = 12,
+                bind_data   = False # Returns just future data
+            )
+    )    
+    
+    assert extended_df.shape[0] == 48
+    
+def test_example_4():
+    
+    import pytimetk as tk
+    import pandas as pd
+    
+    # Stock data
+    df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
+    
+    # Allow irregular future dates (i.e. business days)
+    extended_df = (
+        df
+            .groupby('symbol', sort = False)
+            .future_frame(
+                date_column = 'date', 
+                length_out  = 12,
+                force_regular = False, # Allow irregular future dates (i.e. business days)),
+                bind_data   = True,
+                threads     = 1
+            )
+    )    
+    
+    assert extended_df.shape[0] == 16266
+    
+def test_example_5():
+    
+    import pytimetk as tk
+    import pandas as pd
+    
+    # Stock data
+    df = tk.load_dataset('stocks_daily', parse_dates = ['date'])
+    
+    extended_df = (
+        df
+            .groupby('symbol', sort = False)
+            .future_frame(
+                date_column = 'date', 
+                length_out  = 12,
+                force_regular = True, # Force regular future dates (i.e. include weekends)),
+                bind_data   = True
+            )
+    )    
+    
+    
+    assert extended_df.shape[0] == 16266
+    
+    
+    
+
 # Run the tests
 if __name__ == "__main__":
     pytest.main([__file__])

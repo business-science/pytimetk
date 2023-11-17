@@ -233,7 +233,7 @@ def get_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular: bool =
         raise ValueError("Cannot determine frequency with less than 2 timestamps. Please provide a timeseries with at least 2 timestamps.")
     
     if isinstance(idx, pd.Series):
-        idx = idx.values
+        idx = pd.to_datetime(idx.values)
         
     freq = _get_pandas_frequency(idx, force_regular)
     
@@ -667,7 +667,9 @@ def _get_pandas_frequency(idx: Union[pd.Series, pd.DatetimeIndex], force_regular
     '''
     
     check_series_or_datetime(idx)
+    
     freq = idx.inferred_freq if isinstance(idx, pd.DatetimeIndex) else pd.DatetimeIndex(idx.iloc[:min(len(idx), 10)]).inferred_freq
+    
     return IRREGULAR_TO_REGULAR.get(freq, freq) if force_regular and freq else freq
 
     
