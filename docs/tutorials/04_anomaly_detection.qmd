@@ -1,5 +1,5 @@
 ---
-title: "Anomaly Detection"
+title: "Anomaly Detection in Website Traffic"
 jupyter: python3
 toc: true
 toc-depth: 3
