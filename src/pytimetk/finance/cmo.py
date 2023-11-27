@@ -117,6 +117,21 @@ def augment_cmo(
     
     ```
     
+    ```{python}
+    # Example 3 - Calculate CMO for polars engine
+    cmo_df = (
+        df
+            .query("symbol == 'AAPL'")
+            .augment_cmo(
+                date_column='date',
+                value_column='adjusted',
+                periods=[14, 28],
+                engine='polars'
+            )
+    )
+    cmo_df
+    ```
+    
     '''
     
     # Run common checks
@@ -205,6 +220,63 @@ def _calculate_cmo_pandas(series: pd.Series, period=14):
     return cmo
 
 
+def _augment_cmo_polars(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
+    date_column: str,
+    value_column: Union[str, List[str]], 
+    periods: Union[int, Tuple[int, int], List[int]] = 14
+) -> pd.DataFrame:
+    
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        # Data is a GroupBy object, use apply to get a DataFrame
+        pandas_df = data.apply(lambda x: x)
+    elif isinstance(data, pd.DataFrame):
+        # Data is already a DataFrame
+        pandas_df = data
+    elif isinstance(data, pl.DataFrame):
+        # Data is already a Polars DataFrame
+        pandas_df = data.to_pandas()
+    else:
+        raise ValueError("data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame")
+
+    if isinstance(value_column, str):
+        value_column = [value_column]
+        
+    if isinstance(periods, int):
+        periods = [periods]  # Convert to a list with a single value
+    elif isinstance(periods, tuple):
+        periods = list(range(periods[0], periods[1] + 1))
+    elif not isinstance(periods, list):
+        raise TypeError(f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list.")
+
+    cmo_exprs = []
+    
+    for col in value_column:
+        for period in periods:
+            cmo_expr = _calculate_cmo_polars(pl.col(col), period=period).alias(f'{col}_cmo_{period}')
+            cmo_exprs.append(cmo_expr)
+    
+    # Select columns
+    selected_columns = cmo_exprs
+    
+    # Select the columns
+    df = pl.DataFrame(pandas_df)
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        out_df = df \
+            .group_by(data.grouper.names, maintain_order=True) \
+            .agg(selected_columns)
+        out_df = out_df.explode(out_df.columns)
+        out_df = out_df.drop(data.grouper.names)
+    else: # a dataframe
+        out_df = df.select(selected_columns)
+
+    # Concatenate the DataFrames horizontally
+    df = pl.concat([df, out_df], how="horizontal").to_pandas()
+    
+    return df
+    
+    
+
 def _calculate_cmo_polars(series: pl.Series, period=14):
     # Calculate the difference in closing prices
     delta = series.diff()
@@ -219,5 +291,6 @@ def _calculate_cmo_polars(series: pl.Series, period=14):
 
     # Calculate CMO
     cmo = 100 * (sum_gains - sum_losses) / (sum_gains + sum_losses)
+    
     return cmo
 
