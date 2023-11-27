@@ -157,7 +157,7 @@ def _augment_lags_pandas(
     elif not isinstance(lags, list):
         raise TypeError(f"Invalid lags specification: type: {type(lags)}. Please use int, tuple, or list.")
 
-    # DATAFRAME EXTENSION - If data is a Pandas DataFrame, extend with future dates
+    # DATAFRAME EXTENSION - If data is a Pandas DataFrame, apply lag function
     if isinstance(data, pd.DataFrame):
 
         df = data.copy()
