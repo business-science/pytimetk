@@ -32,6 +32,7 @@ from .feature_engineering.hilbert import *
 from .feature_engineering.wavelet import *
 
 from .finance.ewm import *
+from .finance.cmo import *
 
 from .datasets.get_datasets import *
 
@@ -128,6 +129,9 @@ from .core.frequency import (
 )
 from .finance.ewm import (
     augment_ewm
+)
+from .finance.cmo import (
+    augment_cmo
 )
 from .datasets.get_datasets import (
     load_dataset, get_available_datasets
