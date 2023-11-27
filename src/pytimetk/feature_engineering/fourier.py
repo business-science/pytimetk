@@ -59,7 +59,7 @@ def augment_fourier(
 
     df = tk.load_dataset('m4_daily', parse_dates=['date'])
     
-    # Add Fourier transforms for a single column
+    # Example 1 - Add Fourier transforms for a single column
     fourier_df = (
         df
             .query("id == 'D10'")
@@ -74,6 +74,36 @@ def augment_fourier(
     fourier_df.plot_timeseries("date", "date_sin_1_7", x_axis_date_labels = "%B %d, %Y",)
     ```
 
+    ``` {python}
+    # Example 2 - Add Fourier transforms for grouped data
+    fourier_df = (
+        df
+            .groupby("id")
+            .augment_fourier(
+                date_column='date',
+                periods=[1, 7],
+                max_order=1,
+                engine= "pandas"
+            )
+    )
+    fourier_df
+    ```
+    
+    ``` {python}
+    # Example 3 - Add Fourier transforms for grouped data
+    fourier_df = (
+        df
+            .groupby("id")
+            .augment_fourier(
+                date_column='date',
+                periods=[1, 7],
+                max_order=1,
+                engine= "polars"
+            )
+    )
+    fourier_df
+    ```
+    
     """
 
     if not engine in ['pandas', 'polars']: 
@@ -126,7 +156,7 @@ def _augment_fourier_pandas(
 ) -> pd.DataFrame:
 
     df = data.copy()
-    df.sort_values(by=[date_column], inplace=True)
+    # df.sort_values(by=[date_column], inplace=True)
 
     scale_factor = date_to_seq_scale_factor(df, date_column).iloc[0].total_seconds()
     if scale_factor == 0:
@@ -167,8 +197,8 @@ def _augment_fourier_polars(
     """
 
     # Convert to polars
-    df = pl.from_pandas(data) \
-        .sort(by=[date_column], descending=False, nulls_last=True) 
+    df = pl.from_pandas(data) 
+    # .sort(by=[date_column], descending=False, nulls_last=True) 
 
     # Compute scale factor
     scale_factor = date_to_seq_scale_factor(data, date_column, engine="polars")[0].total_seconds()
