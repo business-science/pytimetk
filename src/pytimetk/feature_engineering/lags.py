@@ -94,7 +94,7 @@ def augment_lags(
             .augment_lags(
                 date_column='date',
                 value_column='value',
-                lags=2,
+                lags=(1, 3),
                 engine='polars'
             )
     )
@@ -233,7 +233,8 @@ def _augment_lags_polars(
     df = pl.DataFrame(pandas_df)
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         out_df = df.group_by(data.grouper.names, maintain_order=True).agg(selected_columns)
-        out_df = out_df.explode(out_df.columns[1:])
+        
+        out_df = out_df.explode(out_df.columns[len(data.grouper.names):])
         out_df = out_df.drop(data.grouper.names)
     else: # a dataframe
         out_df = df.select(selected_columns)
