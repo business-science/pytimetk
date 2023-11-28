@@ -56,7 +56,7 @@ lagged_df = (
         .augment_lags(
             date_column='date',
             value_column='value',
-            lags=2,
+            lags=(1, 3),
             engine='polars'
         )
 )

@@ -106,7 +106,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/changelog-news.html</loc>
-    <lastmod>2023-11-18T13:49:08.448Z</lastmod>
+    <lastmod>2023-11-28T15:33:34.961Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/tutorials/02_finance.html</loc>
@@ -170,7 +170,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/performance/01_speed_comparisons.html</loc>
-    <lastmod>2023-11-18T13:49:07.545Z</lastmod>
+    <lastmod>2023-11-28T15:30:51.247Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_rolling.html</loc>
@@ -210,7 +210,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2023-11-18T13:49:27.210Z</lastmod>
+    <lastmod>2023-11-28T15:31:03.976Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/plot_anomalies_decomp.html</loc>
@@ -222,7 +222,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_fourier.html</loc>
-    <lastmod>2023-11-18T13:49:34.203Z</lastmod>
+    <lastmod>2023-11-28T15:31:15.862Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_trend_frequency.html</loc>
@@ -266,7 +266,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_lags.html</loc>
-    <lastmod>2023-11-18T13:49:54.051Z</lastmod>
+    <lastmod>2023-11-28T15:31:27.153Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_holiday_signature.html</loc>
@@ -275,5 +275,9 @@
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/anomalize.html</loc>
     <lastmod>2023-11-18T13:49:59.555Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/augment_cmo.html</loc>
+    <lastmod>2023-11-28T15:31:03.139Z</lastmod>
   </url>
 </urlset>

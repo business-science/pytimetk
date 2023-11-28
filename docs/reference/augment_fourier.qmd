@@ -31,7 +31,7 @@ import pytimetk as tk
 
 df = tk.load_dataset('m4_daily', parse_dates=['date'])
 
-# Add Fourier transforms for a single column
+# Example 1 - Add Fourier transforms for a single column
 fourier_df = (
     df
         .query("id == 'D10'")
@@ -44,4 +44,34 @@ fourier_df = (
 fourier_df.head()
 
 fourier_df.plot_timeseries("date", "date_sin_1_7", x_axis_date_labels = "%B %d, %Y",)
+```
+
+``` {python}
+# Example 2 - Add Fourier transforms for grouped data
+fourier_df = (
+    df
+        .groupby("id")
+        .augment_fourier(
+            date_column='date',
+            periods=[1, 7],
+            max_order=1,
+            engine= "pandas"
+        )
+)
+fourier_df
+```
+
+``` {python}
+# Example 3 - Add Fourier transforms for grouped data
+fourier_df = (
+    df
+        .groupby("id")
+        .augment_fourier(
+            date_column='date',
+            periods=[1, 7],
+            max_order=1,
+            engine= "polars"
+        )
+)
+fourier_df
 ```

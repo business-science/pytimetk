@@ -37,6 +37,7 @@ website:
       section: "\U0001F4CE TS Features"
     - contents:
       - reference/augment_ewm.qmd
+      - reference/augment_cmo.qmd
       section: "\U0001F4B9 Finance Module"
     - contents:
       - reference/make_future_timeseries.qmd

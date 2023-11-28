@@ -8,18 +8,21 @@ number-sections: false
 
 # pytimetk 0.2.1.9000 (Development Version)
 
-### New Functions:
+### Feature Engineering:
 
 - `augment_diffs()` - Can now add differenced columns
 - `augment_fourier()` - Can now add fourier features. 
 
 ### Finance Module:
 
+- `augment_cmo()`: Chande Momentum Oscillator (CMO)
 
-### Polars Backend:
 
-- `augment_diffs()`- Gains a polars backend
-- `augment_fourier()` - Gains a polars backend
+### New Polars Backends:
+
+- `augment_diffs()`
+- `augment_fourier()` 
+- `augment_cmo()` 
 
 ### General
 

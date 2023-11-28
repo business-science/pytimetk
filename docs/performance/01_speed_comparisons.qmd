@@ -73,6 +73,7 @@ from pytimetk.utils.pandas_helpers import pd_quantile
 # Datasets
 expedia_df = tk.load_dataset("expedia", parse_dates = ['date_time'])
 m4_daily_df = tk.load_dataset("m4_daily", parse_dates = ['date'])
+stocks_daily_df = tk.load_dataset('stocks_daily', parse_dates=['date'])
 
 # Plotting utility
 def make_time_comparison_plot(title, methods, times, height_spacer=500):
@@ -116,6 +117,10 @@ def make_time_comparison_plot(title, methods, times, height_spacer=500):
     plt.tight_layout()
     return plt
 ```
+
+# Feature Engineering Performance Comparisons
+
+This section includes performance comparisons are common Time Series Feature Engineering tasks.
 
 ## Summarize By Time `summarize_by_time()`
 
@@ -451,6 +456,72 @@ expanded_df = (
             date_column = 'date', 
             value_column = 'value', 
             lags = (2,30),
+            engine = 'pandas',  
+        )
+)
+
+# 73.3 ms ± 3.29 ms per loop (mean ± std. dev. of 7 runs, 25 loops each)
+```
+
+:::
+
+# Finance and Techincal Trading Performance Comparisons
+
+## Chande Momentum Oscillator (CMO) `augment_cmo()`
+
+- Polars is 3.3X faster than Pandas
+- Speed improvement of Polars (vs Pandas) increases with number of CMO periods
+
+
+```{python}
+# | echo: false
+
+# Data
+title = "Augment CMO"
+methods = ['Polars', 'Pandas']
+times = [94.4, 310]
+
+make_time_comparison_plot(title, methods, times, height_spacer=500)
+
+plt.show()
+```
+
+
+:::{.panel-tabset groups="bbands-plotly-plotnine"}
+
+## Polars
+
+```{python}
+# | eval: false
+%%timeit -n 25
+
+df = (
+    stocks_daily_df
+        .groupby('symbol')
+        .augment_cmo(
+            date_column = 'date', 
+            value_column = 'adjusted', 
+            periods = (5,30),
+            engine = 'polars',  
+        )
+)
+
+# 94.4 ms ± 3.24 ms per loop (mean ± std. dev. of 7 runs, 25 loops each)
+```
+
+## Pandas
+
+```{python}
+# | eval: false
+%%timeit -n 25
+
+df = (
+    stocks_daily_df
+        .groupby('symbol')
+        .augment_cmo(
+            date_column = 'date', 
+            value_column = 'adjusted', 
+            periods = (5,30),
             engine = 'pandas',  
         )
 )
