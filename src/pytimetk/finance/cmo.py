@@ -144,7 +144,7 @@ def augment_cmo(
                 engine='polars'
             )
     )
-    cmo_df
+    cmo_df.groupby('symbol').tail(1)
     ```
     
     '''
@@ -264,15 +264,16 @@ def _augment_cmo_polars(
     elif not isinstance(periods, list):
         raise TypeError(f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list.")
     
-    _exprs = []
-        
-    for col in value_column:
-        for period in periods:
-            _expr = _calculate_cmo_polars(pl.col(col), period=period).alias(f'{col}_cmo_{period}')
-            _exprs.append(_expr)
-    
-    
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        
+        def apply_cmo(pl_df):
+            for col in value_column:
+                for period in periods:
+                    pl_df = pl_df.with_columns(
+                        _calculate_cmo_polars(pl_df[col], period=period).alias(f'{col}_cmo_{period}')
+                    )
+                    # pl_df[f'{col}_cmo_{period}'] = _calculate_cmo_polars(pl_df[col], period=period)
+            return pl_df
         
         # Get the group names and original ungrouped data
         group_names = data.grouper.names
@@ -281,17 +282,22 @@ def _augment_cmo_polars(
         
         df = pl.from_pandas(pandas_df)
         
-        
         out_df = df.group_by(
             data.grouper.names, maintain_order=True
-        ).agg(
-            _exprs
-        )
+        ).apply(apply_cmo)
         
-        out_df = out_df.explode(out_df.columns[1:])
-        out_df = out_df.drop(data.grouper.names)
+        print(out_df)
+        
+        df = out_df
 
     else:
+        
+        _exprs = []
+        
+        for col in value_column:
+            for period in periods:
+                _expr = _calculate_cmo_polars(pl.col(col), period=period).alias(f'{col}_cmo_{period}')
+                _exprs.append(_expr)
         
         pandas_df = pandas_df.sort_values(by=[date_column])
         
@@ -299,7 +305,7 @@ def _augment_cmo_polars(
         
         out_df = df.select(_exprs)
         
-    df = pl.concat([df, out_df], how="horizontal")
+        df = pl.concat([df, out_df], how="horizontal")
     
     return df.to_pandas()
     
@@ -308,8 +314,8 @@ def _augment_cmo_polars(
 def _calculate_cmo_polars(series: pl.Series, period=14):
     # Calculate the difference in closing prices
     delta = series.diff()
-
-    # Separate gains and losses
+    
+    # Separate gains and losses    
     # gains = delta.apply(lambda x: x if x > 0 else 0)
     # losses = delta.apply(lambda x: -x if x < 0 else 0)
     
@@ -321,7 +327,8 @@ def _calculate_cmo_polars(series: pl.Series, period=14):
     sum_losses = losses.rolling_sum(window_size=period)
 
     # Calculate CMO
-    cmo = 100 * (sum_gains - sum_losses) / (sum_gains + sum_losses)
+    total_movement = sum_gains + sum_losses
+    cmo = 100 * (sum_gains - sum_losses) / total_movement
     
     return cmo
 
