@@ -286,8 +286,6 @@ def _augment_cmo_polars(
             data.grouper.names, maintain_order=True
         ).apply(apply_cmo)
         
-        print(out_df)
-        
         df = out_df
 
     else:
