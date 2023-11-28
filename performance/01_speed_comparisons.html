@@ -373,15 +373,20 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#key-benefits" id="toc-key-benefits" class="nav-link" data-scroll-target="#key-benefits"><span class="header-section-number">2.1</span> Key benefits:</a></li>
   <li><a href="#what-affects-speed" id="toc-what-affects-speed" class="nav-link" data-scroll-target="#what-affects-speed"><span class="header-section-number">2.2</span> What affects speed?</a></li>
   </ul></li>
-  <li><a href="#speed-tests-and-conclusions" id="toc-speed-tests-and-conclusions" class="nav-link" data-scroll-target="#speed-tests-and-conclusions"><span class="header-section-number">3</span> Speed Tests and Conclusions</a>
+  <li><a href="#speed-tests-and-conclusions" id="toc-speed-tests-and-conclusions" class="nav-link" data-scroll-target="#speed-tests-and-conclusions"><span class="header-section-number">3</span> Speed Tests and Conclusions</a></li>
+  <li><a href="#feature-engineering-performance-comparisons" id="toc-feature-engineering-performance-comparisons" class="nav-link" data-scroll-target="#feature-engineering-performance-comparisons"><span class="header-section-number">4</span> Feature Engineering Performance Comparisons</a>
   <ul class="collapse">
-  <li><a href="#summarize-by-time-summarize_by_time" id="toc-summarize-by-time-summarize_by_time" class="nav-link" data-scroll-target="#summarize-by-time-summarize_by_time"><span class="header-section-number">3.1</span> Summarize By Time <code>summarize_by_time()</code></a></li>
-  <li><a href="#rolling-calculations-augment_rolling" id="toc-rolling-calculations-augment_rolling" class="nav-link" data-scroll-target="#rolling-calculations-augment_rolling"><span class="header-section-number">3.2</span> Rolling Calculations <code>augment_rolling()</code></a></li>
-  <li><a href="#augment-expanding-augment_expanding" id="toc-augment-expanding-augment_expanding" class="nav-link" data-scroll-target="#augment-expanding-augment_expanding"><span class="header-section-number">3.3</span> Augment Expanding <code>augment_expanding()</code></a></li>
-  <li><a href="#augment-lags-augment_lags" id="toc-augment-lags-augment_lags" class="nav-link" data-scroll-target="#augment-lags-augment_lags"><span class="header-section-number">3.4</span> Augment Lags <code>augment_lags()</code></a></li>
+  <li><a href="#summarize-by-time-summarize_by_time" id="toc-summarize-by-time-summarize_by_time" class="nav-link" data-scroll-target="#summarize-by-time-summarize_by_time"><span class="header-section-number">4.1</span> Summarize By Time <code>summarize_by_time()</code></a></li>
+  <li><a href="#rolling-calculations-augment_rolling" id="toc-rolling-calculations-augment_rolling" class="nav-link" data-scroll-target="#rolling-calculations-augment_rolling"><span class="header-section-number">4.2</span> Rolling Calculations <code>augment_rolling()</code></a></li>
+  <li><a href="#augment-expanding-augment_expanding" id="toc-augment-expanding-augment_expanding" class="nav-link" data-scroll-target="#augment-expanding-augment_expanding"><span class="header-section-number">4.3</span> Augment Expanding <code>augment_expanding()</code></a></li>
+  <li><a href="#augment-lags-augment_lags" id="toc-augment-lags-augment_lags" class="nav-link" data-scroll-target="#augment-lags-augment_lags"><span class="header-section-number">4.4</span> Augment Lags <code>augment_lags()</code></a></li>
   </ul></li>
-  <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions"><span class="header-section-number">4</span> Conclusions</a></li>
-  <li><a href="#more-coming-soon" id="toc-more-coming-soon" class="nav-link" data-scroll-target="#more-coming-soon"><span class="header-section-number">5</span> More Coming Soon…</a></li>
+  <li><a href="#finance-and-techincal-trading-performance-comparisons" id="toc-finance-and-techincal-trading-performance-comparisons" class="nav-link" data-scroll-target="#finance-and-techincal-trading-performance-comparisons"><span class="header-section-number">5</span> Finance and Techincal Trading Performance Comparisons</a>
+  <ul class="collapse">
+  <li><a href="#chande-momentum-oscillator-cmo-augment_cmo" id="toc-chande-momentum-oscillator-cmo-augment_cmo" class="nav-link" data-scroll-target="#chande-momentum-oscillator-cmo-augment_cmo"><span class="header-section-number">5.1</span> Chande Momentum Oscillator (CMO) <code>augment_cmo()</code></a></li>
+  </ul></li>
+  <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions"><span class="header-section-number">6</span> Conclusions</a></li>
+  <li><a href="#more-coming-soon" id="toc-more-coming-soon" class="nav-link" data-scroll-target="#more-coming-soon"><span class="header-section-number">7</span> More Coming Soon…</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/performance/01_speed_comparisons.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -495,52 +500,57 @@ How this guide benefits you
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Datasets</span></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>expedia_df <span class="op">=</span> tk.load_dataset(<span class="st">"expedia"</span>, parse_dates <span class="op">=</span> [<span class="st">'date_time'</span>])</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>m4_daily_df <span class="op">=</span> tk.load_dataset(<span class="st">"m4_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting utility</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_time_comparison_plot(title, methods, times, height_spacer<span class="op">=</span><span class="dv">500</span>):</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">    Create a bar chart comparing execution times of different methods.</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">    - title (str): Title for the plot.</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co">    - methods (list of str): Names of the methods being compared.</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">    - times (list of float): Execution times corresponding to the methods.</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co">    - height_spacer (int, optional): Additional space above the tallest bar. Defaults to 5000.</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co">    - None. Displays the plot.</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate how many times slower each method is relative to the fastest method</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    min_time <span class="op">=</span> <span class="bu">min</span>(times)</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    times_slower <span class="op">=</span> [time <span class="op">/</span> min_time <span class="cf">for</span> time <span class="kw">in</span> times]</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create the bar chart</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    bars <span class="op">=</span> plt.bar(methods, times, color<span class="op">=</span>[<span class="st">'blue'</span>, <span class="st">'red'</span>, <span class="st">'green'</span>, <span class="st">'orange'</span>])</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add title and labels</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="ss">f'</span><span class="sc">{</span>title<span class="sc">}</span><span class="ss">: Comparison of Execution Times'</span>)</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Execution Time (ms)'</span>)</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Methods'</span>)</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Display the execution times and how many times slower on top of the bars</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> bar, v, multiplier <span class="kw">in</span> <span class="bu">zip</span>(bars, times, times_slower):</span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>        height <span class="op">=</span> bar.get_height()</span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>        plt.text(bar.get_x() <span class="op">+</span> bar.get_width() <span class="op">/</span> <span class="dv">2</span>, height <span class="op">+</span> <span class="dv">50</span>, </span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>                 <span class="ss">f"</span><span class="sc">{</span>v<span class="sc">}</span><span class="ss"> ms</span><span class="ch">\n</span><span class="sc">{</span>multiplier<span class="sc">:.1f}</span><span class="ss">X slower"</span> <span class="cf">if</span> multiplier <span class="op">!=</span> <span class="dv">1</span> <span class="cf">else</span> <span class="ss">f"</span><span class="sc">{</span>v<span class="sc">}</span><span class="ss"> ms"</span>, </span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>                 ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'bottom'</span>, fontsize<span class="op">=</span><span class="dv">9</span>, </span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>                 color<span class="op">=</span><span class="st">'black'</span> <span class="cf">if</span> multiplier <span class="op">!=</span> <span class="dv">1</span> <span class="cf">else</span> <span class="st">'green'</span>)</span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Adjust y-axis limit to make sure all labels fit</span></span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    plt.ylim(<span class="dv">0</span>, <span class="bu">max</span>(times) <span class="op">+</span> height_spacer)</span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Display the plot</span></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>    plt.tight_layout()</span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> plt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>stocks_daily_df <span class="op">=</span> tk.load_dataset(<span class="st">'stocks_daily'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting utility</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_time_comparison_plot(title, methods, times, height_spacer<span class="op">=</span><span class="dv">500</span>):</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">    Create a bar chart comparing execution times of different methods.</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co">    - title (str): Title for the plot.</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">    - methods (list of str): Names of the methods being compared.</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co">    - times (list of float): Execution times corresponding to the methods.</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co">    - height_spacer (int, optional): Additional space above the tallest bar. Defaults to 5000.</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co">    - None. Displays the plot.</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate how many times slower each method is relative to the fastest method</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    min_time <span class="op">=</span> <span class="bu">min</span>(times)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    times_slower <span class="op">=</span> [time <span class="op">/</span> min_time <span class="cf">for</span> time <span class="kw">in</span> times]</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create the bar chart</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    bars <span class="op">=</span> plt.bar(methods, times, color<span class="op">=</span>[<span class="st">'blue'</span>, <span class="st">'red'</span>, <span class="st">'green'</span>, <span class="st">'orange'</span>])</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add title and labels</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="ss">f'</span><span class="sc">{</span>title<span class="sc">}</span><span class="ss">: Comparison of Execution Times'</span>)</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Execution Time (ms)'</span>)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Methods'</span>)</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Display the execution times and how many times slower on top of the bars</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> bar, v, multiplier <span class="kw">in</span> <span class="bu">zip</span>(bars, times, times_slower):</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>        height <span class="op">=</span> bar.get_height()</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>        plt.text(bar.get_x() <span class="op">+</span> bar.get_width() <span class="op">/</span> <span class="dv">2</span>, height <span class="op">+</span> <span class="dv">50</span>, </span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>                 <span class="ss">f"</span><span class="sc">{</span>v<span class="sc">}</span><span class="ss"> ms</span><span class="ch">\n</span><span class="sc">{</span>multiplier<span class="sc">:.1f}</span><span class="ss">X slower"</span> <span class="cf">if</span> multiplier <span class="op">!=</span> <span class="dv">1</span> <span class="cf">else</span> <span class="ss">f"</span><span class="sc">{</span>v<span class="sc">}</span><span class="ss"> ms"</span>, </span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>                 ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'bottom'</span>, fontsize<span class="op">=</span><span class="dv">9</span>, </span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>                 color<span class="op">=</span><span class="st">'black'</span> <span class="cf">if</span> multiplier <span class="op">!=</span> <span class="dv">1</span> <span class="cf">else</span> <span class="st">'green'</span>)</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Adjust y-axis limit to make sure all labels fit</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    plt.ylim(<span class="dv">0</span>, <span class="bu">max</span>(times) <span class="op">+</span> height_spacer)</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Display the plot</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>    plt.tight_layout()</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> plt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<section id="summarize-by-time-summarize_by_time" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="summarize-by-time-summarize_by_time"><span class="header-section-number">3.1</span> Summarize By Time <code>summarize_by_time()</code></h2>
+</section>
+<section id="feature-engineering-performance-comparisons" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Feature Engineering Performance Comparisons</h1>
+<p>This section includes performance comparisons are common Time Series Feature Engineering tasks.</p>
+<section id="summarize-by-time-summarize_by_time" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="summarize-by-time-summarize_by_time"><span class="header-section-number">4.1</span> Summarize By Time <code>summarize_by_time()</code></h2>
 <ul>
 <li>Polars is 13.1X faster than Pandas</li>
 </ul>
@@ -595,8 +605,8 @@ How this guide benefits you
 </div>
 </div>
 </section>
-<section id="rolling-calculations-augment_rolling" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="rolling-calculations-augment_rolling"><span class="header-section-number">3.2</span> Rolling Calculations <code>augment_rolling()</code></h2>
+<section id="rolling-calculations-augment_rolling" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="rolling-calculations-augment_rolling"><span class="header-section-number">4.2</span> Rolling Calculations <code>augment_rolling()</code></h2>
 <ul>
 <li>Polars is 10.8X faster than Pandas</li>
 <li>Polars is 3,517X faster than Pandas with Lambdas</li>
@@ -698,8 +708,8 @@ How this guide benefits you
 </div>
 </div>
 </section>
-<section id="augment-expanding-augment_expanding" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="augment-expanding-augment_expanding"><span class="header-section-number">3.3</span> Augment Expanding <code>augment_expanding()</code></h2>
+<section id="augment-expanding-augment_expanding" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="augment-expanding-augment_expanding"><span class="header-section-number">4.3</span> Augment Expanding <code>augment_expanding()</code></h2>
 <ul>
 <li>Polars is 3X faster than Pandas with built-in and configurable functions</li>
 <li>Polars is 515X faster than Pandas with lambda functions</li>
@@ -796,8 +806,8 @@ How this guide benefits you
 </div>
 </div>
 </section>
-<section id="augment-lags-augment_lags" class="level2" data-number="3.4">
-<h2 data-number="3.4" class="anchored" data-anchor-id="augment-lags-augment_lags"><span class="header-section-number">3.4</span> Augment Lags <code>augment_lags()</code></h2>
+<section id="augment-lags-augment_lags" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="augment-lags-augment_lags"><span class="header-section-number">4.4</span> Augment Lags <code>augment_lags()</code></h2>
 <ul>
 <li>Polars is 1.9X faster than Pandas</li>
 <li>Speed improvement of Polars (vs Pandas) increases with number of lags</li>
@@ -856,12 +866,74 @@ How this guide benefits you
 </div>
 </section>
 </section>
-<section id="conclusions" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Conclusions</h1>
+<section id="finance-and-techincal-trading-performance-comparisons" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Finance and Techincal Trading Performance Comparisons</h1>
+<section id="chande-momentum-oscillator-cmo-augment_cmo" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="chande-momentum-oscillator-cmo-augment_cmo"><span class="header-section-number">5.1</span> Chande Momentum Oscillator (CMO) <code>augment_cmo()</code></h2>
+<ul>
+<li>Polars is 3.3X faster than Pandas</li>
+<li>Speed improvement of Polars (vs Pandas) increases with number of CMO periods</li>
+</ul>
+<div class="cell" data-execution_count="16">
+<div class="cell-output cell-output-display">
+<p><img src="01_speed_comparisons_files/figure-html/cell-17-output-1.png" width="662" height="470"></p>
+</div>
+</div>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-groups="bbands-plotly-plotnine">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">Polars</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">Pandas</a></li></ul>
+<div class="tab-content" data-groups="bbands-plotly-plotnine">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="cell" data-execution_count="17">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit <span class="op">-</span>n <span class="dv">25</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> (</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    stocks_daily_df</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        .augment_cmo(</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'adjusted'</span>, </span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>            periods <span class="op">=</span> (<span class="dv">5</span>,<span class="dv">30</span>),</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'polars'</span>,  </span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 94.4 ms ± 3.24 ms per loop (mean ± std. dev. of 7 runs, 25 loops each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="cell" data-execution_count="18">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>timeit <span class="op">-</span>n <span class="dv">25</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> (</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    stocks_daily_df</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        .augment_cmo(</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'adjusted'</span>, </span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>            periods <span class="op">=</span> (<span class="dv">5</span>,<span class="dv">30</span>),</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">'pandas'</span>,  </span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 73.3 ms ± 3.29 ms per loop (mean ± std. dev. of 7 runs, 25 loops each)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="conclusions" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Conclusions</h1>
 <p>In general, when speed and performance is needed, which is quite often the case in large-scale time series databases (e.g.&nbsp;finance, customer analytics), the polars engine can be a substantial performance enhancer. Almost every function has experienced a performance increase with the new <code>polars</code> engine. We’ve seen many functions gain 10X increases and beyond.</p>
 </section>
-<section id="more-coming-soon" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> More Coming Soon…</h1>
+<section id="more-coming-soon" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> More Coming Soon…</h1>
 <p>We are in the early stages of development. But it’s obvious the potential for <code>pytimetk</code> now in Python. 🐍</p>
 <ul>
 <li>Please <a href="https://github.com/business-science/pytimetk">⭐ us on GitHub</a> (it takes 2-seconds and means a lot).</li>
