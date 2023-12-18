@@ -60,6 +60,51 @@ def binarize(
     --------
     - `correlate()` : Calculates the correlation between a target variable and all other variables in a pandas DataFrame.
     
+    Examples
+    --------
+    
+    ``` {python}
+    # NON-TIMESERIES EXAMPLE ----
+    
+    import pandas as pd
+    import numpy as np
+    import pytimetk as tk
+
+    # Set a random seed for reproducibility
+    np.random.seed(0)
+
+    # Define the number of rows for your DataFrame
+    num_rows = 200
+
+    # Create fake data for the columns
+    data = {
+        'Age': np.random.randint(18, 65, size=num_rows),
+        'Gender': np.random.choice(['Male', 'Female'], size=num_rows),
+        'Marital_Status': np.random.choice(['Single', 'Married', 'Divorced'], size=num_rows),
+        'City': np.random.choice(['New York', 'Los Angeles', 'Chicago', 'Houston', 'Miami'], size=num_rows),
+        'Years_Playing': np.random.randint(0, 30, size=num_rows),
+        'Average_Income': np.random.randint(20000, 100000, size=num_rows),
+        'Member_Status': np.random.choice(['Bronze', 'Silver', 'Gold', 'Platinum'], size=num_rows),
+        'Number_Children': np.random.randint(0, 5, size=num_rows),
+        'Own_House_Flag': np.random.choice([True, False], size=num_rows),
+        'Own_Car_Count': np.random.randint(0, 3, size=num_rows),
+        'PersonId': range(1, num_rows + 1),  # Add a PersonId column as a row count
+        'Client': np.random.choice(['A', 'B'], size=num_rows)  # Add a Client column with random values 'A' or 'B'
+    }
+
+    # Create a DataFrame
+    df = pd.DataFrame(data)
+    
+    # Binarize the data
+    df_binarized = df.binarize(n_bins=4, thresh_infreq=0.01, name_infreq="-OTHER", one_hot=True)
+    
+    df_binarized.glimpse()    
+    ```
+    
+    ``` {python}
+    df_binarized.correlate(target='Member_Status__Platinum')
+    ```
+    
     '''
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -140,6 +185,47 @@ def correlate(
     --------
     - `binarize()` : Prepares data for `correlate`, which is used for analyzing correlationfunnel plots.
     
+    ``` {python}
+    # NON-TIMESERIES EXAMPLE ----
+    
+    import pandas as pd
+    import numpy as np
+    import pytimetk as tk
+
+    # Set a random seed for reproducibility
+    np.random.seed(0)
+
+    # Define the number of rows for your DataFrame
+    num_rows = 200
+
+    # Create fake data for the columns
+    data = {
+        'Age': np.random.randint(18, 65, size=num_rows),
+        'Gender': np.random.choice(['Male', 'Female'], size=num_rows),
+        'Marital_Status': np.random.choice(['Single', 'Married', 'Divorced'], size=num_rows),
+        'City': np.random.choice(['New York', 'Los Angeles', 'Chicago', 'Houston', 'Miami'], size=num_rows),
+        'Years_Playing': np.random.randint(0, 30, size=num_rows),
+        'Average_Income': np.random.randint(20000, 100000, size=num_rows),
+        'Member_Status': np.random.choice(['Bronze', 'Silver', 'Gold', 'Platinum'], size=num_rows),
+        'Number_Children': np.random.randint(0, 5, size=num_rows),
+        'Own_House_Flag': np.random.choice([True, False], size=num_rows),
+        'Own_Car_Count': np.random.randint(0, 3, size=num_rows),
+        'PersonId': range(1, num_rows + 1),  # Add a PersonId column as a row count
+        'Client': np.random.choice(['A', 'B'], size=num_rows)  # Add a Client column with random values 'A' or 'B'
+    }
+
+    # Create a DataFrame
+    df = pd.DataFrame(data)
+    
+    # Binarize the data
+    df_binarized = df.binarize(n_bins=4, thresh_infreq=0.01, name_infreq="-OTHER", one_hot=True)
+    
+    df_binarized.glimpse()    
+    ```
+    
+    ``` {python}
+    df_binarized.correlate(target='Member_Status__Platinum')
+    ```
     
     '''
     

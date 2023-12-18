@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -82,6 +116,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <!-- SUMO -->
 <script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -112,7 +149,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">binarize</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -320,22 +357,33 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#pytimetk.binarize" id="toc-pytimetk.binarize" class="nav-link active" data-scroll-target="#pytimetk.binarize">binarize</a>
-  <ul class="collapse">
-  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   <li><a href="#see-also" id="toc-see-also" class="nav-link" data-scroll-target="#see-also">See Also</a></li>
-  </ul></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/binarize.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">binarize</h1>
+</div>
 
 
-<section id="pytimetk.binarize" class="level1">
-<h1>binarize</h1>
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
 <p><code>binarize(data, n_bins=4, thresh_infreq=0.01, name_infreq='-OTHER', one_hot=True)</code></p>
 <p>The <code>binarize</code> function prepares data for <code>correlate</code>, which is used for analyzing correlationfunnel plots.</p>
 <p>Binarization does the following:</p>
@@ -424,9 +472,325 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <ul>
 <li><code>correlate()</code> : Calculates the correlation between a target variable and all other variables in a pandas DataFrame.</li>
 </ul>
-
-
 </section>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># NON-TIMESERIES EXAMPLE ----</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Set a random seed for reproducibility</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">0</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the number of rows for your DataFrame</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>num_rows <span class="op">=</span> <span class="dv">200</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create fake data for the columns</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> {</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Age'</span>: np.random.randint(<span class="dv">18</span>, <span class="dv">65</span>, size<span class="op">=</span>num_rows),</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Gender'</span>: np.random.choice([<span class="st">'Male'</span>, <span class="st">'Female'</span>], size<span class="op">=</span>num_rows),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Marital_Status'</span>: np.random.choice([<span class="st">'Single'</span>, <span class="st">'Married'</span>, <span class="st">'Divorced'</span>], size<span class="op">=</span>num_rows),</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">'City'</span>: np.random.choice([<span class="st">'New York'</span>, <span class="st">'Los Angeles'</span>, <span class="st">'Chicago'</span>, <span class="st">'Houston'</span>, <span class="st">'Miami'</span>], size<span class="op">=</span>num_rows),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Years_Playing'</span>: np.random.randint(<span class="dv">0</span>, <span class="dv">30</span>, size<span class="op">=</span>num_rows),</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Average_Income'</span>: np.random.randint(<span class="dv">20000</span>, <span class="dv">100000</span>, size<span class="op">=</span>num_rows),</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Member_Status'</span>: np.random.choice([<span class="st">'Bronze'</span>, <span class="st">'Silver'</span>, <span class="st">'Gold'</span>, <span class="st">'Platinum'</span>], size<span class="op">=</span>num_rows),</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Number_Children'</span>: np.random.randint(<span class="dv">0</span>, <span class="dv">5</span>, size<span class="op">=</span>num_rows),</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Own_House_Flag'</span>: np.random.choice([<span class="va">True</span>, <span class="va">False</span>], size<span class="op">=</span>num_rows),</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Own_Car_Count'</span>: np.random.randint(<span class="dv">0</span>, <span class="dv">3</span>, size<span class="op">=</span>num_rows),</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">'PersonId'</span>: <span class="bu">range</span>(<span class="dv">1</span>, num_rows <span class="op">+</span> <span class="dv">1</span>),  <span class="co"># Add a PersonId column as a row count</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Client'</span>: np.random.choice([<span class="st">'A'</span>, <span class="st">'B'</span>], size<span class="op">=</span>num_rows)  <span class="co"># Add a Client column with random values 'A' or 'B'</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a DataFrame</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(data)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Binarize the data</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>df_binarized <span class="op">=</span> df.binarize(n_bins<span class="op">=</span><span class="dv">4</span>, thresh_infreq<span class="op">=</span><span class="fl">0.01</span>, name_infreq<span class="op">=</span><span class="st">"-OTHER"</span>, one_hot<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>df_binarized.glimpse()    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[]
+&lt;class 'pandas.core.frame.DataFrame'&gt;: 200 rows of 42 columns
+Age__18.0_29.5:                   uint8             [0, 1, 1, 1, 0, 1, 0 ...
+Age__29.5_41.0:                   uint8             [0, 0, 0, 0, 0, 0, 1 ...
+Age__41.0_52.5:                   uint8             [0, 0, 0, 0, 0, 0, 0 ...
+Age__52.5_64.0:                   uint8             [1, 0, 0, 0, 1, 0, 0 ...
+Years_Playing__0.0_7.2:           uint8             [0, 1, 0, 0, 0, 0, 0 ...
+Years_Playing__7.2_14.5:          uint8             [0, 0, 1, 0, 1, 0, 1 ...
+Years_Playing__14.5_21.8:         uint8             [1, 0, 0, 0, 0, 1, 0 ...
+Years_Playing__21.8_29.0:         uint8             [0, 0, 0, 1, 0, 0, 0 ...
+Average_Income__20131.0_39881.0:  uint8             [0, 0, 1, 0, 0, 0, 0 ...
+Average_Income__39881.0_59631.0:  uint8             [0, 0, 0, 1, 1, 0, 1 ...
+Average_Income__59631.0_79381.0:  uint8             [0, 1, 0, 0, 0, 0, 0 ...
+Average_Income__79381.0_99210.0:  uint8             [1, 0, 0, 0, 0, 1, 0 ...
+PersonId__1.0_50.8:               uint8             [1, 1, 1, 1, 1, 1, 1 ...
+PersonId__50.8_100.5:             uint8             [0, 0, 0, 0, 0, 0, 0 ...
+PersonId__100.5_150.2:            uint8             [0, 0, 0, 0, 0, 0, 0 ...
+PersonId__150.2_200.2:            uint8             [0, 0, 0, 0, 0, 0, 0 ...
+Gender__Female:                   uint8             [1, 0, 0, 0, 1, 0, 1 ...
+Gender__Male:                     uint8             [0, 1, 1, 1, 0, 1, 0 ...
+Marital_Status__Divorced:         uint8             [0, 0, 0, 0, 0, 0, 0 ...
+Marital_Status__Married:          uint8             [1, 1, 0, 0, 1, 0, 0 ...
+Marital_Status__Single:           uint8             [0, 0, 1, 1, 0, 1, 1 ...
+City__Chicago:                    uint8             [0, 0, 1, 0, 0, 1, 0 ...
+City__Houston:                    uint8             [0, 0, 0, 0, 0, 0, 1 ...
+City__Los Angeles:                uint8             [0, 0, 0, 0, 0, 0, 0 ...
+City__Miami:                      uint8             [0, 1, 0, 0, 0, 0, 0 ...
+City__New York:                   uint8             [1, 0, 0, 1, 1, 0, 0 ...
+Member_Status__Bronze:            uint8             [1, 0, 1, 0, 0, 0, 0 ...
+Member_Status__Gold:              uint8             [0, 0, 0, 0, 0, 1, 1 ...
+Member_Status__Platinum:          uint8             [0, 0, 0, 1, 0, 0, 0 ...
+Member_Status__Silver:            uint8             [0, 1, 0, 0, 1, 0, 0 ...
+Number_Children__0:               uint8             [0, 0, 1, 0, 0, 0, 0 ...
+Number_Children__1:               uint8             [0, 0, 0, 0, 0, 0, 1 ...
+Number_Children__2:               uint8             [0, 0, 0, 1, 0, 0, 0 ...
+Number_Children__3:               uint8             [0, 1, 0, 0, 0, 1, 0 ...
+Number_Children__4:               uint8             [1, 0, 0, 0, 1, 0, 0 ...
+Own_House_Flag__0:                uint8             [1, 1, 0, 0, 1, 0, 1 ...
+Own_House_Flag__1:                uint8             [0, 0, 1, 1, 0, 1, 0 ...
+Own_Car_Count__0:                 uint8             [0, 1, 0, 0, 1, 0, 0 ...
+Own_Car_Count__1:                 uint8             [0, 0, 0, 1, 0, 1, 1 ...
+Own_Car_Count__2:                 uint8             [1, 0, 1, 0, 0, 0, 0 ...
+Client__A:                        uint8             [1, 1, 1, 1, 1, 1, 1 ...
+Client__B:                        uint8             [0, 0, 0, 0, 0, 0, 0 ...</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_binarized.correlate(target<span class="op">=</span><span class="st">'Member_Status__Platinum'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">feature</th>
+<th data-quarto-table-cell-role="th">correlation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>Member_Status__Platinum</td>
+<td>1.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">26</td>
+<td>Member_Status__Bronze</td>
+<td>-0.341351</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">29</td>
+<td>Member_Status__Silver</td>
+<td>-0.332799</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>Member_Status__Gold</td>
+<td>-0.298637</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">30</td>
+<td>Number_Children__0</td>
+<td>0.205230</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">8</td>
+<td>Average_Income__20131.0_39881.0</td>
+<td>-0.151215</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>Age__18.0_29.5</td>
+<td>-0.135522</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>Average_Income__79381.0_99210.0</td>
+<td>0.128508</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">33</td>
+<td>Number_Children__3</td>
+<td>-0.112216</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>Average_Income__39881.0_59631.0</td>
+<td>0.109999</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">19</td>
+<td>Marital_Status__Married</td>
+<td>-0.104562</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">41</td>
+<td>Client__B</td>
+<td>0.103842</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">40</td>
+<td>Client__A</td>
+<td>-0.103842</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>Age__41.0_52.5</td>
+<td>0.090621</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>PersonId__1.0_50.8</td>
+<td>0.088509</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">38</td>
+<td>Own_Car_Count__1</td>
+<td>0.087769</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>Average_Income__59631.0_79381.0</td>
+<td>-0.086568</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">22</td>
+<td>City__Houston</td>
+<td>0.086124</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">13</td>
+<td>PersonId__50.8_100.5</td>
+<td>-0.074892</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">39</td>
+<td>Own_Car_Count__2</td>
+<td>-0.071738</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">7</td>
+<td>Years_Playing__21.8_29.0</td>
+<td>-0.071452</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">31</td>
+<td>Number_Children__1</td>
+<td>-0.069054</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">25</td>
+<td>City__New York</td>
+<td>-0.055757</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">18</td>
+<td>Marital_Status__Divorced</td>
+<td>0.055724</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5</td>
+<td>Years_Playing__7.2_14.5</td>
+<td>0.054617</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">20</td>
+<td>Marital_Status__Single</td>
+<td>0.050286</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">34</td>
+<td>Number_Children__4</td>
+<td>-0.047760</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>PersonId__150.2_200.2</td>
+<td>-0.047659</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1</td>
+<td>Age__29.5_41.0</td>
+<td>0.040717</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">14</td>
+<td>PersonId__100.5_150.2</td>
+<td>0.034042</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">21</td>
+<td>City__Chicago</td>
+<td>-0.032799</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4</td>
+<td>Years_Playing__0.0_7.2</td>
+<td>0.028391</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>Gender__Female</td>
+<td>0.020215</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>Gender__Male</td>
+<td>-0.020215</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">35</td>
+<td>Own_House_Flag__0</td>
+<td>0.017336</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">36</td>
+<td>Own_House_Flag__1</td>
+<td>-0.017336</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">37</td>
+<td>Own_Car_Count__0</td>
+<td>-0.016373</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>Age__52.5_64.0</td>
+<td>0.014562</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>City__Miami</td>
+<td>0.010662</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">6</td>
+<td>Years_Playing__14.5_21.8</td>
+<td>-0.005915</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">23</td>
+<td>City__Los Angeles</td>
+<td>-0.004911</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">32</td>
+<td>Number_Children__2</td>
+<td>0.002104</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
