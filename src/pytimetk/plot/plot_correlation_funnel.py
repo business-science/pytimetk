@@ -12,28 +12,67 @@ def plot_correlation_funnel(
     data, 
     interactive=False, 
     limits=(-1, 1), 
-    alpha=1
+    alpha=1,
+    title = "Correlation Funnel Plot",
+    x_lab = "Correlation",
+    y_lab = "Feature",
+    base_size = 11,
+    width = None,
+    height = None,
 ):
     if not isinstance(data, pd.DataFrame):
         raise ValueError("plot_correlation_funnel(): Object is not of class `pd.DataFrame`.")
     
     if interactive:
-        data['label_text'] = data.apply(lambda row: f"{row['feature']}\nCorrelation: {row['correlation']:.3f}", axis=1)
-        
+          
         fig = px.scatter(
             data, 
             x='correlation', 
             y='feature', 
-            text='label_text',
+            hover_data={'correlation':':.3f', 'feature':False, 'bin':True},
             range_x=limits, 
             title='Correlation Funnel'
         )
         
-        fig.update_traces(marker=dict(color='#2c3e50', opacity=alpha), selector=dict(mode='markers'))
-        fig.update_layout(shapes=[dict(type='line', x0=0, x1=0, y0=0, y1=1, yref='paper', line=dict(color='red', dash='dash'))])
-        fig.update_xaxes(title_text="Correlation")
-        fig.update_yaxes(title_text="Feature")
-        fig.update_layout(showlegend=False)
+        # Finalize the plotly plot
+    
+        fig.update_layout(
+            title=title,
+            xaxis_title=x_lab,
+            yaxis_title=y_lab,
+        )
+        
+        fig.update_xaxes(
+            matches=None, showticklabels=True, visible=True, 
+        )
+        
+        fig.update_layout(margin=dict(l=10, r=10, t=40, b=40))
+        fig.update_layout(
+            template="plotly_white", 
+            font=dict(size=base_size),
+            title_font=dict(size=base_size*1.2),
+            legend_title_font=dict(size=base_size*0.8),
+            legend_font=dict(size=base_size*0.8),
+        )
+        fig.update_xaxes(tickfont=dict(size=base_size*0.8))
+        fig.update_yaxes(
+            tickfont=dict(size=base_size*0.8), 
+            autorange="reversed"
+        )
+        fig.update_annotations(font_size=base_size*0.8)
+        fig.update_layout(
+            autosize=True, 
+            width=width,
+            height=height,
+            showlegend=False,
+        )
+        fig.update_traces(
+            marker=dict(color='#2c3e50', opacity=alpha), 
+            selector=dict(mode='markers'),
+            text = data['bin'],
+            # hoverinfo = 'text+x+y',
+            hoverlabel=dict(font_size=base_size*0.8)
+        )
         
         return fig
 

@@ -233,6 +233,10 @@ def correlate(
     df_correlated
     ```
     
+    ``` {python}
+    df_correlated.plot_correlation_funnel(interactive=True)
+    ```
+    
     '''
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
