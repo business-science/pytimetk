@@ -17,6 +17,7 @@ from .core.ts_features import *
 from .core.ts_summary import *
 from .core.anomalize import *
 from .core.frequency import *
+from .core.correlationfunnel import *
 
 from .feature_engineering.timeseries_signature import *
 from .feature_engineering.holiday_signature import *
@@ -63,6 +64,9 @@ from .plot.theme import (
 )
 from .core.anomalize import (
     anomalize,
+)
+from .core.correlationfunnel import (
+    correlate, binarize
 )
 from .core.summarize_by_time import (
     summarize_by_time, 
