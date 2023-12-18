@@ -3,37 +3,64 @@ import pandas as pd
 import numpy as np
 import pandas_flavor as pf
 
-@pf.register_dataframe_method
-def correlate(data, target, method='pearson'):
-    
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        data = data.obj
-    
-    if not isinstance(data, pd.DataFrame):
-        raise ValueError("Error correlate(): Object is not of class `pd.DataFrame`.")
-
-    if target not in data.columns:
-        raise ValueError(f"Error in correlate(): '{target}' not found in the DataFrame columns.")
-
-    if method not in ['pearson', 'kendall', 'spearman']:
-        raise ValueError("Invalid correlation method. Choose from 'pearson', 'kendall', or 'spearman'.")
-
-    # Calculate the correlation
-    correlations = data.corrwith(data[target], method=method)
-    correlations = correlations.reset_index()
-    correlations.columns = ['feature', 'correlation']
-
-    # Sort by absolute correlation in descending order
-    correlations = correlations.sort_values(by='correlation', key=abs, ascending=False)
-
-    return correlations
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.correlate = correlate
+from typing import Union
 
 
 @pf.register_dataframe_method
-def binarize(data, n_bins=4, thresh_infreq=0.01, name_infreq="-OTHER", one_hot=True):
+def binarize(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    n_bins: int = 4, 
+    thresh_infreq: float=0.01, 
+    name_infreq: str="-OTHER", 
+    one_hot: bool=True
+):
+    '''The `binarize` function prepares data for `correlate`, which is used for analyzing correlationfunnel plots. 
+    
+    Binarization does the following:
+    
+    1. Takes in a pandas DataFrame or DataFrameGroupBy object, converts non-numeric
+    columns to categorical, 
+    2. Replaces boolean columns with integers, 
+    3. Checks for data type and missing
+    values, 
+    4. fixes low cardinality numeric data, 
+    5. fixes high skew numeric data, and 
+    6. finally applies a
+    transformation to create a new DataFrame with binarized data.
+    
+    Parameters
+    ----------
+    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+        The `data` parameter is the input data that you want to binarize. It can be either a pandas
+        DataFrame or a DataFrameGroupBy object.
+    n_bins : int, optional
+        The `n_bins` parameter specifies the number of bins to use when binarizing numeric data. It is used
+        in the `create_recipe` function to determine the number of bins for each numeric column.
+    thresh_infreq : float
+        The `thresh_infreq` parameter is a float that represents the threshold for infrequent categories.
+        Categories that have a frequency below this threshold will be grouped together and labeled with the
+        name specified in the `name_infreq` parameter. For example, if `thresh_infreq` is set to 0
+    name_infreq : str, optional
+        The `name_infreq` parameter is used to specify the name that will be assigned to the category
+        representing infrequent values in a column. This is applicable when performing binarization on
+        non-numeric columns. By default, the name assigned is "-OTHER".
+    one_hot : bool, optional
+        The `one_hot` parameter is a boolean flag that determines whether or not to perform one-hot
+        encoding on the categorical variables after binarization. If `one_hot` is set to `True`, the
+        categorical variables will be one-hot encoded, creating binary columns for each unique category. 
+    
+    Returns
+    -------
+        The function `binarize` returns the transformed data after applying various data preprocessing
+        steps such as converting non-numeric columns to categorical, replacing boolean columns with
+        integers, fixing low cardinality numeric data, fixing high skew numeric data, and creating a recipe
+        for binarization.
+        
+    See Also
+    --------
+    - `correlate()` : Calculates the correlation between a target variable and all other variables in a pandas DataFrame.
+    
+    '''
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         data = data.obj
@@ -78,6 +105,69 @@ def binarize(data, n_bins=4, thresh_infreq=0.01, name_infreq="-OTHER", one_hot=T
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.binarize = binarize
+
+
+@pf.register_dataframe_method
+def correlate(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    target: str, 
+    method='pearson'
+):
+    '''The `correlate` function calculates the correlation between a target variable and all other
+    variables in a pandas DataFrame, and returns the results sorted by absolute correlation in
+    descending order.
+    
+    Parameters
+    ----------
+    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+        The `data` parameter is the input data that you want to calculate correlations for. It can be
+        either a pandas DataFrame or a grouped DataFrame obtained from a groupby operation.
+    target : str
+        The `target` parameter is a string that represents the column name in the DataFrame for which you
+        want to calculate the correlation with other columns.
+    method, optional
+        The `method` parameter in the `correlate` function is used to specify the method for calculating
+        the correlation coefficient. The available options for the `method` parameter are:
+    
+    Returns
+    -------
+        The function `correlate` returns a DataFrame with two columns: 'feature' and 'correlation'. The
+        'feature' column contains the names of the features in the input data, and the 'correlation' column
+        contains the correlation coefficients between each feature and the target variable. The DataFrame is
+        sorted in descending order based on the absolute correlation values.
+        
+    See Also
+    --------
+    - `binarize()` : Prepares data for `correlate`, which is used for analyzing correlationfunnel plots.
+    
+    
+    '''
+    
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        data = data.obj
+    
+    if not isinstance(data, pd.DataFrame):
+        raise ValueError("Error correlate(): Object is not of class `pd.DataFrame`.")
+
+    if target not in data.columns:
+        raise ValueError(f"Error in correlate(): '{target}' not found in the DataFrame columns.")
+
+    if method not in ['pearson', 'kendall', 'spearman']:
+        raise ValueError("Invalid correlation method. Choose from 'pearson', 'kendall', or 'spearman'.")
+
+    # Calculate the correlation
+    correlations = data.corrwith(data[target], method=method)
+    correlations = correlations.reset_index()
+    correlations.columns = ['feature', 'correlation']
+
+    # Sort by absolute correlation in descending order
+    correlations = correlations.sort_values(by='correlation', key=abs, ascending=False)
+
+    return correlations
+
+# Monkey patch the method to pandas groupby objects
+pd.core.groupby.generic.DataFrameGroupBy.correlate = correlate
+
 
 
 # UTILITIES ----
