@@ -20,6 +20,7 @@ website:
     - contents:
       - reference/binarize.qmd
       - reference/correlate.qmd
+      - reference/plot_correlation_funnel.qmd
       section: "\U0001F32A\uFE0F Correlation Funnel"
     - contents:
       - reference/augment_timeseries_signature.qmd

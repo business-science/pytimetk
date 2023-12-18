@@ -25,6 +25,8 @@ descending order.
 
 - `binarize()` : Prepares data for `correlate`, which is used for analyzing correlationfunnel plots.
 
+## Examples
+
 ``` {python}
 # NON-TIMESERIES EXAMPLE ----
 
@@ -64,5 +66,23 @@ df_binarized.glimpse()
 ```
 
 ``` {python}
-df_binarized.correlate(target='Member_Status__Platinum')
+df_correlated = df_binarized.correlate(target='Member_Status__Platinum')
+df_correlated
+```
+
+``` {python}
+# Interactive
+df_correlated.plot_correlation_funnel(
+    interactive=True, 
+    height=400
+)
+```
+
+``` {python}
+# Static
+fig = df_correlated.plot_correlation_funnel(
+    interactive=False, 
+    height = 600
+)
+fig
 ```

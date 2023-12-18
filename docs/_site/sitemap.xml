@@ -214,7 +214,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2023-12-18T19:48:58.533Z</lastmod>
+    <lastmod>2023-12-18T22:29:27.144Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/plot_anomalies_decomp.html</loc>
@@ -282,10 +282,14 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/correlate.html</loc>
-    <lastmod>2023-12-18T19:49:10.231Z</lastmod>
+    <lastmod>2023-12-18T22:29:44.385Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/binarize.html</loc>
-    <lastmod>2023-12-18T20:02:44.655Z</lastmod>
+    <lastmod>2023-12-18T22:29:58.785Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/plot_correlation_funnel.html</loc>
+    <lastmod>2023-12-18T22:29:26.235Z</lastmod>
   </url>
 </urlset>

@@ -1,0 +1,4 @@
+# plot_correlation_funnel { #pytimetk.plot_correlation_funnel }
+
+`plot_correlation_funnel(data, limits=(-1, 1), alpha=1, title='Correlation Funnel Plot', x_lab='Correlation', y_lab='Feature', base_size=11, width=None, height=None, interactive=True)`
+

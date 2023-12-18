@@ -119,6 +119,22 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.26.0.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
 
 
 </head>
@@ -360,6 +376,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   <li><a href="#see-also" id="toc-see-also" class="nav-link" data-scroll-target="#see-also">See Also</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/correlate.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -456,6 +473,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <ul>
 <li><code>binarize()</code> : Prepares data for <code>correlate</code>, which is used for analyzing correlationfunnel plots.</li>
 </ul>
+</section>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># NON-TIMESERIES EXAMPLE ----</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -540,7 +560,8 @@ Client__B:                        uint8             [0, 0, 0, 0, 0, 0, 0 ...</co
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_binarized.correlate(target<span class="op">=</span><span class="st">'Member_Status__Platinum'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_correlated <span class="op">=</span> df_binarized.correlate(target<span class="op">=</span><span class="st">'Member_Status__Platinum'</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_correlated</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
@@ -550,224 +571,316 @@ Client__B:                        uint8             [0, 0, 0, 0, 0, 0, 0 ...</co
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">feature</th>
+<th data-quarto-table-cell-role="th">bin</th>
 <th data-quarto-table-cell-role="th">correlation</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">28</td>
-<td>Member_Status__Platinum</td>
+<td>Member_Status</td>
+<td>Platinum</td>
 <td>1.000000</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">26</td>
-<td>Member_Status__Bronze</td>
+<td>Member_Status</td>
+<td>Bronze</td>
 <td>-0.341351</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">29</td>
-<td>Member_Status__Silver</td>
+<td>Member_Status</td>
+<td>Silver</td>
 <td>-0.332799</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">27</td>
-<td>Member_Status__Gold</td>
+<td>Member_Status</td>
+<td>Gold</td>
 <td>-0.298637</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">30</td>
-<td>Number_Children__0</td>
+<td>Number_Children</td>
+<td>0</td>
 <td>0.205230</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">8</td>
-<td>Average_Income__20131.0_39881.0</td>
+<td>Average_Income</td>
+<td>20131.0_39881.0</td>
 <td>-0.151215</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>Age__18.0_29.5</td>
+<td>Age</td>
+<td>18.0_29.5</td>
 <td>-0.135522</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">11</td>
-<td>Average_Income__79381.0_99210.0</td>
+<td>Average_Income</td>
+<td>79381.0_99210.0</td>
 <td>0.128508</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">33</td>
-<td>Number_Children__3</td>
+<td>Number_Children</td>
+<td>3</td>
 <td>-0.112216</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9</td>
-<td>Average_Income__39881.0_59631.0</td>
+<td>Average_Income</td>
+<td>39881.0_59631.0</td>
 <td>0.109999</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">19</td>
-<td>Marital_Status__Married</td>
+<td>Marital_Status</td>
+<td>Married</td>
 <td>-0.104562</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">41</td>
-<td>Client__B</td>
+<td>Client</td>
+<td>B</td>
 <td>0.103842</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">40</td>
-<td>Client__A</td>
+<td>Client</td>
+<td>A</td>
 <td>-0.103842</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2</td>
-<td>Age__41.0_52.5</td>
+<td>Age</td>
+<td>41.0_52.5</td>
 <td>0.090621</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">12</td>
-<td>PersonId__1.0_50.8</td>
+<td>PersonId</td>
+<td>1.0_50.8</td>
 <td>0.088509</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">38</td>
-<td>Own_Car_Count__1</td>
+<td>Own_Car_Count</td>
+<td>1</td>
 <td>0.087769</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">10</td>
-<td>Average_Income__59631.0_79381.0</td>
+<td>Average_Income</td>
+<td>59631.0_79381.0</td>
 <td>-0.086568</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">22</td>
-<td>City__Houston</td>
+<td>City</td>
+<td>Houston</td>
 <td>0.086124</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">13</td>
-<td>PersonId__50.8_100.5</td>
+<td>PersonId</td>
+<td>50.8_100.5</td>
 <td>-0.074892</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">39</td>
-<td>Own_Car_Count__2</td>
+<td>Own_Car_Count</td>
+<td>2</td>
 <td>-0.071738</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">7</td>
-<td>Years_Playing__21.8_29.0</td>
+<td>Years_Playing</td>
+<td>21.8_29.0</td>
 <td>-0.071452</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">31</td>
-<td>Number_Children__1</td>
+<td>Number_Children</td>
+<td>1</td>
 <td>-0.069054</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">25</td>
-<td>City__New York</td>
+<td>City</td>
+<td>New York</td>
 <td>-0.055757</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">18</td>
-<td>Marital_Status__Divorced</td>
+<td>Marital_Status</td>
+<td>Divorced</td>
 <td>0.055724</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">5</td>
-<td>Years_Playing__7.2_14.5</td>
+<td>Years_Playing</td>
+<td>7.2_14.5</td>
 <td>0.054617</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">20</td>
-<td>Marital_Status__Single</td>
+<td>Marital_Status</td>
+<td>Single</td>
 <td>0.050286</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">34</td>
-<td>Number_Children__4</td>
+<td>Number_Children</td>
+<td>4</td>
 <td>-0.047760</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">15</td>
-<td>PersonId__150.2_200.2</td>
+<td>PersonId</td>
+<td>150.2_200.2</td>
 <td>-0.047659</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">1</td>
-<td>Age__29.5_41.0</td>
+<td>Age</td>
+<td>29.5_41.0</td>
 <td>0.040717</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">14</td>
-<td>PersonId__100.5_150.2</td>
+<td>PersonId</td>
+<td>100.5_150.2</td>
 <td>0.034042</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">21</td>
-<td>City__Chicago</td>
+<td>City</td>
+<td>Chicago</td>
 <td>-0.032799</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">4</td>
-<td>Years_Playing__0.0_7.2</td>
+<td>Years_Playing</td>
+<td>0.0_7.2</td>
 <td>0.028391</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">16</td>
-<td>Gender__Female</td>
+<td>Gender</td>
+<td>Female</td>
 <td>0.020215</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">17</td>
-<td>Gender__Male</td>
+<td>Gender</td>
+<td>Male</td>
 <td>-0.020215</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">35</td>
-<td>Own_House_Flag__0</td>
+<td>Own_House_Flag</td>
+<td>0</td>
 <td>0.017336</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">36</td>
-<td>Own_House_Flag__1</td>
+<td>Own_House_Flag</td>
+<td>1</td>
 <td>-0.017336</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">37</td>
-<td>Own_Car_Count__0</td>
+<td>Own_Car_Count</td>
+<td>0</td>
 <td>-0.016373</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>Age__52.5_64.0</td>
+<td>Age</td>
+<td>52.5_64.0</td>
 <td>0.014562</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">24</td>
-<td>City__Miami</td>
+<td>City</td>
+<td>Miami</td>
 <td>0.010662</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">6</td>
-<td>Years_Playing__14.5_21.8</td>
+<td>Years_Playing</td>
+<td>14.5_21.8</td>
 <td>-0.005915</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">23</td>
-<td>City__Los Angeles</td>
+<td>City</td>
+<td>Los Angeles</td>
 <td>-0.004911</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">32</td>
-<td>Number_Children__2</td>
+<td>Number_Children</td>
+<td>2</td>
 <td>0.002104</td>
 </tr>
 </tbody>
 </table>
 
 </div>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Interactive</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_correlated.plot_correlation_funnel(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    interactive<span class="op">=</span><span class="va">True</span>, </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">400</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<div>                            <div id="7b40c186-b24e-4e42-8cca-12a5c3d6fdd8" class="plotly-graph-div" style="height:400px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("7b40c186-b24e-4e42-8cca-12a5c3d6fdd8")) {                    Plotly.newPlot(                        "7b40c186-b24e-4e42-8cca-12a5c3d6fdd8",                        [{"customdata":[["Platinum"],["Bronze"],["Silver"],["Gold"],["0"],["20131.0_39881.0"],["18.0_29.5"],["79381.0_99210.0"],["3"],["39881.0_59631.0"],["Married"],["B"],["A"],["41.0_52.5"],["1.0_50.8"],["1"],["59631.0_79381.0"],["Houston"],["50.8_100.5"],["2"],["21.8_29.0"],["1"],["New York"],["Divorced"],["7.2_14.5"],["Single"],["4"],["150.2_200.2"],["29.5_41.0"],["100.5_150.2"],["Chicago"],["0.0_7.2"],["Female"],["Male"],["0"],["1"],["0"],["52.5_64.0"],["Miami"],["14.5_21.8"],["Los Angeles"],["2"]],"hovertemplate":"correlation=%{x:.3f}\u003cbr\u003efeature=%{y}\u003cbr\u003ebin=%{customdata[0]}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"","marker":{"color":"#2c3e50","symbol":"circle","opacity":1},"mode":"markers","name":"","orientation":"h","showlegend":false,"x":[1.0,-0.341350510892991,-0.3327993588882368,-0.2986370049425592,0.2052299041466788,-0.1512148191541667,-0.13552199722893685,0.12850816386101255,-0.11221608935048046,0.10999860937282734,-0.10456172444048943,0.10384151217834135,-0.1038415121783413,0.09062050961540245,0.08850913177228,0.08776937548442013,-0.08656826101097509,0.08612363356437988,-0.07489234226885316,-0.07173762090338524,-0.07145198912998886,-0.06905408456963764,-0.055756726287264746,0.05572361943715288,0.054616790835160745,0.0502857924784525,-0.047759813009531714,-0.04765876326199725,0.04071695493090413,0.034041973758569495,-0.03279915479297811,0.028390854871177176,0.020214737348883103,-0.02021473734888304,0.01733582068579715,-0.01733582068579715,-0.016372603019343304,0.014562476964599742,0.01066197660457439,-0.005914601683979656,-0.004911046587357808,0.002104185801273971],"xaxis":"x","y":["Member_Status","Member_Status","Member_Status","Member_Status","Number_Children","Average_Income","Age","Average_Income","Number_Children","Average_Income","Marital_Status","Client","Client","Age","PersonId","Own_Car_Count","Average_Income","City","PersonId","Own_Car_Count","Years_Playing","Number_Children","City","Marital_Status","Years_Playing","Marital_Status","Number_Children","PersonId","Age","PersonId","City","Years_Playing","Gender","Gender","Own_House_Flag","Own_House_Flag","Own_Car_Count","Age","City","Years_Playing","City","Number_Children"],"yaxis":"y","type":"scatter","hoverlabel":{"font":{"size":8.8}},"text":["Platinum","Bronze","Silver","Gold","0","20131.0_39881.0","18.0_29.5","79381.0_99210.0","3","39881.0_59631.0","Married","B","A","41.0_52.5","1.0_50.8","1","59631.0_79381.0","Houston","50.8_100.5","2","21.8_29.0","1","New York","Divorced","7.2_14.5","Single","4","150.2_200.2","29.5_41.0","100.5_150.2","Chicago","0.0_7.2","Female","Male","0","1","0","52.5_64.0","Miami","14.5_21.8","Los Angeles","2"]}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"Correlation"},"range":[-1,1],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"Feature"},"tickfont":{"size":8.8},"autorange":"reversed"},"legend":{"tracegroupgap":0,"title":{"font":{"size":8.8}},"font":{"size":8.8}},"title":{"text":"Correlation Funnel Plot","font":{"size":13.2}},"margin":{"l":10,"r":10,"t":40,"b":40},"font":{"size":11},"autosize":true,"height":400,"showlegend":false},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('7b40c186-b24e-4e42-8cca-12a5c3d6fdd8');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Static</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> df_correlated.plot_correlation_funnel(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    interactive<span class="op">=</span><span class="va">False</span>, </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    height <span class="op">=</span> <span class="dv">600</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>fig</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="correlate_files/figure-html/cell-5-output-1.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<pre><code>&lt;Figure Size: (700 x 600)&gt;</code></pre>
 </div>
 </div>
 

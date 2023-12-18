@@ -103,11 +103,23 @@ def binarize(
     
     ``` {python}
     df_correlated = df_binarized.correlate(target='Member_Status__Platinum')
-    df_correlated
+    df_correlated.head(10)
     ```
     
     ``` {python}
-    df_correlated.plot_correlation_funnel(interactive=True)
+    # Interactive
+    df_correlated.plot_correlation_funnel(
+        interactive=True, 
+        height=600
+    )
+    ```
+    
+    ``` {python}
+    # Static
+    df_correlated.plot_correlation_funnel(
+        interactive=False, 
+        height = 900
+    )
     ```
     
     '''
@@ -190,6 +202,9 @@ def correlate(
     --------
     - `binarize()` : Prepares data for `correlate`, which is used for analyzing correlationfunnel plots.
     
+    Examples
+    --------
+    
     ``` {python}
     # NON-TIMESERIES EXAMPLE ----
     
@@ -243,10 +258,11 @@ def correlate(
     
     ``` {python}
     # Static
-    df_correlated.plot_correlation_funnel(
+    fig = df_correlated.plot_correlation_funnel(
         interactive=False, 
         height = 600
     )
+    fig
     ```
     
     '''
