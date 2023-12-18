@@ -27,8 +27,8 @@ def anomalize(
     clean_alpha: float = 0.75,
     max_anomalies: float = 0.2,
     bind_data: bool = False,
-    threads: int = 1,
     reduce_memory: bool = False,
+    threads: int = 1,
     show_progress: bool = True,
     verbose = False,
 ) -> pd.DataFrame:
@@ -102,13 +102,13 @@ def anomalize(
         included in the output. If set to `True`, the original data will be included 
         in the output dataframe. If set to `False`, only the anomalous data will be 
         included.
+    reduce_memory : bool, optional
+        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
     threads : int
         The `threads` parameter specifies the number of threads to use for parallel 
         processing. By default, it is set to `1`, which means no parallel processing 
         is used. If you set `threads` to `-1`, it will use all available processors 
         for parallel processing.
-    reduce_memory : bool, optional
-        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
     show_progress : bool
         A boolean parameter that determines whether to show a progress bar during 
         the execution of the function. If set to True, a progress bar will be 
