@@ -4,9 +4,11 @@ import pandas_flavor as pf
 
 import plotly.express as px
 
-from plotnine import ggplot, aes, geom_vline, geom_point, geom_text, labs, theme_minimal, xlim
+from plotnine import ggplot, aes, geom_vline, geom_point, geom_text, labs, xlim, geom_label
+import matplotlib.pyplot as plt
+from adjustText import adjust_text
 
-from pytimetk.plot.theme import theme_timetk, palette_timetk
+from pytimetk.plot.theme import theme_timetk
 
 @pf.register_dataframe_method
 def plot_correlation_funnel(
@@ -85,12 +87,23 @@ def plot_correlation_funnel(
             + aes(x='correlation', y='feature', label='bin')
             + geom_vline(xintercept=0, linetype='dashed', color='red')
             + geom_point(color='#2c3e50', alpha=alpha)
-            + geom_text(size=base_size*0.8, color='#2c3e50', nudge_y=0.3)
             + labs(title=title, x=x_lab, y=y_lab)
             + xlim(limits[0], limits[1])
-            + theme_minimal()
         )
         p = p + theme_timetk(base_size=base_size, width = width, height = height)
+        
+        p = p + geom_text(    
+            size=base_size*0.8,
+            color='#2c3e50', 
+            # nudge_y=0.3,
+            adjust_text={
+                'expand_points': (0.5, 0.5),
+                # 'expand_objects': (1.5, 1.5),
+                'arrowprops': {
+                    'arrowstyle': '-',
+                },
+            },
+        )  
         
         return p
         

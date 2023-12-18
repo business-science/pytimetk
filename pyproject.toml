@@ -37,6 +37,7 @@ tqdm = "^4.66.1"
 polars = ">=0.19.8"
 pyarrow = "^13.0.0"
 pathos = "^0.3.1"
+adjusttext = "^0.8"
 
 
 [tool.poetry.group.dev.dependencies]
