@@ -136,6 +136,7 @@ quartodoc:
       contents:
         - binarize
         - correlate 
+        - plot_correlation_funnel
     - title: 🏗️ Feature Engineereing
       desc: Adding Features to Time Series DataFrames (Augmenting)
       package: pytimetk

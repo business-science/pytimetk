@@ -229,7 +229,8 @@ def correlate(
     ```
     
     ``` {python}
-    df_binarized.correlate(target='Member_Status__Platinum')
+    df_correlated = df_binarized.correlate(target='Member_Status__Platinum')
+    df_correlated
     ```
     
     '''
@@ -253,6 +254,13 @@ def correlate(
 
     # Sort by absolute correlation in descending order
     correlations = correlations.sort_values(by='correlation', key=abs, ascending=False)
+    
+    
+    # Splitting the 'feature' column
+    correlations[['feature', 'bin']] = correlations['feature'].str.split('__', expand=True)
+    
+    # Reorder the columns
+    correlations = correlations[['feature', 'bin', 'correlation']]
 
     return correlations
 
