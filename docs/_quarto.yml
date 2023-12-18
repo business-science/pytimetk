@@ -130,6 +130,12 @@ quartodoc:
         - plot_anomalies
         - plot_anomalies_decomp
         - plot_anomalies_cleaned
+    - title: 🌪️ Correlation Funnel
+      desc: Visualize correlation on any tabular dataset (not just for Time Series).
+      package: pytimetk
+      contents:
+        - binarize
+        - correlate 
     - title: 🏗️ Feature Engineereing
       desc: Adding Features to Time Series DataFrames (Augmenting)
       package: pytimetk

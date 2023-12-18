@@ -18,6 +18,10 @@ website:
       - reference/plot_anomalies_cleaned.qmd
       section: "\U0001F50D Anomaly Detection"
     - contents:
+      - reference/binarize.qmd
+      - reference/correlate.qmd
+      section: "\U0001F32A\uFE0F Correlation Funnel"
+    - contents:
       - reference/augment_timeseries_signature.qmd
       - reference/augment_holiday_signature.qmd
       - reference/augment_lags.qmd

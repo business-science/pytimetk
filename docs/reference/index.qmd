@@ -30,6 +30,15 @@ Detect anomalies in time series data.
 | [plot_anomalies_decomp](plot_anomalies_decomp.qmd#pytimetk.plot_anomalies_decomp) | The `plot_anomalies_decomp` function takes in data from the `anomalize()`  |
 | [plot_anomalies_cleaned](plot_anomalies_cleaned.qmd#pytimetk.plot_anomalies_cleaned) | The `plot_anomalies_cleaned` function takes in data from the `anomalize()`  |
 
+## 🌪️ Correlation Funnel
+
+Visualize correlation on any tabular dataset (not just for Time Series).
+
+| | |
+| --- | --- |
+| [binarize](binarize.qmd#pytimetk.binarize) | The `binarize` function prepares data for `correlate`, which is used for analyzing correlationfunnel plots.  |
+| [correlate](correlate.qmd#pytimetk.correlate) | The `correlate` function calculates the correlation between a target variable and all other |
+
 ## 🏗️ Feature Engineereing
 
 Adding Features to Time Series DataFrames (Augmenting)

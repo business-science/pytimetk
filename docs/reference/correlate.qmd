@@ -1,0 +1,26 @@
+# correlate { #pytimetk.correlate }
+
+`correlate(data, target, method='pearson')`
+
+The `correlate` function calculates the correlation between a target variable and all other
+variables in a pandas DataFrame, and returns the results sorted by absolute correlation in
+descending order.
+
+## Parameters
+
+| Name       | Type                                                            | Description                                                                                                                                                                         | Default     |
+|------------|-----------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| `data`     | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | The `data` parameter is the input data that you want to calculate correlations for. It can be either a pandas DataFrame or a grouped DataFrame obtained from a groupby operation.   | _required_  |
+| `target`   | str                                                             | The `target` parameter is a string that represents the column name in the DataFrame for which you want to calculate the correlation with other columns.                             | _required_  |
+| `method`   |                                                                 | The `method` parameter in the `correlate` function is used to specify the method for calculating the correlation coefficient. The available options for the `method` parameter are: | `'pearson'` |
+| `optional` |                                                                 | The `method` parameter in the `correlate` function is used to specify the method for calculating the correlation coefficient. The available options for the `method` parameter are: | `'pearson'` |
+
+## Returns
+
+| Type                                                                                            | Description                                                                                                                                                                                                                                                                   |
+|-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| The function `correlate` returns a DataFrame with two columns: 'feature' and 'correlation'. The | 'feature' column contains the names of the features in the input data, and the 'correlation' column contains the correlation coefficients between each feature and the target variable. The DataFrame is sorted in descending order based on the absolute correlation values. |
+
+## See Also
+
+- `binarize()` : Prepares data for `correlate`, which is used for analyzing correlationfunnel plots.
