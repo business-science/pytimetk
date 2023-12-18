@@ -5,6 +5,7 @@ from .plot.plot_timeseries import *
 from .plot.plot_anomalies import *
 from .plot.plot_anomalies_decomp import *
 from .plot.plot_anomalies_cleaned import *
+from .plot.plot_correlation_funnel import *
 from .plot.theme import *
 
 from .core.summarize_by_time import *
@@ -58,6 +59,9 @@ from .plot.plot_anomalies_decomp import (
 )
 from .plot.plot_anomalies_cleaned import (
     plot_anomalies_cleaned
+)
+from .plot.plot_correlation_funnel import (
+    plot_correlation_funnel
 )
 from .plot.theme import (
     theme_timetk, palette_timetk

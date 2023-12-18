@@ -102,7 +102,12 @@ def binarize(
     ```
     
     ``` {python}
-    df_binarized.correlate(target='Member_Status__Platinum')
+    df_correlated = df_binarized.correlate(target='Member_Status__Platinum')
+    df_correlated
+    ```
+    
+    ``` {python}
+    df_correlated.plot_correlation_funnel(interactive=True)
     ```
     
     '''
