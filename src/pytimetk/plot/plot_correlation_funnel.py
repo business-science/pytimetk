@@ -2,15 +2,15 @@ import pandas as pd
 import numpy as np
 import pandas_flavor as pf
 
-# from plotnine import ggplot, aes, geom_vline, geom_point, geom_text, labs, theme_minimal, theme, element_text
-import matplotlib.pyplot as plt
 import plotly.express as px
-import plotly.graph_objects as go
+
+from plotnine import ggplot, aes, geom_vline, geom_point, geom_text, labs, theme_minimal, xlim
+
+from pytimetk.plot.theme import theme_timetk, palette_timetk
 
 @pf.register_dataframe_method
 def plot_correlation_funnel(
     data, 
-    interactive=False, 
     limits=(-1, 1), 
     alpha=1,
     title = "Correlation Funnel Plot",
@@ -19,6 +19,7 @@ def plot_correlation_funnel(
     base_size = 11,
     width = None,
     height = None,
+    interactive=True, 
 ):
     if not isinstance(data, pd.DataFrame):
         raise ValueError("plot_correlation_funnel(): Object is not of class `pd.DataFrame`.")
@@ -29,7 +30,7 @@ def plot_correlation_funnel(
             data, 
             x='correlation', 
             y='feature', 
-            hover_data={'correlation':':.3f', 'feature':False, 'bin':True},
+            hover_data={'correlation':':.3f', 'feature':True, 'bin':True},
             range_x=limits, 
             title='Correlation Funnel'
         )
@@ -70,56 +71,26 @@ def plot_correlation_funnel(
             marker=dict(color='#2c3e50', opacity=alpha), 
             selector=dict(mode='markers'),
             text = data['bin'],
-            # hoverinfo = 'text+x+y',
             hoverlabel=dict(font_size=base_size*0.8)
         )
         
         return fig
 
     else:
-        fig, ax = plt.subplots()
-        ax.scatter(data['correlation'], data['feature'], c='#2c3e50', alpha=alpha)
         
-        for i, row in data.iterrows():
-            ax.text(row['correlation'], row['feature'], size=12, color='#2c3e50')
+        data['feature'] = pd.Categorical(data['feature'], categories=data['feature'].unique()[::-1], ordered=True)
         
-        ax.axvline(x=0, linestyle='--', color='red')
-        ax.set_xlim(limits)
-        ax.set_xlabel('Correlation')
-        ax.set_ylabel('Feature')
-        ax.set_title('Correlation Funnel')
+        p = (
+            ggplot(data)
+            + aes(x='correlation', y='feature', label='bin')
+            + geom_vline(xintercept=0, linetype='dashed', color='red')
+            + geom_point(color='#2c3e50', alpha=alpha)
+            + geom_text(size=base_size*0.8, color='#2c3e50', nudge_y=0.3)
+            + labs(title=title, x=x_lab, y=y_lab)
+            + xlim(limits[0], limits[1])
+            + theme_minimal()
+        )
+        p = p + theme_timetk(base_size=base_size, width = width, height = height)
         
-        return plt.show()
-
-# def _plot_correlation_funnel_plotnine(data, interactive=False, limits=(-1, 1), alpha=1):
-#     if not isinstance(data, pd.DataFrame):
-#         raise ValueError("plot_correlation_funnel(): Object is not of class `pd.DataFrame`.")
-    
-#     if interactive:
-#         data['label_text'] = data.apply(lambda row: f"{row['feature']}\nCorrelation: {row['correlation']:.3f}", axis=1)
-
-#         p = (
-#             ggplot(data)
-#             + aes(x='correlation', y='feature', text='label_text')
-#             + geom_vline(xintercept=0, linetype='dashed', color='red')
-#             + geom_point(color='#2c3e50', alpha=alpha)
-#             + labs(title='Correlation Funnel')
-#             + theme_minimal()
-#         )
-#         p = p + theme(axis_text_x=element_text(size=12))
+        return p
         
-#         return p
-
-#     else:
-#         p = (
-#             ggplot(data)
-#             + aes(x='correlation', y='feature', label='feature')
-#             + geom_vline(xintercept=0, linetype='dashed', color='red')
-#             + geom_point(color='#2c3e50', alpha=alpha)
-#             + geom_text(size=12, color='#2c3e50')
-#             + labs(title='Correlation Funnel')
-#             + theme_minimal()
-#         )
-#         p = p + theme(axis_text_x=element_text(size=12))
-        
-#         return p

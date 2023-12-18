@@ -234,7 +234,19 @@ def correlate(
     ```
     
     ``` {python}
-    df_correlated.plot_correlation_funnel(interactive=True)
+    # Interactive
+    df_correlated.plot_correlation_funnel(
+        interactive=True, 
+        height=400
+    )
+    ```
+    
+    ``` {python}
+    # Static
+    df_correlated.plot_correlation_funnel(
+        interactive=False, 
+        height = 600
+    )
     ```
     
     '''
