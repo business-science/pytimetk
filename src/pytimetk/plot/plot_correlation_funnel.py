@@ -6,9 +6,7 @@ from typing import Optional
 
 import plotly.express as px
 
-from plotnine import ggplot, aes, geom_vline, geom_point, geom_text, labs, xlim, geom_label
-import matplotlib.pyplot as plt
-from adjustText import adjust_text
+from plotnine import ggplot, aes, geom_vline, geom_point, geom_text, labs, xlim
 
 from pytimetk.plot.theme import theme_timetk
 
@@ -209,7 +207,7 @@ def plot_correlation_funnel(
             aes(label='bin'),    
             size=base_size*0.8,
             color='#2c3e50', 
-            # nudge_y=0.3,
+            nudge_y=0.3,
             adjust_text={
                 'expand_points': (0.5, 0.5),
                 # 'expand_objects': (1.5, 1.5),
