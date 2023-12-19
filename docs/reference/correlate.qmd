@@ -73,7 +73,7 @@ df_correlated
 ``` {python}
 # Interactive
 df_correlated.plot_correlation_funnel(
-    interactive=True, 
+    engine='plotly', 
     height=400
 )
 ```
@@ -81,7 +81,7 @@ df_correlated.plot_correlation_funnel(
 ``` {python}
 # Static
 fig = df_correlated.plot_correlation_funnel(
-    interactive=False, 
+    engine ='plotnine', 
     height = 600
 )
 fig

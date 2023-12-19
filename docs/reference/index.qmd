@@ -38,7 +38,7 @@ Visualize correlation on any tabular dataset (not just for Time Series).
 | --- | --- |
 | [binarize](binarize.qmd#pytimetk.binarize) | The `binarize` function prepares data for `correlate`, which is used for analyzing correlationfunnel plots.  |
 | [correlate](correlate.qmd#pytimetk.correlate) | The `correlate` function calculates the correlation between a target variable and all other |
-| [plot_correlation_funnel](plot_correlation_funnel.qmd#pytimetk.plot_correlation_funnel) |  |
+| [plot_correlation_funnel](plot_correlation_funnel.qmd#pytimetk.plot_correlation_funnel) | The `plot_correlation_funnel` function generates a correlation funnel plot using either Plotly or |
 
 ## 🏗️ Feature Engineereing
 
