@@ -162,6 +162,9 @@ def binarize(
 
         # TRANSFORMATION STEPS ----
         data_transformed = create_recipe(data, n_bins, thresh_infreq, name_infreq, one_hot)
+    
+    # Ensure that the data is binary
+    data_transformed = logical_to_integer(data_transformed)
 
     return data_transformed
 
