@@ -348,7 +348,7 @@ def create_recipe(data, n_bins, thresh_infreq, name_infreq, one_hot):
         # Convert continuous features to binned features
         for col in data.select_dtypes(include=['number']).columns:
             
-            binned, bins = pd.cut(data[col], bins=n_bins, retbins=True, labels=False, right=False)
+            binned, bins = pd.qcut(data[col], q=n_bins, retbins=True, labels=False, duplicates='drop')
             bins = bins.tolist()
             one_hot_encoded = pd.get_dummies(binned)
             
