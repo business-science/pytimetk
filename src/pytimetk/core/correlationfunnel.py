@@ -35,11 +35,12 @@ def binarize(
         DataFrame or a DataFrameGroupBy object.
     n_bins : int, optional
         The `n_bins` parameter specifies the number of bins to use when binarizing numeric data. It is used
-        in the `create_recipe` function to determine the number of bins for each numeric column.
+        in the `create_recipe` function to determine the number of bins for each numeric column. 
+        `pd.qcut()` is used to bin the numeric data.
     thresh_infreq : float
         The `thresh_infreq` parameter is a float that represents the threshold for infrequent categories.
         Categories that have a frequency below this threshold will be grouped together and labeled with the
-        name specified in the `name_infreq` parameter. For example, if `thresh_infreq` is set to 0
+        name specified in the `name_infreq` parameter. By default, the threshold is set to 0.01.
     name_infreq : str, optional
         The `name_infreq` parameter is used to specify the name that will be assigned to the category
         representing infrequent values in a column. This is applicable when performing binarization on
