@@ -305,7 +305,7 @@ pd.core.groupby.generic.DataFrameGroupBy.correlate = correlate
 
 def check_data_type(data, classes_not_allowed, fun_name=None):
     invalid_cols = [col for col in data.columns if str(data[col].dtype) in classes_not_allowed]
-    print(invalid_cols)
+    # print(invalid_cols)
     if invalid_cols:
         msg = f"Error {fun_name}(): The following columns have invalid data types: {', '.join(invalid_cols)}"
         raise ValueError(msg)
@@ -334,6 +334,7 @@ def fix_high_skew_numeric_data(data, unique_limit):
     return data
 
 def create_recipe(data, n_bins, thresh_infreq, name_infreq, one_hot):
+    
     # Recipe creation steps (similar to R code)
     num_count = len(data.select_dtypes(include=['number']).columns)
     cat_count = len(data.select_dtypes(include=['object', 'category']).columns)
@@ -343,10 +344,15 @@ def create_recipe(data, n_bins, thresh_infreq, name_infreq, one_hot):
     if num_count > 0:
         # Convert continuous features to binned features
         for col in data.select_dtypes(include=['number']).columns:
+            
             binned, bins = pd.cut(data[col], bins=n_bins, retbins=True, labels=False, right=False)
-            bins=bins.tolist()
+            bins = bins.tolist()
             one_hot_encoded = pd.get_dummies(binned)
-            one_hot_encoded.columns = [f"{col}__{round(a,1)}_{round(b,1)}" for a, b in zip(bins[:-1], bins[1:])]
+            
+            # Ensure the number of column names matches the number of columns
+            col_names = [f"{col}__{round(a,1)}_{round(b,1)}" for a, b in zip(bins[:-1], bins[1:])]
+            one_hot_encoded.columns = [col_names[i] for i in one_hot_encoded.columns]
+
             data = pd.concat([data, one_hot_encoded], axis=1)
             data.drop(col, axis=1, inplace=True)
     
