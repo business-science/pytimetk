@@ -109,7 +109,7 @@ def binarize(
     ``` {python}
     # Interactive
     df_correlated.plot_correlation_funnel(
-        interactive=True, 
+        engine='plotly', 
         height=600
     )
     ```
@@ -117,7 +117,7 @@ def binarize(
     ``` {python}
     # Static
     df_correlated.plot_correlation_funnel(
-        interactive=False, 
+        engine ='plotnine', 
         height = 900
     )
     ```
@@ -251,7 +251,7 @@ def correlate(
     ``` {python}
     # Interactive
     df_correlated.plot_correlation_funnel(
-        interactive=True, 
+        engine='plotly', 
         height=400
     )
     ```
@@ -259,7 +259,7 @@ def correlate(
     ``` {python}
     # Static
     fig = df_correlated.plot_correlation_funnel(
-        interactive=False, 
+        engine ='plotnine', 
         height = 600
     )
     fig

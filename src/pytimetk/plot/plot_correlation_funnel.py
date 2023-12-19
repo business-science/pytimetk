@@ -12,21 +12,21 @@ from pytimetk.plot.theme import theme_timetk
 
 @pf.register_dataframe_method
 def plot_correlation_funnel(
-    data, 
-    limits=(-1, 1), 
-    alpha=1,
-    title = "Correlation Funnel Plot",
-    x_lab = "Correlation",
-    y_lab = "Feature",
-    base_size = 11,
-    width = None,
-    height = None,
-    interactive=True, 
+    data: pd.DataFrame, 
+    limits: tuple=(-1, 1), 
+    alpha: float=1.0,
+    title: str = "Correlation Funnel Plot",
+    x_lab: str = "Correlation",
+    y_lab: str = "Feature",
+    base_size: float = 11,
+    width: Optional[int] = None,
+    height: Optional[int] = None,
+    engine: str = 'plotly' 
 ):
     if not isinstance(data, pd.DataFrame):
         raise ValueError("plot_correlation_funnel(): Object is not of class `pd.DataFrame`.")
     
-    if interactive:
+    if engine == 'plotly':
           
         fig = px.scatter(
             data, 
