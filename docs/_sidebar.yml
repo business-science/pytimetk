@@ -9,6 +9,7 @@ website:
       - reference/summarize_by_time.qmd
       - reference/apply_by_time.qmd
       - reference/pad_by_time.qmd
+      - reference/filter_by_time.qmd
       - reference/future_frame.qmd
       section: "\U0001F525 Wrangling Pandas Time Series DataFrames"
     - contents:

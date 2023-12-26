@@ -11,6 +11,7 @@ from .plot.theme import *
 from .core.summarize_by_time import *
 from .core.apply_by_time import *
 from .core.pad import *
+from .core.filter_by_time import *
 from .core.future import *
 from .core.make_timeseries_sequence import *
 from .core.make_future_timeseries import *
@@ -92,6 +93,9 @@ from .feature_engineering.holiday_signature import (
 )
 from .core.future import (
     future_frame
+)
+from .core.filter_by_time import (
+    filter_by_time
 )
 from .core.make_future_timeseries import (
     make_future_timeseries

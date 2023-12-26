@@ -17,6 +17,7 @@ Bend time series data to your will.
 | [summarize_by_time](summarize_by_time.qmd#pytimetk.summarize_by_time) | Summarize a DataFrame or GroupBy object by time. |
 | [apply_by_time](apply_by_time.qmd#pytimetk.apply_by_time) | Apply for time series. |
 | [pad_by_time](pad_by_time.qmd#pytimetk.pad_by_time) | Make irregular time series regular by padding with missing dates. |
+| [filter_by_time](filter_by_time.qmd#pytimetk.filter_by_time) | Filters a DataFrame or GroupBy object based on a specified date range. |
 | [future_frame](future_frame.qmd#pytimetk.future_frame) | Extend a DataFrame or GroupBy object with future dates. |
 
 ## 🔍 Anomaly Detection

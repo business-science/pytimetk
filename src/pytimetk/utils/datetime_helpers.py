@@ -304,6 +304,30 @@ def freq_to_timedelta(freq_str):
     else:
         raise ValueError(f"Unsupported frequency unit: {unit}")
 
+def parse_end_date(date_str):
+    
+    date = pd.to_datetime(date_str)
+    
+    # Determine the granularity of the input and apply the appropriate offset
+    if len(date_str) == 4:  # Year granularity
+        end_date = date + pd.offsets.YearEnd()
+    elif len(date_str) == 7:  # Month granularity
+        end_date = date + pd.offsets.MonthEnd()
+    elif len(date_str) == 10:  # Day granularity
+        end_date = pd.Timestamp(date_str).replace(hour=23, minute=59, second=59)
+    elif len(date_str) == 13:  # Hour granularity
+        end_date = pd.Timestamp(date_str).replace(minute=59, second=59)
+    elif len(date_str) == 16:  # Minute granularity
+        end_date = pd.Timestamp(date_str).replace(second=59)
+    elif len(date_str) == 19:  # Second Granularity
+        end_date = date
+    else:  # Day or finer granularity
+        # Assuming you want to roll up to the end of the day
+        end_date = pd.Timestamp(date_str).replace(hour=23, minute=59, second=59)
+
+    return end_date
+    
+
 @pf.register_series_method
 def week_of_month(
     idx: Union[pd.Series, pd.DatetimeIndex],

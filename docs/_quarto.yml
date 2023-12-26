@@ -121,6 +121,7 @@ quartodoc:
         - summarize_by_time
         - apply_by_time
         - pad_by_time
+        - filter_by_time
         - future_frame
     - title: 🔍 Anomaly Detection
       desc: Detect anomalies in time series data.

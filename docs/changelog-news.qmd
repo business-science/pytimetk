@@ -8,6 +8,18 @@ number-sections: false
 
 # pytimetk 0.2.1.9000 (Development Version)
 
+### Correlation Funnel
+
+The R package `correlationfunnel` has been ported inside `pytimetk`:
+
+- `binarize()`
+- `correlate()`
+- `plot_correlation_funnel()`
+
+### Core:
+
+- `filter_by_time()` - Filtering with time-based strings
+
 ### Feature Engineering:
 
 - `augment_diffs()` - Can now add differenced columns
