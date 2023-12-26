@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>pytimetk – correlate</title>
+<title>pytimetk – filter_by_time</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -119,22 +119,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
-<script type="text/javascript">
-window.PlotlyConfig = {MathJaxConfig: 'local'};
-if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
-if (typeof require !== 'undefined') {
-require.undef("plotly");
-requirejs.config({
-    paths: {
-        'plotly': ['https://cdn.plot.ly/plotly-2.26.0.min']
-    }
-});
-require(['plotly'], function(Plotly) {
-    window._Plotly = Plotly;
-});
-}
-</script>
-
 
 
 </head>
@@ -165,7 +149,7 @@ require(['plotly'], function(Plotly) {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">correlate</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">filter_by_time</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -375,17 +359,18 @@ require(['plotly'], function(Plotly) {
   <ul>
   <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
-  <li><a href="#see-also" id="toc-see-also" class="nav-link" data-scroll-target="#see-also">See Also</a></li>
+  <li><a href="#raises" id="toc-raises" class="nav-link" data-scroll-target="#raises">Raises</a></li>
+  <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/correlate.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/filter_by_time.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">correlate</h1>
+<h1 class="title">filter_by_time</h1>
 </div>
 
 
@@ -400,16 +385,17 @@ require(['plotly'], function(Plotly) {
 
 </header>
 
-<p><code>correlate(data, target, method='pearson')</code></p>
-<p>The <code>correlate</code> function calculates the correlation between a target variable and all other variables in a pandas DataFrame, and returns the results sorted by absolute correlation in descending order.</p>
+<p><code>filter_by_time(data, date_column, start_date='start', end_date='end', engine='pandas')</code></p>
+<p>Filters a DataFrame or GroupBy object based on a specified date range.</p>
+<p>This function filters data in a pandas DataFrame or a pandas GroupBy object by a given date range. It supports various date formats and can handle both DataFrame and GroupBy objects.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 2%">
-<col style="width: 16%">
-<col style="width: 77%">
-<col style="width: 3%">
+<col style="width: 4%">
+<col style="width: 18%">
+<col style="width: 72%">
+<col style="width: 4%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -422,21 +408,33 @@ require(['plotly'], function(Plotly) {
 <tbody>
 <tr class="odd">
 <td><code>data</code></td>
-<td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
-<td>The <code>data</code> parameter is the input data that you want to calculate correlations for. It can be either a pandas DataFrame or a grouped DataFrame obtained from a groupby operation.</td>
+<td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
+<td>The data to be filtered. It can be a pandas DataFrame or a pandas GroupBy object.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>target</code></td>
+<td><code>date_column</code></td>
 <td>str</td>
-<td>The <code>target</code> parameter is a string that represents the column name in the DataFrame for which you want to calculate the correlation with other columns.</td>
+<td>The name of the column in <code>data</code> that contains date information. This column is used for filtering the data based on the date range.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
-<td><code>method</code></td>
+<td><code>start_date</code></td>
 <td>str</td>
-<td>The <code>method</code> parameter in the <code>correlate</code> function is used to specify the method for calculating the correlation coefficient. The available options for the <code>method</code> parameter are: * pearson : standard correlation coefficient * kendall : Kendall Tau correlation coefficient * spearman : Spearman rank correlation</td>
-<td><code>= 'pearson'</code></td>
+<td>The start date of the filtering range. The format of the date can be YYYY, YYYY-MM, YYYY-MM-DD, YYYY-MM-DD HH, YYYY-MM-DD HH:SS, or YYYY-MM-DD HH:MM:SS. Default: ‘start’, which will filter from the earliest date in the data.</td>
+<td><code>'start'</code></td>
+</tr>
+<tr class="even">
+<td><code>end_date</code></td>
+<td>str</td>
+<td>The end date of the filtering range. It supports the same formats as <code>start_date</code>. Default: ‘end’, which will filter until the latest date in the data.</td>
+<td><code>'end'</code></td>
+</tr>
+<tr class="odd">
+<td><code>engine</code></td>
+<td>str</td>
+<td>The engine to be used for filtering the data. Currently, only ‘pandas’.</td>
+<td><code>= 'pandas'</code></td>
 </tr>
 </tbody>
 </table>
@@ -445,8 +443,8 @@ require(['plotly'], function(Plotly) {
 <h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 26%">
-<col style="width: 73%">
+<col style="width: 14%">
+<col style="width: 85%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -456,105 +454,60 @@ require(['plotly'], function(Plotly) {
 </thead>
 <tbody>
 <tr class="odd">
-<td>The function <code>correlate</code> returns a DataFrame with two columns: ‘feature’ and ‘correlation’. The</td>
-<td>‘feature’ column contains the names of the features in the input data, and the ‘correlation’ column contains the correlation coefficients between each feature and the target variable. The DataFrame is sorted in descending order based on the absolute correlation values.</td>
+<td>pd.DataFrame</td>
+<td>A pandas DataFrame containing the filtered data within the specified date range.</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="see-also" class="level2">
-<h2 class="anchored" data-anchor-id="see-also">See Also</h2>
+<section id="raises" class="level2">
+<h2 class="anchored" data-anchor-id="raises">Raises</h2>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 85%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ValueError</td>
+<td>If the provided date strings do not match any of the supported formats.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="notes" class="level2">
+<h2 class="anchored" data-anchor-id="notes">Notes</h2>
 <ul>
-<li><code>binarize()</code> : Prepares data for <code>correlate</code>, which is used for analyzing correlationfunnel plots.</li>
+<li>The function uses pd.to_datetime to convert the start date (e.g.&nbsp;start_date = “2014” becomes “2014-01-01”).</li>
+<li>The function internally uses the <code>parse_end_date</code> function to convert the end dates (e.g.&nbsp;end_date = “2014” becomes “2014-12-31”).</li>
 </ul>
 </section>
 <section id="examples" class="level2">
 <h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># NON-TIMESERIES EXAMPLE ----</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Set a random seed for reproducibility</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">0</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the number of rows for your DataFrame</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>num_rows <span class="op">=</span> <span class="dv">200</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create fake data for the columns</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> {</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Age'</span>: np.random.randint(<span class="dv">18</span>, <span class="dv">65</span>, size<span class="op">=</span>num_rows),</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Gender'</span>: np.random.choice([<span class="st">'Male'</span>, <span class="st">'Female'</span>], size<span class="op">=</span>num_rows),</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Marital_Status'</span>: np.random.choice([<span class="st">'Single'</span>, <span class="st">'Married'</span>, <span class="st">'Divorced'</span>], size<span class="op">=</span>num_rows),</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">'City'</span>: np.random.choice([<span class="st">'New York'</span>, <span class="st">'Los Angeles'</span>, <span class="st">'Chicago'</span>, <span class="st">'Houston'</span>, <span class="st">'Miami'</span>], size<span class="op">=</span>num_rows),</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Years_Playing'</span>: np.random.randint(<span class="dv">0</span>, <span class="dv">30</span>, size<span class="op">=</span>num_rows),</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Average_Income'</span>: np.random.randint(<span class="dv">20000</span>, <span class="dv">100000</span>, size<span class="op">=</span>num_rows),</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Member_Status'</span>: np.random.choice([<span class="st">'Bronze'</span>, <span class="st">'Silver'</span>, <span class="st">'Gold'</span>, <span class="st">'Platinum'</span>], size<span class="op">=</span>num_rows),</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Number_Children'</span>: np.random.randint(<span class="dv">0</span>, <span class="dv">5</span>, size<span class="op">=</span>num_rows),</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Own_House_Flag'</span>: np.random.choice([<span class="va">True</span>, <span class="va">False</span>], size<span class="op">=</span>num_rows),</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Own_Car_Count'</span>: np.random.randint(<span class="dv">0</span>, <span class="dv">3</span>, size<span class="op">=</span>num_rows),</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">'PersonId'</span>: <span class="bu">range</span>(<span class="dv">1</span>, num_rows <span class="op">+</span> <span class="dv">1</span>),  <span class="co"># Add a PersonId column as a row count</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Client'</span>: np.random.choice([<span class="st">'A'</span>, <span class="st">'B'</span>], size<span class="op">=</span>num_rows)  <span class="co"># Add a Client column with random values 'A' or 'B'</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a DataFrame</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(data)</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Binarize the data</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>df_binarized <span class="op">=</span> df.binarize(n_bins<span class="op">=</span><span class="dv">4</span>, thresh_infreq<span class="op">=</span><span class="fl">0.01</span>, name_infreq<span class="op">=</span><span class="st">"-OTHER"</span>, one_hot<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>df_binarized.glimpse()    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 200 rows of 42 columns
-Age__18.0_29.0:                   uint8             [0, 1, 1, 1, 0, 1, 0 ...
-Age__29.0_39.0:                   uint8             [0, 0, 0, 0, 0, 0, 1 ...
-Age__39.0_53.0:                   uint8             [0, 0, 0, 0, 0, 0, 0 ...
-Age__53.0_64.0:                   uint8             [1, 0, 0, 0, 1, 0, 0 ...
-Years_Playing__0.0_7.0:           uint8             [0, 1, 0, 0, 0, 0, 0 ...
-Years_Playing__7.0_15.0:          uint8             [0, 0, 1, 0, 1, 0, 1 ...
-Years_Playing__15.0_22.0:         uint8             [1, 0, 0, 0, 0, 1, 0 ...
-Years_Playing__22.0_29.0:         uint8             [0, 0, 0, 1, 0, 0, 0 ...
-Average_Income__20131.0_40110.2:  uint8             [0, 0, 1, 0, 0, 0, 0 ...
-Average_Income__40110.2_60649.5:  uint8             [0, 0, 0, 1, 1, 0, 1 ...
-Average_Income__60649.5_79904.8:  uint8             [0, 1, 0, 0, 0, 0, 0 ...
-Average_Income__79904.8_99131.0:  uint8             [1, 0, 0, 0, 0, 1, 0 ...
-PersonId__1.0_50.8:               uint8             [1, 1, 1, 1, 1, 1, 1 ...
-PersonId__50.8_100.5:             uint8             [0, 0, 0, 0, 0, 0, 0 ...
-PersonId__100.5_150.2:            uint8             [0, 0, 0, 0, 0, 0, 0 ...
-PersonId__150.2_200.0:            uint8             [0, 0, 0, 0, 0, 0, 0 ...
-Gender__Female:                   uint8             [1, 0, 0, 0, 1, 0, 1 ...
-Gender__Male:                     uint8             [0, 1, 1, 1, 0, 1, 0 ...
-Marital_Status__Divorced:         uint8             [0, 0, 0, 0, 0, 0, 0 ...
-Marital_Status__Married:          uint8             [1, 1, 0, 0, 1, 0, 0 ...
-Marital_Status__Single:           uint8             [0, 0, 1, 1, 0, 1, 1 ...
-City__Chicago:                    uint8             [0, 0, 1, 0, 0, 1, 0 ...
-City__Houston:                    uint8             [0, 0, 0, 0, 0, 0, 1 ...
-City__Los Angeles:                uint8             [0, 0, 0, 0, 0, 0, 0 ...
-City__Miami:                      uint8             [0, 1, 0, 0, 0, 0, 0 ...
-City__New York:                   uint8             [1, 0, 0, 1, 1, 0, 0 ...
-Member_Status__Bronze:            uint8             [1, 0, 1, 0, 0, 0, 0 ...
-Member_Status__Gold:              uint8             [0, 0, 0, 0, 0, 1, 1 ...
-Member_Status__Platinum:          uint8             [0, 0, 0, 1, 0, 0, 0 ...
-Member_Status__Silver:            uint8             [0, 1, 0, 0, 1, 0, 0 ...
-Number_Children__0:               uint8             [0, 0, 1, 0, 0, 0, 0 ...
-Number_Children__1:               uint8             [0, 0, 0, 0, 0, 0, 1 ...
-Number_Children__2:               uint8             [0, 0, 0, 1, 0, 0, 0 ...
-Number_Children__3:               uint8             [0, 1, 0, 0, 0, 1, 0 ...
-Number_Children__4:               uint8             [1, 0, 0, 0, 1, 0, 0 ...
-Own_House_Flag__0:                uint8             [1, 1, 0, 0, 1, 0, 1 ...
-Own_House_Flag__1:                uint8             [0, 0, 1, 1, 0, 1, 0 ...
-Own_Car_Count__0:                 uint8             [0, 1, 0, 0, 1, 0, 0 ...
-Own_Car_Count__1:                 uint8             [0, 0, 0, 1, 0, 1, 1 ...
-Own_Car_Count__2:                 uint8             [1, 0, 1, 0, 0, 0, 0 ...
-Client__A:                        uint8             [1, 1, 1, 1, 1, 1, 1 ...
-Client__B:                        uint8             [0, 0, 0, 0, 0, 0, 0 ...</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> datetime</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>m4_daily_df <span class="op">=</span> tk.datasets.load_dataset(<span class="st">'m4_daily'</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_correlated <span class="op">=</span> df_binarized.correlate(target<span class="op">=</span><span class="st">'Member_Status__Platinum'</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_correlated</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Filter by date</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_filtered <span class="op">=</span> tk.filter_by_time(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    data        <span class="op">=</span> m4_daily_df,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    start_date  <span class="op">=</span> <span class="st">'2014-07-03'</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    end_date    <span class="op">=</span> <span class="st">'2014-07-10'</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>df_filtered</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
@@ -563,263 +516,59 @@ Client__B:                        uint8             [0, 0, 0, 0, 0, 0, 0 ...</co
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">feature</th>
-<th data-quarto-table-cell-role="th">bin</th>
-<th data-quarto-table-cell-role="th">correlation</th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">28</td>
-<td>Member_Status</td>
-<td>Platinum</td>
-<td>1.000000</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">26</td>
-<td>Member_Status</td>
-<td>Bronze</td>
-<td>-0.341351</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">29</td>
-<td>Member_Status</td>
-<td>Silver</td>
-<td>-0.332799</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">27</td>
-<td>Member_Status</td>
-<td>Gold</td>
-<td>-0.298637</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">30</td>
-<td>Number_Children</td>
-<td>0</td>
-<td>0.205230</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">8</td>
-<td>Average_Income</td>
-<td>20131.0_40110.2</td>
-<td>-0.156593</td>
-</tr>
-<tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>Age</td>
-<td>18.0_29.0</td>
-<td>-0.135522</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">11</td>
-<td>Average_Income</td>
-<td>79904.8_99131.0</td>
-<td>0.115743</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">33</td>
-<td>Number_Children</td>
-<td>3</td>
-<td>-0.112216</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">7</td>
-<td>Years_Playing</td>
-<td>22.0_29.0</td>
-<td>-0.106763</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">19</td>
-<td>Marital_Status</td>
-<td>Married</td>
-<td>-0.104562</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">41</td>
-<td>Client</td>
-<td>B</td>
-<td>0.103842</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">40</td>
-<td>Client</td>
-<td>A</td>
-<td>-0.103842</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9</td>
-<td>Average_Income</td>
-<td>40110.2_60649.5</td>
-<td>0.088509</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">12</td>
-<td>PersonId</td>
-<td>1.0_50.8</td>
-<td>0.088509</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">38</td>
-<td>Own_Car_Count</td>
-<td>1</td>
-<td>0.087769</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">22</td>
-<td>City</td>
-<td>Houston</td>
-<td>0.086124</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">13</td>
-<td>PersonId</td>
-<td>50.8_100.5</td>
-<td>-0.074892</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>Age</td>
-<td>39.0_53.0</td>
-<td>0.074739</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">39</td>
-<td>Own_Car_Count</td>
-<td>2</td>
-<td>-0.071738</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">31</td>
-<td>Number_Children</td>
-<td>1</td>
-<td>-0.069054</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">25</td>
-<td>City</td>
-<td>New York</td>
-<td>-0.055757</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">18</td>
-<td>Marital_Status</td>
-<td>Divorced</td>
-<td>0.055724</td>
+<td>D10</td>
+<td>2014-07-03</td>
+<td>2076.2</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>Age</td>
-<td>29.0_39.0</td>
-<td>0.054374</td>
+<td>D10</td>
+<td>2014-07-04</td>
+<td>2073.4</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">20</td>
-<td>Marital_Status</td>
-<td>Single</td>
-<td>0.050286</td>
+<td data-quarto-table-cell-role="th">2</td>
+<td>D10</td>
+<td>2014-07-05</td>
+<td>2048.7</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">34</td>
-<td>Number_Children</td>
-<td>4</td>
-<td>-0.047760</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">15</td>
-<td>PersonId</td>
-<td>150.2_200.0</td>
-<td>-0.047659</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">10</td>
-<td>Average_Income</td>
-<td>60649.5_79904.8</td>
-<td>-0.047659</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5</td>
-<td>Years_Playing</td>
-<td>7.0_15.0</td>
-<td>0.040717</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">14</td>
-<td>PersonId</td>
-<td>100.5_150.2</td>
-<td>0.034042</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">6</td>
-<td>Years_Playing</td>
-<td>15.0_22.0</td>
-<td>0.034042</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">21</td>
-<td>City</td>
-<td>Chicago</td>
-<td>-0.032799</td>
+<td data-quarto-table-cell-role="th">3</td>
+<td>D10</td>
+<td>2014-07-06</td>
+<td>2048.9</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>Years_Playing</td>
-<td>0.0_7.0</td>
-<td>0.028391</td>
+<td>D10</td>
+<td>2014-07-07</td>
+<td>2006.4</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">16</td>
-<td>Gender</td>
-<td>Female</td>
-<td>0.020215</td>
+<td data-quarto-table-cell-role="th">5</td>
+<td>D10</td>
+<td>2014-07-08</td>
+<td>2017.6</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">17</td>
-<td>Gender</td>
-<td>Male</td>
-<td>-0.020215</td>
+<td data-quarto-table-cell-role="th">6</td>
+<td>D10</td>
+<td>2014-07-09</td>
+<td>2019.1</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">35</td>
-<td>Own_House_Flag</td>
-<td>0</td>
-<td>0.017336</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">36</td>
-<td>Own_House_Flag</td>
-<td>1</td>
-<td>-0.017336</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">37</td>
-<td>Own_Car_Count</td>
-<td>0</td>
-<td>-0.016373</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">3</td>
-<td>Age</td>
-<td>53.0_64.0</td>
-<td>0.012002</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">24</td>
-<td>City</td>
-<td>Miami</td>
-<td>0.010662</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">23</td>
-<td>City</td>
-<td>Los Angeles</td>
-<td>-0.004911</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">32</td>
-<td>Number_Children</td>
-<td>2</td>
-<td>0.002104</td>
+<td data-quarto-table-cell-role="th">7</td>
+<td>D10</td>
+<td>2014-07-10</td>
+<td>2007.4</td>
 </tr>
 </tbody>
 </table>
@@ -828,52 +577,583 @@ Client__B:                        uint8             [0, 0, 0, 0, 0, 0, 0 ...</co
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Interactive</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_correlated.plot_correlation_funnel(</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'plotly'</span>, </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">400</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Filter by month.</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: This will filter by the first day of the month.</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df_filtered <span class="op">=</span> tk.filter_by_time(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    data        <span class="op">=</span> m4_daily_df,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    start_date  <span class="op">=</span> <span class="st">'2014-07'</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    end_date    <span class="op">=</span> <span class="st">'2014-09'</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>df_filtered</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
 
-<div>                            <div id="d74ae0c9-4469-4440-bc10-e54affc6f9ed" class="plotly-graph-div" style="height:400px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("d74ae0c9-4469-4440-bc10-e54affc6f9ed")) {                    Plotly.newPlot(                        "d74ae0c9-4469-4440-bc10-e54affc6f9ed",                        [{"customdata":[["Platinum"],["Bronze"],["Silver"],["Gold"],["0"],["20131.0_40110.2"],["18.0_29.0"],["79904.8_99131.0"],["3"],["22.0_29.0"],["Married"],["B"],["A"],["40110.2_60649.5"],["1.0_50.8"],["1"],["Houston"],["50.8_100.5"],["39.0_53.0"],["2"],["1"],["New York"],["Divorced"],["29.0_39.0"],["Single"],["4"],["150.2_200.0"],["60649.5_79904.8"],["7.0_15.0"],["100.5_150.2"],["15.0_22.0"],["Chicago"],["0.0_7.0"],["Female"],["Male"],["0"],["1"],["0"],["53.0_64.0"],["Miami"],["Los Angeles"],["2"]],"hovertemplate":"correlation=%{x:.3f}\u003cbr\u003efeature=%{y}\u003cbr\u003ebin=%{customdata[0]}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"","marker":{"color":"#2c3e50","symbol":"circle","opacity":1.0},"mode":"markers","name":"","orientation":"h","showlegend":false,"x":[1.0,-0.341350510892991,-0.3327993588882368,-0.2986370049425592,0.2052299041466788,-0.15659307928941948,-0.13552199722893685,0.11574271077913593,-0.11221608935048046,-0.10676306930122222,-0.10456172444048943,0.10384151217834135,-0.1038415121783413,0.0885091317722803,0.08850913177228,0.08776937548442013,0.08612363356437988,-0.07489234226885316,0.07473905764301597,-0.07173762090338524,-0.06905408456963764,-0.055756726287264746,0.05572361943715288,0.05437352245862904,0.0502857924784525,-0.047759813009531714,-0.04765876326199725,-0.047658763261997104,0.04071695493090421,0.034041973758569495,0.03404197375856945,-0.03279915479297811,0.028390854871177176,0.020214737348883103,-0.02021473734888304,0.01733582068579715,-0.01733582068579715,-0.016372603019343304,0.012001960009511814,0.01066197660457439,-0.004911046587357808,0.002104185801273971],"xaxis":"x","y":["Member_Status","Member_Status","Member_Status","Member_Status","Number_Children","Average_Income","Age","Average_Income","Number_Children","Years_Playing","Marital_Status","Client","Client","Average_Income","PersonId","Own_Car_Count","City","PersonId","Age","Own_Car_Count","Number_Children","City","Marital_Status","Age","Marital_Status","Number_Children","PersonId","Average_Income","Years_Playing","PersonId","Years_Playing","City","Years_Playing","Gender","Gender","Own_House_Flag","Own_House_Flag","Own_Car_Count","Age","City","City","Number_Children"],"yaxis":"y","type":"scatter","hoverlabel":{"font":{"size":8.8}},"text":["Platinum","Bronze","Silver","Gold","0","20131.0_40110.2","18.0_29.0","79904.8_99131.0","3","22.0_29.0","Married","B","A","40110.2_60649.5","1.0_50.8","1","Houston","50.8_100.5","39.0_53.0","2","1","New York","Divorced","29.0_39.0","Single","4","150.2_200.0","60649.5_79904.8","7.0_15.0","100.5_150.2","15.0_22.0","Chicago","0.0_7.0","Female","Male","0","1","0","53.0_64.0","Miami","Los Angeles","2"]}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"Correlation"},"range":[-1,1],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"Feature"},"tickfont":{"size":8.8},"autorange":"reversed"},"legend":{"tracegroupgap":0,"title":{"font":{"size":8.8}},"font":{"size":8.8}},"title":{"text":"Correlation Funnel Plot","font":{"size":13.2}},"margin":{"l":10,"r":10,"t":40,"b":40},"font":{"size":11},"autosize":true,"height":400,"showlegend":false},                        {"responsive": true}                    ).then(function(){
-                            
-var gd = document.getElementById('d74ae0c9-4469-4440-bc10-e54affc6f9ed');
-var x = new MutationObserver(function (mutations, observer) {{
-        var display = window.getComputedStyle(gd).display;
-        if (!display || display === 'none') {{
-            console.log([gd, 'removed!']);
-            Plotly.purge(gd);
-            observer.disconnect();
-        }}
-}});
 
-// Listen for the removal of the full notebook cells
-var notebookContainer = gd.closest('#notebook-container');
-if (notebookContainer) {{
-    x.observe(notebookContainer, {childList: true});
-}}
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>D10</td>
+<td>2014-07-03</td>
+<td>2076.2</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>D10</td>
+<td>2014-07-04</td>
+<td>2073.4</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>D10</td>
+<td>2014-07-05</td>
+<td>2048.7</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>D10</td>
+<td>2014-07-06</td>
+<td>2048.9</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>D10</td>
+<td>2014-07-07</td>
+<td>2006.4</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">85</td>
+<td>D10</td>
+<td>2014-09-26</td>
+<td>1987.9</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">86</td>
+<td>D10</td>
+<td>2014-09-27</td>
+<td>1999.8</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">87</td>
+<td>D10</td>
+<td>2014-09-28</td>
+<td>2000.2</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">88</td>
+<td>D10</td>
+<td>2014-09-29</td>
+<td>1996.4</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">89</td>
+<td>D10</td>
+<td>2014-09-30</td>
+<td>2023.5</td>
+</tr>
+</tbody>
+</table>
 
-// Listen for the clearing of the current output cell
-var outputEl = gd.closest('.output');
-if (outputEl) {{
-    x.observe(outputEl, {childList: true});
-}}
-
-                        })                };                });            </script>        </div>
+<p>90 rows × 3 columns</p>
+</div>
 </div>
 </div>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Static</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> df_correlated.plot_correlation_funnel(</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    engine <span class="op">=</span><span class="st">'plotnine'</span>, </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    height <span class="op">=</span> <span class="dv">600</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>fig</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="correlate_files/figure-html/cell-5-output-1.png" class="img-fluid"></p>
-</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 - Filter by year.</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: This will filter by the first day of the year.</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>df_filtered <span class="op">=</span> tk.filter_by_time(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    data        <span class="op">=</span> m4_daily_df,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    start_date  <span class="op">=</span> <span class="st">'2014'</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    end_date    <span class="op">=</span> <span class="st">'2014'</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>df_filtered</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
-<pre><code>&lt;Figure Size: (700 x 600)&gt;</code></pre>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>D10</td>
+<td>2014-07-03</td>
+<td>2076.2</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>D10</td>
+<td>2014-07-04</td>
+<td>2073.4</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>D10</td>
+<td>2014-07-05</td>
+<td>2048.7</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>D10</td>
+<td>2014-07-06</td>
+<td>2048.9</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>D10</td>
+<td>2014-07-07</td>
+<td>2006.4</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">177</td>
+<td>D10</td>
+<td>2014-12-27</td>
+<td>2270.1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">178</td>
+<td>D10</td>
+<td>2014-12-28</td>
+<td>2322.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">179</td>
+<td>D10</td>
+<td>2014-12-29</td>
+<td>2327.3</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">180</td>
+<td>D10</td>
+<td>2014-12-30</td>
+<td>2344.9</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">181</td>
+<td>D10</td>
+<td>2014-12-31</td>
+<td>2327.8</td>
+</tr>
+</tbody>
+</table>
+
+<p>182 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 4 - Filter by day/hour/minute/second</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Here we'll use an hourly dataset, however this will also work for minute/second data</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data and format date column appropriately</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>m4_hourly_df <span class="op">=</span> tk.datasets.load_dataset(<span class="st">'m4_hourly'</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>df_filtered <span class="op">=</span> tk.filter_by_time(</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    data        <span class="op">=</span> m4_hourly_df,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    date_column <span class="op">=</span> <span class="st">"date"</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    start_date  <span class="op">=</span> <span class="st">'2015-07-01 12:00:00'</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    end_date    <span class="op">=</span> <span class="st">'2015-07-01 20:00:00'</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>df_filtered</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>H10</td>
+<td>2015-07-01 12:00:00+00:00</td>
+<td>513</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>H10</td>
+<td>2015-07-01 13:00:00+00:00</td>
+<td>512</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>H10</td>
+<td>2015-07-01 14:00:00+00:00</td>
+<td>506</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>H10</td>
+<td>2015-07-01 15:00:00+00:00</td>
+<td>500</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>H10</td>
+<td>2015-07-01 16:00:00+00:00</td>
+<td>490</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>H10</td>
+<td>2015-07-01 17:00:00+00:00</td>
+<td>484</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>H10</td>
+<td>2015-07-01 18:00:00+00:00</td>
+<td>467</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>H10</td>
+<td>2015-07-01 19:00:00+00:00</td>
+<td>446</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>H10</td>
+<td>2015-07-01 20:00:00+00:00</td>
+<td>434</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">700</td>
+<td>H50</td>
+<td>2015-07-01 12:00:00+00:00</td>
+<td>39325</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">701</td>
+<td>H50</td>
+<td>2015-07-01 13:00:00+00:00</td>
+<td>38153</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">702</td>
+<td>H50</td>
+<td>2015-07-01 14:00:00+00:00</td>
+<td>36829</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">703</td>
+<td>H50</td>
+<td>2015-07-01 15:00:00+00:00</td>
+<td>35878</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">704</td>
+<td>H50</td>
+<td>2015-07-01 16:00:00+00:00</td>
+<td>33626</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">705</td>
+<td>H50</td>
+<td>2015-07-01 17:00:00+00:00</td>
+<td>31014</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">706</td>
+<td>H50</td>
+<td>2015-07-01 18:00:00+00:00</td>
+<td>28891</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">707</td>
+<td>H50</td>
+<td>2015-07-01 19:00:00+00:00</td>
+<td>27413</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">708</td>
+<td>H50</td>
+<td>2015-07-01 20:00:00+00:00</td>
+<td>26291</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 5 - Combine year/month/day/hour/minute/second filters</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df_filtered <span class="op">=</span> tk.filter_by_time(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    data        <span class="op">=</span> m4_hourly_df,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    date_column <span class="op">=</span> <span class="st">"date"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    start_date  <span class="op">=</span> <span class="st">'2015-07-01'</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    end_date    <span class="op">=</span> <span class="st">'2015-07-29'</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>df_filtered</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>H10</td>
+<td>2015-07-01 12:00:00+00:00</td>
+<td>513</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>H10</td>
+<td>2015-07-01 13:00:00+00:00</td>
+<td>512</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>H10</td>
+<td>2015-07-01 14:00:00+00:00</td>
+<td>506</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>H10</td>
+<td>2015-07-01 15:00:00+00:00</td>
+<td>500</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>H10</td>
+<td>2015-07-01 16:00:00+00:00</td>
+<td>490</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1379</td>
+<td>H50</td>
+<td>2015-07-29 19:00:00+00:00</td>
+<td>30167</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1380</td>
+<td>H50</td>
+<td>2015-07-29 20:00:00+00:00</td>
+<td>28894</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1381</td>
+<td>H50</td>
+<td>2015-07-29 21:00:00+00:00</td>
+<td>27949</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1382</td>
+<td>H50</td>
+<td>2015-07-29 22:00:00+00:00</td>
+<td>27507</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1383</td>
+<td>H50</td>
+<td>2015-07-29 23:00:00+00:00</td>
+<td>28020</td>
+</tr>
+</tbody>
+</table>
+
+<p>1368 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 6 - Filter a GroupBy object</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>df_filtered <span class="op">=</span> (</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    m4_hourly_df</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        .filter_by_time(</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">"date"</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>            start_date  <span class="op">=</span> <span class="st">'2015-07-01 12:00:00'</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>            end_date    <span class="op">=</span> <span class="st">'2015-07-01 20:00:00'</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>df_filtered</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>H10</td>
+<td>2015-07-01 12:00:00+00:00</td>
+<td>513</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>H10</td>
+<td>2015-07-01 13:00:00+00:00</td>
+<td>512</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>H10</td>
+<td>2015-07-01 14:00:00+00:00</td>
+<td>506</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>H10</td>
+<td>2015-07-01 15:00:00+00:00</td>
+<td>500</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>H10</td>
+<td>2015-07-01 16:00:00+00:00</td>
+<td>490</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>H10</td>
+<td>2015-07-01 17:00:00+00:00</td>
+<td>484</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>H10</td>
+<td>2015-07-01 18:00:00+00:00</td>
+<td>467</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>H10</td>
+<td>2015-07-01 19:00:00+00:00</td>
+<td>446</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>H10</td>
+<td>2015-07-01 20:00:00+00:00</td>
+<td>434</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">700</td>
+<td>H50</td>
+<td>2015-07-01 12:00:00+00:00</td>
+<td>39325</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">701</td>
+<td>H50</td>
+<td>2015-07-01 13:00:00+00:00</td>
+<td>38153</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">702</td>
+<td>H50</td>
+<td>2015-07-01 14:00:00+00:00</td>
+<td>36829</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">703</td>
+<td>H50</td>
+<td>2015-07-01 15:00:00+00:00</td>
+<td>35878</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">704</td>
+<td>H50</td>
+<td>2015-07-01 16:00:00+00:00</td>
+<td>33626</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">705</td>
+<td>H50</td>
+<td>2015-07-01 17:00:00+00:00</td>
+<td>31014</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">706</td>
+<td>H50</td>
+<td>2015-07-01 18:00:00+00:00</td>
+<td>28891</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">707</td>
+<td>H50</td>
+<td>2015-07-01 19:00:00+00:00</td>
+<td>27413</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">708</td>
+<td>H50</td>
+<td>2015-07-01 20:00:00+00:00</td>
+<td>26291</td>
+</tr>
+</tbody>
+</table>
+
+</div>
 </div>
 </div>
 
