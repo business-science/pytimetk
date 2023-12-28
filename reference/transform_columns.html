@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>pytimetk – index</title>
+<title>pytimetk – transform_columns</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -112,7 +112,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reference/index.html">📄 API Reference</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -268,7 +268,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/index.html" class="sidebar-item-text sidebar-link active">
+  <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📄 API Reference</span></a>
   </div>
 </li>
@@ -326,346 +326,79 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#function-reference" id="toc-function-reference" class="nav-link active" data-scroll-target="#function-reference">Function reference</a>
+  <li><a href="#pytimetk.transform_columns" id="toc-pytimetk.transform_columns" class="nav-link active" data-scroll-target="#pytimetk.transform_columns">transform_columns</a>
   <ul class="collapse">
-  <li><a href="#data-visualization" id="toc-data-visualization" class="nav-link" data-scroll-target="#data-visualization">🚀 Data Visualization</a></li>
-  <li><a href="#wrangling-pandas-time-series-dataframes" id="toc-wrangling-pandas-time-series-dataframes" class="nav-link" data-scroll-target="#wrangling-pandas-time-series-dataframes">🔥 Wrangling Pandas Time Series DataFrames</a></li>
-  <li><a href="#anomaly-detection" id="toc-anomaly-detection" class="nav-link" data-scroll-target="#anomaly-detection">🔍 Anomaly Detection</a></li>
-  <li><a href="#correlation-funnel" id="toc-correlation-funnel" class="nav-link" data-scroll-target="#correlation-funnel">🌪️ Correlation Funnel</a></li>
-  <li><a href="#feature-engineereing" id="toc-feature-engineereing" class="nav-link" data-scroll-target="#feature-engineereing">🏗️ Feature Engineereing</a></li>
-  <li><a href="#ts-features" id="toc-ts-features" class="nav-link" data-scroll-target="#ts-features">📎 TS Features</a></li>
-  <li><a href="#finance-module" id="toc-finance-module" class="nav-link" data-scroll-target="#finance-module">💹 Finance Module</a></li>
-  <li><a href="#time-series-for-pandas-series" id="toc-time-series-for-pandas-series" class="nav-link" data-scroll-target="#time-series-for-pandas-series">🐼 Time Series for Pandas Series</a></li>
-  <li><a href="#date-utilities" id="toc-date-utilities" class="nav-link" data-scroll-target="#date-utilities">🛠️ Date Utilities</a></li>
-  <li><a href="#visualization-utilities" id="toc-visualization-utilities" class="nav-link" data-scroll-target="#visualization-utilities">🛠️ Visualization Utilities</a></li>
-  <li><a href="#extra-pandas-helpers-that-help-beyond-just-time-series" id="toc-extra-pandas-helpers-that-help-beyond-just-time-series" class="nav-link" data-scroll-target="#extra-pandas-helpers-that-help-beyond-just-time-series">Extra Pandas Helpers (That Help Beyond Just Time Series)</a></li>
-  <li><a href="#datasets" id="toc-datasets" class="nav-link" data-scroll-target="#datasets">💾 13 Datasets</a></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   </ul></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/index.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/transform_columns.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
 
-<section id="function-reference" class="level1">
-<h1>Function reference</h1>
-<section id="data-visualization" class="level2">
-<h2 class="anchored" data-anchor-id="data-visualization">🚀 Data Visualization</h2>
-<p>Visualize time series data with one line of code.</p>
+<section id="pytimetk.transform_columns" class="level1">
+<h1>transform_columns</h1>
+<p><code>transform_columns(data, columns, transform_func)</code></p>
+<p>The function <code>transform_columns</code> applies a user-provided function to specified columns in a pandas DataFrame.</p>
+<section id="parameters" class="level2">
+<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 9%">
+<col style="width: 82%">
+<col style="width: 3%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td><a href="../reference/plot_timeseries.html#pytimetk.plot_timeseries">plot_timeseries</a></td>
-<td>Creates time series plots using different plotting engines such as Plotnine,</td>
+<td><code>data</code></td>
+<td>pd.DataFrame</td>
+<td>The <code>data</code> parameter is a pandas DataFrame or a pandas DataFrameGroupBy object. It represents the data on which the transformation will be applied.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td><code>columns</code></td>
+<td>Union[str, List[str]]</td>
+<td>The <code>columns</code> parameter can be either a string or a list of strings. These strings represent the column names or regular expressions that will be matched against the column names in the DataFrame. If a column name matches any of the provided patterns, the transformation function will be applied to that column.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td><code>transform_func</code></td>
+<td>Callable[[pd.Series], pd.Series]</td>
+<td>A function that takes a pandas Series as input and returns a transformed pandas Series. This function will be applied to each column that matches the <code>columns</code> parameter.</td>
+<td><em>required</em></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="wrangling-pandas-time-series-dataframes" class="level2">
-<h2 class="anchored" data-anchor-id="wrangling-pandas-time-series-dataframes">🔥 Wrangling Pandas Time Series DataFrames</h2>
-<p>Bend time series data to your will.</p>
+<section id="returns" class="level2">
+<h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 93%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td><a href="../reference/summarize_by_time.html#pytimetk.summarize_by_time">summarize_by_time</a></td>
-<td>Summarize a DataFrame or GroupBy object by time.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/apply_by_time.html#pytimetk.apply_by_time">apply_by_time</a></td>
-<td>Apply for time series.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/pad_by_time.html#pytimetk.pad_by_time">pad_by_time</a></td>
-<td>Make irregular time series regular by padding with missing dates.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/filter_by_time.html#pytimetk.filter_by_time">filter_by_time</a></td>
-<td>Filters a DataFrame or GroupBy object based on a specified date range.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/future_frame.html#pytimetk.future_frame">future_frame</a></td>
-<td>Extend a DataFrame or GroupBy object with future dates.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="anomaly-detection" class="level2">
-<h2 class="anchored" data-anchor-id="anomaly-detection">🔍 Anomaly Detection</h2>
-<p>Detect anomalies in time series data.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/anomalize.html#pytimetk.anomalize">anomalize</a></td>
-<td>Detects anomalies in time series data, either for a single time</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/plot_anomalies.html#pytimetk.plot_anomalies">plot_anomalies</a></td>
-<td>Creates plot of anomalies in time series data using Plotly, Matplotlib,</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/plot_anomalies_decomp.html#pytimetk.plot_anomalies_decomp">plot_anomalies_decomp</a></td>
-<td>The <code>plot_anomalies_decomp</code> function takes in data from the <code>anomalize()</code></td>
-</tr>
-<tr class="even">
-<td><a href="../reference/plot_anomalies_cleaned.html#pytimetk.plot_anomalies_cleaned">plot_anomalies_cleaned</a></td>
-<td>The <code>plot_anomalies_cleaned</code> function takes in data from the <code>anomalize()</code></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="correlation-funnel" class="level2">
-<h2 class="anchored" data-anchor-id="correlation-funnel">🌪️ Correlation Funnel</h2>
-<p>Visualize correlation on any tabular dataset (not just for Time Series).</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/binarize.html#pytimetk.binarize">binarize</a></td>
-<td>The <code>binarize</code> function prepares data for <code>correlate</code>, which is used for analyzing correlationfunnel plots.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/correlate.html#pytimetk.correlate">correlate</a></td>
-<td>The <code>correlate</code> function calculates the correlation between a target variable and all other</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/plot_correlation_funnel.html#pytimetk.plot_correlation_funnel">plot_correlation_funnel</a></td>
-<td>The <code>plot_correlation_funnel</code> function generates a correlation funnel plot using either Plotly or</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="feature-engineereing" class="level2">
-<h2 class="anchored" data-anchor-id="feature-engineereing">🏗️ Feature Engineereing</h2>
-<p>Adding Features to Time Series DataFrames (Augmenting)</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/augment_timeseries_signature.html#pytimetk.augment_timeseries_signature">augment_timeseries_signature</a></td>
-<td>The function <code>augment_timeseries_signature</code> takes a DataFrame and a date</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_holiday_signature.html#pytimetk.augment_holiday_signature">augment_holiday_signature</a></td>
-<td>Engineers 4 different holiday features from a single datetime for 137 countries</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_lags.html#pytimetk.augment_lags">augment_lags</a></td>
-<td>Adds lags to a Pandas DataFrame or DataFrameGroupBy object.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_leads.html#pytimetk.augment_leads">augment_leads</a></td>
-<td>Adds leads to a Pandas DataFrame or DataFrameGroupBy object.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_diffs.html#pytimetk.augment_diffs">augment_diffs</a></td>
-<td>Adds differences to a Pandas DataFrame or DataFrameGroupBy object.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_rolling.html#pytimetk.augment_rolling">augment_rolling</a></td>
-<td>Apply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_rolling_apply.html#pytimetk.augment_rolling_apply">augment_rolling_apply</a></td>
-<td>Apply one or more DataFrame-based rolling functions and window sizes to one</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_expanding.html#pytimetk.augment_expanding">augment_expanding</a></td>
-<td>Apply one or more Series-based expanding functions to one or more columns of a DataFrame.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_expanding_apply.html#pytimetk.augment_expanding_apply">augment_expanding_apply</a></td>
-<td>Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_fourier.html#pytimetk.augment_fourier">augment_fourier</a></td>
-<td>Adds Fourier transforms to a Pandas DataFrame or DataFrameGroupBy object.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_hilbert.html#pytimetk.augment_hilbert">augment_hilbert</a></td>
-<td>Apply the Hilbert transform to specified columns of a DataFrame or</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_wavelet.html#pytimetk.augment_wavelet">augment_wavelet</a></td>
-<td>Apply the Wavely transform to specified columns of a DataFrame or</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="ts-features" class="level2">
-<h2 class="anchored" data-anchor-id="ts-features">📎 TS Features</h2>
-<p>Python implementation of the R package <code>tsfeatures</code>.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/ts_features.html#pytimetk.ts_features">ts_features</a></td>
-<td>Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the <code>tsfeatures</code> package.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/ts_summary.html#pytimetk.ts_summary">ts_summary</a></td>
-<td>Computes summary statistics for a time series data, either for the entire</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="finance-module" class="level2">
-<h2 class="anchored" data-anchor-id="finance-module">💹 Finance Module</h2>
-<p>Functions for working with financial time series data.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/augment_ewm.html#pytimetk.augment_ewm">augment_ewm</a></td>
-<td>Add Exponential Weighted Moving (EWM) window functions to a DataFrame or</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_cmo.html#pytimetk.augment_cmo">augment_cmo</a></td>
-<td>The <code>augment_cmo</code> function calculates the Chande Momentum Oscillator (CMO) for a given financial</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="time-series-for-pandas-series" class="level2">
-<h2 class="anchored" data-anchor-id="time-series-for-pandas-series">🐼 Time Series for Pandas Series</h2>
-<p>Time series functions that generate / manipulate Pandas Series.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/make_future_timeseries.html#pytimetk.make_future_timeseries">make_future_timeseries</a></td>
-<td>Make future dates for a time series.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/make_weekday_sequence.html#pytimetk.make_weekday_sequence">make_weekday_sequence</a></td>
-<td>Generate a sequence of weekday dates within a specified date range,</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/make_weekend_sequence.html#pytimetk.make_weekend_sequence">make_weekend_sequence</a></td>
-<td>Generate a sequence of weekend dates within a specified date range,</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/get_date_summary.html#pytimetk.get_date_summary">get_date_summary</a></td>
-<td>Returns a summary of the date-related information, including the number of</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/get_frequency_summary.html#pytimetk.get_frequency_summary">get_frequency_summary</a></td>
-<td>More robust version of pandas inferred frequency.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/get_diff_summary.html#pytimetk.get_diff_summary">get_diff_summary</a></td>
-<td>Calculates summary statistics of the time differences between consecutive values in a datetime index.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/get_frequency.html#pytimetk.get_frequency">get_frequency</a></td>
-<td>Get the frequency of a pandas Series or DatetimeIndex.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/get_seasonal_frequency.html#pytimetk.get_seasonal_frequency">get_seasonal_frequency</a></td>
-<td>The <code>get_seasonal_frequency</code> function returns the seasonal period of a given</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/get_trend_frequency.html#pytimetk.get_trend_frequency">get_trend_frequency</a></td>
-<td>The <code>get_trend_frequency</code> function returns the trend period of a given time</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/get_timeseries_signature.html#pytimetk.get_timeseries_signature">get_timeseries_signature</a></td>
-<td>Convert a timestamp to a set of 29 time series features.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/get_holiday_signature.html#pytimetk.get_holiday_signature">get_holiday_signature</a></td>
-<td>Engineers 4 different holiday features from a single datetime for 137 countries</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="date-utilities" class="level2">
-<h2 class="anchored" data-anchor-id="date-utilities">🛠️ Date Utilities</h2>
-<p>Helper functions to make your life easier.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/floor_date.html#pytimetk.floor_date">floor_date</a></td>
-<td>Robust date flooring.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/ceil_date.html#pytimetk.ceil_date">ceil_date</a></td>
-<td>Robust date ceiling.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/is_holiday.html#pytimetk.is_holiday">is_holiday</a></td>
-<td>Check if a given list of dates are holidays for a specified country.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/week_of_month.html#pytimetk.week_of_month">week_of_month</a></td>
-<td>The “week_of_month” function calculates the week number of a given date</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/timeseries_unit_frequency_table.html#pytimetk.timeseries_unit_frequency_table">timeseries_unit_frequency_table</a></td>
-<td>The function <code>timeseries_unit_frequency_table</code> returns a pandas DataFrame</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/time_scale_template.html#pytimetk.time_scale_template">time_scale_template</a></td>
-<td>The function <code>time_scale_template</code> returns a table with time scale</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="visualization-utilities" class="level2">
-<h2 class="anchored" data-anchor-id="visualization-utilities">🛠️ Visualization Utilities</h2>
-<p>Helper functions to make your life easier.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/theme_timetk.html#pytimetk.theme_timetk">theme_timetk</a></td>
-<td>Returns a <code>plotnine</code> theme with timetk styles applied, allowing for</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/palette_timetk.html#pytimetk.palette_timetk">palette_timetk</a></td>
-<td>The function <code>palette_timetk</code> returns a dictionary of color codes for</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="extra-pandas-helpers-that-help-beyond-just-time-series" class="level2">
-<h2 class="anchored" data-anchor-id="extra-pandas-helpers-that-help-beyond-just-time-series">Extra Pandas Helpers (That Help Beyond Just Time Series)</h2>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/glimpse.html#pytimetk.glimpse">glimpse</a></td>
-<td>Takes a pandas DataFrame and prints a summary of its dimensions, column</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/parallel_apply.html#pytimetk.parallel_apply">parallel_apply</a></td>
-<td>The <code>parallel_apply</code> function parallelizes the application of a function on</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/progress_apply.html#pytimetk.progress_apply">progress_apply</a></td>
-<td>Adds a progress bar to pandas apply().</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/drop_zero_variance.html#pytimetk.drop_zero_variance">drop_zero_variance</a></td>
-<td>The function <code>drop_zero_variance</code> takes a pandas DataFrame as input and returns a new DataFrame with</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/transform_columns.html#pytimetk.transform_columns">transform_columns</a></td>
-<td>The function <code>transform_columns</code> applies a user-provided function to specified columns in a pandas DataFrame.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/flatten_multiindex_column_names.html#pytimetk.flatten_multiindex_column_names">flatten_multiindex_column_names</a></td>
-<td>Takes a DataFrame as input and flattens the column</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="datasets" class="level2">
-<h2 class="anchored" data-anchor-id="datasets">💾 13 Datasets</h2>
-<p>Practice <code>pytimetk</code> with 13 complementary time series datasets.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/get_available_datasets.html#pytimetk.get_available_datasets">get_available_datasets</a></td>
-<td>Get a list of 12 datasets that can be loaded with <code>pytimetk.load_dataset</code>.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/load_dataset.html#pytimetk.load_dataset">load_dataset</a></td>
-<td>Load one of 12 Time Series Datasets.</td>
+<td></td>
+<td>A modified copy of the input DataFrame where the specified columns are transformed using the provided function.</td>
 </tr>
 </tbody>
 </table>
