@@ -1,0 +1,134 @@
+---
+title: "Correlation Funnel"
+jupyter: python3
+toc: true
+toc-depth: 3
+number-sections: true
+number-depth: 2
+---
+
+# Here's what you make in this Guide:
+
+We will demonstrate how Correlation Funnel to analyze Expedia Hotel Bookings and which features correlate to a customer making a booking through their website: 
+
+![Correlation Funnel](/guides/correlation_funnel.jpg)
+
+# About Correlation Funnel
+
+Correlationfunnel is designed for getting quick insights during the exploratory data analysis phase of data science projects. It's not specific to time series, although it can help in time series analysis. We'll see how we can use the correlation funnel workflow to identify the following quick business decisions:
+
+- We can begin to make business decisions like focusing less on packages and increasing advertising on continent ID 2 with trips to high-conversion search destinations. 
+
+- These actions will help increase Return on Advertising Spend (ROAS) and Return on Investment (ROI). All from a simple Correlation Funnel Visualization.
+
+# Correlation Funnel Workflow in Python
+
+Pytimetk uses the following methods for applying the Correlation Funnel:
+
+1. `binarize()`: Used to convert categorical, string and numeric data to binary 0/1 data. 
+2. `correlate()`: Used to correlate all binary features to one of the "target" binary features. 
+3. `plot_correlation_funnel()`: Used to visualize the correlations as a funnel, where the top features typically form a funnel shape. 
+
+## Setup
+
+To set up, import the following packages and the `expedia_df` dataset, Expedia Hotel Time Series Dataset. 
+
+```{python}
+# Libraries
+import pandas as pd 
+import pytimetk as tk
+
+# Data
+expedia_df = tk.load_dataset("expedia", parse_dates = ['date_time'])
+expedia_df.glimpse()
+```
+
+
+## Data Preparation
+
+To prepare the dataset, we will first perform data preparation:
+
+1. Add time series features based on the `date_time` timestamp column. 
+2. We will drop any zero variance features
+3. Drop additional columns that are not an acceptable data type (i.e. not numeric, categorical, or string) or contain missing values 
+4. Convert numeric columns that are actually categorical "ID" columns to string 
+
+```{python}
+expedia_ts_features_df = expedia_df \
+    .augment_timeseries_signature('date_time') \
+    .drop_zero_variance() \
+    .drop(columns=['date_time', 'orig_destination_distance', 'srch_ci', 'srch_co']) \
+    .convert_columns_to_string(columns = [r"hotel_.*"])
+    
+expedia_ts_features_df.glimpse()
+```
+
+## Correlation Funnel Workflow
+
+Next, we will perform the Correlation Funnel workflow to explore the Expedia Hotel Time Series dataset. There are 3 steps:
+
+1. *Binarize:* Convert the data to binary 0/1
+2. *Correlate:* Detect relationships between the binary features and one of the columns (called the target)
+3. *Visualize the Correlation Funnel:* Plotting allows us to assess the top features and their relationship to the target. 
+
+### Step 1: Binarize
+
+Use `binarize()` to convert the raw data to binary 0/1. Binarization happens as follows:
+
+1. *Numeric Data:* Numeric data is Quantile Binned using the `pd.qcut()` function. The default is 4 bins, which bins numeric data into a maximum of 4 discrete bins. Fewer bins can be returned if there is insufficient data for 4 bins. The number of bins is controlled with the `n_bins` parameter.
+
+2. *Categorical / String Data:* Categorical data is first processed to determine the most frequent categories. Categories that are sparse are lumped into an "OTHER" category. The lumping can be controlled with the `thresh_infreq`. 
+
+```{python}
+expedia_ts_binarized_df = expedia_ts_features_df.binarize(thresh_infreq = 0.05)
+
+expedia_ts_binarized_df.glimpse()
+```
+
+### Step 2: Correlate the data
+
+Next, we use `correlate()` to calculate strength of the relationship. The main parameter is `target`, which should be selected based on the business goal. 
+
+In this case, we can create a business goal to understand what relates to a website visit count greater than 2. We will select the column: `is_booking__1` as the target. This is because we want to know what relates to a hotel room booking via the website search data.  
+
+This returns a 3 column data frame containing:
+
+1. *feature:* The name of the features
+2. *bin:* The bin that corresponds to a bin inside the features
+3. *correlation:* The strength of the relationship (0 to 1) and the direction of the relationship (+/-)
+
+```{python}
+expedia_ts_correlate_df = expedia_ts_binarized_df.correlate('is_booking__1')
+
+expedia_ts_correlate_df
+```
+
+
+### Step 3: Plot the Correlation funnel
+
+It's in this step where we can visualize review the correlations and determine which features relate to the target, the strength of the relationship (magnitude between 0 and 1), and the direction of the relationship (+/-).
+
+```{python}
+expedia_ts_correlate_df.plot_correlation_funnel(
+    engine = 'plotly',
+    height = 800
+)
+```
+
+## Business insights from the Correlation Funnel
+
+Within just a few lines of code, we can quickly assess the business insights. We see:
+
+1. Count of website visits seems counterintuitive: Lower counts are more likely to convert to a booking. 
+
+2. Is package is also counterintuitive. Bundled hotel packages seem to convert less than non-bundled packages. 
+
+3. Hotel continent ID = 2 has a higher conversion rate than other hotel contients
+
+4. Search destination and destination types appear to have higher booking conversions. 
+
+### Business Value:
+
+From these insights we can begin to make business decisions like focusing less on packages and increasing advertising on continent ID 2 with trips to high-conversion search destinations. These actions should help increase Return on advertising spend (ROAS) and Return on Investment (ROI). All from a simple Correlation Funnel Visualization. 
+
+{{< include ../_includes/_footer.qmd >}}

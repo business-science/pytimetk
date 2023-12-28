@@ -176,7 +176,7 @@ def filter_by_time(
         raise ValueError("Invalid engine. Current supported engines: 'pandas'")
 
 
-# Monkey Patch the Method to Pandas Grouby Objecs
+# Monkey Patch the Method to Pandas Grouby Objects
 pd.core.groupby.generic.DataFrameGroupBy.filter_by_time = filter_by_time
 
 def _filter_by_time_pandas(
@@ -185,23 +185,6 @@ def _filter_by_time_pandas(
     start_date: str,
     end_date: str
 ):
-
-    # # Function to parse dates based on length
-    # def parse_date(date_str):
-    #     if len(date_str) == 4:
-    #         return datetime.datetime.strptime(date_str, '%Y')
-    #     elif len(date_str) == 7:  # Year-Month
-    #         return datetime.datetime.strptime(date_str, '%Y-%m')
-    #     elif len(date_str) == 10:  # Year-Month-Day
-    #         return datetime.datetime.strptime(date_str, '%Y-%m-%d')
-    #     elif len(date_str) == 19:  # Full datetime
-    #         return datetime.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
-
-    #     else: raise ValueError("Invalid date format. Supported formats: YYYY, YYYY-MM, YYYY-MM-DD, YYYY-MM-DDTHH:MM:SS")
-
-    # # Parsed Dates
-    # start_date_parsed = parse_date(start_date)
-    # end_date_parsed = parse_date(end_date)
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         data = data.obj

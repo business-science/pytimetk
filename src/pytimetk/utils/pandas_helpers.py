@@ -1,9 +1,11 @@
 import pandas as pd
 import pandas_flavor as pf
 import polars as pl
+import re
 
 from pytimetk.utils.checks import check_dataframe_or_groupby
 
+from typing import Union, List
 
 @pf.register_dataframe_method
 def glimpse(
@@ -109,6 +111,85 @@ def _glimpse_polars(df, max_width=76):
     print(final_df.to_string(formatters=make_lalign_formatter(final_df), index=False, justify='left'))
     
     return None
+
+@pf.register_dataframe_method
+def drop_zero_variance(data: pd.DataFrame, ):
+    '''The function `drop_zero_variance` takes a pandas DataFrame as input and returns a new DataFrame with
+    columns that have zero variance removed.
+    
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The `data` parameter is a pandas DataFrame or a pandas DataFrameGroupBy object. It represents the
+    data that you want to filter out columns with zero variance from.
+    
+    Returns
+    -------
+    DataFrame:
+        a filtered DataFrame with columns that have non-zero variance.
+    
+    '''
+    
+    # Common checks
+    check_dataframe_or_groupby(data)
+    
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        data = data.obj
+    
+    df = data.copy()
+    
+    def all_values_same(series):
+        return series.nunique() == 1
+
+    # Apply the function to each column and get columns to drop
+    columns_to_drop = [col for col in df.columns if all_values_same(df[col])]
+
+    # Drop the identified columns
+    df_filtered = df.drop(columns=columns_to_drop)
+    
+    return df_filtered
+          
+@pf.register_dataframe_method
+def convert_columns_to_string(data: pd.DataFrame, columns: Union[str, List[str]]):
+    '''The function `convert_columns_to_string` converts specified columns in a pandas DataFrame to string
+    data type.
+    
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The `data` parameter is a pandas DataFrame or a pandas DataFrameGroupBy object. It represents the
+    data that you want to convert the columns to string.
+    columns : Union[str, List[str]]
+        The `columns` parameter can be either a string or a list of strings. These strings represent the
+        columns that you want to match against the column names in the DataFrame. If a column name matches
+        any of the columns, that column will be converted to a string data type.
+        This function also supports regular expressions. For example, if you want to convert all columns that start with "user_"
+        to string, you can pass the string `r"^user_"` to the `columns` parameter.
+    
+    Returns
+    -------
+    DataFrame: 
+        A modified copy of the input DataFrame where the columns specified by the columns are converted to
+        string data type.
+    
+    '''
+    
+    # Common checks
+    check_dataframe_or_groupby(data)
+    
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        data = data.obj
+    
+    df = data.copy()
+    
+    if isinstance(columns, str):
+        columns = [columns]
+    
+    for col in df.columns:
+        if any(re.fullmatch(pattern, col) for pattern in columns) or col in columns:
+            df[col] = df[col].astype(str)
+    return df
+    
 
 @pf.register_dataframe_method
 def flatten_multiindex_column_names(data: pd.DataFrame, sep = '_') -> pd.DataFrame:

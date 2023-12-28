@@ -219,6 +219,4 @@ Now we can visualize the anomalies;
 
 ```
 
-# Anomaly Detection for Grouped Timeseries
-
-Coming soon...
+{{< include ../_includes/_footer.qmd >}}
