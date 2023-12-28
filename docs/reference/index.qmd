@@ -125,6 +125,8 @@ Helper functions to make your life easier.
 | [glimpse](glimpse.qmd#pytimetk.glimpse) | Takes a pandas DataFrame and prints a summary of its dimensions, column  |
 | [parallel_apply](parallel_apply.qmd#pytimetk.parallel_apply) | The `parallel_apply` function parallelizes the application of a function on  |
 | [progress_apply](progress_apply.qmd#pytimetk.progress_apply) | Adds a progress bar to pandas apply(). |
+| [drop_zero_variance](drop_zero_variance.qmd#pytimetk.drop_zero_variance) | The function `drop_zero_variance` takes a pandas DataFrame as input and returns a new DataFrame with |
+| [transform_columns](transform_columns.qmd#pytimetk.transform_columns) | The function `transform_columns` applies a user-provided function to specified columns in a pandas DataFrame. |
 | [flatten_multiindex_column_names](flatten_multiindex_column_names.qmd#pytimetk.flatten_multiindex_column_names) | Takes a DataFrame as input and flattens the column |
 
 ## 💾 13 Datasets

@@ -1,0 +1,19 @@
+# transform_columns { #pytimetk.transform_columns }
+
+`transform_columns(data, columns, transform_func)`
+
+The function `transform_columns` applies a user-provided function to specified columns in a pandas DataFrame.
+
+## Parameters
+
+| Name             | Type                                 | Description                                                                                                                                                                                                                                                                                                             | Default    |
+|------------------|--------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| `data`           | pd.DataFrame                         | The `data` parameter is a pandas DataFrame or a pandas DataFrameGroupBy object. It represents the data on which the transformation will be applied.                                                                                                                                                                     | _required_ |
+| `columns`        | Union\[str, List\[str\]\]            | The `columns` parameter can be either a string or a list of strings. These strings represent the column names or regular expressions that will be matched against the column names in the DataFrame. If a column name matches any of the provided patterns, the transformation function will be applied to that column. | _required_ |
+| `transform_func` | Callable\[\[pd.Series\], pd.Series\] | A function that takes a pandas Series as input and returns a transformed pandas Series. This function will be applied to each column that matches the `columns` parameter.                                                                                                                                              | _required_ |
+
+## Returns
+
+| Type   | Description                                                                                                     |
+|--------|-----------------------------------------------------------------------------------------------------------------|
+|        | A modified copy of the input DataFrame where the specified columns are transformed using the provided function. |
