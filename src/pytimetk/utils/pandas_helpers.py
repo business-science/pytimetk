@@ -5,7 +5,7 @@ import re
 
 from pytimetk.utils.checks import check_dataframe_or_groupby
 
-from typing import Union, List
+from typing import Union, List, Callable
 
 @pf.register_dataframe_method
 def glimpse(
@@ -149,31 +149,31 @@ def drop_zero_variance(data: pd.DataFrame, ):
     
     return df_filtered
           
+
 @pf.register_dataframe_method
-def convert_columns_to_string(data: pd.DataFrame, columns: Union[str, List[str]]):
-    '''The function `convert_columns_to_string` converts specified columns in a pandas DataFrame to string
-    data type.
-    
+def transform_columns(data: pd.DataFrame, columns: Union[str, List[str]], transform_func: Callable[[pd.Series], pd.Series]):
+    '''The function `transform_columns` applies a user-provided function to specified columns in a pandas DataFrame.
+
     Parameters
     ----------
     data : pd.DataFrame
         The `data` parameter is a pandas DataFrame or a pandas DataFrameGroupBy object. It represents the
-    data that you want to convert the columns to string.
+        data on which the transformation will be applied.
     columns : Union[str, List[str]]
         The `columns` parameter can be either a string or a list of strings. These strings represent the
-        columns that you want to match against the column names in the DataFrame. If a column name matches
-        any of the columns, that column will be converted to a string data type.
-        This function also supports regular expressions. For example, if you want to convert all columns that start with "user_"
-        to string, you can pass the string `r"^user_"` to the `columns` parameter.
+        column names or regular expressions that will be matched against the column names in the DataFrame.
+        If a column name matches any of the provided patterns, the transformation function will be applied to that column.
+    transform_func : Callable[[pd.Series], pd.Series]
+        A function that takes a pandas Series as input and returns a transformed pandas Series. This function
+        will be applied to each column that matches the `columns` parameter.
     
     Returns
     -------
     DataFrame: 
-        A modified copy of the input DataFrame where the columns specified by the columns are converted to
-        string data type.
+        A modified copy of the input DataFrame where the specified columns are transformed using the provided
+        function.
     
     '''
-    
     # Common checks
     check_dataframe_or_groupby(data)
     
@@ -187,8 +187,9 @@ def convert_columns_to_string(data: pd.DataFrame, columns: Union[str, List[str]]
     
     for col in df.columns:
         if any(re.fullmatch(pattern, col) for pattern in columns) or col in columns:
-            df[col] = df[col].astype(str)
+            df[col] = transform_func(df[col])
     return df
+
     
 
 @pf.register_dataframe_method

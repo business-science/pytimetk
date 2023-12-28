@@ -51,19 +51,22 @@ To prepare the dataset, we will first perform data preparation:
 1. Add time series features based on the `date_time` timestamp column. 
 2. We will drop any zero variance features
 3. Drop additional columns that are not an acceptable data type (i.e. not numeric, categorical, or string) or contain missing values 
-4. Convert numeric columns that are actually categorical "ID" columns to string 
+4. Convert numeric columns that start with "hotel_" that are actually categorical "ID" columns to string 
 
 ```{python}
 expedia_ts_features_df = expedia_df \
     .augment_timeseries_signature('date_time') \
     .drop_zero_variance() \
     .drop(columns=['date_time', 'orig_destination_distance', 'srch_ci', 'srch_co']) \
-    .convert_columns_to_string(columns = [r"hotel_.*"])
+    .transform_columns(
+        columns = [r"hotel_.*"],
+        transform_func = lambda x: x.astype(str)
+    )
     
 expedia_ts_features_df.glimpse()
 ```
 
-## Correlation Funnel Workflow
+## 3-Step Correlation Funnel Workflow
 
 Next, we will perform the Correlation Funnel workflow to explore the Expedia Hotel Time Series dataset. There are 3 steps:
 
@@ -115,7 +118,7 @@ expedia_ts_correlate_df.plot_correlation_funnel(
 )
 ```
 
-## Business insights from the Correlation Funnel
+# Business insights from the Correlation Funnel
 
 Within just a few lines of code, we can quickly assess the business insights. We see:
 
@@ -127,8 +130,8 @@ Within just a few lines of code, we can quickly assess the business insights. We
 
 4. Search destination and destination types appear to have higher booking conversions. 
 
-### Business Value:
+# Business Value (Better Decisions)
 
-From these insights we can begin to make business decisions like focusing less on packages and increasing advertising on continent ID 2 with trips to high-conversion search destinations. These actions should help increase Return on advertising spend (ROAS) and Return on Investment (ROI). All from a simple Correlation Funnel Visualization. 
+From these business insights we can begin to make business decisions like focusing less on packages and increasing advertising on continent ID 2 with trips to high-conversion search destinations. These actions should help increase Return on advertising spend (ROAS) and Return on Investment (ROI). All from a simple Correlation Funnel Visualization. 
 
 {{< include ../_includes/_footer.qmd >}}

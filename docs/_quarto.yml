@@ -204,7 +204,7 @@ quartodoc:
       - parallel_apply
       - progress_apply
       - drop_zero_variance
-      - convert_columns_to_string
+      - transform_columns
       - flatten_multiindex_column_names
     - title: 💾 13 Datasets
       package: pytimetk
