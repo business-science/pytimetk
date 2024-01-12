@@ -6,7 +6,7 @@ toc-depth: 3
 number-sections: false
 ---
 
-# pytimetk 0.2.1.9000 (Development Version)
+# pytimetk 0.3.0 
 
 ### Correlation Funnel
 
