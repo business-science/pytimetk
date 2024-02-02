@@ -151,6 +151,7 @@ quartodoc:
         - augment_rolling_apply
         - augment_expanding
         - augment_expanding_apply
+        - augment_ewm
         - augment_fourier
         - augment_hilbert
         - augment_wavelet
@@ -160,11 +161,10 @@ quartodoc:
       contents:
         - ts_features
         - ts_summary
-    - title: 💹 Finance Module
+    - title: 💹 Finance Module (Momentum Indicators)
       desc: Functions for working with financial time series data.
       package: pytimetk
       contents:
-        - augment_ewm
         - augment_cmo
         - augment_macd
     - title: 🐼 Time Series for Pandas Series

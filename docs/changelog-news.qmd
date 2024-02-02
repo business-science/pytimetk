@@ -6,6 +6,13 @@ toc-depth: 3
 number-sections: false
 ---
 
+# pytimetk 0.3.0.9000
+
+## Finance Module Updates:
+
+1. `augment_macd()`: pandas and polars engines
+
+
 # pytimetk 0.3.0 
 
 ### Correlation Funnel

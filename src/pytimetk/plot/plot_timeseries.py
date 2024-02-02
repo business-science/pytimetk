@@ -724,7 +724,7 @@ def _plot_timeseries_plotly(
                 
                 grp_nm = group_group['_group_names'].unique()[0]
                 
-                trace = go.Scatter(x=group_group[date_column], y=group_group[value_column], mode='lines', line=dict(color=hex_to_rgba(line_color, alpha=line_alpha), width=line_size), showlegend=False, name=name[0])
+                trace = go.Scatter(x=group_group[date_column], y=group_group[value_column], mode='lines', line=dict(color=hex_to_rgba(line_color, alpha=line_alpha), width=line_size), showlegend=False, name=group_group[value_column].name)
                 fig.add_trace(trace, row=row, col=col)
                 
                 

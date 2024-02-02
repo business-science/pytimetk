@@ -334,7 +334,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#correlation-funnel" id="toc-correlation-funnel" class="nav-link" data-scroll-target="#correlation-funnel">🌪️ Correlation Funnel</a></li>
   <li><a href="#feature-engineereing" id="toc-feature-engineereing" class="nav-link" data-scroll-target="#feature-engineereing">🏗️ Feature Engineereing</a></li>
   <li><a href="#ts-features" id="toc-ts-features" class="nav-link" data-scroll-target="#ts-features">📎 TS Features</a></li>
-  <li><a href="#finance-module" id="toc-finance-module" class="nav-link" data-scroll-target="#finance-module">💹 Finance Module</a></li>
+  <li><a href="#finance-module-momentum-indicators" id="toc-finance-module-momentum-indicators" class="nav-link" data-scroll-target="#finance-module-momentum-indicators">💹 Finance Module (Momentum Indicators)</a></li>
   <li><a href="#time-series-for-pandas-series" id="toc-time-series-for-pandas-series" class="nav-link" data-scroll-target="#time-series-for-pandas-series">🐼 Time Series for Pandas Series</a></li>
   <li><a href="#date-utilities" id="toc-date-utilities" class="nav-link" data-scroll-target="#date-utilities">🛠️ Date Utilities</a></li>
   <li><a href="#visualization-utilities" id="toc-visualization-utilities" class="nav-link" data-scroll-target="#visualization-utilities">🛠️ Visualization Utilities</a></li>
@@ -477,14 +477,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame.</td>
 </tr>
 <tr class="even">
+<td><a href="../reference/augment_ewm.html#pytimetk.augment_ewm">augment_ewm</a></td>
+<td>Add Exponential Weighted Moving (EWM) window functions to a DataFrame or</td>
+</tr>
+<tr class="odd">
 <td><a href="../reference/augment_fourier.html#pytimetk.augment_fourier">augment_fourier</a></td>
 <td>Adds Fourier transforms to a Pandas DataFrame or DataFrameGroupBy object.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="../reference/augment_hilbert.html#pytimetk.augment_hilbert">augment_hilbert</a></td>
 <td>Apply the Hilbert transform to specified columns of a DataFrame or</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="../reference/augment_wavelet.html#pytimetk.augment_wavelet">augment_wavelet</a></td>
 <td>Apply the Wavely transform to specified columns of a DataFrame or</td>
 </tr>
@@ -507,20 +511,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tbody>
 </table>
 </section>
-<section id="finance-module" class="level2">
-<h2 class="anchored" data-anchor-id="finance-module">💹 Finance Module</h2>
+<section id="finance-module-momentum-indicators" class="level2">
+<h2 class="anchored" data-anchor-id="finance-module-momentum-indicators">💹 Finance Module (Momentum Indicators)</h2>
 <p>Functions for working with financial time series data.</p>
 <table class="table">
 <tbody>
 <tr class="odd">
-<td><a href="../reference/augment_ewm.html#pytimetk.augment_ewm">augment_ewm</a></td>
-<td>Add Exponential Weighted Moving (EWM) window functions to a DataFrame or</td>
-</tr>
-<tr class="even">
 <td><a href="../reference/augment_cmo.html#pytimetk.augment_cmo">augment_cmo</a></td>
 <td>The <code>augment_cmo</code> function calculates the Chande Momentum Oscillator (CMO) for a given financial</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="../reference/augment_macd.html#pytimetk.augment_macd">augment_macd</a></td>
 <td>Calculate MACD for a given financial instrument using either pandas or polars engine.</td>
 </tr>

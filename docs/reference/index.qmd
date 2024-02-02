@@ -56,6 +56,7 @@ Adding Features to Time Series DataFrames (Augmenting)
 | [augment_rolling_apply](augment_rolling_apply.qmd#pytimetk.augment_rolling_apply) | Apply one or more DataFrame-based rolling functions and window sizes to one  |
 | [augment_expanding](augment_expanding.qmd#pytimetk.augment_expanding) | Apply one or more Series-based expanding functions to one or more columns of a DataFrame. |
 | [augment_expanding_apply](augment_expanding_apply.qmd#pytimetk.augment_expanding_apply) | Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame. |
+| [augment_ewm](augment_ewm.qmd#pytimetk.augment_ewm) | Add Exponential Weighted Moving (EWM) window functions to a DataFrame or  |
 | [augment_fourier](augment_fourier.qmd#pytimetk.augment_fourier) | Adds Fourier transforms to a Pandas DataFrame or DataFrameGroupBy object. |
 | [augment_hilbert](augment_hilbert.qmd#pytimetk.augment_hilbert) | Apply the Hilbert transform to specified columns of a DataFrame or  |
 | [augment_wavelet](augment_wavelet.qmd#pytimetk.augment_wavelet) | Apply the Wavely transform to specified columns of a DataFrame or  |
@@ -69,13 +70,12 @@ Python implementation of the R package `tsfeatures`.
 | [ts_features](ts_features.qmd#pytimetk.ts_features) | Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the `tsfeatures` package. |
 | [ts_summary](ts_summary.qmd#pytimetk.ts_summary) | Computes summary statistics for a time series data, either for the entire  |
 
-## 💹 Finance Module
+## 💹 Finance Module (Momentum Indicators)
 
 Functions for working with financial time series data.
 
 | | |
 | --- | --- |
-| [augment_ewm](augment_ewm.qmd#pytimetk.augment_ewm) | Add Exponential Weighted Moving (EWM) window functions to a DataFrame or  |
 | [augment_cmo](augment_cmo.qmd#pytimetk.augment_cmo) | The `augment_cmo` function calculates the Chande Momentum Oscillator (CMO) for a given financial |
 | [augment_macd](augment_macd.qmd#pytimetk.augment_macd) | Calculate MACD for a given financial instrument using either pandas or polars engine. |
 

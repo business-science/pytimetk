@@ -34,7 +34,7 @@ def augment_cmo(
         values on which the CMO will be calculated. It can be either a single column name (string) or a list
         of column names (if you want to calculate CMO on multiple columns).
     periods : Union[int, Tuple[int, int], List[int]], optional
-        The `periods` parameter in the `augment_cmo` function specifies the number of periods over which
+        The `periods` parameter in the `augment_cmo` function specifies the number of rolling periods over which
         the Chande Momentum Oscillator (CMO) is calculated. It can be provided as an integer, a tuple of two
         integers (start and end periods), or a list of integers.
     reduce_memory : bool, optional
