@@ -36,6 +36,8 @@ from .feature_engineering.wavelet import *
 
 from .feature_engineering.ewm import *
 from .finance.cmo import *
+from .finance.macd import *
+from .finance.bbands import *
 
 from .datasets.get_datasets import *
 
@@ -147,6 +149,9 @@ from .finance.cmo import (
 )
 from .finance.macd import (
     augment_macd
+)
+from .finance.bbands import (
+    augment_bbands
 )
 from .datasets.get_datasets import (
     load_dataset, get_available_datasets
