@@ -89,20 +89,22 @@ def _calculate_macd_pandas(df, close_column, fast_period, slow_period, signal_pe
     Calculate MACD, Signal Line, and MACD Histogram for a DataFrame.
     """
     # Calculate Fast and Slow EMAs
-    df['_ema_fast'] = df[close_column].ewm(span=fast_period, adjust=False).mean()
-    df['_ema_slow'] = df[close_column].ewm(span=slow_period, adjust=False).mean()
+    ema_fast = df[close_column].ewm(span=fast_period, adjust=False, min_periods = 0).mean()
+    ema_slow = df[close_column].ewm(span=slow_period, adjust=False, min_periods = 0).mean()
 
     # Calculate MACD Line
-    df['macd_line'] = df['_ema_fast'] - df['_ema_slow']
+    macd_line = ema_fast - ema_slow
 
     # Calculate Signal Line
-    df['signal_line'] = df['macd_line'].ewm(span=signal_period, adjust=False).mean()
+    signal_line = macd_line.ewm(span=signal_period, adjust=False, min_periods = 0).mean()
 
     # Calculate MACD Histogram
-    df['macd_histogram'] = df['macd_line'] - df['signal_line']
+    macd_histogram = macd_line - signal_line
 
-    # Drop the temporary EMA columns
-    df.drop(columns=['_ema_fast', '_ema_slow'], inplace=True)
+    # Add columns
+    df[f'{close_column}_macd_line_{fast_period}_{slow_period}_{signal_period}'] = macd_line
+    df[f'{close_column}_signal_line_{fast_period}_{slow_period}_{signal_period}'] = signal_line
+    df[f'{close_column}_macd_histogram_{fast_period}_{slow_period}_{signal_period}'] = macd_histogram
 
     return df
 
@@ -137,9 +139,15 @@ def _augment_macd_polars(data, date_column, close_column, fast_period, slow_peri
         macd_histogram = macd_line - signal_line
 
         return pl_df.with_columns([
-            macd_line.alias('macd_line'),
-            signal_line.alias('signal_line'),
-            macd_histogram.alias('macd_histogram')
+            macd_line.alias(
+                f'{close_column}_macd_line_{fast_period}_{slow_period}_{signal_period}'
+            ),
+            signal_line.alias(
+                f'{close_column}_signal_line_{fast_period}_{slow_period}_{signal_period}'
+            ),
+            macd_histogram.alias(
+                f'{close_column}_macd_histogram_{fast_period}_{slow_period}_{signal_period}'
+            )
         ])
 
     # Apply the calculation to each group if data is grouped, otherwise apply directly
