@@ -38,12 +38,16 @@ polars = ">=0.19.8"
 pyarrow = "^13.0.0"
 pathos = "^0.3.1"
 adjusttext = "^0.8"
+xarray = "<=2023.10.1" # until fix: https://github.com/pyjanitor-devs/pandas_flavor/issues/33
+# ta-lib = { version = "^0.4.28", optional = true }
+
+# [tool.poetry.extras]
+# finance = ["ta-lib"]
 
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.25.2"
 pytest = "^7.4.2"
-
 
 [tool.poetry.group.docs.dependencies]
 quarto = "^0.1.0"
