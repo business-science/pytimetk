@@ -78,7 +78,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2024-01-12T19:18:50.371Z</lastmod>
+    <lastmod>2024-02-02T02:03:29.646Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/palette_timetk.html</loc>
@@ -102,7 +102,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_cmo.html</loc>
-    <lastmod>2024-01-12T19:18:39.428Z</lastmod>
+    <lastmod>2024-02-02T02:01:58.334Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_expanding.html</loc>
@@ -307,5 +307,9 @@
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/anomalize.html</loc>
     <lastmod>2024-01-12T19:19:38.599Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/augment_macd.html</loc>
+    <lastmod>2024-02-02T02:03:40.702Z</lastmod>
   </url>
 </urlset>

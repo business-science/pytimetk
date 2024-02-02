@@ -13,7 +13,7 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 def augment_cmo(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
-    value_column: Union[str, List[str]], 
+    close_column: Union[str, List[str]], 
     periods: Union[int, Tuple[int, int], List[int]] = 14,
     reduce_memory: bool = False,
     engine: str = 'pandas'
@@ -29,8 +29,8 @@ def augment_cmo(
         calculated.
     date_column : str
         The name of the column in the data that contains the dates or timestamps.
-    value_column : Union[str, List[str]]
-        The `value_column` parameter is used to specify the column(s) in the input data that contain the
+    close_column : Union[str, List[str]]
+        The `close_column` parameter is used to specify the column(s) in the input data that contain the
         values on which the CMO will be calculated. It can be either a single column name (string) or a list
         of column names (if you want to calculate CMO on multiple columns).
     periods : Union[int, Tuple[int, int], List[int]], optional
@@ -95,7 +95,7 @@ def augment_cmo(
             .query("symbol == 'AAPL'")
             .augment_cmo(
                 date_column='date',
-                value_column='adjusted',
+                close_column='adjusted',
                 periods=[14, 28]
             )
     )
@@ -109,7 +109,7 @@ def augment_cmo(
             .groupby('symbol')
             .augment_cmo(
                 date_column='date',
-                value_column='adjusted',
+                close_column='adjusted',
                 periods=[14, 28]
             )
     )
@@ -124,7 +124,7 @@ def augment_cmo(
             .query("symbol == 'AAPL'")
             .augment_cmo(
                 date_column='date',
-                value_column='adjusted',
+                close_column='adjusted',
                 periods=[14, 28],
                 engine='polars'
             )
@@ -139,7 +139,7 @@ def augment_cmo(
             .groupby('symbol')
             .augment_cmo(
                 date_column='date',
-                value_column='adjusted',
+                close_column='adjusted',
                 periods=[14, 28],
                 engine='polars'
             )
@@ -151,16 +151,16 @@ def augment_cmo(
     
     # Run common checks
     check_dataframe_or_groupby(data)
-    check_value_column(data, value_column)
+    check_value_column(data, close_column)
     check_date_column(data, date_column)
     
     if reduce_memory:
         data = reduce_memory_usage(data)
     
     if engine == 'pandas':
-        ret = _augment_cmo_pandas(data, date_column, value_column, periods)
+        ret = _augment_cmo_pandas(data, date_column, close_column, periods)
     elif engine == 'polars':
-        ret = _augment_cmo_polars(data, date_column, value_column, periods)
+        ret = _augment_cmo_polars(data, date_column, close_column, periods)
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
     
@@ -176,12 +176,12 @@ pd.core.groupby.generic.DataFrameGroupBy.augment_cmo = augment_cmo
 def _augment_cmo_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
-    value_column: Union[str, List[str]], 
+    close_column: Union[str, List[str]], 
     periods: Union[int, Tuple[int, int], List[int]] = 14
 ) -> pd.DataFrame:
     
-    if isinstance(value_column, str):
-        value_column = [value_column]
+    if isinstance(close_column, str):
+        close_column = [close_column]
 
     if isinstance(periods, int):
         periods = [periods]
@@ -197,7 +197,7 @@ def _augment_cmo_pandas(
 
         df.sort_values(by=[date_column], inplace=True)
 
-        for col in value_column:
+        for col in close_column:
             for period in periods:
                 df[f'{col}_cmo_{period}'] = _calculate_cmo_pandas(df[col], period=period)
     
@@ -211,7 +211,7 @@ def _augment_cmo_pandas(
 
         df.sort_values(by=[*group_names, date_column], inplace=True)
         
-        for col in value_column:
+        for col in close_column:
             for period in periods:
                 df[f'{col}_cmo_{period}'] = df.groupby(group_names)[col].apply(_calculate_cmo_pandas, period=period)
     
@@ -238,7 +238,7 @@ def _calculate_cmo_pandas(series: pd.Series, period=14):
 def _augment_cmo_polars(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
-    value_column: Union[str, List[str]], 
+    close_column: Union[str, List[str]], 
     periods: Union[int, Tuple[int, int], List[int]] = 14
 ) -> pd.DataFrame:
     
@@ -254,8 +254,8 @@ def _augment_cmo_polars(
     else:
         raise ValueError("data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame")
 
-    if isinstance(value_column, str):
-        value_column = [value_column]
+    if isinstance(close_column, str):
+        close_column = [close_column]
         
     if isinstance(periods, int):
         periods = [periods]  # Convert to a list with a single value
@@ -267,7 +267,7 @@ def _augment_cmo_polars(
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         
         def apply_cmo(pl_df):
-            for col in value_column:
+            for col in close_column:
                 for period in periods:
                     pl_df = pl_df.with_columns(
                         _calculate_cmo_polars(pl_df[col], period=period).alias(f'{col}_cmo_{period}')
@@ -292,7 +292,7 @@ def _augment_cmo_polars(
         
         _exprs = []
         
-        for col in value_column:
+        for col in close_column:
             for period in periods:
                 _expr = _calculate_cmo_polars(pl.col(col), period=period).alias(f'{col}_cmo_{period}')
                 _exprs.append(_expr)

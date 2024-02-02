@@ -44,6 +44,55 @@ def augment_macd(
     -------
     pd.DataFrame
         DataFrame with MACD line, signal line, and MACD histogram added.
+        
+    Examples
+    --------
+    
+    ``` {python}
+    import pandas as pd
+    import pytimetk as tk
+
+    df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
+    
+    df
+    ```
+    
+    ``` {python}
+    # MACD pandas engine
+    df_macd = (
+        df
+            .groupby('symbol')
+            .augment_macd(
+                date_column = 'date', 
+                close_column='close', 
+                fast_period=12, 
+                slow_period=26, 
+                signal_period=9, 
+                engine = "pandas"
+            )
+    )
+    
+    df_macd.glimpse()
+    ```
+    
+    ``` {python}
+    # MACD polars engine
+    df_macd = (
+        df
+            .groupby('symbol')
+            .augment_macd(
+                date_column = 'date', 
+                close_column='close', 
+                fast_period=12, 
+                slow_period=26, 
+                signal_period=9, 
+                engine = "pandas"
+            )
+    )
+    
+    df_macd.glimpse()
+    ```
+    
     """
 
     check_dataframe_or_groupby(data)

@@ -1,6 +1,6 @@
 # augment_cmo { #pytimetk.augment_cmo }
 
-`augment_cmo(data, date_column, value_column, periods=14, reduce_memory=False, engine='pandas')`
+`augment_cmo(data, date_column, close_column, periods=14, reduce_memory=False, engine='pandas')`
 
 The `augment_cmo` function calculates the Chande Momentum Oscillator (CMO) for a given financial
 instrument using either pandas or polars engine, and returns the augmented DataFrame.
@@ -11,7 +11,7 @@ instrument using either pandas or polars engine, and returns the augmented DataF
 |-----------------|-----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
 | `data`          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | The `data` parameter is the input data that can be either a pandas DataFrame or a pandas DataFrameGroupBy object. It contains the data on which the Chande Momentum  Oscillator (CMO) will be calculated.                                                                                                                                            | _required_ |
 | `date_column`   | str                                                             | The name of the column in the data that contains the dates or timestamps.                                                                                                                                                                                                                                                                            | _required_ |
-| `value_column`  | Union\[str, List\[str\]\]                                       | The `value_column` parameter is used to specify the column(s) in the input data that contain the values on which the CMO will be calculated. It can be either a single column name (string) or a list of column names (if you want to calculate CMO on multiple columns).                                                                            | _required_ |
+| `close_column`  | Union\[str, List\[str\]\]                                       | The `close_column` parameter is used to specify the column(s) in the input data that contain the values on which the CMO will be calculated. It can be either a single column name (string) or a list of column names (if you want to calculate CMO on multiple columns).                                                                            | _required_ |
 | `periods`       | Union\[int, Tuple\[int, int\], List\[int\]\]                    | The `periods` parameter in the `augment_cmo` function specifies the number of periods over which the Chande Momentum Oscillator (CMO) is calculated. It can be provided as an integer, a tuple of two integers (start and end periods), or a list of integers.                                                                                       | `14`       |
 | `reduce_memory` | bool                                                            | The `reduce_memory` parameter is a boolean flag that indicates whether or not to reduce the memory usage of the data before performing the CMO calculation. If set to `True`, the function will attempt to reduce the memory usage of the input data. If set to `False`, the function will not attempt to reduce the memory usage of the input data. | `False`    |
 | `engine`        | str                                                             | The `engine` parameter specifies the computation engine to use for calculating the Chande Momentum Oscillator (CMO). It can take two values: 'pandas' or 'polars'.                                                                                                                                                                                   | `'pandas'` |
@@ -65,7 +65,7 @@ cmo_df = (
         .query("symbol == 'AAPL'")
         .augment_cmo(
             date_column='date',
-            value_column='adjusted',
+            close_column='adjusted',
             periods=[14, 28]
         )
 )
@@ -79,7 +79,7 @@ cmo_df = (
         .groupby('symbol')
         .augment_cmo(
             date_column='date',
-            value_column='adjusted',
+            close_column='adjusted',
             periods=[14, 28]
         )
 )
@@ -94,7 +94,7 @@ cmo_df = (
         .query("symbol == 'AAPL'")
         .augment_cmo(
             date_column='date',
-            value_column='adjusted',
+            close_column='adjusted',
             periods=[14, 28],
             engine='polars'
         )
@@ -109,7 +109,7 @@ cmo_df = (
         .groupby('symbol')
         .augment_cmo(
             date_column='date',
-            value_column='adjusted',
+            close_column='adjusted',
             periods=[14, 28],
             engine='polars'
         )

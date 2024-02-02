@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytimetk"
-version = "0.3.0"
+version = "0.3.0.9000"
 description = "The time series toolkit for Python."
 authors = [
     "Business Science <info@business-science.io>",
@@ -44,6 +44,8 @@ xarray = "<=2023.10.1" # until fix: https://github.com/pyjanitor-devs/pandas_fla
 # [tool.poetry.extras]
 # finance = ["ta-lib"]
 
+[tool.pytest.ini_options]
+norecursedirs = ["zzz_local"]
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.25.2"

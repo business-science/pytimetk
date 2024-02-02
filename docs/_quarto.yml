@@ -166,6 +166,7 @@ quartodoc:
       contents:
         - augment_ewm
         - augment_cmo
+        - augment_macd
     - title: 🐼 Time Series for Pandas Series
       desc: Time series functions that generate / manipulate Pandas Series.
       package: pytimetk

@@ -44,6 +44,7 @@ website:
     - contents:
       - reference/augment_ewm.qmd
       - reference/augment_cmo.qmd
+      - reference/augment_macd.qmd
       section: "\U0001F4B9 Finance Module"
     - contents:
       - reference/make_future_timeseries.qmd
