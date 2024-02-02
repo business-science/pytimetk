@@ -145,6 +145,9 @@ from .finance.ewm import (
 from .finance.cmo import (
     augment_cmo
 )
+from .finance.macd import (
+    augment_macd
+)
 from .datasets.get_datasets import (
     load_dataset, get_available_datasets
 )
