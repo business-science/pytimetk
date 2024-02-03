@@ -154,6 +154,16 @@ def augment_cmo(
     check_value_column(data, close_column)
     check_date_column(data, date_column)
     
+    if isinstance(close_column, str):
+        close_column = [close_column]
+        
+    if isinstance(periods, int):
+        periods = [periods]  # Convert to a list with a single value
+    elif isinstance(periods, tuple):
+        periods = list(range(periods[0], periods[1] + 1))
+    elif not isinstance(periods, list):
+        raise TypeError(f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list.")
+    
     if reduce_memory:
         data = reduce_memory_usage(data)
     
@@ -179,16 +189,6 @@ def _augment_cmo_pandas(
     close_column: Union[str, List[str]], 
     periods: Union[int, Tuple[int, int], List[int]] = 14
 ) -> pd.DataFrame:
-    
-    if isinstance(close_column, str):
-        close_column = [close_column]
-
-    if isinstance(periods, int):
-        periods = [periods]
-    elif isinstance(periods, tuple):
-        periods = list(range(periods[0], periods[1] + 1))
-    elif not isinstance(periods, list):
-        raise TypeError(f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list.")
 
     # DATAFRAME EXTENSION - If data is a Pandas DataFrame, apply cmo function
     if isinstance(data, pd.DataFrame):
@@ -254,15 +254,7 @@ def _augment_cmo_polars(
     else:
         raise ValueError("data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame")
 
-    if isinstance(close_column, str):
-        close_column = [close_column]
-        
-    if isinstance(periods, int):
-        periods = [periods]  # Convert to a list with a single value
-    elif isinstance(periods, tuple):
-        periods = list(range(periods[0], periods[1] + 1))
-    elif not isinstance(periods, list):
-        raise TypeError(f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list.")
+    
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         

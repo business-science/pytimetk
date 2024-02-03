@@ -75,10 +75,6 @@ def _augment_bbands_pandas(
             
             ma = df.groupby(group_names)[close_column].rolling(period).mean().reset_index(drop = True).set_axis(df.index)
             
-            print(ma)
-            
-            print(df)
-            
             df[f'{close_column}_bband_middle_{period}'] = ma
             
             std = df.groupby(group_names)[close_column].rolling(period).std().reset_index(drop = True).set_axis(df.index)
@@ -111,24 +107,8 @@ def _augment_bbands_pandas(
 
 
 
-def _calculate_cmo_pandas(series: pd.Series, period=14):
-    # Calculate the difference in closing prices
-    delta = series.diff()
 
-    # Separate gains and losses
-    gains = delta.where(delta > 0, 0)
-    losses = -delta.where(delta < 0, 0)
-
-    # Calculate the sum of gains and losses using a rolling window
-    sum_gains = gains.rolling(window=period).sum()
-    sum_losses = losses.rolling(window=period).sum()
-
-    # Calculate CMO
-    cmo = 100 * (sum_gains - sum_losses) / (sum_gains + sum_losses)
-    return cmo
-
-
-def _augment_cmo_polars(
+def _augment_bbands_polars(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
     close_column: Union[str, List[str]], 
@@ -137,7 +117,7 @@ def _augment_cmo_polars(
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         # Data is a GroupBy object, use apply to get a DataFrame
-        pandas_df = data.apply(lambda x: x)
+        pandas_df = data.obj.copy()
     elif isinstance(data, pd.DataFrame):
         # Data is already a DataFrame
         pandas_df = data.copy()
@@ -147,15 +127,6 @@ def _augment_cmo_polars(
     else:
         raise ValueError("data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame")
 
-    if isinstance(close_column, str):
-        close_column = [close_column]
-        
-    if isinstance(periods, int):
-        periods = [periods]  # Convert to a list with a single value
-    elif isinstance(periods, tuple):
-        periods = list(range(periods[0], periods[1] + 1))
-    elif not isinstance(periods, list):
-        raise TypeError(f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list.")
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         
