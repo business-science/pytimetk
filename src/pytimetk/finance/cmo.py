@@ -195,8 +195,6 @@ def _augment_cmo_pandas(
 
         df = data.copy()
 
-        df.sort_values(by=[date_column], inplace=True)
-
         for col in close_column:
             for period in periods:
                 df[f'{col}_cmo_{period}'] = _calculate_cmo_pandas(df[col], period=period)
@@ -208,9 +206,7 @@ def _augment_cmo_pandas(
         data = data.obj
 
         df = data.copy()
-
-        df.sort_values(by=[*group_names, date_column], inplace=True)
-        
+   
         for col in close_column:
             for period in periods:
                 df[f'{col}_cmo_{period}'] = df.groupby(group_names)[col].apply(_calculate_cmo_pandas, period=period)
@@ -269,8 +265,6 @@ def _augment_cmo_polars(
         
         # Get the group names and original ungrouped data
         group_names = data.grouper.names
-
-        pandas_df = pandas_df.sort_values(by=[*group_names, date_column])
         
         df = pl.from_pandas(pandas_df)
         
@@ -288,8 +282,6 @@ def _augment_cmo_polars(
             for period in periods:
                 _expr = _calculate_cmo_polars(pl.col(col), period=period).alias(f'{col}_cmo_{period}')
                 _exprs.append(_expr)
-        
-        pandas_df = pandas_df.sort_values(by=[date_column])
         
         df = pl.from_pandas(pandas_df)
         

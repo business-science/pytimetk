@@ -19,6 +19,90 @@ def augment_bbands(
     reduce_memory: bool = False,
     engine: str = 'pandas'
 ) -> pd.DataFrame:
+    '''The `augment_bbands` function is used to calculate Bollinger Bands for a given dataset and return
+    the augmented dataset.
+    
+    Parameters
+    ----------
+    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+        The `data` parameter is the input data that can be either a pandas DataFrame or a pandas
+        DataFrameGroupBy object. It contains the data on which the Bollinger Bands will be calculated.
+    date_column : str
+        The `date_column` parameter is a string that specifies the name of the column in the `data`
+        DataFrame that contains the dates.
+    close_column : str
+        The `close_column` parameter is a string that specifies the name of the column in the `data`
+        DataFrame that contains the closing prices of the asset.
+    periods : Union[int, Tuple[int, int], List[int]], optional
+        The `periods` parameter in the `augment_bbands` function can be specified as an integer, a tuple,
+        or a list. This parameter specifies the number of rolling periods to use when calculating the Bollinger Bands.
+    num_std_dev : float, optional
+        The `num_std_dev` parameter is a float that represents the number of standard deviations to use
+        when calculating the Bollinger Bands. Bollinger Bands are a technical analysis tool that consists of
+        a middle band (usually a simple moving average) and an upper and lower band that are typically two
+        standard
+    reduce_memory : bool, optional
+        The `reduce_memory` parameter is a boolean flag that indicates whether or not to reduce the memory
+        usage of the input data before performing the calculation. If set to `True`, the function will
+        attempt to reduce the memory usage of the input data using techniques such as downcasting numeric
+        columns and converting object columns
+    engine : str, optional
+        The `engine` parameter specifies the computation engine to use for calculating the Bollinger Bands.
+        It can take two values: 'pandas' or 'polars'. If 'pandas' is selected, the function will use the
+        pandas library for computation. If 'polars' is selected,
+    
+    Returns
+    -------
+    pd.DataFrame
+        The function `augment_bbands` returns a pandas DataFrame.
+        
+    Examples
+    --------
+    
+    ``` {python}
+    import pandas as pd
+    import pytimetk as tk
+
+    df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
+    
+    df
+    ```
+    
+    ``` {python}
+    # BBANDS pandas engine
+    df_bbands = (
+        df
+            .groupby('symbol')
+            .augment_bbands(
+                date_column = 'date', 
+                close_column='close', 
+                periods = [20, 40],
+                num_std_dev=2, 
+                engine = "pandas"
+            )
+    )
+    
+    df_bbands.glimpse()
+    ```
+    
+    ``` {python}
+    # BBANDS pandas engine
+    df_bbands = (
+        df
+            .groupby('symbol')
+            .augment_bbands(
+                date_column = 'date', 
+                close_column='close', 
+                periods = [20, 40],
+                num_std_dev=2, 
+                engine = "polars"
+            )
+    )
+    
+    df_bbands.glimpse()
+    ```
+    
+    '''
     
     # Run common checks
     check_dataframe_or_groupby(data)
@@ -56,8 +140,8 @@ pd.core.groupby.generic.DataFrameGroupBy.augment_bbands = augment_bbands
 def _augment_bbands_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
-    close_column: Union[str, List[str]], 
-    periods: Union[int, Tuple[int, int], List[int]] = 14,
+    close_column: str, 
+    periods: Union[int, Tuple[int, int], List[int]] = 20,
     num_std_dev: float = 2
 ) -> pd.DataFrame:
     """
@@ -69,15 +153,15 @@ def _augment_bbands_pandas(
         data = data.obj
         df = data.copy()
         
-        df.sort_values(by=[*group_names, date_column], inplace=True)
-        
         for period in periods:
             
-            ma = df.groupby(group_names)[close_column].rolling(period).mean().reset_index(drop = True).set_axis(df.index)
+            ma = df.groupby(group_names)[close_column].rolling(period).mean().reset_index(level = 0, drop = True)
             
+            
+            std = df.groupby(group_names)[close_column].rolling(period).std().reset_index(level = 0, drop = True)
+            
+            # Add upper and lower bband columns
             df[f'{close_column}_bband_middle_{period}'] = ma
-            
-            std = df.groupby(group_names)[close_column].rolling(period).std().reset_index(drop = True).set_axis(df.index)
             
             df[f'{close_column}_bband_upper_{period}'] = ma + (std * num_std_dev)
             
@@ -86,14 +170,15 @@ def _augment_bbands_pandas(
 
     elif isinstance(data, pd.DataFrame):
         
-        df = data.copy().sort_values(by=date_column)
+        df = data.copy()
         
         for period in periods:
             
-            ma = df[close_column].rolling(period).mean().reset_index(drop = True).set_axis(df.index)
+            ma = df[close_column].rolling(period).mean()
             
-            std = df[close_column].rolling(period).std().reset_index(drop = True).set_axis(df.index)
+            std = df[close_column].rolling(period).std()
             
+            # Add upper and lower bband columns
             df[f'{close_column}_bband_middle_{period}'] = ma
             
             df[f'{close_column}_bband_upper_{period}'] = ma + (std * num_std_dev)
@@ -102,17 +187,17 @@ def _augment_bbands_pandas(
             
     else:
         raise ValueError("data must be a pandas DataFrame or a pandas GroupBy object")
+    
+    
 
     return df
-
-
-
 
 def _augment_bbands_polars(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
-    close_column: Union[str, List[str]], 
-    periods: Union[int, Tuple[int, int], List[int]] = 14
+    close_column: str, 
+    periods: Union[int, Tuple[int, int], List[int]] = 20,
+    num_std_dev: float = 2
 ) -> pd.DataFrame:
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -129,68 +214,45 @@ def _augment_bbands_polars(
 
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        
-        def apply_cmo(pl_df):
-            for col in close_column:
-                for period in periods:
-                    pl_df = pl_df.with_columns(
-                        _calculate_cmo_polars(pl_df[col], period=period).alias(f'{col}_cmo_{period}')
-                    )
-                    # pl_df[f'{col}_cmo_{period}'] = _calculate_cmo_polars(pl_df[col], period=period)
-            return pl_df
-        
+                
         # Get the group names and original ungrouped data
         group_names = data.grouper.names
-
-        pandas_df = pandas_df.sort_values(by=[*group_names, date_column])
         
-        df = pl.from_pandas(pandas_df)
+        pl_df = pl.from_pandas(pandas_df)
         
-        out_df = df.group_by(
-            data.grouper.names, maintain_order=True
-        ).apply(apply_cmo)
+        for period in periods:
+            
+            ma = pl.col(close_column).rolling_mean(window_size=period).over(group_names).alias(f'{close_column}_bband_middle_{period}')
+            
+            std = pl.col(close_column).rolling_std(window_size=period).over(group_names).alias('std')
+            
+            # Add upper and lower bband columns     
+            upper_band = (ma + std * num_std_dev).alias(f'{close_column}_bband_upper_{period}')
+            
+            lower_band = (ma - std * num_std_dev).alias(f'{close_column}_bband_lower_{period}')   
+            
+            pl_df = pl_df.with_columns([ma, upper_band, lower_band]) 
         
-        df = out_df
-
     else:
         
-        _exprs = []
+        pl_df = pl.from_pandas(pandas_df)
         
-        for col in close_column:
-            for period in periods:
-                _expr = _calculate_cmo_polars(pl.col(col), period=period).alias(f'{col}_cmo_{period}')
-                _exprs.append(_expr)
+        for period in periods:
+            
+            ma = pl.col(close_column).rolling_mean(window_size=period).alias(f'{close_column}_bband_middle_{period}')
+            
+            std = pl.col(close_column).rolling_std(window_size=period).alias('std')
         
-        pandas_df = pandas_df.sort_values(by=[date_column])
-        
-        df = pl.from_pandas(pandas_df)
-        
-        out_df = df.select(_exprs)
-        
-        df = pl.concat([df, out_df], how="horizontal")
+            # Add upper and lower bband columns     
+            upper_band = (ma + std * num_std_dev).alias(f'{close_column}_bband_upper_{period}')
+            
+            lower_band = (ma - std * num_std_dev).alias(f'{close_column}_bband_lower_{period}')   
+            
+            pl_df = pl_df.with_columns([ma, upper_band, lower_band])   
     
-    return df.to_pandas()
+    return pl_df.to_pandas()
     
     
 
-def _calculate_cmo_polars(series: pl.Series, period=14):
-    # Calculate the difference in closing prices
-    delta = series.diff()
-    
-    # Separate gains and losses    
-    # gains = delta.apply(lambda x: x if x > 0 else 0)
-    # losses = delta.apply(lambda x: -x if x < 0 else 0)
-    
-    gains = pl.when(delta > 0).then(delta).otherwise(0)
-    losses = pl.when(delta <= 0).then(-delta).otherwise(0)
 
-    # Calculate the sum of gains and losses using a rolling window
-    sum_gains = gains.rolling_sum(window_size=period)
-    sum_losses = losses.rolling_sum(window_size=period)
-
-    # Calculate CMO
-    total_movement = sum_gains + sum_losses
-    cmo = 100 * (sum_gains - sum_losses) / total_movement
-    
-    return cmo
 

@@ -207,7 +207,6 @@ def _augment_macd_polars(data, date_column, close_column, fast_period, slow_peri
         
     else:
         result_df = calculate_macd_single(pl_df).to_pandas()
-        result_df = result_df.sort_values(by=date_column)
 
     return result_df
 
