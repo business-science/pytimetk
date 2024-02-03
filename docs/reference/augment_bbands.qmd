@@ -1,6 +1,6 @@
 # augment_bbands { #pytimetk.augment_bbands }
 
-`augment_bbands(data, date_column, close_column, periods=20, num_std_dev=2, reduce_memory=False, engine='pandas')`
+`augment_bbands(data, date_column, close_column, periods=20, std_dev=2, reduce_memory=False, engine='pandas')`
 
 The `augment_bbands` function is used to calculate Bollinger Bands for a given dataset and return
 the augmented dataset.
@@ -13,7 +13,7 @@ the augmented dataset.
 | `date_column`   | str                                                             | The `date_column` parameter is a string that specifies the name of the column in the `data` DataFrame that contains the dates.                                                                                                                                                                                                            | _required_ |
 | `close_column`  | str                                                             | The `close_column` parameter is a string that specifies the name of the column in the `data` DataFrame that contains the closing prices of the asset.                                                                                                                                                                                     | _required_ |
 | `periods`       | Union\[int, Tuple\[int, int\], List\[int\]\]                    | The `periods` parameter in the `augment_bbands` function can be specified as an integer, a tuple, or a list. This parameter specifies the number of rolling periods to use when calculating the Bollinger Bands.                                                                                                                          | `20`       |
-| `num_std_dev`   | float                                                           | The `num_std_dev` parameter is a float that represents the number of standard deviations to use when calculating the Bollinger Bands. Bollinger Bands are a technical analysis tool that consists of a middle band (usually a simple moving average) and an upper and lower band that are typically two standard                          | `2`        |
+| `std_dev`       | float                                                           | The `std_dev` parameter is a float that represents the number of standard deviations to use when calculating the Bollinger Bands. Bollinger Bands are a technical analysis tool that consists of a middle band (usually a simple moving average) and an upper and lower band that are typically two standard                              | `2`        |
 | `reduce_memory` | bool                                                            | The `reduce_memory` parameter is a boolean flag that indicates whether or not to reduce the memory usage of the input data before performing the calculation. If set to `True`, the function will attempt to reduce the memory usage of the input data using techniques such as downcasting numeric columns and converting object columns | `False`    |
 | `engine`        | str                                                             | The `engine` parameter specifies the computation engine to use for calculating the Bollinger Bands. It can take two values: 'pandas' or 'polars'. If 'pandas' is selected, the function will use the pandas library for computation. If 'polars' is selected,                                                                             | `'pandas'` |
 
@@ -43,7 +43,7 @@ df_bbands = (
             date_column = 'date', 
             close_column='close', 
             periods = [20, 40],
-            num_std_dev=2, 
+            std_dev=2, 
             engine = "pandas"
         )
 )
@@ -60,7 +60,7 @@ df_bbands = (
             date_column = 'date', 
             close_column='close', 
             periods = [20, 40],
-            num_std_dev=2, 
+            std_dev=2, 
             engine = "polars"
         )
 )

@@ -15,7 +15,7 @@ def augment_bbands(
     date_column: str,
     close_column: str, 
     periods: Union[int, Tuple[int, int], List[int]] = 20,
-    num_std_dev: float = 2,
+    std_dev: float = 2,
     reduce_memory: bool = False,
     engine: str = 'pandas'
 ) -> pd.DataFrame:
@@ -36,8 +36,8 @@ def augment_bbands(
     periods : Union[int, Tuple[int, int], List[int]], optional
         The `periods` parameter in the `augment_bbands` function can be specified as an integer, a tuple,
         or a list. This parameter specifies the number of rolling periods to use when calculating the Bollinger Bands.
-    num_std_dev : float, optional
-        The `num_std_dev` parameter is a float that represents the number of standard deviations to use
+    std_dev : float, optional
+        The `std_dev` parameter is a float that represents the number of standard deviations to use
         when calculating the Bollinger Bands. Bollinger Bands are a technical analysis tool that consists of
         a middle band (usually a simple moving average) and an upper and lower band that are typically two
         standard
@@ -77,7 +77,7 @@ def augment_bbands(
                 date_column = 'date', 
                 close_column='close', 
                 periods = [20, 40],
-                num_std_dev=2, 
+                std_dev=2, 
                 engine = "pandas"
             )
     )
@@ -94,7 +94,7 @@ def augment_bbands(
                 date_column = 'date', 
                 close_column='close', 
                 periods = [20, 40],
-                num_std_dev=2, 
+                std_dev=2, 
                 engine = "polars"
             )
     )
@@ -122,9 +122,9 @@ def augment_bbands(
         data = reduce_memory_usage(data)
     
     if engine == 'pandas':
-        ret = _augment_bbands_pandas(data, date_column, close_column, periods, num_std_dev)
+        ret = _augment_bbands_pandas(data, date_column, close_column, periods, std_dev)
     elif engine == 'polars':
-        ret = _augment_bbands_polars(data, date_column, close_column, periods, num_std_dev)
+        ret = _augment_bbands_polars(data, date_column, close_column, periods, std_dev)
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
     
@@ -142,7 +142,7 @@ def _augment_bbands_pandas(
     date_column: str,
     close_column: str, 
     periods: Union[int, Tuple[int, int], List[int]] = 20,
-    num_std_dev: float = 2
+    std_dev: float = 2
 ) -> pd.DataFrame:
     """
     Internal function to calculate BBANDS using Pandas.
@@ -163,9 +163,9 @@ def _augment_bbands_pandas(
             # Add upper and lower bband columns
             df[f'{close_column}_bband_middle_{period}'] = ma
             
-            df[f'{close_column}_bband_upper_{period}'] = ma + (std * num_std_dev)
+            df[f'{close_column}_bband_upper_{period}'] = ma + (std * std_dev)
             
-            df[f'{close_column}_bband_lower_{period}'] = ma - (std * num_std_dev)
+            df[f'{close_column}_bband_lower_{period}'] = ma - (std * std_dev)
         
 
     elif isinstance(data, pd.DataFrame):
@@ -181,9 +181,9 @@ def _augment_bbands_pandas(
             # Add upper and lower bband columns
             df[f'{close_column}_bband_middle_{period}'] = ma
             
-            df[f'{close_column}_bband_upper_{period}'] = ma + (std * num_std_dev)
+            df[f'{close_column}_bband_upper_{period}'] = ma + (std * std_dev)
             
-            df[f'{close_column}_bband_lower_{period}'] = ma - (std * num_std_dev)
+            df[f'{close_column}_bband_lower_{period}'] = ma - (std * std_dev)
             
     else:
         raise ValueError("data must be a pandas DataFrame or a pandas GroupBy object")
@@ -197,7 +197,7 @@ def _augment_bbands_polars(
     date_column: str,
     close_column: str, 
     periods: Union[int, Tuple[int, int], List[int]] = 20,
-    num_std_dev: float = 2
+    std_dev: float = 2
 ) -> pd.DataFrame:
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -227,9 +227,9 @@ def _augment_bbands_polars(
             std = pl.col(close_column).rolling_std(window_size=period).over(group_names).alias('std')
             
             # Add upper and lower bband columns     
-            upper_band = (ma + std * num_std_dev).alias(f'{close_column}_bband_upper_{period}')
+            upper_band = (ma + std * std_dev).alias(f'{close_column}_bband_upper_{period}')
             
-            lower_band = (ma - std * num_std_dev).alias(f'{close_column}_bband_lower_{period}')   
+            lower_band = (ma - std * std_dev).alias(f'{close_column}_bband_lower_{period}')   
             
             pl_df = pl_df.with_columns([ma, upper_band, lower_band]) 
         
@@ -244,9 +244,9 @@ def _augment_bbands_polars(
             std = pl.col(close_column).rolling_std(window_size=period).alias('std')
         
             # Add upper and lower bband columns     
-            upper_band = (ma + std * num_std_dev).alias(f'{close_column}_bband_upper_{period}')
+            upper_band = (ma + std * std_dev).alias(f'{close_column}_bband_upper_{period}')
             
-            lower_band = (ma - std * num_std_dev).alias(f'{close_column}_bband_lower_{period}')   
+            lower_band = (ma - std * std_dev).alias(f'{close_column}_bband_lower_{period}')   
             
             pl_df = pl_df.with_columns([ma, upper_band, lower_band])   
     

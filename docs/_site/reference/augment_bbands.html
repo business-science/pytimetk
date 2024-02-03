@@ -389,7 +389,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_bbands(data, date_column, close_column, periods=20, num_std_dev=2, reduce_memory=False, engine='pandas')</code></p>
+<p><code>augment_bbands(data, date_column, close_column, periods=20, std_dev=2, reduce_memory=False, engine='pandas')</code></p>
 <p>The <code>augment_bbands</code> function is used to calculate Bollinger Bands for a given dataset and return the augmented dataset.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
@@ -434,9 +434,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><code>20</code></td>
 </tr>
 <tr class="odd">
-<td><code>num_std_dev</code></td>
+<td><code>std_dev</code></td>
 <td>float</td>
-<td>The <code>num_std_dev</code> parameter is a float that represents the number of standard deviations to use when calculating the Bollinger Bands. Bollinger Bands are a technical analysis tool that consists of a middle band (usually a simple moving average) and an upper and lower band that are typically two standard</td>
+<td>The <code>std_dev</code> parameter is a float that represents the number of standard deviations to use when calculating the Bollinger Bands. Bollinger Bands are a technical analysis tool that consists of a middle band (usually a simple moving average) and an upper and lower band that are typically two standard</td>
 <td><code>2</code></td>
 </tr>
 <tr class="even">
@@ -640,7 +640,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'close'</span>, </span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            periods <span class="op">=</span> [<span class="dv">20</span>, <span class="dv">40</span>],</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            num_std_dev<span class="op">=</span><span class="dv">2</span>, </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            std_dev<span class="op">=</span><span class="dv">2</span>, </span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">"pandas"</span></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>)</span>
@@ -673,7 +673,7 @@ close_bband_lower_40:   float64           [nan, nan, nan, nan, nan, nan, ...</co
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'close'</span>, </span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            periods <span class="op">=</span> [<span class="dv">20</span>, <span class="dv">40</span>],</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            num_std_dev<span class="op">=</span><span class="dv">2</span>, </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            std_dev<span class="op">=</span><span class="dv">2</span>, </span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">"polars"</span></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>)</span>
