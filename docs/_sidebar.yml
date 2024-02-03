@@ -47,6 +47,9 @@ website:
       - reference/augment_macd.qmd
       section: "\U0001F4B9 Finance Module (Momentum Indicators)"
     - contents:
+      - reference/augment_bbands.qmd
+      section: "\U0001F4B9 Finance Module (Volatility Indicators)"
+    - contents:
       - reference/make_future_timeseries.qmd
       - reference/make_weekday_sequence.qmd
       - reference/make_weekend_sequence.qmd

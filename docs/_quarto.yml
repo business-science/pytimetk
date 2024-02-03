@@ -162,11 +162,16 @@ quartodoc:
         - ts_features
         - ts_summary
     - title: 💹 Finance Module (Momentum Indicators)
-      desc: Functions for working with financial time series data.
+      desc: Momentum indicators for financial time series data.
       package: pytimetk
       contents:
         - augment_cmo
         - augment_macd
+    - title: 💹 Finance Module (Volatility Indicators)
+      desc: Volatility indicators for financial time series data.
+      package: pytimetk
+      contents:
+        - augment_bbands
     - title: 🐼 Time Series for Pandas Series
       desc: Time series functions that generate / manipulate Pandas Series.
       package: pytimetk
