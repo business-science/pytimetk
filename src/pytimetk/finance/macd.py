@@ -152,7 +152,7 @@ def _calculate_macd_pandas(df, close_column, fast_period, slow_period, signal_pe
 
     # Add columns
     df[f'{close_column}_macd_line_{fast_period}_{slow_period}_{signal_period}'] = macd_line
-    df[f'{close_column}_signal_line_{fast_period}_{slow_period}_{signal_period}'] = signal_line
+    df[f'{close_column}_macd_signal_line_{fast_period}_{slow_period}_{signal_period}'] = signal_line
     df[f'{close_column}_macd_histogram_{fast_period}_{slow_period}_{signal_period}'] = macd_histogram
 
     return df
@@ -192,7 +192,7 @@ def _augment_macd_polars(data, date_column, close_column, fast_period, slow_peri
                 f'{close_column}_macd_line_{fast_period}_{slow_period}_{signal_period}'
             ),
             signal_line.alias(
-                f'{close_column}_signal_line_{fast_period}_{slow_period}_{signal_period}'
+                f'{close_column}_macd_signal_line_{fast_period}_{slow_period}_{signal_period}'
             ),
             macd_histogram.alias(
                 f'{close_column}_macd_histogram_{fast_period}_{slow_period}_{signal_period}'
