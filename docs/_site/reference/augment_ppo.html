@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>pytimetk – augment_bbands</title>
+<title>pytimetk – augment_ppo</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -149,7 +149,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">augment_bbands</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">augment_ppo</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -367,14 +367,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_bbands.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_ppo.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">augment_bbands</h1>
+<h1 class="title">augment_ppo</h1>
 </div>
 
 
@@ -389,16 +389,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_bbands(data, date_column, close_column, periods=20, std_dev=2, reduce_memory=False, engine='pandas')</code></p>
-<p>The <code>augment_bbands</code> function is used to calculate Bollinger Bands for a given dataset and return the augmented dataset.</p>
+<p><code>augment_ppo(data, date_column, close_column, fast_period=12, slow_period=26, reduce_memory=False, engine='pandas')</code></p>
+<p>Calculate PPO for a given financial instrument using either pandas or polars engine.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 3%">
-<col style="width: 11%">
-<col style="width: 82%">
-<col style="width: 2%">
+<col style="width: 9%">
+<col style="width: 37%">
+<col style="width: 45%">
+<col style="width: 6%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -412,43 +412,43 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td><code>data</code></td>
 <td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
-<td>The <code>data</code> parameter is the input data that can be either a pandas DataFrame or a pandas DataFrameGroupBy object. It contains the data on which the Bollinger Bands will be calculated.</td>
+<td>Pandas DataFrame or GroupBy object containing financial data.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td><code>date_column</code></td>
 <td>str</td>
-<td>The <code>date_column</code> parameter is a string that specifies the name of the column in the <code>data</code> DataFrame that contains the dates.</td>
+<td>Name of the column containing date information.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td><code>close_column</code></td>
 <td>str</td>
-<td>The <code>close_column</code> parameter is a string that specifies the name of the column in the <code>data</code> DataFrame that contains the closing prices of the asset.</td>
+<td>Name of the column containing closing price data.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>periods</code></td>
-<td>Union[int, Tuple[int, int], List[int]]</td>
-<td>The <code>periods</code> parameter in the <code>augment_bbands</code> function can be specified as an integer, a tuple, or a list. This parameter specifies the number of rolling periods to use when calculating the Bollinger Bands.</td>
-<td><code>20</code></td>
+<td><code>fast_period</code></td>
+<td>int</td>
+<td>Number of periods for the fast EMA in PPO calculation.</td>
+<td><code>12</code></td>
 </tr>
 <tr class="odd">
-<td><code>std_dev</code></td>
-<td>float</td>
-<td>The <code>std_dev</code> parameter is a float that represents the number of standard deviations to use when calculating the Bollinger Bands. Bollinger Bands are a technical analysis tool that consists of a middle band (usually a simple moving average) and an upper and lower band that are typically two standard deviations away from the middle band. The <code>std_dev</code> parameter specifies the number of standard deviations. <code>std_dev</code> can be a list of floats as well.</td>
-<td><code>2</code></td>
+<td><code>slow_period</code></td>
+<td>int</td>
+<td>Number of periods for the slow EMA in PPO calculation.</td>
+<td><code>26</code></td>
 </tr>
 <tr class="even">
 <td><code>reduce_memory</code></td>
 <td>bool</td>
-<td>The <code>reduce_memory</code> parameter is a boolean flag that indicates whether or not to reduce the memory usage of the input data before performing the calculation. If set to <code>True</code>, the function will attempt to reduce the memory usage of the input data using techniques such as downcasting numeric columns and converting object columns</td>
+<td>Whether to reduce memory usage of the data before performing the calculation.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
 <td><code>engine</code></td>
 <td>str</td>
-<td>The <code>engine</code> parameter specifies the computation engine to use for calculating the Bollinger Bands. It can take two values: ‘pandas’ or ‘polars’. If ‘pandas’ is selected, the function will use the pandas library for computation. If ‘polars’ is selected,</td>
+<td>Computation engine to use (‘pandas’ or ‘polars’).</td>
 <td><code>'pandas'</code></td>
 </tr>
 </tbody>
@@ -457,10 +457,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <section id="returns" class="level2">
 <h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
-<colgroup>
-<col style="width: 19%">
-<col style="width: 80%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Type</th>
@@ -470,7 +466,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>pd.DataFrame</td>
-<td>The function <code>augment_bbands</code> returns a pandas DataFrame.</td>
+<td>DataFrame with PPO values added.</td>
 </tr>
 </tbody>
 </table>
@@ -632,69 +628,59 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># BBANDS pandas engine</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_bbands <span class="op">=</span> (</span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PPO pandas engine</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_ppo <span class="op">=</span> (</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    df</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        .augment_bbands(</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        .augment_ppo(</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'close'</span>, </span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            periods <span class="op">=</span> [<span class="dv">20</span>, <span class="dv">40</span>],</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            std_dev <span class="op">=</span> <span class="dv">2</span>, </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            close_column <span class="op">=</span> <span class="st">'close'</span>, </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            fast_period <span class="op">=</span> <span class="dv">12</span>, </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            slow_period <span class="op">=</span> <span class="dv">26</span>, </span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">"pandas"</span></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>df_bbands.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>df_ppo.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 14 columns
-symbol:                     object            ['META', 'META', 'META', ' ...
-date:                       datetime64[ns]    [Timestamp('2013-01-02 00: ...
-open:                       float64           [27.440000534057617, 27.87 ...
-high:                       float64           [28.18000030517578, 28.469 ...
-low:                        float64           [27.420000076293945, 27.59 ...
-close:                      float64           [28.0, 27.770000457763672, ...
-volume:                     int64             [69846400, 63140600, 72715 ...
-adjusted:                   float64           [28.0, 27.770000457763672, ...
-close_bband_middle_20_2.0:  float64           [nan, nan, nan, nan, nan,  ...
-close_bband_upper_20_2.0:   float64           [nan, nan, nan, nan, nan,  ...
-close_bband_lower_20_2.0:   float64           [nan, nan, nan, nan, nan,  ...
-close_bband_middle_40_2.0:  float64           [nan, nan, nan, nan, nan,  ...
-close_bband_upper_40_2.0:   float64           [nan, nan, nan, nan, nan,  ...
-close_bband_lower_40_2.0:   float64           [nan, nan, nan, nan, nan,  ...</code></pre>
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 9 columns
+symbol:                object            ['META', 'META', 'META', 'META' ...
+date:                  datetime64[ns]    [Timestamp('2013-01-02 00:00:00 ...
+open:                  float64           [27.440000534057617, 27.8799991 ...
+high:                  float64           [28.18000030517578, 28.46999931 ...
+low:                   float64           [27.420000076293945, 27.5900001 ...
+close:                 float64           [28.0, 27.770000457763672, 28.7 ...
+volume:                int64             [69846400, 63140600, 72715400,  ...
+adjusted:              float64           [28.0, 27.770000457763672, 28.7 ...
+close_ppo_line_12_26:  float64           [0.0, -0.06556683019189882, 0.1 ...</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># BBANDS polars engine</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_bbands <span class="op">=</span> (</span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PPO polars engine</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_ppo <span class="op">=</span> (</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .augment_bbands(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .augment_ppo(</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'close'</span>, </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            periods <span class="op">=</span> [<span class="dv">20</span>, <span class="dv">40</span>],</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            std_dev <span class="op">=</span> <span class="dv">2</span>, </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            close_column <span class="op">=</span> <span class="st">'close'</span>, </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            fast_period <span class="op">=</span> <span class="dv">12</span>, </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            slow_period <span class="op">=</span> <span class="dv">26</span>, </span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">"polars"</span></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>df_bbands.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>df_ppo.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 14 columns
-symbol:                     object            ['META', 'META', 'META', ' ...
-date:                       datetime64[ns]    [Timestamp('2013-01-02 00: ...
-open:                       float64           [27.440000534057617, 27.87 ...
-high:                       float64           [28.18000030517578, 28.469 ...
-low:                        float64           [27.420000076293945, 27.59 ...
-close:                      float64           [28.0, 27.770000457763672, ...
-volume:                     int64             [69846400, 63140600, 72715 ...
-adjusted:                   float64           [28.0, 27.770000457763672, ...
-close_bband_middle_20_2.0:  float64           [nan, nan, nan, nan, nan,  ...
-close_bband_upper_20_2.0:   float64           [nan, nan, nan, nan, nan,  ...
-close_bband_lower_20_2.0:   float64           [nan, nan, nan, nan, nan,  ...
-close_bband_middle_40_2.0:  float64           [nan, nan, nan, nan, nan,  ...
-close_bband_upper_40_2.0:   float64           [nan, nan, nan, nan, nan,  ...
-close_bband_lower_40_2.0:   float64           [nan, nan, nan, nan, nan,  ...</code></pre>
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 9 columns
+symbol:                object            ['META', 'META', 'META', 'META' ...
+date:                  datetime64[ns]    [Timestamp('2013-01-02 00:00:00 ...
+open:                  float64           [27.440000534057617, 27.8799991 ...
+high:                  float64           [28.18000030517578, 28.46999931 ...
+low:                   float64           [27.420000076293945, 27.5900001 ...
+close:                 float64           [28.0, 27.770000457763672, 28.7 ...
+volume:                int64             [69846400, 63140600, 72715400,  ...
+adjusted:              float64           [28.0, 27.770000457763672, 28.7 ...
+close_ppo_line_12_26:  float64           [0.0, -0.06556683019189882, 0.1 ...</code></pre>
 </div>
 </div>
 

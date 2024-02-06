@@ -78,6 +78,7 @@ Momentum indicators for financial time series data.
 | --- | --- |
 | [augment_cmo](augment_cmo.qmd#pytimetk.augment_cmo) | The `augment_cmo` function calculates the Chande Momentum Oscillator (CMO) for a given financial |
 | [augment_macd](augment_macd.qmd#pytimetk.augment_macd) | Calculate MACD for a given financial instrument using either pandas or polars engine. |
+| [augment_ppo](augment_ppo.qmd#pytimetk.augment_ppo) | Calculate PPO for a given financial instrument using either pandas or polars engine. |
 
 ## 💹 Finance Module (Volatility Indicators)
 
