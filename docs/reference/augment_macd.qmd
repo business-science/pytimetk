@@ -23,6 +23,34 @@ Calculate MACD for a given financial instrument using either pandas or polars en
 |--------------|------------------------------------------------------------------|
 | pd.DataFrame | DataFrame with MACD line, signal line, and MACD histogram added. |
 
+## Notes
+
+The MACD (Moving Average Convergence Divergence) is a 
+trend-following momentum indicator that shows the relationship 
+between two moving averages of a security’s price. Developed by
+Gerald Appel in the late 1970s, the MACD is one of the simplest
+and most effective momentum indicators available.
+
+MACD Line: The MACD line is the difference between two 
+exponential moving averages (EMAs) of a security’s price, 
+typically the 12-day and 26-day EMAs.
+
+Signal Line: This is usually a 9-day EMA of the MACD line. It
+acts as a trigger for buy and sell signals.
+
+Histogram: The MACD histogram plots the difference between the
+MACD line and the signal line. A histogram above zero indicates
+that the MACD line is above the signal line (bullish), and 
+below zero indicates it is below the signal line (bearish).
+
+Crossovers: The most common MACD signals are when the MACD line
+crosses above or below the signal line. A crossover above the 
+signal line is a bullish signal, indicating it might be time to
+buy, and a crossover below the signal line is bearish, 
+suggesting it might be time to sell.
+
+    
+
 ## Examples
 
 ``` {python}

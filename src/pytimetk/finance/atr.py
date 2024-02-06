@@ -66,7 +66,7 @@ def augment_atr(
     Notes
     -----
     
-    # ATR (Average True Range)
+    ## ATR (Average True Range)
     
     The Average True Range (ATR) is a technical analysis indicator used to measure market volatility. It was introduced by J. Welles Wilder Jr. in his 1978 book "New Concepts in Technical Trading Systems."  
     
@@ -80,7 +80,7 @@ def augment_atr(
         
     2. Average True Range: The ATR is an average of the True Range over a specified number of periods (commonly 14 days).
     
-    # NATR (Normalized Average True Range)
+    ## NATR (Normalized Average True Range)
     
     The NATR (Normalized Average True Range) is a variation of the ATR that normalizes the ATR values to express this volatility as a percentage of the closing price.
     

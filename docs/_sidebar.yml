@@ -50,6 +50,7 @@ website:
       section: "\U0001F4B9 Finance Module (Momentum Indicators)"
     - contents:
       - reference/augment_bbands.qmd
+      - reference/augment_atr.qmd
       section: "\U0001F4B9 Finance Module (Volatility Indicators)"
     - contents:
       - reference/make_future_timeseries.qmd
