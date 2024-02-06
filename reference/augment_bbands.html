@@ -365,6 +365,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <ul>
   <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_bbands.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
@@ -474,6 +475,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 </tbody>
 </table>
+</section>
+<section id="notes" class="level2">
+<h2 class="anchored" data-anchor-id="notes">Notes</h2>
+<p>Bollinger Bands are a technical analysis tool developed by John Bollinger in the 1980s. They are used to measure the ‘volatility’ of a stock price or other financial instrument. This indicator consists of three lines which are plotted in relation to an asset’s price:</p>
+<ol type="1">
+<li><p>The Middle Band: This is typically a simple moving average (SMA) of the closing prices over a certain number of days (commonly 20 days).</p></li>
+<li><p>The Upper Band: This is set a specified number of standard deviations (usually two) above the middle band.</p></li>
+<li><p>The Lower Band: This is set the same number of standard deviations (again, usually two) below the middle band.</p></li>
+</ol>
+<p>Volatility Indicator: The width of the bands is a measure of volatility. When the bands widen, it indicates increased volatility, and when they contract, it suggests decreased volatility.</p>
+<p>Overbought and Oversold Conditions: Prices are considered overbought near the upper band and oversold near the lower band. However, these conditions do not necessarily signal a reversal; prices can remain overbought or oversold for extended periods during strong trends.</p>
 </section>
 <section id="examples" class="level2">
 <h2 class="anchored" data-anchor-id="examples">Examples</h2>

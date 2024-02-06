@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>pytimetk – augment_ppo</title>
+<title>pytimetk – augment_atr</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -149,7 +149,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">augment_ppo</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">augment_atr</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -366,16 +366,20 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
+  <li><a href="#atr-average-true-range" id="toc-atr-average-true-range" class="nav-link" data-scroll-target="#atr-average-true-range">ATR (Average True Range)</a></li>
+  <li><a href="#natr-normalized-average-true-range" id="toc-natr-normalized-average-true-range" class="nav-link" data-scroll-target="#natr-normalized-average-true-range">NATR (Normalized Average True Range)</a>
+  <ul class="collapse">
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  </ul></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_ppo.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_atr.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">augment_ppo</h1>
+<h1 class="title">augment_atr</h1>
 </div>
 
 
@@ -390,16 +394,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_ppo(data, date_column, close_column, fast_period=12, slow_period=26, reduce_memory=False, engine='pandas')</code></p>
-<p>Calculate PPO for a given financial instrument using either pandas or polars engine.</p>
+<p><code>augment_atr(data, date_column, high_column, low_column, close_column, periods=20, normalize=False, reduce_memory=False, engine='pandas')</code></p>
+<p>The <code>augment_atr</code> function is used to calculate Bollinger Bands for a given dataset and return the augmented dataset.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 9%">
-<col style="width: 37%">
-<col style="width: 45%">
-<col style="width: 6%">
+<col style="width: 4%">
+<col style="width: 15%">
+<col style="width: 77%">
+<col style="width: 2%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -413,43 +417,55 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td><code>data</code></td>
 <td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
-<td>Pandas DataFrame or GroupBy object containing financial data.</td>
+<td>The <code>data</code> parameter is the input data that can be either a pandas DataFrame or a pandas DataFrameGroupBy object. It contains the data on which the Bollinger Bands will be calculated.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td><code>date_column</code></td>
 <td>str</td>
-<td>Name of the column containing date information.</td>
+<td>The <code>date_column</code> parameter is a string that specifies the name of the column in the <code>data</code> DataFrame that contains the dates.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td><code>high_column</code></td>
+<td>str</td>
+<td>The <code>high_column</code> parameter is a string that specifies the name of the column in the <code>data</code> DataFrame that contains the high prices of the asset.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td><code>low_column</code></td>
+<td>str</td>
+<td>The <code>low_column</code> parameter is a string that specifies the name of the column in the <code>data</code> DataFrame that contains the low prices of the asset.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td><code>close_column</code></td>
 <td>str</td>
-<td>Name of the column containing closing price data.</td>
+<td>The <code>close_column</code> parameter is a string that specifies the name of the column in the <code>data</code> DataFrame that contains the closing prices of the asset.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>fast_period</code></td>
-<td>int</td>
-<td>Number of periods for the fast EMA in PPO calculation.</td>
-<td><code>12</code></td>
+<td><code>periods</code></td>
+<td>Union[int, Tuple[int, int], List[int]]</td>
+<td>The <code>periods</code> parameter in the <code>augment_atr</code> function can be specified as an integer, a tuple, or a list. This parameter specifies the number of rolling periods to use when calculating the ATR.</td>
+<td><code>20</code></td>
 </tr>
 <tr class="odd">
-<td><code>slow_period</code></td>
-<td>int</td>
-<td>Number of periods for the slow EMA in PPO calculation.</td>
-<td><code>26</code></td>
+<td><code>normalize</code></td>
+<td>bool</td>
+<td>The <code>normalize</code> parameter is a boolean flag that indicates whether or not to normalize the ATR values. If set to <code>True</code>, the function will normalize the ATR values to express this volatility as a percentage of the closing price.</td>
+<td><code>False</code></td>
 </tr>
 <tr class="even">
 <td><code>reduce_memory</code></td>
 <td>bool</td>
-<td>Whether to reduce memory usage of the data before performing the calculation.</td>
+<td>The <code>reduce_memory</code> parameter is a boolean flag that indicates whether or not to reduce the memory usage of the input data before performing the calculation. If set to <code>True</code>, the function will attempt to reduce the memory usage of the input data using techniques such as downcasting numeric columns and converting object columns</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
 <td><code>engine</code></td>
 <td>str</td>
-<td>Computation engine to use (‘pandas’ or ‘polars’).</td>
+<td>The <code>engine</code> parameter specifies the computation engine to use for calculating the Bollinger Bands. It can take two values: ‘pandas’ or ‘polars’. If ‘pandas’ is selected, the function will use the pandas library for computation. If ‘polars’ is selected,</td>
 <td><code>'pandas'</code></td>
 </tr>
 </tbody>
@@ -458,6 +474,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <section id="returns" class="level2">
 <h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 80%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Type</th>
@@ -467,17 +487,32 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>pd.DataFrame</td>
-<td>DataFrame with PPO values added.</td>
+<td>The function <code>augment_atr</code> returns a pandas DataFrame.</td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="notes" class="level2">
 <h2 class="anchored" data-anchor-id="notes">Notes</h2>
-<p>The Percentage Price Oscillator (PPO) is a momentum oscillator that measures the difference between two moving averages as a percentage of the larger moving average. The PPO is best used to confirm the direction of the price trend and gauge its momentum.</p>
-<p>The PPO is calculated by subtracting a long-term EMA from a short-term EMA, then dividing the result by the long-term EMA, and finally multiplying by 100.</p>
-<p>Advantages Over MACD: The PPO’s percentage-based calculation allows for easier comparisons between different securities, regardless of their price levels. This is a distinct advantage over the MACD, which provides absolute values and can be less meaningful when comparing stocks with significantly different prices.</p>
 </section>
+<section id="atr-average-true-range" class="level1">
+<h1>ATR (Average True Range)</h1>
+<p>The Average True Range (ATR) is a technical analysis indicator used to measure market volatility. It was introduced by J. Welles Wilder Jr.&nbsp;in his 1978 book “New Concepts in Technical Trading Systems.”</p>
+<p>The ATR is calculated as follows:</p>
+<ol type="1">
+<li><p>True Range: For each period (typically a day), the True Range is the greatest of the following:</p>
+<ul>
+<li>The current high minus the current low.</li>
+<li>The absolute value of the current high minus the previous close.</li>
+<li>The absolute value of the current low minus the previous close.</li>
+</ul></li>
+<li><p>Average True Range: The ATR is an average of the True Range over a specified number of periods (commonly 14 days).</p></li>
+</ol>
+</section>
+<section id="natr-normalized-average-true-range" class="level1">
+<h1>NATR (Normalized Average True Range)</h1>
+<p>The NATR (Normalized Average True Range) is a variation of the ATR that normalizes the ATR values to express this volatility as a percentage of the closing price.</p>
+<p>The NATR (<code>normalize = True</code>) is calculated as follows: NATR = (ATR / Close) * 100</p>
 <section id="examples" class="level2">
 <h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
@@ -635,63 +670,70 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PPO pandas engine</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_ppo <span class="op">=</span> (</span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ATR pandas engine</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_atr <span class="op">=</span> (</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    df</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        .augment_ppo(</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        .augment_atr(</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            close_column <span class="op">=</span> <span class="st">'close'</span>, </span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            fast_period <span class="op">=</span> <span class="dv">12</span>, </span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            slow_period <span class="op">=</span> <span class="dv">26</span>, </span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">"pandas"</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>df_ppo.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            high_column<span class="op">=</span><span class="st">'high'</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            low_column<span class="op">=</span><span class="st">'low'</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'close'</span>, </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            periods <span class="op">=</span> [<span class="dv">14</span>, <span class="dv">28</span>],</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>            normalize <span class="op">=</span> <span class="va">False</span>, <span class="co"># True for NATR</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">"pandas"</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>df_atr.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 9 columns
-symbol:                object            ['META', 'META', 'META', 'META' ...
-date:                  datetime64[ns]    [Timestamp('2013-01-02 00:00:00 ...
-open:                  float64           [27.440000534057617, 27.8799991 ...
-high:                  float64           [28.18000030517578, 28.46999931 ...
-low:                   float64           [27.420000076293945, 27.5900001 ...
-close:                 float64           [28.0, 27.770000457763672, 28.7 ...
-volume:                int64             [69846400, 63140600, 72715400,  ...
-adjusted:              float64           [28.0, 27.770000457763672, 28.7 ...
-close_ppo_line_12_26:  float64           [0.0, -0.06556683019189882, 0.1 ...</code></pre>
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 10 columns
+symbol:        object            ['META', 'META', 'META', 'META', 'META' ...
+date:          datetime64[ns]    [Timestamp('2013-01-02 00:00:00'), Time ...
+open:          float64           [27.440000534057617, 27.8799991607666,  ...
+high:          float64           [28.18000030517578, 28.46999931335449,  ...
+low:           float64           [27.420000076293945, 27.59000015258789, ...
+close:         float64           [28.0, 27.770000457763672, 28.760000228 ...
+volume:        int64             [69846400, 63140600, 72715400, 83781800 ...
+adjusted:      float64           [28.0, 27.770000457763672, 28.760000228 ...
+close_atr_14:  float64           [nan, nan, nan, nan, nan, nan, nan, nan ...
+close_atr_28:  float64           [nan, nan, nan, nan, nan, nan, nan, nan ...</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PPO polars engine</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_ppo <span class="op">=</span> (</span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ATR polars engine</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_atr <span class="op">=</span> (</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .augment_ppo(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .augment_atr(</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            close_column <span class="op">=</span> <span class="st">'close'</span>, </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            fast_period <span class="op">=</span> <span class="dv">12</span>, </span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            slow_period <span class="op">=</span> <span class="dv">26</span>, </span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">"polars"</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>df_ppo.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            high_column<span class="op">=</span><span class="st">'high'</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            low_column<span class="op">=</span><span class="st">'low'</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'close'</span>, </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>            periods <span class="op">=</span> [<span class="dv">14</span>, <span class="dv">28</span>],</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>            normalize <span class="op">=</span> <span class="va">False</span>, <span class="co"># True for NATR</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">"polars"</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>df_atr.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 9 columns
-symbol:                object            ['META', 'META', 'META', 'META' ...
-date:                  datetime64[ns]    [Timestamp('2013-01-02 00:00:00 ...
-open:                  float64           [27.440000534057617, 27.8799991 ...
-high:                  float64           [28.18000030517578, 28.46999931 ...
-low:                   float64           [27.420000076293945, 27.5900001 ...
-close:                 float64           [28.0, 27.770000457763672, 28.7 ...
-volume:                int64             [69846400, 63140600, 72715400,  ...
-adjusted:              float64           [28.0, 27.770000457763672, 28.7 ...
-close_ppo_line_12_26:  float64           [0.0, -0.06556683019189882, 0.1 ...</code></pre>
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 10 columns
+symbol:        object            ['META', 'META', 'META', 'META', 'META' ...
+date:          datetime64[ns]    [Timestamp('2013-01-02 00:00:00'), Time ...
+open:          float64           [27.440000534057617, 27.8799991607666,  ...
+high:          float64           [28.18000030517578, 28.46999931335449,  ...
+low:           float64           [27.420000076293945, 27.59000015258789, ...
+close:         float64           [28.0, 27.770000457763672, 28.760000228 ...
+volume:        int64             [69846400, 63140600, 72715400, 83781800 ...
+adjusted:      float64           [28.0, 27.770000457763672, 28.760000228 ...
+close_atr_14:  float64           [nan, nan, nan, nan, nan, nan, nan, nan ...
+close_atr_28:  float64           [nan, nan, nan, nan, nan, nan, nan, nan ...</code></pre>
 </div>
 </div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
