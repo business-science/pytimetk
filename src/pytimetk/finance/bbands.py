@@ -56,6 +56,37 @@ def augment_bbands(
     pd.DataFrame
         The function `augment_bbands` returns a pandas DataFrame.
         
+    Notes
+    -----
+    
+    Bollinger Bands are a technical analysis tool developed by John
+    Bollinger in the 1980s. They are used to measure the 
+    'volatility' of a stock price or other financial instrument. 
+    This indicator consists of three lines which are plotted in 
+    relation to an asset's price:
+    
+    1. The Middle Band: This is typically a simple moving average 
+    (SMA) of the closing prices over a certain number of days 
+    (commonly 20 days).
+
+    2. The Upper Band: This is set a specified number of standard
+    deviations (usually two) above the middle band.
+    
+    3. The Lower Band: This is set the same number of standard 
+    deviations (again, usually two) below the middle band.
+    
+    Volatility Indicator: The width of the bands is a measure of 
+    volatility. When the bands widen, it indicates increased 
+    volatility, and when they contract, it suggests decreased 
+    volatility.
+    
+    Overbought and Oversold Conditions: Prices are considered 
+    overbought near the upper band and oversold near the lower
+    band. However, these conditions do not necessarily signal a 
+    reversal; prices can remain overbought or oversold for extended
+    periods during strong trends.
+    
+    
     Examples
     --------
     

@@ -36,11 +36,32 @@ def augment_ppo(
         Whether to reduce memory usage of the data before performing the calculation.
     engine : str, optional
         Computation engine to use ('pandas' or 'polars').
-
+       
     Returns
     -------
     pd.DataFrame
         DataFrame with PPO values added.
+         
+    Notes
+    -----
+    
+    The Percentage Price Oscillator (PPO) is a momentum oscillator 
+    that measures the difference between two moving averages as a 
+    percentage of the larger moving average. The PPO is best used
+    to confirm the direction of the price trend and gauge its 
+    momentum. 
+    
+    The PPO is calculated by subtracting a long-term EMA from a 
+    short-term EMA, then dividing the result by the long-term EMA,
+    and finally multiplying by 100.
+    
+    Advantages Over MACD: The PPO's percentage-based calculation 
+    allows for easier comparisons between different securities, 
+    regardless of their price levels. This is a distinct advantage
+    over the MACD, which provides absolute values and can be less
+    meaningful when comparing stocks with significantly different 
+    prices.
+
         
     Examples
     --------
