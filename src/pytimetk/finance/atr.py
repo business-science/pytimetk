@@ -260,6 +260,37 @@ def _augment_atr_polars(
         pandas_df = data.to_pandas()
     else:
         raise ValueError("data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame")
+    
+    def _calculate_atr_polars(pl_df, high_column, low_column, close_column, period, normalize):
+        """
+        Internal function to calculate ATR using Polars.
+        """
+        
+        # Calculate the true range components
+        high_low = pl_df[high_column] - pl_df[low_column]
+        high_close = (pl_df[high_column] - pl_df[close_column].shift()).abs()
+        low_close = (pl_df[low_column] - pl_df[close_column].shift()).abs()
+
+        # Calculate the true range
+        true_range = pl.select([
+            high_low.alias("high_low"),
+            high_close.alias("high_close"),
+            low_close.alias("low_close")
+        ]).max(axis=1).alias("_temp_true_range")
+
+        # Calculate ATR
+        atr = true_range.rolling_mean(window_size=period)
+
+        # Normalize if required
+        if normalize:
+            atr = (atr / pl_df[close_column]) * 100
+            column_name = f'{close_column}_natr_{period}'
+        else:
+            column_name = f'{close_column}_atr_{period}'
+
+        pl_df = pl_df.with_columns(atr.alias(column_name))
+
+        return pl_df
 
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -270,7 +301,7 @@ def _augment_atr_polars(
         pl_df = pl.from_pandas(pandas_df)
         
         for period in periods:
-             "todo"
+             pl_df = pl_df.groupby(group_names, maintain_order=True).apply(lambda df: _calculate_atr_polars(df, high_column=high_column, low_column=low_column, close_column=close_column, period=period, normalize=normalize))
             
         
     else:
@@ -287,33 +318,3 @@ def _augment_atr_polars(
     
     
 
-def _calculate_atr_polars(pl_df, high_column, low_column, close_column, period, normalize):
-    """
-    Internal function to calculate ATR using Polars.
-    """
-    
-    # Calculate the true range components
-    high_low = pl_df[high_column] - pl_df[low_column]
-    high_close = (pl_df[high_column] - pl_df[close_column].shift()).abs()
-    low_close = (pl_df[low_column] - pl_df[close_column].shift()).abs()
-
-    # Calculate the true range
-    true_range = pl.select([
-        high_low.alias("high_low"),
-        high_close.alias("high_close"),
-        low_close.alias("low_close")
-    ]).max(axis=1).alias("_temp_true_range")
-
-    # Calculate ATR
-    atr = true_range.rolling_mean(window_size=period)
-
-    # Normalize if required
-    if normalize:
-        atr = (atr / pl_df[close_column]) * 100
-        column_name = f'{close_column}_natr_{period}'
-    else:
-        column_name = f'{close_column}_atr_{period}'
-
-    pl_df = pl_df.with_columns(atr.alias(column_name))
-
-    return pl_df
