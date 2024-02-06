@@ -33,12 +33,13 @@ from .feature_engineering.expanding_apply import *
 from .feature_engineering.fourier import *
 from .feature_engineering.hilbert import *
 from .feature_engineering.wavelet import *
-
 from .feature_engineering.ewm import *
+
 from .finance.cmo import *
 from .finance.macd import *
 from .finance.bbands import *
 from .finance.ppo import *
+from .finance.rsi import *
 
 from .datasets.get_datasets import *
 
@@ -156,6 +157,9 @@ from .finance.bbands import (
 )
 from .finance.ppo import (
     augment_ppo
+)
+from .finance.rsi import (
+    augment_rsi
 )
 from .datasets.get_datasets import (
     load_dataset, get_available_datasets

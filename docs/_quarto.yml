@@ -165,9 +165,10 @@ quartodoc:
       desc: Momentum indicators for financial time series data.
       package: pytimetk
       contents:
-        - augment_cmo
         - augment_macd
         - augment_ppo
+        - augment_rsi
+        - augment_cmo
     - title: 💹 Finance Module (Volatility Indicators)
       desc: Volatility indicators for financial time series data.
       package: pytimetk
