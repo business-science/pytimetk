@@ -167,6 +167,7 @@ quartodoc:
       contents:
         - augment_cmo
         - augment_macd
+        - augment_ppo
     - title: 💹 Finance Module (Volatility Indicators)
       desc: Volatility indicators for financial time series data.
       package: pytimetk
