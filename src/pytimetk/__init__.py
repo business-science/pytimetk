@@ -40,6 +40,7 @@ from .finance.macd import *
 from .finance.bbands import *
 from .finance.ppo import *
 from .finance.rsi import *
+from .finance.atr import *  
 
 from .datasets.get_datasets import *
 
@@ -160,6 +161,9 @@ from .finance.ppo import (
 )
 from .finance.rsi import (
     augment_rsi
+)
+from .finance.atr import (
+    augment_atr
 )
 from .datasets.get_datasets import (
     load_dataset, get_available_datasets
