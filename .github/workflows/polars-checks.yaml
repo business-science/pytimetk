@@ -1,4 +1,4 @@
-name: pandas-checks
+name: polars-checks
 
 on:
   schedule:
