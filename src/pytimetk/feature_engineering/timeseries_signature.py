@@ -460,11 +460,8 @@ def _polars_timeseries_signature(data: pl.DataFrame, date_column: str) -> pl.Dat
         pl.col(name).dt.nanosecond().alias(f"{name}_nsecond"),
 
         # AM/PM
-        (pl.when((pl.col(name).dt.hour() <= 12))
-            .then("am")
-            .otherwise("pm")
-            .alias(f"{name}_am_pm")
-        )
+        pl.when(pl.col(name).dt.hour() <= 12).then(pl.lit("am")).otherwise(pl.lit("pm")).alias(f"{name}_am_pm"),
+        
     )
     
     return df_pl

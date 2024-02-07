@@ -50,7 +50,7 @@ jobs:
         run: |
           poetry install
           if [ "${{ matrix.config.pandas-version }}" == "latest" ]; then
-            poetry add pandas
+            poetry add pandas@latest
           else
             poetry add pandas==${{ matrix.config.pandas-version }}
           fi

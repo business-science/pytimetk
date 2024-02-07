@@ -1613,32 +1613,33 @@ dev = ["black (==23.9.0)", "build", "coveralls", "ghp-import", "ipython", "jupyt
 
 [[package]]
 name = "polars"
-version = "0.19.10"
+version = "0.20.7"
 description = "Blazingly fast DataFrame library"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "polars-0.19.10-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:7d3fa7140c1dc9de2268c3c36cd90704181f6cf59d539fd14dc017727293580a"},
-    {file = "polars-0.19.10-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:ff90120f74fe49ae9b844422b4e2d9049043242fa4a61cb5130e2a3b74e4f8ee"},
-    {file = "polars-0.19.10-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f19a67a44672177be7a7f54daf8916af7edf57c6ed438fa213b39997dd21087a"},
-    {file = "polars-0.19.10-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:56da51e9c826b22af3bb89dae16bc88954b12f646e80bcd44167689599c36068"},
-    {file = "polars-0.19.10-cp38-abi3-win_amd64.whl", hash = "sha256:ba00d3babea6d1dcaa60e3f56e1eb8fb24e506338ad630bff4dd0315a9c1758b"},
-    {file = "polars-0.19.10.tar.gz", hash = "sha256:f6521935dc962b025c924f8b7464f9b3fedfb96e840b955000792c5a110d6f94"},
+    {file = "polars-0.20.7-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:fd6100df0ca53614c3fa7136251e030fb70dee8833023edf7a3ac380f8e2dce5"},
+    {file = "polars-0.20.7-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:359d556fafcb533bb0caa34ddfbd5161ee23b8a43817c7a2b80189720a1f42f6"},
+    {file = "polars-0.20.7-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3cfc71d4569818548c9bf4285c497d62a3a542363c86940593a41dd731e69d7f"},
+    {file = "polars-0.20.7-cp38-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:ddff2fa419f15aa64ee23a94655fcb24b3e1b5c3eb30d124e3315deca2039a92"},
+    {file = "polars-0.20.7-cp38-abi3-win_amd64.whl", hash = "sha256:f0928576a52eca47e14a8b98f4da22025b4b2fa32549f80f4d92c5187fd3f461"},
+    {file = "polars-0.20.7.tar.gz", hash = "sha256:ec742fdf41e16ff699c043259ba94a11bbc2f7dcb978d768495db1ff2b3c5c20"},
 ]
 
 [package.extras]
 adbc = ["adbc_driver_sqlite"]
-all = ["polars[adbc,cloudpickle,connectorx,deltalake,fsspec,gevent,matplotlib,numpy,pandas,pyarrow,pydantic,pyiceberg,sqlalchemy,timezone,xlsx2csv,xlsxwriter]"]
+all = ["polars[adbc,cloudpickle,connectorx,deltalake,fsspec,gevent,numpy,pandas,plot,pyarrow,pydantic,pyiceberg,sqlalchemy,timezone,xlsx2csv,xlsxwriter]"]
 cloudpickle = ["cloudpickle"]
-connectorx = ["connectorx"]
-deltalake = ["deltalake (>=0.10.0)"]
+connectorx = ["connectorx (>=0.3.2)"]
+deltalake = ["deltalake (>=0.14.0)"]
 fsspec = ["fsspec"]
 gevent = ["gevent"]
 matplotlib = ["matplotlib"]
 numpy = ["numpy (>=1.16.0)"]
 openpyxl = ["openpyxl (>=3.0.0)"]
 pandas = ["pandas", "pyarrow (>=7.0.0)"]
+plot = ["hvplot (>=0.9.1)"]
 pyarrow = ["pyarrow (>=7.0.0)"]
 pydantic = ["pydantic"]
 pyiceberg = ["pyiceberg (>=0.5.0)"]
@@ -2879,4 +2880,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9"
-content-hash = "342140a379def22770e30b3de86599535625d45a069d336cadd42724d1c649ba"
+content-hash = "1733c8ee791e8e90933aad698a16aafedfc4fe31dba3b1f96abb78c822e79b9d"

@@ -50,7 +50,7 @@ jobs:
         run: |
           poetry install
           if [ "${{ matrix.config.polars-version }}" == "latest" ]; then
-            poetry add polars
+            poetry add polars@latest
           else
             poetry add polars==${{ matrix.config.polars-version }}
           fi

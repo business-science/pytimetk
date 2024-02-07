@@ -113,6 +113,7 @@ def test_augment_timeseries_signature_polars():
     
     # Test if function adds the correct number of features
     augmented = df.augment_timeseries_signature(date_column='order_date', engine = 'polars')
+    
     assert augmented.shape[1] == df.shape[1] + 29, "Number of features in the augmented dataframe is not correct."
     
     # Test if original dataframe data remains the same
