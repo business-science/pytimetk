@@ -13,6 +13,9 @@ number-sections: false
 1. `augment_macd()`: pandas and polars engines
 2. `augment_bbands()`: pandas and polars engines
 
+## Polars Upgrades
+
+- Migrate to `polars 0.20.7`
 
 # pytimetk 0.3.0 
 

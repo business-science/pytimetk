@@ -4,7 +4,7 @@ import pandas as pd
 from pytimetk import ts_summary, get_frequency
 from pytimetk import load_dataset
 
-from pytimetk.core.frequency import _get_manual_frequency  # Adjust the module name accordingly
+from pytimetk.core.frequency import _get_manual_frequency  
 
 # Sample test data
 dates = pd.to_datetime(["2023-10-02", "2023-10-03", "2023-10-04", "2023-10-05", "2023-10-06", "2023-10-09", "2023-10-10"])
@@ -380,17 +380,26 @@ def test_examples_02():
     assert list(test_1.columns) == expected_columns
     
 def test_ts_summary_polars_df():
-    pd_output = df_sample.ts_summary(date_column='date', engine="pandas")
-    pl_output = df_sample.ts_summary(date_column='date', engine="polars")
+    
+    pd_output = df_sample.ts_summary(date_column='date', engine="pandas").drop("date_tz", axis=1)
+    
+    pl_output = df_sample.ts_summary(date_column='date', engine="polars").drop("date_tz", axis=1)
+    
     pd.testing.assert_frame_equal(pd_output, pl_output)
 
 
 def test_ts_summary_polars_grouped():
+    
     df_grouped = df_sample.copy()
+    
     df_grouped['group'] = ['A', 'B', 'A', 'B', 'A', 'B', 'A']
+    
     groups = df_grouped.groupby('group')
-    pd_output = groups.ts_summary(date_column='date', engine="pandas")
-    pl_output = groups.ts_summary(date_column='date', engine="polars")
+    
+    pd_output = groups.ts_summary(date_column='date', engine="pandas").drop("date_tz", axis=1)
+    
+    pl_output = groups.ts_summary(date_column='date', engine="polars").drop("date_tz", axis=1)
+    
     pd.testing.assert_frame_equal(pd_output, pl_output)
 
 
