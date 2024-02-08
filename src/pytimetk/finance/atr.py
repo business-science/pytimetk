@@ -265,11 +265,13 @@ def _augment_atr_polars(
                 
         # Get the group names and original ungrouped data
         group_names = data.grouper.names
+        if not isinstance(group_names, list):
+            group_names = [group_names]
         
         pl_df = pl.from_pandas(pandas_df)
         
         for period in periods:
-             pl_df = pl_df.groupby(group_names, maintain_order=True).apply(lambda df: _calculate_atr_polars(df, high_column=high_column, low_column=low_column, close_column=close_column, period=period, normalize=normalize))
+             pl_df = pl_df.group_by(*group_names, maintain_order=True).map_groups(lambda df: _calculate_atr_polars(df, high_column=high_column, low_column=low_column, close_column=close_column, period=period, normalize=normalize))
             
     else:
         

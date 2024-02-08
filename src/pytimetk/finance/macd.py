@@ -192,6 +192,8 @@ def _augment_macd_polars(data, date_column, close_column, fast_period, slow_peri
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         # Data is a GroupBy object, use apply to get a DataFrame
         group_names = data.grouper.names
+        if not isinstance(group_names, list):
+            group_names = [group_names]
         pandas_df = data.obj
         pl_df = pl.from_pandas(pandas_df)
     elif isinstance(data, pd.DataFrame):
@@ -228,9 +230,9 @@ def _augment_macd_polars(data, date_column, close_column, fast_period, slow_peri
 
     # Apply the calculation to each group if data is grouped, otherwise apply directly
     if 'groupby' in str(type(data)):
-        result_df = pl_df.groupby(
-            group_names, maintain_order=True
-        ).apply(calculate_macd_single).to_pandas()
+        result_df = pl_df.group_by(
+            *group_names, maintain_order=True
+        ).map_groups(calculate_macd_single).to_pandas()
         
     else:
         result_df = calculate_macd_single(pl_df).to_pandas()

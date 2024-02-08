@@ -265,12 +265,14 @@ def _augment_cmo_polars(
         
         # Get the group names and original ungrouped data
         group_names = data.grouper.names
+        if not isinstance(group_names, list):
+            group_names = [group_names]
         
         df = pl.from_pandas(pandas_df)
         
         out_df = df.group_by(
-            data.grouper.names, maintain_order=True
-        ).apply(apply_cmo)
+            *group_names, maintain_order=True
+        ).map_groups(apply_cmo)
         
         df = out_df
 
