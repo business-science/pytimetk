@@ -21,8 +21,10 @@ def augment_atr(
     reduce_memory: bool = False,
     engine: str = 'pandas'
 ) -> pd.DataFrame:
-    '''The `augment_atr` function is used to calculate Bollinger Bands for a given dataset and return
-    the augmented dataset.
+    '''The `augment_atr` function is used to calculate Average True Range (ATR) and 
+    Normalized Average True Range (NATR) for a given dataset and return
+    the augmented dataset. 
+    Set the `normalize` parameter to `True` to calculate NATR.
     
     Parameters
     ----------
