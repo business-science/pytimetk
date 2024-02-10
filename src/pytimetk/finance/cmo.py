@@ -5,6 +5,8 @@ import polars as pl
 import pandas_flavor as pf
 from typing import Union, List, Tuple
 
+from pytimetk.utils.parallel_helpers import progress_apply
+
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 
@@ -13,7 +15,7 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 def augment_cmo(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
-    close_column: Union[str, List[str]], 
+    close_column: str, 
     periods: Union[int, Tuple[int, int], List[int]] = 14,
     reduce_memory: bool = False,
     engine: str = 'pandas'
@@ -153,9 +155,6 @@ def augment_cmo(
     check_dataframe_or_groupby(data)
     check_value_column(data, close_column)
     check_date_column(data, date_column)
-    
-    if isinstance(close_column, str):
-        close_column = [close_column]
         
     if isinstance(periods, int):
         periods = [periods]  # Convert to a list with a single value
@@ -186,7 +185,7 @@ pd.core.groupby.generic.DataFrameGroupBy.augment_cmo = augment_cmo
 def _augment_cmo_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
-    close_column: Union[str, List[str]], 
+    close_column: str, 
     periods: Union[int, Tuple[int, int], List[int]] = 14
 ) -> pd.DataFrame:
 
@@ -194,10 +193,10 @@ def _augment_cmo_pandas(
     if isinstance(data, pd.DataFrame):
 
         df = data.copy()
+        col = close_column
 
-        for col in close_column:
-            for period in periods:
-                df[f'{col}_cmo_{period}'] = _calculate_cmo_pandas(df[col], period=period)
+        for period in periods:
+            df[f'{col}_cmo_{period}'] = _calculate_cmo_pandas(df[col], period=period)
     
     # GROUPBY EXTENSION - If data is a Pandas GroupBy object, apply cmo function BY GROUP
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -207,10 +206,11 @@ def _augment_cmo_pandas(
 
         df = data.copy()
    
-        for col in close_column:
-            for period in periods:
-                df[f'{col}_cmo_{period}'] = df.groupby(group_names)[col].apply(_calculate_cmo_pandas, period=period)
-    
+        col = close_column
+        
+        for period in periods:
+            df[f'{col}_cmo_{period}'] = df.groupby(group_names, group_keys=False)[col].apply(_calculate_cmo_pandas, period=period)
+
     return df
 
 
@@ -234,13 +234,13 @@ def _calculate_cmo_pandas(series: pd.Series, period=14):
 def _augment_cmo_polars(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
-    close_column: Union[str, List[str]], 
+    close_column: str, 
     periods: Union[int, Tuple[int, int], List[int]] = 14
 ) -> pd.DataFrame:
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         # Data is a GroupBy object, use apply to get a DataFrame
-        pandas_df = data.apply(lambda x: x)
+        pandas_df = data.obj
     elif isinstance(data, pd.DataFrame):
         # Data is already a DataFrame
         pandas_df = data.copy()
@@ -255,12 +255,14 @@ def _augment_cmo_polars(
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         
         def apply_cmo(pl_df):
-            for col in close_column:
-                for period in periods:
-                    pl_df = pl_df.with_columns(
-                        _calculate_cmo_polars(pl_df[col], period=period).alias(f'{col}_cmo_{period}')
-                    )
-                    # pl_df[f'{col}_cmo_{period}'] = _calculate_cmo_polars(pl_df[col], period=period)
+            
+            col = close_column
+            
+            for period in periods:
+                pl_df = pl_df.with_columns(
+                    _calculate_cmo_polars(pl_df[col], period=period).alias(f'{col}_cmo_{period}')
+                )
+                
             return pl_df
         
         # Get the group names and original ungrouped data
@@ -280,10 +282,11 @@ def _augment_cmo_polars(
         
         _exprs = []
         
-        for col in close_column:
-            for period in periods:
-                _expr = _calculate_cmo_polars(pl.col(col), period=period).alias(f'{col}_cmo_{period}')
-                _exprs.append(_expr)
+        col = close_column
+        
+        for period in periods:
+            _expr = _calculate_cmo_polars(pl.col(col), period=period).alias(f'{col}_cmo_{period}')
+            _exprs.append(_expr)
         
         df = pl.from_pandas(pandas_df)
         

@@ -13,7 +13,7 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 def augment_rsi(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
-    close_column: Union[str, List[str]], 
+    close_column: str, 
     periods: Union[int, Tuple[int, int], List[int]] = 14,
     reduce_memory: bool = False,
     engine: str = 'pandas'
@@ -29,7 +29,7 @@ def augment_rsi(
         calculated.
     date_column : str
         The name of the column in the data that contains the dates or timestamps.
-    close_column : Union[str, List[str]]
+    close_column : str
         The `close_column` parameter is used to specify the column(s) in the input data that contain the
         values on which the RSI will be calculated. It can be either a single column name (string) or a list
         of column names (if you want to calculate RSI on multiple columns).
@@ -169,7 +169,7 @@ pd.core.groupby.generic.DataFrameGroupBy.augment_rsi = augment_rsi
 def _augment_rsi_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
-    close_column: Union[str, List[str]], 
+    close_column: str, 
     periods: Union[int, Tuple[int, int], List[int]] = 14
 ) -> pd.DataFrame:
 
@@ -177,10 +177,11 @@ def _augment_rsi_pandas(
     if isinstance(data, pd.DataFrame):
 
         df = data.copy()
+        
+        col = close_column
 
-        for col in close_column:
-            for period in periods:
-                df[f'{col}_rsi_{period}'] = _calculate_rsi_pandas(df[col], period=period)
+        for period in periods:
+            df[f'{col}_rsi_{period}'] = _calculate_rsi_pandas(df[col], period=period)
     
     # GROUPBY EXTENSION - If data is a Pandas GroupBy object, apply RSI function BY GROUP
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -189,10 +190,11 @@ def _augment_rsi_pandas(
         data = data.obj
 
         df = data.copy()
+        
+        col = close_column
    
-        for col in close_column:
-            for period in periods:
-                df[f'{col}_rsi_{period}'] = df.groupby(group_names)[col].apply(_calculate_rsi_pandas, period=period)
+        for period in periods:
+            df[f'{col}_rsi_{period}'] = df.groupby(group_names, group_keys=False)[col].apply(_calculate_rsi_pandas, period=period)
     
     return df
 

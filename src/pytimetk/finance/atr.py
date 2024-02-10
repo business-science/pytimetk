@@ -199,8 +199,10 @@ def _augment_atr_pandas(
         data = data.obj
         df = data.copy()
         
+        # df.sort_values(by=[*group_names, date_column], inplace=True)
+        
         for period in periods:
-            df = df.groupby(group_names).apply(_calculate_atr_pandas, high_column, low_column, close_column, period, normalize)
+            df = df.groupby(group_names, group_keys=False).apply(lambda x: _calculate_atr_pandas(x, high_column, low_column, close_column, period, normalize))
         
 
     elif isinstance(data, pd.DataFrame):
