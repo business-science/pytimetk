@@ -162,8 +162,6 @@ def _augment_lags_pandas(
 
         df = data.copy()
 
-        df.sort_values(by=[date_column], inplace=True)
-
         for col in value_column:
             for lag in lags:
                 df[f'{col}_lag_{lag}'] = df[col].shift(lag)
@@ -176,8 +174,6 @@ def _augment_lags_pandas(
         data = data.obj
 
         df = data.copy()
-
-        df.sort_values(by=[*group_names, date_column], inplace=True)
 
         for col in value_column:
             for lag in lags:
@@ -194,7 +190,7 @@ def _augment_lags_polars(
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         # Data is a GroupBy object, use apply to get a DataFrame
-        pandas_df = data.apply(lambda x: x)
+        pandas_df = data.obj
     elif isinstance(data, pd.DataFrame):
         # Data is already a DataFrame
         pandas_df = data

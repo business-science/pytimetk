@@ -120,7 +120,7 @@ def augment_fourier(
         raise TypeError(f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list.")
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):  
-        data = data.apply(lambda x: x).reset_index(drop=True)  
+        data = data.obj.copy().reset_index(drop=True)  
         
     # Reduce memory usage
     if reduce_memory:
@@ -156,7 +156,6 @@ def _augment_fourier_pandas(
 ) -> pd.DataFrame:
 
     df = data.copy()
-    # df.sort_values(by=[date_column], inplace=True)
 
     scale_factor = date_to_seq_scale_factor(df, date_column).iloc[0].total_seconds()
     if scale_factor == 0:

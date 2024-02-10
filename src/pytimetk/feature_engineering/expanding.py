@@ -418,9 +418,6 @@ def _augment_expanding_polars(
     Augments the given dataframe with expanding calculations using the Polars library.
     """
     
-    # Create a fresh copy of the data, leaving the original untouched
-    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
-    
     # Retrieve the group column names if the input data is a GroupBy object
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
@@ -428,10 +425,10 @@ def _augment_expanding_polars(
         group_names = None
 
     # Convert data into a Pandas DataFrame format for processing
-    if isinstance(data_copy, pd.core.groupby.generic.DataFrameGroupBy):
-        pandas_df = data_copy.apply(lambda x: x)
-    elif isinstance(data_copy, pd.DataFrame):
-        pandas_df = data_copy
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        pandas_df = data.obj.copy()
+    elif isinstance(data, pd.DataFrame):
+        pandas_df = data.copy()
     else:
         raise ValueError("Data must be a Pandas DataFrame or Pandas GroupBy object.")
     

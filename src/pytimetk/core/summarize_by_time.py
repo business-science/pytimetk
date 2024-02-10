@@ -328,10 +328,10 @@ def _summarize_by_time_polars(
         grouped = True
         # Extract names from groupby object
         groups = data.grouper.names  # This can be a list of group names
-
+        
         # Convert the GroupBy object into a Polars DataFrame
         df_pl = (
-            pl.from_pandas(data.apply(lambda x: x))
+            pl.from_pandas(data.obj.copy())
                  .group_by(groups, maintain_order=True)
                  .agg(pl.all().sort_by(date_column))
         )

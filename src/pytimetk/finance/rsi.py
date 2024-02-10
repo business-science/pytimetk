@@ -225,7 +225,7 @@ def _augment_rsi_polars(
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         # Data is a GroupBy object, use apply to get a DataFrame
-        pandas_df = data.apply(lambda x: x)
+        pandas_df = data.obj.copy()
     elif isinstance(data, pd.DataFrame):
         # Data is already a DataFrame
         pandas_df = data.copy()

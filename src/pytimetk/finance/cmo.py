@@ -303,9 +303,6 @@ def _calculate_cmo_polars(series: pl.Series, period=14):
     delta = series.diff()
     
     # Separate gains and losses    
-    # gains = delta.apply(lambda x: x if x > 0 else 0)
-    # losses = delta.apply(lambda x: -x if x < 0 else 0)
-    
     gains = pl.when(delta > 0).then(delta).otherwise(0)
     losses = pl.when(delta <= 0).then(-delta).otherwise(0)
 

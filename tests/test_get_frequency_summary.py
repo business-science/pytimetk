@@ -15,6 +15,7 @@ from pandas.testing import assert_frame_equal
     ('Y', False, 'A-DEC' , '365 days', 1.0, 'Y'),
     ('Y', True,  'Y'     , '365 days', 1.0, 'Y')
 ])
+
 def test_correct_frequency_inference(
     freq, regular, inferred_unit, median_timedelta, median_scale, median_unit
 ):

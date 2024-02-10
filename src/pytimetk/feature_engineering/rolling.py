@@ -277,7 +277,7 @@ def _augment_rolling_pandas(
     # Group data if it's a GroupBy object; otherwise, prepare it for the rolling calculations
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        grouped = data_copy.sort_values(by=[*group_names, date_column]).groupby(group_names)
+        grouped = data_copy.groupby(group_names)
         
         # Check if the data is grouped and threads are set to 1. If true, handle it without parallel processing.
         if threads == 1:
@@ -408,8 +408,6 @@ def _augment_rolling_polars(
     **kwargs,
 ) -> pd.DataFrame:
     
-    # Create a fresh copy of the data, leaving the original untouched
-    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
     
     # Retrieve the group column names if the input data is a GroupBy object
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -418,10 +416,10 @@ def _augment_rolling_polars(
         group_names = None
 
     # Convert data into a Pandas DataFrame format for processing
-    if isinstance(data_copy, pd.core.groupby.generic.DataFrameGroupBy):
-        pandas_df = data_copy.apply(lambda x: x)
-    elif isinstance(data_copy, pd.DataFrame):
-        pandas_df = data_copy
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        pandas_df = data.obj.copy()
+    elif isinstance(data, pd.DataFrame):
+        pandas_df = data.copy()
     else:
         raise ValueError("Data must be a Pandas DataFrame or Pandas GroupBy object.")
     
