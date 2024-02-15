@@ -219,7 +219,7 @@ def _calculate_rsi_pandas(series: pd.Series, period=14):
 def _augment_rsi_polars(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
-    close_column: Union[str, List[str]], 
+    close_column: str, 
     periods: Union[int, Tuple[int, int], List[int]] = 14
 ) -> pd.DataFrame:
     
@@ -283,10 +283,7 @@ def _calculate_rsi_polars(series: pl.Series, period=14):
     # Calculate the difference in closing prices
     delta = series.diff()
     
-    # Separate gains and losses    
-    # gains = delta.apply(lambda x: x if x > 0 else 0)
-    # losses = delta.apply(lambda x: -x if x < 0 else 0)
-    
+    # Separate gains and losses        
     gains = pl.when(delta > 0).then(delta).otherwise(0)
     losses = pl.when(delta <= 0).then(-delta).otherwise(0)
 

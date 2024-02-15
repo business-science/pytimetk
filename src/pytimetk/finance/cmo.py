@@ -31,10 +31,9 @@ def augment_cmo(
         calculated.
     date_column : str
         The name of the column in the data that contains the dates or timestamps.
-    close_column : Union[str, List[str]]
-        The `close_column` parameter is used to specify the column(s) in the input data that contain the
-        values on which the CMO will be calculated. It can be either a single column name (string) or a list
-        of column names (if you want to calculate CMO on multiple columns).
+    close_column : str
+        The `close_column` parameter is used to specify the column in the input data that contain the
+        values on which the CMO will be calculated. 
     periods : Union[int, Tuple[int, int], List[int]], optional
         The `periods` parameter in the `augment_cmo` function specifies the number of rolling periods over which
         the Chande Momentum Oscillator (CMO) is calculated. It can be provided as an integer, a tuple of two
