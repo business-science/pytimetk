@@ -41,7 +41,7 @@ from .finance.bbands import *
 from .finance.ppo import *
 from .finance.rsi import *
 from .finance.atr import *  
-from .finance.momentum import *
+from .finance.qsmomentum import *
 
 from .datasets.get_datasets import *
 
@@ -166,8 +166,8 @@ from .finance.rsi import (
 from .finance.atr import (
     augment_atr
 )
-from .finance.momentum import (
-    augment_momentum
+from .finance.qsmomentum import (
+    augment_qsmomentum
 )
 from .datasets.get_datasets import (
     load_dataset, get_available_datasets

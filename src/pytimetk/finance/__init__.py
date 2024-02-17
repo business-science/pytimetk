@@ -4,4 +4,4 @@ from .bbands import *
 from .ppo import *
 from .rsi import *
 from .atr import *
-from .momentum import *
+from .qsmomentum import *
