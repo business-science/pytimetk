@@ -335,6 +335,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#pytimetk-0.3.0.9000" id="toc-pytimetk-0.3.0.9000" class="nav-link active" data-scroll-target="#pytimetk-0.3.0.9000">pytimetk 0.3.0.9000</a>
   <ul class="collapse">
   <li><a href="#finance-module-updates" id="toc-finance-module-updates" class="nav-link" data-scroll-target="#finance-module-updates">Finance Module Updates:</a></li>
+  <li><a href="#polars-upgrades" id="toc-polars-upgrades" class="nav-link" data-scroll-target="#polars-upgrades">Polars Upgrades</a></li>
   </ul></li>
   <li><a href="#pytimetk-0.3.0" id="toc-pytimetk-0.3.0" class="nav-link" data-scroll-target="#pytimetk-0.3.0">pytimetk 0.3.0</a>
   <ul class="collapse">
@@ -390,9 +391,19 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <section id="finance-module-updates" class="level2">
 <h2 class="anchored" data-anchor-id="finance-module-updates">Finance Module Updates:</h2>
 <ol type="1">
-<li><code>augment_macd()</code>: pandas and polars engines</li>
-<li><code>augment_bbands()</code>: pandas and polars engines</li>
+<li><code>augment_macd()</code>: MACD, pandas and polars engines</li>
+<li><code>augment_bbands()</code>: Bollinger Bands, pandas and polars engines</li>
+<li><code>augment_atr()</code>: Average True Range, pandas and polars engines</li>
+<li><code>augment_ppo()</code>: Percentage Price Oscillator, pandas and polars engines</li>
+<li><code>augment_rsi()</code>: Relative Strength Index, pandas and polars engines</li>
+<li><code>augment_qsmomentum()</code>: Quant Science Momentum Indicator, pandas and polars engines</li>
 </ol>
+</section>
+<section id="polars-upgrades" class="level2">
+<h2 class="anchored" data-anchor-id="polars-upgrades">Polars Upgrades</h2>
+<ul>
+<li>Migrate to <code>polars 0.20.7</code></li>
+</ul>
 </section>
 </section>
 <section id="pytimetk-0.3.0" class="level1">

@@ -36,7 +36,8 @@ def augment_ppo(
         Whether to reduce memory usage of the data before performing the calculation.
     engine : str, optional
         Computation engine to use ('pandas' or 'polars').
-       
+        
+        
     Returns
     -------
     pd.DataFrame

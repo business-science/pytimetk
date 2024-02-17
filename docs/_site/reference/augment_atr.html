@@ -367,10 +367,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
   <li><a href="#atr-average-true-range" id="toc-atr-average-true-range" class="nav-link" data-scroll-target="#atr-average-true-range">ATR (Average True Range)</a></li>
-  <li><a href="#natr-normalized-average-true-range" id="toc-natr-normalized-average-true-range" class="nav-link" data-scroll-target="#natr-normalized-average-true-range">NATR (Normalized Average True Range)</a>
-  <ul class="collapse">
+  <li><a href="#natr-normalized-average-true-range" id="toc-natr-normalized-average-true-range" class="nav-link" data-scroll-target="#natr-normalized-average-true-range">NATR (Normalized Average True Range)</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
-  </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_atr.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -395,7 +393,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </header>
 
 <p><code>augment_atr(data, date_column, high_column, low_column, close_column, periods=20, normalize=False, reduce_memory=False, engine='pandas')</code></p>
-<p>The <code>augment_atr</code> function is used to calculate Bollinger Bands for a given dataset and return the augmented dataset.</p>
+<p>The <code>augment_atr</code> function is used to calculate Average True Range (ATR) and Normalized Average True Range (NATR) for a given dataset and return the augmented dataset. Set the <code>normalize</code> parameter to <code>True</code> to calculate NATR.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
@@ -495,8 +493,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <section id="notes" class="level2">
 <h2 class="anchored" data-anchor-id="notes">Notes</h2>
 </section>
-<section id="atr-average-true-range" class="level1">
-<h1>ATR (Average True Range)</h1>
+<section id="atr-average-true-range" class="level2">
+<h2 class="anchored" data-anchor-id="atr-average-true-range">ATR (Average True Range)</h2>
 <p>The Average True Range (ATR) is a technical analysis indicator used to measure market volatility. It was introduced by J. Welles Wilder Jr.&nbsp;in his 1978 book “New Concepts in Technical Trading Systems.”</p>
 <p>The ATR is calculated as follows:</p>
 <ol type="1">
@@ -509,10 +507,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <li><p>Average True Range: The ATR is an average of the True Range over a specified number of periods (commonly 14 days).</p></li>
 </ol>
 </section>
-<section id="natr-normalized-average-true-range" class="level1">
-<h1>NATR (Normalized Average True Range)</h1>
+<section id="natr-normalized-average-true-range" class="level2">
+<h2 class="anchored" data-anchor-id="natr-normalized-average-true-range">NATR (Normalized Average True Range)</h2>
 <p>The NATR (Normalized Average True Range) is a variation of the ATR that normalizes the ATR values to express this volatility as a percentage of the closing price.</p>
 <p>The NATR (<code>normalize = True</code>) is calculated as follows: NATR = (ATR / Close) * 100</p>
+</section>
 <section id="examples" class="level2">
 <h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
@@ -733,7 +732,6 @@ close_atr_28:  float64           [nan, nan, nan, nan, nan, nan, nan, nan ...</co
 </div>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

@@ -2,8 +2,10 @@
 
 `augment_atr(data, date_column, high_column, low_column, close_column, periods=20, normalize=False, reduce_memory=False, engine='pandas')`
 
-The `augment_atr` function is used to calculate Bollinger Bands for a given dataset and return
-the augmented dataset.
+The `augment_atr` function is used to calculate Average True Range (ATR) and 
+Normalized Average True Range (NATR) for a given dataset and return
+the augmented dataset. 
+Set the `normalize` parameter to `True` to calculate NATR.
 
 ## Parameters
 
@@ -28,7 +30,7 @@ the augmented dataset.
 ## Notes
 
 
-# ATR (Average True Range)
+## ATR (Average True Range)
 
 The Average True Range (ATR) is a technical analysis indicator used to measure market volatility. It was introduced by J. Welles Wilder Jr. in his 1978 book "New Concepts in Technical Trading Systems."  
 
@@ -42,7 +44,7 @@ The ATR is calculated as follows:
     
 2. Average True Range: The ATR is an average of the True Range over a specified number of periods (commonly 14 days).
 
-# NATR (Normalized Average True Range)
+## NATR (Normalized Average True Range)
 
 The NATR (Normalized Average True Range) is a variation of the ATR that normalizes the ATR values to express this volatility as a percentage of the closing price.
 

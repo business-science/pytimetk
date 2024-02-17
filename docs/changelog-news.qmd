@@ -10,8 +10,12 @@ number-sections: false
 
 ## Finance Module Updates:
 
-1. `augment_macd()`: pandas and polars engines
-2. `augment_bbands()`: pandas and polars engines
+1. `augment_macd()`: MACD, pandas and polars engines
+2. `augment_bbands()`: Bollinger Bands, pandas and polars engines
+3. `augment_atr()`: Average True Range, pandas and polars engines
+4. `augment_ppo()`: Percentage Price Oscillator, pandas and polars engines
+5. `augment_rsi()`: Relative Strength Index, pandas and polars engines
+6. `augment_qsmomentum()`: Quant Science Momentum Indicator, pandas and polars engines
 
 ## Polars Upgrades
 

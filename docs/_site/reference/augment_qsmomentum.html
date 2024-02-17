@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>pytimetk – augment_cmo</title>
+<title>pytimetk – augment_qsmomentum</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -116,9 +116,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <!-- SUMO -->
 <script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -149,7 +146,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">augment_cmo</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -363,42 +360,32 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#pytimetk.augment_qsmomentum" id="toc-pytimetk.augment_qsmomentum" class="nav-link active" data-scroll-target="#pytimetk.augment_qsmomentum">augment_qsmomentum</a>
+  <ul class="collapse">
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  </ul></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_cmo.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_qsmomentum.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">augment_cmo</h1>
-</div>
 
 
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-</header>
-
-<p><code>augment_cmo(data, date_column, close_column, periods=14, reduce_memory=False, engine='pandas')</code></p>
-<p>The <code>augment_cmo</code> function calculates the Chande Momentum Oscillator (CMO) for a given financial instrument using either pandas or polars engine, and returns the augmented DataFrame.</p>
+<section id="pytimetk.augment_qsmomentum" class="level1">
+<h1>augment_qsmomentum</h1>
+<p><code>augment_qsmomentum(data, date_column, close_column, roc_fast_period=21, roc_slow_period=252, returns_period=126, reduce_memory=False, engine='pandas')</code></p>
+<p>The function <code>augment_qsmomentum</code> calculates Quant Science Momentum for financial data.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 3%">
-<col style="width: 14%">
-<col style="width: 78%">
+<col style="width: 4%">
+<col style="width: 15%">
+<col style="width: 77%">
 <col style="width: 2%">
 </colgroup>
 <thead>
@@ -413,37 +400,49 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td><code>data</code></td>
 <td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
-<td>The <code>data</code> parameter is the input data that can be either a pandas DataFrame or a pandas DataFrameGroupBy object. It contains the data on which the Chande Momentum Oscillator (CMO) will be calculated.</td>
+<td>The <code>data</code> parameter in the <code>augment_qsmomentum</code> function is expected to be a pandas DataFrame or a pandas DataFrameGroupBy object. This parameter represents the input data on which the momentum calculations will be performed.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td><code>date_column</code></td>
 <td>str</td>
-<td>The name of the column in the data that contains the dates or timestamps.</td>
+<td>The <code>date_column</code> parameter in the <code>augment_qsmomentum</code> function refers to the column in your input data that contains the dates associated with the financial data. This column is used for time-based operations and calculations within the function.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td><code>close_column</code></td>
 <td>str</td>
-<td>The <code>close_column</code> parameter is used to specify the column in the input data that contain the values on which the CMO will be calculated.</td>
+<td>The <code>close_column</code> parameter in the <code>augment_qsmomentum</code> function refers to the column in the input DataFrame that contains the closing prices of the financial instrument or asset for which you want to calculate the momentum.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>periods</code></td>
+<td><code>roc_fast_period</code></td>
 <td>Union[int, Tuple[int, int], List[int]]</td>
-<td>The <code>periods</code> parameter in the <code>augment_cmo</code> function specifies the number of rolling periods over which the Chande Momentum Oscillator (CMO) is calculated. It can be provided as an integer, a tuple of two integers (start and end periods), or a list of integers.</td>
-<td><code>14</code></td>
+<td>The <code>roc_fast_period</code> parameter in the <code>augment_qsmomentum</code> function determines the period used for calculating the fast Rate of Change (ROC) momentum indicator.</td>
+<td><code>21</code></td>
+</tr>
+<tr class="odd">
+<td><code>roc_slow_period</code></td>
+<td>Union[int, Tuple[int, int], List[int]]</td>
+<td>The <code>roc_slow_period</code> parameter in the <code>augment_qsmomentum</code> function represents the period used for calculating the slow rate of change (ROC) in momentum analysis.</td>
+<td><code>252</code></td>
+</tr>
+<tr class="even">
+<td><code>returns_period</code></td>
+<td>Union[int, Tuple[int, int], List[int]]</td>
+<td>The <code>returns_period</code> parameter in the <code>augment_qsmomentum</code> function determines the period over which the returns are calculated.</td>
+<td><code>126</code></td>
 </tr>
 <tr class="odd">
 <td><code>reduce_memory</code></td>
 <td>bool</td>
-<td>The <code>reduce_memory</code> parameter is a boolean flag that indicates whether or not to reduce the memory usage of the data before performing the CMO calculation. If set to <code>True</code>, the function will attempt to reduce the memory usage of the input data. If set to <code>False</code>, the function will not attempt to reduce the memory usage of the input data.</td>
+<td>The <code>reduce_memory</code> parameter in the <code>augment_qsmomentum</code> function is a boolean flag that indicates whether memory reduction techniques should be applied to the input data before and after the momentum calculation process. If set to <code>True</code>, memory reduction methods will be used to optimize memory usage, potentially reducing</td>
 <td><code>False</code></td>
 </tr>
 <tr class="even">
 <td><code>engine</code></td>
 <td>str</td>
-<td>The <code>engine</code> parameter specifies the computation engine to use for calculating the Chande Momentum Oscillator (CMO). It can take two values: ‘pandas’ or ‘polars’.</td>
+<td>The <code>engine</code> parameter in the <code>augment_qsmomentum</code> function specifies the computation engine to be sed for calculating momentum. It can have two possible values: “pandas” or “polars”.</td>
 <td><code>'pandas'</code></td>
 </tr>
 </tbody>
@@ -453,8 +452,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 8%">
-<col style="width: 91%">
+<col style="width: 39%">
+<col style="width: 60%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -464,636 +463,60 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td>pd.DataFrame</td>
-<td>The function <code>augment_cmo</code> returns a pandas DataFrame that contains the augmented data with the Chande Momentum Oscillator (CMO) values added.</td>
+<td>The function <code>augment_qsmomentum</code> returns a pandas DataFrame that has been augmented with columns</td>
+<td>representing the Quant Science Momentum (QSM) calculated based on the specified parameters such as roc_fast_period, roc_slow_period, and returns_period.</td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="notes" class="level2">
 <h2 class="anchored" data-anchor-id="notes">Notes</h2>
-<p>The Chande Momentum Oscillator (CMO), developed by Tushar Chande, is a technical analysis tool used to gauge the momentum of a financial instrument. It is similar to other momentum indicators like the Relative Strength Index (RSI), but with some distinct characteristics. Here’s what the CMO tells us:</p>
-<p>Momentum of Price Movements:</p>
-<p>The CMO measures the strength of trends in price movements. It calculates the difference between the sum of gains and losses over a specified period, normalized to oscillate between -100 and +100. Overbought and Oversold Conditions:</p>
-<p>Values close to +100 suggest overbought conditions, indicating that the price might be too high and could reverse. Conversely, values near -100 suggest oversold conditions, implying that the price might be too low and could rebound. Trend Strength:</p>
-<p>High absolute values (either positive or negative) indicate strong trends, while values near zero suggest a lack of trend or a weak trend. Divergences:</p>
-<p>Divergences between the CMO and price movements can be significant. For example, if the price is making new highs but the CMO is declining, it may indicate weakening momentum and a potential trend reversal. Crossing the Zero Line:</p>
-<p>When the CMO crosses above zero, it can be seen as a bullish signal, whereas a cross below zero can be interpreted as bearish. Customization:</p>
-<p>The period over which the CMO is calculated can be adjusted. A shorter period makes the oscillator more sensitive to price changes, suitable for short-term trading. A longer period smooths out the oscillator for a longer-term perspective. It’s important to note that while the CMO can provide valuable insights into market momentum and potential price reversals, it is most effective when used in conjunction with other indicators and analysis methods. Like all technical indicators, the CMO should not be used in isolation but rather as part of a comprehensive trading strategy.</p>
-<p>References: 1. https://www.fmlabs.com/reference/default.htm?url=CMO.htm</p>
+<p>The Quant Science Momentum (QSM) is a momentum indicator that is calculated based on the Slow Rate of Change (ROC) usually over a 252-day period and the Fast Rate of Change (ROC) usually over a 21-day period.</p>
+<p>The QSM is calculated as the difference between the slow and fast ROCs divided by the standard deviation of the returns over a specified period.</p>
+<p>This provides a measure of momentum that is normalized by the volatility of the returns.</p>
 </section>
 <section id="examples" class="level2">
 <h2 class="anchored" data-anchor-id="examples">Examples</h2>
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'stocks_daily'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df</span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"stocks_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Calculate CMO for a single column</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>cmo_df <span class="op">=</span> (</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">"symbol == 'AAPL'"</span>)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        .augment_cmo(</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'adjusted'</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">14</span>, <span class="dv">28</span>]</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>cmo_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PANDAS QS MOMENTUM CALCULATION</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_qsmom <span class="op">=</span> (</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'symbol == "GOOG"'</span>) </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        .augment_qsmomentum(</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            close_column <span class="op">=</span> <span class="st">'close'</span>, </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            roc_fast_period <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">21</span>], </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            roc_slow_period <span class="op">=</span> <span class="dv">252</span>, </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            returns_period <span class="op">=</span> <span class="dv">126</span>, </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">"pandas"</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        ) </span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>df_qsmom.dropna().glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># POLARS QS MOMENTUM CALCULATION</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_qsmom <span class="op">=</span> (</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'symbol == "GOOG"'</span>) </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .augment_qsmomentum(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            close_column <span class="op">=</span> <span class="st">'close'</span>, </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            roc_fast_period <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">21</span>], </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            roc_slow_period <span class="op">=</span> <span class="dv">252</span>, </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            returns_period <span class="op">=</span> <span class="dv">126</span>, </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">"polars"</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        ) </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>df_qsmom.dropna().glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-<th data-quarto-table-cell-role="th">adjusted_cmo_14</th>
-<th data-quarto-table-cell-role="th">adjusted_cmo_28</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5398</td>
-<td>AAPL</td>
-<td>2013-01-02</td>
-<td>19.779285</td>
-<td>19.821428</td>
-<td>19.343929</td>
-<td>19.608213</td>
-<td>560518000</td>
-<td>16.791180</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5399</td>
-<td>AAPL</td>
-<td>2013-01-03</td>
-<td>19.567142</td>
-<td>19.631071</td>
-<td>19.321428</td>
-<td>19.360714</td>
-<td>352965200</td>
-<td>16.579241</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5400</td>
-<td>AAPL</td>
-<td>2013-01-04</td>
-<td>19.177500</td>
-<td>19.236786</td>
-<td>18.779642</td>
-<td>18.821428</td>
-<td>594333600</td>
-<td>16.117437</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5401</td>
-<td>AAPL</td>
-<td>2013-01-07</td>
-<td>18.642857</td>
-<td>18.903570</td>
-<td>18.400000</td>
-<td>18.710714</td>
-<td>484156400</td>
-<td>16.022623</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5402</td>
-<td>AAPL</td>
-<td>2013-01-08</td>
-<td>18.900356</td>
-<td>18.996071</td>
-<td>18.616072</td>
-<td>18.761070</td>
-<td>458707200</td>
-<td>16.065746</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8092</td>
-<td>AAPL</td>
-<td>2023-09-15</td>
-<td>176.479996</td>
-<td>176.500000</td>
-<td>173.820007</td>
-<td>175.009995</td>
-<td>109205100</td>
-<td>175.009995</td>
-<td>-11.097429</td>
-<td>-6.370009</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">8093</td>
-<td>AAPL</td>
-<td>2023-09-18</td>
-<td>176.479996</td>
-<td>179.380005</td>
-<td>176.169998</td>
-<td>177.970001</td>
-<td>67257600</td>
-<td>177.970001</td>
-<td>-6.564165</td>
-<td>-2.713367</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8094</td>
-<td>AAPL</td>
-<td>2023-09-19</td>
-<td>177.520004</td>
-<td>179.630005</td>
-<td>177.130005</td>
-<td>179.070007</td>
-<td>51826900</td>
-<td>179.070007</td>
-<td>-16.295529</td>
-<td>1.931561</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">8095</td>
-<td>AAPL</td>
-<td>2023-09-20</td>
-<td>179.259995</td>
-<td>179.699997</td>
-<td>175.399994</td>
-<td>175.490005</td>
-<td>58436200</td>
-<td>175.490005</td>
-<td>-39.175190</td>
-<td>-3.650570</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8096</td>
-<td>AAPL</td>
-<td>2023-09-21</td>
-<td>174.550003</td>
-<td>176.300003</td>
-<td>173.860001</td>
-<td>173.929993</td>
-<td>63047900</td>
-<td>173.929993</td>
-<td>-43.051227</td>
-<td>-6.140628</td>
-</tr>
-</tbody>
-</table>
-
-<p>2699 rows × 10 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Calculate CMO for multiple groups</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>cmo_df <span class="op">=</span> (</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        .augment_cmo(</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'adjusted'</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">14</span>, <span class="dv">28</span>]</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>cmo_df.groupby(<span class="st">'symbol'</span>).tail(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-<th data-quarto-table-cell-role="th">adjusted_cmo_14</th>
-<th data-quarto-table-cell-role="th">adjusted_cmo_28</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2698</td>
-<td>META</td>
-<td>2023-09-21</td>
-<td>295.700012</td>
-<td>300.260010</td>
-<td>293.269989</td>
-<td>295.730011</td>
-<td>21300500</td>
-<td>295.730011</td>
-<td>-0.277495</td>
-<td>-4.703549</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5397</td>
-<td>AMZN</td>
-<td>2023-09-21</td>
-<td>131.940002</td>
-<td>132.240005</td>
-<td>129.309998</td>
-<td>129.330002</td>
-<td>70234800</td>
-<td>129.330002</td>
-<td>-27.450935</td>
-<td>-16.697312</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8096</td>
-<td>AAPL</td>
-<td>2023-09-21</td>
-<td>174.550003</td>
-<td>176.300003</td>
-<td>173.860001</td>
-<td>173.929993</td>
-<td>63047900</td>
-<td>173.929993</td>
-<td>-43.051227</td>
-<td>-6.140628</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">10795</td>
-<td>NFLX</td>
-<td>2023-09-21</td>
-<td>386.500000</td>
-<td>395.899994</td>
-<td>383.420013</td>
-<td>384.149994</td>
-<td>5547900</td>
-<td>384.149994</td>
-<td>-56.124625</td>
-<td>-19.430200</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">13494</td>
-<td>NVDA</td>
-<td>2023-09-21</td>
-<td>415.829987</td>
-<td>421.000000</td>
-<td>409.799988</td>
-<td>410.170013</td>
-<td>44893000</td>
-<td>410.170013</td>
-<td>-83.624257</td>
-<td>0.671283</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">16193</td>
-<td>GOOG</td>
-<td>2023-09-21</td>
-<td>132.389999</td>
-<td>133.190002</td>
-<td>131.089996</td>
-<td>131.360001</td>
-<td>22042700</td>
-<td>131.360001</td>
-<td>-33.482367</td>
-<td>2.917383</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 - Calculate CMO for polars engine</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>cmo_df <span class="op">=</span> (</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">"symbol == 'AAPL'"</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .augment_cmo(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'adjusted'</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">14</span>, <span class="dv">28</span>],</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'polars'</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>cmo_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-<th data-quarto-table-cell-role="th">adjusted_cmo_14</th>
-<th data-quarto-table-cell-role="th">adjusted_cmo_28</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>AAPL</td>
-<td>2013-01-02</td>
-<td>19.779285</td>
-<td>19.821428</td>
-<td>19.343929</td>
-<td>19.608213</td>
-<td>560518000</td>
-<td>16.791180</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>AAPL</td>
-<td>2013-01-03</td>
-<td>19.567142</td>
-<td>19.631071</td>
-<td>19.321428</td>
-<td>19.360714</td>
-<td>352965200</td>
-<td>16.579241</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>AAPL</td>
-<td>2013-01-04</td>
-<td>19.177500</td>
-<td>19.236786</td>
-<td>18.779642</td>
-<td>18.821428</td>
-<td>594333600</td>
-<td>16.117437</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>AAPL</td>
-<td>2013-01-07</td>
-<td>18.642857</td>
-<td>18.903570</td>
-<td>18.400000</td>
-<td>18.710714</td>
-<td>484156400</td>
-<td>16.022623</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>AAPL</td>
-<td>2013-01-08</td>
-<td>18.900356</td>
-<td>18.996071</td>
-<td>18.616072</td>
-<td>18.761070</td>
-<td>458707200</td>
-<td>16.065746</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2694</td>
-<td>AAPL</td>
-<td>2023-09-15</td>
-<td>176.479996</td>
-<td>176.500000</td>
-<td>173.820007</td>
-<td>175.009995</td>
-<td>109205100</td>
-<td>175.009995</td>
-<td>-11.097429</td>
-<td>-6.370009</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">2695</td>
-<td>AAPL</td>
-<td>2023-09-18</td>
-<td>176.479996</td>
-<td>179.380005</td>
-<td>176.169998</td>
-<td>177.970001</td>
-<td>67257600</td>
-<td>177.970001</td>
-<td>-6.564165</td>
-<td>-2.713367</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2696</td>
-<td>AAPL</td>
-<td>2023-09-19</td>
-<td>177.520004</td>
-<td>179.630005</td>
-<td>177.130005</td>
-<td>179.070007</td>
-<td>51826900</td>
-<td>179.070007</td>
-<td>-16.295529</td>
-<td>1.931561</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">2697</td>
-<td>AAPL</td>
-<td>2023-09-20</td>
-<td>179.259995</td>
-<td>179.699997</td>
-<td>175.399994</td>
-<td>175.490005</td>
-<td>58436200</td>
-<td>175.490005</td>
-<td>-39.175190</td>
-<td>-3.650570</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2698</td>
-<td>AAPL</td>
-<td>2023-09-21</td>
-<td>174.550003</td>
-<td>176.300003</td>
-<td>173.860001</td>
-<td>173.929993</td>
-<td>63047900</td>
-<td>173.929993</td>
-<td>-43.051227</td>
-<td>-6.140628</td>
-</tr>
-</tbody>
-</table>
-
-<p>2699 rows × 10 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 4 - Calculate CMO for polars engine and groups</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>cmo_df <span class="op">=</span> (</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .augment_cmo(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'adjusted'</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">14</span>, <span class="dv">28</span>],</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'polars'</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>cmo_df.groupby(<span class="st">'symbol'</span>).tail(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-<th data-quarto-table-cell-role="th">adjusted_cmo_14</th>
-<th data-quarto-table-cell-role="th">adjusted_cmo_28</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2698</td>
-<td>META</td>
-<td>2023-09-21</td>
-<td>295.700012</td>
-<td>300.260010</td>
-<td>293.269989</td>
-<td>295.730011</td>
-<td>21300500</td>
-<td>295.730011</td>
-<td>-0.277495</td>
-<td>-4.703549</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5397</td>
-<td>AMZN</td>
-<td>2023-09-21</td>
-<td>131.940002</td>
-<td>132.240005</td>
-<td>129.309998</td>
-<td>129.330002</td>
-<td>70234800</td>
-<td>129.330002</td>
-<td>-27.450935</td>
-<td>-16.697312</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8096</td>
-<td>AAPL</td>
-<td>2023-09-21</td>
-<td>174.550003</td>
-<td>176.300003</td>
-<td>173.860001</td>
-<td>173.929993</td>
-<td>63047900</td>
-<td>173.929993</td>
-<td>-43.051227</td>
-<td>-6.140628</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">10795</td>
-<td>NFLX</td>
-<td>2023-09-21</td>
-<td>386.500000</td>
-<td>395.899994</td>
-<td>383.420013</td>
-<td>384.149994</td>
-<td>5547900</td>
-<td>384.149994</td>
-<td>-56.124625</td>
-<td>-19.430200</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">13494</td>
-<td>NVDA</td>
-<td>2023-09-21</td>
-<td>415.829987</td>
-<td>421.000000</td>
-<td>409.799988</td>
-<td>410.170013</td>
-<td>44893000</td>
-<td>410.170013</td>
-<td>-83.624257</td>
-<td>0.671283</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">16193</td>
-<td>GOOG</td>
-<td>2023-09-21</td>
-<td>132.389999</td>
-<td>133.190002</td>
-<td>131.089996</td>
-<td>131.360001</td>
-<td>22042700</td>
-<td>131.360001</td>
-<td>-33.482367</td>
-<td>2.917383</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-
-
+</section>
 </section>
 
 </main> <!-- /main -->

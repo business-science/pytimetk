@@ -80,6 +80,7 @@ Momentum indicators for financial time series data.
 | [augment_ppo](augment_ppo.qmd#pytimetk.augment_ppo) | Calculate PPO for a given financial instrument using either pandas or polars engine. |
 | [augment_rsi](augment_rsi.qmd#pytimetk.augment_rsi) | The `augment_rsi` function calculates the Relative Strength Index (RSI) for a given financial |
 | [augment_cmo](augment_cmo.qmd#pytimetk.augment_cmo) | The `augment_cmo` function calculates the Chande Momentum Oscillator (CMO) for a given financial |
+| [augment_qsmomentum](augment_qsmomentum.qmd#pytimetk.augment_qsmomentum) | The function `augment_qsmomentum` calculates Quant Science Momentum for financial data. |
 
 ## 💹 Finance Module (Volatility Indicators)
 
@@ -88,7 +89,7 @@ Volatility indicators for financial time series data.
 | | |
 | --- | --- |
 | [augment_bbands](augment_bbands.qmd#pytimetk.augment_bbands) | The `augment_bbands` function is used to calculate Bollinger Bands for a given dataset and return |
-| [augment_atr](augment_atr.qmd#pytimetk.augment_atr) | The `augment_atr` function is used to calculate Bollinger Bands for a given dataset and return |
+| [augment_atr](augment_atr.qmd#pytimetk.augment_atr) | The `augment_atr` function is used to calculate Average True Range (ATR) and  |
 
 ## 🐼 Time Series for Pandas Series
 
