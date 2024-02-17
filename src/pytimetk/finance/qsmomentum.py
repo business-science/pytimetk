@@ -70,11 +70,11 @@ def augment_qsmomentum(
     
     The QSM is calculated as the difference between the slow and fast ROCs divided by the standard deviation of the returns over a specified period.
     
-    This provides a measure of momentum that is normalized by the volatility of the returns.
+    This provides a measure of momentum that is normalized by the rolling volatility of the returns.
     
     Examples
     --------
-    ``` python
+    ``` {python}
     import pandas as pd
     import polars as pl
     import pytimetk as tk
@@ -84,7 +84,7 @@ def augment_qsmomentum(
     df.glimpse()
     ```
     
-    ``` python
+    ``` {python}
     # PANDAS QS MOMENTUM CALCULATION
     df_qsmom = (
         df 
@@ -102,7 +102,7 @@ def augment_qsmomentum(
     df_qsmom.dropna().glimpse()
     ```
     
-    ``` python
+    ``` {python}
     # POLARS QS MOMENTUM CALCULATION
     df_qsmom = (
         df 
