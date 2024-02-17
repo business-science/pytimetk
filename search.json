@@ -1775,7 +1775,7 @@
     "href": "reference/augment_diffs.html",
     "title": "augment_diffs",
     "section": "",
-    "text": "augment_diffs(data, date_column, value_column, periods=1, sort=True, reduce_memory=False, engine='pandas')\nAdds differences to a Pandas DataFrame or DataFrameGroupBy object.\nThe augment_diffs function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a period or list of periods, and adds differenced versions of the value columns to the DataFrame."
+    "text": "augment_diffs(data, date_column, value_column, periods=1, reduce_memory=False, engine='pandas')\nAdds differences to a Pandas DataFrame or DataFrameGroupBy object.\nThe augment_diffs function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a period or list of periods, and adds differenced versions of the value columns to the DataFrame."
   },
   {
     "objectID": "reference/augment_diffs.html#parameters",
