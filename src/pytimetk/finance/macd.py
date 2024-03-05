@@ -150,7 +150,12 @@ def _augment_macd_pandas(data, date_column, close_column, fast_period, slow_peri
     """
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         # If data is a GroupBy object, apply MACD calculation for each group
-        df = data.apply(lambda x: _calculate_macd_pandas(x, close_column, fast_period, slow_period, signal_period))
+        group_names = data.grouper.names
+        data = data.obj
+
+        df = data.copy()
+        
+        df = df.groupby(group_names, group_keys=False).apply(lambda x: _calculate_macd_pandas(x, close_column, fast_period, slow_period, signal_period))
     elif isinstance(data, pd.DataFrame):
         # If data is a DataFrame, apply MACD calculation directly
         df = data.copy().sort_values(by=date_column)
@@ -181,6 +186,11 @@ def _calculate_macd_pandas(df, close_column, fast_period, slow_period, signal_pe
     df[f'{close_column}_macd_line_{fast_period}_{slow_period}_{signal_period}'] = macd_line
     df[f'{close_column}_macd_signal_line_{fast_period}_{slow_period}_{signal_period}'] = signal_line
     df[f'{close_column}_macd_histogram_{fast_period}_{slow_period}_{signal_period}'] = macd_histogram
+    
+    # # Calculate Bullish and Bearish Crossovers
+    # df[f'{close_column}_macd_bullish_crossover_{fast_period}_{slow_period}_{signal_period}'] = (macd_line > signal_line) & (macd_line.shift(1) <= signal_line.shift(1))
+    
+    # df[f'{close_column}_macd_bearish_crossover_{fast_period}_{slow_period}_{signal_period}'] = (macd_line < signal_line) & (macd_line.shift(1) >= signal_line.shift(1))
 
     return df
 
