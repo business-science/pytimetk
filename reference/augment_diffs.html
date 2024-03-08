@@ -389,8 +389,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_diffs(data, date_column, value_column, periods=1, reduce_memory=False, engine='pandas')</code></p>
-<p>Adds differences to a Pandas DataFrame or DataFrameGroupBy object.</p>
+<p><code>augment_diffs(data, date_column, value_column, periods=1, normalize=False, reduce_memory=False, engine='pandas')</code></p>
+<p>Adds differences and percentage difference (percentage change) to a Pandas DataFrame or DataFrameGroupBy object.</p>
 <p>The <code>augment_diffs</code> function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a period or list of periods, and adds differenced versions of the value columns to the DataFrame.</p>
 <section id="parameters" class="level2">
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
@@ -435,12 +435,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><code>1</code></td>
 </tr>
 <tr class="odd">
+<td><code>normalize</code></td>
+<td>bool</td>
+<td>The <code>normalize</code> parameter is used to specify whether to normalize the differenced values as a percentage difference. Default is False.</td>
+<td><code>False</code></td>
+</tr>
+<tr class="even">
 <td><code>reduce_memory</code></td>
 <td>bool</td>
 <td>The <code>reduce_memory</code> parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.</td>
 <td><code>False</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>engine</code></td>
 <td>str</td>
 <td>The <code>engine</code> parameter is used to specify the engine to use for augmenting differences. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for augmenting diffs. This can be faster than using “pandas” for large datasets.</td>
