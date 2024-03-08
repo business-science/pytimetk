@@ -13,11 +13,12 @@ def augment_diffs(
     date_column: str,
     value_column: Union[str, List[str]], 
     periods: Union[int, Tuple[int, int], List[int]] = 1,
+    normalize: bool = False,
     reduce_memory: bool = False,
     engine: str = 'pandas'
 ) -> pd.DataFrame:
     """
-    Adds differences to a Pandas DataFrame or DataFrameGroupBy object.
+    Adds differences and percentage difference (percentage change) to a Pandas DataFrame or DataFrameGroupBy object.
 
     The `augment_diffs` function takes a Pandas DataFrame or GroupBy object, a 
     date column, a value column or list of value columns, and a period or list of 
@@ -47,6 +48,9 @@ def augment_diffs(
           value (inclusive). 
         
         - If it is a list, it will generate differences based on the values in the list.
+    normalize : bool, optional
+        The `normalize` parameter is used to specify whether to normalize the 
+        differenced values as a percentage difference. Default is False.
     reduce_memory : bool, optional
         The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
     engine : str, optional
@@ -127,9 +131,9 @@ def augment_diffs(
         data = reduce_memory_usage(data)
     
     if engine == 'pandas':
-        ret = _augment_diffs_pandas(data, date_column, value_column, periods)
+        ret = _augment_diffs_pandas(data, date_column, value_column, periods, normalize=normalize)
     elif engine == 'polars':
-        ret = _augment_diffs_polars(data, date_column, value_column, periods)
+        ret = _augment_diffs_polars(data, date_column, value_column, periods, normalize=normalize)
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
     
@@ -146,7 +150,8 @@ def _augment_diffs_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
     value_column: Union[str, List[str]], 
-    periods: Union[int, Tuple[int, int], List[int]] = 1
+    periods: Union[int, Tuple[int, int], List[int]] = 1,
+    normalize: bool = False
 ) -> pd.DataFrame:
     
     if isinstance(value_column, str):
@@ -166,9 +171,15 @@ def _augment_diffs_pandas(
 
         df.sort_values(by=[date_column], inplace=True)
 
-        for col in value_column:
-            for period in periods:
-                df[f'{col}_diff_{period}'] = df[col].diff(period)
+        if normalize:
+            for col in value_column:
+                for period in periods:
+                    df[f'{col}_diff_{period}'] = df[col].diff(period)
+        
+        else:
+            for col in value_column:
+                for period in periods:
+                    df[f'{col}_diff_{period}'] = df[col].diff(period)
 
     # GROUPED EXTENSION - If data is a GroupBy object, add differences by group
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -181,9 +192,14 @@ def _augment_diffs_pandas(
 
         df.sort_values(by=[*group_names, date_column], inplace=True)
 
-        for col in value_column:
-            for period in periods:
-                df[f'{col}_diff_{period}'] = df.groupby(group_names)[col].diff(period)
+        if normalize:
+            for col in value_column:
+                for period in periods:
+                    df[f'{col}_pctdiff_{period}'] = df.groupby(group_names)[col].pct_change(period)
+        else: 
+            for col in value_column:
+                for period in periods:
+                    df[f'{col}_diff_{period}'] = df.groupby(group_names)[col].diff(period)
 
     return df
 
@@ -191,7 +207,8 @@ def _augment_diffs_polars(
     data: Union[pl.DataFrame, pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
-    periods: Union[int, Tuple[int, int], List[int]] = 1
+    periods: Union[int, Tuple[int, int], List[int]] = 1,
+    normalize: bool = False
 ) -> pl.DataFrame:
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -220,10 +237,18 @@ def _augment_diffs_polars(
 
     period_exprs = []
 
-    for col in value_column:
-        for period in periods:
-            period_expr = (pl.col(col) - pl.col(col).shift(period)).alias(f"{col}_diff_{period}")
-            period_exprs.append(period_expr)
+    if normalize:
+        for col in value_column:
+            for period in periods:
+                period_expr = (
+                    pl.col(col) / pl.col(col).shift(period) - 1
+                ).alias(f"{col}_pctdiff_{period}")
+                period_exprs.append(period_expr)
+    else:
+        for col in value_column:
+            for period in periods:
+                period_expr = (pl.col(col) - pl.col(col).shift(period)).alias(f"{col}_diff_{period}")
+                period_exprs.append(period_expr)
 
     # Select columns
     selected_columns = [diff_foo] + period_exprs
