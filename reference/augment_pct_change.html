@@ -395,9 +395,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 3%">
+<col style="width: 2%">
 <col style="width: 10%">
-<col style="width: 83%">
+<col style="width: 84%">
 <col style="width: 2%">
 </colgroup>
 <thead>
@@ -412,25 +412,25 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td><code>data</code></td>
 <td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
-<td>The <code>data</code> parameter is the input DataFrame or DataFrameGroupBy object that you want to add differenced columns to.</td>
+<td>The <code>data</code> parameter is the input DataFrame or DataFrameGroupBy object that you want to add percentage differenced columns to.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td><code>date_column</code></td>
 <td>str</td>
-<td>The <code>date_column</code> parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the differenced values.</td>
+<td>The <code>date_column</code> parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the percentage differenced values.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td><code>value_column</code></td>
 <td>str or list</td>
-<td>The <code>value_column</code> parameter is the column(s) in the DataFrame that you want to add differences values for. It can be either a single column name (string) or a list of column names.</td>
+<td>The <code>value_column</code> parameter is the column(s) in the DataFrame that you want to add percentage differences values for. It can be either a single column name (string) or a list of column names.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td><code>periods</code></td>
 <td>int or tuple or list</td>
-<td>The <code>periods</code> parameter is an integer, tuple, or list that specifies the periods to shift values when differencing. - If it is an integer, the function will add that number of differences values for each column specified in the <code>value_column</code> parameter. - If it is a tuple, it will generate differences from the first to the second value (inclusive). - If it is a list, it will generate differences based on the values in the list.</td>
+<td>The <code>periods</code> parameter is an integer, tuple, or list that specifies the periods to shift values when percentage differencing. - If it is an integer, the function will add that number of percentage differences values for each column specified in the <code>value_column</code> parameter. - If it is a tuple, it will generate percentage differences from the first to the second value (inclusive). - If it is a list, it will generate percentage differences based on the values in the list.</td>
 <td><code>1</code></td>
 </tr>
 <tr class="odd">
@@ -442,7 +442,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="even">
 <td><code>engine</code></td>
 <td>str</td>
-<td>The <code>engine</code> parameter is used to specify the engine to use for augmenting differences. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for augmenting diffs. This can be faster than using “pandas” for large datasets.</td>
+<td>The <code>engine</code> parameter is used to specify the engine to use for augmenting percentage differences. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for augmenting percentage diffs. This can be faster than using “pandas” for large datasets.</td>
 <td><code>'pandas'</code></td>
 </tr>
 </tbody>
@@ -452,8 +452,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 19%">
-<col style="width: 80%">
+<col style="width: 16%">
+<col style="width: 83%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -464,7 +464,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>pd.DataFrame</td>
-<td>A Pandas DataFrame with differenced columns added to it.</td>
+<td>A Pandas DataFrame with percentage differenced columns added to it.</td>
 </tr>
 </tbody>
 </table>
@@ -579,20 +579,20 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>pctdiff_df_single.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 674 rows of 10 columns
-id:            object            ['D10', 'D10', 'D10', 'D10', 'D10', 'D1 ...
-date:          datetime64[ns]    [Timestamp('2014-07-03 00:00:00'), Time ...
-value:         float64           [2076.2, 2073.4, 2048.7, 2048.9, 2006.4 ...
-value_diff_1:  float64           [nan, -2.799999999999727, -24.700000000 ...
-value_diff_2:  float64           [nan, nan, -27.5, -24.5, -42.2999999999 ...
-value_diff_3:  float64           [nan, nan, nan, -27.299999999999727, -6 ...
-value_diff_4:  float64           [nan, nan, nan, nan, -69.79999999999973 ...
-value_diff_5:  float64           [nan, nan, nan, nan, nan, -58.599999999 ...
-value_diff_6:  float64           [nan, nan, nan, nan, nan, nan, -57.0999 ...
-value_diff_7:  float64           [nan, nan, nan, nan, nan, nan, nan, -68 ...</code></pre>
+id:               object            ['D10', 'D10', 'D10', 'D10', 'D10',  ...
+date:             datetime64[ns]    [Timestamp('2014-07-03 00:00:00'), T ...
+value:            float64           [2076.2, 2073.4, 2048.7, 2048.9, 200 ...
+value_pctdiff_1:  float64           [nan, -0.0013486176668913163, -0.011 ...
+value_pctdiff_2:  float64           [nan, nan, -0.013245352085540896, -0 ...
+value_pctdiff_3:  float64           [nan, nan, nan, -0.01314902225219138 ...
+value_pctdiff_4:  float64           [nan, nan, nan, nan, -0.033619111838 ...
+value_pctdiff_5:  float64           [nan, nan, nan, nan, nan, -0.0282246 ...
+value_pctdiff_6:  float64           [nan, nan, nan, nan, nan, nan, -0.02 ...
+value_pctdiff_7:  float64           [nan, nan, nan, nan, nan, nan, nan,  ...</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Add a single differenced value of 2 for each GroupBy object, polars engine</span></span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Add a single percent differenced value of 2 for each GroupBy object, polars engine</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>pctdiff_df <span class="op">=</span> (</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df </span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
@@ -704,7 +704,7 @@ value_diff_7:  float64           [nan, nan, nan, nan, nan, nan, nan, -68 ...</co
 </div>
 </div>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 add 2 differenced values, 2 and 4, for a single DataFrame object, pandas engine</span></span>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 add 2 percent differenced values, 2 and 4, for a single DataFrame object, pandas engine</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pctdiff_df_single_two <span class="op">=</span> (</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    df </span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'id == "D10"'</span>)</span>
