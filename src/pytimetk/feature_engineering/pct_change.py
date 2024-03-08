@@ -20,42 +20,42 @@ def augment_pct_change(
     ----------
     data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
         The `data` parameter is the input DataFrame or DataFrameGroupBy object 
-        that you want to add differenced columns to.
+        that you want to add percentage differenced columns to.
     date_column : str
         The `date_column` parameter is a string that specifies the name of the 
         column in the DataFrame that contains the dates. This column will be 
-        used to sort the data before adding the differenced values.
+        used to sort the data before adding the percentage differenced values.
     value_column : str or list
         The `value_column` parameter is the column(s) in the DataFrame that you 
-        want to add differences values for. It can be either a single column name 
+        want to add percentage differences values for. It can be either a single column name 
         (string) or a list of column names.
     periods : int or tuple or list, optional
         The `periods` parameter is an integer, tuple, or list that specifies the 
-        periods to shift values when differencing. 
+        periods to shift values when percentage differencing. 
         
-        - If it is an integer, the function will add that number of differences 
+        - If it is an integer, the function will add that number of percentage differences 
           values for each column specified in the `value_column` parameter. 
         
-        - If it is a tuple, it will generate differences from the first to the second 
+        - If it is a tuple, it will generate percentage differences from the first to the second 
           value (inclusive). 
         
-        - If it is a list, it will generate differences based on the values in the list.
+        - If it is a list, it will generate percentage differences based on the values in the list.
     reduce_memory : bool, optional
         The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
     engine : str, optional
         The `engine` parameter is used to specify the engine to use for 
-        augmenting differences. It can be either "pandas" or "polars". 
+        augmenting percentage differences. It can be either "pandas" or "polars". 
         
         - The default value is "pandas".
         
         - When "polars", the function will internally use the `polars` library 
-          for augmenting diffs. This can be faster than using "pandas" for large 
+          for augmenting percentage diffs. This can be faster than using "pandas" for large 
           datasets. 
 
     Returns
     -------
     pd.DataFrame
-        A Pandas DataFrame with differenced columns added to it.
+        A Pandas DataFrame with percentage differenced columns added to it.
     
     Examples
     --------
@@ -81,8 +81,9 @@ def augment_pct_change(
     )
     pctdiff_df_single.glimpse()
     ```
+    
     ```{python}
-    # Example 2 - Add a single differenced value of 2 for each GroupBy object, polars engine
+    # Example 2 - Add a single percent differenced value of 2 for each GroupBy object, polars engine
     pctdiff_df = (
         df 
             .groupby('id')
@@ -97,7 +98,7 @@ def augment_pct_change(
     ```
 
     ```{python}
-    # Example 3 add 2 differenced values, 2 and 4, for a single DataFrame object, pandas engine
+    # Example 3 add 2 percent differenced values, 2 and 4, for a single DataFrame object, pandas engine
     pctdiff_df_single_two = (
         df 
             .query('id == "D10"')
@@ -126,5 +127,5 @@ def augment_pct_change(
     return ret
 
 # Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_diffs = augment_diffs
+pd.core.groupby.generic.DataFrameGroupBy.augment_pct_change = augment_pct_change
 

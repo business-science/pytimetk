@@ -51,7 +51,8 @@ Adding Features to Time Series DataFrames (Augmenting)
 | [augment_holiday_signature](augment_holiday_signature.qmd#pytimetk.augment_holiday_signature) | Engineers 4 different holiday features from a single datetime for 137 countries  |
 | [augment_lags](augment_lags.qmd#pytimetk.augment_lags) | Adds lags to a Pandas DataFrame or DataFrameGroupBy object. |
 | [augment_leads](augment_leads.qmd#pytimetk.augment_leads) | Adds leads to a Pandas DataFrame or DataFrameGroupBy object. |
-| [augment_diffs](augment_diffs.qmd#pytimetk.augment_diffs) | Adds differences to a Pandas DataFrame or DataFrameGroupBy object. |
+| [augment_diffs](augment_diffs.qmd#pytimetk.augment_diffs) | Adds differences and percentage difference (percentage change) to a Pandas DataFrame or DataFrameGroupBy object. |
+| [augment_pct_change](augment_pct_change.qmd#pytimetk.augment_pct_change) | Adds percentage difference (percentage change) to a Pandas DataFrame or DataFrameGroupBy object. |
 | [augment_rolling](augment_rolling.qmd#pytimetk.augment_rolling) | Apply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame. |
 | [augment_rolling_apply](augment_rolling_apply.qmd#pytimetk.augment_rolling_apply) | Apply one or more DataFrame-based rolling functions and window sizes to one  |
 | [augment_expanding](augment_expanding.qmd#pytimetk.augment_expanding) | Apply one or more Series-based expanding functions to one or more columns of a DataFrame. |

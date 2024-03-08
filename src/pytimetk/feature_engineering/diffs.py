@@ -174,7 +174,7 @@ def _augment_diffs_pandas(
         if normalize:
             for col in value_column:
                 for period in periods:
-                    df[f'{col}_diff_{period}'] = df[col].diff(period)
+                    df[f'{col}_pctdiff_{period}'] = df[col].pct_change(period)
         
         else:
             for col in value_column:
