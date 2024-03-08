@@ -11,3 +11,4 @@ from .expanding_apply import *
 from .ewm import *
 from .fourier import *
 from .diffs import *
+from .pct_change import *

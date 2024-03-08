@@ -26,6 +26,7 @@ from .feature_engineering.holiday_signature import *
 from .feature_engineering.lags import *
 from .feature_engineering.leads import *
 from .feature_engineering.diffs import *
+from .feature_engineering.pct_change import *
 from .feature_engineering.rolling import *
 from .feature_engineering.rolling_apply import *
 from .feature_engineering.expanding import *
@@ -117,6 +118,9 @@ from .feature_engineering.leads import (
 )
 from .feature_engineering.diffs import (
     augment_diffs
+)
+from .feature_engineering.pct_change import (
+    augment_pct_change
 )
 from .core.pad import (
     pad_by_time

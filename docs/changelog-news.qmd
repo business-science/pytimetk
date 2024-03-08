@@ -6,7 +6,11 @@ toc-depth: 3
 number-sections: false
 ---
 
-# pytimetk 0.3.0.9000
+# pytimetk 0.3.0.9003
+
+## Feature Engineering Module:
+
+1. `augment_pct_change()`: pandas and polars engines
 
 ## Finance Module Updates:
 
