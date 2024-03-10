@@ -48,6 +48,7 @@ website:
       - reference/augment_ppo.qmd
       - reference/augment_rsi.qmd
       - reference/augment_cmo.qmd
+      - reference/augment_roc.qmd
       - reference/augment_qsmomentum.qmd
       section: "\U0001F4B9 Finance Module (Momentum Indicators)"
     - contents:

@@ -81,6 +81,7 @@ Momentum indicators for financial time series data.
 | [augment_ppo](augment_ppo.qmd#pytimetk.augment_ppo) | Calculate PPO for a given financial instrument using either pandas or polars engine. |
 | [augment_rsi](augment_rsi.qmd#pytimetk.augment_rsi) | The `augment_rsi` function calculates the Relative Strength Index (RSI) for a given financial |
 | [augment_cmo](augment_cmo.qmd#pytimetk.augment_cmo) | The `augment_cmo` function calculates the Chande Momentum Oscillator (CMO) for a given financial |
+| [augment_roc](augment_roc.qmd#pytimetk.augment_roc) | Adds rate of change (percentage change) to a Pandas DataFrame or DataFrameGroupBy object. |
 | [augment_qsmomentum](augment_qsmomentum.qmd#pytimetk.augment_qsmomentum) | The function `augment_qsmomentum` calculates Quant Science Momentum for financial data. |
 
 ## 💹 Finance Module (Volatility Indicators)
