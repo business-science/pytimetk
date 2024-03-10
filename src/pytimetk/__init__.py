@@ -42,6 +42,7 @@ from .finance.bbands import *
 from .finance.ppo import *
 from .finance.rsi import *
 from .finance.atr import *  
+from .finance.roc import *
 from .finance.qsmomentum import *
 
 from .datasets.get_datasets import *
@@ -169,6 +170,9 @@ from .finance.rsi import (
 )
 from .finance.atr import (
     augment_atr
+)
+from .finance.roc import (
+    augment_roc
 )
 from .finance.qsmomentum import (
     augment_qsmomentum

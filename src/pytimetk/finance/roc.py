@@ -4,7 +4,7 @@ import numpy as np
 import pandas_flavor as pf
 from typing import Union, List, Tuple
 
-from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_close_column
+from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 
@@ -22,12 +22,12 @@ def augment_roc(
     
     # Run common checks
     check_dataframe_or_groupby(data)
-    check_close_column(data, close_column)
+    check_value_column(data, close_column)
     check_date_column(data, date_column)
     
     # Check start_index > periods
-    if start_index < max(periods):
-        raise ValueError("start_index must be greater than the maximum value in periods.")
+    if start_index >= min(periods):
+        raise ValueError("start_index must be less than the minimum value in periods.")
     
     if reduce_memory:
         data = reduce_memory_usage(data)
@@ -119,7 +119,7 @@ def _augment_roc_polars(
     if isinstance(close_column, str):
         close_column = [close_column]
 
-    diff_foo = pl.col(date_column).shift(1).suffix("_diff_1")
+    roc_foo = pl.col(date_column).shift(1).suffix("_diff_1")
 
     if isinstance(periods, int):
         periods = [periods]  # Convert to a list with a single value
@@ -139,11 +139,13 @@ def _augment_roc_polars(
                 ).alias(f"{col}_roc_{period}")
                 period_exprs.append(period_expr)
             else:
-                period_expr = (pl.col(col).shift(start_index) - pl.col(col).shift(period)).alias(f"{col}_roc_{start_index}_{period}")
+                period_expr = (
+                    (pl.col(col).shift(start_index) / pl.col(col).shift(period)) - 1
+                ).alias(f"{col}_roc_{start_index}_{period}")
                 period_exprs.append(period_expr)
 
     # Select columns
-    selected_columns = [diff_foo] + period_exprs
+    selected_columns = [roc_foo] + period_exprs
 
     # Drop the first column by position (index)
     selected_columns = selected_columns[1:]
