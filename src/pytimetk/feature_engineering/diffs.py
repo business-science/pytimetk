@@ -241,7 +241,7 @@ def _augment_diffs_polars(
         for col in value_column:
             for period in periods:
                 period_expr = (
-                    pl.col(col) / pl.col(col).shift(period) - 1
+                    (pl.col(col) / pl.col(col).shift(period)) - 1
                 ).alias(f"{col}_pctdiff_{period}")
                 period_exprs.append(period_expr)
     else:
