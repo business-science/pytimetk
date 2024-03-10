@@ -49,8 +49,8 @@ def augment_pct_change(
         - The default value is "pandas".
         
         - When "polars", the function will internally use the `polars` library 
-          for augmenting percentage diffs. This can be faster than using "pandas" for large 
-          datasets. 
+        for augmenting percentage diffs. This can be faster than using "pandas" for large 
+        datasets. 
 
     Returns
     -------

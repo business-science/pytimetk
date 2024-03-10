@@ -6,7 +6,7 @@ toc-depth: 3
 number-sections: false
 ---
 
-# pytimetk 0.3.0.9003
+# pytimetk 0.3.0.9004
 
 ## Feature Engineering Module:
 
@@ -20,6 +20,7 @@ number-sections: false
 4. `augment_ppo()`: Percentage Price Oscillator, pandas and polars engines
 5. `augment_rsi()`: Relative Strength Index, pandas and polars engines
 6. `augment_qsmomentum()`: Quant Science Momentum Indicator, pandas and polars engines
+7. `augment_roc()`: Rate of Change (ROC), pandas and polars e ngines
 
 ## Polars Upgrades
 

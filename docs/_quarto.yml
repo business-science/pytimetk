@@ -170,6 +170,7 @@ quartodoc:
         - augment_ppo
         - augment_rsi
         - augment_cmo
+        - augment_roc
         - augment_qsmomentum
     - title: 💹 Finance Module (Volatility Indicators)
       desc: Volatility indicators for financial time series data.
