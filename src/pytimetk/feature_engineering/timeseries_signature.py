@@ -9,6 +9,136 @@ from pytimetk.utils.datetime_helpers import week_of_month
 from pytimetk.utils.checks import check_series_or_datetime, check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 
+@pf.register_dataframe_method
+def augment_timeseries_signature(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
+    date_column: str,
+    reduce_memory: bool = False,
+    engine: str = 'pandas',
+) -> pd.DataFrame:
+    """
+    The function `augment_timeseries_signature` takes a DataFrame and a date 
+    column as input and returns the original DataFrame with the **29 different 
+    date and time based features** added as new columns with the feature name 
+    based on the date_column.
+    
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The `data` parameter is a pandas DataFrame that contains the time series 
+        data.
+    date_column : str
+        The `date_column` parameter is a string that represents the name of the 
+        date column in the `data` DataFrame.
+    reduce_memory : bool, optional
+        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.
+    engine : str, optional
+        The `engine` parameter is used to specify the engine to use for 
+        augmenting datetime features. It can be either "pandas" or "polars". 
+        
+        - The default value is "pandas".
+        
+        - When "polars", the function will internally use the `polars` library 
+          for feature generation. This is generally faster than using "pandas" 
+          for large datasets. 
+    
+    Returns
+    -------
+    pd.DataFrame
+        A Pandas DataFrame with 29 datetime features added to it.
+
+    - _index_num: An int64 feature that captures the entire datetime as a numeric value to the second
+    - _year: The year of the datetime
+    - _year_iso: The iso year of the datetime
+    - _yearstart: Logical (0,1) indicating if first day of year (defined by frequency)
+    - _yearend: Logical (0,1) indicating if last day of year (defined by frequency)
+    - _leapyear: Logical (0,1) indicating if the date belongs to a leap year
+    - _half: Half year of the date: Jan-Jun = 1, July-Dec = 2
+    - _quarter: Quarter of the date: Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4
+    - _quarteryear: Quarter of the date + relative year
+    - _quarterstart: Logical (0,1) indicating if first day of quarter (defined by frequency)
+    - _quarterend: Logical (0,1) indicating if last day of quarter (defined by frequency)
+    - _month: The month of the datetime
+    - _month_lbl: The month label of the datetime
+    - _monthstart: Logical (0,1) indicating if first day of month (defined by frequency)
+    - _monthend: Logical (0,1) indicating if last day of month (defined by frequency)
+    - _yweek: The week ordinal of the year
+    - _mweek: The week ordinal of the month
+    - _wday: The number of the day of the week with Monday=1, Sunday=6
+    - _wday_lbl: The day of the week label
+    - _mday: The day of the datetime
+    - _qday: The days of the relative quarter
+    - _yday: The ordinal day of year
+    - _weekend: Logical (0,1) indicating if the day is a weekend 
+    - _hour: The hour of the datetime
+    - _minute: The minutes of the datetime
+    - _second: The seconds of the datetime
+    - _msecond: The microseconds of the datetime
+    - _nsecond: The nanoseconds of the datetime
+    - _am_pm: Half of the day, AM = ante meridiem, PM = post meridiem
+    
+    Examples
+    --------
+    ```{python}
+    import pandas as pd
+    import pytimetk as tk
+    
+    df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
+    ```
+    
+    ```{python}
+    # Adds 29 new time series features as columns to the original DataFrame (pandas engine)
+    ( 
+        df
+            .augment_timeseries_signature(date_column='order_date', engine ='pandas')
+            .glimpse()
+    )
+    ```
+    
+    ```{python}
+    # Adds 29 new time series features as columns to the original DataFrame (polars engine)
+    ( 
+        df
+            .augment_timeseries_signature(date_column='order_date', engine ='polars')
+            .glimpse()
+    )
+    ```
+    """
+    # Run common checks
+    check_dataframe_or_groupby(data)
+    check_date_column(data, date_column)
+    
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        data = data.obj
+    
+    if reduce_memory:
+        data = reduce_memory_usage(data)
+    
+    if engine == 'pandas':
+        ret = pd.concat(
+            [
+                data, 
+                data[date_column].get_timeseries_signature(engine=engine).drop(date_column, axis=1)
+            ],
+            axis=1)
+    elif engine == 'polars':
+        
+        df_pl = pl.DataFrame(data)
+        
+        df_pl = _polars_timeseries_signature(df_pl, date_column = date_column)
+        
+        ret = df_pl.to_pandas()
+    else:
+        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    
+    if reduce_memory:
+        ret = reduce_memory_usage(ret)
+        
+    return ret
+
+# Monkey patch the method to pandas groupby objects
+pd.core.groupby.generic.DataFrameGroupBy.augment_timeseries_signature = augment_timeseries_signature
+
 @pf.register_series_method
 def get_timeseries_signature(
     idx: Union[pd.Series, pd.DatetimeIndex],
@@ -157,135 +287,7 @@ def _get_timeseries_signature_polars(idx: Union[pd.Series, pd.DatetimeIndex]) ->
 
     return df_pl.to_pandas()
 
-@pf.register_dataframe_method
-def augment_timeseries_signature(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
-    date_column: str,
-    reduce_memory: bool = False,
-    engine: str = 'pandas',
-) -> pd.DataFrame:
-    """
-    The function `augment_timeseries_signature` takes a DataFrame and a date 
-    column as input and returns the original DataFrame with the **29 different 
-    date and time based features** added as new columns with the feature name 
-    based on the date_column.
-    
-    Parameters
-    ----------
-    data : pd.DataFrame
-        The `data` parameter is a pandas DataFrame that contains the time series 
-        data.
-    date_column : str
-        The `date_column` parameter is a string that represents the name of the 
-        date column in the `data` DataFrame.
-    reduce_memory : bool, optional
-        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.
-    engine : str, optional
-        The `engine` parameter is used to specify the engine to use for 
-        augmenting datetime features. It can be either "pandas" or "polars". 
-        
-        - The default value is "pandas".
-        
-        - When "polars", the function will internally use the `polars` library 
-          for feature generation. This is generally faster than using "pandas" 
-          for large datasets. 
-    
-    Returns
-    -------
-    pd.DataFrame
-        A Pandas DataFrame with 29 datetime features added to it.
 
-    - _index_num: An int64 feature that captures the entire datetime as a numeric value to the second
-    - _year: The year of the datetime
-    - _year_iso: The iso year of the datetime
-    - _yearstart: Logical (0,1) indicating if first day of year (defined by frequency)
-    - _yearend: Logical (0,1) indicating if last day of year (defined by frequency)
-    - _leapyear: Logical (0,1) indicating if the date belongs to a leap year
-    - _half: Half year of the date: Jan-Jun = 1, July-Dec = 2
-    - _quarter: Quarter of the date: Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4
-    - _quarteryear: Quarter of the date + relative year
-    - _quarterstart: Logical (0,1) indicating if first day of quarter (defined by frequency)
-    - _quarterend: Logical (0,1) indicating if last day of quarter (defined by frequency)
-    - _month: The month of the datetime
-    - _month_lbl: The month label of the datetime
-    - _monthstart: Logical (0,1) indicating if first day of month (defined by frequency)
-    - _monthend: Logical (0,1) indicating if last day of month (defined by frequency)
-    - _yweek: The week ordinal of the year
-    - _mweek: The week ordinal of the month
-    - _wday: The number of the day of the week with Monday=1, Sunday=6
-    - _wday_lbl: The day of the week label
-    - _mday: The day of the datetime
-    - _qday: The days of the relative quarter
-    - _yday: The ordinal day of year
-    - _weekend: Logical (0,1) indicating if the day is a weekend 
-    - _hour: The hour of the datetime
-    - _minute: The minutes of the datetime
-    - _second: The seconds of the datetime
-    - _msecond: The microseconds of the datetime
-    - _nsecond: The nanoseconds of the datetime
-    - _am_pm: Half of the day, AM = ante meridiem, PM = post meridiem
-    
-    Examples
-    --------
-    ```{python}
-    import pandas as pd
-    import pytimetk as tk
-    
-    df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
-    ```
-    
-    ```{python}
-    # Adds 29 new time series features as columns to the original DataFrame (pandas engine)
-    ( 
-        df
-            .augment_timeseries_signature(date_column='order_date', engine ='pandas')
-            .glimpse()
-    )
-    ```
-    
-    ```{python}
-    # Adds 29 new time series features as columns to the original DataFrame (polars engine)
-    ( 
-        df
-            .augment_timeseries_signature(date_column='order_date', engine ='polars')
-            .glimpse()
-    )
-    ```
-    """
-    # Run common checks
-    check_dataframe_or_groupby(data)
-    check_date_column(data, date_column)
-    
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        data = data.obj
-    
-    if reduce_memory:
-        data = reduce_memory_usage(data)
-    
-    if engine == 'pandas':
-        ret = pd.concat(
-            [
-                data, 
-                data[date_column].get_timeseries_signature(engine=engine).drop(date_column, axis=1)
-            ],
-            axis=1)
-    elif engine == 'polars':
-        
-        df_pl = pl.DataFrame(data)
-        
-        df_pl = _polars_timeseries_signature(df_pl, date_column = date_column)
-        
-        ret = df_pl.to_pandas()
-    else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
-    
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
-        
-    return ret
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_timeseries_signature = augment_timeseries_signature
 
 # UTILITIES
 # ---------
