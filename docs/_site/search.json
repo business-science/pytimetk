@@ -1754,7 +1754,7 @@
     "href": "changelog-news.html",
     "title": "Changelog for PyTimeTK",
     "section": "",
-    "text": "augment_pct_change(): pandas and polars engines\n\n\n\n\n\naugment_macd(): MACD, pandas and polars engines\naugment_bbands(): Bollinger Bands, pandas and polars engines\naugment_atr(): Average True Range, pandas and polars engines\naugment_ppo(): Percentage Price Oscillator, pandas and polars engines\naugment_rsi(): Relative Strength Index, pandas and polars engines\naugment_qsmomentum(): Quant Science Momentum Indicator, pandas and polars engines\naugment_roc(): Rate of Change (ROC), pandas and polars e ngines\n\n\n\n\n\nMigrate to polars 0.20.7"
+    "text": "augment_pct_change(): pandas and polars engines\n\n\n\n\n\naugment_macd(): MACD, pandas and polars engines\naugment_bbands(): Bollinger Bands, pandas and polars engines\naugment_atr(): Average True Range, pandas and polars engines\naugment_ppo(): Percentage Price Oscillator, pandas and polars engines\naugment_rsi(): Relative Strength Index, pandas and polars engines\naugment_qsmomentum(): Quant Science Momentum Indicator, pandas and polars engines\naugment_roc(): Rate of Change (ROC), pandas and polars engines\n\n\n\n\n\nMigrate to polars 0.20.7"
   },
   {
     "objectID": "changelog-news.html#feature-engineering-module",
@@ -1768,7 +1768,7 @@
     "href": "changelog-news.html#finance-module-updates",
     "title": "Changelog for PyTimeTK",
     "section": "",
-    "text": "augment_macd(): MACD, pandas and polars engines\naugment_bbands(): Bollinger Bands, pandas and polars engines\naugment_atr(): Average True Range, pandas and polars engines\naugment_ppo(): Percentage Price Oscillator, pandas and polars engines\naugment_rsi(): Relative Strength Index, pandas and polars engines\naugment_qsmomentum(): Quant Science Momentum Indicator, pandas and polars engines\naugment_roc(): Rate of Change (ROC), pandas and polars e ngines"
+    "text": "augment_macd(): MACD, pandas and polars engines\naugment_bbands(): Bollinger Bands, pandas and polars engines\naugment_atr(): Average True Range, pandas and polars engines\naugment_ppo(): Percentage Price Oscillator, pandas and polars engines\naugment_rsi(): Relative Strength Index, pandas and polars engines\naugment_qsmomentum(): Quant Science Momentum Indicator, pandas and polars engines\naugment_roc(): Rate of Change (ROC), pandas and polars engines"
   },
   {
     "objectID": "changelog-news.html#polars-upgrades",
