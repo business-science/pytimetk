@@ -73,7 +73,7 @@ def check_date_column(data: Union[pd.DataFrame, pd.core.groupby.generic.DataFram
         
     return None
 
-def check_value_column(data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], value_column: Union[str, List[str]]) -> None:
+def check_value_column(data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], value_column: Union[str, List[str]], require_numeric_dtype = True) -> None:
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         data = data.obj
@@ -86,8 +86,9 @@ def check_value_column(data: Union[pd.DataFrame, pd.core.groupby.generic.DataFra
             raise ValueError(f"`value_column` ({column}) not found in `data`.")
         
         # Check if value_column is a numeric dtype
-        if not np.issubdtype(data[column].dtype, np.number):
-            raise TypeError(f"`value_column` ({column}) is not a numeric dtype.")
+        if require_numeric_dtype:
+            if not np.issubdtype(data[column].dtype, np.number):
+                raise TypeError(f"`value_column` ({column}) is not a numeric dtype.")
     
     return None
 

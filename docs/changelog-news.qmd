@@ -6,6 +6,12 @@ toc-depth: 3
 number-sections: false
 ---
 
+# pytimetk 0.4.0.9000 (Development Version)
+
+## Improvements:
+
+- `.augment_lags()` and `.augment_leads()`: value_column only accepts numeric dtype. Now accepts any dtype. #295
+
 # pytimetk 0.4.0
 
 ## Feature Engineering Module:

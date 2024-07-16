@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 # Ensure the function and dependencies are imported
-from pytimetk import augment_lags
+import pytimetk as tk
 
 # Sample data for testing
 @pytest.fixture
@@ -53,7 +53,7 @@ def test_invalid_lags_type(df_sample):
 def test_invalid_dataframe_or_groupby_input():
     invalid_data = {"key": "value"}
     with pytest.raises(TypeError, match="`data` is not a Pandas DataFrame or GroupBy object."):
-        augment_lags(data=invalid_data, date_column="date", value_column="value", lags=1)
+        tk.augment_lags(data=invalid_data, date_column="date", value_column="value", lags=1)
 
 # Value Column as List Test
 def test_value_column_list(df_sample):
@@ -67,6 +67,15 @@ def test_lags_list(df_sample):
     assert 'value_lag_3' in df_result.columns
     assert df_result['value_lag_1'].iloc[3] == 3
     assert df_result['value_lag_3'].iloc[3] == 1
+    
+def test_lags_string():
+    
+    df = tk.load_dataset('m4_daily', parse_dates=['date'])
+    
+    df_result = df.augment_lags("date", "id", lags = (1,7))
+    
+    assert "id_lag_1" in df_result.columns
+    
 
 if __name__ == "__main__":
     pytest.main()

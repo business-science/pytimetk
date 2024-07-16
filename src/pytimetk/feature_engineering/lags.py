@@ -118,7 +118,7 @@ def augment_lags(
     """
     # Run common checks
     check_dataframe_or_groupby(data)
-    check_value_column(data, value_column)
+    check_value_column(data, value_column, require_numeric_dtype = False)
     check_date_column(data, date_column)
     
     if reduce_memory:
