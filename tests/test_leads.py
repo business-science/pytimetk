@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 import numpy as np
 from pytimetk import augment_leads  
+import pytimetk as tk
 
 # Sample Data for testing
 @pytest.fixture
@@ -49,6 +50,14 @@ def test_invalid_dataframe_or_groupby_input():
 def test_invalid_leads_type(df_sample):
     with pytest.raises(TypeError):
         df_sample.augment_lags(date_column='date', value_column='value', leads='string')
+
+def test_lags_string():
+    
+    df = tk.load_dataset('m4_daily', parse_dates=['date'])
+    
+    df_result = df.augment_leads("date", "id", leads = (1,7))
+    
+    assert "id_lead_1" in df_result.columns
 
 if __name__ == "__main__":
     pytest.main()
