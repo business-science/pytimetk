@@ -112,6 +112,70 @@ def _glimpse_polars(df, max_width=76):
     
     return None
 
+    
+@pf.register_dataframe_method
+def sort_dataframe(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
+    date_column: str,
+    keep_grouped_df: bool = True,
+) -> Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]:
+    '''The function `sort_dataframe` sorts a DataFrame by a specified date column, handling both regular
+    DataFrames and grouped DataFrames.
+    
+    Parameters
+    ----------
+    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+        The `data` parameter in the `sort_dataframe` function can accept either a pandas DataFrame or a
+        grouped DataFrame (DataFrameGroupBy object).
+    date_column
+        The `date_column` parameter in the `sort_dataframe` method is used to specify the column in the
+        DataFrame by which the sorting will be performed. This column contains dates that will be used as
+        the basis for sorting the DataFrame or DataFrameGroupBy object.
+    keep_grouped_df
+        If `True` and `data` is a grouped data frame, a grouped data frame will be returned. If `False`, an ungrouped data frame is returned. 
+    
+    Returns
+    -------
+        The `sort_dataframe` function returns a sorted DataFrame based on the specified date column. If the
+        input data is a regular DataFrame, it sorts the DataFrame by the specified date column. If the input
+        data is a grouped DataFrame (DataFrameGroupBy object), it sorts the DataFrame by the group names and
+        the specified date column. The function returns the sorted DataFrame.
+        
+    Examples
+    --------
+    ```{python}
+    import pytimetk as tk
+    import pandas as pd
+    
+    df = tk.load_dataset('walmart_sales_weekly', parse_dates=['Date'])
+    
+    df.sort_dataframe('Date')
+    
+    df.groupby('id').sort_dataframe('Date').obj
+    
+    df.groupby(['id', 'Store', 'Dept']).sort_dataframe('Date').obj
+    ```
+    
+    '''
+    
+    group_names = None  
+    if isinstance(data, pd.DataFrame):
+        df = data.copy()        
+        df.sort_values(by=[date_column], inplace=True)
+        index_after_sort = df.index
+
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        group_names = data.grouper.names
+        df = data.obj.copy()
+        df.sort_values(by=[*group_names, date_column], inplace=True)
+        index_after_sort = df.index
+        if keep_grouped_df: 
+            df = df.groupby(group_names)
+        
+    return df, index_after_sort
+
+pd.core.groupby.generic.DataFrameGroupBy.sort_dataframe = sort_dataframe
+
 @pf.register_dataframe_method
 def drop_zero_variance(data: pd.DataFrame, ):
     '''The function `drop_zero_variance` takes a pandas DataFrame as input and returns a new DataFrame with

@@ -6,7 +6,9 @@ from typing import Union, Optional
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.core.frequency import get_frequency, get_seasonal_frequency, get_trend_frequency
+
 from pytimetk.utils.memory_helpers import reduce_memory_usage
+from pytimetk.utils.pandas_helpers import sort_dataframe
 
 from pytimetk.utils.parallel_helpers import parallel_apply, get_threads, progress_apply
 
@@ -282,6 +284,8 @@ def anomalize(
     
     if reduce_memory:
         data = reduce_memory_usage(data)
+        
+    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df = True)
     
     if isinstance(data, pd.DataFrame):
         result = _anomalize(
@@ -353,6 +357,9 @@ def anomalize(
     
     if reduce_memory:
         result = reduce_memory_usage(result)
+    
+    result.index = idx_unsorted
+    result = result.sort_index()
     
     return result
 

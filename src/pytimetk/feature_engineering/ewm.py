@@ -106,13 +106,9 @@ def augment_ewm(
     display(ewm_df)
     ```
     """
-    # Ensure data is a DataFrame or a GroupBy object
+    # Checks
     check_dataframe_or_groupby(data)
-    
-    # Ensure date column exists and is properly formatted
     check_date_column(data, date_column)
-    
-    # Ensure value column(s) exist
     check_value_column(data, value_column)
     
     # Convert string value column to list for consistency

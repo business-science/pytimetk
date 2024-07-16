@@ -9,6 +9,7 @@ from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column,
 
 from pytimetk.core.ts_summary import ts_summary
 from pytimetk.utils.memory_helpers import reduce_memory_usage
+from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
@@ -112,6 +113,9 @@ def augment_fourier(
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
     
+    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df = True)
+    
+    
     if isinstance(periods, int):
         periods = [periods]
     elif isinstance(periods, tuple):
@@ -133,6 +137,9 @@ def augment_fourier(
     
     if reduce_memory:
         ret = reduce_memory_usage(ret)
+        
+    ret.index = idx_unsorted
+    ret = ret.sort_index()
     
     return ret
 

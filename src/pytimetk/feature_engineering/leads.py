@@ -6,6 +6,7 @@ from typing import Union, List, Tuple
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.utils.memory_helpers import reduce_memory_usage
+from pytimetk.utils.pandas_helpers import sort_dataframe
 
 @pf.register_dataframe_method
 def augment_leads(
@@ -124,6 +125,8 @@ def augment_leads(
     
     if reduce_memory:
         data = reduce_memory_usage(data)
+        
+    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df = True)
     
     if engine == 'pandas':
         ret = _augment_leads_pandas(data, date_column, value_column, leads)
@@ -134,6 +137,9 @@ def augment_leads(
     
     if reduce_memory:
         ret = reduce_memory_usage(ret)
+        
+    ret.index = idx_unsorted
+    ret = ret.sort_index()
     
     return ret
 

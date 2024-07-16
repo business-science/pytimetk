@@ -10,7 +10,9 @@ number-sections: false
 
 ## Improvements:
 
-- `.augment_lags()` and `.augment_leads()`: value_column only accepts numeric dtype. Now accepts any dtype. #295
+
+- Implement `sort_dataframe()`: This function is used internally to make sure Polars and Pandas engines perform grouped operations consistently and correctly. #286 #290
+- `.augment_lags()` and `.augment_leads()`: value_column now accepts any dtype. #295
 
 # pytimetk 0.4.0
 

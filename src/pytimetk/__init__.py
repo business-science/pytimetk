@@ -187,7 +187,7 @@ from .utils.memory_helpers import (
     reduce_memory_usage
 )
 from .utils.pandas_helpers import (
-    flatten_multiindex_column_names, glimpse, drop_zero_variance, transform_columns
+    flatten_multiindex_column_names, glimpse, drop_zero_variance, transform_columns, sort_dataframe
 )
 from .utils.parallel_helpers import (
     parallel_apply, progress_apply
