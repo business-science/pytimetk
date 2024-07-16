@@ -8,6 +8,7 @@ from pytimetk.core.frequency import _get_manual_frequency
 
 # Sample test data
 dates = pd.to_datetime(["2023-10-02", "2023-10-03", "2023-10-04", "2023-10-05", "2023-10-06", "2023-10-09", "2023-10-10"])
+
 df_sample = pd.DataFrame(dates, columns=["date"])
 
 # Test ts_summary on a regular dataframe
@@ -22,6 +23,7 @@ def test_ts_summary_regular_df():
 
 # Test ts_summary on a grouped dataframe
 def test_ts_summary_grouped_df():
+    
     # Grouped DataFrame sample
     df_grouped = df_sample.copy()
     df_grouped['group'] = ['A', 'B', 'A', 'B', 'A', 'B', 'A']
@@ -98,7 +100,7 @@ def test_minute():
     
     result = get_frequency(dates)
     
-    assert result == '12T'
+    assert result == '12min'
     
     result = _get_manual_frequency(dates)
     
@@ -117,7 +119,7 @@ def test_hour():
     
     result = get_frequency(dates)
     
-    assert result == '3H'
+    assert result == '3h'
     
     result = _get_manual_frequency(dates)
     
@@ -161,7 +163,7 @@ def test_week():
     
     assert result == '2W'
     
-def test_month():
+def test_month_end():
     
     dates = pd.date_range(start='2018-01-01', end='2018-12-01', freq='2M')
     
@@ -174,11 +176,31 @@ def test_month():
     
     result = get_frequency(dates)
     
-    assert result == '2M'
+    assert result == '2ME'
     
     result = _get_manual_frequency(dates)
     
     assert result == '2M'
+    
+    
+def test_month_start():
+    
+    dates = pd.date_range(start='2018-01-01', end='2018-12-01', freq='2MS')
+    
+    df_sample = pd.DataFrame(dates, columns=["date"])
+    
+    result = ts_summary(df_sample, 'date')
+    
+    assert result['freq_median_scale'].values[0] == 2.0
+    assert result['freq_median_unit'].values[0] == 'M'
+    
+    result = get_frequency(dates)
+    
+    assert result == '2MS'
+    
+    result = _get_manual_frequency(dates)
+    
+    assert result == '2MS'
 
 def test_four_months():
     
@@ -193,7 +215,7 @@ def test_four_months():
     
     result = get_frequency(dates)
     
-    assert result == '4M'
+    assert result == '4ME'
     
     result = _get_manual_frequency(dates)
     
@@ -251,7 +273,7 @@ def test_quarter_end():
     
     result = get_frequency(dates)
     
-    assert result == 'Q-DEC'
+    assert result == 'QE-DEC'
     
     result = _get_manual_frequency(dates)
     
@@ -270,13 +292,14 @@ def test_year():
     
     result = get_frequency(dates)
     
-    assert result == '2A-DEC'
+    assert result == '2YE-DEC'
     
     result = _get_manual_frequency(dates)
     
     assert result == '2Y'
     
 def test_custom_offset():
+   
     from dateutil.relativedelta import relativedelta
 
     start_date = pd.Timestamp('2022-01-01')
