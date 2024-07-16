@@ -8,12 +8,12 @@ from pandas.testing import assert_frame_equal
     ('D', True,  'D'     , '1 days'  , 1.0, 'D'),
     ('W', False, 'W-SUN' , '7 days'  , 1.0, 'W'),
     ('W', True,  'W'     , '7 days'  , 1.0, 'W'),
-    ('M', False, 'M'     , '31 days' , 1.0, 'M'),
-    ('M', True,  'M'     , '31 days' , 1.0, 'M'),
-    ('Q', False, 'Q-DEC' , '92 days' , 1.0, 'Q'),
-    ('Q', True,  'Q'     , '92 days' , 1.0, 'Q'),
-    ('Y', False, 'A-DEC' , '365 days', 1.0, 'Y'),
-    ('Y', True,  'Y'     , '365 days', 1.0, 'Y')
+    ('M', False, 'ME'     , '31 days' , 1.0, 'M'),
+    ('M', True,  'ME'     , '31 days' , 1.0, 'M'),
+    ('Q', False, 'QE-DEC' , '92 days' , 1.0, 'Q'),
+    ('Q', True,  'QE-DEC', '92 days' , 1.0, 'Q'),
+    ('Y', False, 'YE-DEC' , '365 days', 1.0, 'Y'),
+    ('Y', True,  'YE-DEC', '365 days', 1.0, 'Y')
 ])
 
 def test_correct_frequency_inference(
@@ -38,3 +38,7 @@ def test_correct_frequency_inference(
 
     # Check inferred frequency
     assert_frame_equal(result, expected_result)
+
+# Run the tests
+if __name__ == "__main__":
+    pytest.main([__file__])

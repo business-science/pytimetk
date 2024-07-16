@@ -15,9 +15,12 @@ Upgrading to:
 - pandas >= 2.0.0
 - polars >= 1.2.0
 
+Use pytimetk <=0.4.0 to support:
+
+- pandas <2.0.0
+- polars <1.0.0
 
 ## Improvements:
-
 
 - Implement `sort_dataframe()`: This function is used internally to make sure Polars and Pandas engines perform grouped operations consistently and correctly. #286 #290
 - `.augment_lags()` and `.augment_leads()`: value_column now accepts any dtype. #295
