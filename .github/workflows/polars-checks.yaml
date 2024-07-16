@@ -19,8 +19,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { os: ubuntu-latest, python-version: '3.9', polars-version: '0.19.10' }
-          - { os: ubuntu-latest, python-version: '3.9', polars-version: '0.20.7' }
+          # - { os: ubuntu-latest, python-version: '3.9', polars-version: '0.19.10' }
+          - { os: ubuntu-latest, python-version: '3.9', polars-version: '1.2.0' }
           - { os: ubuntu-latest, python-version: '3.9', polars-version: 'latest' }
 
     defaults:

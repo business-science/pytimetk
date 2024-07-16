@@ -19,8 +19,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { os: ubuntu-latest, python-version: '3.9', pandas-version: '1.5.0' }
-          - { os: ubuntu-latest, python-version: '3.9', pandas-version: '2.0.0' }
+          # - { os: ubuntu-latest, python-version: '3.9', pandas-version: '1.5.0' }
+          - { os: ubuntu-latest, python-version: '3.9', pandas-version: '2.2.0' }
           - { os: ubuntu-latest, python-version: '3.9', pandas-version: 'latest' }
 
     defaults:
