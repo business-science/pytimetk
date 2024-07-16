@@ -281,7 +281,9 @@ def _augment_atr_polars(
         pl_df = pl.from_pandas(pandas_df)
         
         for period in periods:
-             pl_df = pl_df.group_by(*group_names, maintain_order=True).map_groups(lambda df: _calculate_atr_polars(df, high_column=high_column, low_column=low_column, close_column=close_column, period=period, normalize=normalize))
+             pl_df = pl_df.group_by(*group_names, maintain_order=True).map_groups(
+                lambda df: _calculate_atr_polars(df, high_column=high_column, low_column=low_column, close_column=close_column, period=period, normalize=normalize)
+            )
             
     else:
         
@@ -302,15 +304,15 @@ def _calculate_atr_polars(pl_df, high_column, low_column, close_column, period, 
     
     # Calculate the true range components
     high_low = pl_df[high_column] - pl_df[low_column]
-    high_close = (pl_df[high_column] - pl_df[close_column].shift()).abs()
-    low_close = (pl_df[low_column] - pl_df[close_column].shift()).abs()
+    high_close = (pl_df[high_column] - pl_df[close_column].shift(1)).abs()
+    low_close = (pl_df[low_column] - pl_df[close_column].shift(1)).abs()
 
     # Calculate the true range
     true_range = pl.select([
         high_low.alias("high_low"),
         high_close.alias("high_close"),
         low_close.alias("low_close")
-    ]).max(axis=1).alias("_temp_true_range")
+    ]).max_horizontal().alias("_temp_true_range")
 
     # Calculate ATR
     atr = true_range.rolling_mean(window_size=period)
