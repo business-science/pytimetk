@@ -25,7 +25,7 @@ documentation = "https://business-science.github.io/pytimetk/reference/"
 
 [tool.poetry.dependencies]
 python = ">=3.9"
-pandas = ">=1.5.0"
+pandas = ">=2.0.0"
 pandas-flavor = "^0.6.0"
 matplotlib = "^3.8.0"
 plotnine = "^0.12.3"
@@ -34,8 +34,8 @@ holidays = "^0.33"
 tsfeatures = "^0.4.5"
 statsmodels = "^0.14.0"
 tqdm = "^4.66.1"
-polars = "^0.20.7"
-pyarrow = "^13.0.0"
+polars = "^1.2.0"
+pyarrow = "^16.1.0"
 pathos = "^0.3.1"
 adjusttext = "^0.8"
 xarray = "^2024.6.0" # "<=2023.10.1" https://github.com/pyjanitor-devs/pandas_flavor/issues/33
@@ -53,7 +53,7 @@ pytest = "^7.4.2"
 
 [tool.poetry.group.docs.dependencies]
 quarto = "^0.1.0"
-quartodoc = "^0.6.2"
+quartodoc = "^0.7.5"
 
 [build-system]
 requires = ["poetry-core"]

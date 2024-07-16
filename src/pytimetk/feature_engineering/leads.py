@@ -212,7 +212,7 @@ def _augment_leads_polars(
     if isinstance(value_columns, str):
         value_columns = [value_columns]
 
-    lead_foo = pl.col(date_column).shift(-1).suffix("_lead_1")
+    lead_foo = pl.col(date_column).shift(-1).alias("_lead_1")
 
     if isinstance(leads, int):
         leads = [leads]  # Convert to a list with a single value
@@ -225,7 +225,7 @@ def _augment_leads_polars(
 
     for col in value_columns:
         for lead in leads:
-            lead_expr = pl.col(col).shift(-lead).suffix(f"_lead_{lead}")
+            lead_expr = pl.col(col).shift(-lead).alias(f"{col}_lead_{lead}")
             lead_exprs.append(lead_expr)
 
     # Select columns

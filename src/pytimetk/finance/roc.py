@@ -224,7 +224,7 @@ def _augment_roc_polars(
     else:
         raise ValueError("data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame")
 
-    roc_foo = pl.col(date_column).shift(1).suffix("_diff_1")
+    roc_foo = pl.col(date_column).shift(1).alias("_diff_1")
 
     period_exprs = []
 

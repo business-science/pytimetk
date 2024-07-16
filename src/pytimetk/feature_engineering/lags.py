@@ -209,7 +209,7 @@ def _augment_lags_polars(
     if isinstance(value_column, str):
         value_column = [value_column]
 
-    lag_foo = pl.col(date_column).shift(1).suffix("_lag_1")
+    lag_foo = pl.col(date_column).shift(1).alias(f"_lag_1")
 
     if isinstance(lags, int):
         lags = [lags]  # Convert to a list with a single value
@@ -222,7 +222,7 @@ def _augment_lags_polars(
 
     for col in value_column:
         for lag in lags:
-            lag_expr = pl.col(col).shift(lag).suffix(f"_lag_{lag}")
+            lag_expr = pl.col(col).shift(lag).alias(f"{col}_lag_{lag}")
             lag_exprs.append(lag_expr)
 
     # Select columns

@@ -232,7 +232,7 @@ def _augment_diffs_polars(
     if isinstance(value_column, str):
         value_column = [value_column]
 
-    diff_foo = pl.col(date_column).shift(1).suffix("_diff_1")
+    diff_foo = pl.col(date_column).shift(1).alias("_diff_1")
 
     if isinstance(periods, int):
         periods = [periods]  # Convert to a list with a single value

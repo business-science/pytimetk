@@ -32,17 +32,17 @@ def pandas_to_polars_frequency(pandas_freq_str, default=(1, "d")):
 def pandas_to_polars_aggregation_mapping(column_name):
     
     return {
-        'sum'    : pl.col(column_name).sum().suffix("_sum"),
-        'mean'   : pl.col(column_name).mean().suffix("_mean"),
-        'median' : pl.col(column_name).median().suffix("_median"),
-        'min'    : pl.col(column_name).min().suffix("_min"),
-        'max'    : pl.col(column_name).max().suffix("_max"),
-        'std'    : pl.col(column_name).std().suffix("_std"),
-        'var'    : pl.col(column_name).var().suffix("_var"),
-        'first'  : pl.col(column_name).first().suffix("_first"),
-        'last'   : pl.col(column_name).last().suffix("_last"),
-        'count'  : pl.col(column_name).count().suffix("_count"),
-        'nunique': pl.col(column_name).n_unique().suffix("_nunique")
+        'sum'    : pl.col(column_name).sum().alias(f"{column_name}_sum"),
+        'mean'   : pl.col(column_name).mean().alias(f"{column_name}_mean"),
+        'median' : pl.col(column_name).median().alias(f"{column_name}_median"),
+        'min'    : pl.col(column_name).min().alias(f"{column_name}_min"),
+        'max'    : pl.col(column_name).max().alias(f"{column_name}_max"),
+        'std'    : pl.col(column_name).std().alias(f"{column_name}_std"),
+        'var'    : pl.col(column_name).var().alias(f"{column_name}_var"),
+        'first'  : pl.col(column_name).first().alias(f"{column_name}_first"),
+        'last'   : pl.col(column_name).last().alias(f"{column_name}_last"),
+        'count'  : pl.col(column_name).count().alias(f"{column_name}_count"),
+        'nunique': pl.col(column_name).n_unique().alias(f"{column_name}_nunique")
     }
     
     

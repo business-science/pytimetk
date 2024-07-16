@@ -1,5 +1,5 @@
 ---
-title: "Changelog for PyTimeTK"
+title: "Changelog for Pytimetk"
 jupyter: python3
 toc: true
 toc-depth: 3
@@ -7,6 +7,14 @@ number-sections: false
 ---
 
 # pytimetk 0.4.0.9000 (Development Version)
+
+## Pandas and Polars Compatibility:
+
+Upgrading to:
+
+- pandas >= 2.0.0
+- polars >= 1.2.0
+
 
 ## Improvements:
 
