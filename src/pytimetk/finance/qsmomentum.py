@@ -7,7 +7,7 @@ from functools import partial
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.utils.memory_helpers import reduce_memory_usage
-
+from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
@@ -125,6 +125,8 @@ def augment_qsmomentum(
     check_dataframe_or_groupby(data)
     check_value_column(data, close_column)
     check_date_column(data, date_column)
+    
+    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df = True)
 
     # Check if roc_fast_period lists, tuples or integers
     if isinstance(roc_fast_period, int):
@@ -184,6 +186,9 @@ def augment_qsmomentum(
     
     if reduce_memory:
         ret = reduce_memory_usage(ret)
+        
+    ret.index = idx_unsorted
+    ret = ret.sort_index()
 
     return ret
 

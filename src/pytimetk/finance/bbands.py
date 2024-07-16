@@ -6,6 +6,7 @@ from typing import Union, List, Tuple
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.utils.memory_helpers import reduce_memory_usage
+from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 
@@ -139,6 +140,8 @@ def augment_bbands(
     check_dataframe_or_groupby(data)
     check_value_column(data, close_column)
     check_date_column(data, date_column)
+    
+    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df = True)
 
     if isinstance(periods, int):
         periods = [periods]
@@ -170,6 +173,9 @@ def augment_bbands(
     
     if reduce_memory:
         ret = reduce_memory_usage(ret)
+        
+    ret.index = idx_unsorted
+    ret = ret.sort_index()
     
     return ret
 
