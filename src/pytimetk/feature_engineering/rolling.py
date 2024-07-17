@@ -456,7 +456,7 @@ def _augment_rolling_polars(
                             # Construct rolling window expression
                             rolling_expr = pl.col(col) \
                                 .cast(pl.Float64) \
-                                .rolling_apply(
+                                .rolling_map(
                                     function=func,
                                     window_size=window_size, 
                                     min_periods=min_periods
@@ -500,6 +500,7 @@ def _augment_rolling_polars(
                     
                     rolling_expr = rolling_expr.alias(new_column_name)
 
+                # Standard Functions: "mean", "std"
                 elif isinstance(func, str):
                     func_name = func
                     new_column_name = f"{col}_rolling_{func_name}_win_{window_size}"

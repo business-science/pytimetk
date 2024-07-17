@@ -463,7 +463,7 @@ def _augment_expanding_polars(
                         # Construct expanding window expression
                         expanding_expr = pl.col(col) \
                             .cast(pl.Float64) \
-                            .rolling_apply(
+                            .rolling_map(
                                 function=func,
                                 window_size=pandas_df.shape[0], 
                                 min_periods=min_periods
