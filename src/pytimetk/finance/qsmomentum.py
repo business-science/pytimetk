@@ -181,13 +181,14 @@ def augment_qsmomentum(
                         )
                         
                         ret.rename(columns={ret.columns[-1]: f'{close_column}_qsmom_{fp}_{sp}_{np}'}, inplace=True)
-                
-
     
+    # if engine == 'polars':
+    #     # Polars Index to Match Pandas
+    #     ret.index = idx_unsorted     
+
     if reduce_memory:
         ret = reduce_memory_usage(ret)
         
-    ret.index = idx_unsorted
     ret = ret.sort_index()
 
     return ret

@@ -134,11 +134,13 @@ def augment_fourier(
         ret = _augment_fourier_pandas(data, date_column, periods, max_order)
     else:
         ret = _augment_fourier_polars(data, date_column, periods, max_order)
+        
+        # Polars Index to Match Pandas
+        ret.index = idx_unsorted
     
     if reduce_memory:
         ret = reduce_memory_usage(ret)
         
-    ret.index = idx_unsorted
     ret = ret.sort_index()
     
     return ret

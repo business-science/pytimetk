@@ -136,13 +136,14 @@ def augment_macd(
         ret = _augment_macd_pandas(data, date_column, close_column, fast_period, slow_period, signal_period)
     elif engine == 'polars':
         ret = _augment_macd_polars(data, date_column, close_column, fast_period, slow_period, signal_period)
+        # Polars Index to Match Pandas
+        ret.index = idx_unsorted
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
 
     if reduce_memory:
         ret = reduce_memory_usage(ret)
         
-    ret.index = idx_unsorted
     ret = ret.sort_index()
 
     return ret

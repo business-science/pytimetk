@@ -165,6 +165,7 @@ def test_example_1_polars():
                 window = [2,7],  # Specifying multiple window sizes
                 window_func = [
                     'mean',  # Built-in mean function
+                    # 'std'
                     ('std', lambda x: x.std())  # Lambda function to compute standard deviation
                 ],
                 engine = 'polars'  # Using pandas engine
@@ -210,6 +211,8 @@ def test_sort_pandas_lambda():
 
     stocks_df = tk.load_dataset("stocks_daily")
     stocks_df['date'] = pd.to_datetime(stocks_df['date'])
+    
+    # stocks_df = stocks_df.sort_values('date').reset_index()
     
     rolled_df_pandas_fast = stocks_df[['symbol','date','adjusted']] \
         .groupby('symbol') \

@@ -166,13 +166,14 @@ def augment_atr(
         ret = _augment_atr_pandas(data, date_column, high_column, low_column, close_column, periods, normalize)
     elif engine == 'polars':
         ret = _augment_atr_polars(data, date_column, high_column, low_column, close_column, periods, normalize)
+        # Polars Index to Match Pandas
+        ret.index = idx_unsorted
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
     
     if reduce_memory:
         ret = reduce_memory_usage(ret)
         
-    ret.index = idx_unsorted
     ret = ret.sort_index()
     
     return ret

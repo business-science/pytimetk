@@ -357,8 +357,7 @@ def anomalize(
     
     if reduce_memory:
         result = reduce_memory_usage(result)
-    
-    result.index = idx_unsorted
+        
     result = result.sort_index()
     
     return result

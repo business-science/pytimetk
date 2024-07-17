@@ -165,13 +165,14 @@ def augment_hilbert(
         ret = _augment_hilbert_pandas(data, date_column, value_column)
     elif engine == 'polars':
         ret = _augment_hilbert_polars(data, date_column, value_column)
+        # Polars Index to Match Pandas
+        ret.index = idx_unsorted
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
     
     if reduce_memory:
         ret = reduce_memory_usage(ret)
         
-    ret.index = idx_unsorted
     ret = ret.sort_index()
         
     return ret

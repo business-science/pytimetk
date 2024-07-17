@@ -137,13 +137,17 @@ def augment_diffs(
         ret = _augment_diffs_pandas(data, date_column, value_column, periods, normalize=normalize)
     elif engine == 'polars':
         ret = _augment_diffs_polars(data, date_column, value_column, periods, normalize=normalize)
+        
+        # Polars Index to Match Pandas
+        ret.index = idx_unsorted
+        
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
     
     if reduce_memory:
         ret = reduce_memory_usage(ret)
     
-    ret.index = idx_unsorted
+    # Sort index
     ret = ret.sort_index()
     
     return ret

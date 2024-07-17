@@ -131,13 +131,14 @@ def augment_lags(
         ret = _augment_lags_pandas(data, date_column, value_column, lags)
     elif engine == 'polars':
         ret = _augment_lags_polars(data, date_column, value_column, lags)
+        # Polars Index to Match Pandas
+        ret.index = idx_unsorted
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
     
     if reduce_memory:
         ret = reduce_memory_usage(ret)
         
-    ret.index = idx_unsorted
     ret = ret.sort_index()
     
     return ret

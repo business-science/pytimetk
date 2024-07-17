@@ -247,7 +247,6 @@ def augment_wavelet(
     if reduce_memory:
         ret = reduce_memory_usage(ret)
         
-    ret.index = idx_unsorted
     ret = ret.sort_index()
     
     return ret

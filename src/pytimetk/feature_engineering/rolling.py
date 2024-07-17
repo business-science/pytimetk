@@ -250,13 +250,16 @@ def augment_rolling(
             show_progress,
             **kwargs
         )
+        
+        # Polars Index to Match Pandas
+        ret.index = idx_unsorted
+        
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
     
     if reduce_memory:
         ret = reduce_memory_usage(ret)
         
-    ret.index = idx_unsorted
     ret = ret.sort_index()
     
     return ret
