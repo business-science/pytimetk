@@ -61,8 +61,8 @@ def pl_quantile(**kwargs):
         'weights': None, 
         'min_periods': None,
         'center': False,
-        'by': None,
-        'closed': 'left'
+        # 'by': None,
+        # 'closed': 'left'
     }
     return func_type, func_name, default_kwargs, kwargs
 

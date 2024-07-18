@@ -1,7 +1,6 @@
 import pytest
 import pandas as pd
 import numpy as np
-from pytimetk import augment_rolling  
 import pytimetk as tk
 
 from pytimetk.utils.polars_helpers import pl_quantile
@@ -87,6 +86,7 @@ def test_example_1_polars():
     assert expanded_df.shape[0] == df.shape[0]
     
 def test_example_2():
+    
     df = tk.load_dataset("m4_daily", parse_dates = ['date'])
 
     expanded_df = (
