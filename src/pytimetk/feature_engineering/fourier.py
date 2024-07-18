@@ -215,7 +215,7 @@ def _augment_fourier_polars(
     
     # Convert dates to numeric representation
     min_date = df[date_column].min()
-    df = df.with_columns((2 * np.pi * (df[date_column] - min_date).dt.seconds() / scale_factor).rename('radians'))
+    df = df.with_columns((2 * np.pi * (df[date_column] - min_date).dt.total_seconds() / scale_factor).rename('radians'))
     
     # Compute Fourier series
     for type_val in ("sin", "cos"):
@@ -223,7 +223,7 @@ def _augment_fourier_polars(
             for period_val in periods:
                 df = df.with_columns(calc_fourier(x = df['radians'], period = period_val, type = type_val, K = K_val).rename(f'{date_column}_{type_val}_{K_val}_{period_val}'))
         
-    return df.drop(columns=['radians']).to_pandas()
+    return df.to_pandas().drop(columns=['radians'])
 
 
 
