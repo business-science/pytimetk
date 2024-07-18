@@ -20,14 +20,10 @@ Note: This function requires the `holidays` package to be installed.
 pd.Series:
     Series containing True if the date is a holiday, False otherwise.
 
-
-
 ## Raises:
 
 ValueError:
     If the specified country is not found in the holidays package.
-
-
 
 ## Examples:
 

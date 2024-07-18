@@ -4,7 +4,6 @@
 
 Detects anomalies in time series data, either for a single time
 series or for multiple time series grouped by a specific column.
-    
 
 ## Parameters
 
@@ -43,9 +42,6 @@ series or for multiple time series grouped by a specific column.
 | - recomposed_l1: lower level bound of recomposed time series          |                                                                                  |
 | - recomposed_l2: upper level bound of recomposed time series          |                                                                                  |
 | - observed_clean: original data with anomalies interpolated           |                                                                                  |
-
-
-
 
 ## Notes
 

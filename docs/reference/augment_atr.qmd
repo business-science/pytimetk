@@ -41,7 +41,7 @@ The ATR is calculated as follows:
     - The current high minus the current low.
     - The absolute value of the current high minus the previous close.
     - The absolute value of the current low minus the previous close.
-    
+
 2. Average True Range: The ATR is an average of the True Range over a specified number of periods (commonly 14 days).
 
 ## NATR (Normalized Average True Range)

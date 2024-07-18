@@ -3,7 +3,6 @@
 `get_frequency_summary(idx, force_regular=False, engine='pandas')`
 
 More robust version of pandas inferred frequency.
-    
 
 ## Parameters
 

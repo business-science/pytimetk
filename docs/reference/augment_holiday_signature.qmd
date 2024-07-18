@@ -132,8 +132,6 @@ These are the Available Financial Markets:
 | European Central Bank        | EuropeanCentralBank    | ECB  |
 | New York Stock Exchange      | NewYorkStockExchange   | XNYS |
 
-
-
 ## Example
 
 ```{python}

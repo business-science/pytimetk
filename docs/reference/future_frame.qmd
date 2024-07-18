@@ -43,9 +43,6 @@ datasets with many time series groups:
     - Set threads = -1 to use all available processors. 
     - Set threads = 1 to disable parallel processing.
 
-
-
-
 ## See Also
 
 make_future_timeseries: Generate future dates for a time series.

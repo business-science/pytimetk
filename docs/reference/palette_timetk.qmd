@@ -4,7 +4,7 @@
 
 The function `palette_timetk` returns a dictionary of color codes for 
 various colors in the timetk theme.
-    
+
 - blue         = "#2c3e50", # blue
 - red          = "#e31a1c", # red
 - green        = "#18BC9C", # green

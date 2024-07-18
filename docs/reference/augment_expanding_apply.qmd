@@ -3,7 +3,6 @@
 `augment_expanding_apply(data, date_column, window_func, min_periods=None, threads=1, show_progress=True, reduce_memory=False)`
 
 Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame.
-    
 
 ## Parameters
 

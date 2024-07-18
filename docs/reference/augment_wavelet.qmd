@@ -48,7 +48,7 @@ functions are suitable for different types of signals and analytical goals.
 Let's look at the three wavelet methods:
 
 1. Morlet Wavelet:
-    
+
     Characteristics:
     Essentially a complex sinusoid modulated by a Gaussian window.
     It provides a good balance between time localization and frequency 
@@ -61,7 +61,7 @@ Let's look at the three wavelet methods:
     because of its simplicity and effectiveness.
 
 2. Bump Wavelet:
-    
+
     Characteristics:
     Has an oscillating behavior similar to the Morlet but has sharper time 
     localization. Its frequency localization isn't as sharp as its time 
@@ -73,7 +73,7 @@ Let's look at the three wavelet methods:
     sharp spikes or short-lived events in your signal.
 
 3. Analytic Morlet Wavelet:
-    
+
     Characteristics:
     A variation of the Morlet wavelet that is designed to have no negative 
     frequencies when transformed. This means it's "analytic." Offers slightly 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>pytimetk - Changelog for PyTimeTK</title>
+<title>pytimetk - Changelog for Pytimetk</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -84,10 +84,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
 
 
-<meta property="og:title" content="pytimetk - Changelog for PyTimeTK">
+<meta property="og:title" content="pytimetk - Changelog for Pytimetk">
 <meta property="og:description" content="">
 <meta property="og:site-name" content="pytimetk">
-<meta name="twitter:title" content="pytimetk - Changelog for PyTimeTK">
+<meta name="twitter:title" content="pytimetk - Changelog for Pytimetk">
 <meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
@@ -332,7 +332,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#pytimetk-0.4.0" id="toc-pytimetk-0.4.0" class="nav-link active" data-scroll-target="#pytimetk-0.4.0">pytimetk 0.4.0</a>
+  <li><a href="#pytimetk-0.4.0.9000-development-version" id="toc-pytimetk-0.4.0.9000-development-version" class="nav-link active" data-scroll-target="#pytimetk-0.4.0.9000-development-version">pytimetk 0.4.0.9000 (Development Version)</a>
+  <ul class="collapse">
+  <li><a href="#pandas-and-polars-compatibility" id="toc-pandas-and-polars-compatibility" class="nav-link" data-scroll-target="#pandas-and-polars-compatibility">Pandas and Polars Compatibility:</a></li>
+  <li><a href="#improvements" id="toc-improvements" class="nav-link" data-scroll-target="#improvements">Improvements:</a></li>
+  </ul></li>
+  <li><a href="#pytimetk-0.4.0" id="toc-pytimetk-0.4.0" class="nav-link" data-scroll-target="#pytimetk-0.4.0">pytimetk 0.4.0</a>
   <ul class="collapse">
   <li><a href="#feature-engineering-module" id="toc-feature-engineering-module" class="nav-link" data-scroll-target="#feature-engineering-module">Feature Engineering Module:</a></li>
   <li><a href="#finance-module-updates" id="toc-finance-module-updates" class="nav-link" data-scroll-target="#finance-module-updates">Finance Module Updates:</a></li>
@@ -372,7 +377,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Changelog for PyTimeTK</h1>
+<h1 class="title">Changelog for Pytimetk</h1>
 </div>
 
 
@@ -387,6 +392,29 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
+<section id="pytimetk-0.4.0.9000-development-version" class="level1">
+<h1>pytimetk 0.4.0.9000 (Development Version)</h1>
+<section id="pandas-and-polars-compatibility" class="level2">
+<h2 class="anchored" data-anchor-id="pandas-and-polars-compatibility">Pandas and Polars Compatibility:</h2>
+<p>Upgrading to:</p>
+<ul>
+<li>pandas &gt;= 2.0.0</li>
+<li>polars &gt;= 1.2.0</li>
+</ul>
+<p>Use pytimetk &lt;=0.4.0 to support:</p>
+<ul>
+<li>pandas &lt;2.0.0</li>
+<li>polars &lt;1.0.0</li>
+</ul>
+</section>
+<section id="improvements" class="level2">
+<h2 class="anchored" data-anchor-id="improvements">Improvements:</h2>
+<ul>
+<li>Implement <code>sort_dataframe()</code>: This function is used internally to make sure Polars and Pandas engines perform grouped operations consistently and correctly. #286 #290</li>
+<li><code>.augment_lags()</code> and <code>.augment_leads()</code>: value_column now accepts any dtype. #295</li>
+</ul>
+</section>
+</section>
 <section id="pytimetk-0.4.0" class="level1">
 <h1>pytimetk 0.4.0</h1>
 <section id="feature-engineering-module" class="level2">

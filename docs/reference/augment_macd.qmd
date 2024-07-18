@@ -49,8 +49,6 @@ signal line is a bullish signal, indicating it might be time to
 buy, and a crossover below the signal line is bearish, 
 suggesting it might be time to sell.
 
-    
-
 ## Examples
 
 ``` {python}

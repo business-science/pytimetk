@@ -42,8 +42,6 @@ over the MACD, which provides absolute values and can be less
 meaningful when comparing stocks with significantly different 
 prices.
 
-    
-
 ## Examples
 
 ``` {python}
