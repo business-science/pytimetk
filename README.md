@@ -78,7 +78,8 @@ df \
         date_column='order_date', 
         value_column= 'total_price',
         freq = "MS",
-        agg_func = ['mean', 'sum']
+        agg_func = ['mean', 'sum'],
+        engine = "polars"
     )
 ```
 
