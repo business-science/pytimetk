@@ -135,7 +135,7 @@ summary_category_1_df \
     .groupby('category_1') \
     .plot_timeseries(
         date_column  = 'order_date',
-        value_column = 'total_price',
+        value_column = 'total_price_sum',
         smooth_frac  = 0.8,
         engine       = "plotnine"
     )
