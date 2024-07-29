@@ -347,7 +347,7 @@ def _summarize_by_time_polars(
             exploded_df
                 .select(groups + [date_column] + value_column)
                 .with_columns(pl.col(date_column).dt.truncate(polars_freq))
-                .groupby(groups + [date_column])
+                .group_by(groups + [date_column])
                 .agg(agg_columns)
                 .sort(groups + [date_column])
         )
@@ -393,7 +393,7 @@ def _summarize_by_time_polars(
         data = (df_pl
                 .select([date_column] + value_column)
                 .with_columns(pl.col(date_column).dt.truncate(polars_freq))
-                .groupby([date_column])
+                .group_by([date_column])
                 .agg(agg_columns)
                 .sort([date_column]))
         

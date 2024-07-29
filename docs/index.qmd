@@ -111,7 +111,7 @@ summary_category_1_df = df \
         freq         = "MS",
         agg_func     = 'sum',
         wide_format  = False,
-        # engine       = "polars"
+        engine       = "polars"
     )
 
 # First 5 rows shown
