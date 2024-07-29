@@ -110,7 +110,8 @@ summary_category_1_df = df \
         value_column = 'total_price',
         freq         = "MS",
         agg_func     = 'sum',
-        wide_format  = False
+        wide_format  = False,
+        # engine       = "polars"
     )
 
 # First 5 rows shown
@@ -135,7 +136,8 @@ summary_category_1_df \
     .plot_timeseries(
         date_column  = 'order_date',
         value_column = 'total_price',
-        smooth_frac  = 0.8
+        smooth_frac  = 0.8,
+        engine       = "plotnine"
     )
 ```
 

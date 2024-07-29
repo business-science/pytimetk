@@ -6,7 +6,7 @@ toc-depth: 3
 number-sections: false
 ---
 
-# pytimetk 0.4.0.9000 (Development Version)
+# pytimetk 1.0.0 
 
 ## Pandas and Polars Compatibility:
 
