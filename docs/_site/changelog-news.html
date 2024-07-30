@@ -332,7 +332,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#pytimetk-1.0.0.9000" id="toc-pytimetk-1.0.0.9000" class="nav-link active" data-scroll-target="#pytimetk-1.0.0.9000">pytimetk 1.0.0.9000</a></li>
+  <li><a href="#pytimetk-1.0.1" id="toc-pytimetk-1.0.1" class="nav-link active" data-scroll-target="#pytimetk-1.0.1">pytimetk 1.0.1</a>
+  <ul class="collapse">
+  <li><a href="#fixes" id="toc-fixes" class="nav-link" data-scroll-target="#fixes">Fixes:</a></li>
+  </ul></li>
   <li><a href="#pytimetk-1.0.0" id="toc-pytimetk-1.0.0" class="nav-link" data-scroll-target="#pytimetk-1.0.0">pytimetk 1.0.0</a>
   <ul class="collapse">
   <li><a href="#pandas-and-polars-compatibility" id="toc-pandas-and-polars-compatibility" class="nav-link" data-scroll-target="#pandas-and-polars-compatibility">Pandas and Polars Compatibility:</a></li>
@@ -393,8 +396,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<section id="pytimetk-1.0.0.9000" class="level1">
-<h1>pytimetk 1.0.0.9000</h1>
+<section id="pytimetk-1.0.1" class="level1">
+<h1>pytimetk 1.0.1</h1>
+<section id="fixes" class="level2">
+<h2 class="anchored" data-anchor-id="fixes">Fixes:</h2>
+<ul>
+<li><code>tk.summarize_by_time()</code>: AttributeError: ‘DataFrame’ object has no attribute ‘groupby’ #298</li>
+</ul>
+</section>
 </section>
 <section id="pytimetk-1.0.0" class="level1">
 <h1>pytimetk 1.0.0</h1>

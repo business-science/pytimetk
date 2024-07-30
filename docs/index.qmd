@@ -98,7 +98,7 @@ df
 Your company might be interested in sales patterns for various categories of bicycles. We can obtain a grouped monthly sales aggregation by `category_1` in two lines of code:
 
 1. First use pandas's `groupby()` method to group the DataFrame on `category_1`
-2. Next, use timetk's `summarize_by_time()` method to apply the sum function my month start ("MS") and use `wide_format = 'False'` to return the dataframe in a long format (Note long format is the default). 
+2. Next, use timetk's `summarize_by_time()` method to apply the sum function my month start ("MS") and use `wide_format = 'False'` to return the dataframe in a long format (Note long format is the default). The default engine is `"pandas"`. Selecting `engine = "polars"` allows us to improve the speed of the function. 
 
 The result is the total revenue for Mountain and Road bikes by month. 
 
@@ -114,8 +114,8 @@ summary_category_1_df = df \
         engine       = "polars"
     )
 
-# First 5 rows shown
-summary_category_1_df.head()
+# Quickly examine each column
+summary_category_1_df.glimpse()
 ```
 
 
@@ -130,6 +130,8 @@ Plot time series is a quick and easy way to visualize time series and make profe
 
 With the data summarized by time, we can visualize with `plot_timeseries()`. `pytimetk` functions are `groupby()` aware meaning they understand if your data is grouped to do things by group. This is useful in time series where we often deal with 100s of time series groups. 
 
+The default engine in "plotnine" for static plotting. Setting the `engine = "plotly"` returns an interactive plot. 
+
 ```{python}
 summary_category_1_df \
     .groupby('category_1') \
@@ -137,7 +139,7 @@ summary_category_1_df \
         date_column  = 'order_date',
         value_column = 'total_price_sum',
         smooth_frac  = 0.8,
-        engine       = "plotnine"
+        engine       = "plotly"
     )
 ```
 
