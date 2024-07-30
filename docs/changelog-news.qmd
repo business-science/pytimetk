@@ -6,7 +6,11 @@ toc-depth: 3
 number-sections: false
 ---
 
-# pytimetk 1.0.0.9000
+# pytimetk 1.0.1
+
+## Fixes:
+
+- `tk.summarize_by_time()`: AttributeError: 'DataFrame' object has no attribute 'groupby' #298
 
 # pytimetk 1.0.0 
 
