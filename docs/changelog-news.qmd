@@ -6,6 +6,17 @@ toc-depth: 3
 number-sections: false
 ---
 
+# pytimetk 1.0.1.9000
+
+## New Features
+
+### Plotly Dropdowns
+
+A plotly dropdown automates the group-wise analysis. Instead of facets, which are only powerful for <=9 plots at a time, a dropdown can easily visualize more plots. 
+
+- `plot_timeseries()`: Gets new parameters `plotly_dropdown`, `plotly_dropdown_x`, `plotly_dropdown_y`
+
+
 # pytimetk 1.0.1
 
 ## Fixes:
