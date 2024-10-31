@@ -62,7 +62,11 @@ def plot_timeseries(
     width: Optional[int] = None,
     height: Optional[int] = None,
 
-    engine: str = 'plotly'
+    engine: str = 'plotly',
+    
+    plotly_dropdown: bool = False,
+    plotly_dropdown_x: float = 0,
+    plotly_dropdown_y: float = 1,
 
 ):
     '''
@@ -219,6 +223,14 @@ def plot_timeseries(
         - "plotnine" (static): Use the plotnine library to create the plot. 
           This is the default value.
         - "matplotlib" (static): Use the matplotlib library to create the plot.
+    plotly_dropdown : bool
+        For analyzing many plots. When set to True and groups are provided, the function switches from 
+        faceting to create a dropdown menu to switch between different groups. Default: `False`.
+    plotly_dropdown_x : float
+        The x-axis location of the dropdown. Default: 0.
+    plotly_dropdown_y : float
+        The y-axis location of the dropdown. Default: 1.
+    
         
     
     Returns
@@ -253,7 +265,7 @@ def plot_timeseries(
     ```
     
     ```{python}
-    # Plotly Object: Grouped Time Series
+    # Plotly Object: Grouped Time Series (Facets)
     fig = (
         df
             .groupby('id')
@@ -268,6 +280,27 @@ def plot_timeseries(
                 engine = 'plotly',
                 width = 600,
                 height = 500,
+            )
+    )
+    fig
+    ```
+    
+    ```{python}
+    # Plotly Object: Grouped Time Series (Plotly Dropdown)
+    fig = (
+        df
+            .groupby('id')
+            .plot_timeseries(
+                'date', 'value', 
+                facet_scales = "free_y",
+                smooth_frac = 0.2,
+                smooth_size = 2.0,
+                y_intercept = None,
+                x_axis_date_labels = "%Y",
+                engine = 'plotly',
+                width = 600,
+                height = 500,
+                plotly_dropdown = True, # Plotly Dropdown
             )
     )
     fig
@@ -542,6 +575,10 @@ def plot_timeseries(
             
             width = width,
             height = height,
+            
+            plotly_dropdown=plotly_dropdown,
+            plotly_dropdown_x=plotly_dropdown_x,
+            plotly_dropdown_y=plotly_dropdown_y,
         )
 
     
@@ -551,53 +588,41 @@ def plot_timeseries(
 pd.core.groupby.generic.DataFrameGroupBy.plot_timeseries = plot_timeseries
 
 
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import pandas as pd
-
 def _plot_timeseries_plotly(
     data,
     date_column,
     value_column,
-    
-    color_column = None,
-    color_palette = None, 
-    
-    group_names = None,
-
-    facet_ncol = 1,
-    facet_nrow = None,
-    facet_scales = "free_y",
-    facet_dir = "h",
-
-    line_color = "#2c3e50",
-    line_size = 0.3,
-    line_type = 'solid',
-    line_alpha = 1,
-    
-    y_intercept = None,
-    y_intercept_color = "#2c3e50",
-    
-    x_intercept = None,
-    x_intercept_color = "#2c3e50",
-    
-    smooth = None,
-    smooth_color = "#3366FF",
-    smooth_size = 0.3,
-    smooth_alpha = 1,
-    
-    legend_show = True,
-    
-    title = "Time Series Plot",
-    x_lab = "",
-    y_lab = "",
-    color_lab = "Legend",
-    
-    x_axis_date_labels = "%b %Y",
-    base_size = 11,
-    
-    width = None,
-    height = None,
+    color_column=None,
+    color_palette=None,
+    group_names=None,
+    plotly_dropdown=False,  
+    plotly_dropdown_x=0,
+    plotly_dropdown_y=1,
+    facet_ncol=1,
+    facet_nrow=None,
+    facet_scales="free_y",
+    facet_dir="h",
+    line_color="#2c3e50",
+    line_size=0.3,
+    line_type='solid',
+    line_alpha=1,
+    y_intercept=None,
+    y_intercept_color="#2c3e50",
+    x_intercept=None,
+    x_intercept_color="#2c3e50",
+    smooth=None,
+    smooth_color="#3366FF",
+    smooth_size=0.3,
+    smooth_alpha=1,
+    legend_show=True,
+    title="Time Series Plot",
+    x_lab="",
+    y_lab="",
+    color_lab="Legend",
+    x_axis_date_labels="%b %Y",
+    base_size=11,
+    width=None,
+    height=None,
 ):
     """This function is not intended to be called directly. It is used by the `plot_timeseries` function."""
     
@@ -605,7 +630,6 @@ def _plot_timeseries_plotly(
     
     # Assign colors to groups
     if color_column is not None:
-        
         if not isinstance(color_column, list):
             color_column = [color_column]
         
@@ -616,86 +640,281 @@ def _plot_timeseries_plotly(
         color_df["_color"] = (color_palette * 1_000_000)[:len(color_df)]  
         
         color_df["_color_group_names"] =  color_df[color_column].agg(" | ".join, axis=1)
-
-        
-    # SETUP SUBPLOTS ----
     
-    subplot_titles = []
-    if group_names is not None:
-        
-        # NEW ----
+    # Handle dropdown functionality
+    if plotly_dropdown and group_names is not None:
         if not isinstance(group_names, list):
             group_names = [group_names]
         
         data[group_names] = data[group_names].astype(str)
-         
-        group_lookup_df = data[group_names].drop_duplicates().reset_index(drop=True)
+        data["_group_names"] = data[group_names].agg(" | ".join, axis=1)
         
-        group_lookup_df["_group_names"] =  group_lookup_df[group_names].agg(" | ".join, axis=1)
+        grouped = data.groupby("_group_names", sort=False)
+        unique_group_names = data["_group_names"].unique()
         
-        # OLD ----
+        traces = []
+        visibility_per_trace = []
+        group_values = []
+        shapes_per_group = {}
         
-        grouped = data.groupby(group_names, sort = False, group_keys = False)
-        
-        num_groups = len(grouped)
-        facet_nrow = -(-num_groups // facet_ncol)  # Ceil division
-        
-        subplot_titles = [" | ".join(map(str, name)) if isinstance(name, tuple) else str(name) for name in grouped.groups.keys()]
-        
-        if color_column is not None:
-            colors = color_palette * 1_000_000
-            colors = colors[:num_groups]
-        else: 
-            colors = [line_color] * num_groups
-        
-    else:
-        facet_nrow = 1
-        num_groups = 1
-    
-    fig = make_subplots(
-        rows=facet_nrow, 
-        cols=facet_ncol, 
-        
-        subplot_titles=subplot_titles,
-        
-        # Shared Axes if facet_scales is "free" or "free_x" or "free_y"
-        shared_xaxes=True if facet_scales == "free_y" else False,
-        shared_yaxes=True if facet_scales == "free_x" else False,
-    )
-    
-    # ADD TRACES -----
-
-    if group_names is not None:
-        for i, (name, group) in enumerate(grouped):
-            
-            row = i // facet_ncol + 1
-            col = i % facet_ncol + 1
-            
-            # BUG in plotly with "v" direction
-            
-            # if facet_dir == "h":
-            #     row = i // facet_ncol + 1
-            #     col = i % facet_ncol + 1
-            # else:
-            #     col = i // facet_ncol + 1
-            #     row = i % facet_ncol + 1
-
+        for i, (group_name, group) in enumerate(grouped):
             if color_column is not None:
-                
                 color_group = group.merge(color_df, on=color_column, how="left")
-                
-                color_group = color_group.merge(group_lookup_df, on=group_names, how="left")
-                
-                for j, (name, color_group) in enumerate(color_group.groupby("_color_group_names")):
-                    
-                    color = color_group['_color'].unique()[0]
-                    
-                    grp_nm = color_group['_group_names'].unique()[0]
-                    
-                    name = color_group['_color_group_names'].unique()[0]
-                    
+                for name, color_subgroup in color_group.groupby("_color_group_names"):
+                    color = color_subgroup['_color'].unique()[0]
                     color = name_to_hex(color)
-                    
+                    trace = go.Scatter(
+                        x=color_subgroup[date_column],
+                        y=color_subgroup[value_column],
+                        mode='lines',
+                        line=dict(color=hex_to_rgba(color, alpha=line_alpha), width=line_size),
+                        name=name,
+                        legendgroup=name,
+                        showlegend=(i == 0),
+                        visible=(i == 0),
+                    )
+                    traces.append(trace)
+                    visibility_per_trace.append(i)
+                    group_values.append(group_name)
+            else:
+                trace = go.Scatter(
+                    x=group[date_column],
+                    y=group[value_column],
+                    mode='lines',
+                    line=dict(color=hex_to_rgba(line_color, alpha=line_alpha), width=line_size),
+                    name=group_name,
+                    showlegend=False,
+                    visible=(i == 0),
+                )
+                traces.append(trace)
+                visibility_per_trace.append(i)
+                group_values.append(group_name)
+            
+            # Add smooth line if applicable
+            if smooth:
+                # Assuming 'smooth' processing is done prior and stored in '__smooth' column
+                trace = go.Scatter(
+                    x=group[date_column],
+                    y=group['__smooth'],
+                    mode='lines',
+                    line=dict(color=hex_to_rgba(smooth_color, alpha=smooth_alpha), width=smooth_size),
+                    name='Smoother',
+                    showlegend=False,
+                    visible=(i == 0),
+                )
+                traces.append(trace)
+                visibility_per_trace.append(i)
+                group_values.append(group_name)
+            
+            # Collect shapes for y_intercept and x_intercept
+            shapes = []
+            if y_intercept is not None:
+                if not isinstance(y_intercept, list):
+                    y_intercept = [y_intercept]
+                for y in y_intercept:
+                    shape = dict(
+                        type="line",
+                        y0=y, y1=y,
+                        x0=group[date_column].min(), x1=group[date_column].max(),
+                        line=dict(color=y_intercept_color, width=1),
+                    )
+                    shapes.append(shape)
+            if x_intercept is not None:
+                if not isinstance(x_intercept, list):
+                    x_intercept = [x_intercept]
+                for x in x_intercept:
+                    shape = dict(
+                        type="line",
+                        x0=x, x1=x,
+                        y0=group[value_column].min(), y1=group[value_column].max(),
+                        line=dict(color=x_intercept_color, width=1),
+                    )
+                    shapes.append(shape)
+            shapes_per_group[group_name] = shapes
+        
+        # Create visibility settings for each group
+        visibility_lists = []
+        for group_name in unique_group_names:
+            visibility = [gv == group_name for gv in group_values]
+            visibility_lists.append(visibility)
+        
+        # Create dropdown buttons
+        dropdown_buttons = []
+        for idx, group_name in enumerate(unique_group_names):
+            button = dict(
+                label=group_name,
+                method='update',
+                args=[
+                    {'visible': visibility_lists[idx]},
+                    {
+                        'title': f"{title} - {group_name}",
+                        'shapes': shapes_per_group.get(group_name, []),
+                    }
+                ]
+            )
+            dropdown_buttons.append(button)
+        
+        # Create figure and add traces
+        fig = go.Figure(data=traces)
+        
+        # Update layout with dropdown
+        fig.update_layout(
+            updatemenus=[
+                dict(
+                    active=0,
+                    buttons=dropdown_buttons,
+                    x=plotly_dropdown_x,
+                    xanchor="left",
+                    y=plotly_dropdown_y,
+                    yanchor="top",
+                    showactive=True,
+                )
+            ],
+            title=f"{title} - {unique_group_names[0]}",
+            xaxis_title=x_lab,
+            yaxis_title=y_lab,
+            legend_title_text=color_lab,
+            xaxis=dict(tickformat=x_axis_date_labels),
+        )
+        
+        # Apply styling and layout updates
+        fig.update_layout(margin=dict(l=10, r=10, t=40, b=40))
+        fig.update_layout(
+            template="plotly_white", 
+            font=dict(size=base_size),
+            title_font=dict(size=base_size*1.2),
+            legend_title_font=dict(size=base_size*0.8),
+            legend_font=dict(size=base_size*0.8),
+        )
+        fig.update_xaxes(tickfont=dict(size=base_size*0.8))
+        fig.update_yaxes(tickfont=dict(size=base_size*0.8))
+        fig.update_layout(
+            autosize=True, 
+            width=width,
+            height=height,
+        )
+        fig.update_traces(hoverlabel=dict(font_size=base_size*0.8))
+        
+        if not legend_show:
+            fig.update_layout(showlegend=False)
+        
+        return fig
+    
+    else:
+        # Existing functionality when plotly_dropdown is False
+        # SETUP SUBPLOTS ----
+        subplot_titles = []
+        if group_names is not None:
+            if not isinstance(group_names, list):
+                group_names = [group_names]
+            
+            data[group_names] = data[group_names].astype(str)
+            group_lookup_df = data[group_names].drop_duplicates().reset_index(drop=True)
+            group_lookup_df["_group_names"] =  group_lookup_df[group_names].agg(" | ".join, axis=1)
+            grouped = data.groupby(group_names, sort=False, group_keys=False)
+            num_groups = len(grouped)
+            facet_nrow = -(-num_groups // facet_ncol)  # Ceil division
+            subplot_titles = [" | ".join(map(str, name)) if isinstance(name, tuple) else str(name) for name in grouped.groups.keys()]
+            if color_column is not None:
+                colors = color_palette * 1_000_000
+                colors = colors[:num_groups]
+            else: 
+                colors = [line_color] * num_groups
+        else:
+            facet_nrow = 1
+            num_groups = 1
+        
+        fig = make_subplots(
+            rows=facet_nrow, 
+            cols=facet_ncol, 
+            subplot_titles=subplot_titles,
+            shared_xaxes=True if facet_scales == "free_y" else False,
+            shared_yaxes=True if facet_scales == "free_x" else False,
+        )
+        
+        # ADD TRACES -----
+        if group_names is not None:
+            for i, (name, group) in enumerate(grouped):
+                row = i // facet_ncol + 1
+                col = i % facet_ncol + 1
+                if color_column is not None:
+                    color_group = group.merge(color_df, on=color_column, how="left")
+                    color_group = color_group.merge(group_lookup_df, on=group_names, how="left")
+                    for j, (name, color_group) in enumerate(color_group.groupby("_color_group_names")):
+                        color = color_group['_color'].unique()[0]
+                        grp_nm = color_group['_group_names'].unique()[0]
+                        name = color_group['_color_group_names'].unique()[0]
+                        color = name_to_hex(color)
+                        trace = go.Scatter(
+                            x=color_group[date_column], 
+                            y=color_group[value_column], 
+                            mode='lines',
+                            line=dict(color=hex_to_rgba(color, alpha=line_alpha), width=line_size), 
+                            name=name, 
+                            legendgroup=name,
+                        )
+                        fig.add_trace(trace, row=row, col=col)
+                        fig.layout.annotations[i].update(text=grp_nm)
+                    # Remove duplicate legends in each legend group
+                    seen_legendgroups = set()
+                    for trace in fig.data:
+                        legendgroup = trace.legendgroup
+                        if legendgroup in seen_legendgroups:
+                            trace.showlegend = False
+                        else:
+                            seen_legendgroups.add(legendgroup)
+                else:
+                    group_group = group.merge(group_lookup_df, on=group_names, how="left")
+                    grp_nm = group_group['_group_names'].unique()[0]
+                    trace = go.Scatter(
+                        x=group_group[date_column], 
+                        y=group_group[value_column], 
+                        mode='lines', 
+                        line=dict(color=hex_to_rgba(line_color, alpha=line_alpha), width=line_size), 
+                        showlegend=False, 
+                        name=group_group[value_column].name
+                    )
+                    fig.add_trace(trace, row=row, col=col)
+                    fig.layout.annotations[i].update(text=grp_nm)
+                if smooth:
+                    trace = go.Scatter(
+                        x=group[date_column], 
+                        y=group['__smooth'], 
+                        mode='lines', 
+                        line=dict(color=hex_to_rgba(smooth_color, alpha=smooth_alpha), width=smooth_size), 
+                        showlegend=False, 
+                        name="Smoother"
+                    )
+                    fig.add_trace(trace, row=row, col=col)
+                if y_intercept is not None:
+                    if not isinstance(y_intercept, list):
+                        y_intercept = [y_intercept]
+                    for y in y_intercept:
+                        fig.add_shape(
+                            go.layout.Shape(
+                                type="line", y0=y, y1=y, x0=group[date_column].min(), x1=group[date_column].max(), 
+                                line=dict(color=y_intercept_color, width=1)
+                            ), 
+                            row=row, col=col
+                        )
+                if x_intercept is not None:
+                    if not isinstance(x_intercept, list):
+                        x_intercept = [x_intercept]
+                    for x in x_intercept:
+                        fig.add_shape(
+                            go.layout.Shape(
+                                type="line", x0=x, x1=x, y0=group[value_column].min(), y1=group[value_column].max(), 
+                                line=dict(color=x_intercept_color, width=1)
+                            ), 
+                            row=row, col=col
+                        )
+        else:
+            if color_column is not None:
+                color_group = data.merge(color_df, on=color_column, how="left")
+                for j, (name, color_group) in enumerate(color_group.groupby("_color")):
+                    color = color_group['_color'].unique()[0]
+                    name = color_group['_color_group_names'].unique()[0]
+                    color = name_to_hex(color)
                     trace = go.Scatter(
                         x=color_group[date_column], 
                         y=color_group[value_column], 
@@ -704,11 +923,7 @@ def _plot_timeseries_plotly(
                         name=name, 
                         legendgroup=name,
                     )
-                    fig.add_trace(trace, row=row, col=col)
-                    
-                    fig.layout.annotations[i].update(text=grp_nm)
-                    
-                
+                    fig.add_trace(trace)
                 # Remove duplicate legends in each legend group
                 seen_legendgroups = set()
                 for trace in fig.data:
@@ -717,129 +932,79 @@ def _plot_timeseries_plotly(
                         trace.showlegend = False
                     else:
                         seen_legendgroups.add(legendgroup)
-                
             else:
-                
-                group_group = group.merge(group_lookup_df, on=group_names, how="left")
-                
-                grp_nm = group_group['_group_names'].unique()[0]
-                
-                trace = go.Scatter(x=group_group[date_column], y=group_group[value_column], mode='lines', line=dict(color=hex_to_rgba(line_color, alpha=line_alpha), width=line_size), showlegend=False, name=group_group[value_column].name)
-                fig.add_trace(trace, row=row, col=col)
-                
-                
-                fig.layout.annotations[i].update(text=grp_nm)
-            
-            
+                trace = go.Scatter(
+                    x=data[date_column], 
+                    y=data[value_column], 
+                    mode='lines', 
+                    line=dict(color=hex_to_rgba(line_color, alpha=line_alpha), width=line_size), 
+                    showlegend=False, 
+                    name="Time Series"
+                )
+                fig.add_trace(trace)
             if smooth:
-                trace = go.Scatter(x=group[date_column], y=group['__smooth'], mode='lines', line=dict(color=hex_to_rgba(smooth_color, alpha=smooth_alpha), width=smooth_size), showlegend=False, name="Smoother")
-                fig.add_trace(trace, row=row, col=col)
-            
+                trace = go.Scatter(
+                    x=data[date_column], 
+                    y=data['__smooth'], 
+                    mode='lines', 
+                    line=dict(color=hex_to_rgba(smooth_color, alpha=smooth_alpha), width=smooth_size), 
+                    showlegend=False, 
+                    name="Smoother"
+                )
+                fig.add_trace(trace)
             if y_intercept is not None:
                 if not isinstance(y_intercept, list):
                     y_intercept = [y_intercept]
                 for y in y_intercept:
-                    fig.add_shape(go.layout.Shape(type="line", y0=y, y1=y, x0=group[date_column].min(), x1=group[date_column].max(), line=dict(color=y_intercept_color, width=1)), row=row, col=col)
-                
+                    fig.add_shape(
+                        go.layout.Shape(
+                            type="line", y0=y, y1=y, x0=data[date_column].min(), x1=data[date_column].max(), 
+                            line=dict(color=y_intercept_color, width=1)
+                        )
+                    )
             if x_intercept is not None:
                 if not isinstance(x_intercept, list):
                     x_intercept = [x_intercept]
                 for x in x_intercept:
-                    fig.add_shape(go.layout.Shape(type="line", x0=x, x1=x, y0=group[value_column].min(), y1=group[value_column].max(), line=dict(color=x_intercept_color, width=1)), row=row, col=col)
-            
-    else:
+                    fig.add_shape(
+                        go.layout.Shape(
+                            type="line", x0=x, x1=x, y0=data[value_column].min(), y1=data[value_column].max(), 
+                            line=dict(color=x_intercept_color, width=1)
+                        )
+                    )
+        # Finalize the plotly plot
+        fig.update_layout(
+            title=title,
+            xaxis_title=x_lab,
+            yaxis_title=y_lab,
+            legend_title_text=color_lab,
+            xaxis=dict(tickformat=x_axis_date_labels),
+        )
+        fig.update_xaxes(
+            matches=None, showticklabels=True, visible=True, 
+        )
+        fig.update_layout(margin=dict(l=10, r=10, t=40, b=40))
+        fig.update_layout(
+            template="plotly_white", 
+            font=dict(size=base_size),
+            title_font=dict(size=base_size*1.2),
+            legend_title_font=dict(size=base_size*0.8),
+            legend_font=dict(size=base_size*0.8),
+        )
+        fig.update_xaxes(tickfont=dict(size=base_size*0.8))
+        fig.update_yaxes(tickfont=dict(size=base_size*0.8))
+        fig.update_annotations(font_size=base_size*0.8)
+        fig.update_layout(
+            autosize=True, 
+            width=width,
+            height=height,
+        )
+        fig.update_traces(hoverlabel=dict(font_size=base_size*0.8))
         
-        if color_column is not None:
-            
-            color_group = data.merge(color_df, on=color_column, how="left")
-                    
-            for j, (name, color_group) in enumerate(color_group.groupby("_color")):
-                
-                color = color_group['_color'].unique()[0]
-                
-                name = color_group['_color_group_names'].unique()[0]
-                
-                color = name_to_hex(color)
-                                
-                trace = go.Scatter(
-                    x=color_group[date_column], 
-                    y=color_group[value_column], 
-                    mode='lines',
-                    line=dict(color=hex_to_rgba(color, alpha=line_alpha), width=line_size), 
-                    name=name, 
-                    legendgroup=name,
-                )
-                fig.add_trace(trace)
-            
-            # Remove duplicate legends in each legend group
-            seen_legendgroups = set()
-            for trace in fig.data:
-                legendgroup = trace.legendgroup
-                if legendgroup in seen_legendgroups:
-                    trace.showlegend = False
-                else:
-                    seen_legendgroups.add(legendgroup)
-            
-            
-        else:
-            trace = go.Scatter(x=data[date_column], y=data[value_column], mode='lines', line=dict(color=hex_to_rgba(line_color, alpha=line_alpha), width=line_size), showlegend=False, name="Time Series")
-            fig.add_trace(trace)
-        
-        if smooth:
-            trace = go.Scatter(x=data[date_column], y=data['__smooth'], mode='lines', line=dict(color=hex_to_rgba(smooth_color, alpha=smooth_alpha), width=smooth_size), showlegend=False, name="Smoother")
-            fig.add_trace(trace)
-        
-        if y_intercept is not None:
-            if not isinstance(y_intercept, list):
-                y_intercept = [y_intercept]
-            for y in y_intercept:
-                fig.add_shape(go.layout.Shape(type="line", y0=y, y1=y, x0=data[date_column].min(), x1=data[date_column].max(), line=dict(color=y_intercept_color, width=1)))
-                   
-        if x_intercept is not None:
-            if not isinstance(x_intercept, list):
-                x_intercept = [x_intercept]
-            for x in x_intercept:
-                fig.add_shape(go.layout.Shape(type="line", x0=x, x1=x, y0=data[value_column].min(), y1=data[value_column].max(), line=dict(color=x_intercept_color, width=1)))
-
-    # Finalize the plotly plot
-    
-    fig.update_layout(
-        title=title,
-        xaxis_title=x_lab,
-        yaxis_title=y_lab,
-        legend_title_text = color_lab,
-        xaxis=dict(tickformat=x_axis_date_labels),
-    )
-    
-    fig.update_xaxes(
-        matches=None, showticklabels=True, visible=True, 
-    )
-    
-    fig.update_layout(margin=dict(l=10, r=10, t=40, b=40))
-    fig.update_layout(
-        template="plotly_white", 
-        font=dict(size=base_size),
-        title_font=dict(size=base_size*1.2),
-        legend_title_font=dict(size=base_size*0.8),
-        legend_font=dict(size=base_size*0.8),
-    )
-    fig.update_xaxes(tickfont=dict(size=base_size*0.8))
-    fig.update_yaxes(tickfont=dict(size=base_size*0.8))
-    fig.update_annotations(font_size=base_size*0.8)
-    fig.update_layout(
-        autosize=True, 
-        width=width,
-        height=height,
-    )
-    fig.update_traces(hoverlabel=dict(font_size=base_size*0.8))
-    
-    if not legend_show:
-        fig.update_layout(showlegend=False)
-   
-    return fig
-
-
-
+        if not legend_show:
+            fig.update_layout(showlegend=False)
+       
+        return fig
 
 
 def _plot_timeseries_plotnine(
