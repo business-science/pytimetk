@@ -203,7 +203,9 @@ final_df = pd.concat(dfs)
 
 ```
 
-Now we can visualize the anomalies;
+Now we can visualize the anomalies:
+
+### Visualizing Grouped Anomalies (Facets)
 
 ```{python}
 # Visualize
@@ -214,6 +216,24 @@ Now we can visualize the anomalies;
 			date_column = 'date',
 			engine      = 'plotly',
 			facet_ncol  = 2
+		)
+)
+
+```
+
+### Visualizing Grouped Anomalies (Plotly Dropdown)
+
+```{python}
+# Visualize
+(
+	final_df
+		.groupby('iqr_alpha')
+		.plot_anomalies(
+			date_column     = 'date',
+			engine          = 'plotly',
+			plotly_dropdown = True,
+			plotly_dropdown_x = 1,
+			plotly_dropdown_y = 0.60
 		)
 )
 

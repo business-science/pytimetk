@@ -14,7 +14,8 @@ number-sections: false
 
 A plotly dropdown automates the group-wise analysis. Instead of facets, which are only powerful for <=9 plots at a time, a dropdown can easily visualize more plots. 
 
-- `plot_timeseries()`: Gets new parameters `plotly_dropdown`, `plotly_dropdown_x`, `plotly_dropdown_y`
+- `plot_timeseries()`: Gets new parameters `plotly_dropdown`, `plotly_dropdown_x`, `plotly_dropdown_y` #301
+- `plot_anomalies()`: Gets new parameters `plotly_dropdown`, `plotly_dropdown_x`, `plotly_dropdown_y` #301
 
 
 # pytimetk 1.0.1

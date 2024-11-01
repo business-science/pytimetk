@@ -36,6 +36,10 @@ import pandas as pd
 
 # Plotting Time Series
 
+The main function is `plot_timeseries()`. We'll cover some key functionality for easy time series visualization for single and grouped time series. 
+
+## Plotting a Single Time Series
+
 Let’s start with a popular time series, `taylor_30_min`, which includes energy demand in megawatts at a sampling interval of 30-minutes. This is a single time series.
 
 ```{python}
@@ -72,7 +76,14 @@ m4_monthly = tk.load_dataset("m4_monthly", parse_dates = ['date'])
 m4_monthly
 ```
 
-Visualizing grouped data is as simple as grouping the data set with `groupby()` before run it into the `plot_timeseries()` function. Here are the key points:
+Visualizing grouped data is as simple as grouping the data set with `groupby()` before run it into the `plot_timeseries()` function. There are 2 methods:
+
+1. Facets
+2. Plotly Dropdown
+
+### Facets (Subgroups on one plot)
+
+This is great to see all time series in one plot. Here are the key points:
 
 * Groups can be added using the pandas `groupby()`.
 * These groups are then converted into facets.
@@ -87,6 +98,18 @@ m4_monthly.groupby('id').plot_timeseries(
 )
 ```
 
+### Plotly Dropdown
+
+Sometimes you have many groups and would prefer to see one plot per group. This can be accomplished with `plotly_dropdown`. You can adjust the x and y position as follows: 
+
+```{python}
+m4_monthly.groupby('id').plot_timeseries(
+    'date', 'value', 
+    plotly_dropdown=True,
+    plotly_dropdown_x=0,
+    plotly_dropdown_y=1
+)
+```
 
 The groups can also be vizualized in the same plot using `color_column` paramenter. Let's come back to `taylor_30_min` dataframe.
 
