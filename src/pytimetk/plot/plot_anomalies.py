@@ -307,7 +307,9 @@ def plot_anomalies(
             .plot_anomalies(
                 date_column = "Date", 
                 engine = "plotly",
-                plotly_dropdown=True
+                plotly_dropdown=True,
+                plotly_dropdown_x=1.05,
+                plotly_dropdown_y=1.15
             )
     )
     ```
@@ -563,9 +565,31 @@ def _plot_anomalies_plotly(
         
         for idx, (group_name_values, group_data) in enumerate(data_prepared.groupby(group_names)):
             group_label = " | ".join(group_name_values)
-            # Use the preload_plot_timeseries function to generate traces
-            fig_temp = preload_plot_timeseries(group_data)
-            group_traces = list(fig_temp.data)  # Convert to list to manipulate
+            group_traces = []
+            
+            # Generate traces for each variable
+            for var_name, var_data in group_data.groupby('_var'):
+                
+                if var_name == 'observed':
+                    line_props = dict(
+                        color=hex_to_rgba(line_color, alpha=line_alpha),
+                        width=line_size,
+                        dash=line_type,
+                    )
+                elif var_name in ['recomposed_l1', 'recomposed_l2']:
+                    line_props = dict(color='rgba(0,0,0,0)')  # Transparent for ribbon edges
+                else:
+                    line_props = dict()
+                    
+                trace = go.Scatter(
+                    x=var_data['Date'],
+                    y=var_data['_val'],
+                    name=var_name,
+                    mode='lines',
+                    line=line_props,
+                    showlegend=legend_show
+                )
+                group_traces.append(trace)
             
             # Identify traces by checking if 'observed', 'recomposed_l1', 'recomposed_l2' are in the name
             observed_trace = None
@@ -603,9 +627,9 @@ def _plot_anomalies_plotly(
                     fillcolor=ribbon_color_rgba,
                 )
                 recomposed_l1_trace.legendgroup = "bands"
-                recomposed_l1_trace.showlegend = False
+                # recomposed_l1_trace.showlegend = False
                 recomposed_l2_trace.legendgroup = "bands"
-                recomposed_l2_trace.showlegend = False
+                # recomposed_l2_trace.showlegend = False
             
             # Update visibility
             for trace in ordered_traces:
@@ -635,18 +659,21 @@ def _plot_anomalies_plotly(
                     ),
                     name='anomalies',
                     legendgroup='anomalies',
-                    showlegend=(idx == 0),
+                    showlegend=legend_show,
                     visible=(idx == 0),
                 )
                 traces.append(anomalies_trace)
                 group_values.append(group_label)
         
-        # Create visibility settings for each group
+        # Create visibility and showlegend settings for each group
         visibility_lists = []
+        showlegend_lists = []
         for unique_label in group_labels:
             visibility = [gv == unique_label for gv in group_values]
             visibility_lists.append(visibility)
-        
+            showlegend = visibility.copy()  # Copy of visibility list
+            showlegend_lists.append(showlegend)
+
         # Create dropdown buttons
         dropdown_buttons = []
         for idx, unique_label in enumerate(group_labels):
@@ -654,7 +681,10 @@ def _plot_anomalies_plotly(
                 label=unique_label,
                 method='update',
                 args=[
-                    {'visible': visibility_lists[idx]},
+                    {
+                        'visible': visibility_lists[idx],
+                        'showlegend': showlegend_lists[idx],  # Update showlegend
+                    },
                     {'title': f"{title} - {unique_label}"}
                 ]
             )
@@ -664,13 +694,13 @@ def _plot_anomalies_plotly(
         fig = go.Figure(data=traces)
         
         # Remove duplicate legends in each legend group
-        seen_legendgroups = set()
-        for trace in fig.data:
-            legendgroup = trace.legendgroup
-            if legendgroup in seen_legendgroups:
-                trace.showlegend = False
-            else:
-                seen_legendgroups.add(legendgroup)
+        # seen_legendgroups = set()
+        # for trace in fig.data:
+        #     legendgroup = trace.legendgroup
+        #     if legendgroup in seen_legendgroups:
+        #         trace.showlegend = False
+        #     else:
+        #         seen_legendgroups.add(legendgroup)
         
         # Update layout with dropdown
         fig.update_layout(
@@ -711,6 +741,7 @@ def _plot_anomalies_plotly(
         # Existing functionality when plotly_dropdown is False or data is not grouped
         data_prepared_grouped = data_prepared.groupby(group_names)
         fig = preload_plot_timeseries(data_prepared_grouped)
+        
         
         # Adjust traces for ribbon and anomalies
         # Identify indices of recomposed_l1 and recomposed_l2 traces
