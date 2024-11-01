@@ -13,7 +13,7 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 from pytimetk.plot.theme import theme_timetk, palette_timetk
 from pytimetk.utils.plot_helpers import hex_to_rgba, name_to_hex
 
-from typing import Union, Optional
+from typing import Union, Optional, List
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 
@@ -24,9 +24,9 @@ from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column,
 def plot_timeseries(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
-    value_column: str,
+    value_column: Union[str, List[str]],
     
-    color_column: Optional[str] = None,
+    color_column: Union[str, List[str]] = None,
     color_palette: Optional[Union[dict, list, str]] = None,
 
     facet_ncol: int = 1,
@@ -81,15 +81,31 @@ def plot_timeseries(
     date_column : str
         The name of the column in the DataFrame that contains the dates for the 
         time series data.
-    value_column : str
+    value_column : str or list
         The `value_column` parameter is used to specify the name of the column 
         in the DataFrame that contains the values for the time series data. This 
         column will be plotted on the y-axis of the time series plot.
+        
+        LONG-FORMAT PLOTTING:
+        If the `value_column` parameter is a string, it will be treated as a 
+        single column name. To plot multiple time series,
+        group the DataFrame first using pd.DataFrame.groupby().
+        
+        WIDE-FORMAT PLOTTING:
+        If the `value_column` parameter is a list, it will plotted
+        as multiple time series (wide-format).         
     color_column : str
         The `color_column` parameter is an optional parameter that specifies the 
         column in the DataFrame that will be used to assign colors to the 
         different time series. If this parameter is not provided, all time 
         series will have the same color.
+        
+        LONG-FORMAT PLOTTING:
+        The `color_column` parameter is a single column name.
+        
+        WIDE-FORMAT PLOTTING:
+        The `color_column` parameter must be the same list 
+        as the `value_column` parameter to color the different time series when performing wide-format plotting.
     color_palette : list, optional
         The `color_palette` parameter is used to specify the colors to be used 
         for the different time series. It accepts a list of color codes or names. 
@@ -384,14 +400,60 @@ def plot_timeseries(
     )
     fig
     ```
+    
+    ``` {python}
+    # Wide-Format DataFrame
+    
+    # Imports
+    import pandas as pd
+    import numpy as np
+    import pytimetk as tk
+
+    # Set a random seed for reproducibility
+    np.random.seed(42) 
+
+    # Create a date range
+    dates = pd.date_range(start="2020-01-01", periods=100, freq="D")
+
+    # Generate random sales data and compute expenses and profit
+    sales = np.random.uniform(1000, 5000, len(dates))
+    expenses = sales * np.random.uniform(0.5, 0.8, len(dates))
+    profit = sales - expenses
+
+    # Create the DataFrame
+    df = pd.DataFrame({
+        'date': dates,
+        'sales': sales,
+        'expenses': expenses,
+        'profit': profit
+    })
+    
+    (
+        df
+            .plot_timeseries(
+                date_column = 'date', 
+                value_column = ['sales', 'expenses', 'profit'],
+                # color_column = ['sales', 'expenses', 'profit'], 
+                facet_ncol = 2,
+                smooth = True,
+                y_intercept = 0,
+                x_axis_date_labels = "%Y",
+                engine = 'plotly',
+                plotly_dropdown = True, # Plotly Dropdown
+            )
+    )
     '''
     
     # Common checks
-    # ensure_datetime64_date_column(data, date_column)
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
-    check_value_column(data, value_column)
     
+    if isinstance(value_column, list):
+        for col in value_column:
+            check_value_column(data, col)
+    else:
+        check_value_column(data, value_column)
+
     # Handle line_size
     if line_size is None:
         if engine == 'plotnine':
@@ -400,63 +462,92 @@ def plot_timeseries(
             line_size = 0.35
         elif engine == 'plotly':
             line_size = 0.65
-            
+
     # Handle named colors
     line_color = name_to_hex(line_color)
     smooth_color = name_to_hex(smooth_color)
     y_intercept_color = name_to_hex(y_intercept_color)
     x_intercept_color = name_to_hex(x_intercept_color)
-    
-    
+
     # Handle DataFrames
     if isinstance(data, pd.DataFrame):
-        
         group_names = None
         data = data.copy()
-        
+
+        # Reshape data if value_column is a list
+        if isinstance(value_column, list):
+            data = pd.melt(
+                data,
+                id_vars=[date_column],
+                value_vars=value_column,
+                var_name='__value_column',
+                value_name='__value'
+            )
+            group_names = '__value_column'
+            value_column = '__value'  # Update value_column to the new column name
+            if color_column is value_column:
+                color_column = '__value_column'  # Use variable names as the color column
+        else:
+            # Ensure value_column is in data
+            if value_column not in data.columns:
+                raise ValueError(f"value_column '{value_column}' not found in DataFrame.")
+
         # Handle smoother
         if smooth:
+            data['__smooth'] = np.nan
             if color_column is None:
-                data['__smooth'] = lowess(data[value_column], data[date_column], frac=smooth_frac, return_sorted=False)
+                sorted_data = data.sort_values(by=date_column)
+                x = np.arange(len(sorted_data))
+                y = sorted_data[value_column].to_numpy()
+                data['__smooth'] = lowess(y, x, frac=smooth_frac, return_sorted=False)
             else:
-                data['__smooth'] = np.nan
-                
                 for name, group in data.groupby(color_column):
-                    
                     sorted_group = group.sort_values(by=date_column)
                     x = np.arange(len(sorted_group))
                     y = sorted_group[value_column].to_numpy()
-                    
                     smoothed = lowess(y, x, frac=smooth_frac)
-                    
                     data.loc[sorted_group.index, '__smooth'] = smoothed[:, 1]
-        
-    
-    # Handle GroupBy objects
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
 
+    # Handle GroupBy objects
+    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
         data = data.obj.copy()
-        
+
+        # Reshape data if value_column is a list
+        if isinstance(value_column, list):
+            data = pd.melt(
+                data,
+                id_vars=group_names + [date_column],
+                value_vars=value_column,
+                var_name='__value_column',
+                value_name='__value'
+            )
+            value_column = '__value'  # Update value_column to the new column name
+            if color_column is None:
+                color_column = '__value_column'  # Use variable names as the color column
+
         # Handle smoother
         if smooth:
-            
             data['__smooth'] = np.nan
-            
-            for name, group in data.groupby(group_names):
-                
-                sorted_group = group.sort_values(by=date_column)
-                x = np.arange(len(sorted_group))
-                y = sorted_group[value_column].to_numpy()
-                
-                smoothed = lowess(y, x, frac=smooth_frac)  # Adjust frac as needed
-                
-                # Updating the original DataFrame with smoothed values
-                data.loc[sorted_group.index, '__smooth'] = smoothed[:, 1]
-            
+            if color_column is None:
+                for name, group in data.groupby(group_names):
+                    sorted_group = group.sort_values(by=date_column)
+                    x = np.arange(len(sorted_group))
+                    y = sorted_group[value_column].to_numpy()
+                    smoothed = lowess(y, x, frac=smooth_frac)
+                    data.loc[sorted_group.index, '__smooth'] = smoothed[:, 1]
+            else:
+                for name, group in data.groupby(group_names + [color_column]):
+                    sorted_group = group.sort_values(by=date_column)
+                    x = np.arange(len(sorted_group))
+                    y = sorted_group[value_column].to_numpy()
+                    smoothed = lowess(y, x, frac=smooth_frac)
+                    data.loc[sorted_group.index, '__smooth'] = smoothed[:, 1]
+
     # Handle color palette
     if color_palette is None:
-        color_palette = list(palette_timetk().values())
+        unique_colors = data[color_column].nunique() if color_column else 1
+        color_palette = list(palette_timetk().values()) * unique_colors
     else:
         if isinstance(color_palette, dict):
             color_palette = list(palette_timetk(color_palette).values())
@@ -465,124 +556,97 @@ def plot_timeseries(
         elif isinstance(color_palette, str):
             color_palette = [color_palette]
         else:
-            ValueError("Invalid `color_palette` parameter. It must be a dictionary, list, or string.")
-    
-    # print(data.head())  
-    
+            raise ValueError("Invalid `color_palette` parameter. It must be a dictionary, list, or string.")
+
     # Engine
     if engine in ['plotnine', 'matplotlib']:
         fig = _plot_timeseries_plotnine(
-            data = data,
-            date_column = date_column,
-            value_column = value_column,
-            
-            color_column = color_column,
-            color_palette = color_palette,
-            
-            group_names = group_names,
-
-            facet_ncol = facet_ncol,
-            facet_nrow = facet_nrow,
-            facet_scales = facet_scales,
-            facet_dir = facet_dir,
-
-            line_color = line_color,
-            line_size = line_size,
-            line_type = line_type,
-            line_alpha = line_alpha,
-
-            y_intercept = y_intercept,
-            y_intercept_color = y_intercept_color,
-            
-            x_intercept = x_intercept,
-            x_intercept_color = x_intercept_color,
-
-            smooth = smooth,
-            smooth_color = smooth_color,
-            smooth_size = smooth_size,
-            smooth_alpha = smooth_alpha,
-            
-            legend_show = legend_show,
-
-            title = title,
-            x_lab = x_lab,
-            y_lab = y_lab,
-            color_lab = color_lab,
-
-            x_axis_date_labels = x_axis_date_labels,
-            base_size = base_size,
-            
-            width = width,
-            height = height,
+            data=data,
+            date_column=date_column,
+            value_column=value_column,
+            color_column=color_column,
+            color_palette=color_palette,
+            group_names=group_names,
+            facet_ncol=facet_ncol,
+            facet_nrow=facet_nrow,
+            facet_scales=facet_scales,
+            facet_dir=facet_dir,
+            line_color=line_color,
+            line_size=line_size,
+            line_type=line_type,
+            line_alpha=line_alpha,
+            y_intercept=y_intercept,
+            y_intercept_color=y_intercept_color,
+            x_intercept=x_intercept,
+            x_intercept_color=x_intercept_color,
+            smooth=smooth,
+            smooth_color=smooth_color,
+            smooth_size=smooth_size,
+            smooth_alpha=smooth_alpha,
+            legend_show=legend_show,
+            title=title,
+            x_lab=x_lab,
+            y_lab=y_lab,
+            color_lab=color_lab,
+            x_axis_date_labels=x_axis_date_labels,
+            base_size=base_size,
+            width=width,
+            height=height,
         )
-        
+
         if engine == 'matplotlib':
-            if width == None:
-                width_size = 800 # in pixels for compat with plotly
-            else: 
+            if width is None:
+                width_size = 800  # in pixels for compatibility with plotly
+            else:
                 width_size = width
 
-            if height == None:
-                height_size = 600 # in pixels for compat with plotly
+            if height is None:
+                height_size = 600  # in pixels for compatibility with plotly
             else:
                 height_size = height
-            fig = fig + theme_timetk(height=height_size, width=width_size) # setting default figure size to prevent matplotlib sizing error
+            fig = fig + theme_timetk(height=height_size, width=width_size)  # Setting default figure size
             fig = fig.draw()
 
-        
     elif engine == 'plotly':
-        
         fig = _plot_timeseries_plotly(
-            data = data,
-            date_column = date_column,
-            value_column = value_column,
-            
-            color_column = color_column,
-            color_palette = color_palette,
-            
-            group_names = group_names,
-
-            facet_ncol = facet_ncol,
-            facet_nrow = facet_nrow,
-            facet_scales = facet_scales,
-            facet_dir = facet_dir,
-
-            line_color = line_color,
-            line_size = line_size,
-            line_type = line_type,
-            line_alpha = line_alpha,
-
-            y_intercept = y_intercept,
-            y_intercept_color = y_intercept_color,
-            
-            x_intercept = x_intercept,
-            x_intercept_color = x_intercept_color,
-
-            smooth = smooth,
-            smooth_color = smooth_color,
-            smooth_size = smooth_size,
-            smooth_alpha = smooth_alpha,
-            
-            legend_show = legend_show,
-
-            title = title,
-            x_lab = x_lab,
-            y_lab = y_lab,
-            color_lab = color_lab,
-
-            x_axis_date_labels = x_axis_date_labels,
-            base_size = base_size,
-            
-            width = width,
-            height = height,
-            
+            data=data,
+            date_column=date_column,
+            value_column=value_column,
+            color_column=color_column,
+            color_palette=color_palette,
+            group_names=group_names,
+            facet_ncol=facet_ncol,
+            facet_nrow=facet_nrow,
+            facet_scales=facet_scales,
+            facet_dir=facet_dir,
+            line_color=line_color,
+            line_size=line_size,
+            line_type=line_type,
+            line_alpha=line_alpha,
+            y_intercept=y_intercept,
+            y_intercept_color=y_intercept_color,
+            x_intercept=x_intercept,
+            x_intercept_color=x_intercept_color,
+            smooth=smooth,
+            smooth_color=smooth_color,
+            smooth_size=smooth_size,
+            smooth_alpha=smooth_alpha,
+            legend_show=legend_show,
+            title=title,
+            x_lab=x_lab,
+            y_lab=y_lab,
+            color_lab=color_lab,
+            x_axis_date_labels=x_axis_date_labels,
+            base_size=base_size,
+            width=width,
+            height=height,
             plotly_dropdown=plotly_dropdown,
             plotly_dropdown_x=plotly_dropdown_x,
             plotly_dropdown_y=plotly_dropdown_y,
         )
 
-    
     return fig
+
 
 # Monkey patch the method to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.plot_timeseries = plot_timeseries
