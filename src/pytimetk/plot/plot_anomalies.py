@@ -582,7 +582,7 @@ def _plot_anomalies_plotly(
                     line_props = dict()
                     
                 trace = go.Scatter(
-                    x=var_data['Date'],
+                    x=var_data[date_column],
                     y=var_data['_val'],
                     name=var_name,
                     mode='lines',
