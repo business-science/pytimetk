@@ -402,7 +402,7 @@ def plot_timeseries(
     ```
     
     ``` {python}
-    # Wide-Format DataFrame
+    # Wide-Format Plotting
     
     # Imports
     import pandas as pd
@@ -434,9 +434,7 @@ def plot_timeseries(
                 date_column = 'date', 
                 value_column = ['sales', 'expenses', 'profit'],
                 color_column = ['sales', 'expenses', 'profit'], 
-                facet_ncol = 2,
                 smooth = True,
-                y_intercept = 0,
                 x_axis_date_labels = "%Y",
                 engine = 'plotly',
                 plotly_dropdown = True, # Plotly Dropdown

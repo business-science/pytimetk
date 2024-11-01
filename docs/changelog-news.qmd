@@ -17,6 +17,10 @@ A plotly dropdown automates the group-wise analysis. Instead of facets, which ar
 - `plot_timeseries()`: Gets new parameters `plotly_dropdown`, `plotly_dropdown_x`, `plotly_dropdown_y` #301
 - `plot_anomalies()`: Gets new parameters `plotly_dropdown`, `plotly_dropdown_x`, `plotly_dropdown_y` #301
 
+### Wide-Format Plotting
+
+- plot_timeseries(value_column = list(), color_column=list()): Now supports multiple columns in wide format for grouped time series data visualization. #136
+
 
 # pytimetk 1.0.1
 
