@@ -1761,14 +1761,14 @@
     "href": "changelog-news.html",
     "title": "Changelog for Pytimetk",
     "section": "",
-    "text": "A plotly dropdown automates the group-wise analysis. Instead of facets, which are only powerful for &lt;=9 plots at a time, a dropdown can easily visualize more plots.\n\nplot_timeseries(): Gets new parameters plotly_dropdown, plotly_dropdown_x, plotly_dropdown_y #301\nplot_anomalies(): Gets new parameters plotly_dropdown, plotly_dropdown_x, plotly_dropdown_y #301"
+    "text": "A plotly dropdown automates the group-wise analysis. Instead of facets, which are only powerful for &lt;=9 plots at a time, a dropdown can easily visualize more plots.\n\nplot_timeseries(): Gets new parameters plotly_dropdown, plotly_dropdown_x, plotly_dropdown_y #301\nplot_anomalies(): Gets new parameters plotly_dropdown, plotly_dropdown_x, plotly_dropdown_y #301\n\n\n\n\n\nplot_timeseries(value_column = list(), color_column=list()): Now supports multiple columns in wide format for grouped time series data visualization. #136"
   },
   {
     "objectID": "changelog-news.html#new-features",
     "href": "changelog-news.html#new-features",
     "title": "Changelog for Pytimetk",
     "section": "",
-    "text": "A plotly dropdown automates the group-wise analysis. Instead of facets, which are only powerful for &lt;=9 plots at a time, a dropdown can easily visualize more plots.\n\nplot_timeseries(): Gets new parameters plotly_dropdown, plotly_dropdown_x, plotly_dropdown_y #301\nplot_anomalies(): Gets new parameters plotly_dropdown, plotly_dropdown_x, plotly_dropdown_y #301"
+    "text": "A plotly dropdown automates the group-wise analysis. Instead of facets, which are only powerful for &lt;=9 plots at a time, a dropdown can easily visualize more plots.\n\nplot_timeseries(): Gets new parameters plotly_dropdown, plotly_dropdown_x, plotly_dropdown_y #301\nplot_anomalies(): Gets new parameters plotly_dropdown, plotly_dropdown_x, plotly_dropdown_y #301\n\n\n\n\n\nplot_timeseries(value_column = list(), color_column=list()): Now supports multiple columns in wide format for grouped time series data visualization. #136"
   },
   {
     "objectID": "changelog-news.html#fixes",
