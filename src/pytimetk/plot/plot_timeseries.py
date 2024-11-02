@@ -823,6 +823,18 @@ def _plot_timeseries_plotly(
                     y=plotly_dropdown_y,
                     yanchor="top",
                     showactive=True,
+                    font=dict(
+                        size=8  # Adjust the font size to make the dropdown text smaller
+                    ),
+                    pad=dict(
+                        r=1,  # Reduce right padding
+                        t=1,  # Reduce top padding
+                        l=1,  # Reduce left padding
+                        b=1,  # Reduce bottom padding
+                    ),
+                    # bgcolor='rgba(255, 255, 255, 0.5)',  # Set a transparent background for a sleek look
+                    # bordercolor='gray',  # Optionally add a border color
+                    borderwidth=1 
                 )
             ],
             title=f"{title} - {unique_group_names[0]}",
