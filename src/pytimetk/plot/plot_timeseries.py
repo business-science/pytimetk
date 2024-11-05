@@ -824,13 +824,13 @@ def _plot_timeseries_plotly(
                     yanchor="top",
                     showactive=True,
                     font=dict(
-                        size=8  # Adjust the font size to make the dropdown text smaller
+                        size=10  # Adjust the font size to make the dropdown text smaller
                     ),
                     pad=dict(
-                        r=1,  # Reduce right padding
-                        t=1,  # Reduce top padding
-                        l=1,  # Reduce left padding
-                        b=1,  # Reduce bottom padding
+                        r=5,  # Reduce right padding
+                        t=5,  # Reduce top padding
+                        l=5,  # Reduce left padding
+                        b=5,  # Reduce bottom padding
                     ),
                     # bgcolor='rgba(255, 255, 255, 0.5)',  # Set a transparent background for a sleek look
                     # bordercolor='gray',  # Optionally add a border color
