@@ -36,6 +36,8 @@ from .feature_engineering.hilbert import *
 from .feature_engineering.wavelet import *
 from .feature_engineering.ewm import *
 
+from .crossvalidation.time_series_cv import *
+
 from .finance.cmo import *
 from .finance.macd import *
 from .finance.bbands import *
