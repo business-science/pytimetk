@@ -132,12 +132,17 @@ class TimeSeriesCV(TimeBasedSplit):
         """Returns a generator of split arrays with an optional `slice_limit`.
 
         Arguments:
-            *arrays: The arrays to split. Must have the same length as `time_series`.
-            time_series: The time series used to create boolean masks for splits. If not provided, the method will try 
+            *arrays: 
+                The arrays to split. Must have the same length as `time_series`.
+            time_series: 
+                The time series used to create boolean masks for splits. If not provided, the method will try 
                 to use the index of the first array (if it is a DataFrame or Series) as the time series.
-            start_dt: The start of the time period. If provided, it is used in place of `time_series.min()`.
-            end_dt: The end of the time period. If provided, it is used in place of `time_series.max()`.
-            return_splitstate: Whether to return the `SplitState` instance for each split.
+            start_dt: 
+                The start of the time period. If provided, it is used in place of `time_series.min()`.
+            end_dt: 
+                The end of the time period. If provided, it is used in place of `time_series.max()`.
+            return_splitstate: 
+                Whether to return the `SplitState` instance for each split.
 
         Yields:
             A generator of tuples of arrays containing the training and forecast data. If `slice_limit` is set, 
