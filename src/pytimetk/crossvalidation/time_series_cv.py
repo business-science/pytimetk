@@ -102,7 +102,7 @@ class TimeSeriesCV(TimeBasedSplit):
         frequency="days",
         train_size=10,
         forecast_horizon=5,
-        gap=1,
+        gap=0,
         stride=0,
         split_limit=3  # Limiting to 3 splits
     )
@@ -253,11 +253,10 @@ class TimeSeriesCV(TimeBasedSplit):
         color_palette: Optional[Union[dict, list, str]] = None,
         facet_ncol: int = 1,
         facet_nrow: Optional[int] = None,
-        facet_scales: str = "free_y",
+        facet_scales: str = "fixed",  # "fixed" ensures y-axis is globally consistent
         facet_dir: str = "h",
         line_color: str = "#2c3e50",
-        line_size: float = None,
-        line_type: str = 'solid',
+        line_size: float = 1.0,  # Line size for the plot
         line_alpha: float = 1.0,
         legend_show: bool = True,
         title: str = "Time Series Cross Validation Plot",
@@ -268,7 +267,7 @@ class TimeSeriesCV(TimeBasedSplit):
         base_size: float = 11,
         width: Optional[int] = None,
         height: Optional[int] = None,
-        engine: str = "plotly",
+        engine: str = "plotly"
     ):
         """Plots the cross-validation sets using Plotly with a custom theme and formatting.
 
@@ -279,34 +278,17 @@ class TimeSeriesCV(TimeBasedSplit):
         """
         # Handle color palette
         if color_palette is None:
-            
-            color_palette = list(palette_timetk().values())
-        else:
-            if isinstance(color_palette, dict):
-                color_palette = list(palette_timetk(color_palette).values())
-            elif isinstance(color_palette, list):
-                color_palette = color_palette
-            elif isinstance(color_palette, str):
-                color_palette = [color_palette]
-            else:
-                raise ValueError("Invalid `color_palette` parameter. It must be a dictionary, list, or string.")
-        # Handle color palette
-        if color_palette is None:
-            color_palette = list(palette_timetk(color_palette).values())  # Default colors
+            color_palette = list(palette_timetk().values())  # Default colors
         elif isinstance(color_palette, str):
             color_palette = [color_palette]  # Convert single color to a list
         elif isinstance(color_palette, dict):
             # Convert dictionary to a list of colors for train and forecast
             color_palette = [
-                color_palette.get("train", "rgb(57, 105, 172)"),
-                color_palette.get("forecast", "indianred")
+                color_palette.get("train", palette_timetk().values()[0]),
+                color_palette.get("forecast", palette_timetk().values()[1]),
             ]
         elif not isinstance(color_palette, list):
             raise ValueError("Invalid `color_palette` parameter. It must be a dictionary, list, or string.")
-
-        # Handle line_size
-        if line_size is None:
-            line_size = 0.65 if engine == 'plotly' else 0.35
 
         # Use the index of y if time_series is not provided
         if time_series is None:
@@ -323,10 +305,11 @@ class TimeSeriesCV(TimeBasedSplit):
         splits = list(self.split(y, time_series=time_series, return_splitstate=True))
         num_folds = len(splits)
 
-        # Create subplots
+        # Create subplots with shared y-axis
         fig = make_subplots(
             rows=num_folds, cols=1,
             shared_xaxes=True,
+            shared_yaxes=True,  # Ensure y-axis is shared globally
             subplot_titles=[f"Fold {i+1}" for i in range(num_folds)]
         )
 
@@ -339,27 +322,33 @@ class TimeSeriesCV(TimeBasedSplit):
             fs = split_state.forecast_start
             fe = split_state.forecast_end
 
-            # Add train set trace to the current subplot
+            # Add train set trace as lines to the current subplot
             fig.add_trace(
                 go.Scatter(
                     x=time_series[(time_series >= ts) & (time_series < te)],
-                    y=train + fold,
+                    y=train,
                     name=f"Train Fold {fold}",
-                    mode="lines" if line_size else "markers",
-                    line=dict(color=color_palette[0], width=line_size, dash=line_type),
+                    mode="lines",  # Use lines for plotting
+                    line=dict(
+                        color=color_palette[0], 
+                        width=line_size
+                    ),
                     opacity=line_alpha
                 ),
                 row=fold, col=1
             )
 
-            # Add forecast set trace to the current subplot
+            # Add forecast set trace as lines to the current subplot
             fig.add_trace(
                 go.Scatter(
                     x=time_series[(time_series >= fs) & (time_series < fe)],
-                    y=forecast + fold,
+                    y=forecast,
                     name=f"Forecast Fold {fold}",
-                    mode="lines" if line_size else "markers",
-                    line=dict(color=color_palette[1], width=line_size),
+                    mode="lines",  # Use lines for plotting
+                    line=dict(
+                        color=color_palette[1], 
+                        width=line_size
+                    ),
                     opacity=line_alpha
                 ),
                 row=fold, col=1
@@ -385,7 +374,7 @@ class TimeSeriesCV(TimeBasedSplit):
 
         # Update axes
         fig.update_xaxes(tickfont=dict(size=base_size * 0.8), matches=None, showticklabels=True, visible=True)
-        fig.update_yaxes(tickfont=dict(size=base_size * 0.8))
+        fig.update_yaxes(tickfont=dict(size=base_size * 0.8), range=[y.min(), y.max()])  # Keep y-axis range consistent
 
         # Update hover labels
         fig.update_traces(hoverlabel=dict(font_size=base_size * 0.8))
