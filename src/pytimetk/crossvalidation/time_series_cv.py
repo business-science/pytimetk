@@ -18,6 +18,9 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 from typing import TypeVar
+from typing import Optional, Union
+
+from pytimetk.plot.theme import palette_timetk
 
 TL = TypeVar("TL", bound=TensorLike)
 
@@ -128,6 +131,7 @@ class TimeSeriesCV(TimeBasedSplit):
     """
 
     def __init__(
+        self,
         frequency: str,
         train_size: int,
         forecast_horizon: int,
@@ -138,8 +142,22 @@ class TimeSeriesCV(TimeBasedSplit):
         split_limit: int = None,
         **kwargs
     ):
-        super().__init__(*args, mode=mode, **kwargs)
+        # Initialize the parent class
+        super().__init__(
+            frequency = frequency,
+            train_size = train_size,
+            forecast_horizon = forecast_horizon,
+            gap = gap,
+            stride = stride,
+            window = window,
+            mode=mode, 
+            **kwargs
+        )
+        
         self.split_limit = split_limit
+
+        # Assign the parameters to the class
+        
 
     def split(
         self,
@@ -228,16 +246,60 @@ class TimeSeriesCV(TimeBasedSplit):
             print(f"Train Period: {train_start_date} to {train_end_date}")
             print(f"Forecast Period: {forecast_start_date} to {forecast_end_date}\n")
             
-    
-    def plot(self, y: pd.Series, time_series: pd.Series = None):
-        """Plots the cross-validation sets using Plotly with each fold in a separate subplot.
+    def plot(
+        self, 
+        y: pd.Series, 
+        time_series: pd.Series = None,
+        color_palette: Optional[Union[dict, list, str]] = None,
+        facet_ncol: int = 1,
+        facet_nrow: Optional[int] = None,
+        facet_scales: str = "free_y",
+        facet_dir: str = "h",
+        line_color: str = "#2c3e50",
+        line_size: float = None,
+        line_type: str = 'solid',
+        line_alpha: float = 1.0,
+        legend_show: bool = True,
+        title: str = "Time Series Plot",
+        x_lab: str = "",
+        y_lab: str = "",
+        color_lab: str = "Legend",
+        x_axis_date_labels: str = "%b %Y",
+        base_size: float = 11,
+        width: Optional[int] = None,
+        height: Optional[int] = None,
+        engine: str = "plotly",
+    ):
+        """Plots the cross-validation sets using Plotly with a custom theme and formatting.
 
         Arguments:
-            y: Pandas.Series
-                The Pandas series of target values to plot.
-            time_series: Optional[pd.Series]
-                The time series used for the x-axis. If not provided, the index of `y` will be used.
+            y: The Pandas series of target values to plot.
+            time_series: The time series used for the x-axis. If not provided, the index of `y` will be used.
+            (Additional arguments for customizing the theme and layout)
         """
+        # Handle color palette
+        if color_palette is None:
+            
+            color_palette = list(palette_timetk().values())
+        else:
+            if isinstance(color_palette, dict):
+                color_palette = list(palette_timetk(color_palette).values())
+            elif isinstance(color_palette, list):
+                color_palette = color_palette
+            elif isinstance(color_palette, str):
+                color_palette = [color_palette]
+            else:
+                raise ValueError("Invalid `color_palette` parameter. It must be a dictionary, list, or string.")
+        
+        # Handle line_size
+        if line_size is None:
+            if engine == 'plotnine':
+                line_size = 0.35
+            elif engine == 'matplotlib':
+                line_size = 0.35
+            elif engine == 'plotly':
+                line_size = 0.65
+        
         # Use the index of y if time_series is not provided
         if time_series is None:
             if isinstance(y, pd.Series):
@@ -255,8 +317,8 @@ class TimeSeriesCV(TimeBasedSplit):
 
         # Create subplots
         fig = make_subplots(
-            rows=num_folds, cols=1,  # One column, multiple rows
-            shared_xaxes=True,  # Share the x-axis across all subplots
+            rows=num_folds, cols=1,
+            shared_xaxes=True,
             subplot_titles=[f"Fold {i+1}" for i in range(num_folds)]
         )
 
@@ -275,8 +337,10 @@ class TimeSeriesCV(TimeBasedSplit):
                     x=time_series[(time_series >= ts) & (time_series < te)],
                     y=train + fold,
                     name=f"Train Fold {fold}",
-                    mode="markers",
-                    marker={"color": "rgb(57, 105, 172)"}
+                    mode="lines" if line_size else "markers",
+                    line=dict(color=line_color, width=line_size, dash=line_type),
+                    opacity=line_alpha,
+                    marker=dict(color=color_palette.get("train", "rgb(57, 105, 172)") if color_palette else "rgb(57, 105, 172)")
                 ),
                 row=fold, col=1
             )
@@ -287,27 +351,43 @@ class TimeSeriesCV(TimeBasedSplit):
                     x=time_series[(time_series >= fs) & (time_series < fe)],
                     y=forecast + fold,
                     name=f"Forecast Fold {fold}",
-                    mode="markers",
-                    marker={"color": "indianred"}
+                    mode="lines" if line_size else "markers",
+                    marker=dict(color=color_palette.get("forecast", "indianred") if color_palette else "indianred")
                 ),
                 row=fold, col=1
             )
 
         # Update layout
         fig.update_layout(
-            title={
-                "text": "Time-Based Cross Validation",
-                "y": 0.95, "x": 0.5,
-                "xanchor": "center",
-                "yanchor": "top"
-            },
-            showlegend=True,
-            height=300 * num_folds,  # Adjust height based on the number of folds
-            xaxis_title="Time",
-            yaxis_title="Fold"
+            title=title,
+            xaxis_title=x_lab,
+            yaxis_title=y_lab,
+            legend_title_text=color_lab,
+            xaxis=dict(tickformat=x_axis_date_labels),
+            template="plotly_white",
+            font=dict(size=base_size),
+            title_font=dict(size=base_size * 1.2),
+            legend_title_font=dict(size=base_size * 0.8),
+            legend_font=dict(size=base_size * 0.8),
+            margin=dict(l=10, r=10, t=40, b=40),
+            autosize=True,
+            width=width,
+            height=height,
         )
 
+        # Update axes
+        fig.update_xaxes(tickfont=dict(size=base_size * 0.8), matches=None, showticklabels=True, visible=True)
+        fig.update_yaxes(tickfont=dict(size=base_size * 0.8))
+
+        # Update hover labels
+        fig.update_traces(hoverlabel=dict(font_size=base_size * 0.8))
+
+        # Show or hide legend
+        if not legend_show:
+            fig.update_layout(showlegend=False)
+
         return fig
+
 
 
 
