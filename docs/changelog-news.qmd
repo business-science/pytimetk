@@ -10,6 +10,12 @@ number-sections: false
 
 ## New Features
 
+### Time Series Cross Validation (TSCV)
+
+Integration with `timebasedcv` #291. New Classes:
+
+- `TimeSeriesCV()`: An enhanced version of `TimeBasedSplit()` that defaults to `mode = "backwards"`, allows for maximum splits using `split_limit`, and adds enhanced diagnostics like `glimpse()` and `plot()`
+
 ### Plotly Dropdowns
 
 A plotly dropdown automates the group-wise analysis. Instead of facets, which are only powerful for <=9 plots at a time, a dropdown can easily visualize more plots. 
