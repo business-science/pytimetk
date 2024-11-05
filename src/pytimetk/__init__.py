@@ -143,6 +143,9 @@ from .feature_engineering.expanding_apply import (
 from .feature_engineering.fourier import (
     augment_fourier
 )
+from .crossvalidation.time_series_cv import (
+    TimeSeriesCV, 
+)
 from .core.ts_features import (
     ts_features
 )

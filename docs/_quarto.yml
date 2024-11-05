@@ -162,6 +162,11 @@ quartodoc:
       contents:
         - ts_features
         - ts_summary
+    - title: 📈 Time Series Cross Validation (TSCV)
+      desc: Time series cross validation.
+      package: pytimetk
+      contents:
+        - TimeSeriesCV
     - title: 💹 Finance Module (Momentum Indicators)
       desc: Momentum indicators for financial time series data.
       package: pytimetk

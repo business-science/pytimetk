@@ -22,7 +22,8 @@ from typing import TypeVar
 TL = TypeVar("TL", bound=TensorLike)
 
 class TimeSeriesCV(TimeBasedSplit):
-    """`TimeSeriesCV` is a subclass of `TimeBasedSplit` with default mode set to 'backward' 
+    """
+    `TimeSeriesCV` is a subclass of `TimeBasedSplit` with default mode set to 'backward' 
     and an optional `split_limit` to return the first `n` slices of time series cross-validation sets.
     
     Parameters
@@ -39,7 +40,7 @@ class TimeSeriesCV(TimeBasedSplit):
         Sets the number of time units to skip between the end of the train set and the start of the forecast set.
     stride: int 
         How many time unit to move forward after each split. If `None` (or set to 0), the stride is equal to the
-       `forecast_horizon` quantity.
+        `forecast_horizon` quantity.
     window: 
         The type of window to use, either "rolling" or "expanding".
     mode: ModeType, optional
@@ -88,7 +89,7 @@ class TimeSeriesCV(TimeBasedSplit):
         .reset_index(drop=True)
         .assign(y=lambda t: t[["a", "b"]].sum(axis=1) + RNG.normal(size=t.shape[0]) / 25)
     )
-    
+
     df.set_index("time", inplace=True)
 
     # Now let's run split the data with the provided `TimeSeriesCV` instance
@@ -107,26 +108,36 @@ class TimeSeriesCV(TimeBasedSplit):
 
     # Creates a split generator
     splits = tscv.split(X, y)
-    
+
     for X_train, X_forecast, y_train, y_forecast in splits:
         print(X_train)
         print(X_forecast)
     ```
-    
+
     ``` {python}
     # Also, you can use `glimpse()` to print summary information about the splits
-    
+
     tscv.glimpse(y)
     ```
-    
+
     ``` {python}
     # You can also plot the splits by calling `plot()` on the `TimeSeriesCV` instance with the `y` Pandas series
-    
+
     tscv.plot(y)
     ```
     """
 
-    def __init__(self, *args, mode: ModeType = "backward", split_limit: int = None, **kwargs):
+    def __init__(
+        frequency: str,
+        train_size: int,
+        forecast_horizon: int,
+        gap: int,
+        stride: int = 0,
+        window: str = "rolling",
+        mode: ModeType = "backward",
+        split_limit: int = None,
+        **kwargs
+    ):
         super().__init__(*args, mode=mode, **kwargs)
         self.split_limit = split_limit
 

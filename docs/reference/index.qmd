@@ -71,6 +71,14 @@ Python implementation of the R package `tsfeatures`.
 | [ts_features](ts_features.qmd#pytimetk.ts_features) | Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the `tsfeatures` package. |
 | [ts_summary](ts_summary.qmd#pytimetk.ts_summary) | Computes summary statistics for a time series data, either for the entire  |
 
+## 📈 Time Series Cross Validation (TSCV)
+
+Time series cross validation.
+
+| | |
+| --- | --- |
+| [TimeSeriesCV](TimeSeriesCV.qmd#pytimetk.TimeSeriesCV) | `TimeSeriesCV` is a subclass of `TimeBasedSplit` with default mode set to 'backward'  |
+
 ## 💹 Finance Module (Momentum Indicators)
 
 Momentum indicators for financial time series data.

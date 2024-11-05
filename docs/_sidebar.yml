@@ -44,6 +44,9 @@ website:
       - reference/ts_summary.qmd
       section: "\U0001F4CE TS Features"
     - contents:
+      - reference/TimeSeriesCV.qmd
+      section: "\U0001F4C8 Time Series Cross Validation (TSCV)"
+    - contents:
       - reference/augment_macd.qmd
       - reference/augment_ppo.qmd
       - reference/augment_rsi.qmd

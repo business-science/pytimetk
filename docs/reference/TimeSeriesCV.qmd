@@ -1,0 +1,152 @@
+# TimeSeriesCV { #pytimetk.TimeSeriesCV }
+
+`TimeSeriesCV(frequency, train_size, forecast_horizon, gap, stride=0, window='rolling', mode='backward', split_limit=None, **kwargs)`
+
+`TimeSeriesCV` is a subclass of `TimeBasedSplit` with default mode set to 'backward' 
+and an optional `split_limit` to return the first `n` slices of time series cross-validation sets.
+
+## Parameters
+
+| Name               | Type     | Description                                                                                                                                                                                                                                                     | Default      |
+|--------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| `frequency`        | str      | The frequency (or time unit) of the time series. Must be one of "days", "seconds", "microseconds", "milliseconds", "minutes", "hours", "weeks". These are the only valid values for the `unit` argument of `timedelta` from python `datetime` standard library. | _required_   |
+| `train_size`       | int      | Defines the minimum number of time units required to be in the train set.                                                                                                                                                                                       | _required_   |
+| `forecast_horizon` | int      | Specifies the number of time units to forecast.                                                                                                                                                                                                                 | _required_   |
+| `gap`              | int      | Sets the number of time units to skip between the end of the train set and the start of the forecast set.                                                                                                                                                       | _required_   |
+| `stride`           | int      | How many time unit to move forward after each split. If `None` (or set to 0), the stride is equal to the `forecast_horizon` quantity.                                                                                                                           | `0`          |
+| `window`           | str      | The type of window to use, either "rolling" or "expanding".                                                                                                                                                                                                     | `'rolling'`  |
+| `mode`             | ModeType | The mode to use for cross-validation. Default is 'backward'.                                                                                                                                                                                                    | `'backward'` |
+| `split_limit`      | int      | The maximum number of splits to return. If not provided, all splits are returned.                                                                                                                                                                               | `None`       |
+
+## Raises:
+
+ValueError:
+    - If `frequency` is not one of "days", "seconds", "microseconds", "milliseconds", "minutes", "hours",
+    "weeks".
+    - If `window` is not one of "rolling" or "expanding".
+    - If `mode` is not one of "forward" or "backward"
+    - If `train_size`, `forecast_horizon`, `gap` or `stride` are not strictly positive.
+
+TypeError: 
+    If `train_size`, `forecast_horizon`, `gap` or `stride` are not of type `int`.
+
+## Examples:
+
+
+``` {python}
+import pandas as pd
+import numpy as np
+from pytimetk import TimeSeriesCV
+
+RNG = np.random.default_rng(seed=42)
+
+dates = pd.Series(pd.date_range("2023-01-01", "2023-01-31", freq="D"))
+size = len(dates)
+
+df = (
+    pd.concat(
+        [
+            pd.DataFrame(
+                {
+                    "time": pd.date_range(start, end, periods=_size, inclusive="left"),
+                    "a": RNG.normal(size=_size - 1),
+                    "b": RNG.normal(size=_size - 1),
+                }
+            )
+            for start, end, _size in zip(dates[:-1], dates[1:], RNG.integers(2, 24, size - 1))
+        ]
+    )
+    .reset_index(drop=True)
+    .assign(y=lambda t: t[["a", "b"]].sum(axis=1) + RNG.normal(size=t.shape[0]) / 25)
+)
+
+df.set_index("time", inplace=True)
+
+# Now let's run split the data with the provided `TimeSeriesCV` instance
+
+# Initialize TimeSeriesCV with desired parameters
+tscv = TimeSeriesCV(
+    frequency="days",
+    train_size=10,
+    forecast_horizon=5,
+    gap=1,
+    stride=0,
+    split_limit=3  # Limiting to 3 splits
+)
+
+X, y = df.loc[:, ["a", "b"]], df["y"]
+
+# Creates a split generator
+splits = tscv.split(X, y)
+
+for X_train, X_forecast, y_train, y_forecast in splits:
+    print(X_train)
+    print(X_forecast)
+```
+
+``` {python}
+# Also, you can use `glimpse()` to print summary information about the splits
+
+tscv.glimpse(y)
+```
+
+``` {python}
+# You can also plot the splits by calling `plot()` on the `TimeSeriesCV` instance with the `y` Pandas series
+
+tscv.plot(y)
+```
+
+## Methods
+
+| Name | Description |
+| --- | --- |
+| [glimpse](#pytimetk.TimeSeriesCV.glimpse) | Prints summary information about the splits, focusing on the first two arrays. |
+| [plot](#pytimetk.TimeSeriesCV.plot) | Plots the cross-validation sets using Plotly with each fold in a separate subplot. |
+| [split](#pytimetk.TimeSeriesCV.split) | Returns a generator of split arrays with an optional `split_limit`. |
+
+### glimpse { #pytimetk.TimeSeriesCV.glimpse }
+
+`TimeSeriesCV.glimpse(*arrays, time_series=None)`
+
+Prints summary information about the splits, focusing on the first two arrays.
+
+Arguments:
+    *arrays: 
+        The arrays to split. Only the first two will be used for summary information.
+    time_series: 
+        The time series used for splitting. If not provided, the index of the first array is used. Default is None.
+
+### plot { #pytimetk.TimeSeriesCV.plot }
+
+`TimeSeriesCV.plot(y, time_series=None)`
+
+Plots the cross-validation sets using Plotly with each fold in a separate subplot.
+
+Arguments:
+    y: Pandas.Series
+        The Pandas series of target values to plot.
+    time_series: Optional[pd.Series]
+        The time series used for the x-axis. If not provided, the index of `y` will be used.
+
+### split { #pytimetk.TimeSeriesCV.split }
+
+`TimeSeriesCV.split(*arrays, time_series=None, start_dt=None, end_dt=None, return_splitstate=False)`
+
+Returns a generator of split arrays with an optional `split_limit`.
+
+Arguments:
+    *arrays: 
+        The arrays to split. Must have the same length as `time_series`.
+    time_series: 
+        The time series used to create boolean masks for splits. If not provided, the method will try 
+        to use the index of the first array (if it is a DataFrame or Series) as the time series.
+    start_dt: 
+        The start of the time period. If provided, it is used in place of `time_series.min()`.
+    end_dt: 
+        The end of the time period. If provided, it is used in place of `time_series.max()`.
+    return_splitstate: 
+        Whether to return the `SplitState` instance for each split.
+
+Yields:
+    A generator of tuples of arrays containing the training and forecast data. If `split_limit` is set, 
+    yields only up to `split_limit` splits.
