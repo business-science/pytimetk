@@ -260,7 +260,7 @@ class TimeSeriesCV(TimeBasedSplit):
         line_type: str = 'solid',
         line_alpha: float = 1.0,
         legend_show: bool = True,
-        title: str = "Time Series Plot",
+        title: str = "Time Series Cross Validation Plot",
         x_lab: str = "",
         y_lab: str = "",
         color_lab: str = "Legend",
@@ -290,16 +290,24 @@ class TimeSeriesCV(TimeBasedSplit):
                 color_palette = [color_palette]
             else:
                 raise ValueError("Invalid `color_palette` parameter. It must be a dictionary, list, or string.")
-        
+        # Handle color palette
+        if color_palette is None:
+            color_palette = list(palette_timetk(color_palette).values())  # Default colors
+        elif isinstance(color_palette, str):
+            color_palette = [color_palette]  # Convert single color to a list
+        elif isinstance(color_palette, dict):
+            # Convert dictionary to a list of colors for train and forecast
+            color_palette = [
+                color_palette.get("train", "rgb(57, 105, 172)"),
+                color_palette.get("forecast", "indianred")
+            ]
+        elif not isinstance(color_palette, list):
+            raise ValueError("Invalid `color_palette` parameter. It must be a dictionary, list, or string.")
+
         # Handle line_size
         if line_size is None:
-            if engine == 'plotnine':
-                line_size = 0.35
-            elif engine == 'matplotlib':
-                line_size = 0.35
-            elif engine == 'plotly':
-                line_size = 0.65
-        
+            line_size = 0.65 if engine == 'plotly' else 0.35
+
         # Use the index of y if time_series is not provided
         if time_series is None:
             if isinstance(y, pd.Series):
@@ -338,9 +346,8 @@ class TimeSeriesCV(TimeBasedSplit):
                     y=train + fold,
                     name=f"Train Fold {fold}",
                     mode="lines" if line_size else "markers",
-                    line=dict(color=line_color, width=line_size, dash=line_type),
-                    opacity=line_alpha,
-                    marker=dict(color=color_palette.get("train", "rgb(57, 105, 172)") if color_palette else "rgb(57, 105, 172)")
+                    line=dict(color=color_palette[0], width=line_size, dash=line_type),
+                    opacity=line_alpha
                 ),
                 row=fold, col=1
             )
@@ -352,7 +359,8 @@ class TimeSeriesCV(TimeBasedSplit):
                     y=forecast + fold,
                     name=f"Forecast Fold {fold}",
                     mode="lines" if line_size else "markers",
-                    marker=dict(color=color_palette.get("forecast", "indianred") if color_palette else "indianred")
+                    line=dict(color=color_palette[1], width=line_size),
+                    opacity=line_alpha
                 ),
                 row=fold, col=1
             )
