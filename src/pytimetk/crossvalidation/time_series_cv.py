@@ -24,15 +24,21 @@ class TimeSeriesCV(TimeBasedSplit):
     
     Parameters
     ----------
-    frequency: The frequency (or time unit) of the time series. Must be one of "days", "seconds", "microseconds",
-            "milliseconds", "minutes", "hours", "weeks". These are the only valid values for the `unit` argument of
-            `timedelta` from python `datetime` standard library.
-    train_size: Defines the minimum number of time units required to be in the train set.
-    forecast_horizon: Specifies the number of time units to forecast.
-    gap: Sets the number of time units to skip between the end of the train set and the start of the forecast set.
-    stride: How many time unit to move forward after each split. If `None` (or set to 0), the stride is equal to the
+    frequency: str
+        The frequency (or time unit) of the time series. Must be one of "days", "seconds", "microseconds",
+        "milliseconds", "minutes", "hours", "weeks". These are the only valid values for the `unit` argument of
+        `timedelta` from python `datetime` standard library.
+    train_size: int
+        Defines the minimum number of time units required to be in the train set.
+    forecast_horizon: int
+        Specifies the number of time units to forecast.
+    gap: int
+        Sets the number of time units to skip between the end of the train set and the start of the forecast set.
+    stride: int 
+        How many time unit to move forward after each split. If `None` (or set to 0), the stride is equal to the
        `forecast_horizon` quantity.
-    window: The type of window to use, either "rolling" or "expanding".
+    window: 
+        The type of window to use, either "rolling" or "expanding".
     mode: ModeType, optional
         The mode to use for cross-validation. Default is 'backward'.
     slice_limit: int, optional
@@ -46,12 +52,14 @@ class TimeSeriesCV(TimeBasedSplit):
         - If `window` is not one of "rolling" or "expanding".
         - If `mode` is not one of "forward" or "backward"
         - If `train_size`, `forecast_horizon`, `gap` or `stride` are not strictly positive.
-    TypeError: If `train_size`, `forecast_horizon`, `gap` or `stride` are not of type `int`.
+        
+    TypeError: 
+        If `train_size`, `forecast_horizon`, `gap` or `stride` are not of type `int`.
     
     Examples:
     ---------
     
-    ```{python}
+    ```python
     import pandas as pd
     import numpy as np
     from pytimetk import TimeSeriesCV
@@ -77,8 +85,8 @@ class TimeSeriesCV(TimeBasedSplit):
         .reset_index(drop=True)
         .assign(y=lambda t: t[["a", "b"]].sum(axis=1) + RNG.normal(size=t.shape[0]) / 25)
     )
-
-    df.set_index("time").resample("D").agg(count=("y", np.size)).head(5)
+    
+    df.set_index("time", inplace=True)
 
     # Now let's run split the data with the provided `TimeSeriesCV` instance
 
@@ -88,18 +96,25 @@ class TimeSeriesCV(TimeBasedSplit):
         train_size=10,
         forecast_horizon=5,
         gap=1,
-        stride=3,
+        stride=0,
         slice_limit=3  # Limiting to 3 slices
     )
 
-    X, y, time_series = df.loc[:, ["a", "b"]], df["y"], df["time"]
+    X, y = df.loc[:, ["a", "b"]], df["y"]
 
-    for X_train, X_forecast, y_train, y_forecast in tscv.split(X, y, time_series=time_series):
+    # If `time_series` is not provided, it will use the index of `X` or `y` if available
+    for X_train, X_forecast, y_train, y_forecast in tscv.split(X, y):
+        
+        # Get the start and end dates for the training and forecast periods
+        train_start_date = min(X_train.index)
+        train_end_date = max(X_train.index)
+        forecast_start_date = min(X_forecast.index)
+        forecast_end_date = max(X_forecast.index)
+
         print(f"Train: {X_train.shape}, Forecast: {X_forecast.shape}")
-    
+        print(f"Train Period: {train_start_date} to {train_end_date}")
+        print(f"Forecast Period: {forecast_start_date} to {forecast_end_date}\n")
     ```
-    
-    
     """
 
     def __init__(self, *args, mode: ModeType = "backward", slice_limit: int = None, **kwargs):
@@ -109,7 +124,7 @@ class TimeSeriesCV(TimeBasedSplit):
     def split(
         self,
         *arrays: TL,
-        time_series: SeriesLike[DateTimeLike],
+        time_series: SeriesLike[DateTimeLike] = None,
         start_dt: NullableDatetime = None,
         end_dt: NullableDatetime = None,
         return_splitstate: bool = False,
@@ -118,7 +133,8 @@ class TimeSeriesCV(TimeBasedSplit):
 
         Arguments:
             *arrays: The arrays to split. Must have the same length as `time_series`.
-            time_series: The time series used to create boolean masks for splits.
+            time_series: The time series used to create boolean masks for splits. If not provided, the method will try 
+                to use the index of the first array (if it is a DataFrame or Series) as the time series.
             start_dt: The start of the time period. If provided, it is used in place of `time_series.min()`.
             end_dt: The end of the time period. If provided, it is used in place of `time_series.max()`.
             return_splitstate: Whether to return the `SplitState` instance for each split.
@@ -127,6 +143,17 @@ class TimeSeriesCV(TimeBasedSplit):
             A generator of tuples of arrays containing the training and forecast data. If `slice_limit` is set, 
             yields only up to `slice_limit` splits.
         """
+        # If time_series is not provided, attempt to extract it from the index of the first array
+        if time_series is None:
+            if isinstance(arrays[0], (pd.DataFrame, pd.Series)):
+                time_series = arrays[0].index
+            else:
+                raise ValueError("time_series must be provided if arrays do not have a time-based index.")
+
+        # Ensure the time_series is compatible with Narwhals
+        if isinstance(time_series, pd.Index):
+            time_series = pd.Series(time_series, index=time_series)
+
         split_generator = super().split(
             *arrays, time_series=time_series, start_dt=start_dt, end_dt=end_dt, return_splitstate=return_splitstate
         )
@@ -138,6 +165,7 @@ class TimeSeriesCV(TimeBasedSplit):
                 yield split
         else:
             yield from split_generator
+
 
 
 # class TimeSeriesCV:
