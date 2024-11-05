@@ -93,9 +93,11 @@ class TimeSeriesCV(TimeBasedSplit):
         .assign(y=lambda t: t[["a", "b"]].sum(axis=1) + RNG.normal(size=t.shape[0]) / 25)
     )
 
+    # Set index
     df.set_index("time", inplace=True)
-
-    # Now let's run split the data with the provided `TimeSeriesCV` instance
+    
+    # Create an X dataframeand y series
+    X, y = df.loc[:, ["a", "b"]], df["y"]
 
     # Initialize TimeSeriesCV with desired parameters
     tscv = TimeSeriesCV(
@@ -106,9 +108,11 @@ class TimeSeriesCV(TimeBasedSplit):
         stride=0,
         split_limit=3  # Limiting to 3 splits
     )
+    
+    tscv
+    ```
 
-    X, y = df.loc[:, ["a", "b"]], df["y"]
-
+    ``` {python}
     # Creates a split generator
     splits = tscv.split(X, y)
 
@@ -116,7 +120,7 @@ class TimeSeriesCV(TimeBasedSplit):
         print(X_train)
         print(X_forecast)
     ```
-
+    
     ``` {python}
     # Also, you can use `glimpse()` to print summary information about the splits
 
@@ -251,25 +255,18 @@ class TimeSeriesCV(TimeBasedSplit):
         y: pd.Series, 
         time_series: pd.Series = None,
         color_palette: Optional[Union[dict, list, str]] = None,
-        facet_ncol: int = 1,
-        facet_nrow: Optional[int] = None,
-        facet_scales: str = "fixed",  # "fixed" ensures y-axis is globally consistent
-        facet_dir: str = "h",
-        line_color: str = "#2c3e50",
         line_size: float = 1.0,  # Line size for the plot
         line_alpha: float = 1.0,
-        legend_show: bool = True,
         title: str = "Time Series Cross Validation Plot",
         x_lab: str = "",
-        y_lab: str = "",
-        color_lab: str = "Legend",
-        x_axis_date_labels: str = "%b %Y",
+        y_lab: str = "Fold",
+        x_axis_date_labels: str = None,
         base_size: float = 11,
         width: Optional[int] = None,
         height: Optional[int] = None,
         engine: str = "plotly"
     ):
-        """Plots the cross-validation sets using Plotly with a custom theme and formatting.
+        """Plots the cross-validation folds on a single plot with folds on the y-axis and dates on the x-axis.
 
         Arguments:
             y: The Pandas series of target values to plot.
@@ -284,8 +281,8 @@ class TimeSeriesCV(TimeBasedSplit):
         elif isinstance(color_palette, dict):
             # Convert dictionary to a list of colors for train and forecast
             color_palette = [
-                color_palette.get("train", palette_timetk().values()[0]),
-                color_palette.get("forecast", palette_timetk().values()[1]),
+                color_palette.get("train", list(palette_timetk().values())[0]),
+                color_palette.get("forecast", list(palette_timetk().values())[1]),
             ]
         elif not isinstance(color_palette, list):
             raise ValueError("Invalid `color_palette` parameter. It must be a dictionary, list, or string.")
@@ -299,91 +296,94 @@ class TimeSeriesCV(TimeBasedSplit):
 
         # Ensure time_series is a Pandas Index
         if not isinstance(time_series, pd.Index):
-            raise ValueError("time_series must be a Pandas Index or convertible to one.")
+            time_series = pd.Index(time_series)
+
+        # Ensure time_series is a DatetimeIndex
+        if not isinstance(time_series, pd.DatetimeIndex):
+            time_series = pd.to_datetime(time_series)
 
         # Determine the number of folds
         splits = list(self.split(y, time_series=time_series, return_splitstate=True))
         num_folds = len(splits)
 
-        # Create subplots with shared y-axis
-        fig = make_subplots(
-            rows=num_folds, cols=1,
-            shared_xaxes=True,
-            shared_yaxes=True,  # Ensure y-axis is shared globally
-            subplot_titles=[f"Fold {i+1}" for i in range(num_folds)]
-        )
+        # Create figure
+        fig = go.Figure()
 
-        # Enumerate through the splits and add traces to each subplot
+        # Enumerate through the splits and add traces
         for fold, (train_forecast, split_state) in enumerate(splits, start=1):
-            train, forecast = train_forecast
-
             ts = split_state.train_start
             te = split_state.train_end
             fs = split_state.forecast_start
             fe = split_state.forecast_end
 
-            # Add train set trace as lines to the current subplot
-            fig.add_trace(
-                go.Scatter(
-                    x=time_series[(time_series >= ts) & (time_series < te)],
-                    y=train,
-                    name=f"Train Fold {fold}",
-                    mode="lines",  # Use lines for plotting
-                    line=dict(
-                        color=color_palette[0], 
-                        width=line_size
-                    ),
-                    opacity=line_alpha
-                ),
-                row=fold, col=1
-            )
+            # Convert indices to datetime if necessary
+            if isinstance(ts, int):
+                ts_date = time_series[ts]
+            else:
+                ts_date = pd.to_datetime(ts)
+            if isinstance(te, int):
+                te_date = time_series[te]
+            else:
+                te_date = pd.to_datetime(te)
+            if isinstance(fs, int):
+                fs_date = time_series[fs]
+            else:
+                fs_date = pd.to_datetime(fs)
+            if isinstance(fe, int):
+                fe_date = time_series[fe]
+            else:
+                fe_date = pd.to_datetime(fe)
 
-            # Add forecast set trace as lines to the current subplot
-            fig.add_trace(
-                go.Scatter(
-                    x=time_series[(time_series >= fs) & (time_series < fe)],
-                    y=forecast,
-                    name=f"Forecast Fold {fold}",
-                    mode="lines",  # Use lines for plotting
-                    line=dict(
-                        color=color_palette[1], 
-                        width=line_size
-                    ),
-                    opacity=line_alpha
-                ),
-                row=fold, col=1
-            )
+            # Plot the train period as a horizontal line at y=fold
+            fig.add_trace(go.Scatter(
+                x=[ts_date, te_date],
+                y=[fold, fold],
+                mode='lines',
+                line=dict(color=color_palette[0], width=line_size),
+                opacity=line_alpha,
+                showlegend=False
+            ))
+
+            # Plot the forecast period as a horizontal line at y=fold
+            fig.add_trace(go.Scatter(
+                x=[fs_date, fe_date],
+                y=[fold, fold],
+                mode='lines',
+                line=dict(color=color_palette[1], width=line_size),
+                opacity=line_alpha,
+                showlegend=False
+            ))
 
         # Update layout
         fig.update_layout(
             title=title,
             xaxis_title=x_lab,
             yaxis_title=y_lab,
-            legend_title_text=color_lab,
-            xaxis=dict(tickformat=x_axis_date_labels),
+            xaxis=dict(
+                tickformat=x_axis_date_labels,
+                type='date'  # Explicitly set the x-axis type to date
+            ),
             template="plotly_white",
             font=dict(size=base_size),
             title_font=dict(size=base_size * 1.2),
-            legend_title_font=dict(size=base_size * 0.8),
-            legend_font=dict(size=base_size * 0.8),
             margin=dict(l=10, r=10, t=40, b=40),
             autosize=True,
             width=width,
             height=height,
+            showlegend=False
         )
 
-        # Update axes
-        fig.update_xaxes(tickfont=dict(size=base_size * 0.8), matches=None, showticklabels=True, visible=True)
-        fig.update_yaxes(tickfont=dict(size=base_size * 0.8), range=[y.min(), y.max()])  # Keep y-axis range consistent
-
-        # Update hover labels
-        fig.update_traces(hoverlabel=dict(font_size=base_size * 0.8))
-
-        # Show or hide legend
-        if not legend_show:
-            fig.update_layout(showlegend=False)
+        # Update y-axis to have ticks at each fold
+        fig.update_yaxes(
+            tickmode='array',
+            tickvals=list(range(1, num_folds +1)),
+            ticktext=[f'Fold {i}' for i in range(1, num_folds +1)],
+            autorange='reversed'  # Optional: Place fold 1 at the top
+        )
 
         return fig
+
+
 
 
 
