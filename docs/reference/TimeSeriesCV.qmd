@@ -21,14 +21,16 @@ and an optional `split_limit` to return the first `n` slices of time series cros
 ## Raises:
 
 ValueError:
-    - If `frequency` is not one of "days", "seconds", "microseconds", "milliseconds", "minutes", "hours",
-    "weeks".
-    - If `window` is not one of "rolling" or "expanding".
-    - If `mode` is not one of "forward" or "backward"
-    - If `train_size`, `forecast_horizon`, `gap` or `stride` are not strictly positive.
+
+- If `frequency` is not one of "days", "seconds", "microseconds", "milliseconds", "minutes", "hours",
+"weeks".
+- If `window` is not one of "rolling" or "expanding".
+- If `mode` is not one of "forward" or "backward"
+- If `train_size`, `forecast_horizon`, `gap` or `stride` are not strictly positive.
 
 TypeError: 
-    If `train_size`, `forecast_horizon`, `gap` or `stride` are not of type `int`.
+
+If `train_size`, `forecast_horizon`, `gap` or `stride` are not of type `int`.
 
 ## Examples:
 

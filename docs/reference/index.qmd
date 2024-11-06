@@ -78,6 +78,7 @@ Time series cross validation.
 | | |
 | --- | --- |
 | [TimeSeriesCV](TimeSeriesCV.qmd#pytimetk.TimeSeriesCV) | `TimeSeriesCV` is a subclass of `TimeBasedSplit` with default mode set to 'backward'  |
+| [TimeSeriesCVSplitter](TimeSeriesCVSplitter.qmd#pytimetk.TimeSeriesCVSplitter) | The `TimeSeriesCVSplitter` is a scikit-learn compatible cross-validator using `TimeSeriesCV`. |
 
 ## 💹 Finance Module (Momentum Indicators)
 
