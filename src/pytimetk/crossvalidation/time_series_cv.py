@@ -255,9 +255,8 @@ class TimeSeriesCV(TimeBasedSplit):
         y: pd.Series, 
         time_series: pd.Series = None,
         color_palette: Optional[Union[dict, list, str]] = None,
-        line_size: float = 1.0,  # Line size for the plot
-        line_alpha: float = 1.0,
-        title: str = "Time Series Cross Validation Plot",
+        bar_height: float = 0.6,  # Height of each bar (adjust as needed)
+        title: str = "Time Series Cross-Validation Plot",
         x_lab: str = "",
         y_lab: str = "Fold",
         x_axis_date_labels: str = None,
@@ -266,7 +265,7 @@ class TimeSeriesCV(TimeBasedSplit):
         height: Optional[int] = None,
         engine: str = "plotly"
     ):
-        """Plots the cross-validation folds on a single plot with folds on the y-axis and dates on the x-axis.
+        """Plots the cross-validation folds on a single plot with folds on the y-axis and dates on the x-axis using rectangle shapes.
 
         Arguments:
             y: The Pandas series of target values to plot.
@@ -294,10 +293,6 @@ class TimeSeriesCV(TimeBasedSplit):
             else:
                 raise ValueError("time_series must be provided if y does not have a time-based index.")
 
-        # Ensure time_series is a Pandas Index
-        if not isinstance(time_series, pd.Index):
-            time_series = pd.Index(time_series)
-
         # Ensure time_series is a DatetimeIndex
         if not isinstance(time_series, pd.DatetimeIndex):
             time_series = pd.to_datetime(time_series)
@@ -309,8 +304,13 @@ class TimeSeriesCV(TimeBasedSplit):
         # Create figure
         fig = go.Figure()
 
-        # Enumerate through the splits and add traces
+        # Calculate the vertical positions for each fold
+        fold_positions = list(range(1, num_folds + 1))
+
+        # Enumerate through the splits and add rectangle shapes
         for fold, (train_forecast, split_state) in enumerate(splits, start=1):
+            train_indices, forecast_indices = train_forecast
+
             ts = split_state.train_start
             te = split_state.train_end
             fs = split_state.forecast_start
@@ -334,24 +334,48 @@ class TimeSeriesCV(TimeBasedSplit):
             else:
                 fe_date = pd.to_datetime(fe)
 
-            # Plot the train period as a horizontal line at y=fold
-            fig.add_trace(go.Scatter(
-                x=[ts_date, te_date],
-                y=[fold, fold],
-                mode='lines',
-                line=dict(color=color_palette[0], width=line_size),
-                opacity=line_alpha,
-                showlegend=False
-            ))
+            # Calculate y-axis positions
+            y0 = fold - bar_height / 2
+            y1 = fold + bar_height / 2
 
-            # Plot the forecast period as a horizontal line at y=fold
+            # Add rectangle for the training period
+            fig.add_shape(
+                type="rect",
+                x0=ts_date,
+                y0=y0,
+                x1=te_date,
+                y1=y1,
+                line=dict(width=0),
+                fillcolor=color_palette[0],
+                opacity=0.8,
+                layer='below',
+            )
+
+            # Add rectangle for the forecast period
+            fig.add_shape(
+                type="rect",
+                x0=fs_date,
+                y0=y0,
+                x1=fe_date,
+                y1=y1,
+                line=dict(width=0),
+                fillcolor=color_palette[1],
+                opacity=0.8,
+                layer='below',
+            )
+
+            # Calculate midpoint for annotation
+            train_midpoint = ts_date + (te_date - ts_date) / 2
+
+            # Optionally, add text annotations for each fold
             fig.add_trace(go.Scatter(
-                x=[fs_date, fe_date],
-                y=[fold, fold],
-                mode='lines',
-                line=dict(color=color_palette[1], width=line_size),
-                opacity=line_alpha,
-                showlegend=False
+                x=[train_midpoint],
+                y=[fold],
+                text=[f"Fold {fold}"],
+                mode="text",
+                showlegend=False,
+                textposition="middle center",
+                hoverinfo='skip',
             ))
 
         # Update layout
@@ -360,8 +384,19 @@ class TimeSeriesCV(TimeBasedSplit):
             xaxis_title=x_lab,
             yaxis_title=y_lab,
             xaxis=dict(
+                type='date',
                 tickformat=x_axis_date_labels,
-                type='date'  # Explicitly set the x-axis type to date
+                tickfont=dict(size=base_size * 0.8),
+                showgrid=True,
+            ),
+            yaxis=dict(
+                tickmode='array',
+                tickvals=fold_positions,
+                ticktext=[f'Fold {i}' for i in fold_positions],
+                range=[0.5, num_folds + 0.5],
+                autorange='reversed',  # Place Fold 1 at the top
+                tickfont=dict(size=base_size * 0.8),
+                showgrid=False,
             ),
             template="plotly_white",
             font=dict(size=base_size),
@@ -370,18 +405,14 @@ class TimeSeriesCV(TimeBasedSplit):
             autosize=True,
             width=width,
             height=height,
-            showlegend=False
-        )
-
-        # Update y-axis to have ticks at each fold
-        fig.update_yaxes(
-            tickmode='array',
-            tickvals=list(range(1, num_folds +1)),
-            ticktext=[f'Fold {i}' for i in range(1, num_folds +1)],
-            autorange='reversed'  # Optional: Place fold 1 at the top
+            showlegend=False,
         )
 
         return fig
+
+
+
+
 
 
 
