@@ -440,6 +440,7 @@ def plot_timeseries(
                 plotly_dropdown = True, # Plotly Dropdown
             )
     )
+    ```
     '''
     
     # Common checks

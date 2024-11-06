@@ -1,0 +1,274 @@
+---
+title: "Time Series Cross Validation"
+jupyter: python3
+toc: true
+toc-depth: 3
+number-sections: true
+number-depth: 2
+---
+
+# Time-Based Cross-Validation Using `TimeSeriesCV` and `TimeSeriesCVSplitter`
+
+In this tutorial, you'll learn how to use the `TimeSeriesCV` and `TimeSeriesCVSplitter` classes from `pytimetk` for time series cross-validation, using the walmart_sales_df dataset as an example, which contains 7 time series groups. 
+
+1. In Part 1, we'll start with exploring the data and move on to creating and visualizing time-based cross-validation splits. This will prepare you for the next section with Scikit Learn. 
+
+2. In Part 2, we'll implement time series cross-validation with Scikit-Learn, engineer features, train a random forest model, and visualize the results in Python. By following this process, you can ensure a robust evaluation of your time series models and gain insights into their predictive performance.
+
+# Part 1: Getting Started with `TimeSeriesCV`
+
+`TimeSeriesCV` is used to generate many time series splits (or folds) for use in modeling and resampling with one or more time series groups contained in the data. 
+
+::: {.callout-note collapse="false"}
+## Using with Scikit Learn
+
+If you are wanting a drop-in replacement for Scikit Learn's `TimeSeriesSplit`, please use `TimeSeriesCVSplitter()` discussed next. The splitter uses `TimeSeriesCV` under the hood.  
+:::
+
+
+## Step 1: Load and Explore the Data
+
+First, let's load the Walmart sales dataset and explore its structure:
+
+```{python}
+# libraries
+import pytimetk as tk
+import pandas as pd
+import numpy as np
+
+# Import Data
+walmart_sales_df = tk.load_dataset('walmart_sales_weekly')
+
+walmart_sales_df['Date'] = pd.to_datetime(walmart_sales_df['Date'])
+
+walmart_sales_df = walmart_sales_df[['id', 'Date', 'Weekly_Sales']]
+
+walmart_sales_df.glimpse()
+```
+
+## Step 2: Visualize the Time Series Data
+
+We can visualize the weekly sales data for different store IDs using the `plot_timeseries` method from `pytimetk`:
+
+```{python}
+walmart_sales_df \
+    .groupby('id') \
+    .plot_timeseries(
+        "Date", "Weekly_Sales",
+        plotly_dropdown = True,
+    )
+```
+
+This will generate an interactive time series plot, allowing you to explore sales data for different stores using a dropdown.
+
+## Step 3: Set Up `TimeSeriesCV` for Cross-Validation
+
+Now, let's set up a time-based cross-validation scheme using `TimeSeriesCV`:
+
+```{python}
+from pytimetk.crossvalidation import TimeSeriesCV
+
+# Define parameters for TimeSeriesCV
+tscv = TimeSeriesCV(
+    frequency="weeks",
+    train_size=52,          # Use 52 weeks for training
+    forecast_horizon=12,    # Forecast 12 weeks ahead
+    gap=0,                  # No gap between training and forecast sets
+    stride=4,               # Move forward by 4 weeks after each split
+    window="rolling",       # Use a rolling window
+    mode="backward"         # Generate splits from end to start
+)
+
+# Glimpse the cross-validation splits
+tscv.glimpse(
+    walmart_sales_df['Weekly_Sales'], 
+    time_series=walmart_sales_df['Date']
+)
+```
+
+The `glimpse` method provides a summary of each cross-validation fold, including the start and end dates of the training and forecast periods.
+
+
+## Step 4: Plot the Cross-Validation Splits
+
+You can visualize how the data is split for training and testing:
+
+```{python}
+# Plot the cross-validation splits
+tscv.plot(
+    walmart_sales_df['Weekly_Sales'], 
+    time_series=walmart_sales_df['Date']
+)
+```
+
+This plot will show each fold, illustrating which weeks are used for training and which weeks are used for forecasting.
+
+# Part 2: Using `TimeSeriesCVSplitter` for Model Evaluation with Scikit Learn
+
+When evaluating a model's predictive performance on time series data, we need to split the data in a way that respects the order of time within the Scikit Learn framework. We use a custom splitter, `TimeSeriesCVSplitter`, from the pytimetk library to handle this.
+
+
+## Step 1: Setting Up the `TimeSeriesCVSplitter`
+
+The `TimeSeriesCVSplitter` helps us divide our dataset into training and forecast sets in a rolling window fashion. Here's how we configure it:
+
+
+```{python}
+from pytimetk.crossvalidation import TimeSeriesCVSplitter
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import cross_val_score
+
+# Set up TimeSeriesCVSplitter
+cv_splitter = TimeSeriesCVSplitter(
+    time_series=walmart_sales_df['Date'],
+    frequency="weeks",
+    train_size=52*2,
+    forecast_horizon=12,
+    gap=0,
+    stride=4,
+    window="rolling",
+    mode="backward",
+    split_limit = 5
+)
+
+# Visualize the TSCV Strategy
+cv_splitter.splitter.plot(walmart_sales_df['Weekly_Sales'], walmart_sales_df['Date'])
+```
+
+The `TimeSeriesCVSplitter` creates multiple splits of the time series data, allowing us to validate the model across different periods. By visualizing the cross-validation strategy, we can see how the training and forecast sets are structured.
+
+## Step 2: Feature Engineering for Time Series Data
+
+Effective feature engineering can significantly impact the performance of a time series model. Using `pytimetk`, we extract a variety of features from the Date column.
+
+### Generating Time Series Features
+
+We use `get_timeseries_signature` to generate useful features, such as year, quarter, month, and day-of-week indicators.
+
+```{python}
+# Prepare data for modeling
+
+# Extract time series features from the 'Date' column
+X_time_features = tk.get_timeseries_signature(walmart_sales_df['Date'])
+
+# Select features to dummy encode
+features_to_dummy = ['Date_quarteryear', 'Date_month_lbl', 'Date_wday_lbl', 'Date_am_pm']
+
+# Dummy encode the selected features
+X_time_dummies = pd.get_dummies(X_time_features[features_to_dummy], drop_first=True)
+
+# Dummy encode the 'id' column
+X_id_dummies = pd.get_dummies(walmart_sales_df['id'], prefix='store')
+
+# Combine the time series features, dummy-encoded features, and the 'id' dummies
+X = pd.concat([X_time_features, X_time_dummies, X_id_dummies], axis=1)
+
+# Drop the original categorical columns that were dummy encoded
+X = X.drop(columns=features_to_dummy).drop('Date', axis=1)
+
+# Set the target variable
+y = walmart_sales_df['Weekly_Sales'].values
+```
+
+
+## Step 3: Model Training and Evaluation with Random Forest
+
+For this example, we use `RandomForestRegressor` from scikit-learn to model the time series data. A random forest is a robust, ensemble-based model that can handle a wide range of regression tasks.
+
+```{python}
+# Initialize the RandomForestRegressor model
+model = RandomForestRegressor(
+    n_estimators=100,      # Number of trees in the forest
+    max_depth=None,        # Maximum depth of the trees (None means nodes are expanded until all leaves are pure)
+    random_state=42        # Set a random state for reproducibility
+)
+
+# Evaluate the model using cross-validation scores
+scores = cross_val_score(model, X, y, cv=cv_splitter, scoring='neg_mean_squared_error')
+
+# Print cross-validation scores
+print("Cross-Validation Scores (Negative MSE):", scores)
+```
+
+
+## Step 4: Visualizing the Forecast
+
+Visualization is crucial to understand how well the model predicts future values. We collect the actual and predicted values for each fold and combine them for easy plotting.
+
+```{python}
+# Lists to store the combined data
+combined_data = []
+
+# Iterate through each fold and collect the data
+for i, (train_index, test_index) in enumerate(cv_splitter.split(X, y), start=1):
+    # Get the training and forecast data from the original DataFrame
+    train_df = walmart_sales_df.iloc[train_index].copy()
+    test_df = walmart_sales_df.iloc[test_index].copy()
+    
+    # Fit the model on the training data
+    model.fit(X.iloc[train_index], y[train_index])
+    
+    # Predict on the test set
+    y_pred = model.predict(X.iloc[test_index])
+    
+    # Add the actual and predicted values
+    train_df['Actual'] = y[train_index]
+    train_df['Predicted'] = None  # No predictions for training data
+    train_df['Fold'] = i  # Indicate the current fold
+    
+    test_df['Actual'] = y[test_index]
+    test_df['Predicted'] = y_pred  # Predictions for the test data
+    test_df['Fold'] = i  # Indicate the current fold
+    
+    # Append both the training and forecast DataFrames to the combined data list
+    combined_data.extend([train_df, test_df])
+
+# Combine all the data into a single DataFrame
+full_forecast_df = pd.concat(combined_data, ignore_index=True)
+
+full_forecast_df = full_forecast_df[['id', 'Date', 'Actual', 'Predicted', 'Fold']]
+
+full_forecast_df.glimpse()
+```
+
+### Preparing Data for Visualization
+
+To make the data easier to plot, we use `pd.melt()` to transform the Actual and Predicted columns into a long format.
+
+
+```{python}
+# Melt the Actual and Predicted columns
+melted_df = pd.melt(
+    full_forecast_df,
+    id_vars=['id', 'Date', 'Fold'],  # Columns to keep
+    value_vars=['Actual', 'Predicted'],  # Columns to melt
+    var_name='Type',  # Name for the new column indicating 'Actual' or 'Predicted'
+    value_name='Value'  # Name for the new column with the values
+)
+
+melted_df["unique_id"] = "ID_" + melted_df['id'] + "-Fold_" + melted_df["Fold"].astype(str)
+
+melted_df.glimpse()
+```
+
+
+### Plotting the Forecasts
+
+Finally, we use `plot_timeseries()` to visualize the forecasts, comparing the actual and predicted values for each fold.
+
+```{python}
+melted_df \
+    .groupby('unique_id') \
+    .plot_timeseries(
+        "Date", "Value",
+        color_column = "Type",
+        smooth=False, 
+        plotly_dropdown=True
+    )
+```
+
+# Conclusion
+
+This guide demonstrated how to implement time series cross-validation, engineer features, train a random forest model, and visualize the results in Python. By following this process, you can ensure a robust evaluation of your time series models and gain insights into their predictive performance. Happy modeling!
+
+{{< include ../_includes/_footer.qmd >}}

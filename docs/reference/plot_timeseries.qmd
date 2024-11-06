@@ -232,3 +232,4 @@ df = pd.DataFrame({
             plotly_dropdown = True, # Plotly Dropdown
         )
 )
+```
