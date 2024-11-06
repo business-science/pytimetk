@@ -401,19 +401,6 @@ class TimeSeriesCV(TimeBasedSplit):
                 showlegend=False,
             ))
 
-            # Optionally, add text annotations for each fold
-            train_midpoint = ts_date + (te_date - ts_date) / 2
-
-            fig.add_trace(go.Scatter(
-                x=[train_midpoint],
-                y=[fold],
-                text=[f"Fold {fold}"],
-                mode="text",
-                showlegend=False,
-                textposition="middle center",
-                hoverinfo='skip',
-            ))
-
         # Update layout
         fig.update_layout(
             title=title,
