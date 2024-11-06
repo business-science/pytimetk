@@ -144,7 +144,7 @@ from .feature_engineering.fourier import (
     augment_fourier
 )
 from .crossvalidation.time_series_cv import (
-    TimeSeriesCV, 
+    TimeSeriesCV, TimeSeriesCVSplitter
 )
 from .core.ts_features import (
     ts_features

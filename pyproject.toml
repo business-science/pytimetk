@@ -40,6 +40,7 @@ pathos = "^0.3.1"
 adjusttext = "^0.8"
 xarray = "^2024.6.0" # "<=2023.10.1" https://github.com/pyjanitor-devs/pandas_flavor/issues/33
 timebasedcv = "^0.2.1"
+scikit-learn = "^1.5.2"
 
 
 [tool.pytest.ini_options]

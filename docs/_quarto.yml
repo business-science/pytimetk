@@ -167,6 +167,7 @@ quartodoc:
       package: pytimetk
       contents:
         - TimeSeriesCV
+        - TimeSeriesCVSplitter
     - title: 💹 Finance Module (Momentum Indicators)
       desc: Momentum indicators for financial time series data.
       package: pytimetk
