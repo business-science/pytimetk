@@ -336,6 +336,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <ul class="collapse">
   <li><a href="#new-features" id="toc-new-features" class="nav-link" data-scroll-target="#new-features">New Features</a>
   <ul class="collapse">
+  <li><a href="#time-series-cross-validation-tscv" id="toc-time-series-cross-validation-tscv" class="nav-link" data-scroll-target="#time-series-cross-validation-tscv">Time Series Cross Validation (TSCV)</a></li>
   <li><a href="#plotly-dropdowns" id="toc-plotly-dropdowns" class="nav-link" data-scroll-target="#plotly-dropdowns">Plotly Dropdowns</a></li>
   <li><a href="#wide-format-plotting" id="toc-wide-format-plotting" class="nav-link" data-scroll-target="#wide-format-plotting">Wide-Format Plotting</a></li>
   </ul></li>
@@ -408,6 +409,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h1>pytimetk 1.0.1.9000</h1>
 <section id="new-features" class="level2">
 <h2 class="anchored" data-anchor-id="new-features">New Features</h2>
+<section id="time-series-cross-validation-tscv" class="level3">
+<h3 class="anchored" data-anchor-id="time-series-cross-validation-tscv">Time Series Cross Validation (TSCV)</h3>
+<p>Integration with <code>timebasedcv</code> #291. New Classes:</p>
+<ul>
+<li><code>TimeSeriesCV()</code>: An enhanced version of <code>TimeBasedSplit()</code> that defaults to <code>mode = "backwards"</code>, allows for maximum splits using <code>split_limit</code>, and adds enhanced diagnostics like <code>glimpse()</code> and <code>plot()</code></li>
+</ul>
+</section>
 <section id="plotly-dropdowns" class="level3">
 <h3 class="anchored" data-anchor-id="plotly-dropdowns">Plotly Dropdowns</h3>
 <p>A plotly dropdown automates the group-wise analysis. Instead of facets, which are only powerful for &lt;=9 plots at a time, a dropdown can easily visualize more plots.</p>

@@ -1,6 +1,6 @@
 # TimeSeriesCV { #pytimetk.TimeSeriesCV }
 
-`TimeSeriesCV(frequency, train_size, forecast_horizon, gap, stride=0, window='rolling', mode='backward', split_limit=None, **kwargs)`
+`TimeSeriesCV(self, frequency, train_size, forecast_horizon, gap, stride=0, window='rolling', mode='backward', split_limit=None, **kwargs)`
 
 `TimeSeriesCV` is a subclass of `TimeBasedSplit` with default mode set to 'backward' 
 and an optional `split_limit` to return the first `n` slices of time series cross-validation sets.
@@ -60,22 +60,26 @@ df = (
     .assign(y=lambda t: t[["a", "b"]].sum(axis=1) + RNG.normal(size=t.shape[0]) / 25)
 )
 
+# Set index
 df.set_index("time", inplace=True)
 
-# Now let's run split the data with the provided `TimeSeriesCV` instance
+# Create an X dataframeand y series
+X, y = df.loc[:, ["a", "b"]], df["y"]
 
 # Initialize TimeSeriesCV with desired parameters
 tscv = TimeSeriesCV(
     frequency="days",
     train_size=10,
     forecast_horizon=5,
-    gap=1,
+    gap=0,
     stride=0,
     split_limit=3  # Limiting to 3 splits
 )
 
-X, y = df.loc[:, ["a", "b"]], df["y"]
+tscv
+```
 
+``` {python}
 # Creates a split generator
 splits = tscv.split(X, y)
 
@@ -101,8 +105,8 @@ tscv.plot(y)
 | Name | Description |
 | --- | --- |
 | [glimpse](#pytimetk.TimeSeriesCV.glimpse) | Prints summary information about the splits, focusing on the first two arrays. |
-| [plot](#pytimetk.TimeSeriesCV.plot) | Plots the cross-validation sets using Plotly with each fold in a separate subplot. |
-| [split](#pytimetk.TimeSeriesCV.split) | Returns a generator of split arrays with an optional `split_limit`. |
+| [plot](#pytimetk.TimeSeriesCV.plot) | Plots the cross-validation folds on a single plot with folds on the y-axis and dates on the x-axis using filled Scatter traces. |
+| [split](#pytimetk.TimeSeriesCV.split) | Returns a generator of split arrays. |
 
 ### glimpse { #pytimetk.TimeSeriesCV.glimpse }
 
@@ -112,41 +116,50 @@ Prints summary information about the splits, focusing on the first two arrays.
 
 Arguments:
     *arrays: 
-        The arrays to split. Only the first two will be used for summary information.
+        The arrays to split. Only the first one will be used for summary information.
     time_series: 
         The time series used for splitting. If not provided, the index of the first array is used. Default is None.
 
 ### plot { #pytimetk.TimeSeriesCV.plot }
 
-`TimeSeriesCV.plot(y, time_series=None)`
+`TimeSeriesCV.plot(y, time_series=None, color_palette=None, bar_height=0.3, title='Time Series Cross-Validation Plot', x_lab='', y_lab='Fold', x_axis_date_labels=None, base_size=11, width=None, height=None, engine='plotly')`
 
-Plots the cross-validation sets using Plotly with each fold in a separate subplot.
+Plots the cross-validation folds on a single plot with folds on the y-axis and dates on the x-axis using filled Scatter traces.
 
-Arguments:
-    y: Pandas.Series
-        The Pandas series of target values to plot.
-    time_series: Optional[pd.Series]
-        The time series used for the x-axis. If not provided, the index of `y` will be used.
+#### Parameters
+
+| Name                 | Type                                 | Description                                                                                        | Default                               |
+|----------------------|--------------------------------------|----------------------------------------------------------------------------------------------------|---------------------------------------|
+| `y`                  | pd.Series                            | The target time series as a pandas Series.                                                         | _required_                            |
+| `time_series`        | pd.Series                            | The time series used for splitting. If not provided, the index of `y` is used. Default is None.    | `None`                                |
+| `color_palette`      | Optional\[Union\[dict, list, str\]\] | The color palette to use for the train and forecast. If not provided, the default colors are used. | `None`                                |
+| `bar_height`         | float                                | The height of each bar in the plot. Default is 0.3.                                                | `0.3`                                 |
+| `title`              | str                                  | The title of the plot. Default is "Time Series Cross-Validation Plot".                             | `'Time Series Cross-Validation Plot'` |
+| `x_lab`              | str                                  | The label for the x-axis. Default is "".                                                           | `''`                                  |
+| `y_lab`              | str                                  | The label for the y-axis. Default is "Fold".                                                       | `'Fold'`                              |
+| `x_axis_date_labels` | str                                  | The format of the date labels on the x-axis. Default is None.                                      | `None`                                |
+| `base_size`          | float                                | The base font size for the plot. Default is 11.                                                    | `11`                                  |
+| `width`              | Optional\[int\]                      | The width of the plot in pixels. Default is None.                                                  | `None`                                |
+| `height`             | Optional\[int\]                      | The height of the plot in pixels. Default is None.                                                 | `None`                                |
+| `engine`             | str                                  | The plotting engine to use. Default is "plotly".                                                   | `'plotly'`                            |
 
 ### split { #pytimetk.TimeSeriesCV.split }
 
 `TimeSeriesCV.split(*arrays, time_series=None, start_dt=None, end_dt=None, return_splitstate=False)`
 
-Returns a generator of split arrays with an optional `split_limit`.
+Returns a generator of split arrays.
 
-Arguments:
-    *arrays: 
-        The arrays to split. Must have the same length as `time_series`.
-    time_series: 
-        The time series used to create boolean masks for splits. If not provided, the method will try 
-        to use the index of the first array (if it is a DataFrame or Series) as the time series.
-    start_dt: 
-        The start of the time period. If provided, it is used in place of `time_series.min()`.
-    end_dt: 
-        The end of the time period. If provided, it is used in place of `time_series.max()`.
-    return_splitstate: 
-        Whether to return the `SplitState` instance for each split.
+#### Parameters
 
-Yields:
-    A generator of tuples of arrays containing the training and forecast data. If `split_limit` is set, 
-    yields only up to `split_limit` splits.
+| Name                | Type                       | Description                                                                                                                                                                             | Default   |
+|---------------------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `*arrays`           | TL                         | The arrays to split. Must have the same length as `time_series`.                                                                                                                        | `()`      |
+| `time_series`       | SeriesLike\[DateTimeLike\] | The time series used to create boolean masks for splits. If not provided, the method will try  to use the index of the first array (if it is a DataFrame or Series) as the time series. | `None`    |
+| `start_dt`          | NullableDatetime           | The start of the time period. If provided, it is used in place of `time_series.min()`.                                                                                                  | `None`    |
+| `end_dt`            | NullableDatetime           | The end of the time period. If provided, it is used in place of `time_series.max()`.                                                                                                    | `None`    |
+| `return_splitstate` | bool                       | Whether to return the `SplitState` instance for each split.                                                                                                                             | `False`   |
+
+#### Returns:
+
+A generator of tuples of arrays containing the training and forecast data. If `split_limit` is set, 
+yields only up to `split_limit` splits.

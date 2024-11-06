@@ -54,14 +54,16 @@ class TimeSeriesCV(TimeBasedSplit):
     Raises:
     ----------   
     ValueError:
-        - If `frequency` is not one of "days", "seconds", "microseconds", "milliseconds", "minutes", "hours",
-        "weeks".
-        - If `window` is not one of "rolling" or "expanding".
-        - If `mode` is not one of "forward" or "backward"
-        - If `train_size`, `forecast_horizon`, `gap` or `stride` are not strictly positive.
+    
+    - If `frequency` is not one of "days", "seconds", "microseconds", "milliseconds", "minutes", "hours",
+    "weeks".
+    - If `window` is not one of "rolling" or "expanding".
+    - If `mode` is not one of "forward" or "backward"
+    - If `train_size`, `forecast_horizon`, `gap` or `stride` are not strictly positive.
         
     TypeError: 
-        If `train_size`, `forecast_horizon`, `gap` or `stride` are not of type `int`.
+        
+    If `train_size`, `forecast_horizon`, `gap` or `stride` are not of type `int`.
     
     Examples:
     ---------
@@ -171,24 +173,26 @@ class TimeSeriesCV(TimeBasedSplit):
         end_dt: NullableDatetime = None,
         return_splitstate: bool = False,
     ) -> Generator[Union[Tuple[TL, ...], Tuple[Tuple[TL, ...], SplitState]], None, None]:
-        """Returns a generator of split arrays with an optional `split_limit`.
+        """Returns a generator of split arrays.
 
-        Arguments:
-            *arrays: 
-                The arrays to split. Must have the same length as `time_series`.
-            time_series: 
-                The time series used to create boolean masks for splits. If not provided, the method will try 
-                to use the index of the first array (if it is a DataFrame or Series) as the time series.
-            start_dt: 
-                The start of the time period. If provided, it is used in place of `time_series.min()`.
-            end_dt: 
-                The end of the time period. If provided, it is used in place of `time_series.max()`.
-            return_splitstate: 
-                Whether to return the `SplitState` instance for each split.
+        Parameters
+        ----------
+        *arrays: pd.DataFrame, pd.Series
+            The arrays to split. Must have the same length as `time_series`.
+        time_series: pd.Series
+            The time series used to create boolean masks for splits. If not provided, the method will try 
+            to use the index of the first array (if it is a DataFrame or Series) as the time series.
+        start_dt: str
+            The start of the time period. If provided, it is used in place of `time_series.min()`.
+        end_dt: str
+            The end of the time period. If provided, it is used in place of `time_series.max()`.
+        return_splitstate: bool
+            Whether to return the `SplitState` instance for each split.
 
-        Yields:
-            A generator of tuples of arrays containing the training and forecast data. If `split_limit` is set, 
-            yields only up to `split_limit` splits.
+        Returns:
+        -------
+        A generator of tuples of arrays containing the training and forecast data. If `split_limit` is set, 
+        yields only up to `split_limit` splits.
         """
         # If time_series is not provided, attempt to extract it from the index of the first array
         if time_series is None:
