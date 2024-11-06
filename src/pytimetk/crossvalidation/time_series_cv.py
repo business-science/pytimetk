@@ -218,7 +218,7 @@ class TimeSeriesCV(TimeBasedSplit):
 
         Arguments:
             *arrays: 
-                The arrays to split. Only the first two will be used for summary information.
+                The arrays to split. Only the first one will be used for summary information.
             time_series: 
                 The time series used for splitting. If not provided, the index of the first array is used. Default is None.
         """
@@ -267,10 +267,32 @@ class TimeSeriesCV(TimeBasedSplit):
     ):
         """Plots the cross-validation folds on a single plot with folds on the y-axis and dates on the x-axis using filled Scatter traces.
 
-        Arguments:
-            y: The Pandas series of target values to plot.
-            time_series: The time series used for the x-axis. If not provided, the index of `y` will be used.
-            (Additional arguments for customizing the theme and layout)
+        Parameters
+        ----------
+        y : pd.Series
+            The target time series as a pandas Series.
+        time_series : pd.Series
+            The time series used for splitting. If not provided, the index of `y` is used. Default is None.
+        color_palette : Optional[Union[dict, list, str]]
+            The color palette to use for the train and forecast. If not provided, the default colors are used.
+        bar_height : float
+            The height of each bar in the plot. Default is 0.3.
+        title : str
+            The title of the plot. Default is "Time Series Cross-Validation Plot".
+        x_lab : str
+            The label for the x-axis. Default is "".
+        y_lab : str
+            The label for the y-axis. Default is "Fold".
+        x_axis_date_labels : str
+            The format of the date labels on the x-axis. Default is None.
+        base_size : float
+            The base font size for the plot. Default is 11.
+        width : Optional[int]
+            The width of the plot in pixels. Default is None.
+        height : Optional[int]
+            The height of the plot in pixels. Default is None.
+        engine : str
+            The plotting engine to use. Default is "plotly".
         """
         # Handle color palette
         if color_palette is None:
