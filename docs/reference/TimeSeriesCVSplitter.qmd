@@ -9,7 +9,9 @@ This cross-validator generates splits based on time values, making it suitable f
 ## Parameters:
 
 frequency: str
-    The frequency of the time series (e.g., "days", "hours").
+    The frequency (or time unit) of the time series. Must be one of "days", "seconds", "microseconds",
+    "milliseconds", "minutes", "hours", "weeks", "months" or "years". These are the valid values for the
+    `unit` argument of `relativedelta` from python `dateutil` library.
 train_size: int
     Minimum number of time units in the training set.
 forecast_horizon: int

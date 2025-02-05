@@ -1,0 +1,16 @@
+adjusttext<0.9,>=0.8
+holidays<0.34,>=0.33
+matplotlib<4.0.0,>=3.8.0
+pandas-flavor<0.7.0,>=0.6.0
+pandas>=2.0.0
+pathos<0.4.0,>=0.3.1
+plotly<6.0.0,>=5.17.0
+plotnine<0.13.0,>=0.12.3
+polars<2.0.0,>=1.2.0
+pyarrow<17.0.0,>=16.1.0
+scikit-learn<2.0.0,>=1.5.2
+statsmodels<0.15.0,>=0.14.0
+timebasedcv<0.4,>=0.3
+tqdm<5.0.0,>=4.66.1
+tsfeatures<0.5.0,>=0.4.5
+xarray<2025.0.0,>=2024.6.0

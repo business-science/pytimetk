@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytimetk"
-version = "1.0.1.9000"
+version = "1.1.0"
 description = "The time series toolkit for Python."
 authors = [
     "Business Science <info@business-science.io>",
@@ -26,21 +26,21 @@ documentation = "https://business-science.github.io/pytimetk/reference/"
 [tool.poetry.dependencies]
 python = ">=3.9"
 pandas = ">=2.0.0"
-pandas-flavor = "^0.6.0"
-matplotlib = "^3.8.0"
-plotnine = "^0.12.3"
-plotly = "^5.17.0"
-holidays = "^0.33"
-tsfeatures = "^0.4.5"
-statsmodels = "^0.14.0"
-tqdm = "^4.66.1"
-polars = "^1.2.0"
-pyarrow = "^16.1.0"
-pathos = "^0.3.1"
-adjusttext = "^0.8"
-xarray = "^2024.6.0" # "<=2023.10.1" https://github.com/pyjanitor-devs/pandas_flavor/issues/33
-timebasedcv = "^0.2.1"
-scikit-learn = "^1.5.2"
+pandas-flavor = ">=0.6.0"
+matplotlib = ">=3.8.0"
+plotnine = ">=0.12.3"
+plotly = ">=5.17.0"
+holidays = ">=0.33"
+tsfeatures = ">=0.4.5"
+statsmodels = ">=0.14.0"
+tqdm = ">=4.66.1"
+polars = ">=1.2.0"
+pyarrow = ">=16.1.0"
+pathos = ">=0.3.1"
+adjusttext = ">=0.8"
+xarray = ">=2024.6.0" # "<=2023.10.1" https://github.com/pyjanitor-devs/pandas_flavor/issues/33
+timebasedcv = ">=0.3"
+scikit-learn = ">=1.5.2"
 
 
 [tool.pytest.ini_options]
