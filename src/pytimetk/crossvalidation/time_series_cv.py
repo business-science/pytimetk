@@ -34,8 +34,8 @@ class TimeSeriesCV(TimeBasedSplit):
     ----------
     frequency: str
         The frequency (or time unit) of the time series. Must be one of "days", "seconds", "microseconds",
-        "milliseconds", "minutes", "hours", "weeks". These are the only valid values for the `unit` argument of
-        `timedelta` from python `datetime` standard library.
+        "milliseconds", "minutes", "hours", "weeks", "months" or "years". These are the valid values for the
+        `unit` argument of `relativedelta` from python `dateutil` library.
     train_size: int
         Defines the minimum number of time units required to be in the train set.
     forecast_horizon: int
@@ -443,7 +443,9 @@ class TimeSeriesCVSplitter(BaseCrossValidator):
     Parameters:
     -----------
     frequency: str
-        The frequency of the time series (e.g., "days", "hours").
+        The frequency (or time unit) of the time series. Must be one of "days", "seconds", "microseconds",
+        "milliseconds", "minutes", "hours", "weeks", "months" or "years". These are the valid values for the
+        `unit` argument of `relativedelta` from python `dateutil` library.
     train_size: int
         Minimum number of time units in the training set.
     forecast_horizon: int
