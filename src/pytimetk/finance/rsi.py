@@ -185,10 +185,9 @@ def _augment_rsi_pandas(
 
         df = data.copy()
         
-        col = close_column
-
-        for period in periods:
-            df[f'{col}_rsi_{period}'] = _calculate_rsi_pandas(df[col], period=period)
+        for col in close_column:
+            for period in periods:
+                df[f'{col}_rsi_{period}'] = _calculate_rsi_pandas(df[col], period=period)
     
     # GROUPBY EXTENSION - If data is a Pandas GroupBy object, apply RSI function BY GROUP
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -198,10 +197,9 @@ def _augment_rsi_pandas(
 
         df = data.copy()
         
-        col = close_column
-   
-        for period in periods:
-            df[f'{col}_rsi_{period}'] = df.groupby(group_names, group_keys=False)[col].apply(_calculate_rsi_pandas, period=period)
+        for col in close_column:   
+            for period in periods:
+                df[f'{col}_rsi_{period}'] = df.groupby(group_names, group_keys=False)[col].apply(_calculate_rsi_pandas, period=period)
     
     return df
 
