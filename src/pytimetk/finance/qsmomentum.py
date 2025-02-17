@@ -197,31 +197,34 @@ def augment_qsmomentum(
 pd.core.groupby.generic.DataFrameGroupBy.augment_qsmomentum = augment_qsmomentum
 
 def _calculate_qsmomentum_pandas(close, roc_fast_period, roc_slow_period, returns_period):
-    
     close = pd.Series(close)
-    
     returns = close.pct_change().iloc[-returns_period:]
+    std_returns = np.std(returns)
     
-    roc_slow_calc = (close.iloc[-roc_fast_period] - close.iloc[-roc_slow_period]) / (close.iloc[-roc_slow_period] + 0.0000000001)
+    # Check if the standard deviation is too small:
+    if np.abs(std_returns) < 1e-10:
+        return np.nan
+
+    # Calculate the rates of change with a small epsilon added to the denominator
+    roc_slow_calc = (close.iloc[-roc_fast_period] - close.iloc[-roc_slow_period]) / (close.iloc[-roc_slow_period] + 1e-10)
+    roc_fast_calc = (close.iloc[-1] - close.iloc[-roc_fast_period]) / (close.iloc[-roc_fast_period] + 1e-10)
     
-    roc_fast_calc = (close.iloc[-1] - close.iloc[-roc_fast_period]) / (close.iloc[-roc_fast_period] + 0.0000000001)
-    
-    mom = (roc_slow_calc - roc_fast_calc) / np.std(returns)
-    
+    mom = (roc_slow_calc - roc_fast_calc) / std_returns
     return mom
 
+
 def _calculate_qsmomentum_polars(close, roc_fast_period, roc_slow_period, returns_period):
-    
     close = pl.Series(close)
-    
     returns = close.pct_change()
-    
     returns_last_returns_period = returns.slice(-returns_period, returns_period)
+    std_returns = returns_last_returns_period.std()
     
-    roc_slow_calc = (close[-roc_fast_period] - close[-roc_slow_period]) / (close[-roc_slow_period] + 0.0000000001)
+    # Check if the standard deviation is too small (or undefined)
+    if std_returns is None or std_returns < 1e-10:
+        return np.nan
     
-    roc_fast_calc = (close[-1] - close[-roc_fast_period]) / (close[-roc_fast_period] + 0.0000000001)
+    roc_slow_calc = (close[-roc_fast_period] - close[-roc_slow_period]) / (close[-roc_slow_period] + 1e-10)
+    roc_fast_calc = (close[-1] - close[-roc_fast_period]) / (close[-roc_fast_period] + 1e-10)
     
-    mom = (roc_slow_calc - roc_fast_calc) / returns_last_returns_period.std()
-    
+    mom = (roc_slow_calc - roc_fast_calc) / std_returns
     return mom
