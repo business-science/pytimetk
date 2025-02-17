@@ -146,8 +146,13 @@ def _augment_ppo_pandas(data, date_column, close_column, fast_period, slow_perio
     Internal function to calculate PPO using Pandas.
     """
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        # If data is a GroupBy object, apply PPO calculation for each group
-        df = data.apply(lambda x: _calculate_ppo_pandas(x, close_column, fast_period, slow_period))
+        # If data is a GroupBy object, apply MACD calculation for each group
+        group_names = data.grouper.names
+        data = data.obj
+
+        df = data.copy()
+        
+        df = data.groupby(group_names, group_keys=False).apply(lambda x: _calculate_ppo_pandas(x, close_column, fast_period, slow_period))
     elif isinstance(data, pd.DataFrame):
         # If data is a DataFrame, apply PPO calculation directly
         df = data.copy().sort_values(by=date_column)
