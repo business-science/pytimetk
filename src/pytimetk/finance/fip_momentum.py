@@ -47,7 +47,7 @@ def augment_fip_momentum(
     
     Examples
     --------
-    ```python
+    ```{python}
     import pandas as pd
     import pytimetk as tk
 
@@ -62,8 +62,10 @@ def augment_fip_momentum(
             window=252
         )
     )
-    print(fip_df.head())
+    fip_df.tail()
+    ```
     
+    ```{python}    
     # Multiple windows
     fip_df = (
         df.groupby('symbol')
@@ -74,7 +76,7 @@ def augment_fip_momentum(
             engine='polars'
         )
     )
-    print(fip_df.head())
+    fip_df.tail()
     ```
     '''
     

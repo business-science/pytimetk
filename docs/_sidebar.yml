@@ -54,6 +54,7 @@ website:
       - reference/augment_cmo.qmd
       - reference/augment_roc.qmd
       - reference/augment_qsmomentum.qmd
+      - reference/augment_fip_momentum.qmd
       section: "\U0001F4B9 Finance Module (Momentum Indicators)"
     - contents:
       - reference/augment_bbands.qmd

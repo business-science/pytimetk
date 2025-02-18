@@ -41,6 +41,7 @@ the augmented DataFrame with columns for Sharpe Ratio, Sortino Ratio, and other 
 ## Notes {.doc-section .doc-section-notes}
 
 This function computes returns from closing prices and calculates rolling risk metrics:
+
 - Sharpe Ratio: Excess return over risk-free rate divided by volatility
 - Sortino Ratio: Excess return over risk-free rate divided by downside deviation
 - Treynor Ratio: Excess return over risk-free rate divided by beta (requires benchmark)
