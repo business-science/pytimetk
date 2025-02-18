@@ -46,6 +46,7 @@ from .finance.rsi import *
 from .finance.atr import *  
 from .finance.roc import *
 from .finance.qsmomentum import *
+from .finance.drawdown import *
 
 from .datasets.get_datasets import *
 
@@ -181,6 +182,9 @@ from .finance.roc import (
 )
 from .finance.qsmomentum import (
     augment_qsmomentum
+)
+from .finance.drawdown import (
+    augment_drawdown
 )
 from .datasets.get_datasets import (
     load_dataset, get_available_datasets
