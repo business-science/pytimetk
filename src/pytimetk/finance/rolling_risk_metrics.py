@@ -64,6 +64,7 @@ def augment_rolling_risk_metrics(
     Notes
     -----
     This function computes returns from closing prices and calculates rolling risk metrics:
+    
     - Sharpe Ratio: Excess return over risk-free rate divided by volatility
     - Sortino Ratio: Excess return over risk-free rate divided by downside deviation
     - Treynor Ratio: Excess return over risk-free rate divided by beta (requires benchmark)

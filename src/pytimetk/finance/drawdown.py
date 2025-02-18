@@ -45,6 +45,7 @@ def augment_drawdown(
     -----
     Drawdown is a measure of peak-to-trough decline in a time series, typically used to assess
     the risk of a financial instrument:
+    
     - Peak Value: The highest value observed up to each point in time
     - Drawdown: The absolute difference between the peak and current value
     - Drawdown Percentage: The percentage decline from the peak value

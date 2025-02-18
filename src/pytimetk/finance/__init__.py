@@ -8,3 +8,4 @@ from .roc import *
 from .qsmomentum import *
 from .drawdown import *
 from .rolling_risk_metrics import *
+from .fip_momentum import *
