@@ -184,6 +184,7 @@ quartodoc:
       contents:
         - augment_bbands
         - augment_atr
+        - augment_drawdown
     - title: 🐼 Time Series for Pandas Series
       desc: Time series functions that generate / manipulate Pandas Series.
       package: pytimetk
