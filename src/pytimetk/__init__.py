@@ -69,6 +69,7 @@ from .finance import (
     augment_roc,
     augment_qsmomentum,
     augment_drawdown,
+    augment_rolling_risk_metrics,
 )
 from .datasets import (
     load_dataset, 
