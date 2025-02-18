@@ -62,10 +62,14 @@ def augment_drawdown(
         df.query("symbol == 'AAPL'")
         .augment_drawdown(
             date_column='date',
-            close_column='adjusted'
+            close_column='close',
         )
     )
     dd_df.head()
+    ```
+    
+    ``` {python}
+    dd_df.groupby('symbol').plot_timeseries('date', 'close_drawdown_pct')
     ```
     
     ``` {python}
@@ -74,12 +78,16 @@ def augment_drawdown(
         df.groupby('symbol')
         .augment_drawdown(
             date_column='date',
-            close_column='adjusted',
+            close_column='close',
             engine='polars'
         )
     )
     dd_df.head()
     ```
+    
+    ``` {python}
+    dd_df.groupby('symbol').plot_timeseries('date', 'close_drawdown_pct')
+    ```    
     '''
     
     # Run common checks

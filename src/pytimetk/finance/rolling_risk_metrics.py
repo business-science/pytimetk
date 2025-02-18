@@ -100,7 +100,7 @@ def augment_rolling_risk_metrics(
         .augment_rolling_risk_metrics(
             date_column='date',
             close_column='adjusted',
-            benchmark_column='market_adjusted',  # Assuming a benchmark column exists
+            # benchmark_column='market_adjusted_returns',  # Use if a benchmark returns column exists
             window=60,
             engine='polars'
         )
@@ -252,7 +252,6 @@ def _augment_rolling_risk_metrics_pandas(
     return df
 
 
-
 def _augment_rolling_risk_metrics_polars(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
@@ -262,7 +261,7 @@ def _augment_rolling_risk_metrics_polars(
     benchmark_column: Optional[str],
     annualization_factor: int
 ) -> pd.DataFrame:
-    """Polars implementation of rolling risk metrics calculation."""
+    """Optimized Polars implementation of rolling risk metrics calculation with flexible column ordering."""
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         pandas_df = data.obj
@@ -276,9 +275,12 @@ def _augment_rolling_risk_metrics_polars(
     df = pl.from_pandas(pandas_df)
     col = close_column
     
-    # Calculate returns
+    # Calculate returns and precompute masks
+    returns_col = f'{col}_returns'
     df = df.with_columns(
-        (pl.col(col).log() - pl.col(col).log().shift(1)).alias(f'{col}_returns')
+        (pl.col(col).log() - pl.col(col).log().shift(1)).alias(returns_col),
+        (pl.col(col).log() - pl.col(col).log().shift(1) > 0).cast(pl.Float64).alias('pos_mask'),
+        (pl.col(col).log() - pl.col(col).log().shift(1) < 0).cast(pl.Float64).alias('neg_mask')
     )
     if benchmark_column:
         df = df.with_columns(
@@ -286,43 +288,34 @@ def _augment_rolling_risk_metrics_polars(
         )
     
     # Define rolling metrics as expressions
-    returns_col = f'{col}_returns'
+    mean_ret = pl.col(returns_col).rolling_mean(window, min_periods=window//2)
+    std_ret = pl.col(returns_col).rolling_std(window, min_periods=window//2)
     
-    # Common expressions for both grouped and non-grouped cases
+    # Optimized expressions
     exprs = [
-        # Sharpe: (mean - rf) / std * sqrt(annualization)
-        ((pl.col(returns_col).rolling_mean(window, min_periods=window//2) - risk_free_rate) / 
-         pl.col(returns_col).rolling_std(window, min_periods=window//2) * 
-         pl.lit(np.sqrt(annualization_factor))).alias(f'{col}_sharpe_ratio_{window}'),
-        
-        # Volatility: std * sqrt(annualization)
-        (pl.col(returns_col).rolling_std(window, min_periods=window//2) * 
-         pl.lit(np.sqrt(annualization_factor))).alias(f'{col}_volatility_annualized_{window}'),
+        # Sharpe
+        ((mean_ret - risk_free_rate) / std_ret * pl.lit(np.sqrt(annualization_factor))).alias(f'{col}_sharpe_ratio_{window}'),
+        # Volatility
+        (std_ret * pl.lit(np.sqrt(annualization_factor))).alias(f'{col}_volatility_annualized_{window}'),
     ]
     
-    # Custom expressions for downside_std, omega, skew, and kurtosis
+    # Downside std: use masked returns
+    downside_ret = (pl.col(returns_col) * pl.col('neg_mask')).alias('downside_ret')
     downside_std_expr = (
-        pl.col(returns_col)
-        .rolling_map(
-            lambda x: x.filter(x < 0).std() if x.filter(x < 0).len() > 0 else np.nan,
-            window_size=window,
-            min_periods=window//2
-        )
+        downside_ret.rolling_std(window, min_periods=window//2)
         .alias('downside_std_temp')
     )
+    
+    # Omega: use masked sums
+    pos_sum = (pl.col(returns_col) * pl.col('pos_mask')).rolling_sum(window, min_periods=window//2)
+    neg_sum = (pl.col(returns_col) * pl.col('neg_mask')).rolling_sum(window, min_periods=window//2).abs()
     omega_expr = (
-        pl.col(returns_col)
-        .rolling_map(
-            lambda x: (
-                x.filter(x > 0).sum() / np.abs(x.filter(x < 0).sum())
-                if x.filter(x < 0).sum() != 0 else np.inf
-            ) if x.is_not_null().sum() >= window//2 else np.nan,
-            window_size=window,
-            min_periods=window//2
-        )
+        (pos_sum / neg_sum)
         .replace([np.inf, -np.inf], np.nan)
         .alias(f'{col}_omega_ratio_{window}')
     )
+    
+    # Skew and Kurtosis
     skew_expr = (
         pl.col(returns_col)
         .rolling_map(
@@ -343,16 +336,17 @@ def _augment_rolling_risk_metrics_polars(
     )
     
     if group_names:
-        # Apply rolling calculations over groups using .over()
+        # Apply grouped rolling calculations
         df = df.with_columns(
+            downside_ret  # Precompute downside returns
+        ).with_columns(
             downside_std_expr.over(group_names),
             omega_expr.over(group_names),
             skew_expr.over(group_names),
             kurt_expr.over(group_names)
         ).with_columns(
             [e.over(group_names) for e in exprs] + [
-                ((pl.col(returns_col).rolling_mean(window, min_periods=window//2) - risk_free_rate) / 
-                 pl.col('downside_std_temp') * pl.lit(np.sqrt(annualization_factor)))
+                ((mean_ret - risk_free_rate) / pl.col('downside_std_temp') * pl.lit(np.sqrt(annualization_factor)))
                 .over(group_names)
                 .alias(f'{col}_sortino_ratio_{window}')
             ]
@@ -373,22 +367,26 @@ def _augment_rolling_risk_metrics_polars(
                 beta_expr.over(group_names),
                 tracking_error_expr.over(group_names)
             ).with_columns([
-                ((pl.col(returns_col).rolling_mean(window, min_periods=window//2) - risk_free_rate) / 
-                 pl.col('beta_temp') * pl.lit(np.sqrt(annualization_factor)))
+                ((mean_ret - risk_free_rate) / pl.col('beta_temp') * pl.lit(np.sqrt(annualization_factor)))
                 .over(group_names)
                 .alias(f'{col}_treynor_ratio_{window}'),
-                ((pl.col(returns_col).rolling_mean(window, min_periods=window//2) - 
-                  pl.col(bench_col).rolling_mean(window, min_periods=window//2)) / 
+                ((mean_ret - pl.col(bench_col).rolling_mean(window, min_periods=window//2)) / 
                  pl.col('tracking_error_temp'))
                 .over(group_names)
                 .alias(f'{col}_information_ratio_{window}')
             ]).drop(['beta_temp', 'tracking_error_temp'])
     else:
         # Non-grouped rolling calculations
-        df = df.with_columns(downside_std_expr, omega_expr, skew_expr, kurt_expr).with_columns(
+        df = df.with_columns(
+            downside_ret  # Precompute downside returns
+        ).with_columns(
+            downside_std_expr,
+            omega_expr,
+            skew_expr,
+            kurt_expr
+        ).with_columns(
             exprs + [
-                ((pl.col(returns_col).rolling_mean(window, min_periods=window//2) - risk_free_rate) / 
-                 pl.col('downside_std_temp') * pl.lit(np.sqrt(annualization_factor)))
+                ((mean_ret - risk_free_rate) / pl.col('downside_std_temp') * pl.lit(np.sqrt(annualization_factor)))
                 .alias(f'{col}_sortino_ratio_{window}')
             ]
         ).drop('downside_std_temp')
@@ -404,20 +402,34 @@ def _augment_rolling_risk_metrics_polars(
                 .rolling_std(window, min_periods=window//2)
                 .alias('tracking_error_temp')
             )
-            df = df.with_columns(beta_expr, tracking_error_expr).with_columns([
-                ((pl.col(returns_col).rolling_mean(window, min_periods=window//2) - risk_free_rate) / 
-                 pl.col('beta_temp') * pl.lit(np.sqrt(annualization_factor)))
+            df = df.with_columns(
+                beta_expr,
+                tracking_error_expr
+            ).with_columns([
+                ((mean_ret - risk_free_rate) / pl.col('beta_temp') * pl.lit(np.sqrt(annualization_factor)))
                 .alias(f'{col}_treynor_ratio_{window}'),
-                ((pl.col(returns_col).rolling_mean(window, min_periods=window//2) - 
-                  pl.col(bench_col).rolling_mean(window, min_periods=window//2)) / 
+                ((mean_ret - pl.col(bench_col).rolling_mean(window, min_periods=window//2)) / 
                  pl.col('tracking_error_temp'))
                 .alias(f'{col}_information_ratio_{window}')
             ]).drop(['beta_temp', 'tracking_error_temp'])
     
-    # Drop temporary returns columns
-    drop_cols = [f'{col}_returns']
+    # Drop temporary columns
+    drop_cols = [f'{col}_returns', 'pos_mask', 'neg_mask', 'downside_ret']
     if benchmark_column:
         drop_cols.append(f'{benchmark_column}_returns')
     df = df.drop(drop_cols)
+    
+    # Dynamically build column order: original columns + metrics in Pandas order
+    original_cols = [c for c in pandas_df.columns if c not in drop_cols]  # Keep input columns
+    metric_cols = [
+        f'{close_column}_sharpe_ratio_{window}',
+        f'{close_column}_sortino_ratio_{window}',
+        f'{close_column}_volatility_annualized_{window}',
+        f'{close_column}_omega_ratio_{window}',
+        f'{close_column}_skewness_{window}',
+        f'{close_column}_kurtosis_{window}'
+    ]
+    final_columns = original_cols + [c for c in metric_cols if c in df.columns]
+    df = df.select(final_columns)
     
     return df.to_pandas()

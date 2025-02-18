@@ -10,7 +10,8 @@ number-sections: false
 
 ## New Functions
 
-- `augment_drawdown()`:
+- `augment_drawdown()`: The augment_drawdown function calculates the drawdown metrics for a financial time series using either pandas or polars engine, and returns the augmented DataFrame with peak value, drawdown, and drawdown percentage columns.
+- `augment_rolling_risk_metrics()`: The augment_rolling_risk_metrics function calculates rolling risk-adjusted performance metrics for a financial time series using either pandas or polars engine, and returns the augmented DataFrame with columns for Sharpe Ratio, Sortino Ratio, and other metrics.
 
 ## Bug Fixes and Speed Improvements
 

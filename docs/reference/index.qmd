@@ -102,6 +102,7 @@ Volatility indicators for financial time series data.
 | [augment_bbands](augment_bbands.qmd#pytimetk.augment_bbands) | The `augment_bbands` function is used to calculate Bollinger Bands for a given dataset and return |
 | [augment_atr](augment_atr.qmd#pytimetk.augment_atr) | The `augment_atr` function is used to calculate Average True Range (ATR) and  |
 | [augment_drawdown](augment_drawdown.qmd#pytimetk.augment_drawdown) | The augment_drawdown function calculates the drawdown metrics for a financial time series |
+| [augment_rolling_risk_metrics](augment_rolling_risk_metrics.qmd#pytimetk.augment_rolling_risk_metrics) | The augment_rolling_risk_metrics function calculates rolling risk-adjusted performance |
 
 ## 🐼 Time Series for Pandas Series
 
