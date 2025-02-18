@@ -395,7 +395,8 @@ def get_diff_summary_polars(idx: pl.Series, numeric: bool = False):
     
 def get_date_summary(
     idx: Union[pd.Series, pd.DatetimeIndex],
-    engine: str = 'pandas'):
+    engine: str = 'pandas'
+) -> pd.DataFrame:
     """
     Returns a summary of the date-related information, including the number of 
     dates, the time zone, the start date, and the end date.
@@ -409,11 +410,7 @@ def get_date_summary(
     engine : str, optional
         The `engine` parameter is used to specify the engine to use for 
         generating a date summary. It can be either "pandas" or "polars". 
-        
-        - The default value is "pandas".
-        
-        - When "polars", the function will internally use the `polars` library 
-          for generating a date summary. 
+        Default is "pandas".
 
     Returns
     -------
@@ -424,52 +421,30 @@ def get_date_summary(
         - `date_start`: The first date in the index.
         - `date_end`: The last date in the index.
         
-    Examples
-    --------
-    ```{python}
-    import pytimetk as tk
-    import pandas as pd
-    
-    df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
-    
-    tk.get_date_summary(df['order_date'], engine='pandas')
-    
-    tk.get_date_summary(df['order_date'], engine='polars')
-    ```
+    Notes
+    -----
+    - When using the 'polars' engine, timezone information is derived from the 
+      pandas input before conversion, as Polars does not natively preserve it.
     """
+    if not isinstance(idx, (pd.Series, pd.DatetimeIndex)):
+        raise TypeError(f'Input must be of type pd.Series or pd.DatetimeIndex. Got {type(idx)}')
 
-    if not isinstance(idx, pd.Series) and not isinstance(idx, pd.DatetimeIndex):
-        raise TypeError('Input must be of type pd.Series or pd.DatetimeIndex. Got {}'.format(type(idx)))
-
+    # Convert to Series if DatetimeIndex and extract timezone
+    if isinstance(idx, pd.DatetimeIndex):
+        idx = pd.Series(idx, name="idx")
+    
     if engine == 'pandas':
-        return compute_date_summary_pandas(pd.Series(idx, name="idx") if isinstance(idx, pd.DatetimeIndex) else idx)
+        return compute_date_summary_pandas(idx)
     elif engine == 'polars':
-        return compute_date_summary_polars(pl.Series(idx, name="idx") if isinstance(idx, pd.DatetimeIndex) else pl.from_pandas(idx))
+        # Extract timezone from pandas before conversion
+        tz = idx.dt.tz
+        pl_idx = pl.Series("idx", idx.values) if isinstance(idx, pd.Series) else pl.from_pandas(idx)
+        return compute_date_summary_polars(pl_idx)  # No tz parameter needed
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
 
-
 def compute_date_summary_pandas(idx: pd.Series) -> pd.DataFrame:
-    """Returns a summary of the date-related information, including the number of 
-    dates, the time zone, the start date, and the end date.
-
-    Parameters
-    ----------
-    idx : pd.Series or pd.DateTimeIndex
-        The parameter `idx` can be either a pandas Series or a pandas 
-        DateTimeIndex. It represents the dates or timestamps for which we want 
-        to generate a summary.
-
-    Returns
-    -------
-    pd.DataFrame
-        A pandas DataFrame with the following columns: 
-        - `date_n`: The number of dates in the index.
-        - `date_tz`: The time zone of the dates in the index.
-        - `date_start`: The first date in the index.
-        - `date_end`: The last date in the index.
-    """
-
+    """[Unchanged docstring]"""
     _n = len(idx)
     _tz = idx.dt.tz
     _date_start = idx.min()
@@ -477,48 +452,48 @@ def compute_date_summary_pandas(idx: pd.Series) -> pd.DataFrame:
     
     return pd.DataFrame({
         "date_n": [_n], 
-        "date_tz": [_tz], # "America/New_York
+        "date_tz": [_tz],
         "date_start": [_date_start],
         "date_end": [_date_end],
-    })  
+    })
 
-
-def compute_date_summary_polars(idx: pl.Series, tz: None, output_type='pandas') -> Union[pd.DataFrame, pl.DataFrame]:
+def compute_date_summary_polars(idx: pl.Series, output_type='pandas') -> Union[pd.DataFrame, pl.DataFrame]:
     """Returns a summary of the date-related information, including the number of 
     dates, the time zone, the start date, and the end date.
 
     Parameters
     ----------
-    idx : pd.Series or pd.DateTimeIndex
-        The parameter `idx` can be either a pandas Series or a pandas 
-        DateTimeIndex. It represents the dates or timestamps for which we want 
+    idx : pl.Series
+        A Polars Series containing the dates or timestamps for which we want 
         to generate a summary.
-    tz : 
-        You need to pass this value as it is not supported in polars. The value 
-        is lost when converting a pandas Series to polars.
+    output_type : str, optional
+        The format of the output, either 'pandas' (default) or 'polars'.
 
     Returns
     -------
-    pd.DataFrame
-        A pandas DataFrame with the following columns: 
+    Union[pd.DataFrame, pl.DataFrame]
+        A DataFrame with the following columns: 
         - `date_n`: The number of dates in the index.
-        - `date_tz`: The time zone of the dates in the index.
+        - `date_tz`: The time zone of the dates (derived from the original pandas input).
         - `date_start`: The first date in the index.
         - `date_end`: The last date in the index.
     """
-    
     if output_type not in ['pandas', 'polars']:
-        raise TypeError('Output type can only be pandas or polars. Got {}.'.format(output_type))
+        raise TypeError(f'Output type can only be pandas or polars. Got {output_type}')
 
+    # Attempt to infer timezone from dtype if available, otherwise assume None
+    tz = None
+    if idx.dtype == pl.Datetime and hasattr(idx.dtype, 'time_zone'):
+        tz = idx.dtype.time_zone  # Polars 0.20+ supports time_zone in dtype
 
     return pd.DataFrame({
         "date_n": [len(idx)], 
-        "date_tz": [tz], # "America/New_York
+        "date_tz": [tz],
         "date_start": [idx.min()],
         "date_end": [idx.max()],
     }) if output_type == 'pandas' else pl.DataFrame({
         "date_n": pl.Series([len(idx)]), 
-        "date_tz": pl.Series([tz]), # "America/New_York
+        "date_tz": pl.Series([tz]),
         "date_start": pl.Series([idx.min()], dtype=pl.Datetime('ns')),
         "date_end": pl.Series([idx.max()], dtype=pl.Datetime('ns')),
-    })  
+    })

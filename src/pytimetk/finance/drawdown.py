@@ -65,7 +65,7 @@ def augment_drawdown(
             close_column='adjusted'
         )
     )
-    ddf_df.head()
+    dd_df.head()
     ```
     
     ``` {python}
@@ -78,6 +78,7 @@ def augment_drawdown(
             engine='polars'
         )
     )
+    dd_df.head()
     ```
     '''
     

@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 
 from plotnine import *
 
-from pytimetk.plot.plot_timeseries import plot_timeseries
+from pytimetk.plot import plot_timeseries
 from pytimetk.utils.plot_helpers import hex_to_rgba, rgba_to_hex, parse_rgba
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_anomalize_data
 from pytimetk.plot.theme import theme_timetk

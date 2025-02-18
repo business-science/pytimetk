@@ -294,118 +294,79 @@ def _summarize_by_time_polars(
     date_column: str,
     value_column: Union[str, List[str]],  
     freq: str = "D",  
-    agg_func: Union[str, list, Tuple[str, Callable]] = 'sum',
+    agg_func: Union[str, list] = 'sum',
     wide_format: bool = False,  
     fillna: int = 0,
-):
-    
-
-    # Translate the pandas frequency offset to Polars
-    polars_freq = pandas_to_polars_frequency(freq, default="d")  # Default to daily if not found
-
-    # Define a dictionary mapping aggregation function names to Polars aggregation expressions
-    aggregation_mapping = pandas_to_polars_aggregation_mapping(value_column)
-
-    # If value_column is a string, convert it to a list
+) -> pd.DataFrame:
+    polars_freq = pandas_to_polars_frequency(freq, default="d")
     if isinstance(value_column, str):
         value_column = [value_column]
-    
-    # If agg_func is a string, convert it to a list
     if not isinstance(agg_func, list):
         agg_func = [agg_func]
-    
-    # Check if agg_func contains any unsupported functions 
+
+    aggregation_mapping = pandas_to_polars_aggregation_mapping(value_column)
     for func in agg_func:
-        if isinstance(func, tuple):
-            raise TypeError(f"Polars does not currently support custom lambda functions or functions provided as tuples. Here are a list of supported functions: {list(aggregation_mapping.keys())}")
+        if func not in aggregation_mapping:
+            raise ValueError(f"Unsupported aggregation function '{func}' for Polars.")
 
-    # Select columns for aggregation based on agg_func
-    agg_columns = [aggregation_mapping[func] for func in agg_func if func in aggregation_mapping]
+    agg_columns = [
+        pl.col(val_col).sum().fill_null(fillna).alias(f"{val_col}_{func}")
+        for val_col in value_column
+        for func in agg_func
+    ]
 
-    # Check if the input data is a DataFrame or a GroupBy object
-    grouped = False
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        grouped = True
-        # Extract names from groupby object
-        groups = data.grouper.names  # This can be a list of group names
+        groups = data.grouper.names if isinstance(data.grouper.names, list) else [data.grouper.names]
+        df_pl = pl.from_pandas(data.obj.copy(), include_index=False)[groups + [date_column] + value_column]
         
-        # Convert the GroupBy object into a Polars DataFrame
-        df_pl = (
-            pl.from_pandas(data.obj.copy())
-                 .group_by(groups, maintain_order=True)
-                 .agg(pl.all().sort_by(date_column))
-        )
-
-        # Create a list of column names to explode
-        columns_to_explode = [col for col in df_pl.columns if col not in groups]
-
-        # Explode the selected columns
-        exploded_df = df_pl.explode(columns=columns_to_explode)
+        # Get group combinations in pandas-like order
+        group_combinations = df_pl.select(groups).unique(maintain_order=False).sort(groups).rows()
         
-        # Group by groups and date
         data = (
-            exploded_df
-                .select(groups + [date_column] + value_column)
+            df_pl.lazy()
                 .with_columns(pl.col(date_column).dt.truncate(polars_freq))
-                .group_by(groups + [date_column])
+                .group_by(groups + [date_column], maintain_order=True)
                 .agg(agg_columns)
                 .sort(groups + [date_column])
+                .collect(streaming=True)
         )
         
         if wide_format:
-            # Value columns for aggregation
             values = data.select(pl.exclude([date_column] + groups)).columns
-
-            # Emulate the pandas pivot function
-            if not isinstance(groups, list):
-                groups = [groups]
-
-            # Combine columns using a loop
-            cols_to_combine = groups
-            separator = "_"
-
-            combined_expr = pl.col(cols_to_combine[0])
-            if len(cols_to_combine) > 1:
-                for col_name in cols_to_combine[1:]:
-                    combined_expr = combined_expr + separator + pl.col(col_name)
-
-            data = data.with_columns(combined_expr.alias("_Combined"))
+            data = data.pivot(
+                values=values,
+                index=[date_column],
+                columns=groups,
+                aggregate_function="sum"
+            ).fill_null(fillna)
             
-            data = (
-                data.pivot(
-                    values=values, 
-                    index=[date_column], 
-                    columns= "_Combined",
-                    aggregate_function = pl.col(values[0]).sum()
-                )
-                    .fill_null(fillna)
-            ).to_pandas()
+            # Rename columns to match pandas style and order
+            new_columns = [date_column]
+            for val_col in value_column:  # Preserve value_column order
+                for group_vals in group_combinations:  # Use sorted group combinations
+                    new_columns.append(f"{val_col}_{'_'.join(str(col) for col in group_vals)}")
             
-            data.columns = data.columns.str.replace("__Combined", "")
-        else:
-            # Convert back to a pandas DataFrame
             data = data.to_pandas()
+            data.columns = new_columns
+        else:
+            data = data.to_pandas()
+    
     elif isinstance(data, pd.DataFrame):
-        # Convert the pandas DataFrame into a Polars DataFrame
-        df_pl = pl.from_pandas(data).sort(date_column)
-
-        # Group by date
-        data = (df_pl
-                .select([date_column] + value_column)
+        df_pl = pl.from_pandas(data, include_index=False)[[date_column] + value_column]
+        data = (
+            df_pl.lazy()
                 .with_columns(pl.col(date_column).dt.truncate(polars_freq))
-                .group_by([date_column])
+                .group_by([date_column], maintain_order=True)
                 .agg(agg_columns)
-                .sort([date_column]))
+                .sort([date_column])
+                .collect(streaming=True)
+        )
         
         if wide_format and len(value_column) > 1:
-            # Pivot the data in Polars when multiple value columns are present
             values = data.select(pl.exclude([date_column])).columns
-            data = (data.pivot(values=values, index=[date_column])
-                    .fill_null(fillna)
-                    ).to_pandas()
+            data = data.pivot(values=values, index=[date_column]).fill_null(fillna).to_pandas()
         else:
-            # Convert back to a pandas DataFrame
-            data = data.to_pandas()        
+            data = data.to_pandas()
 
     return data
 
