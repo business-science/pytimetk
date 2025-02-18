@@ -146,18 +146,20 @@ def augment_atr(
     # Run common checks
     check_dataframe_or_groupby(data)
     check_value_column(data, close_column)
+    check_value_column(data, high_column)
+    check_value_column(data, low_column)
     check_date_column(data, date_column)
     
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df = True)
-
+    # Handle periods
     if isinstance(periods, int):
         periods = [periods]
-        
     elif isinstance(periods, tuple):
         periods = list(range(periods[0], periods[1] + 1))
-        
     elif not isinstance(periods, list):
         raise TypeError(f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list.")
+    
+    # Sort data and preserve index
+    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
     
     if reduce_memory:
         data = reduce_memory_usage(data)
@@ -166,7 +168,6 @@ def augment_atr(
         ret = _augment_atr_pandas(data, date_column, high_column, low_column, close_column, periods, normalize)
     elif engine == 'polars':
         ret = _augment_atr_polars(data, date_column, high_column, low_column, close_column, periods, normalize)
-        # Polars Index to Match Pandas
         ret.index = idx_unsorted
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
@@ -174,81 +175,59 @@ def augment_atr(
     if reduce_memory:
         ret = reduce_memory_usage(ret)
         
-    ret = ret.sort_index()
-    
-    return ret
+    return ret.sort_index()
 
-# Monkey patch the method to pandas groupby objects
+# Monkey patch
 pd.core.groupby.generic.DataFrameGroupBy.augment_atr = augment_atr
-
-
 def _augment_atr_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
     high_column: str,
     low_column: str,
     close_column: str, 
-    periods: Union[int, Tuple[int, int], List[int]] = 20,
-    normalize: bool = False,
+    periods: List[int],
+    normalize: bool
 ) -> pd.DataFrame:
-    """
-    Internal function to calculate ATR using Pandas.
-    """
+    """Pandas implementation of ATR/NATR calculation."""
+    type_str = 'natr' if normalize else 'atr'
     
-    if normalize:
-        type = 'natr'
-    else:
-        type = 'atr'
-    
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        
-        group_names = data.grouper.names
-        data = data.obj
+    if isinstance(data, pd.DataFrame):
         df = data.copy()
-        
-        # df.sort_values(by=[*group_names, date_column], inplace=True)
+        # True Range calculation as a column
+        df['tr'] = pd.concat([
+            df[high_column] - df[low_column],
+            (df[high_column] - df[close_column].shift(1)).abs(),
+            (df[low_column] - df[close_column].shift(1)).abs()
+        ], axis=1).max(axis=1)
         
         for period in periods:
-            df = df.groupby(group_names, group_keys=False).apply(lambda x: _calculate_atr_pandas(x, high_column, low_column, close_column, period, normalize))
+            atr = df['tr'].rolling(window=period, min_periods=1).mean()
+            if normalize:
+                atr = (atr / df[close_column] * 100).replace([float('inf'), -float('inf')], pd.NA)
+            df[f'{close_column}_{type_str}_{period}'] = atr
         
-
-    elif isinstance(data, pd.DataFrame):
-        
-        df = data.copy()
-        
-        for period in periods:
-            df = _calculate_atr_pandas(df, high_column, low_column, close_column, period, normalize)
+        df = df.drop(columns=['tr'])
             
-    else:
-        raise ValueError("data must be a pandas DataFrame or a pandas GroupBy object")
-
-    return df
-
-def _calculate_atr_pandas(df, high_column, low_column, close_column, period, normalize):
-    """
-    Calculate ATR for a DataFrame.
-    """
-    if normalize:
-        type = 'natr'
-    else:
-        type = 'atr'
-    
-    high_low = df[high_column] - df[low_column]
-    high_close = (df[high_column] - df[close_column].shift()).abs()
-    low_close = (df[low_column] - df[close_column].shift()).abs()
-    
-    true_ranges = pd.concat([high_low, high_close, low_close], axis=1)
-    true_range = true_ranges.max(axis=1)
-    
-    atr = true_range.rolling(period).mean()
-    
-    if normalize:
-        atr = atr / df[close_column] * 100
+    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        group_names = data.grouper.names
+        df = data.obj.copy()
+        # True Range calculation with group-aware shift
+        prev_close = df.groupby(group_names)[close_column].shift(1)
+        df['tr'] = pd.concat([
+            df[high_column] - df[low_column],
+            (df[high_column] - prev_close).abs(),
+            (df[low_column] - prev_close).abs()
+        ], axis=1).max(axis=1)
         
-    df[f'{close_column}_{type}_{period}'] = atr
+        for period in periods:
+            atr = df.groupby(group_names)['tr'].rolling(window=period, min_periods=1).mean().reset_index(level=0, drop=True)
+            if normalize:
+                atr = (atr / df[close_column] * 100).replace([float('inf'), -float('inf')], pd.NA)
+            df[f'{close_column}_{type_str}_{period}'] = atr
+        
+        df = df.drop(columns=['tr'])
     
     return df
-    
 
 def _augment_atr_polars(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
@@ -256,76 +235,31 @@ def _augment_atr_polars(
     high_column: str,
     low_column: str,
     close_column: str, 
-    periods: Union[int, Tuple[int, int], List[int]] = 20,
-    normalize: bool = False,
+    periods: List[int],
+    normalize: bool
 ) -> pd.DataFrame:
+    """Polars implementation of ATR/NATR calculation."""
+    type_str = 'natr' if normalize else 'atr'
     
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        # Data is a GroupBy object, use apply to get a DataFrame
-        pandas_df = data.obj.copy()
-    elif isinstance(data, pd.DataFrame):
-        # Data is already a DataFrame
-        pandas_df = data.copy()
-    elif isinstance(data, pl.DataFrame):
-        # Data is already a Polars DataFrame
-        pandas_df = data.to_pandas()
+        df = pl.from_pandas(data.obj)
+        group_names = data.grouper.names if isinstance(data.grouper.names, list) else [data.grouper.names]
     else:
-        raise ValueError("data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame")
-        
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-                
-        # Get the group names and original ungrouped data
-        group_names = data.grouper.names
-        if not isinstance(group_names, list):
-            group_names = [group_names]
-        
-        pl_df = pl.from_pandas(pandas_df)
-        
-        for period in periods:
-             pl_df = pl_df.group_by(*group_names, maintain_order=True).map_groups(
-                lambda df: _calculate_atr_polars(df, high_column=high_column, low_column=low_column, close_column=close_column, period=period, normalize=normalize)
-            )
-            
-    else:
-        
-        pl_df = pl.from_pandas(pandas_df)
-        
-        for period in periods:
-            
-            pl_df = _calculate_atr_polars(pl_df, high_column, low_column, close_column, period, normalize)
-            
-              
+        df = pl.from_pandas(data.copy())
+        group_names = None
     
-    return pl_df.to_pandas()
+    # True Range calculation
+    tr = pl.max_horizontal([
+        pl.col(high_column) - pl.col(low_column),
+        (pl.col(high_column) - pl.col(close_column).shift(1)).abs(),
+        (pl.col(low_column) - pl.col(close_column).shift(1)).abs()
+    ])
     
-def _calculate_atr_polars(pl_df, high_column, low_column, close_column, period, normalize):
-    """
-    Internal function to calculate ATR using Polars.
-    """
+    # Add ATR/NATR columns
+    for period in periods:
+        atr = tr.rolling_mean(window_size=period, min_periods=1).over(group_names if group_names else None)
+        if normalize:
+            atr = (atr / pl.col(close_column) * 100).replace([float('inf'), -float('inf')], None)
+        df = df.with_columns(atr.alias(f'{close_column}_{type_str}_{period}'))
     
-    # Calculate the true range components
-    high_low = pl_df[high_column] - pl_df[low_column]
-    high_close = (pl_df[high_column] - pl_df[close_column].shift(1)).abs()
-    low_close = (pl_df[low_column] - pl_df[close_column].shift(1)).abs()
-
-    # Calculate the true range
-    true_range = pl.select([
-        high_low.alias("high_low"),
-        high_close.alias("high_close"),
-        low_close.alias("low_close")
-    ]).max_horizontal().alias("_temp_true_range")
-
-    # Calculate ATR
-    atr = true_range.rolling_mean(window_size=period)
-
-    # Normalize if required
-    if normalize:
-        atr = (atr / pl_df[close_column]) * 100
-        column_name = f'{close_column}_natr_{period}'
-    else:
-        column_name = f'{close_column}_atr_{period}'
-
-    pl_df = pl_df.with_columns(atr.alias(column_name))
-
-    return pl_df
-
+    return df.to_pandas()
