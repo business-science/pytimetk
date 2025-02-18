@@ -1,29 +1,40 @@
 # augment_macd { #pytimetk.augment_macd }
 
-`augment_macd(data, date_column, close_column, fast_period=12, slow_period=26, signal_period=9, reduce_memory=False, engine='pandas')`
+```python
+augment_macd(
+    data,
+    date_column,
+    close_column,
+    fast_period=12,
+    slow_period=26,
+    signal_period=9,
+    reduce_memory=False,
+    engine='pandas',
+)
+```
 
 Calculate MACD for a given financial instrument using either pandas or polars engine.
 
-## Parameters
+## Parameters {.doc-section .doc-section-parameters}
 
-| Name            | Type                                                            | Description                                                                   | Default    |
-|-----------------|-----------------------------------------------------------------|-------------------------------------------------------------------------------|------------|
-| `data`          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | Pandas DataFrame or GroupBy object containing financial data.                 | _required_ |
-| `date_column`   | str                                                             | Name of the column containing date information.                               | _required_ |
-| `close_column`  | str                                                             | Name of the column containing closing price data.                             | _required_ |
-| `fast_period`   | int                                                             | Number of periods for the fast EMA in MACD calculation.                       | `12`       |
-| `slow_period`   | int                                                             | Number of periods for the slow EMA in MACD calculation.                       | `26`       |
-| `signal_period` | int                                                             | Number of periods for the signal line EMA in MACD calculation.                | `9`        |
-| `reduce_memory` | bool                                                            | Whether to reduce memory usage of the data before performing the calculation. | `False`    |
-| `engine`        | str                                                             | Computation engine to use ('pandas' or 'polars').                             | `'pandas'` |
+| Name          | Type                                                            | Description                                                                   | Default    |
+|---------------|-----------------------------------------------------------------|-------------------------------------------------------------------------------|------------|
+| data          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | Pandas DataFrame or GroupBy object containing financial data.                 | _required_ |
+| date_column   | str                                                             | Name of the column containing date information.                               | _required_ |
+| close_column  | str                                                             | Name of the column containing closing price data.                             | _required_ |
+| fast_period   | int                                                             | Number of periods for the fast EMA in MACD calculation.                       | `12`       |
+| slow_period   | int                                                             | Number of periods for the slow EMA in MACD calculation.                       | `26`       |
+| signal_period | int                                                             | Number of periods for the signal line EMA in MACD calculation.                | `9`        |
+| reduce_memory | bool                                                            | Whether to reduce memory usage of the data before performing the calculation. | `False`    |
+| engine        | str                                                             | Computation engine to use ('pandas' or 'polars').                             | `'pandas'` |
 
-## Returns
+## Returns {.doc-section .doc-section-returns}
 
-| Type         | Description                                                      |
-|--------------|------------------------------------------------------------------|
-| pd.DataFrame | DataFrame with MACD line, signal line, and MACD histogram added. |
+| Name   | Type         | Description                                                      |
+|--------|--------------|------------------------------------------------------------------|
+|        | pd.DataFrame | DataFrame with MACD line, signal line, and MACD histogram added. |
 
-## Notes
+## Notes {.doc-section .doc-section-notes}
 
 The MACD (Moving Average Convergence Divergence) is a 
 trend-following momentum indicator that shows the relationship 
@@ -49,7 +60,7 @@ signal line is a bullish signal, indicating it might be time to
 buy, and a crossover below the signal line is bearish, 
 suggesting it might be time to sell.
 
-## Examples
+## Examples {.doc-section .doc-section-examples}
 
 ``` {python}
 import pandas as pd

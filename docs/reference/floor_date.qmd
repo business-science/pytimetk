@@ -1,6 +1,8 @@
 # floor_date { #pytimetk.floor_date }
 
-`floor_date(idx, unit='D', engine='pandas')`
+```python
+floor_date(idx, unit='D', engine='pandas')
+```
 
 Robust date flooring.
 
@@ -9,21 +11,21 @@ with the dates rounded down to the specified unit. It's more robust than the
 pandas `floor` function, which does weird things with irregular frequencies 
 like Month which are actually regular.
 
-## Parameters
+## Parameters {.doc-section .doc-section-parameters}
 
-| Name     | Type                          | Description                                                                                                                                                                                                                                                                                                                                             | Default    |
-|----------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `idx`    | pd.Series or pd.DatetimeIndex | The `idx` parameter is a pandas Series or pandas DatetimeIndex object that  contains datetime values. It represents the dates that you want to round down.                                                                                                                                                                                              | _required_ |
-| `unit`   | str                           | The `unit` parameter in the `floor_date` function is a string that specifies  the time unit to which the dates in the `idx` series should be rounded down.  It has a default value of "D", which stands for day. Other possible values  for the `unit` parameter could be.                                                                              | `'D'`      |
-| `engine` | str                           | The `engine` parameter is used to specify the engine to use for calculating  the floor datetime. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library for    calculating the floor datetime. This can be faster than using "pandas" for    large datasets. | `'pandas'` |
+| Name   | Type                          | Description                                                                                                                                                                                                                                                                                                                                             | Default    |
+|--------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| idx    | pd.Series or pd.DatetimeIndex | The `idx` parameter is a pandas Series or pandas DatetimeIndex object that  contains datetime values. It represents the dates that you want to round down.                                                                                                                                                                                              | _required_ |
+| unit   | str                           | The `unit` parameter in the `floor_date` function is a string that specifies  the time unit to which the dates in the `idx` series should be rounded down.  It has a default value of "D", which stands for day. Other possible values  for the `unit` parameter could be.                                                                              | `'D'`      |
+| engine | str                           | The `engine` parameter is used to specify the engine to use for calculating  the floor datetime. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library for    calculating the floor datetime. This can be faster than using "pandas" for    large datasets. | `'pandas'` |
 
-## Returns
+## Returns {.doc-section .doc-section-returns}
 
-| Type      | Description                                                                                |
-|-----------|--------------------------------------------------------------------------------------------|
-| pd.Series | The `floor_date` function returns a pandas Series object containing datetime64[ns] values. |
+| Name   | Type      | Description                                                                                |
+|--------|-----------|--------------------------------------------------------------------------------------------|
+|        | pd.Series | The `floor_date` function returns a pandas Series object containing datetime64[ns] values. |
 
-## Examples
+## Examples {.doc-section .doc-section-examples}
 
 ```{python}
 import pytimetk as tk

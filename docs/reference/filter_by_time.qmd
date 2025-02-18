@@ -1,6 +1,14 @@
 # filter_by_time { #pytimetk.filter_by_time }
 
-`filter_by_time(data, date_column, start_date='start', end_date='end', engine='pandas')`
+```python
+filter_by_time(
+    data,
+    date_column,
+    start_date='start',
+    end_date='end',
+    engine='pandas',
+)
+```
 
 Filters a DataFrame or GroupBy object based on a specified date range.
 
@@ -8,36 +16,36 @@ This function filters data in a pandas DataFrame or a pandas GroupBy object
 by a given date range. It supports various date formats and can handle both
 DataFrame and GroupBy objects.
 
-## Parameters
+## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                                                     | Description                                                                                                                                                                                                                      | Default      |
-|---------------|----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| `data`        | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | The data to be filtered. It can be a pandas DataFrame or a pandas GroupBy object.                                                                                                                                                | _required_   |
-| `date_column` | str                                                      | The name of the column in `data` that contains date information. This column is used for filtering the data based on the date range.                                                                                             | _required_   |
-| `start_date`  | str                                                      | The start date of the filtering range. The format of the date can be YYYY, YYYY-MM, YYYY-MM-DD, YYYY-MM-DD HH, YYYY-MM-DD HH:SS, or YYYY-MM-DD HH:MM:SS. Default: 'start', which will filter from the earliest date in the data. | `'start'`    |
-| `end_date`    | str                                                      | The end date of the filtering range. It supports the same formats as `start_date`. Default: 'end', which will filter until the latest date in the data.                                                                          | `'end'`      |
-| `engine`      | str                                                      | The engine to be used for filtering the data. Currently, only 'pandas'.                                                                                                                                                          | `= 'pandas'` |
+| Name        | Type                                                     | Description                                                                                                                                                                                                                      | Default      |
+|-------------|----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| data        | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | The data to be filtered. It can be a pandas DataFrame or a pandas GroupBy object.                                                                                                                                                | _required_   |
+| date_column | str                                                      | The name of the column in `data` that contains date information. This column is used for filtering the data based on the date range.                                                                                             | _required_   |
+| start_date  | str                                                      | The start date of the filtering range. The format of the date can be YYYY, YYYY-MM, YYYY-MM-DD, YYYY-MM-DD HH, YYYY-MM-DD HH:SS, or YYYY-MM-DD HH:MM:SS. Default: 'start', which will filter from the earliest date in the data. | `'start'`    |
+| end_date    | str                                                      | The end date of the filtering range. It supports the same formats as `start_date`. Default: 'end', which will filter until the latest date in the data.                                                                          | `'end'`      |
+| engine      | str                                                      | The engine to be used for filtering the data. Currently, only 'pandas'.                                                                                                                                                          | `= 'pandas'` |
 
-## Returns
+## Returns {.doc-section .doc-section-returns}
 
-| Type         | Description                                                                      |
-|--------------|----------------------------------------------------------------------------------|
-| pd.DataFrame | A pandas DataFrame containing the filtered data within the specified date range. |
+| Name   | Type         | Description                                                                      |
+|--------|--------------|----------------------------------------------------------------------------------|
+|        | pd.DataFrame | A pandas DataFrame containing the filtered data within the specified date range. |
 
-## Raises
+## Raises {.doc-section .doc-section-raises}
 
-| Type       | Description                                                             |
-|------------|-------------------------------------------------------------------------|
-| ValueError | If the provided date strings do not match any of the supported formats. |
+| Name   | Type       | Description                                                             |
+|--------|------------|-------------------------------------------------------------------------|
+|        | ValueError | If the provided date strings do not match any of the supported formats. |
 
-## Notes
+## Notes {.doc-section .doc-section-notes}
 
 - The function uses pd.to_datetime to convert the start date 
   (e.g. start_date = "2014" becomes "2014-01-01").
 - The function internally uses the `parse_end_date` function to convert the
   end dates (e.g. end_date = "2014" becomes "2014-12-31").
 
-## Examples
+## Examples {.doc-section .doc-section-examples}
 
 ```{python}
 import pytimetk as tk

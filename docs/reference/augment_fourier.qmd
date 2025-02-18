@@ -1,29 +1,38 @@
 # augment_fourier { #pytimetk.augment_fourier }
 
-`augment_fourier(data, date_column, periods=1, max_order=1, reduce_memory=True, engine='pandas')`
+```python
+augment_fourier(
+    data,
+    date_column,
+    periods=1,
+    max_order=1,
+    reduce_memory=True,
+    engine='pandas',
+)
+```
 
 Adds Fourier transforms to a Pandas DataFrame or DataFrameGroupBy object.
 
 The `augment_fourier` function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, the number of periods for the Fourier series, and the maximum Fourier order, and adds Fourier-transformed columns to the DataFrame.
 
-## Parameters
+## Parameters {.doc-section .doc-section-parameters}
 
-| Name            | Type                                                     | Description                                                                                                                                                                                                                                                                                             | Default    |
-|-----------------|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `data`          | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | The `data` parameter is the input DataFrame or DataFrameGroupBy object that you want to add Fourier-transformed columns to.                                                                                                                                                                             | _required_ |
-| `date_column`   | str                                                      | The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to compute the Fourier transforms.                                                                                                                     | _required_ |
-| `periods`       | int or list                                              | The `periods` parameter specifies how many timesteps between each peak in the fourier series. Default is 1.                                                                                                                                                                                             | `1`        |
-| `max_order`     | int                                                      | The `max_order` parameter specifies the maximum Fourier order to calculate. Default is 1.                                                                                                                                                                                                               | `1`        |
-| `reduce_memory` | bool                                                     | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False. | `True`     |
-| `engine`        | str                                                      | The `engine` parameter is used to specify the engine to use for  augmenting lags. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library.  This can be faster than using "pandas" for large datasets.        | `'pandas'` |
+| Name          | Type                                                     | Description                                                                                                                                                                                                                                                                                             | Default    |
+|---------------|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | The `data` parameter is the input DataFrame or DataFrameGroupBy object that you want to add Fourier-transformed columns to.                                                                                                                                                                             | _required_ |
+| date_column   | str                                                      | The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to compute the Fourier transforms.                                                                                                                     | _required_ |
+| periods       | int or list                                              | The `periods` parameter specifies how many timesteps between each peak in the fourier series. Default is 1.                                                                                                                                                                                             | `1`        |
+| max_order     | int                                                      | The `max_order` parameter specifies the maximum Fourier order to calculate. Default is 1.                                                                                                                                                                                                               | `1`        |
+| reduce_memory | bool                                                     | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False. | `True`     |
+| engine        | str                                                      | The `engine` parameter is used to specify the engine to use for  augmenting lags. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library.  This can be faster than using "pandas" for large datasets.        | `'pandas'` |
 
-## Returns
+## Returns {.doc-section .doc-section-returns}
 
-| Type         | Description                                                      |
-|--------------|------------------------------------------------------------------|
-| pd.DataFrame | A Pandas DataFrame with Fourier-transformed columns added to it. |
+| Name   | Type         | Description                                                      |
+|--------|--------------|------------------------------------------------------------------|
+|        | pd.DataFrame | A Pandas DataFrame with Fourier-transformed columns added to it. |
 
-## Examples
+## Examples {.doc-section .doc-section-examples}
 
 ```{python}
 import pandas as pd

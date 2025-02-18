@@ -392,15 +392,20 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_timeseries_signature(data, date_column, reduce_memory=False, engine='pandas')</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>augment_timeseries_signature(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    date_column,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The function <code>augment_timeseries_signature</code> takes a DataFrame and a date column as input and returns the original DataFrame with the <strong>29 different date and time based features</strong> added as new columns with the feature name based on the date_column.</p>
-<section id="parameters" class="level2">
-<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<section id="parameters" class="level2 doc-section doc-section-parameters">
+<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 4%">
 <col style="width: 3%">
-<col style="width: 88%">
+<col style="width: 3%">
+<col style="width: 89%">
 <col style="width: 3%">
 </colgroup>
 <thead>
@@ -413,25 +418,25 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>data</code></td>
+<td>data</td>
 <td>pd.DataFrame</td>
 <td>The <code>data</code> parameter is a pandas DataFrame that contains the time series data.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>date_column</code></td>
+<td>date_column</td>
 <td>str</td>
 <td>The <code>date_column</code> parameter is a string that represents the name of the date column in the <code>data</code> DataFrame.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
-<td><code>reduce_memory</code></td>
+<td>reduce_memory</td>
 <td>bool</td>
 <td>The <code>reduce_memory</code> parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="even">
-<td><code>engine</code></td>
+<td>engine</td>
 <td>str</td>
 <td>The <code>engine</code> parameter is used to specify the engine to use for augmenting datetime features. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for feature generation. This is generally faster than using “pandas” for large datasets.</td>
 <td><code>'pandas'</code></td>
@@ -439,158 +444,190 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tbody>
 </table>
 </section>
-<section id="returns" class="level2">
-<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<section id="returns" class="level2 doc-section doc-section-returns">
+<h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 62%">
-<col style="width: 37%">
+<col style="width: 4%">
+<col style="width: 59%">
+<col style="width: 35%">
 </colgroup>
 <thead>
 <tr class="header">
+<th>Name</th>
 <th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
+<td></td>
 <td>pd.DataFrame</td>
 <td>A Pandas DataFrame with 29 datetime features added to it.</td>
 </tr>
 <tr class="even">
+<td></td>
 <td>- _index_num: An int64 feature that captures the entire datetime as a numeric value to the second</td>
 <td></td>
 </tr>
 <tr class="odd">
+<td></td>
 <td>- _year: The year of the datetime</td>
 <td></td>
 </tr>
 <tr class="even">
+<td></td>
 <td>- _year_iso: The iso year of the datetime</td>
 <td></td>
 </tr>
 <tr class="odd">
+<td></td>
 <td>- _yearstart: Logical (0,1) indicating if first day of year (defined by frequency)</td>
 <td></td>
 </tr>
 <tr class="even">
+<td></td>
 <td>- _yearend: Logical (0,1) indicating if last day of year (defined by frequency)</td>
 <td></td>
 </tr>
 <tr class="odd">
+<td></td>
 <td>- _leapyear: Logical (0,1) indicating if the date belongs to a leap year</td>
 <td></td>
 </tr>
 <tr class="even">
+<td></td>
 <td>- _half: Half year of the date: Jan-Jun = 1, July-Dec = 2</td>
 <td></td>
 </tr>
 <tr class="odd">
+<td></td>
 <td>- _quarter: Quarter of the date: Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4</td>
 <td></td>
 </tr>
 <tr class="even">
+<td></td>
 <td>- _quarteryear: Quarter of the date + relative year</td>
 <td></td>
 </tr>
 <tr class="odd">
+<td></td>
 <td>- _quarterstart: Logical (0,1) indicating if first day of quarter (defined by frequency)</td>
 <td></td>
 </tr>
 <tr class="even">
+<td></td>
 <td>- _quarterend: Logical (0,1) indicating if last day of quarter (defined by frequency)</td>
 <td></td>
 </tr>
 <tr class="odd">
+<td></td>
 <td>- _month: The month of the datetime</td>
 <td></td>
 </tr>
 <tr class="even">
+<td></td>
 <td>- _month_lbl: The month label of the datetime</td>
 <td></td>
 </tr>
 <tr class="odd">
+<td></td>
 <td>- _monthstart: Logical (0,1) indicating if first day of month (defined by frequency)</td>
 <td></td>
 </tr>
 <tr class="even">
+<td></td>
 <td>- _monthend: Logical (0,1) indicating if last day of month (defined by frequency)</td>
 <td></td>
 </tr>
 <tr class="odd">
+<td></td>
 <td>- _yweek: The week ordinal of the year</td>
 <td></td>
 </tr>
 <tr class="even">
+<td></td>
 <td>- _mweek: The week ordinal of the month</td>
 <td></td>
 </tr>
 <tr class="odd">
+<td></td>
 <td>- _wday: The number of the day of the week with Monday=1, Sunday=6</td>
 <td></td>
 </tr>
 <tr class="even">
+<td></td>
 <td>- _wday_lbl: The day of the week label</td>
 <td></td>
 </tr>
 <tr class="odd">
+<td></td>
 <td>- _mday: The day of the datetime</td>
 <td></td>
 </tr>
 <tr class="even">
+<td></td>
 <td>- _qday: The days of the relative quarter</td>
 <td></td>
 </tr>
 <tr class="odd">
+<td></td>
 <td>- _yday: The ordinal day of year</td>
 <td></td>
 </tr>
 <tr class="even">
+<td></td>
 <td>- _weekend: Logical (0,1) indicating if the day is a weekend</td>
 <td></td>
 </tr>
 <tr class="odd">
+<td></td>
 <td>- _hour: The hour of the datetime</td>
 <td></td>
 </tr>
 <tr class="even">
+<td></td>
 <td>- _minute: The minutes of the datetime</td>
 <td></td>
 </tr>
 <tr class="odd">
+<td></td>
 <td>- _second: The seconds of the datetime</td>
 <td></td>
 </tr>
 <tr class="even">
+<td></td>
 <td>- _msecond: The microseconds of the datetime</td>
 <td></td>
 </tr>
 <tr class="odd">
+<td></td>
 <td>- _nsecond: The nanoseconds of the datetime</td>
 <td></td>
 </tr>
 <tr class="even">
+<td></td>
 <td>- _am_pm: Half of the day, AM = ante meridiem, PM = post meridiem</td>
 <td></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<section id="examples" class="level2 doc-section doc-section-examples">
+<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'bike_sales_sample'</span>, parse_dates <span class="op">=</span> [<span class="st">'order_date'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'bike_sales_sample'</span>, parse_dates <span class="op">=</span> [<span class="st">'order_date'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adds 29 new time series features as columns to the original DataFrame (pandas engine)</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>( </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        .augment_timeseries_signature(date_column<span class="op">=</span><span class="st">'order_date'</span>, engine <span class="op">=</span><span class="st">'pandas'</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        .glimpse()</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adds 29 new time series features as columns to the original DataFrame (pandas engine)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>( </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .augment_timeseries_signature(date_column<span class="op">=</span><span class="st">'order_date'</span>, engine <span class="op">=</span><span class="st">'pandas'</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .glimpse()</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 2466 rows of 42 columns
 order_id:                 int64             [1, 1, 2, 2, 3, 3, 3, 3, 3,  ...
@@ -607,43 +644,43 @@ bikeshop_name:            object            ['Ithaca Mountain Climbers', ...
 city:                     object            ['Ithaca', 'Ithaca', 'Kansas ...
 state:                    object            ['NY', 'NY', 'KS', 'KS', 'KY ...
 order_date_index_num:     int64             [1294358400, 1294358400, 129 ...
-order_date_year:          int64             [2011, 2011, 2011, 2011, 201 ...
+order_date_year:          int32             [2011, 2011, 2011, 2011, 201 ...
 order_date_year_iso:      UInt32            [2011, 2011, 2011, 2011, 201 ...
 order_date_yearstart:     uint8             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
 order_date_yearend:       uint8             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
 order_date_leapyear:      uint8             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
 order_date_half:          int64             [1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
-order_date_quarter:       int64             [1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
+order_date_quarter:       int32             [1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
 order_date_quarteryear:   object            ['2011Q1', '2011Q1', '2011Q1 ...
 order_date_quarterstart:  uint8             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
 order_date_quarterend:    uint8             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_month:         int64             [1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
+order_date_month:         int32             [1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
 order_date_month_lbl:     object            ['January', 'January', 'Janu ...
 order_date_monthstart:    uint8             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
 order_date_monthend:      uint8             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
 order_date_yweek:         UInt32            [1, 1, 2, 2, 2, 2, 2, 2, 2,  ...
-order_date_mweek:         int64             [1, 1, 2, 2, 2, 2, 2, 2, 2,  ...
-order_date_wday:          int64             [5, 5, 1, 1, 1, 1, 1, 1, 1,  ...
+order_date_mweek:         int32             [1, 1, 2, 2, 2, 2, 2, 2, 2,  ...
+order_date_wday:          int32             [5, 5, 1, 1, 1, 1, 1, 1, 1,  ...
 order_date_wday_lbl:      object            ['Friday', 'Friday', 'Monday ...
-order_date_mday:          int64             [7, 7, 10, 10, 10, 10, 10, 1 ...
+order_date_mday:          int32             [7, 7, 10, 10, 10, 10, 10, 1 ...
 order_date_qday:          int64             [7, 7, 10, 10, 10, 10, 10, 1 ...
-order_date_yday:          int64             [7, 7, 10, 10, 10, 10, 10, 1 ...
+order_date_yday:          int32             [7, 7, 10, 10, 10, 10, 10, 1 ...
 order_date_weekend:       int64             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_hour:          int64             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_minute:        int64             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_second:        int64             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_msecond:       int64             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_nsecond:       int64             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_hour:          int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_minute:        int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_second:        int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_msecond:       int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_nsecond:       int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
 order_date_am_pm:         object            ['am', 'am', 'am', 'am', 'am ...</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adds 29 new time series features as columns to the original DataFrame (polars engine)</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>( </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .augment_timeseries_signature(date_column<span class="op">=</span><span class="st">'order_date'</span>, engine <span class="op">=</span><span class="st">'polars'</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .glimpse()</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adds 29 new time series features as columns to the original DataFrame (polars engine)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>( </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        .augment_timeseries_signature(date_column<span class="op">=</span><span class="st">'order_date'</span>, engine <span class="op">=</span><span class="st">'polars'</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        .glimpse()</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 2466 rows of 42 columns
 order_id:                 int64             [1, 1, 2, 2, 3, 3, 3, 3, 3,  ...
@@ -666,27 +703,27 @@ order_date_yearstart:     int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
 order_date_yearend:       int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
 order_date_leapyear:      int8              [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
 order_date_half:          int32             [1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
-order_date_quarter:       uint32            [1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
+order_date_quarter:       int8              [1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
 order_date_quarteryear:   object            ['2011Q1', '2011Q1', '2011Q1 ...
 order_date_quarterstart:  int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
 order_date_quarterend:    int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_month:         uint32            [1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
+order_date_month:         int8              [1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
 order_date_month_lbl:     object            ['January', 'January', 'Janu ...
 order_date_monthstart:    int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
 order_date_monthend:      int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_yweek:         uint32            [1, 1, 2, 2, 2, 2, 2, 2, 2,  ...
-order_date_mweek:         uint32            [1, 1, 2, 2, 2, 2, 2, 2, 2,  ...
-order_date_wday:          uint32            [5, 5, 1, 1, 1, 1, 1, 1, 1,  ...
+order_date_yweek:         int8              [1, 1, 2, 2, 2, 2, 2, 2, 2,  ...
+order_date_mweek:         int8              [1, 1, 2, 2, 2, 2, 2, 2, 2,  ...
+order_date_wday:          int8              [5, 5, 1, 1, 1, 1, 1, 1, 1,  ...
 order_date_wday_lbl:      object            ['Friday', 'Friday', 'Monday ...
-order_date_mday:          uint32            [7, 7, 10, 10, 10, 10, 10, 1 ...
-order_date_qday:          int64             [7, 7, 10, 10, 10, 10, 10, 1 ...
-order_date_yday:          uint32            [7, 7, 10, 10, 10, 10, 10, 1 ...
+order_date_mday:          int8              [7, 7, 10, 10, 10, 10, 10, 1 ...
+order_date_qday:          int16             [7, 7, 10, 10, 10, 10, 10, 1 ...
+order_date_yday:          int16             [7, 7, 10, 10, 10, 10, 10, 1 ...
 order_date_weekend:       int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_hour:          uint32            [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_minute:        uint32            [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_second:        uint32            [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_msecond:       uint32            [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_nsecond:       uint32            [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_hour:          int8              [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_minute:        int8              [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_second:        int8              [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_msecond:       int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_nsecond:       int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
 order_date_am_pm:         object            ['am', 'am', 'am', 'am', 'am ...</code></pre>
 </div>
 </div>

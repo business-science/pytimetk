@@ -1,57 +1,64 @@
 # augment_timeseries_signature { #pytimetk.augment_timeseries_signature }
 
-`augment_timeseries_signature(data, date_column, reduce_memory=False, engine='pandas')`
+```python
+augment_timeseries_signature(
+    data,
+    date_column,
+    reduce_memory=False,
+    engine='pandas',
+)
+```
 
 The function `augment_timeseries_signature` takes a DataFrame and a date 
 column as input and returns the original DataFrame with the **29 different 
 date and time based features** added as new columns with the feature name 
 based on the date_column.
 
-## Parameters
+## Parameters {.doc-section .doc-section-parameters}
 
-| Name            | Type         | Description                                                                                                                                                                                                                                                                                                                                     | Default    |
-|-----------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `data`          | pd.DataFrame | The `data` parameter is a pandas DataFrame that contains the time series  data.                                                                                                                                                                                                                                                                 | _required_ |
-| `date_column`   | str          | The `date_column` parameter is a string that represents the name of the  date column in the `data` DataFrame.                                                                                                                                                                                                                                   | _required_ |
-| `reduce_memory` | bool         | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.                                         | `False`    |
-| `engine`        | str          | The `engine` parameter is used to specify the engine to use for  augmenting datetime features. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library    for feature generation. This is generally faster than using "pandas"    for large datasets. | `'pandas'` |
+| Name          | Type         | Description                                                                                                                                                                                                                                                                                                                                     | Default    |
+|---------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | pd.DataFrame | The `data` parameter is a pandas DataFrame that contains the time series  data.                                                                                                                                                                                                                                                                 | _required_ |
+| date_column   | str          | The `date_column` parameter is a string that represents the name of the  date column in the `data` DataFrame.                                                                                                                                                                                                                                   | _required_ |
+| reduce_memory | bool         | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.                                         | `False`    |
+| engine        | str          | The `engine` parameter is used to specify the engine to use for  augmenting datetime features. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library    for feature generation. This is generally faster than using "pandas"    for large datasets. | `'pandas'` |
 
-## Returns
+## Returns {.doc-section .doc-section-returns}
 
-| Type                                                                                              | Description                                               |
-|---------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
-| pd.DataFrame                                                                                      | A Pandas DataFrame with 29 datetime features added to it. |
-| - _index_num: An int64 feature that captures the entire datetime as a numeric value to the second |                                                           |
-| - _year: The year of the datetime                                                                 |                                                           |
-| - _year_iso: The iso year of the datetime                                                         |                                                           |
-| - _yearstart: Logical (0,1) indicating if first day of year (defined by frequency)                |                                                           |
-| - _yearend: Logical (0,1) indicating if last day of year (defined by frequency)                   |                                                           |
-| - _leapyear: Logical (0,1) indicating if the date belongs to a leap year                          |                                                           |
-| - _half: Half year of the date: Jan-Jun = 1, July-Dec = 2                                         |                                                           |
-| - _quarter: Quarter of the date: Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4               |                                                           |
-| - _quarteryear: Quarter of the date + relative year                                               |                                                           |
-| - _quarterstart: Logical (0,1) indicating if first day of quarter (defined by frequency)          |                                                           |
-| - _quarterend: Logical (0,1) indicating if last day of quarter (defined by frequency)             |                                                           |
-| - _month: The month of the datetime                                                               |                                                           |
-| - _month_lbl: The month label of the datetime                                                     |                                                           |
-| - _monthstart: Logical (0,1) indicating if first day of month (defined by frequency)              |                                                           |
-| - _monthend: Logical (0,1) indicating if last day of month (defined by frequency)                 |                                                           |
-| - _yweek: The week ordinal of the year                                                            |                                                           |
-| - _mweek: The week ordinal of the month                                                           |                                                           |
-| - _wday: The number of the day of the week with Monday=1, Sunday=6                                |                                                           |
-| - _wday_lbl: The day of the week label                                                            |                                                           |
-| - _mday: The day of the datetime                                                                  |                                                           |
-| - _qday: The days of the relative quarter                                                         |                                                           |
-| - _yday: The ordinal day of year                                                                  |                                                           |
-| - _weekend: Logical (0,1) indicating if the day is a weekend                                      |                                                           |
-| - _hour: The hour of the datetime                                                                 |                                                           |
-| - _minute: The minutes of the datetime                                                            |                                                           |
-| - _second: The seconds of the datetime                                                            |                                                           |
-| - _msecond: The microseconds of the datetime                                                      |                                                           |
-| - _nsecond: The nanoseconds of the datetime                                                       |                                                           |
-| - _am_pm: Half of the day, AM = ante meridiem, PM = post meridiem                                 |                                                           |
+| Name   | Type                                                                                              | Description                                               |
+|--------|---------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
+|        | pd.DataFrame                                                                                      | A Pandas DataFrame with 29 datetime features added to it. |
+|        | - _index_num: An int64 feature that captures the entire datetime as a numeric value to the second |                                                           |
+|        | - _year: The year of the datetime                                                                 |                                                           |
+|        | - _year_iso: The iso year of the datetime                                                         |                                                           |
+|        | - _yearstart: Logical (0,1) indicating if first day of year (defined by frequency)                |                                                           |
+|        | - _yearend: Logical (0,1) indicating if last day of year (defined by frequency)                   |                                                           |
+|        | - _leapyear: Logical (0,1) indicating if the date belongs to a leap year                          |                                                           |
+|        | - _half: Half year of the date: Jan-Jun = 1, July-Dec = 2                                         |                                                           |
+|        | - _quarter: Quarter of the date: Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4               |                                                           |
+|        | - _quarteryear: Quarter of the date + relative year                                               |                                                           |
+|        | - _quarterstart: Logical (0,1) indicating if first day of quarter (defined by frequency)          |                                                           |
+|        | - _quarterend: Logical (0,1) indicating if last day of quarter (defined by frequency)             |                                                           |
+|        | - _month: The month of the datetime                                                               |                                                           |
+|        | - _month_lbl: The month label of the datetime                                                     |                                                           |
+|        | - _monthstart: Logical (0,1) indicating if first day of month (defined by frequency)              |                                                           |
+|        | - _monthend: Logical (0,1) indicating if last day of month (defined by frequency)                 |                                                           |
+|        | - _yweek: The week ordinal of the year                                                            |                                                           |
+|        | - _mweek: The week ordinal of the month                                                           |                                                           |
+|        | - _wday: The number of the day of the week with Monday=1, Sunday=6                                |                                                           |
+|        | - _wday_lbl: The day of the week label                                                            |                                                           |
+|        | - _mday: The day of the datetime                                                                  |                                                           |
+|        | - _qday: The days of the relative quarter                                                         |                                                           |
+|        | - _yday: The ordinal day of year                                                                  |                                                           |
+|        | - _weekend: Logical (0,1) indicating if the day is a weekend                                      |                                                           |
+|        | - _hour: The hour of the datetime                                                                 |                                                           |
+|        | - _minute: The minutes of the datetime                                                            |                                                           |
+|        | - _second: The seconds of the datetime                                                            |                                                           |
+|        | - _msecond: The microseconds of the datetime                                                      |                                                           |
+|        | - _nsecond: The nanoseconds of the datetime                                                       |                                                           |
+|        | - _am_pm: Half of the day, AM = ante meridiem, PM = post meridiem                                 |                                                           |
 
-## Examples
+## Examples {.doc-section .doc-section-examples}
 
 ```{python}
 import pandas as pd

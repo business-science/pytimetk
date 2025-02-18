@@ -1,24 +1,37 @@
 # TimeSeriesCV { #pytimetk.TimeSeriesCV }
 
-`TimeSeriesCV(self, frequency, train_size, forecast_horizon, gap, stride=0, window='rolling', mode='backward', split_limit=None, **kwargs)`
+```python
+TimeSeriesCV(
+    self,
+    frequency,
+    train_size,
+    forecast_horizon,
+    gap,
+    stride=0,
+    window='rolling',
+    mode='backward',
+    split_limit=None,
+    **kwargs,
+)
+```
 
 `TimeSeriesCV` is a subclass of `TimeBasedSplit` with default mode set to 'backward' 
 and an optional `split_limit` to return the first `n` slices of time series cross-validation sets.
 
-## Parameters
+## Parameters {.doc-section .doc-section-parameters}
 
-| Name               | Type     | Description                                                                                                                                                                                                                                                                | Default      |
-|--------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| `frequency`        | str      | The frequency (or time unit) of the time series. Must be one of "days", "seconds", "microseconds", "milliseconds", "minutes", "hours", "weeks", "months" or "years". These are the valid values for the `unit` argument of `relativedelta` from python `dateutil` library. | _required_   |
-| `train_size`       | int      | Defines the minimum number of time units required to be in the train set.                                                                                                                                                                                                  | _required_   |
-| `forecast_horizon` | int      | Specifies the number of time units to forecast.                                                                                                                                                                                                                            | _required_   |
-| `gap`              | int      | Sets the number of time units to skip between the end of the train set and the start of the forecast set.                                                                                                                                                                  | _required_   |
-| `stride`           | int      | How many time unit to move forward after each split. If `None` (or set to 0), the stride is equal to the `forecast_horizon` quantity.                                                                                                                                      | `0`          |
-| `window`           | str      | The type of window to use, either "rolling" or "expanding".                                                                                                                                                                                                                | `'rolling'`  |
-| `mode`             | ModeType | The mode to use for cross-validation. Default is 'backward'.                                                                                                                                                                                                               | `'backward'` |
-| `split_limit`      | int      | The maximum number of splits to return. If not provided, all splits are returned.                                                                                                                                                                                          | `None`       |
+| Name             | Type     | Description                                                                                                                                                                                                                                                                | Default      |
+|------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| frequency        | str      | The frequency (or time unit) of the time series. Must be one of "days", "seconds", "microseconds", "milliseconds", "minutes", "hours", "weeks", "months" or "years". These are the valid values for the `unit` argument of `relativedelta` from python `dateutil` library. | _required_   |
+| train_size       | int      | Defines the minimum number of time units required to be in the train set.                                                                                                                                                                                                  | _required_   |
+| forecast_horizon | int      | Specifies the number of time units to forecast.                                                                                                                                                                                                                            | _required_   |
+| gap              | int      | Sets the number of time units to skip between the end of the train set and the start of the forecast set.                                                                                                                                                                  | _required_   |
+| stride           | int      | How many time unit to move forward after each split. If `None` (or set to 0), the stride is equal to the `forecast_horizon` quantity.                                                                                                                                      | `0`          |
+| window           | str      | The type of window to use, either "rolling" or "expanding".                                                                                                                                                                                                                | `'rolling'`  |
+| mode             | ModeType | The mode to use for cross-validation. Default is 'backward'.                                                                                                                                                                                                               | `'backward'` |
+| split_limit      | int      | The maximum number of splits to return. If not provided, all splits are returned.                                                                                                                                                                                          | `None`       |
 
-## Raises:
+## Raises: {.doc-section .doc-section-raises}
 
 ValueError:
 
@@ -32,7 +45,7 @@ TypeError:
 
 If `train_size`, `forecast_horizon`, `gap` or `stride` are not of type `int`.
 
-## Examples:
+## Examples: {.doc-section .doc-section-examples}
 
 
 ``` {python}
@@ -112,7 +125,9 @@ tscv.plot(y)
 
 ### glimpse { #pytimetk.TimeSeriesCV.glimpse }
 
-`TimeSeriesCV.glimpse(*arrays, time_series=None)`
+```python
+TimeSeriesCV.glimpse(*arrays, time_series=None)
+```
 
 Prints summary information about the splits, focusing on the first two arrays.
 
@@ -124,44 +139,67 @@ Arguments:
 
 ### plot { #pytimetk.TimeSeriesCV.plot }
 
-`TimeSeriesCV.plot(y, time_series=None, color_palette=None, bar_height=0.3, title='Time Series Cross-Validation Plot', x_lab='', y_lab='Fold', x_axis_date_labels=None, base_size=11, width=None, height=None, engine='plotly')`
+```python
+TimeSeriesCV.plot(
+    y,
+    time_series=None,
+    color_palette=None,
+    bar_height=0.3,
+    title='Time Series Cross-Validation Plot',
+    x_lab='',
+    y_lab='Fold',
+    x_axis_date_labels=None,
+    base_size=11,
+    width=None,
+    height=None,
+    engine='plotly',
+)
+```
 
 Plots the cross-validation folds on a single plot with folds on the y-axis and dates on the x-axis using filled Scatter traces.
 
-#### Parameters
+#### Parameters {.doc-section .doc-section-parameters}
 
-| Name                 | Type                                 | Description                                                                                        | Default                               |
-|----------------------|--------------------------------------|----------------------------------------------------------------------------------------------------|---------------------------------------|
-| `y`                  | pd.Series                            | The target time series as a pandas Series.                                                         | _required_                            |
-| `time_series`        | pd.Series                            | The time series used for splitting. If not provided, the index of `y` is used. Default is None.    | `None`                                |
-| `color_palette`      | Optional\[Union\[dict, list, str\]\] | The color palette to use for the train and forecast. If not provided, the default colors are used. | `None`                                |
-| `bar_height`         | float                                | The height of each bar in the plot. Default is 0.3.                                                | `0.3`                                 |
-| `title`              | str                                  | The title of the plot. Default is "Time Series Cross-Validation Plot".                             | `'Time Series Cross-Validation Plot'` |
-| `x_lab`              | str                                  | The label for the x-axis. Default is "".                                                           | `''`                                  |
-| `y_lab`              | str                                  | The label for the y-axis. Default is "Fold".                                                       | `'Fold'`                              |
-| `x_axis_date_labels` | str                                  | The format of the date labels on the x-axis. Default is None.                                      | `None`                                |
-| `base_size`          | float                                | The base font size for the plot. Default is 11.                                                    | `11`                                  |
-| `width`              | Optional\[int\]                      | The width of the plot in pixels. Default is None.                                                  | `None`                                |
-| `height`             | Optional\[int\]                      | The height of the plot in pixels. Default is None.                                                 | `None`                                |
-| `engine`             | str                                  | The plotting engine to use. Default is "plotly".                                                   | `'plotly'`                            |
+| Name               | Type                                 | Description                                                                                        | Default                               |
+|--------------------|--------------------------------------|----------------------------------------------------------------------------------------------------|---------------------------------------|
+| y                  | pd.Series                            | The target time series as a pandas Series.                                                         | _required_                            |
+| time_series        | pd.Series                            | The time series used for splitting. If not provided, the index of `y` is used. Default is None.    | `None`                                |
+| color_palette      | Optional\[Union\[dict, list, str\]\] | The color palette to use for the train and forecast. If not provided, the default colors are used. | `None`                                |
+| bar_height         | float                                | The height of each bar in the plot. Default is 0.3.                                                | `0.3`                                 |
+| title              | str                                  | The title of the plot. Default is "Time Series Cross-Validation Plot".                             | `'Time Series Cross-Validation Plot'` |
+| x_lab              | str                                  | The label for the x-axis. Default is "".                                                           | `''`                                  |
+| y_lab              | str                                  | The label for the y-axis. Default is "Fold".                                                       | `'Fold'`                              |
+| x_axis_date_labels | str                                  | The format of the date labels on the x-axis. Default is None.                                      | `None`                                |
+| base_size          | float                                | The base font size for the plot. Default is 11.                                                    | `11`                                  |
+| width              | Optional\[int\]                      | The width of the plot in pixels. Default is None.                                                  | `None`                                |
+| height             | Optional\[int\]                      | The height of the plot in pixels. Default is None.                                                 | `None`                                |
+| engine             | str                                  | The plotting engine to use. Default is "plotly".                                                   | `'plotly'`                            |
 
 ### split { #pytimetk.TimeSeriesCV.split }
 
-`TimeSeriesCV.split(*arrays, time_series=None, start_dt=None, end_dt=None, return_splitstate=False)`
+```python
+TimeSeriesCV.split(
+    *arrays,
+    time_series=None,
+    start_dt=None,
+    end_dt=None,
+    return_splitstate=False,
+)
+```
 
 Returns a generator of split arrays.
 
-#### Parameters
+#### Parameters {.doc-section .doc-section-parameters}
 
-| Name                | Type                       | Description                                                                                                                                                                             | Default   |
-|---------------------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
-| `*arrays`           | TL                         | The arrays to split. Must have the same length as `time_series`.                                                                                                                        | `()`      |
-| `time_series`       | SeriesLike\[DateTimeLike\] | The time series used to create boolean masks for splits. If not provided, the method will try  to use the index of the first array (if it is a DataFrame or Series) as the time series. | `None`    |
-| `start_dt`          | NullableDatetime           | The start of the time period. If provided, it is used in place of `time_series.min()`.                                                                                                  | `None`    |
-| `end_dt`            | NullableDatetime           | The end of the time period. If provided, it is used in place of `time_series.max()`.                                                                                                    | `None`    |
-| `return_splitstate` | bool                       | Whether to return the `SplitState` instance for each split.                                                                                                                             | `False`   |
+| Name              | Type                       | Description                                                                                                                                                                             | Default   |
+|-------------------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| *arrays           | TL                         | The arrays to split. Must have the same length as `time_series`.                                                                                                                        | `()`      |
+| time_series       | SeriesLike\[DateTimeLike\] | The time series used to create boolean masks for splits. If not provided, the method will try  to use the index of the first array (if it is a DataFrame or Series) as the time series. | `None`    |
+| start_dt          | NullableDatetime           | The start of the time period. If provided, it is used in place of `time_series.min()`.                                                                                                  | `None`    |
+| end_dt            | NullableDatetime           | The end of the time period. If provided, it is used in place of `time_series.max()`.                                                                                                    | `None`    |
+| return_splitstate | bool                       | Whether to return the `SplitState` instance for each split.                                                                                                                             | `False`   |
 
-#### Returns:
+#### Returns: {.doc-section .doc-section-returns}
 
 A generator of tuples of arrays containing the training and forecast data. If `split_limit` is set, 
 yields only up to `split_limit` splits.

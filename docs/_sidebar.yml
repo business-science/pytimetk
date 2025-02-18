@@ -58,6 +58,7 @@ website:
     - contents:
       - reference/augment_bbands.qmd
       - reference/augment_atr.qmd
+      - reference/augment_drawdown.qmd
       section: "\U0001F4B9 Finance Module (Volatility Indicators)"
     - contents:
       - reference/make_future_timeseries.qmd

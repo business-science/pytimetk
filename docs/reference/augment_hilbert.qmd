@@ -1,28 +1,36 @@
 # augment_hilbert { #pytimetk.augment_hilbert }
 
-`augment_hilbert(data, date_column, value_column, reduce_memory=True, engine='pandas')`
+```python
+augment_hilbert(
+    data,
+    date_column,
+    value_column,
+    reduce_memory=True,
+    engine='pandas',
+)
+```
 
 Apply the Hilbert transform to specified columns of a DataFrame or 
 DataFrameGroupBy object.
 
 Signal Processing: The Hilbert transform is used in various signal processing techniques, including phase and amplitude modulation and demodulation, and in the analysis of signals with time-varying amplitude and frequency.
 
-## Parameters
+## Parameters {.doc-section .doc-section-parameters}
 
-| Name            | Type                                                     | Description                                                                                                                                                                                                                                                                                                                     | Default    |
-|-----------------|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `data`          | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | Input DataFrame or DataFrameGroupBy object with one or more columns of  real-valued signals.                                                                                                                                                                                                                                    | _required_ |
-| `value_column`  | str or list                                              | List of column names in 'data' to which the Hilbert transform will be  applied.                                                                                                                                                                                                                                                 | _required_ |
-| `reduce_memory` | bool                                                     | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.                          | `True`     |
-| `engine`        | str                                                      | The `engine` parameter is used to specify the engine to use for  summarizing the data. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library  for summarizing the data. This can be faster than using "pandas" for  large datasets. | `'pandas'` |
+| Name          | Type                                                     | Description                                                                                                                                                                                                                                                                                                                     | Default    |
+|---------------|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | Input DataFrame or DataFrameGroupBy object with one or more columns of  real-valued signals.                                                                                                                                                                                                                                    | _required_ |
+| value_column  | str or list                                              | List of column names in 'data' to which the Hilbert transform will be  applied.                                                                                                                                                                                                                                                 | _required_ |
+| reduce_memory | bool                                                     | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.                          | `True`     |
+| engine        | str                                                      | The `engine` parameter is used to specify the engine to use for  summarizing the data. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library  for summarizing the data. This can be faster than using "pandas" for  large datasets. | `'pandas'` |
 
-## Returns
+## Returns {.doc-section .doc-section-returns}
 
-| Type         | Description                                                                                                                         |
-|--------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| pd.DataFrame | A new DataFrame with the 2 Hilbert-transformed columns added, 1 for the  real and 1 for imaginary (original columns are preserved). |
+| Name       | Type         | Description                                                                                                                         |
+|------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| df_hilbert | pd.DataFrame | A new DataFrame with the 2 Hilbert-transformed columns added, 1 for the  real and 1 for imaginary (original columns are preserved). |
 
-## Notes
+## Notes {.doc-section .doc-section-notes}
 
 The Hilbert transform is used in time series analysis primarily for:
 
@@ -42,7 +50,7 @@ analysis, feature extraction for machine learning, and improving
 signal-to-noise ratio, providing a deeper understanding of underlying 
 patterns and trends.
 
-## Examples
+## Examples {.doc-section .doc-section-examples}
 
 ```{python}
 # Example 1: Using Pandas Engine on a pandas groupby object

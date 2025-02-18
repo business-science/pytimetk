@@ -1,28 +1,38 @@
 # augment_roc { #pytimetk.augment_roc }
 
-`augment_roc(data, date_column, close_column, periods=1, start_index=0, reduce_memory=False, engine='pandas')`
+```python
+augment_roc(
+    data,
+    date_column,
+    close_column,
+    periods=1,
+    start_index=0,
+    reduce_memory=False,
+    engine='pandas',
+)
+```
 
 Adds rate of change (percentage change) to a Pandas DataFrame or DataFrameGroupBy object.
 
-## Parameters
+## Parameters {.doc-section .doc-section-parameters}
 
-| Name            | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Default    |
-|-----------------|----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `data`          | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | The `data` parameter is the input DataFrame or DataFrameGroupBy object  that you want to add percentage differenced columns to.                                                                                                                                                                                                                                                                                                                                                                          | _required_ |
-| `date_column`   | str                                                      | The `date_column` parameter is a string that specifies the name of the  column in the DataFrame that contains the dates. This column will be  used to sort the data before adding the percentage differenced values.                                                                                                                                                                                                                                                                                     | _required_ |
-| `close_column`  | str                                                      | The `close_column` parameter in the `augment_qsmomentum` function refers to the column in the input DataFrame that contains the closing prices of the financial instrument or asset for which you want to calculate the momentum.                                                                                                                                                                                                                                                                        | _required_ |
-| `periods`       | int or tuple or list                                     | The `periods` parameter is an integer, tuple, or list that specifies the  periods to shift values when percentage differencing.   - If it is an integer, the function will add that number of percentage differences    values for each column specified in the `value_column` parameter.   - If it is a tuple, it will generate percentage differences from the first to the second    value (inclusive).   - If it is a list, it will generate percentage differences based on the values in the list. | `1`        |
-| `start_index`   | int                                                      | The `start_index` parameter is an integer that specifies the starting index for the percentage difference calculation.  Default is 0 which is the last element in the group.                                                                                                                                                                                                                                                                                                                             | `0`        |
-| `reduce_memory` | bool                                                     | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.                                                                                                                                                                                                   | `False`    |
-| `engine`        | str                                                      | The `engine` parameter is used to specify the engine to use for  augmenting percentage differences. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library  for augmenting percentage diffs. This can be faster than using "pandas" for large  datasets.                                                                                                                                                      | `'pandas'` |
+| Name          | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Default    |
+|---------------|----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | The `data` parameter is the input DataFrame or DataFrameGroupBy object  that you want to add percentage differenced columns to.                                                                                                                                                                                                                                                                                                                                                                          | _required_ |
+| date_column   | str                                                      | The `date_column` parameter is a string that specifies the name of the  column in the DataFrame that contains the dates. This column will be  used to sort the data before adding the percentage differenced values.                                                                                                                                                                                                                                                                                     | _required_ |
+| close_column  | str                                                      | The `close_column` parameter in the `augment_qsmomentum` function refers to the column in the input DataFrame that contains the closing prices of the financial instrument or asset for which you want to calculate the momentum.                                                                                                                                                                                                                                                                        | _required_ |
+| periods       | int or tuple or list                                     | The `periods` parameter is an integer, tuple, or list that specifies the  periods to shift values when percentage differencing.   - If it is an integer, the function will add that number of percentage differences    values for each column specified in the `value_column` parameter.   - If it is a tuple, it will generate percentage differences from the first to the second    value (inclusive).   - If it is a list, it will generate percentage differences based on the values in the list. | `1`        |
+| start_index   | int                                                      | The `start_index` parameter is an integer that specifies the starting index for the percentage difference calculation.  Default is 0 which is the last element in the group.                                                                                                                                                                                                                                                                                                                             | `0`        |
+| reduce_memory | bool                                                     | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.                                                                                                                                                                                                   | `False`    |
+| engine        | str                                                      | The `engine` parameter is used to specify the engine to use for  augmenting percentage differences. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library  for augmenting percentage diffs. This can be faster than using "pandas" for large  datasets.                                                                                                                                                      | `'pandas'` |
 
-## Returns
+## Returns {.doc-section .doc-section-returns}
 
-| Type         | Description                                                         |
-|--------------|---------------------------------------------------------------------|
-| pd.DataFrame | A Pandas DataFrame with percentage differenced columns added to it. |
+| Name   | Type         | Description                                                         |
+|--------|--------------|---------------------------------------------------------------------|
+|        | pd.DataFrame | A Pandas DataFrame with percentage differenced columns added to it. |
 
-## Notes
+## Notes {.doc-section .doc-section-notes}
 
 The rate of change (ROC) calculation is a momentum indicator that measures the percentage change in price between the current price and the price a certain number of periods ago. The ROC indicator is used to identify the speed and direction of price movements. It is calculated as follows:
 
@@ -32,7 +42,7 @@ When `start_index` is used, the formula becomes:
 
 ROC = [(Close start_index periods ago - Close n periods ago) / (Close n periods ago)] 
 
-## Examples
+## Examples {.doc-section .doc-section-examples}
 
 ```{python}
 import pandas as pd

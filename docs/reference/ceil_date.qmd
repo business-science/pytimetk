@@ -1,6 +1,8 @@
 # ceil_date { #pytimetk.ceil_date }
 
-`ceil_date(idx, unit='D')`
+```python
+ceil_date(idx, unit='D')
+```
 
 Robust date ceiling.
 
@@ -9,20 +11,20 @@ Series with the dates rounded up to the next specified unit. It's more
 robust than the pandas `ceil` function, which does weird things with 
 irregular frequencies like Month which are actually regular.
 
-## Parameters
+## Parameters {.doc-section .doc-section-parameters}
 
 | Name   | Type                          | Description                                                                                                                                                                                                                                                              | Default    |
 |--------|-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `idx`  | pd.Series or pd.DatetimeIndex | The `idx` parameter is a pandas Series or pandas DatetimeIndex object  that contains datetime values. It represents the dates that you want to  round down.                                                                                                              | _required_ |
-| `unit` | str                           | The `unit` parameter in the `ceil_date` function is a string that  specifies the time unit to which the dates in the `idx` series should be  rounded down. It has a default value of "D", which stands for day. Other  possible values for the `unit` parameter could be | `'D'`      |
+| idx    | pd.Series or pd.DatetimeIndex | The `idx` parameter is a pandas Series or pandas DatetimeIndex object  that contains datetime values. It represents the dates that you want to  round down.                                                                                                              | _required_ |
+| unit   | str                           | The `unit` parameter in the `ceil_date` function is a string that  specifies the time unit to which the dates in the `idx` series should be  rounded down. It has a default value of "D", which stands for day. Other  possible values for the `unit` parameter could be | `'D'`      |
 
-## Returns
+## Returns {.doc-section .doc-section-returns}
 
-| Type      | Description                                                                                |
-|-----------|--------------------------------------------------------------------------------------------|
-| pd.Series | The `ceil_date` function returns a pandas Series object containing  datetime64[ns] values. |
+| Name   | Type      | Description                                                                                |
+|--------|-----------|--------------------------------------------------------------------------------------------|
+|        | pd.Series | The `ceil_date` function returns a pandas Series object containing  datetime64[ns] values. |
 
-## Examples
+## Examples {.doc-section .doc-section-examples}
 
 ```{python}
 import pytimetk as tk

@@ -1,0 +1,71 @@
+# augment_drawdown { #pytimetk.augment_drawdown }
+
+```python
+augment_drawdown(
+    data,
+    date_column,
+    close_column,
+    reduce_memory=False,
+    engine='pandas',
+)
+```
+
+The augment_drawdown function calculates the drawdown metrics for a financial time series
+using either pandas or polars engine, and returns the augmented DataFrame with peak value,
+drawdown, and drawdown percentage columns.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+| Name          | Type                                                            | Description                                                                                                                                   | Default    |
+|---------------|-----------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | The input data can be either a pandas DataFrame or a pandas DataFrameGroupBy object containing the time series data for drawdown calculation. | _required_ |
+| date_column   | str                                                             | The name of the column containing dates or timestamps.                                                                                        | _required_ |
+| close_column  | str                                                             | The column containing the values (e.g., price) to calculate drawdowns from.                                                                   | _required_ |
+| reduce_memory | bool                                                            | If True, reduces memory usage of the DataFrame before calculation. Default is False.                                                          | `False`    |
+| engine        | str                                                             | The computation engine to use: 'pandas' or 'polars'. Default is 'pandas'.                                                                     | `'pandas'` |
+
+## Returns {.doc-section .doc-section-returns}
+
+| Name   | Type         | Description                                                                                                                                                                                                                                                           |
+|--------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|        | pd.DataFrame | A pandas DataFrame augmented with three columns: - {close_column}_peak: Running maximum value up to each point - {close_column}_drawdown: Absolute difference from peak to current value - {close_column}_drawdown_pct: Percentage decline from peak to current value |
+
+## Notes {.doc-section .doc-section-notes}
+
+Drawdown is a measure of peak-to-trough decline in a time series, typically used to assess
+the risk of a financial instrument:
+- Peak Value: The highest value observed up to each point in time
+- Drawdown: The absolute difference between the peak and current value
+- Drawdown Percentage: The percentage decline from the peak value
+
+## Examples {.doc-section .doc-section-examples}
+
+``` {python}
+import pandas as pd
+import pytimetk as tk
+
+df = tk.load_dataset('stocks_daily', parse_dates=['date'])
+
+# Single stock drawdown
+dd_df = (
+    df.query("symbol == 'AAPL'")
+    .augment_drawdown(
+        date_column='date',
+        close_column='adjusted'
+    )
+)
+dd_df.head()
+```
+
+``` {python}
+# Multiple stocks with groupby
+dd_df = (
+    df.groupby('symbol')
+    .augment_drawdown(
+        date_column='date',
+        close_column='adjusted',
+        engine='polars'
+    )
+)
+dd_df.head()
+```

@@ -1,32 +1,26 @@
 # get_date_summary { #pytimetk.get_date_summary }
 
-`get_date_summary(idx, engine='pandas')`
+```python
+get_date_summary(idx, engine='pandas')
+```
 
 Returns a summary of the date-related information, including the number of 
 dates, the time zone, the start date, and the end date.
 
-## Parameters
+## Parameters {.doc-section .doc-section-parameters}
 
-| Name     | Type                          | Description                                                                                                                                                                                                                                                                     | Default    |
-|----------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `idx`    | pd.Series or pd.DateTimeIndex | The parameter `idx` can be either a pandas Series or a pandas  DateTimeIndex. It represents the dates or timestamps for which we want  to generate a summary.                                                                                                                   | _required_ |
-| `engine` | str                           | The `engine` parameter is used to specify the engine to use for  generating a date summary. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library    for generating a date summary. | `'pandas'` |
+| Name   | Type                          | Description                                                                                                                                                   | Default    |
+|--------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| idx    | pd.Series or pd.DateTimeIndex | The parameter `idx` can be either a pandas Series or a pandas  DateTimeIndex. It represents the dates or timestamps for which we want  to generate a summary. | _required_ |
+| engine | str                           | The `engine` parameter is used to specify the engine to use for  generating a date summary. It can be either "pandas" or "polars".  Default is "pandas".      | `'pandas'` |
 
-## Returns
+## Returns {.doc-section .doc-section-returns}
 
-| Type         | Description                                                                                                                                                                                                                                |
-|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| pd.DataFrame | A pandas DataFrame with the following columns:  - `date_n`: The number of dates in the index. - `date_tz`: The time zone of the dates in the index. - `date_start`: The first date in the index. - `date_end`: The last date in the index. |
+| Name   | Type         | Description                                                                                                                                                                                                                                |
+|--------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|        | pd.DataFrame | A pandas DataFrame with the following columns:  - `date_n`: The number of dates in the index. - `date_tz`: The time zone of the dates in the index. - `date_start`: The first date in the index. - `date_end`: The last date in the index. |
 
-## Examples
+## Notes {.doc-section .doc-section-notes}
 
-```{python}
-import pytimetk as tk
-import pandas as pd
-
-df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
-
-tk.get_date_summary(df['order_date'], engine='pandas')
-
-tk.get_date_summary(df['order_date'], engine='polars')
-```
+- When using the 'polars' engine, timezone information is derived from the 
+  pandas input before conversion, as Polars does not natively preserve it.

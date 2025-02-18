@@ -1,6 +1,8 @@
 # pad_by_time { #pytimetk.pad_by_time }
 
-`pad_by_time(data, date_column, freq='D', start_date=None, end_date=None)`
+```python
+pad_by_time(data, date_column, freq='D', start_date=None, end_date=None)
+```
 
 Make irregular time series regular by padding with missing dates.
 
@@ -8,23 +10,23 @@ The `pad_by_time` function inserts missing dates into a Pandas DataFrame or
 DataFrameGroupBy object, through the process making an irregularly spaced 
 time series regularly spaced.
 
-## Parameters
+## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Default    |
-|---------------|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| `data`        | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | The `data` parameter can be either a Pandas DataFrame or a Pandas  DataFrameGroupBy object. It represents the data that you want to pad  with missing dates.                                                                                                                                                                                                                                                                                                                                                                                     | _required_ |
-| `date_column` | str                                                      | The `date_column` parameter is a string that specifies the name of the  column in the DataFrame that contains the dates. This column will be  used to determine the minimum and maximum dates in theDataFrame, and to  generate the regular date range for padding.                                                                                                                                                                                                                                                                              | _required_ |
-| `freq`        | str                                                      | The `freq` parameter specifies the frequency at which the missing  timestamps should be generated. It accepts a string representing a  pandas frequency alias. Some common frequency aliases include:  - S: secondly frequency - min: minute frequency - H: hourly frequency - B: business day frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - BMS: Business month start - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency | `'D'`      |
-| `start_date`  | str                                                      | Specifies the start of the padded series.  If NULL, it will use the  lowest value of the input variable. In the case of groups, it will use  the lowest value by group.                                                                                                                                                                                                                                                                                                                                                                          | `None`     |
-| `end_date`    | str                                                      | Specifies the end of the padded series.  If NULL, it will use the highest  value of the input variable.  In the case of groups, it will use the  highest value by group.                                                                                                                                                                                                                                                                                                                                                                         | `None`     |
+| Name        | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Default    |
+|-------------|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data        | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | The `data` parameter can be either a Pandas DataFrame or a Pandas  DataFrameGroupBy object. It represents the data that you want to pad  with missing dates.                                                                                                                                                                                                                                                                                                                                                                                     | _required_ |
+| date_column | str                                                      | The `date_column` parameter is a string that specifies the name of the  column in the DataFrame that contains the dates. This column will be  used to determine the minimum and maximum dates in theDataFrame, and to  generate the regular date range for padding.                                                                                                                                                                                                                                                                              | _required_ |
+| freq        | str                                                      | The `freq` parameter specifies the frequency at which the missing  timestamps should be generated. It accepts a string representing a  pandas frequency alias. Some common frequency aliases include:  - S: secondly frequency - min: minute frequency - H: hourly frequency - B: business day frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - BMS: Business month start - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency | `'D'`      |
+| start_date  | str                                                      | Specifies the start of the padded series.  If NULL, it will use the  lowest value of the input variable. In the case of groups, it will use  the lowest value by group.                                                                                                                                                                                                                                                                                                                                                                          | `None`     |
+| end_date    | str                                                      | Specifies the end of the padded series.  If NULL, it will use the highest  value of the input variable.  In the case of groups, it will use the  highest value by group.                                                                                                                                                                                                                                                                                                                                                                         | `None`     |
 
-## Returns
+## Returns {.doc-section .doc-section-returns}
 
-| Type         | Description                                                                                      |
-|--------------|--------------------------------------------------------------------------------------------------|
-| pd.DataFrame | The function `pad_by_time` returns a Pandas DataFrame that has been  extended with future dates. |
+| Name   | Type         | Description                                                                                      |
+|--------|--------------|--------------------------------------------------------------------------------------------------|
+|        | pd.DataFrame | The function `pad_by_time` returns a Pandas DataFrame that has been  extended with future dates. |
 
-## Notes
+## Notes {.doc-section .doc-section-notes}
 
 
 ## Performance
@@ -41,7 +43,7 @@ datasets with many time series groups.
 Note: There is no parallel processing since the vectorized approach is 
       almost always faster.
 
-## Examples
+## Examples {.doc-section .doc-section-examples}
 
 ```{python}
 import pandas as pd

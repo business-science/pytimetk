@@ -1,23 +1,25 @@
 # flatten_multiindex_column_names { #pytimetk.flatten_multiindex_column_names }
 
-`flatten_multiindex_column_names(data, sep='_')`
+```python
+flatten_multiindex_column_names(data, sep='_')
+```
 
 Takes a DataFrame as input and flattens the column
 names if they are in a multi-index format.
 
-## Parameters
+## Parameters {.doc-section .doc-section-parameters}
 
 | Name   | Type         | Description                                                       | Default    |
 |--------|--------------|-------------------------------------------------------------------|------------|
-| `data` | pd.DataFrame | The parameter "data" is expected to be a pandas DataFrame object. | _required_ |
+| data   | pd.DataFrame | The parameter "data" is expected to be a pandas DataFrame object. | _required_ |
 
-## Returns
+## Returns {.doc-section .doc-section-returns}
 
-| Type         | Description                                            |
-|--------------|--------------------------------------------------------|
-| pd.DataFrame | The input data with flattened multiindex column names. |
+| Name   | Type         | Description                                            |
+|--------|--------------|--------------------------------------------------------|
+|        | pd.DataFrame | The input data with flattened multiindex column names. |
 
-## Examples
+## Examples {.doc-section .doc-section-examples}
 
 ```{python}
 import pandas as pd

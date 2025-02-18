@@ -1,31 +1,33 @@
 # is_holiday { #pytimetk.is_holiday }
 
-`is_holiday(idx, country_name='UnitedStates', country=None, engine='pandas')`
+```python
+is_holiday(idx, country_name='UnitedStates', country=None, engine='pandas')
+```
 
 Check if a given list of dates are holidays for a specified country.
 
 Note: This function requires the `holidays` package to be installed.
 
-## Parameters
+## Parameters {.doc-section .doc-section-parameters}
 
-| Name           | Type                                                              | Description                                                                                                                                                                                                                                                                                                                                                           | Default          |
-|----------------|-------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
-| `idx`          | Union\[str, datetime, List\[Union\[str, datetime\]\], pd.Series\] | The dates to check for holiday status.                                                                                                                                                                                                                                                                                                                                | _required_       |
-| `country_name` | str                                                               | The name of the country for which to check the holiday status. Defaults  to 'UnitedStates' if not specified.                                                                                                                                                                                                                                                          | `'UnitedStates'` |
-| `country`      | str                                                               | An alternative parameter to specify the country for holiday checking,  overriding country_name.                                                                                                                                                                                                                                                                       | `None`           |
-| `engine`       | str                                                               | The `engine` parameter is used to specify the engine to use for  generating the boolean series. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library    for generating a boolean of holidays or not holidays. This can be    faster than using "pandas" for long series. | `'pandas'`       |
+| Name         | Type                                                              | Description                                                                                                                                                                                                                                                                                                                                                           | Default          |
+|--------------|-------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
+| idx          | Union\[str, datetime, List\[Union\[str, datetime\]\], pd.Series\] | The dates to check for holiday status.                                                                                                                                                                                                                                                                                                                                | _required_       |
+| country_name | str                                                               | The name of the country for which to check the holiday status. Defaults  to 'UnitedStates' if not specified.                                                                                                                                                                                                                                                          | `'UnitedStates'` |
+| country      | str                                                               | An alternative parameter to specify the country for holiday checking,  overriding country_name.                                                                                                                                                                                                                                                                       | `None`           |
+| engine       | str                                                               | The `engine` parameter is used to specify the engine to use for  generating the boolean series. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library    for generating a boolean of holidays or not holidays. This can be    faster than using "pandas" for long series. | `'pandas'`       |
 
-## Returns:
+## Returns: {.doc-section .doc-section-returns}
 
 pd.Series:
     Series containing True if the date is a holiday, False otherwise.
 
-## Raises:
+## Raises: {.doc-section .doc-section-raises}
 
 ValueError:
     If the specified country is not found in the holidays package.
 
-## Examples:
+## Examples: {.doc-section .doc-section-examples}
 
 ```{python}
 import polars as pl

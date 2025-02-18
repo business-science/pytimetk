@@ -6,7 +6,36 @@ toc-depth: 3
 number-sections: false
 ---
 
-# pytimetk 1.0.1.9000
+# pytimetk 1.1.2.9000
+
+## New Functions
+
+- `augment_drawdown()`:
+
+## Bug Fixes and Speed Improvements
+
+- `summarize_by_time()`: polars engine rebuild. Columns should match pandas engine.
+- `__init__.py`: updated to fix circular imports
+- `get_date_summary()`: Fixed issues with polar tz
+- `augment_hilbert()`: Improve polars engine and fix error with groupby()
+- `augment_ewm()`: fix example `from pytimetk import augment_ewm`
+- `test_plot_timeseries`: Fix broken test
+
+# pytimetk 1.1.2
+
+## Bug Fixes
+
+- `augment_rsi()`: fix issue with pandas engine column names
+
+
+# pytimetk 1.1.1
+
+## Bug Fixes
+
+- `augment_ppo()`: fixed issues with leftover multi-index when using grouped df and pandas engine
+- `augment_qsmomentum()`: Fixed issue with divide by zero when standard deviation is zero
+
+# pytimetk 1.1.0
 
 ## New Features
 

@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -347,13 +381,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <section id="pytimetk.get_diff_summary" class="level1">
 <h1>get_diff_summary</h1>
-<p><code>get_diff_summary(idx, numeric=False)</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>get_diff_summary(idx, numeric<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Calculates summary statistics of the time differences between consecutive values in a datetime index.</p>
-<section id="parameters" class="level2">
-<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<section id="parameters" class="level2 doc-section doc-section-parameters">
+<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 2%">
+<col style="width: 1%">
 <col style="width: 6%">
 <col style="width: 88%">
 <col style="width: 2%">
@@ -368,13 +402,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>idx</code></td>
+<td>idx</td>
 <td>pd.Series or pd.DateTimeIndex</td>
 <td>The <code>idx</code> parameter can be either a pandas Series or a pandas DateTimeIndex. It represents the index values for which you want to calculate the difference summary.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>numeric</code></td>
+<td>numeric</td>
 <td>bool</td>
 <td>The <code>numeric</code> parameter is a boolean flag that indicates whether the input index should be treated as numeric or not. - If <code>numeric</code> is set to <code>True</code>, the index values are converted to integers representing the number of seconds since the Unix epoch (January 1, 1970). - If <code>numeric</code> is set to <code>False</code>, the index values are treated as datetime values. The default value of <code>numeric</code> is <code>False</code>.</td>
 <td><code>False</code></td>
@@ -382,21 +416,24 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tbody>
 </table>
 </section>
-<section id="returns" class="level2">
-<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<section id="returns" class="level2 doc-section doc-section-returns">
+<h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
 <col style="width: 0%">
-<col style="width: 99%">
+<col style="width: 0%">
+<col style="width: 98%">
 </colgroup>
 <thead>
 <tr class="header">
+<th>Name</th>
 <th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
+<td></td>
 <td>pd.DataFrame</td>
 <td>The function <code>get_diff_summary</code> returns a pandas DataFrame containing summary statistics including: If <code>numeric</code> is set to <code>False</code>, the column names are: - <code>diff_min</code>: The minimum time difference between consecutive observations in the time series as a timedelta. - <code>diff_q25</code>: The 25th percentile of the time difference between consecutive observations in the time series as a timedelta. - <code>diff_median</code>: The median time difference between consecutive observations in the time series as a timedelta. - <code>diff_mean</code>: The mean time difference between consecutive observations in the time series as a timedelta. - <code>diff_q75</code>: The 75th percentile of the time difference between consecutive observations in the time series as a timedelta. - <code>diff_max</code>: The maximum time difference between consecutive observations in the time series as a timedelta. If <code>numeric</code> is set to <code>True</code>, the column names are: - <code>diff_min_seconds</code>: The minimum time difference between consecutive observations in the time series in seconds. - <code>diff_q25_seconds</code>: The 25th percentile of the time difference between consecutive observations in the time series in seconds. - <code>diff_median_seconds</code>: The median time difference between consecutive observations in the time series in seconds. - <code>diff_mean_seconds</code>: The mean time difference between consecutive observations in the time series in seconds. - <code>diff_q75_seconds</code>: The 75th percentile of the time difference between consecutive observations in the time series in seconds. - <code>diff_max_seconds</code>: The maximum time difference between consecutive observations in the time series in seconds.</td>
 </tr>

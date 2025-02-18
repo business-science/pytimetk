@@ -1,6 +1,8 @@
 # palette_timetk { #pytimetk.palette_timetk }
 
-`palette_timetk()`
+```python
+palette_timetk()
+```
 
 The function `palette_timetk` returns a dictionary of color codes for 
 various colors in the timetk theme.
@@ -18,13 +20,13 @@ various colors in the timetk theme.
 - light_purple = "#cab2d6", # light_purple
 - purple       = "#6a3d9a"  # purple
 
-## Returns
+## Returns {.doc-section .doc-section-returns}
 
-| Type                                                                | Description                                                              |
-|---------------------------------------------------------------------|--------------------------------------------------------------------------|
-| The function `palette_timetk` returns a dictionary containing color | names as keys and their corresponding hexadecimal color codes as values: |
+| Name   | Type                                                                | Description                                                              |
+|--------|---------------------------------------------------------------------|--------------------------------------------------------------------------|
+|        | The function `palette_timetk` returns a dictionary containing color | names as keys and their corresponding hexadecimal color codes as values: |
 
-## Examples
+## Examples {.doc-section .doc-section-examples}
 
 ```{python}
 import pytimetk as tk

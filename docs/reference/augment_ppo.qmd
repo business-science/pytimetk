@@ -1,28 +1,38 @@
 # augment_ppo { #pytimetk.augment_ppo }
 
-`augment_ppo(data, date_column, close_column, fast_period=12, slow_period=26, reduce_memory=False, engine='pandas')`
+```python
+augment_ppo(
+    data,
+    date_column,
+    close_column,
+    fast_period=12,
+    slow_period=26,
+    reduce_memory=False,
+    engine='pandas',
+)
+```
 
 Calculate PPO for a given financial instrument using either pandas or polars engine.
 
-## Parameters
+## Parameters {.doc-section .doc-section-parameters}
 
-| Name            | Type                                                            | Description                                                                   | Default    |
-|-----------------|-----------------------------------------------------------------|-------------------------------------------------------------------------------|------------|
-| `data`          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | Pandas DataFrame or GroupBy object containing financial data.                 | _required_ |
-| `date_column`   | str                                                             | Name of the column containing date information.                               | _required_ |
-| `close_column`  | str                                                             | Name of the column containing closing price data.                             | _required_ |
-| `fast_period`   | int                                                             | Number of periods for the fast EMA in PPO calculation.                        | `12`       |
-| `slow_period`   | int                                                             | Number of periods for the slow EMA in PPO calculation.                        | `26`       |
-| `reduce_memory` | bool                                                            | Whether to reduce memory usage of the data before performing the calculation. | `False`    |
-| `engine`        | str                                                             | Computation engine to use ('pandas' or 'polars').                             | `'pandas'` |
+| Name          | Type                                                            | Description                                                                   | Default    |
+|---------------|-----------------------------------------------------------------|-------------------------------------------------------------------------------|------------|
+| data          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | Pandas DataFrame or GroupBy object containing financial data.                 | _required_ |
+| date_column   | str                                                             | Name of the column containing date information.                               | _required_ |
+| close_column  | str                                                             | Name of the column containing closing price data.                             | _required_ |
+| fast_period   | int                                                             | Number of periods for the fast EMA in PPO calculation.                        | `12`       |
+| slow_period   | int                                                             | Number of periods for the slow EMA in PPO calculation.                        | `26`       |
+| reduce_memory | bool                                                            | Whether to reduce memory usage of the data before performing the calculation. | `False`    |
+| engine        | str                                                             | Computation engine to use ('pandas' or 'polars').                             | `'pandas'` |
 
-## Returns
+## Returns {.doc-section .doc-section-returns}
 
-| Type         | Description                      |
-|--------------|----------------------------------|
-| pd.DataFrame | DataFrame with PPO values added. |
+| Name   | Type         | Description                      |
+|--------|--------------|----------------------------------|
+|        | pd.DataFrame | DataFrame with PPO values added. |
 
-## Notes
+## Notes {.doc-section .doc-section-notes}
 
 
 The Percentage Price Oscillator (PPO) is a momentum oscillator 
@@ -42,7 +52,7 @@ over the MACD, which provides absolute values and can be less
 meaningful when comparing stocks with significantly different 
 prices.
 
-## Examples
+## Examples {.doc-section .doc-section-examples}
 
 ``` {python}
 import pandas as pd
