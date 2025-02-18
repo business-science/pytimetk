@@ -158,14 +158,12 @@ def augment_hilbert(
     if reduce_memory:
         data = reduce_memory_usage(data)
         
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df = True)
+    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
     
-        
     if engine == 'pandas':
         ret = _augment_hilbert_pandas(data, date_column, value_column)
     elif engine == 'polars':
         ret = _augment_hilbert_polars(data, date_column, value_column)
-        # Polars Index to Match Pandas
         ret.index = idx_unsorted
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
@@ -173,9 +171,7 @@ def augment_hilbert(
     if reduce_memory:
         ret = reduce_memory_usage(ret)
         
-    ret = ret.sort_index()
-        
-    return ret
+    return ret.sort_index()
     
     
 # Monkey-patch the method to the DataFrameGroupBy class
@@ -242,23 +238,66 @@ def _augment_hilbert_pandas(
     return df_hilbert
 
 
-def _augment_hilbert_polars(    
+
+
+
+def _augment_hilbert_polars(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
     value_column: Union[str, List[str]], 
-):
-    
+) -> pd.DataFrame:
+    if isinstance(value_column, str):
+        value_column = [value_column]
 
-        # Function to apply Hilbert transform
-    def apply_hilbert(pl_df):
+    df_pl = pl.from_pandas(data.obj.copy() if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy) else data.copy())
+
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        groups = data.grouper.names if isinstance(data.grouper.names, list) else [data.grouper.names]
         
+        # Define output schema
+        original_schema = df_pl.schema
+        new_columns = {
+            f"{col}_hilbert_real": pl.Float64 for col in value_column
+        } | {
+            f"{col}_hilbert_imag": pl.Float64 for col in value_column
+        }
+        output_schema = {**original_schema, **new_columns}
+
+        def apply_hilbert(pl_group: pl.DataFrame) -> pl.DataFrame:
+            exprs = []
+            for col in value_column:
+                signal = pl_group[col].to_numpy()
+                N = signal.size
+                Xf = np.fft.fft(signal)
+                h = np.zeros(N)
+                if N % 2 == 0:
+                    h[0] = h[N // 2] = 1
+                    h[1:N // 2] = 2
+                else:
+                    h[0] = 1
+                    h[1:(N + 1) // 2] = 2
+                Xf *= h
+                x_analytic = np.fft.ifft(Xf)
+                exprs.extend([
+                    pl.Series(f'{col}_hilbert_real', np.real(x_analytic)),
+                    pl.Series(f'{col}_hilbert_imag', np.imag(x_analytic))
+                ])
+            return pl_group.with_columns(exprs)
+
+        data = (
+            df_pl.lazy()
+                .sort([*groups, date_column])
+                .group_by(groups, maintain_order=True)
+                .map_groups(apply_hilbert, schema=output_schema)
+                .collect(streaming=True)
+        )
+    else:
+        data = df_pl.lazy().sort(date_column)
+        exprs = []
         for col in value_column:
-            # Compute the Hilbert transform
-            signal = pl_df[col].to_numpy()
+            signal = data.select(pl.col(col)).collect()[col].to_numpy()
             N = signal.size
             Xf = np.fft.fft(signal)
-            
-            # Create a zero-phase version of the signal with the negative frequencies zeroed out
             h = np.zeros(N)
             if N % 2 == 0:
                 h[0] = h[N // 2] = 1
@@ -266,58 +305,14 @@ def _augment_hilbert_polars(
             else:
                 h[0] = 1
                 h[1:(N + 1) // 2] = 2
-
             Xf *= h
-
-            # Perform the inverse FFT
             x_analytic = np.fft.ifft(Xf)
-            
-            # Convert numpy arrays to Polars Series and add the Hilbert columns to the Polars DataFrame
-            real_series = pl.Series(f'{col}_hilbert_real', np.real(x_analytic))
-            imag_series = pl.Series(f'{col}_hilbert_imag', np.imag(x_analytic))
+            exprs.extend([
+                pl.Series(f'{col}_hilbert_real', np.real(x_analytic)),
+                pl.Series(f'{col}_hilbert_imag', np.imag(x_analytic))
+            ])
+        data = data.with_columns(exprs).collect(streaming=True)
 
-            pl_df = pl_df.with_columns(real_series).with_columns(imag_series)
-        return pl_df
-
-    # Check if the input data is a DataFrame or a GroupBy object
-    grouped = False
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        grouped = True
-        # Extract names from groupby object
-        groups = data.grouper.names  # This can be a list of group names
-
-        # Convert the GroupBy object into a Polars DataFrame
-        df_pl = (
-            pl.from_pandas(data.obj.copy())
-                 .group_by(groups, maintain_order=True)
-                 .agg(pl.all().sort_by(date_column))
-        )
-
-        # Create a list of column names to explode
-        columns_to_explode = [col for col in df_pl.columns if col not in groups]
-
-        # Explode the selected columns
-        exploded_df = df_pl.explode(columns=columns_to_explode)
-        
-        # Group by groups and date
-        data = (
-            exploded_df
-                .sort(*groups ,date_column)
-        )
-        grouped = data.groupby(groups)
-        result_pl_df = grouped.apply(apply_hilbert)
-        
-    else:
-        data = (
-            pl.from_pandas(data)
-                 .sort(date_column)
-        )
-        result_pl_df = apply_hilbert(data)
-
-
-    # Convert the Polars DataFrame back to a Pandas DataFrame
-    result_pd_df = result_pl_df.to_pandas()                               
-
-    return result_pd_df
+    return data.to_pandas()
 
 

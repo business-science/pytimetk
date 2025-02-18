@@ -205,7 +205,7 @@ def _ts_summary_polars(data: pl.DataFrame, date_column: str) -> pl.DataFrame:
     date = pl.from_pandas(data)[date_column].sort(descending=False)
 
     # Compute summary statistics
-    date_summary = compute_date_summary_polars(date, data[date_column].dt.tz, output_type='polars')
+    date_summary = compute_date_summary_polars(date, output_type='polars')
     frequency_summary = pl.from_pandas(get_frequency_summary(date.to_pandas()))
     diff_summary = get_diff_summary_polars(date).cast(pl.Duration('ns'))
     diff_summary_num = get_diff_summary_polars(date, numeric=True).cast(pl.Float64)
