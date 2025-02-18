@@ -396,15 +396,23 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_roc(data, date_column, close_column, periods=1, start_index=0, reduce_memory=False, engine='pandas')</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>augment_roc(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    date_column,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    close_column,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    periods<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    start_index<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Adds rate of change (percentage change) to a Pandas DataFrame or DataFrameGroupBy object.</p>
-<section id="parameters" class="level2">
-<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<section id="parameters" class="level2 doc-section doc-section-parameters">
+<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
 <col style="width: 2%">
 <col style="width: 10%">
-<col style="width: 84%">
+<col style="width: 85%">
 <col style="width: 2%">
 </colgroup>
 <thead>
@@ -417,43 +425,43 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>data</code></td>
+<td>data</td>
 <td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
 <td>The <code>data</code> parameter is the input DataFrame or DataFrameGroupBy object that you want to add percentage differenced columns to.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>date_column</code></td>
+<td>date_column</td>
 <td>str</td>
 <td>The <code>date_column</code> parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the percentage differenced values.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
-<td><code>close_column</code></td>
+<td>close_column</td>
 <td>str</td>
 <td>The <code>close_column</code> parameter in the <code>augment_qsmomentum</code> function refers to the column in the input DataFrame that contains the closing prices of the financial instrument or asset for which you want to calculate the momentum.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>periods</code></td>
+<td>periods</td>
 <td>int or tuple or list</td>
 <td>The <code>periods</code> parameter is an integer, tuple, or list that specifies the periods to shift values when percentage differencing. - If it is an integer, the function will add that number of percentage differences values for each column specified in the <code>value_column</code> parameter. - If it is a tuple, it will generate percentage differences from the first to the second value (inclusive). - If it is a list, it will generate percentage differences based on the values in the list.</td>
 <td><code>1</code></td>
 </tr>
 <tr class="odd">
-<td><code>start_index</code></td>
+<td>start_index</td>
 <td>int</td>
 <td>The <code>start_index</code> parameter is an integer that specifies the starting index for the percentage difference calculation. Default is 0 which is the last element in the group.</td>
 <td><code>0</code></td>
 </tr>
 <tr class="even">
-<td><code>reduce_memory</code></td>
+<td>reduce_memory</td>
 <td>bool</td>
 <td>The <code>reduce_memory</code> parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
-<td><code>engine</code></td>
+<td>engine</td>
 <td>str</td>
 <td>The <code>engine</code> parameter is used to specify the engine to use for augmenting percentage differences. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for augmenting percentage diffs. This can be faster than using “pandas” for large datasets.</td>
 <td><code>'pandas'</code></td>
@@ -461,49 +469,52 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tbody>
 </table>
 </section>
-<section id="returns" class="level2">
-<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<section id="returns" class="level2 doc-section doc-section-returns">
+<h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 16%">
-<col style="width: 83%">
+<col style="width: 8%">
+<col style="width: 15%">
+<col style="width: 75%">
 </colgroup>
 <thead>
 <tr class="header">
+<th>Name</th>
 <th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
+<td></td>
 <td>pd.DataFrame</td>
 <td>A Pandas DataFrame with percentage differenced columns added to it.</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="notes" class="level2">
-<h2 class="anchored" data-anchor-id="notes">Notes</h2>
+<section id="notes" class="level2 doc-section doc-section-notes">
+<h2 class="doc-section doc-section-notes anchored" data-anchor-id="notes">Notes</h2>
 <p>The rate of change (ROC) calculation is a momentum indicator that measures the percentage change in price between the current price and the price a certain number of periods ago. The ROC indicator is used to identify the speed and direction of price movements. It is calculated as follows:</p>
 <p>ROC = [(Close - Close n periods ago) / (Close n periods ago)]</p>
 <p>When <code>start_index</code> is used, the formula becomes:</p>
 <p>ROC = [(Close start_index periods ago - Close n periods ago) / (Close n periods ago)]</p>
 </section>
-<section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<section id="examples" class="level2 doc-section doc-section-examples">
+<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"stocks_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"stocks_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 8 columns
 symbol:    object            ['META', 'META', 'META', 'META', 'META', 'M ...
 date:      datetime64[ns]    [Timestamp('2013-01-02 00:00:00'), Timestam ...
 open:      float64           [27.440000534057617, 27.8799991607666, 28.0 ...
-high:      float64           [28.18000030517578, 28.46999931335449, 28.9 ...
+high:      float64           [28.18000030517578, 28.469999313354492, 28. ...
 low:       float64           [27.420000076293945, 27.59000015258789, 27. ...
 close:     float64           [28.0, 27.770000457763672, 28.7600002288818 ...
 volume:    int64             [69846400, 63140600, 72715400, 83781800, 45 ...
@@ -511,18 +522,18 @@ adjusted:  float64           [28.0, 27.770000457763672, 28.7600002288818 ...</co
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Add 7 roc values for a single DataFrame object, pandas engine</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>roc_df <span class="op">=</span> (</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'symbol == "GOOG"'</span>) </span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .augment_roc(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'close'</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">7</span>),</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'pandas'</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>roc_df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Add 7 roc values for a single DataFrame object, pandas engine</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>roc_df <span class="op">=</span> (</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'symbol == "GOOG"'</span>) </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .augment_roc(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'close'</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">7</span>),</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'pandas'</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>roc_df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 2699 rows of 15 columns
 symbol:         object            ['GOOG', 'GOOG', 'GOOG', 'GOOG', 'GOOG ...
@@ -543,19 +554,19 @@ close_roc_0_7:  float64           [nan, nan, nan, nan, nan, nan, nan, 0. ...</co
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Add 2 ROC with start index 21 using GroupBy object, polars engine</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>roc_df <span class="op">=</span> (</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    df </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        .augment_roc(</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'close'</span>,</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">63</span>, <span class="dv">252</span>],</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            start_index<span class="op">=</span><span class="dv">21</span>,</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'polars'</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>roc_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Add 2 ROC with start index 21 using GroupBy object, polars engine</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>roc_df <span class="op">=</span> (</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        .augment_roc(</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'close'</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">63</span>, <span class="dv">252</span>],</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>            start_index<span class="op">=</span><span class="dv">21</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'polars'</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>roc_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 

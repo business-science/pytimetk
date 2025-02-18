@@ -126,7 +126,7 @@ if (typeof require !== 'undefined') {
 require.undef("plotly");
 requirejs.config({
     paths: {
-        'plotly': ['https://cdn.plot.ly/plotly-2.26.0.min']
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
     }
 });
 require(['plotly'], function(Plotly) {
@@ -412,15 +412,15 @@ require(['plotly'], function(Plotly) {
 
 </header>
 
-<p><code>correlate(data, target, method='pearson')</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>correlate(data, target, method<span class="op">=</span><span class="st">'pearson'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The <code>correlate</code> function calculates the correlation between a target variable and all other variables in a pandas DataFrame, and returns the results sorted by absolute correlation in descending order.</p>
-<section id="parameters" class="level2">
-<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<section id="parameters" class="level2 doc-section doc-section-parameters">
+<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 2%">
+<col style="width: 1%">
 <col style="width: 16%">
-<col style="width: 77%">
+<col style="width: 78%">
 <col style="width: 3%">
 </colgroup>
 <thead>
@@ -433,19 +433,19 @@ require(['plotly'], function(Plotly) {
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>data</code></td>
+<td>data</td>
 <td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
 <td>The <code>data</code> parameter is the input data that you want to calculate correlations for. It can be either a pandas DataFrame or a grouped DataFrame obtained from a groupby operation.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>target</code></td>
+<td>target</td>
 <td>str</td>
 <td>The <code>target</code> parameter is a string that represents the column name in the DataFrame for which you want to calculate the correlation with other columns.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
-<td><code>method</code></td>
+<td>method</td>
 <td>str</td>
 <td>The <code>method</code> parameter in the <code>correlate</code> function is used to specify the method for calculating the correlation coefficient. The available options for the <code>method</code> parameter are: * pearson : standard correlation coefficient * kendall : Kendall Tau correlation coefficient * spearman : Spearman rank correlation</td>
 <td><code>= 'pearson'</code></td>
@@ -453,120 +453,123 @@ require(['plotly'], function(Plotly) {
 </tbody>
 </table>
 </section>
-<section id="returns" class="level2">
-<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<section id="returns" class="level2 doc-section doc-section-returns">
+<h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
+<col style="width: 2%">
 <col style="width: 26%">
-<col style="width: 73%">
+<col style="width: 71%">
 </colgroup>
 <thead>
 <tr class="header">
+<th>Name</th>
 <th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>The function <code>correlate</code> returns a DataFrame with two columns: ‘feature’ and ‘correlation’. The</td>
+<td></td>
+<td>The function <code>correlate</code> returns a DataFrame with two columns: 'feature' and 'correlation'. The</td>
 <td>‘feature’ column contains the names of the features in the input data, and the ‘correlation’ column contains the correlation coefficients between each feature and the target variable. The DataFrame is sorted in descending order based on the absolute correlation values.</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="see-also" class="level2">
-<h2 class="anchored" data-anchor-id="see-also">See Also</h2>
+<section id="see-also" class="level2 doc-section doc-section-see-also">
+<h2 class="doc-section doc-section-see-also anchored" data-anchor-id="see-also">See Also</h2>
 <ul>
 <li><code>binarize()</code> : Prepares data for <code>correlate</code>, which is used for analyzing correlationfunnel plots.</li>
 </ul>
 </section>
-<section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<section id="examples" class="level2 doc-section doc-section-examples">
+<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># NON-TIMESERIES EXAMPLE ----</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Set a random seed for reproducibility</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">0</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the number of rows for your DataFrame</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>num_rows <span class="op">=</span> <span class="dv">200</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create fake data for the columns</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> {</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Age'</span>: np.random.randint(<span class="dv">18</span>, <span class="dv">65</span>, size<span class="op">=</span>num_rows),</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Gender'</span>: np.random.choice([<span class="st">'Male'</span>, <span class="st">'Female'</span>], size<span class="op">=</span>num_rows),</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Marital_Status'</span>: np.random.choice([<span class="st">'Single'</span>, <span class="st">'Married'</span>, <span class="st">'Divorced'</span>], size<span class="op">=</span>num_rows),</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">'City'</span>: np.random.choice([<span class="st">'New York'</span>, <span class="st">'Los Angeles'</span>, <span class="st">'Chicago'</span>, <span class="st">'Houston'</span>, <span class="st">'Miami'</span>], size<span class="op">=</span>num_rows),</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Years_Playing'</span>: np.random.randint(<span class="dv">0</span>, <span class="dv">30</span>, size<span class="op">=</span>num_rows),</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Average_Income'</span>: np.random.randint(<span class="dv">20000</span>, <span class="dv">100000</span>, size<span class="op">=</span>num_rows),</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Member_Status'</span>: np.random.choice([<span class="st">'Bronze'</span>, <span class="st">'Silver'</span>, <span class="st">'Gold'</span>, <span class="st">'Platinum'</span>], size<span class="op">=</span>num_rows),</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Number_Children'</span>: np.random.randint(<span class="dv">0</span>, <span class="dv">5</span>, size<span class="op">=</span>num_rows),</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Own_House_Flag'</span>: np.random.choice([<span class="va">True</span>, <span class="va">False</span>], size<span class="op">=</span>num_rows),</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Own_Car_Count'</span>: np.random.randint(<span class="dv">0</span>, <span class="dv">3</span>, size<span class="op">=</span>num_rows),</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">'PersonId'</span>: <span class="bu">range</span>(<span class="dv">1</span>, num_rows <span class="op">+</span> <span class="dv">1</span>),  <span class="co"># Add a PersonId column as a row count</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Client'</span>: np.random.choice([<span class="st">'A'</span>, <span class="st">'B'</span>], size<span class="op">=</span>num_rows)  <span class="co"># Add a Client column with random values 'A' or 'B'</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a DataFrame</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(data)</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Binarize the data</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>df_binarized <span class="op">=</span> df.binarize(n_bins<span class="op">=</span><span class="dv">4</span>, thresh_infreq<span class="op">=</span><span class="fl">0.01</span>, name_infreq<span class="op">=</span><span class="st">"-OTHER"</span>, one_hot<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>df_binarized.glimpse()    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># NON-TIMESERIES EXAMPLE ----</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Set a random seed for reproducibility</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">0</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the number of rows for your DataFrame</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>num_rows <span class="op">=</span> <span class="dv">200</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create fake data for the columns</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> {</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Age'</span>: np.random.randint(<span class="dv">18</span>, <span class="dv">65</span>, size<span class="op">=</span>num_rows),</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Gender'</span>: np.random.choice([<span class="st">'Male'</span>, <span class="st">'Female'</span>], size<span class="op">=</span>num_rows),</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Marital_Status'</span>: np.random.choice([<span class="st">'Single'</span>, <span class="st">'Married'</span>, <span class="st">'Divorced'</span>], size<span class="op">=</span>num_rows),</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">'City'</span>: np.random.choice([<span class="st">'New York'</span>, <span class="st">'Los Angeles'</span>, <span class="st">'Chicago'</span>, <span class="st">'Houston'</span>, <span class="st">'Miami'</span>], size<span class="op">=</span>num_rows),</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Years_Playing'</span>: np.random.randint(<span class="dv">0</span>, <span class="dv">30</span>, size<span class="op">=</span>num_rows),</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Average_Income'</span>: np.random.randint(<span class="dv">20000</span>, <span class="dv">100000</span>, size<span class="op">=</span>num_rows),</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Member_Status'</span>: np.random.choice([<span class="st">'Bronze'</span>, <span class="st">'Silver'</span>, <span class="st">'Gold'</span>, <span class="st">'Platinum'</span>], size<span class="op">=</span>num_rows),</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Number_Children'</span>: np.random.randint(<span class="dv">0</span>, <span class="dv">5</span>, size<span class="op">=</span>num_rows),</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Own_House_Flag'</span>: np.random.choice([<span class="va">True</span>, <span class="va">False</span>], size<span class="op">=</span>num_rows),</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Own_Car_Count'</span>: np.random.randint(<span class="dv">0</span>, <span class="dv">3</span>, size<span class="op">=</span>num_rows),</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">'PersonId'</span>: <span class="bu">range</span>(<span class="dv">1</span>, num_rows <span class="op">+</span> <span class="dv">1</span>),  <span class="co"># Add a PersonId column as a row count</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Client'</span>: np.random.choice([<span class="st">'A'</span>, <span class="st">'B'</span>], size<span class="op">=</span>num_rows)  <span class="co"># Add a Client column with random values 'A' or 'B'</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a DataFrame</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(data)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Binarize the data</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>df_binarized <span class="op">=</span> df.binarize(n_bins<span class="op">=</span><span class="dv">4</span>, thresh_infreq<span class="op">=</span><span class="fl">0.01</span>, name_infreq<span class="op">=</span><span class="st">"-OTHER"</span>, one_hot<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>df_binarized.glimpse()    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 200 rows of 42 columns
-Age__18.0_29.0:                   uint8             [0, 1, 1, 1, 0, 1, 0 ...
-Age__29.0_39.0:                   uint8             [0, 0, 0, 0, 0, 0, 1 ...
-Age__39.0_53.0:                   uint8             [0, 0, 0, 0, 0, 0, 0 ...
-Age__53.0_64.0:                   uint8             [1, 0, 0, 0, 1, 0, 0 ...
-Years_Playing__0.0_7.0:           uint8             [0, 1, 0, 0, 0, 0, 0 ...
-Years_Playing__7.0_15.0:          uint8             [0, 0, 1, 0, 1, 0, 1 ...
-Years_Playing__15.0_22.0:         uint8             [1, 0, 0, 0, 0, 1, 0 ...
-Years_Playing__22.0_29.0:         uint8             [0, 0, 0, 1, 0, 0, 0 ...
-Average_Income__20131.0_40110.2:  uint8             [0, 0, 1, 0, 0, 0, 0 ...
-Average_Income__40110.2_60649.5:  uint8             [0, 0, 0, 1, 1, 0, 1 ...
-Average_Income__60649.5_79904.8:  uint8             [0, 1, 0, 0, 0, 0, 0 ...
-Average_Income__79904.8_99131.0:  uint8             [1, 0, 0, 0, 0, 1, 0 ...
-PersonId__1.0_50.8:               uint8             [1, 1, 1, 1, 1, 1, 1 ...
-PersonId__50.8_100.5:             uint8             [0, 0, 0, 0, 0, 0, 0 ...
-PersonId__100.5_150.2:            uint8             [0, 0, 0, 0, 0, 0, 0 ...
-PersonId__150.2_200.0:            uint8             [0, 0, 0, 0, 0, 0, 0 ...
-Gender__Female:                   uint8             [1, 0, 0, 0, 1, 0, 1 ...
-Gender__Male:                     uint8             [0, 1, 1, 1, 0, 1, 0 ...
-Marital_Status__Divorced:         uint8             [0, 0, 0, 0, 0, 0, 0 ...
-Marital_Status__Married:          uint8             [1, 1, 0, 0, 1, 0, 0 ...
-Marital_Status__Single:           uint8             [0, 0, 1, 1, 0, 1, 1 ...
-City__Chicago:                    uint8             [0, 0, 1, 0, 0, 1, 0 ...
-City__Houston:                    uint8             [0, 0, 0, 0, 0, 0, 1 ...
-City__Los Angeles:                uint8             [0, 0, 0, 0, 0, 0, 0 ...
-City__Miami:                      uint8             [0, 1, 0, 0, 0, 0, 0 ...
-City__New York:                   uint8             [1, 0, 0, 1, 1, 0, 0 ...
-Member_Status__Bronze:            uint8             [1, 0, 1, 0, 0, 0, 0 ...
-Member_Status__Gold:              uint8             [0, 0, 0, 0, 0, 1, 1 ...
-Member_Status__Platinum:          uint8             [0, 0, 0, 1, 0, 0, 0 ...
-Member_Status__Silver:            uint8             [0, 1, 0, 0, 1, 0, 0 ...
-Number_Children__0:               uint8             [0, 0, 1, 0, 0, 0, 0 ...
-Number_Children__1:               uint8             [0, 0, 0, 0, 0, 0, 1 ...
-Number_Children__2:               uint8             [0, 0, 0, 1, 0, 0, 0 ...
-Number_Children__3:               uint8             [0, 1, 0, 0, 0, 1, 0 ...
-Number_Children__4:               uint8             [1, 0, 0, 0, 1, 0, 0 ...
-Own_House_Flag__0:                uint8             [1, 1, 0, 0, 1, 0, 1 ...
-Own_House_Flag__1:                uint8             [0, 0, 1, 1, 0, 1, 0 ...
-Own_Car_Count__0:                 uint8             [0, 1, 0, 0, 1, 0, 0 ...
-Own_Car_Count__1:                 uint8             [0, 0, 0, 1, 0, 1, 1 ...
-Own_Car_Count__2:                 uint8             [1, 0, 1, 0, 0, 0, 0 ...
-Client__A:                        uint8             [1, 1, 1, 1, 1, 1, 1 ...
-Client__B:                        uint8             [0, 0, 0, 0, 0, 0, 0 ...</code></pre>
+Age__18.0_29.0:                   int64             [0, 1, 1, 1, 0, 1, 0 ...
+Age__29.0_39.0:                   int64             [0, 0, 0, 0, 0, 0, 1 ...
+Age__39.0_53.0:                   int64             [0, 0, 0, 0, 0, 0, 0 ...
+Age__53.0_64.0:                   int64             [1, 0, 0, 0, 1, 0, 0 ...
+Years_Playing__0.0_7.0:           int64             [0, 1, 0, 0, 0, 0, 0 ...
+Years_Playing__7.0_15.0:          int64             [0, 0, 1, 0, 1, 0, 1 ...
+Years_Playing__15.0_22.0:         int64             [1, 0, 0, 0, 0, 1, 0 ...
+Years_Playing__22.0_29.0:         int64             [0, 0, 0, 1, 0, 0, 0 ...
+Average_Income__20131.0_40110.2:  int64             [0, 0, 1, 0, 0, 0, 0 ...
+Average_Income__40110.2_60649.5:  int64             [0, 0, 0, 1, 1, 0, 1 ...
+Average_Income__60649.5_79904.8:  int64             [0, 1, 0, 0, 0, 0, 0 ...
+Average_Income__79904.8_99131.0:  int64             [1, 0, 0, 0, 0, 1, 0 ...
+PersonId__1.0_50.8:               int64             [1, 1, 1, 1, 1, 1, 1 ...
+PersonId__50.8_100.5:             int64             [0, 0, 0, 0, 0, 0, 0 ...
+PersonId__100.5_150.2:            int64             [0, 0, 0, 0, 0, 0, 0 ...
+PersonId__150.2_200.0:            int64             [0, 0, 0, 0, 0, 0, 0 ...
+Gender__Female:                   int64             [1, 0, 0, 0, 1, 0, 1 ...
+Gender__Male:                     int64             [0, 1, 1, 1, 0, 1, 0 ...
+Marital_Status__Divorced:         int64             [0, 0, 0, 0, 0, 0, 0 ...
+Marital_Status__Married:          int64             [1, 1, 0, 0, 1, 0, 0 ...
+Marital_Status__Single:           int64             [0, 0, 1, 1, 0, 1, 1 ...
+City__Chicago:                    int64             [0, 0, 1, 0, 0, 1, 0 ...
+City__Houston:                    int64             [0, 0, 0, 0, 0, 0, 1 ...
+City__Los Angeles:                int64             [0, 0, 0, 0, 0, 0, 0 ...
+City__Miami:                      int64             [0, 1, 0, 0, 0, 0, 0 ...
+City__New York:                   int64             [1, 0, 0, 1, 1, 0, 0 ...
+Member_Status__Bronze:            int64             [1, 0, 1, 0, 0, 0, 0 ...
+Member_Status__Gold:              int64             [0, 0, 0, 0, 0, 1, 1 ...
+Member_Status__Platinum:          int64             [0, 0, 0, 1, 0, 0, 0 ...
+Member_Status__Silver:            int64             [0, 1, 0, 0, 1, 0, 0 ...
+Number_Children__0:               int64             [0, 0, 1, 0, 0, 0, 0 ...
+Number_Children__1:               int64             [0, 0, 0, 0, 0, 0, 1 ...
+Number_Children__2:               int64             [0, 0, 0, 1, 0, 0, 0 ...
+Number_Children__3:               int64             [0, 1, 0, 0, 0, 1, 0 ...
+Number_Children__4:               int64             [1, 0, 0, 0, 1, 0, 0 ...
+Own_House_Flag__0:                int64             [1, 1, 0, 0, 1, 0, 1 ...
+Own_House_Flag__1:                int64             [0, 0, 1, 1, 0, 1, 0 ...
+Own_Car_Count__0:                 int64             [0, 1, 0, 0, 1, 0, 0 ...
+Own_Car_Count__1:                 int64             [0, 0, 0, 1, 0, 1, 1 ...
+Own_Car_Count__2:                 int64             [1, 0, 1, 0, 0, 0, 0 ...
+Client__A:                        int64             [1, 1, 1, 1, 1, 1, 1 ...
+Client__B:                        int64             [0, 0, 0, 0, 0, 0, 0 ...</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_correlated <span class="op">=</span> df_binarized.correlate(target<span class="op">=</span><span class="st">'Member_Status__Platinum'</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_correlated</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_correlated <span class="op">=</span> df_binarized.correlate(target<span class="op">=</span><span class="st">'Member_Status__Platinum'</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_correlated</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
@@ -738,15 +741,15 @@ Client__B:                        uint8             [0, 0, 0, 0, 0, 0, 0 ...</co
 <td>-0.047760</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">15</td>
-<td>PersonId</td>
-<td>150.2_200.0</td>
-<td>-0.047659</td>
-</tr>
-<tr class="even">
 <td data-quarto-table-cell-role="th">10</td>
 <td>Average_Income</td>
 <td>60649.5_79904.8</td>
+<td>-0.047659</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>PersonId</td>
+<td>150.2_200.0</td>
 <td>-0.047659</td>
 </tr>
 <tr class="odd">
@@ -840,16 +843,16 @@ Client__B:                        uint8             [0, 0, 0, 0, 0, 0, 0 ...</co
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Interactive</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_correlated.plot_correlation_funnel(</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'plotly'</span>, </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">400</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Interactive</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_correlated.plot_correlation_funnel(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'plotly'</span>, </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">400</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 
-<div>                            <div id="d74ae0c9-4469-4440-bc10-e54affc6f9ed" class="plotly-graph-div" style="height:400px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("d74ae0c9-4469-4440-bc10-e54affc6f9ed")) {                    Plotly.newPlot(                        "d74ae0c9-4469-4440-bc10-e54affc6f9ed",                        [{"customdata":[["Platinum"],["Bronze"],["Silver"],["Gold"],["0"],["20131.0_40110.2"],["18.0_29.0"],["79904.8_99131.0"],["3"],["22.0_29.0"],["Married"],["B"],["A"],["40110.2_60649.5"],["1.0_50.8"],["1"],["Houston"],["50.8_100.5"],["39.0_53.0"],["2"],["1"],["New York"],["Divorced"],["29.0_39.0"],["Single"],["4"],["150.2_200.0"],["60649.5_79904.8"],["7.0_15.0"],["100.5_150.2"],["15.0_22.0"],["Chicago"],["0.0_7.0"],["Female"],["Male"],["0"],["1"],["0"],["53.0_64.0"],["Miami"],["Los Angeles"],["2"]],"hovertemplate":"correlation=%{x:.3f}\u003cbr\u003efeature=%{y}\u003cbr\u003ebin=%{customdata[0]}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"","marker":{"color":"#2c3e50","symbol":"circle","opacity":1.0},"mode":"markers","name":"","orientation":"h","showlegend":false,"x":[1.0,-0.341350510892991,-0.3327993588882368,-0.2986370049425592,0.2052299041466788,-0.15659307928941948,-0.13552199722893685,0.11574271077913593,-0.11221608935048046,-0.10676306930122222,-0.10456172444048943,0.10384151217834135,-0.1038415121783413,0.0885091317722803,0.08850913177228,0.08776937548442013,0.08612363356437988,-0.07489234226885316,0.07473905764301597,-0.07173762090338524,-0.06905408456963764,-0.055756726287264746,0.05572361943715288,0.05437352245862904,0.0502857924784525,-0.047759813009531714,-0.04765876326199725,-0.047658763261997104,0.04071695493090421,0.034041973758569495,0.03404197375856945,-0.03279915479297811,0.028390854871177176,0.020214737348883103,-0.02021473734888304,0.01733582068579715,-0.01733582068579715,-0.016372603019343304,0.012001960009511814,0.01066197660457439,-0.004911046587357808,0.002104185801273971],"xaxis":"x","y":["Member_Status","Member_Status","Member_Status","Member_Status","Number_Children","Average_Income","Age","Average_Income","Number_Children","Years_Playing","Marital_Status","Client","Client","Average_Income","PersonId","Own_Car_Count","City","PersonId","Age","Own_Car_Count","Number_Children","City","Marital_Status","Age","Marital_Status","Number_Children","PersonId","Average_Income","Years_Playing","PersonId","Years_Playing","City","Years_Playing","Gender","Gender","Own_House_Flag","Own_House_Flag","Own_Car_Count","Age","City","City","Number_Children"],"yaxis":"y","type":"scatter","hoverlabel":{"font":{"size":8.8}},"text":["Platinum","Bronze","Silver","Gold","0","20131.0_40110.2","18.0_29.0","79904.8_99131.0","3","22.0_29.0","Married","B","A","40110.2_60649.5","1.0_50.8","1","Houston","50.8_100.5","39.0_53.0","2","1","New York","Divorced","29.0_39.0","Single","4","150.2_200.0","60649.5_79904.8","7.0_15.0","100.5_150.2","15.0_22.0","Chicago","0.0_7.0","Female","Male","0","1","0","53.0_64.0","Miami","Los Angeles","2"]}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"Correlation"},"range":[-1,1],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"Feature"},"tickfont":{"size":8.8},"autorange":"reversed"},"legend":{"tracegroupgap":0,"title":{"font":{"size":8.8}},"font":{"size":8.8}},"title":{"text":"Correlation Funnel Plot","font":{"size":13.2}},"margin":{"l":10,"r":10,"t":40,"b":40},"font":{"size":11},"autosize":true,"height":400,"showlegend":false},                        {"responsive": true}                    ).then(function(){
+<div>                            <div id="4217d020-85d4-4e34-b602-04c9d7f92802" class="plotly-graph-div" style="height:400px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("4217d020-85d4-4e34-b602-04c9d7f92802")) {                    Plotly.newPlot(                        "4217d020-85d4-4e34-b602-04c9d7f92802",                        [{"customdata":[["Platinum"],["Bronze"],["Silver"],["Gold"],["0"],["20131.0_40110.2"],["18.0_29.0"],["79904.8_99131.0"],["3"],["22.0_29.0"],["Married"],["B"],["A"],["40110.2_60649.5"],["1.0_50.8"],["1"],["Houston"],["50.8_100.5"],["39.0_53.0"],["2"],["1"],["New York"],["Divorced"],["29.0_39.0"],["Single"],["4"],["60649.5_79904.8"],["150.2_200.0"],["7.0_15.0"],["100.5_150.2"],["15.0_22.0"],["Chicago"],["0.0_7.0"],["Female"],["Male"],["0"],["1"],["0"],["53.0_64.0"],["Miami"],["Los Angeles"],["2"]],"hovertemplate":"correlation=%{x:.3f}\u003cbr\u003efeature=%{y}\u003cbr\u003ebin=%{customdata[0]}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"","marker":{"color":"#2c3e50","symbol":"circle","opacity":1.0},"mode":"markers","name":"","orientation":"h","showlegend":false,"x":[0.9999999999999999,-0.34135051089299007,-0.3327993588882369,-0.2986370049425598,0.2052299041466788,-0.1565930792894196,-0.13552199722893732,0.11574271077913593,-0.11221608935048027,-0.10676306930122241,-0.10456172444048947,0.10384151217834135,-0.10384151217834131,0.08850913177228052,0.08850913177228036,0.08776937548442011,0.08612363356437996,-0.07489234226885283,0.07473905764301586,-0.07173762090338529,-0.06905408456963769,-0.0557567262872649,0.05572361943715325,0.054373522458628976,0.05028579247845237,-0.04775981300953161,-0.04765876326199735,-0.04765876326199725,0.040716954930904284,0.03404197375856951,0.034041973758569474,-0.032799154792978076,0.028390854871177176,0.02021473734888318,-0.02021473734888306,0.017335820685797133,-0.017335820685797133,-0.016372603019343273,0.012001960009511875,0.01066197660457439,-0.00491104658735785,0.0021041858012739636],"xaxis":"x","y":["Member_Status","Member_Status","Member_Status","Member_Status","Number_Children","Average_Income","Age","Average_Income","Number_Children","Years_Playing","Marital_Status","Client","Client","Average_Income","PersonId","Own_Car_Count","City","PersonId","Age","Own_Car_Count","Number_Children","City","Marital_Status","Age","Marital_Status","Number_Children","Average_Income","PersonId","Years_Playing","PersonId","Years_Playing","City","Years_Playing","Gender","Gender","Own_House_Flag","Own_House_Flag","Own_Car_Count","Age","City","City","Number_Children"],"yaxis":"y","type":"scatter","hoverlabel":{"font":{"size":8.8}},"text":["Platinum","Bronze","Silver","Gold","0","20131.0_40110.2","18.0_29.0","79904.8_99131.0","3","22.0_29.0","Married","B","A","40110.2_60649.5","1.0_50.8","1","Houston","50.8_100.5","39.0_53.0","2","1","New York","Divorced","29.0_39.0","Single","4","60649.5_79904.8","150.2_200.0","7.0_15.0","100.5_150.2","15.0_22.0","Chicago","0.0_7.0","Female","Male","0","1","0","53.0_64.0","Miami","Los Angeles","2"]}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"Correlation"},"range":[-1,1],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"Feature"},"tickfont":{"size":8.8},"autorange":"reversed"},"legend":{"tracegroupgap":0,"title":{"font":{"size":8.8}},"font":{"size":8.8}},"title":{"text":"Correlation Funnel Plot","font":{"size":13.2}},"margin":{"l":10,"r":10,"t":40,"b":40},"font":{"size":11},"autosize":true,"height":400,"showlegend":false},                        {"responsive": true}                    ).then(function(){
                             
-var gd = document.getElementById('d74ae0c9-4469-4440-bc10-e54affc6f9ed');
+var gd = document.getElementById('4217d020-85d4-4e34-b602-04c9d7f92802');
 var x = new MutationObserver(function (mutations, observer) {{
         var display = window.getComputedStyle(gd).display;
         if (!display || display === 'none') {{
@@ -875,12 +878,12 @@ if (outputEl) {{
 </div>
 </div>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Static</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> df_correlated.plot_correlation_funnel(</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    engine <span class="op">=</span><span class="st">'plotnine'</span>, </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    height <span class="op">=</span> <span class="dv">600</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>fig</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Static</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> df_correlated.plot_correlation_funnel(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    engine <span class="op">=</span><span class="st">'plotnine'</span>, </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    height <span class="op">=</span> <span class="dv">600</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>fig</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <p><img src="correlate_files/figure-html/cell-5-output-1.png" class="img-fluid"></p>
 </div>

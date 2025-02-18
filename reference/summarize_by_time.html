@@ -395,11 +395,20 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>summarize_by_time(data, date_column, value_column, freq='D', agg_func='sum', wide_format=False, fillna=0, engine='pandas')</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>summarize_by_time(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    date_column,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    value_column,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    freq<span class="op">=</span><span class="st">'D'</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    agg_func<span class="op">=</span><span class="st">'sum'</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    wide_format<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    fillna<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Summarize a DataFrame or GroupBy object by time.</p>
 <p>The <code>summarize_by_time</code> function aggregates data by a specified time period and one or more numeric columns, allowing for grouping and customization of the time-based aggregation.</p>
-<section id="parameters" class="level2">
-<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<section id="parameters" class="level2 doc-section doc-section-parameters">
+<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
 <col style="width: 1%">
@@ -417,49 +426,49 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>data</code></td>
+<td>data</td>
 <td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
 <td>A pandas DataFrame or a pandas GroupBy object. This is the data that you want to summarize by time.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>date_column</code></td>
+<td>date_column</td>
 <td>str</td>
 <td>The name of the column in the data frame that contains the dates or timestamps to be aggregated by. This column must be of type datetime64.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
-<td><code>value_column</code></td>
+<td>value_column</td>
 <td>str or list</td>
 <td>The <code>value_column</code> parameter is the name of one or more columns in the DataFrame that you want to aggregate by. It can be either a string representing a single column name, or a list of strings representing multiple column names.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>freq</code></td>
+<td>freq</td>
 <td>str</td>
 <td>The <code>freq</code> parameter specifies the frequency at which the data should be aggregated. It accepts a string representing a pandas frequency offset, such as “D” for daily or “MS” for month start. The default value is “D”, which means the data will be aggregated on a daily basis. Some common frequency aliases include: - S: secondly frequency - min: minute frequency - H: hourly frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency</td>
 <td><code>'D'</code></td>
 </tr>
 <tr class="odd">
-<td><code>agg_func</code></td>
+<td>agg_func</td>
 <td>list</td>
 <td>The <code>agg_func</code> parameter is used to specify one or more aggregating functions to apply to the value column(s) during the summarization process. It can be a single function or a list of functions. The default value is <code>"sum"</code>, which represents the sum function. Some common aggregating functions include: - “sum”: Sum of values - “mean”: Mean of values - “median”: Median of values - “min”: Minimum of values - “max”: Maximum of values - “std”: Standard deviation of values - “var”: Variance of values - “first”: First value in group - “last”: Last value in group - “count”: Count of values - “nunique”: Number of unique values - “corr”: Correlation between values Pandas Engine Only: Custom <code>lambda</code> aggregating functions can be used too. Here are several common examples: - (“q25”, lambda x: x.quantile(0.25)): 25th percentile of values - (“q75”, lambda x: x.quantile(0.75)): 75th percentile of values - (“iqr”, lambda x: x.quantile(0.75) - x.quantile(0.25)): Interquartile range of values - (“range”, lambda x: x.max() - x.min()): Range of values</td>
 <td><code>'sum'</code></td>
 </tr>
 <tr class="even">
-<td><code>wide_format</code></td>
+<td>wide_format</td>
 <td>bool</td>
 <td>A boolean parameter that determines whether the output should be in “wide” or “long” format. If set to <code>True</code>, the output will be in wide format, where each group is represented by a separate column. If set to False, the output will be in long format, where each group is represented by a separate row. The default value is <code>False</code>.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
-<td><code>fillna</code></td>
+<td>fillna</td>
 <td>int</td>
 <td>The <code>fillna</code> parameter is used to specify the value to fill missing data with. By default, it is set to 0. If you want to keep missing values as NaN, you can use <code>np.nan</code> as the value for <code>fillna</code>.</td>
 <td><code>0</code></td>
 </tr>
 <tr class="even">
-<td><code>engine</code></td>
+<td>engine</td>
 <td>str</td>
 <td>The <code>engine</code> parameter is used to specify the engine to use for summarizing the data. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for summarizing the data. This can be faster than using “pandas” for large datasets.</td>
 <td><code>'pandas'</code></td>
@@ -467,32 +476,39 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tbody>
 </table>
 </section>
-<section id="returns" class="level2">
-<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<section id="returns" class="level2 doc-section doc-section-returns">
+<h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 20%">
+<col style="width: 68%">
+</colgroup>
 <thead>
 <tr class="header">
+<th>Name</th>
 <th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
+<td></td>
 <td>pd.DataFrame</td>
 <td>A Pandas DataFrame that is summarized by time.</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<section id="examples" class="level2 doc-section doc-section-examples">
+<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'bike_sales_sample'</span>, parse_dates <span class="op">=</span> [<span class="st">'order_date'</span>])</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'bike_sales_sample'</span>, parse_dates <span class="op">=</span> [<span class="st">'order_date'</span>])</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -701,17 +717,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Summarize by time with a DataFrame object, pandas engine</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>( </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    df </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'total_price'</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">"MS"</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> [<span class="st">'mean'</span>, <span class="st">'sum'</span>],</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            engine       <span class="op">=</span> <span class="st">'pandas'</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Summarize by time with a DataFrame object, pandas engine</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>( </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'total_price'</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">"MS"</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> [<span class="st">'mean'</span>, <span class="st">'sum'</span>],</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            engine       <span class="op">=</span> <span class="st">'pandas'</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
@@ -805,19 +821,19 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Summarize by time with a GroupBy object (Wide Format), polars engine</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>(</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">'category_1'</span>, <span class="st">'frame_material'</span>]) </span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> [<span class="st">'total_price'</span>, <span class="st">'quantity'</span>], </span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">'MS'</span>,</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> <span class="st">'sum'</span>,</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            wide_format  <span class="op">=</span> <span class="va">True</span>, </span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            engine       <span class="op">=</span> <span class="st">'polars'</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Summarize by time with a GroupBy object (Wide Format), polars engine</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">'category_1'</span>, <span class="st">'frame_material'</span>]) </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> [<span class="st">'total_price'</span>, <span class="st">'quantity'</span>], </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">'MS'</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> <span class="st">'sum'</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>            wide_format  <span class="op">=</span> <span class="va">True</span>, </span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>            engine       <span class="op">=</span> <span class="st">'polars'</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
@@ -827,14 +843,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">order_date</th>
-<th data-quarto-table-cell-role="th">total_price_sum_Mountain_Aluminum</th>
-<th data-quarto-table-cell-role="th">total_price_sum_Mountain_Carbon</th>
-<th data-quarto-table-cell-role="th">total_price_sum_Road_Aluminum</th>
-<th data-quarto-table-cell-role="th">total_price_sum_Road_Carbon</th>
-<th data-quarto-table-cell-role="th">quantity_sum_Mountain_Aluminum</th>
-<th data-quarto-table-cell-role="th">quantity_sum_Mountain_Carbon</th>
-<th data-quarto-table-cell-role="th">quantity_sum_Road_Aluminum</th>
-<th data-quarto-table-cell-role="th">quantity_sum_Road_Carbon</th>
+<th data-quarto-table-cell-role="th">total_price_Mountain_Aluminum</th>
+<th data-quarto-table-cell-role="th">total_price_Mountain_Carbon</th>
+<th data-quarto-table-cell-role="th">total_price_Road_Aluminum</th>
+<th data-quarto-table-cell-role="th">total_price_Road_Carbon</th>
+<th data-quarto-table-cell-role="th">quantity_Mountain_Aluminum</th>
+<th data-quarto-table-cell-role="th">quantity_Mountain_Carbon</th>
+<th data-quarto-table-cell-role="th">quantity_Road_Aluminum</th>
+<th data-quarto-table-cell-role="th">quantity_Road_Carbon</th>
 </tr>
 </thead>
 <tbody>
@@ -989,19 +1005,19 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 - Summarize by time with a GroupBy object (Wide Format)</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>(</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'category_1'</span>) </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'total_price'</span>, </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">'MS'</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> <span class="st">'sum'</span>,</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>            wide_format  <span class="op">=</span> <span class="va">True</span>,</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>            engine       <span class="op">=</span> <span class="st">'pandas'</span> </span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 - Summarize by time with a GroupBy object (Wide Format)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'category_1'</span>) </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> <span class="st">'total_price'</span>, </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">'MS'</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> <span class="st">'sum'</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            wide_format  <span class="op">=</span> <span class="va">True</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>            engine       <span class="op">=</span> <span class="st">'pandas'</span> </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
@@ -1095,25 +1111,25 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 4 - Summarize by time with a GroupBy object and multiple value columns and summaries (Wide Format)</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Note - This example only works with the pandas engine</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>(</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    df </span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'category_1'</span>) </span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> [<span class="st">'total_price'</span>, <span class="st">'quantity'</span>], </span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">'MS'</span>,</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> [</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'sum'</span>, </span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>, </span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'q25'</span>, <span class="kw">lambda</span> x: x.quantile(<span class="fl">0.25</span>)), </span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'q75'</span>, <span class="kw">lambda</span> x: x.quantile(<span class="fl">0.75</span>))</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>            ],</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>            wide_format  <span class="op">=</span> <span class="va">False</span>,</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>            engine       <span class="op">=</span> <span class="st">'pandas'</span> </span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 4 - Summarize by time with a GroupBy object and multiple value columns and summaries (Wide Format)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Note - This example only works with the pandas engine</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    df </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'category_1'</span>) </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        .summarize_by_time(</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>            date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span> [<span class="st">'total_price'</span>, <span class="st">'quantity'</span>], </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>            freq         <span class="op">=</span> <span class="st">'MS'</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>            agg_func     <span class="op">=</span> [</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">'sum'</span>, </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">'mean'</span>, </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'q25'</span>, <span class="kw">lambda</span> x: x.quantile(<span class="fl">0.25</span>)), </span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>                (<span class="st">'q75'</span>, <span class="kw">lambda</span> x: x.quantile(<span class="fl">0.75</span>))</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>            ],</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>            wide_format  <span class="op">=</span> <span class="va">False</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>            engine       <span class="op">=</span> <span class="st">'pandas'</span> </span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 

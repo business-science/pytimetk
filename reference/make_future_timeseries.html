@@ -392,11 +392,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>make_future_timeseries(idx, length_out, freq=None, force_regular=False)</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>make_future_timeseries(idx, length_out, freq<span class="op">=</span><span class="va">None</span>, force_regular<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Make future dates for a time series.</p>
 <p>The function <code>make_future_timeseries</code> takes a pandas Series or DateTimeIndex and generates a future sequence of dates based on the frequency of the input series.</p>
-<section id="parameters" class="level2">
-<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<section id="parameters" class="level2 doc-section doc-section-parameters">
+<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
 <col style="width: 3%">
@@ -414,25 +414,25 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>idx</code></td>
+<td>idx</td>
 <td>pd.Series or pd.DateTimeIndex</td>
 <td>The <code>idx</code> parameter is the input time series data. It can be either a pandas Series or a pandas DateTimeIndex. It represents the existing dates in the time series.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>length_out</code></td>
+<td>length_out</td>
 <td>int</td>
 <td>The parameter <code>length_out</code> is an integer that represents the number of future dates to generate for the time series.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
-<td><code>freq</code></td>
+<td>freq</td>
 <td>str</td>
 <td>The <code>frequency</code> parameter is a string that specifies the frequency of the future dates. If <code>frequency</code> is set to <code>None</code>, the frequency of the future dates will be inferred from the input data (e.g.&nbsp;business calendars might be used). The default value is <code>None</code>.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td><code>force_regular</code></td>
+<td>force_regular</td>
 <td>bool</td>
 <td>The <code>force_regular</code> parameter is a boolean flag that determines whether the frequency of the future dates should be forced to be regular. If <code>force_regular</code> is set to <code>True</code>, the frequency of the future dates will be forced to be regular. If <code>force_regular</code> is set to <code>False</code>, the frequency of the future dates will be inferred from the input data (e.g.&nbsp;business calendars might be used). The default value is <code>False</code>.</td>
 <td><code>False</code></td>
@@ -440,32 +440,34 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tbody>
 </table>
 </section>
-<section id="returns" class="level2">
-<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<section id="returns" class="level2 doc-section doc-section-returns">
+<h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <thead>
 <tr class="header">
+<th>Name</th>
 <th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
+<td></td>
 <td>pd.Series</td>
 <td>A pandas Series object containing future dates.</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<section id="examples" class="level2 doc-section doc-section-examples">
+<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Works with a single date (must provide a length out and frequency if only </span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 1 date is provided)</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(<span class="st">"2011-01-01"</span>, <span class="dv">5</span>, <span class="st">"D"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Works with a single date (must provide a length out and frequency if only </span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 1 date is provided)</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(<span class="st">"2011-01-01"</span>, <span class="dv">5</span>, <span class="st">"D"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>0   2011-01-02
 1   2011-01-03
@@ -476,12 +478,12 @@ dtype: datetime64[ns]</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DateTimeIndex: Generate 5 future dates (with inferred frequency)</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.Series(pd.to_datetime([<span class="st">'2022-01-01'</span>, <span class="st">'2022-01-02'</span>, <span class="st">'2022-01-03'</span>, <span class="st">'2022-01-04'</span>]))</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>future_dates_dt <span class="op">=</span> tk.make_future_timeseries(dates, <span class="dv">5</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>future_dates_dt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DateTimeIndex: Generate 5 future dates (with inferred frequency)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.Series(pd.to_datetime([<span class="st">'2022-01-01'</span>, <span class="st">'2022-01-02'</span>, <span class="st">'2022-01-03'</span>, <span class="st">'2022-01-04'</span>]))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>future_dates_dt <span class="op">=</span> tk.make_future_timeseries(dates, <span class="dv">5</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>future_dates_dt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>0   2022-01-05
 1   2022-01-06
@@ -492,8 +494,8 @@ dtype: datetime64[ns]</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Series: Generate 5 future dates</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pd.Series(future_dates_dt).make_future_timeseries(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Series: Generate 5 future dates</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>pd.Series(future_dates_dt).make_future_timeseries(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>0   2022-01-10
 1   2022-01-11
@@ -504,12 +506,12 @@ dtype: datetime64[ns]</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Hourly Frequency: Generate 5 future dates</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>timestamps <span class="op">=</span> [<span class="st">"2023-01-01 01:00"</span>, <span class="st">"2023-01-01 02:00"</span>, <span class="st">"2023-01-01 03:00"</span>, <span class="st">"2023-01-01 04:00"</span>, <span class="st">"2023-01-01 05:00"</span>]</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.to_datetime(timestamps)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Hourly Frequency: Generate 5 future dates</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>timestamps <span class="op">=</span> [<span class="st">"2023-01-01 01:00"</span>, <span class="st">"2023-01-01 02:00"</span>, <span class="st">"2023-01-01 03:00"</span>, <span class="st">"2023-01-01 04:00"</span>, <span class="st">"2023-01-01 05:00"</span>]</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.to_datetime(timestamps)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>0   2023-01-01 06:00:00
 1   2023-01-01 07:00:00
@@ -520,10 +522,10 @@ dtype: datetime64[ns]</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Monthly Frequency: Generate 4 future dates</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.to_datetime([<span class="st">"2021-01-01"</span>, <span class="st">"2021-02-01"</span>, <span class="st">"2021-03-01"</span>, <span class="st">"2021-04-01"</span>])</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Monthly Frequency: Generate 4 future dates</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.to_datetime([<span class="st">"2021-01-01"</span>, <span class="st">"2021-02-01"</span>, <span class="st">"2021-03-01"</span>, <span class="st">"2021-04-01"</span>])</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <pre><code>0   2021-05-01
 1   2021-06-01
@@ -533,10 +535,10 @@ dtype: datetime64[ns]</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Quarterly Frequency: Generate 4 future dates</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.to_datetime([<span class="st">"2021-01-01"</span>, <span class="st">"2021-04-01"</span>, <span class="st">"2021-07-01"</span>, <span class="st">"2021-10-01"</span>])</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Quarterly Frequency: Generate 4 future dates</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.to_datetime([<span class="st">"2021-01-01"</span>, <span class="st">"2021-04-01"</span>, <span class="st">"2021-07-01"</span>, <span class="st">"2021-10-01"</span>])</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>0   2022-01-01
 1   2022-04-01
@@ -546,12 +548,12 @@ dtype: datetime64[ns]</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Irregular Dates: Business Days</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.to_datetime([<span class="st">"2021-01-01"</span>, <span class="st">"2021-01-04"</span>, <span class="st">"2021-01-05"</span>, <span class="st">"2021-01-06"</span>])</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>tk.get_frequency(dates)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Irregular Dates: Business Days</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.to_datetime([<span class="st">"2021-01-01"</span>, <span class="st">"2021-01-04"</span>, <span class="st">"2021-01-05"</span>, <span class="st">"2021-01-06"</span>])</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>tk.get_frequency(dates)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <pre><code>0   2021-01-07
 1   2021-01-08
@@ -561,8 +563,8 @@ dtype: datetime64[ns]</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Irregular Dates: Business Days (Force Regular)    </span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">4</span>, force_regular<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Irregular Dates: Business Days (Force Regular)    </span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>tk.make_future_timeseries(dates, <span class="dv">4</span>, force_regular<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
 <pre><code>0   2021-01-07
 1   2021-01-08

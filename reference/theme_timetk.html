@@ -392,10 +392,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>theme_timetk(base_size=11, base_family=['Arial', 'Helvetica', 'sans-serif'], dpi=100, width=700, height=500)</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>theme_timetk(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    base_size<span class="op">=</span><span class="dv">11</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    base_family<span class="op">=</span>[<span class="st">'Arial'</span>, <span class="st">'Helvetica'</span>, <span class="st">'sans-serif'</span>],</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    dpi<span class="op">=</span><span class="dv">100</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    width<span class="op">=</span><span class="dv">700</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">500</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Returns a <code>plotnine</code> theme with timetk styles applied, allowing for customization of the appearance of plots in Python.</p>
-<section id="parameters" class="level2">
-<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<section id="parameters" class="level2 doc-section doc-section-parameters">
+<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
 <col style="width: 3%">
@@ -413,31 +419,31 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>base_size</code></td>
+<td>base_size</td>
 <td>int</td>
 <td>The <code>base_size</code> parameter determines the base font size for the theme. It is set to 11 by default, but you can change it to any desired value.</td>
 <td><code>11</code></td>
 </tr>
 <tr class="even">
-<td><code>base_family</code></td>
+<td>base_family</td>
 <td>list</td>
 <td>The <code>base_family</code> parameter is a list of font families that will be used as the base font for the theme. The default value is <code>['Arial',  'Helvetica', 'sans-serif']</code>, which means that the theme will use Arial font if available, otherwise it will try Helvetica, and if that is not available either, it will use the generic sans-serif font.</td>
 <td><code>['Arial', 'Helvetica', 'sans-serif']</code></td>
 </tr>
 <tr class="odd">
-<td><code>dpi</code></td>
+<td>dpi</td>
 <td>int</td>
 <td>The <code>dpi</code> parameter stands for dots per inch and determines the resolution of the plot. It specifies the number of pixels per inch in the output image. Higher dpi values result in higher resolution images.</td>
 <td><code>100</code></td>
 </tr>
 <tr class="even">
-<td><code>width</code></td>
+<td>width</td>
 <td>int</td>
 <td>The <code>width</code> parameter is used to specify the width of the plot in pixels at dpi. It determines the horizontal size of the plot. The default value is 700 pixels.</td>
 <td><code>700</code></td>
 </tr>
 <tr class="odd">
-<td><code>height</code></td>
+<td>height</td>
 <td>int</td>
 <td>The <code>height</code> parameter is used to specify the height of the plot in inches. It is an optional parameter, so if you don’t provide a value for it, the default height will be 5 inches (500 pixels).</td>
 <td><code>500</code></td>
@@ -445,49 +451,52 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tbody>
 </table>
 </section>
-<section id="returns" class="level2">
-<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<section id="returns" class="level2 doc-section doc-section-returns">
+<h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 29%">
-<col style="width: 70%">
+<col style="width: 3%">
+<col style="width: 28%">
+<col style="width: 68%">
 </colgroup>
 <thead>
 <tr class="header">
+<th>Name</th>
 <th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
+<td></td>
 <td>A theme object that can be used to customize the appearance of plots in</td>
 <td>Python. The theme object contains various elements such as line, rect, axis, panel, legend, strip, and plot, each with their own set of properties that can be customized.</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<section id="examples" class="level2 doc-section doc-section-examples">
+<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> ggplot, aes, geom_line, labs, scale_x_date, facet_wrap</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> {</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'date'</span>: pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, end<span class="op">=</span><span class="st">'2023-01-10'</span>),</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'value'</span>: [<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">11</span>, <span class="dv">14</span>, <span class="dv">18</span>, <span class="dv">21</span>, <span class="dv">24</span>, <span class="dv">29</span>]</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(data)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotnine chart without styling</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> (</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    ggplot(df, aes(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span><span class="st">'value'</span>)) <span class="op">+</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        geom_line(color<span class="op">=</span><span class="st">'blue'</span>) <span class="op">+</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        labs(title<span class="op">=</span><span class="st">'Time Series Plot'</span>, x<span class="op">=</span><span class="st">'Date'</span>, y<span class="op">=</span><span class="st">'Value'</span>) <span class="op">+</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        scale_x_date(date_labels<span class="op">=</span><span class="st">'%a'</span>)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>fig</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> ggplot, aes, geom_line, labs, scale_x_date, facet_wrap</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> {</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'date'</span>: pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, end<span class="op">=</span><span class="st">'2023-01-10'</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'value'</span>: [<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">11</span>, <span class="dv">14</span>, <span class="dv">18</span>, <span class="dv">21</span>, <span class="dv">24</span>, <span class="dv">29</span>]</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(data)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotnine chart without styling</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> (</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    ggplot(df, aes(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span><span class="st">'value'</span>)) <span class="op">+</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        geom_line(color<span class="op">=</span><span class="st">'blue'</span>) <span class="op">+</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        labs(title<span class="op">=</span><span class="st">'Time Series Plot'</span>, x<span class="op">=</span><span class="st">'Date'</span>, y<span class="op">=</span><span class="st">'Value'</span>) <span class="op">+</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        scale_x_date(date_labels<span class="op">=</span><span class="st">'%a'</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>fig</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <p><img src="theme_timetk_files/figure-html/cell-2-output-1.png" class="img-fluid"></p>
 </div>
@@ -496,8 +505,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotnine chart with timetk styling</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fig <span class="op">+</span> tk.theme_timetk()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotnine chart with timetk styling</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>fig <span class="op">+</span> tk.theme_timetk()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <p><img src="theme_timetk_files/figure-html/cell-3-output-1.png" class="img-fluid"></p>
 </div>
@@ -506,22 +515,22 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Faceted plot with timetk styling</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> {</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'date'</span>: pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, end<span class="op">=</span><span class="st">'2023-01-10'</span>).tolist() <span class="op">*</span> <span class="dv">2</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'value'</span>: [<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">11</span>, <span class="dv">14</span>, <span class="dv">18</span>, <span class="dv">21</span>, <span class="dv">24</span>, <span class="dv">29</span>] <span class="op">*</span> <span class="dv">2</span>,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'category'</span>: [<span class="st">'A'</span>] <span class="op">*</span> <span class="dv">10</span> <span class="op">+</span> [<span class="st">'B'</span>] <span class="op">*</span> <span class="dv">10</span>,</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(data)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>(</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    ggplot(df, aes(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span><span class="st">'value'</span>)) <span class="op">+</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        geom_line(color<span class="op">=</span><span class="st">'blue'</span>) <span class="op">+</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        labs(title<span class="op">=</span><span class="st">'Faceted Time Series Plot'</span>, x<span class="op">=</span><span class="st">'Date'</span>, y<span class="op">=</span><span class="st">'Value'</span>) <span class="op">+</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        facet_wrap(<span class="st">'~category'</span>) <span class="op">+</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        scale_x_date(date_labels<span class="op">=</span><span class="st">'%a'</span>) <span class="op">+</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        tk.theme_timetk()</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Faceted plot with timetk styling</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> {</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'date'</span>: pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, end<span class="op">=</span><span class="st">'2023-01-10'</span>).tolist() <span class="op">*</span> <span class="dv">2</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'value'</span>: [<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">11</span>, <span class="dv">14</span>, <span class="dv">18</span>, <span class="dv">21</span>, <span class="dv">24</span>, <span class="dv">29</span>] <span class="op">*</span> <span class="dv">2</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'category'</span>: [<span class="st">'A'</span>] <span class="op">*</span> <span class="dv">10</span> <span class="op">+</span> [<span class="st">'B'</span>] <span class="op">*</span> <span class="dv">10</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(data)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    ggplot(df, aes(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span><span class="st">'value'</span>)) <span class="op">+</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        geom_line(color<span class="op">=</span><span class="st">'blue'</span>) <span class="op">+</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        labs(title<span class="op">=</span><span class="st">'Faceted Time Series Plot'</span>, x<span class="op">=</span><span class="st">'Date'</span>, y<span class="op">=</span><span class="st">'Value'</span>) <span class="op">+</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        facet_wrap(<span class="st">'~category'</span>) <span class="op">+</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        scale_x_date(date_labels<span class="op">=</span><span class="st">'%a'</span>) <span class="op">+</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        tk.theme_timetk()</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <p><img src="theme_timetk_files/figure-html/cell-4-output-1.png" class="img-fluid"></p>
 </div>

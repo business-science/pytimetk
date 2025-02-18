@@ -396,14 +396,20 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>augment_holiday_signature(data, date_column, country_name='UnitedStates', reduce_memory=False, engine='pandas')</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>augment_holiday_signature(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    date_column,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    country_name<span class="op">=</span><span class="st">'UnitedStates'</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Engineers 4 different holiday features from a single datetime for 137 countries and 2 financial markets.</p>
 <p>Note: Requires the <code>holidays</code> package to be installed. See https://pypi.org/project/holidays/ for more information.</p>
-<section id="parameters" class="level2">
-<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<section id="parameters" class="level2 doc-section doc-section-parameters">
+<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 4%">
+<col style="width: 3%">
 <col style="width: 15%">
 <col style="width: 76%">
 <col style="width: 4%">
@@ -418,31 +424,31 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>data</code></td>
+<td>data</td>
 <td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
 <td>The input DataFrame.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>date_column</code></td>
+<td>date_column</td>
 <td>str</td>
 <td>The name of the datetime-like column in the DataFrame.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
-<td><code>country_name</code></td>
+<td>country_name</td>
 <td>str</td>
 <td>The name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code: See NOTES.</td>
 <td><code>'UnitedStates'</code></td>
 </tr>
 <tr class="even">
-<td><code>reduce_memory</code></td>
+<td>reduce_memory</td>
 <td>bool</td>
 <td>The <code>reduce_memory</code> parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
-<td><code>engine</code></td>
+<td>engine</td>
 <td>str</td>
 <td>The <code>engine</code> parameter is used to specify the engine to use for augmenting holidays. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for augmenting holidays. This can be faster than using “pandas” for large datasets.</td>
 <td><code>'pandas'</code></td>
@@ -450,29 +456,32 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tbody>
 </table>
 </section>
-<section id="returns" class="level2">
-<h2 class="anchored" data-anchor-id="returns">Returns</h2>
+<section id="returns" class="level2 doc-section doc-section-returns">
+<h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
+<col style="width: 2%">
 <col style="width: 5%">
-<col style="width: 94%">
+<col style="width: 91%">
 </colgroup>
 <thead>
 <tr class="header">
+<th>Name</th>
 <th>Type</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
+<td></td>
 <td>pd.DataFrame:</td>
 <td>A pandas DataFrame with three holiday-specific features: - is_holiday: (0, 1) indicator for holiday - before_holiday: (0, 1) indicator for day before holiday - after_holiday: (0, 1) indicator for day after holiday - holiday_name: name of the holiday</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="notes" class="level2">
-<h2 class="anchored" data-anchor-id="notes">Notes</h2>
+<section id="notes" class="level2 doc-section doc-section-notes">
+<h2 class="doc-section doc-section-notes anchored" data-anchor-id="notes">Notes</h2>
 <p>Any of the following are acceptable keys for <code>country_name</code>:</p>
 <table class="table">
 <colgroup>
@@ -973,19 +982,19 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tbody>
 </table>
 </section>
-<section id="example" class="level2">
-<h2 class="anchored" data-anchor-id="example">Example</h2>
+<section id="example" class="level2 doc-section doc-section-example">
+<h2 class="doc-section doc-section-example anchored" data-anchor-id="example">Example</h2>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Make a DataFrame with a date column</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>start_date <span class="op">=</span> <span class="st">'2023-01-01'</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>end_date <span class="op">=</span> <span class="st">'2023-01-10'</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(pd.date_range(start<span class="op">=</span>start_date, end<span class="op">=</span>end_date), columns<span class="op">=</span>[<span class="st">'date'</span>])</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Add holiday features for US</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>tk.augment_holiday_signature(df, <span class="st">'date'</span>, <span class="st">'UnitedStates'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Make a DataFrame with a date column</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>start_date <span class="op">=</span> <span class="st">'2023-01-01'</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>end_date <span class="op">=</span> <span class="st">'2023-01-10'</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(pd.date_range(start<span class="op">=</span>start_date, end<span class="op">=</span>end_date), columns<span class="op">=</span>[<span class="st">'date'</span>])</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Add holiday features for US</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>tk.augment_holiday_signature(df, <span class="st">'date'</span>, <span class="st">'UnitedStates'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -1089,8 +1098,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add holiday features for France</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>tk.augment_holiday_signature(df, <span class="st">'date'</span>, <span class="st">'France'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add holiday features for France</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tk.augment_holiday_signature(df, <span class="st">'date'</span>, <span class="st">'France'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
@@ -1194,8 +1203,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add holiday features for France</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tk.augment_holiday_signature(df, <span class="st">'date'</span>, <span class="st">'France'</span>, engine<span class="op">=</span><span class="st">'polars'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add holiday features for France</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>tk.augment_holiday_signature(df, <span class="st">'date'</span>, <span class="st">'France'</span>, engine<span class="op">=</span><span class="st">'polars'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 

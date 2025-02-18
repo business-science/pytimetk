@@ -391,13 +391,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<p><code>glimpse(data, max_width=76, engine='pandas')</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>glimpse(data, max_width<span class="op">=</span><span class="dv">76</span>, engine<span class="op">=</span><span class="st">'pandas'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Takes a pandas DataFrame and prints a summary of its dimensions, column names, data types, and the first few values of each column.</p>
-<section id="parameters" class="level2">
-<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<section id="parameters" class="level2 doc-section doc-section-parameters">
+<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 4%">
+<col style="width: 3%">
 <col style="width: 4%">
 <col style="width: 87%">
 <col style="width: 3%">
@@ -412,19 +412,19 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>data</code></td>
+<td>data</td>
 <td>pd.DataFrame</td>
 <td>The <code>data</code> parameter is a pandas DataFrame that contains the data you want to glimpse at. It is the main input to the <code>glimpse</code> function.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td><code>max_width</code></td>
+<td>max_width</td>
 <td>int</td>
 <td>The <code>max_width</code> parameter is an optional parameter that specifies the maximum width of each line when printing the glimpse of the DataFrame. If not provided, the default value is set to 76.</td>
 <td><code>76</code></td>
 </tr>
 <tr class="odd">
-<td><code>engine</code></td>
+<td>engine</td>
 <td>str</td>
 <td>The <code>engine</code> parameter is used to specify the engine to use for generating a glimpse. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for generating the glimpse.</td>
 <td><code>'pandas'</code></td>
@@ -432,15 +432,15 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tbody>
 </table>
 </section>
-<section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<section id="examples" class="level2 doc-section doc-section-examples">
+<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'walmart_sales_weekly'</span>, parse_dates<span class="op">=</span>[<span class="st">'Date'</span>])</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'walmart_sales_weekly'</span>, parse_dates<span class="op">=</span>[<span class="st">'Date'</span>])</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 1001 rows of 17 columns
 id:            object            ['1_1', '1_1', '1_1', '1_1', '1_1', '1_ ...

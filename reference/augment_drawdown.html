@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>pytimetk – pad_by_time</title>
+<title>pytimetk – augment_drawdown</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -149,7 +149,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">pad_by_time</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">augment_drawdown</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -372,17 +372,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
-  <li><a href="#performance" id="toc-performance" class="nav-link" data-scroll-target="#performance">Performance</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/pad_by_time.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_drawdown.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">pad_by_time</h1>
+<h1 class="title">augment_drawdown</h1>
 </div>
 
 
@@ -397,17 +396,22 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pad_by_time(data, date_column, freq<span class="op">=</span><span class="st">'D'</span>, start_date<span class="op">=</span><span class="va">None</span>, end_date<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Make irregular time series regular by padding with missing dates.</p>
-<p>The <code>pad_by_time</code> function inserts missing dates into a Pandas DataFrame or DataFrameGroupBy object, through the process making an irregularly spaced time series regularly spaced.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>augment_drawdown(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    date_column,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    close_column,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The augment_drawdown function calculates the drawdown metrics for a financial time series using either pandas or polars engine, and returns the augmented DataFrame with peak value, drawdown, and drawdown percentage columns.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 2%">
-<col style="width: 9%">
-<col style="width: 86%">
-<col style="width: 1%">
+<col style="width: 6%">
+<col style="width: 27%">
+<col style="width: 60%">
+<col style="width: 5%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -420,33 +424,33 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>data</td>
-<td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
-<td>The <code>data</code> parameter can be either a Pandas DataFrame or a Pandas DataFrameGroupBy object. It represents the data that you want to pad with missing dates.</td>
+<td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
+<td>The input data can be either a pandas DataFrame or a pandas DataFrameGroupBy object containing the time series data for drawdown calculation.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>date_column</td>
 <td>str</td>
-<td>The <code>date_column</code> parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to determine the minimum and maximum dates in theDataFrame, and to generate the regular date range for padding.</td>
+<td>The name of the column containing dates or timestamps.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
-<td>freq</td>
+<td>close_column</td>
 <td>str</td>
-<td>The <code>freq</code> parameter specifies the frequency at which the missing timestamps should be generated. It accepts a string representing a pandas frequency alias. Some common frequency aliases include: - S: secondly frequency - min: minute frequency - H: hourly frequency - B: business day frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - BMS: Business month start - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency</td>
-<td><code>'D'</code></td>
+<td>The column containing the values (e.g., price) to calculate drawdowns from.</td>
+<td><em>required</em></td>
 </tr>
 <tr class="even">
-<td>start_date</td>
-<td>str</td>
-<td>Specifies the start of the padded series. If NULL, it will use the lowest value of the input variable. In the case of groups, it will use the lowest value by group.</td>
-<td><code>None</code></td>
+<td>reduce_memory</td>
+<td>bool</td>
+<td>If True, reduces memory usage of the DataFrame before calculation. Default is False.</td>
+<td><code>False</code></td>
 </tr>
 <tr class="odd">
-<td>end_date</td>
+<td>engine</td>
 <td>str</td>
-<td>Specifies the end of the padded series. If NULL, it will use the highest value of the input variable. In the case of groups, it will use the highest value by group.</td>
-<td><code>None</code></td>
+<td>The computation engine to use: ‘pandas’ or ‘polars’. Default is ‘pandas’.</td>
+<td><code>'pandas'</code></td>
 </tr>
 </tbody>
 </table>
@@ -455,9 +459,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 6%">
-<col style="width: 11%">
-<col style="width: 81%">
+<col style="width: 2%">
+<col style="width: 4%">
+<col style="width: 92%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -470,22 +474,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td></td>
 <td>pd.DataFrame</td>
-<td>The function <code>pad_by_time</code> returns a Pandas DataFrame that has been extended with future dates.</td>
+<td>A pandas DataFrame augmented with three columns: - {close_column}_peak: Running maximum value up to each point - {close_column}_drawdown: Absolute difference from peak to current value - {close_column}_drawdown_pct: Percentage decline from peak to current value</td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="notes" class="level2 doc-section doc-section-notes">
 <h2 class="doc-section doc-section-notes anchored" data-anchor-id="notes">Notes</h2>
-</section>
-<section id="performance" class="level2">
-<h2 class="anchored" data-anchor-id="performance">Performance</h2>
-<p>This function uses a number of techniques to speed up computation for large datasets with many time series groups.</p>
-<ul>
-<li>We use a vectorized approach to generate the Cartesian product of all unique group values and all dates in the date range.</li>
-<li>We then merge this Cartesian product with the original data to introduce NaN values for missing rows. This approach is much faster than looping through each group and applying a function to each group.</li>
-</ul>
-<p>Note: There is no parallel processing since the vectorized approach is almost always faster.</p>
+<p>Drawdown is a measure of peak-to-trough decline in a time series, typically used to assess the risk of a financial instrument: - Peak Value: The highest value observed up to each point in time - Drawdown: The absolute difference between the peak and current value - Drawdown Percentage: The percentage decline from the peak value</p>
 </section>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
@@ -493,8 +489,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'stocks_daily'</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'stocks_daily'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Single stock drawdown</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>dd_df <span class="op">=</span> (</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    df.query(<span class="st">"symbol == 'AAPL'"</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    .augment_drawdown(</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">'adjusted'</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>dd_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -511,6 +516,118 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">adjusted</th>
+<th data-quarto-table-cell-role="th">adjusted_peak</th>
+<th data-quarto-table-cell-role="th">adjusted_drawdown</th>
+<th data-quarto-table-cell-role="th">adjusted_drawdown_pct</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5398</td>
+<td>AAPL</td>
+<td>2013-01-02</td>
+<td>19.779285</td>
+<td>19.821428</td>
+<td>19.343929</td>
+<td>19.608213</td>
+<td>560518000</td>
+<td>16.791180</td>
+<td>16.79118</td>
+<td>0.000000</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5399</td>
+<td>AAPL</td>
+<td>2013-01-03</td>
+<td>19.567142</td>
+<td>19.631071</td>
+<td>19.321428</td>
+<td>19.360714</td>
+<td>352965200</td>
+<td>16.579241</td>
+<td>16.79118</td>
+<td>-0.211939</td>
+<td>-0.012622</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5400</td>
+<td>AAPL</td>
+<td>2013-01-04</td>
+<td>19.177500</td>
+<td>19.236786</td>
+<td>18.779642</td>
+<td>18.821428</td>
+<td>594333600</td>
+<td>16.117437</td>
+<td>16.79118</td>
+<td>-0.673742</td>
+<td>-0.040125</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5401</td>
+<td>AAPL</td>
+<td>2013-01-07</td>
+<td>18.642857</td>
+<td>18.903570</td>
+<td>18.400000</td>
+<td>18.710714</td>
+<td>484156400</td>
+<td>16.022623</td>
+<td>16.79118</td>
+<td>-0.768557</td>
+<td>-0.045771</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5402</td>
+<td>AAPL</td>
+<td>2013-01-08</td>
+<td>18.900356</td>
+<td>18.996071</td>
+<td>18.616072</td>
+<td>18.761070</td>
+<td>458707200</td>
+<td>16.065746</td>
+<td>16.79118</td>
+<td>-0.725433</td>
+<td>-0.043203</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple stocks with groupby</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>dd_df <span class="op">=</span> (</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">'symbol'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    .augment_drawdown(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">'adjusted'</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">'polars'</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>dd_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">adjusted</th>
+<th data-quarto-table-cell-role="th">adjusted_peak</th>
+<th data-quarto-table-cell-role="th">adjusted_drawdown</th>
+<th data-quarto-table-cell-role="th">adjusted_drawdown_pct</th>
 </tr>
 </thead>
 <tbody>
@@ -524,6 +641,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>28.000000</td>
 <td>69846400</td>
 <td>28.000000</td>
+<td>28.00</td>
+<td>0.000000</td>
+<td>0.000000</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
@@ -535,6 +655,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>27.770000</td>
 <td>63140600</td>
 <td>27.770000</td>
+<td>28.00</td>
+<td>-0.230000</td>
+<td>-0.008214</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
@@ -546,6 +669,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>28.760000</td>
 <td>72715400</td>
 <td>28.760000</td>
+<td>28.76</td>
+<td>0.000000</td>
+<td>0.000000</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
@@ -557,6 +683,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>29.420000</td>
 <td>83781800</td>
 <td>29.420000</td>
+<td>29.42</td>
+<td>0.000000</td>
+<td>0.000000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
@@ -568,553 +697,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>29.059999</td>
 <td>45871300</td>
 <td>29.059999</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">16189</td>
-<td>GOOG</td>
-<td>2023-09-15</td>
-<td>138.800003</td>
-<td>139.360001</td>
-<td>137.179993</td>
-<td>138.300003</td>
-<td>48947600</td>
-<td>138.300003</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">16190</td>
-<td>GOOG</td>
-<td>2023-09-18</td>
-<td>137.630005</td>
-<td>139.929993</td>
-<td>137.630005</td>
-<td>138.960007</td>
-<td>16233600</td>
-<td>138.960007</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">16191</td>
-<td>GOOG</td>
-<td>2023-09-19</td>
-<td>138.250000</td>
-<td>139.175003</td>
-<td>137.500000</td>
-<td>138.830002</td>
-<td>15479100</td>
-<td>138.830002</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">16192</td>
-<td>GOOG</td>
-<td>2023-09-20</td>
-<td>138.830002</td>
-<td>138.839996</td>
-<td>134.520004</td>
-<td>134.589996</td>
-<td>21473500</td>
-<td>134.589996</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">16193</td>
-<td>GOOG</td>
-<td>2023-09-21</td>
-<td>132.389999</td>
-<td>133.190002</td>
-<td>131.089996</td>
-<td>131.360001</td>
-<td>22042700</td>
-<td>131.360001</td>
+<td>29.42</td>
+<td>-0.360001</td>
+<td>-0.012237</td>
 </tr>
 </tbody>
 </table>
 
-<p>16194 rows × 8 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pad Single Time Series: Fill missing dates</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>padded_df <span class="op">=</span> (</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'symbol == "AAPL"'</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .pad_by_time(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            freq        <span class="op">=</span> <span class="st">'D'</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>padded_df </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>2013-01-02</td>
-<td>AAPL</td>
-<td>19.779285</td>
-<td>19.821428</td>
-<td>19.343929</td>
-<td>19.608213</td>
-<td>560518000.0</td>
-<td>16.791180</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>2013-01-03</td>
-<td>AAPL</td>
-<td>19.567142</td>
-<td>19.631071</td>
-<td>19.321428</td>
-<td>19.360714</td>
-<td>352965200.0</td>
-<td>16.579241</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2013-01-04</td>
-<td>AAPL</td>
-<td>19.177500</td>
-<td>19.236786</td>
-<td>18.779642</td>
-<td>18.821428</td>
-<td>594333600.0</td>
-<td>16.117437</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>2013-01-05</td>
-<td>AAPL</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>2013-01-06</td>
-<td>AAPL</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">3910</td>
-<td>2023-09-17</td>
-<td>AAPL</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3911</td>
-<td>2023-09-18</td>
-<td>AAPL</td>
-<td>176.479996</td>
-<td>179.380005</td>
-<td>176.169998</td>
-<td>177.970001</td>
-<td>67257600.0</td>
-<td>177.970001</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">3912</td>
-<td>2023-09-19</td>
-<td>AAPL</td>
-<td>177.520004</td>
-<td>179.630005</td>
-<td>177.130005</td>
-<td>179.070007</td>
-<td>51826900.0</td>
-<td>179.070007</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3913</td>
-<td>2023-09-20</td>
-<td>AAPL</td>
-<td>179.259995</td>
-<td>179.699997</td>
-<td>175.399994</td>
-<td>175.490005</td>
-<td>58436200.0</td>
-<td>175.490005</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">3914</td>
-<td>2023-09-21</td>
-<td>AAPL</td>
-<td>174.550003</td>
-<td>176.300003</td>
-<td>173.860001</td>
-<td>173.929993</td>
-<td>63047900.0</td>
-<td>173.929993</td>
-</tr>
-</tbody>
-</table>
-
-<p>3915 rows × 8 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pad by Group: Pad each group with missing dates</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>padded_df <span class="op">=</span> (</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .pad_by_time(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            freq        <span class="op">=</span> <span class="st">'D'</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>padded_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>AAPL</td>
-<td>2013-01-02</td>
-<td>19.779285</td>
-<td>19.821428</td>
-<td>19.343929</td>
-<td>19.608213</td>
-<td>560518000.0</td>
-<td>16.791180</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>AAPL</td>
-<td>2013-01-03</td>
-<td>19.567142</td>
-<td>19.631071</td>
-<td>19.321428</td>
-<td>19.360714</td>
-<td>352965200.0</td>
-<td>16.579241</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>AAPL</td>
-<td>2013-01-04</td>
-<td>19.177500</td>
-<td>19.236786</td>
-<td>18.779642</td>
-<td>18.821428</td>
-<td>594333600.0</td>
-<td>16.117437</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>AAPL</td>
-<td>2013-01-05</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>AAPL</td>
-<td>2013-01-06</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">23485</td>
-<td>NVDA</td>
-<td>2023-09-17</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">23486</td>
-<td>NVDA</td>
-<td>2023-09-18</td>
-<td>427.480011</td>
-<td>442.420013</td>
-<td>420.000000</td>
-<td>439.660004</td>
-<td>50027100.0</td>
-<td>439.660004</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">23487</td>
-<td>NVDA</td>
-<td>2023-09-19</td>
-<td>438.329987</td>
-<td>439.660004</td>
-<td>430.019989</td>
-<td>435.200012</td>
-<td>37306400.0</td>
-<td>435.200012</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">23488</td>
-<td>NVDA</td>
-<td>2023-09-20</td>
-<td>436.000000</td>
-<td>439.029999</td>
-<td>422.230011</td>
-<td>422.390015</td>
-<td>36710800.0</td>
-<td>422.390015</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">23489</td>
-<td>NVDA</td>
-<td>2023-09-21</td>
-<td>415.829987</td>
-<td>421.000000</td>
-<td>409.799988</td>
-<td>410.170013</td>
-<td>44893000.0</td>
-<td>410.170013</td>
-</tr>
-</tbody>
-</table>
-
-<p>23490 rows × 8 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pad with end dates specified</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>padded_df <span class="op">=</span> (</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        .pad_by_time(</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            freq        <span class="op">=</span> <span class="st">'D'</span>,</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            start_date  <span class="op">=</span> <span class="st">'2013-01-01'</span>,</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            end_date    <span class="op">=</span> <span class="st">'2023-09-22'</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>padded_df.query(<span class="st">'symbol == "AAPL"'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>AAPL</td>
-<td>2013-01-01</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>AAPL</td>
-<td>2013-01-02</td>
-<td>19.779285</td>
-<td>19.821428</td>
-<td>19.343929</td>
-<td>19.608213</td>
-<td>560518000.0</td>
-<td>16.791180</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>AAPL</td>
-<td>2013-01-03</td>
-<td>19.567142</td>
-<td>19.631071</td>
-<td>19.321428</td>
-<td>19.360714</td>
-<td>352965200.0</td>
-<td>16.579241</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>AAPL</td>
-<td>2013-01-04</td>
-<td>19.177500</td>
-<td>19.236786</td>
-<td>18.779642</td>
-<td>18.821428</td>
-<td>594333600.0</td>
-<td>16.117437</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>AAPL</td>
-<td>2013-01-05</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">3912</td>
-<td>AAPL</td>
-<td>2023-09-18</td>
-<td>176.479996</td>
-<td>179.380005</td>
-<td>176.169998</td>
-<td>177.970001</td>
-<td>67257600.0</td>
-<td>177.970001</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3913</td>
-<td>AAPL</td>
-<td>2023-09-19</td>
-<td>177.520004</td>
-<td>179.630005</td>
-<td>177.130005</td>
-<td>179.070007</td>
-<td>51826900.0</td>
-<td>179.070007</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">3914</td>
-<td>AAPL</td>
-<td>2023-09-20</td>
-<td>179.259995</td>
-<td>179.699997</td>
-<td>175.399994</td>
-<td>175.490005</td>
-<td>58436200.0</td>
-<td>175.490005</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3915</td>
-<td>AAPL</td>
-<td>2023-09-21</td>
-<td>174.550003</td>
-<td>176.300003</td>
-<td>173.860001</td>
-<td>173.929993</td>
-<td>63047900.0</td>
-<td>173.929993</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">3916</td>
-<td>AAPL</td>
-<td>2023-09-22</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-</tbody>
-</table>
-
-<p>3917 rows × 8 columns</p>
 </div>
 </div>
 </div>
