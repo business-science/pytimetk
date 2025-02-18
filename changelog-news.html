@@ -429,7 +429,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <section id="new-functions" class="level2">
 <h2 class="anchored" data-anchor-id="new-functions">New Functions</h2>
 <ul>
-<li><code>augment_drawdown()</code>:</li>
+<li><code>augment_drawdown()</code>: The augment_drawdown function calculates the drawdown metrics for a financial time series using either pandas or polars engine, and returns the augmented DataFrame with peak value, drawdown, and drawdown percentage columns.</li>
+<li><code>augment_rolling_risk_metrics()</code>: The augment_rolling_risk_metrics function calculates rolling risk-adjusted performance metrics for a financial time series using either pandas or polars engine, and returns the augmented DataFrame with columns for Sharpe Ratio, Sortino Ratio, and other metrics.</li>
 </ul>
 </section>
 <section id="bug-fixes-and-speed-improvements" class="level2">
@@ -438,7 +439,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <li><code>summarize_by_time()</code>: polars engine rebuild. Columns should match pandas engine.</li>
 <li><code>__init__.py</code>: updated to fix circular imports</li>
 <li><code>get_date_summary()</code>: Fixed issues with polar tz</li>
-<li></li>
+<li><code>augment_hilbert()</code>: Improve polars engine and fix error with groupby()</li>
+<li><code>augment_ewm()</code>: fix example <code>from pytimetk import augment_ewm</code></li>
+<li><code>test_plot_timeseries</code>: Fix broken test</li>
 </ul>
 </section>
 </section>
