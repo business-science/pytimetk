@@ -78,7 +78,7 @@ def augment_ewm(
     --------
     ```{python}
     import pytimetk as tk
-    from pytimetk.finance import augment_ewm
+    from pytimetk import augment_ewm
     import pandas as pd
     import numpy as np
 
