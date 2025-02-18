@@ -116,6 +116,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <!-- SUMO -->
 <script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -146,7 +149,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">augment_fip_momentum</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -366,22 +369,32 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#pytimetk.augment_fip_momentum" id="toc-pytimetk.augment_fip_momentum" class="nav-link active" data-scroll-target="#pytimetk.augment_fip_momentum">augment_fip_momentum</a>
-  <ul class="collapse">
-  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
-  </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_fip_momentum.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">augment_fip_momentum</h1>
+</div>
 
 
-<section id="pytimetk.augment_fip_momentum" class="level1">
-<h1>augment_fip_momentum</h1>
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>augment_fip_momentum(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data,</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    date_column,</span>
@@ -475,7 +488,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </section>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'stocks_daily'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
@@ -489,22 +503,199 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span><span class="dv">252</span></span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(fip_df.head())</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple windows</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>fip_df <span class="op">=</span> (</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    .augment_fip_momentum(</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">'close'</span>,</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span>[<span class="dv">63</span>, <span class="dv">252</span>],</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">'polars'</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(fip_df.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>fip_df.tail()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<div>
 
 
-</section>
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">adjusted</th>
+<th data-quarto-table-cell-role="th">close_fip_momentum_252</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8092</td>
+<td>AAPL</td>
+<td>2023-09-15</td>
+<td>176.479996</td>
+<td>176.500000</td>
+<td>173.820007</td>
+<td>175.009995</td>
+<td>109205100</td>
+<td>175.009995</td>
+<td>-0.005537</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">8093</td>
+<td>AAPL</td>
+<td>2023-09-18</td>
+<td>176.479996</td>
+<td>179.380005</td>
+<td>176.169998</td>
+<td>177.970001</td>
+<td>67257600</td>
+<td>177.970001</td>
+<td>-0.008667</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8094</td>
+<td>AAPL</td>
+<td>2023-09-19</td>
+<td>177.520004</td>
+<td>179.630005</td>
+<td>177.130005</td>
+<td>179.070007</td>
+<td>51826900</td>
+<td>179.070007</td>
+<td>-0.011206</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">8095</td>
+<td>AAPL</td>
+<td>2023-09-20</td>
+<td>179.259995</td>
+<td>179.699997</td>
+<td>175.399994</td>
+<td>175.490005</td>
+<td>58436200</td>
+<td>175.490005</td>
+<td>-0.007016</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8096</td>
+<td>AAPL</td>
+<td>2023-09-21</td>
+<td>174.550003</td>
+<td>176.300003</td>
+<td>173.860001</td>
+<td>173.929993</td>
+<td>63047900</td>
+<td>173.929993</td>
+<td>-0.004738</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple windows</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fip_df <span class="op">=</span> (</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">'symbol'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    .augment_fip_momentum(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">'close'</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span>[<span class="dv">63</span>, <span class="dv">252</span>],</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">'polars'</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>fip_df.tail()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">adjusted</th>
+<th data-quarto-table-cell-role="th">close_fip_momentum_63</th>
+<th data-quarto-table-cell-role="th">close_fip_momentum_252</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16189</td>
+<td>GOOG</td>
+<td>2023-09-15</td>
+<td>138.800003</td>
+<td>139.360001</td>
+<td>137.179993</td>
+<td>138.300003</td>
+<td>48947600</td>
+<td>138.300003</td>
+<td>-0.004736</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">16190</td>
+<td>GOOG</td>
+<td>2023-09-18</td>
+<td>137.630005</td>
+<td>139.929993</td>
+<td>137.630005</td>
+<td>138.960007</td>
+<td>16233600</td>
+<td>138.960007</td>
+<td>-0.009532</td>
+<td>-0.002678</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16191</td>
+<td>GOOG</td>
+<td>2023-09-19</td>
+<td>138.250000</td>
+<td>139.175003</td>
+<td>137.500000</td>
+<td>138.830002</td>
+<td>15479100</td>
+<td>138.830002</td>
+<td>-0.009599</td>
+<td>-0.002696</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">16192</td>
+<td>GOOG</td>
+<td>2023-09-20</td>
+<td>138.830002</td>
+<td>138.839996</td>
+<td>134.520004</td>
+<td>134.589996</td>
+<td>21473500</td>
+<td>134.589996</td>
+<td>-0.008725</td>
+<td>0.000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16193</td>
+<td>GOOG</td>
+<td>2023-09-21</td>
+<td>132.389999</td>
+<td>133.190002</td>
+<td>131.089996</td>
+<td>131.360001</td>
+<td>22042700</td>
+<td>131.360001</td>
+<td>-0.002879</td>
+<td>0.000000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
