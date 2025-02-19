@@ -18,7 +18,7 @@ def augment_stochastic_oscillator(
     low_column: str,
     close_column: str,
     k_periods: Union[int, Tuple[int, int], List[int]] = 14,
-    d_periods: int = 3,
+    d_periods: Union[int, List[int]] = 3,  # Updated to support list
     reduce_memory: bool = False,
     engine: str = 'pandas'
 ) -> pd.DataFrame:
@@ -162,12 +162,19 @@ def augment_stochastic_oscillator(
     
     data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
     
+    # Handle k_periods
     if isinstance(k_periods, int):
-        k_periods = [k_periods]  # Convert to a list with a single value
+        k_periods = [k_periods]
     elif isinstance(k_periods, tuple):
         k_periods = list(range(k_periods[0], k_periods[1] + 1))
     elif not isinstance(k_periods, list):
         raise TypeError(f"Invalid k_periods specification: type: {type(k_periods)}. Please use int, tuple, or list.")
+    
+    # Handle d_periods
+    if isinstance(d_periods, int):
+        d_periods = [d_periods]  # Convert to list for consistency
+    elif not isinstance(d_periods, list):
+        raise TypeError(f"Invalid d_periods specification: type: {type(d_periods)}. Please use int or list.")
     
     if reduce_memory:
         data = reduce_memory_usage(data)
@@ -197,7 +204,7 @@ def _augment_stochastic_oscillator_pandas(
     low_column: str,
     close_column: str,
     k_periods: List[int],
-    d_periods: int
+    d_periods: List[int]  # Updated to List[int]
 ) -> pd.DataFrame:
     """Pandas implementation of Stochastic Oscillator calculation."""
     
@@ -212,17 +219,25 @@ def _augment_stochastic_oscillator_pandas(
     
     for k_period in k_periods:
         if group_names:
-            # Grouped calculation
+            # Grouped calculation for %K
             lowest_low = df.groupby(group_names)[low_column].rolling(window=k_period, min_periods=1).min().reset_index(level=0, drop=True)
             highest_high = df.groupby(group_names)[high_column].rolling(window=k_period, min_periods=1).max().reset_index(level=0, drop=True)
             df[f'{col}_stoch_k_{k_period}'] = 100 * (df[col] - lowest_low) / (highest_high - lowest_low)
-            df[f'{col}_stoch_d_{k_period}_{d_periods}'] = df.groupby(group_names)[f'{col}_stoch_k_{k_period}'].rolling(window=d_periods, min_periods=1).mean().reset_index(level=0, drop=True)
+            # Calculate %D for each d_period
+            for d_period in d_periods:
+                df[f'{col}_stoch_d_{k_period}_{d_period}'] = df.groupby(group_names)[f'{col}_stoch_k_{k_period}'].rolling(
+                    window=d_period, min_periods=1
+                ).mean().reset_index(level=0, drop=True)
         else:
-            # Non-grouped calculation
+            # Non-grouped calculation for %K
             lowest_low = df[low_column].rolling(window=k_period, min_periods=1).min()
             highest_high = df[high_column].rolling(window=k_period, min_periods=1).max()
             df[f'{col}_stoch_k_{k_period}'] = 100 * (df[col] - lowest_low) / (highest_high - lowest_low)
-            df[f'{col}_stoch_d_{k_period}_{d_periods}'] = df[f'{col}_stoch_k_{k_period}'].rolling(window=d_periods, min_periods=1).mean()
+            # Calculate %D for each d_period
+            for d_period in d_periods:
+                df[f'{col}_stoch_d_{k_period}_{d_period}'] = df[f'{col}_stoch_k_{k_period}'].rolling(
+                    window=d_period, min_periods=1
+                ).mean()
     
     return df
 
@@ -234,7 +249,7 @@ def _augment_stochastic_oscillator_polars(
     low_column: str,
     close_column: str,
     k_periods: List[int],
-    d_periods: int
+    d_periods: List[int]  # Updated to List[int]
 ) -> pd.DataFrame:
     """Polars implementation of Stochastic Oscillator calculation."""
     
@@ -251,7 +266,6 @@ def _augment_stochastic_oscillator_polars(
     col = close_column
     
     if group_names:
-        # Grouped calculation with Polars
         # Step 1: Calculate all %K columns
         k_exprs = []
         for k_period in k_periods:
@@ -261,14 +275,14 @@ def _augment_stochastic_oscillator_polars(
             k_exprs.append(k_expr)
         df = df.with_columns(k_exprs)
         
-        # Step 2: Calculate all %D columns based on %K
+        # Step 2: Calculate all %D columns for each %K and d_period
         d_exprs = []
         for k_period in k_periods:
-            d_expr = pl.col(f'{col}_stoch_k_{k_period}').rolling_mean(window_size=d_periods).over(group_names).alias(f'{col}_stoch_d_{k_period}_{d_periods}')
-            d_exprs.append(d_expr)
+            for d_period in d_periods:
+                d_expr = pl.col(f'{col}_stoch_k_{k_period}').rolling_mean(window_size=d_period).over(group_names).alias(f'{col}_stoch_d_{k_period}_{d_period}')
+                d_exprs.append(d_expr)
         df = df.with_columns(d_exprs)
     else:
-        # Non-grouped calculation with Polars
         # Step 1: Calculate all %K columns
         k_exprs = []
         for k_period in k_periods:
@@ -278,11 +292,12 @@ def _augment_stochastic_oscillator_polars(
             k_exprs.append(k_expr)
         df = df.with_columns(k_exprs)
         
-        # Step 2: Calculate all %D columns based on %K
+        # Step 2: Calculate all %D columns for each %K and d_period
         d_exprs = []
         for k_period in k_periods:
-            d_expr = pl.col(f'{col}_stoch_k_{k_period}').rolling_mean(window_size=d_periods).alias(f'{col}_stoch_d_{k_period}_{d_periods}')
-            d_exprs.append(d_expr)
+            for d_period in d_periods:
+                d_expr = pl.col(f'{col}_stoch_k_{k_period}').rolling_mean(window_size=d_period).alias(f'{col}_stoch_d_{k_period}_{d_period}')
+                d_exprs.append(d_expr)
         df = df.with_columns(d_exprs)
     
     return df.to_pandas()
