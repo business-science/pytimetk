@@ -58,7 +58,7 @@ pip install pytimetk
 Alternatively you can install the development version:
 
 ```bash
-pip install git+https://github.com/business-science/pytimetk.git
+pip install --upgrade --force-reinstall git+https://github.com/business-science/pytimetk.git
 ```
 
 # Quickstart:
