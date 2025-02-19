@@ -2,17 +2,17 @@ import pandas as pd
 import polars as pl
 import numpy as np
 from typing import Union, List, Tuple, Optional
+from joblib import Parallel, delayed
+
+try:
+    from hmmlearn.hmm import GaussianHMM
+except ImportError:
+    GaussianHMM = None
 
 import pandas_flavor as pf
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
-
-# Conditional import for hmmlearn
-try:
-    from hmmlearn.hmm import GaussianHMM
-except ImportError:
-    GaussianHMM = None
 
 
 @pf.register_dataframe_method
@@ -23,6 +23,9 @@ def augment_regime_detection(
     window: Union[int, Tuple[int, int], List[int]] = 252,
     n_regimes: int = 2,
     method: str = 'hmm',
+    step_size: int = 1,
+    n_iter: int = 100,
+    n_jobs: int = -1,
     reduce_memory: bool = False,
     engine: str = 'pandas'
 ) -> pd.DataFrame:
@@ -37,13 +40,19 @@ def augment_regime_detection(
     close_column : str
         Column name with closing prices for regime detection.
     window : Union[int, Tuple[int, int], List[int]], optional
-        Size of the rolling window to fit the regime detection model. Default is 252 (approx. 1 year of trading days).
+        Size of the rolling window to fit the regime detection model. Default is 252.
     n_regimes : int, optional
         Number of regimes to detect (e.g., 2 for bull/bear). Default is 2.
     method : str, optional
-        Method for regime detection. Currently supports 'hmm' (Hidden Markov Model). Default is 'hmm'.
+        Method for regime detection. Currently supports 'hmm'. Default is 'hmm'.
+    step_size : int, optional
+        Step size between HMM fits (e.g., 10 fits every 10 rows). Default is 1.
+    n_iter : int, optional
+        Number of iterations for HMM fitting. Default is 100.
+    n_jobs : int, optional
+        Number of parallel jobs for group processing (-1 uses all cores). Default is -1.
     reduce_memory : bool, optional
-        If True, reduces memory usage before calculation. Default is False.
+        If True, reduces memory usage. Default is False.
     engine : str, optional
         Computation engine: 'pandas' or 'polars'. Default is 'pandas'.
     
@@ -55,11 +64,9 @@ def augment_regime_detection(
     
     Notes
     -----
-    
     - Uses Hidden Markov Model (HMM) to identify latent regimes based on log returns.
     - Regimes reflect distinct statistical states (e.g., high/low volatility, trending).
-    - Requires 'hmmlearn' package for HMM method. Install with `pip install hmmlearn` if not present.
-    
+    - Requires 'hmmlearn' package. Install with `pip install hmmlearn`.    
     
     Examples
     --------
@@ -138,7 +145,12 @@ def augment_regime_detection(
             "Please install it using: `pip install hmmlearn`"
         )
     
-    # Run common checks
+    if method.lower() == 'hmm' and GaussianHMM is None:
+        raise ImportError(
+            "The 'hmm' method requires the 'hmmlearn' package, which is not installed. "
+            "Please install it using: `pip install hmmlearn`"
+        )
+    
     check_dataframe_or_groupby(data)
     check_value_column(data, close_column)
     check_date_column(data, date_column)
@@ -147,6 +159,8 @@ def augment_regime_detection(
         raise ValueError("n_regimes must be at least 2.")
     if method.lower() != 'hmm':
         raise ValueError("Only 'hmm' method is currently supported.")
+    if step_size < 1:
+        raise ValueError("step_size must be at least 1.")
     
     data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
     
@@ -163,9 +177,9 @@ def augment_regime_detection(
         data = reduce_memory_usage(data)
     
     if engine == 'pandas':
-        ret = _augment_regime_detection_pandas(data, date_column, close_column, windows, n_regimes)
+        ret = _augment_regime_detection_pandas(data, date_column, close_column, windows, n_regimes, step_size, n_iter, n_jobs)
     elif engine == 'polars':
-        ret = _augment_regime_detection_polars(data, date_column, close_column, windows, n_regimes)
+        ret = _augment_regime_detection_polars(data, date_column, close_column, windows, n_regimes, step_size, n_iter, n_jobs)
         ret.index = idx_unsorted
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
@@ -178,15 +192,18 @@ def augment_regime_detection(
     return ret
 
 
-# Monkey patch to pandas groupby objects
 pd.core.groupby.generic.DataFrameGroupBy.augment_regime_detection = augment_regime_detection
+
 
 def _augment_regime_detection_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
     close_column: str,
     windows: List[int],
-    n_regimes: int
+    n_regimes: int,
+    step_size: int,
+    n_iter: int,
+    n_jobs: int
 ) -> pd.DataFrame:
     """Pandas implementation of regime detection using HMM."""
     
@@ -199,26 +216,26 @@ def _augment_regime_detection_pandas(
     
     col = close_column
     
-    # Calculate log returns, ensuring finite values
     df['log_returns'] = np.log(df[col] / df[col].shift(1))
-    df['log_returns'] = df['log_returns'].replace([np.inf, -np.inf], np.nan)  # Replace inf with NaN
+    df['log_returns'] = df['log_returns'].replace([np.inf, -np.inf], np.nan)
     
-    def detect_regimes(series, window, n_regimes):
-        """Fit HMM and predict regimes over a rolling window."""
+    def detect_regimes(series, window, n_regimes, step_size, n_iter):
         n = len(series)
-        regimes = np.full(n, np.nan, dtype=float)  # Use float to allow NaN
-        
-        for i in range(window - 1, n):
-            window_data = series[i - window + 1:i + 1].dropna()
-            if len(window_data) < max(window // 2, n_regimes * 10):  # Require enough points
+        regimes = np.full(n, np.nan, dtype=float)
+        for i in range(window - 1, n, step_size):
+            window_data = series[max(0, i - window + 1):i + 1].dropna()
+            if len(window_data) < max(window // 2, n_regimes * 10):
                 continue
             window_data = window_data.values.reshape(-1, 1)
-            if not np.all(np.isfinite(window_data)):  # Check for inf/NaN
+            if not np.all(np.isfinite(window_data)):
                 continue
             try:
-                model = GaussianHMM(n_components=n_regimes, covariance_type="full", n_iter=100)
+                model = GaussianHMM(n_components=n_regimes, covariance_type="diag", n_iter=n_iter)
                 model.fit(window_data)
-                regimes[i] = model.predict(window_data)[-1]  # Last point’s regime
+                predicted = model.predict(window_data)
+                # Fill regimes from i-step_size+1 to i with the last predicted value
+                start_idx = max(0, i - step_size + 1)
+                regimes[start_idx:i + 1] = predicted[-step_size if i > window - 1 else -start_idx:]
             except ValueError as e:
                 print(f"Warning: HMM fit failed at index {i} with error: {e}")
                 continue
@@ -226,13 +243,14 @@ def _augment_regime_detection_pandas(
     
     for window in windows:
         if group_names:
-            df[f'{col}_regime_{window}'] = (
-                df.groupby(group_names)['log_returns']
-                .apply(lambda x: detect_regimes(x, window, n_regimes))
-                .reset_index(level=0, drop=True)
+            # Parallelize across groups
+            results = Parallel(n_jobs=n_jobs)(
+                delayed(detect_regimes)(group['log_returns'], window, n_regimes, step_size, n_iter)
+                for _, group in df.groupby(group_names)
             )
+            df[f'{col}_regime_{window}'] = pd.concat(results).reindex(df.index)
         else:
-            df[f'{col}_regime_{window}'] = detect_regimes(df['log_returns'], window, n_regimes)
+            df[f'{col}_regime_{window}'] = detect_regimes(df['log_returns'], window, n_regimes, step_size, n_iter)
     
     df = df.drop(columns=['log_returns'])
     return df
@@ -243,7 +261,10 @@ def _augment_regime_detection_polars(
     date_column: str,
     close_column: str,
     windows: List[int],
-    n_regimes: int
+    n_regimes: int,
+    step_size: int,
+    n_iter: int,
+    n_jobs: int
 ) -> pd.DataFrame:
     """Polars implementation of regime detection using HMM (via pandas)."""
     
@@ -262,20 +283,22 @@ def _augment_regime_detection_polars(
     df['log_returns'] = np.log(df[col] / df[col].shift(1))
     df['log_returns'] = df['log_returns'].replace([np.inf, -np.inf], np.nan)
     
-    def detect_regimes(series, window, n_regimes):
+    def detect_regimes(series, window, n_regimes, step_size, n_iter):
         n = len(series)
         regimes = np.full(n, np.nan, dtype=float)
-        for i in range(window - 1, n):
-            window_data = series[i - window + 1:i + 1].dropna()
+        for i in range(window - 1, n, step_size):
+            window_data = series[max(0, i - window + 1):i + 1].dropna()
             if len(window_data) < max(window // 2, n_regimes * 10):
                 continue
             window_data = window_data.values.reshape(-1, 1)
             if not np.all(np.isfinite(window_data)):
                 continue
             try:
-                model = GaussianHMM(n_components=n_regimes, covariance_type="full", n_iter=100)
+                model = GaussianHMM(n_components=n_regimes, covariance_type="diag", n_iter=n_iter)
                 model.fit(window_data)
-                regimes[i] = model.predict(window_data)[-1]
+                predicted = model.predict(window_data)
+                start_idx = max(0, i - step_size + 1)
+                regimes[start_idx:i + 1] = predicted[-step_size if i > window - 1 else -start_idx:]
             except ValueError as e:
                 print(f"Warning: HMM fit failed at index {i} with error: {e}")
                 continue
@@ -283,13 +306,13 @@ def _augment_regime_detection_polars(
     
     for window in windows:
         if group_names:
-            df[f'{col}_regime_{window}'] = (
-                df.groupby(group_names)['log_returns']
-                .apply(lambda x: detect_regimes(x, window, n_regimes))
-                .reset_index(level=0, drop=True)
+            results = Parallel(n_jobs=n_jobs)(
+                delayed(detect_regimes)(group['log_returns'], window, n_regimes, step_size, n_iter)
+                for _, group in df.groupby(group_names)
             )
+            df[f'{col}_regime_{window}'] = pd.concat(results).reindex(df.index)
         else:
-            df[f'{col}_regime_{window}'] = detect_regimes(df['log_returns'], window, n_regimes)
+            df[f'{col}_regime_{window}'] = detect_regimes(df['log_returns'], window, n_regimes, step_size, n_iter)
     
     df = df.drop(columns=['log_returns'])
     return df
