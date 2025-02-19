@@ -11,3 +11,4 @@ from .rolling_risk_metrics import *
 from .fip_momentum import *
 from .stochastic_oscillator import *
 from .adx import *
+from .hurst_exponent import *

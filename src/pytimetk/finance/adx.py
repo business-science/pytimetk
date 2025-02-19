@@ -68,7 +68,10 @@ def augment_adx(
     - The -DM is calculated as follows:
         - If Previous Low - Low > High - Previous High, then -DM = max(Previous Low - Low, 0)
         - Otherwise, -DM = 0
-    Reference: https://www.investopedia.com/terms/a/adx.asp
+    
+    References: 
+    
+    - https://www.investopedia.com/terms/a/adx.asp
         
     Examples
     --------

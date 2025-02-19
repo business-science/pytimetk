@@ -179,6 +179,7 @@ quartodoc:
         - augment_roc
         - augment_adx
         - augment_stochastic_oscillator
+        - augment_hurst_exponent
         - augment_qsmomentum
         - augment_fip_momentum
     - title: 💹 Finance Module (Volatility Indicators)

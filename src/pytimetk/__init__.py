@@ -73,6 +73,7 @@ from .finance import (
     augment_fip_momentum,
     augment_stochastic_oscillator,
     augment_adx,
+    augment_hurst_exponent,
 )
 from .datasets import (
     load_dataset, 

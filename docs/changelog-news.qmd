@@ -15,6 +15,8 @@ number-sections: false
 - `augment_fip_momentum()`: Calculate the "Frog In The Pan" (FIP) momentum metric over one or more rolling windows using either pandas or polars engine, augmenting the DataFrame with FIP columns.
 - `augment_stochastic_oscillator`: The `augment_stochastic_oscillator()` function calculates the Stochastic Oscillator (%K and %D) for a financial instrument using either pandas or polars engine, and returns the augmented DataFrame.
 - `augment_adx()`: Calculate Average Directional Index (ADX), +DI, and -DI for a financial time series to determine strength of trend.
+- `augment_hurst_exponent()`: Calculate the Hurst Exponent on a rolling window for a financial time series.
+
 
 ## Bug Fixes and Speed Improvements
 

@@ -77,6 +77,7 @@ def augment_stochastic_oscillator(
     - %D = Moving average of %K over d_periods
     
     References:
+    
     - https://www.investopedia.com/terms/s/stochasticoscillator.asp
     
     Examples
