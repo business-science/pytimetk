@@ -107,6 +107,7 @@ Volatility indicators for financial time series data.
 | [augment_atr](augment_atr.qmd#pytimetk.augment_atr) | The `augment_atr` function is used to calculate Average True Range (ATR) and  |
 | [augment_drawdown](augment_drawdown.qmd#pytimetk.augment_drawdown) | The augment_drawdown function calculates the drawdown metrics for a financial time series |
 | [augment_rolling_risk_metrics](augment_rolling_risk_metrics.qmd#pytimetk.augment_rolling_risk_metrics) | The augment_rolling_risk_metrics function calculates rolling risk-adjusted performance |
+| [augment_ewma_volatility](augment_ewma_volatility.qmd#pytimetk.augment_ewma_volatility) | Calculate Exponentially Weighted Moving Average (EWMA) volatility for a financial time series. |
 
 ## 🐼 Time Series for Pandas Series
 
