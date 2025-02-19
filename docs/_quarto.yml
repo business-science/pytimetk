@@ -190,6 +190,7 @@ quartodoc:
         - augment_atr
         - augment_drawdown
         - augment_rolling_risk_metrics
+        - augment_ewma_volatility
     - title: 🐼 Time Series for Pandas Series
       desc: Time series functions that generate / manipulate Pandas Series.
       package: pytimetk

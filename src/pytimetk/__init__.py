@@ -74,6 +74,7 @@ from .finance import (
     augment_stochastic_oscillator,
     augment_adx,
     augment_hurst_exponent,
+    augment_ewma_volatility,
 )
 from .datasets import (
     load_dataset, 

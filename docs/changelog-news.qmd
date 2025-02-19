@@ -16,6 +16,7 @@ number-sections: false
 - `augment_stochastic_oscillator`: The `augment_stochastic_oscillator()` function calculates the Stochastic Oscillator (%K and %D) for a financial instrument using either pandas or polars engine, and returns the augmented DataFrame.
 - `augment_adx()`: Calculate Average Directional Index (ADX), +DI, and -DI for a financial time series to determine strength of trend.
 - `augment_hurst_exponent()`: Calculate the Hurst Exponent on a rolling window for a financial time series.
+- `augment_ewma_volatility()`: 
 
 
 ## Bug Fixes and Speed Improvements
