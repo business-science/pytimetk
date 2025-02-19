@@ -10,4 +10,5 @@
     "notebook.output.scrolling": true,
     "jupyter.interactiveWindow.textEditor.executeSelection": true,
     "jupyter.notebookFileRoot": "${workspaceFolder}",
+    "dbcode.connections": [],
 }

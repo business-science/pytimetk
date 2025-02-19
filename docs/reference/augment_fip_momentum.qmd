@@ -36,7 +36,7 @@ FIP = Total Return * (percent of negative returns - percent of positive returns)
 
 ## Examples {.doc-section .doc-section-examples}
 
-```python
+```{python}
 import pandas as pd
 import pytimetk as tk
 
@@ -51,8 +51,10 @@ fip_df = (
         window=252
     )
 )
-print(fip_df.head())
+fip_df.tail()
+```
 
+```{python}    
 # Multiple windows
 fip_df = (
     df.groupby('symbol')
@@ -63,5 +65,5 @@ fip_df = (
         engine='polars'
     )
 )
-print(fip_df.head())
+fip_df.tail()
 ```
