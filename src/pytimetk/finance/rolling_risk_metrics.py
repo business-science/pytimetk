@@ -14,7 +14,7 @@ def augment_rolling_risk_metrics(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
     close_column: str,
-    window: int = 252,
+    window: Union[int, List[int]] = 252,
     risk_free_rate: float = 0.0,
     benchmark_column: Optional[str] = None,
     annualization_factor: int = 252,
@@ -110,7 +110,10 @@ def augment_rolling_risk_metrics(
     ```
     '''
     
-    # Run common checks
+    # Convert single int to list for consistency
+    windows = [window] if isinstance(window, int) else window
+    
+    # Existing checks...
     check_dataframe_or_groupby(data)
     check_value_column(data, close_column)
     check_date_column(data, date_column)
@@ -124,12 +127,12 @@ def augment_rolling_risk_metrics(
     
     if engine == 'pandas':
         ret = _augment_rolling_risk_metrics_pandas(
-            data, date_column, close_column, window, risk_free_rate,
+            data, date_column, close_column, windows, risk_free_rate,
             benchmark_column, annualization_factor
         )
     elif engine == 'polars':
         ret = _augment_rolling_risk_metrics_polars(
-            data, date_column, close_column, window, risk_free_rate,
+            data, date_column, close_column, windows, risk_free_rate,
             benchmark_column, annualization_factor
         )
         ret.index = idx_unsorted
@@ -147,18 +150,17 @@ def augment_rolling_risk_metrics(
 pd.core.groupby.generic.DataFrameGroupBy.augment_rolling_risk_metrics = augment_rolling_risk_metrics
 
 
-
 def _augment_rolling_risk_metrics_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
     close_column: str,
-    window: int,
+    window: Union[int, List[int]],  # Updated to accept int or list
     risk_free_rate: float,
     benchmark_column: Optional[str],
     annualization_factor: int
 ) -> pd.DataFrame:
-    """Pandas implementation of rolling risk metrics calculation."""
-    
+    """Pandas implementation of rolling risk metrics calculation, Supports multiple window sizes.
+    """
     if isinstance(data, pd.DataFrame):
         df = data.copy()
         group_names = None
@@ -173,77 +175,91 @@ def _augment_rolling_risk_metrics_pandas(
     if benchmark_column:
         df[f'{benchmark_column}_returns'] = np.log(df[benchmark_column] / df[benchmark_column].shift(1))
     
-    # Define helper functions for rolling metrics with **kwargs to handle unexpected arguments
-    def roll_downside_std(ser, **kwargs):
-        # Apply rolling window first, then compute std of negative returns within each window
-        return ser.rolling(window, min_periods=window//2).apply(
+    # Convert window to list if single integer
+    windows = [window] if isinstance(window, int) else window
+    
+    # Define helper functions for rolling metrics
+    def roll_downside_std(ser, window_size, **kwargs):
+        return ser.rolling(window_size, min_periods=window_size//2).apply(
             lambda x: np.std(x[x < 0]) if np.any(x < 0) else np.nan, raw=True
         )
     
-    def roll_omega(ser, **kwargs):
-        # Apply rolling window first, then compute omega within each window
-        return ser.rolling(window, min_periods=window//2).apply(
+    def roll_omega(ser, window_size, **kwargs):
+        return ser.rolling(window_size, min_periods=window_size//2).apply(
             lambda x: (
                 np.sum(x[x > 0]) / np.abs(np.sum(x[x < 0]))
                 if np.sum(x[x < 0]) != 0 else np.inf
-            ) if np.sum(~np.isnan(x)) >= window//2 else np.nan,
+            ) if np.sum(~np.isnan(x)) >= window_size//2 else np.nan,
             raw=True
         ).replace([np.inf, -np.inf], np.nan)
     
-    def roll_beta(ser, bench_ser, **kwargs):
-        cov = ser.rolling(window, min_periods=window//2).cov(bench_ser)
-        var = bench_ser.rolling(window, min_periods=window//2).var()
+    def roll_beta(ser, bench_ser, window_size, **kwargs):
+        cov = ser.rolling(window_size, min_periods=window_size//2).cov(bench_ser)
+        var = bench_ser.rolling(window_size, min_periods=window_size//2).var()
         return cov / var.where(var != 0, np.nan)
     
-    # Apply rolling calculations
+    # Apply rolling calculations for each window
     if group_names:
         grouped = df.groupby(group_names)
         
-        # Precompute rolling metrics for all groups
-        mean_ret = grouped[f'{col}_returns'].rolling(window, min_periods=window//2).mean()
-        std_ret = grouped[f'{col}_returns'].rolling(window, min_periods=window//2).std()
-        downside_std = grouped[f'{col}_returns'].apply(roll_downside_std, raw=False)
-        omega = grouped[f'{col}_returns'].apply(roll_omega, raw=False)
-        skew = grouped[f'{col}_returns'].rolling(window, min_periods=window//2).apply(lambda x: stats.skew(x, nan_policy='omit'), raw=True)
-        kurt = grouped[f'{col}_returns'].rolling(window, min_periods=window//2).apply(lambda x: stats.kurtosis(x, nan_policy='omit'), raw=True)
-        
-        # Assign metrics directly using the grouped rolling results
-        # Reset index to align with original df
-        df[f'{col}_sharpe_ratio_{window}'] = ((mean_ret - risk_free_rate) / std_ret * np.sqrt(annualization_factor)).reset_index(level=0, drop=True)
-        df[f'{col}_sortino_ratio_{window}'] = ((mean_ret - risk_free_rate) / downside_std * np.sqrt(annualization_factor)).reset_index(level=0, drop=True)
-        df[f'{col}_volatility_annualized_{window}'] = (std_ret * np.sqrt(annualization_factor)).reset_index(level=0, drop=True)
-        df[f'{col}_omega_ratio_{window}'] = omega.reset_index(level=0, drop=True)
-        df[f'{col}_skewness_{window}'] = skew.reset_index(level=0, drop=True)
-        df[f'{col}_kurtosis_{window}'] = kurt.reset_index(level=0, drop=True)
-        
-        if benchmark_column:
-            bench_mean = grouped[f'{benchmark_column}_returns'].rolling(window, min_periods=window//2).mean()
-            beta = grouped[f'{col}_returns'].apply(lambda x: roll_beta(x, df.loc[x.index, f'{benchmark_column}_returns']), raw=False)
-            tracking_error = grouped[f'{col}_returns'].apply(lambda x: (x - df.loc[x.index, f'{benchmark_column}_returns']).rolling(window, min_periods=window//2).std(), raw=False)
+        for w in windows:
+            # Precompute rolling metrics for all groups
+            mean_ret = grouped[f'{col}_returns'].rolling(w, min_periods=w//2).mean()
+            std_ret = grouped[f'{col}_returns'].rolling(w, min_periods=w//2).std()
+            downside_std = grouped[f'{col}_returns'].apply(roll_downside_std, raw=False, window_size=w)
+            omega = grouped[f'{col}_returns'].apply(roll_omega, raw=False, window_size=w)
+            skew = grouped[f'{col}_returns'].rolling(w, min_periods=w//2).apply(
+                lambda x: stats.skew(x, nan_policy='omit'), raw=True
+            )
+            kurt = grouped[f'{col}_returns'].rolling(w, min_periods=w//2).apply(
+                lambda x: stats.kurtosis(x, nan_policy='omit'), raw=True
+            )
             
-            df[f'{col}_treynor_ratio_{window}'] = ((mean_ret - risk_free_rate) / beta * np.sqrt(annualization_factor)).reset_index(level=0, drop=True)
-            df[f'{col}_information_ratio_{window}'] = ((mean_ret - bench_mean) / tracking_error).reset_index(level=0, drop=True)
+            # Assign metrics
+            df[f'{col}_sharpe_ratio_{w}'] = ((mean_ret - risk_free_rate) / std_ret * np.sqrt(annualization_factor)).reset_index(level=0, drop=True)
+            df[f'{col}_sortino_ratio_{w}'] = ((mean_ret - risk_free_rate) / downside_std * np.sqrt(annualization_factor)).reset_index(level=0, drop=True)
+            df[f'{col}_volatility_annualized_{w}'] = (std_ret * np.sqrt(annualization_factor)).reset_index(level=0, drop=True)
+            df[f'{col}_omega_ratio_{w}'] = omega.reset_index(level=0, drop=True)
+            df[f'{col}_skewness_{w}'] = skew.reset_index(level=0, drop=True)
+            df[f'{col}_kurtosis_{w}'] = kurt.reset_index(level=0, drop=True)
+            
+            if benchmark_column:
+                bench_mean = grouped[f'{benchmark_column}_returns'].rolling(w, min_periods=w//2).mean()
+                beta = grouped[f'{col}_returns'].apply(
+                    lambda x: roll_beta(x, df.loc[x.index, f'{benchmark_column}_returns'], window_size=w), raw=False
+                )
+                tracking_error = grouped[f'{col}_returns'].apply(
+                    lambda x: (x - df.loc[x.index, f'{benchmark_column}_returns']).rolling(w, min_periods=w//2).std(), raw=False
+                )
+                
+                df[f'{col}_treynor_ratio_{w}'] = ((mean_ret - risk_free_rate) / beta * np.sqrt(annualization_factor)).reset_index(level=0, drop=True)
+                df[f'{col}_information_ratio_{w}'] = ((mean_ret - bench_mean) / tracking_error).reset_index(level=0, drop=True)
     else:
-        # Base rolling metrics for non-grouped data
-        mean_ret = df[f'{col}_returns'].rolling(window, min_periods=window//2).mean()
-        std_ret = df[f'{col}_returns'].rolling(window, min_periods=window//2).std()
-        downside_std = roll_downside_std(df[f'{col}_returns'])
-        
-        # Assign metrics
-        df[f'{col}_sharpe_ratio_{window}'] = (mean_ret - risk_free_rate) / std_ret * np.sqrt(annualization_factor)
-        df[f'{col}_sortino_ratio_{window}'] = (mean_ret - risk_free_rate) / downside_std * np.sqrt(annualization_factor)
-        df[f'{col}_volatility_annualized_{window}'] = std_ret * np.sqrt(annualization_factor)
-        df[f'{col}_omega_ratio_{window}'] = roll_omega(df[f'{col}_returns'])
-        df[f'{col}_skewness_{window}'] = df[f'{col}_returns'].rolling(window, min_periods=window//2).apply(lambda x: stats.skew(x, nan_policy='omit'), raw=True)
-        df[f'{col}_kurtosis_{window}'] = df[f'{col}_returns'].rolling(window, min_periods=window//2).apply(lambda x: stats.kurtosis(x, nan_policy='omit'), raw=True)
-        
-        if benchmark_column:
-            bench_mean = df[f'{benchmark_column}_returns'].rolling(window, min_periods=window//2).mean()
-            beta = roll_beta(df[f'{col}_returns'], df[f'{benchmark_column}_returns'])
-            tracking_error = (df[f'{col}_returns'] - df[f'{benchmark_column}_returns']).rolling(window, min_periods=window//2).std()
+        for w in windows:
+            # Base rolling metrics for non-grouped data
+            mean_ret = df[f'{col}_returns'].rolling(w, min_periods=w//2).mean()
+            std_ret = df[f'{col}_returns'].rolling(w, min_periods=w//2).std()
+            downside_std = roll_downside_std(df[f'{col}_returns'], window_size=w)
             
-            df[f'{col}_treynor_ratio_{window}'] = (mean_ret - risk_free_rate) / beta * np.sqrt(annualization_factor)
-            df[f'{col}_information_ratio_{window}'] = (mean_ret - bench_mean) / tracking_error
+            # Assign metrics
+            df[f'{col}_sharpe_ratio_{w}'] = (mean_ret - risk_free_rate) / std_ret * np.sqrt(annualization_factor)
+            df[f'{col}_sortino_ratio_{w}'] = (mean_ret - risk_free_rate) / downside_std * np.sqrt(annualization_factor)
+            df[f'{col}_volatility_annualized_{w}'] = std_ret * np.sqrt(annualization_factor)
+            df[f'{col}_omega_ratio_{w}'] = roll_omega(df[f'{col}_returns'], window_size=w)
+            df[f'{col}_skewness_{w}'] = df[f'{col}_returns'].rolling(w, min_periods=w//2).apply(
+                lambda x: stats.skew(x, nan_policy='omit'), raw=True
+            )
+            df[f'{col}_kurtosis_{w}'] = df[f'{col}_returns'].rolling(w, min_periods=w//2).apply(
+                lambda x: stats.kurtosis(x, nan_policy='omit'), raw=True
+            )
+            
+            if benchmark_column:
+                bench_mean = df[f'{benchmark_column}_returns'].rolling(w, min_periods=w//2).mean()
+                beta = roll_beta(df[f'{col}_returns'], df[f'{benchmark_column}_returns'], window_size=w)
+                tracking_error = (df[f'{col}_returns'] - df[f'{benchmark_column}_returns']).rolling(w, min_periods=w//2).std()
+                
+                df[f'{col}_treynor_ratio_{w}'] = (mean_ret - risk_free_rate) / beta * np.sqrt(annualization_factor)
+                df[f'{col}_information_ratio_{w}'] = (mean_ret - bench_mean) / tracking_error
     
     # Drop temporary returns columns
     df.drop(columns=[f'{col}_returns'], inplace=True)
@@ -257,13 +273,11 @@ def _augment_rolling_risk_metrics_polars(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
     close_column: str,
-    window: int,
+    windows: List[int],  # Updated to List[int]
     risk_free_rate: float,
     benchmark_column: Optional[str],
     annualization_factor: int
 ) -> pd.DataFrame:
-    """Optimized Polars implementation of rolling risk metrics calculation with flexible column ordering."""
-    
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         pandas_df = data.obj
         group_names = data.grouper.names
@@ -276,161 +290,51 @@ def _augment_rolling_risk_metrics_polars(
     df = pl.from_pandas(pandas_df)
     col = close_column
     
-    # Calculate returns and precompute masks
+    # Calculate returns and masks
     returns_col = f'{col}_returns'
     df = df.with_columns(
         (pl.col(col).log() - pl.col(col).log().shift(1)).alias(returns_col),
         (pl.col(col).log() - pl.col(col).log().shift(1) > 0).cast(pl.Float64).alias('pos_mask'),
         (pl.col(col).log() - pl.col(col).log().shift(1) < 0).cast(pl.Float64).alias('neg_mask')
     )
-    if benchmark_column:
-        df = df.with_columns(
-            (pl.col(benchmark_column).log() - pl.col(benchmark_column).log().shift(1)).alias(f'{benchmark_column}_returns')
-        )
     
-    # Define rolling metrics as expressions
-    mean_ret = pl.col(returns_col).rolling_mean(window, min_periods=window//2)
-    std_ret = pl.col(returns_col).rolling_std(window, min_periods=window//2)
+    # Compute expressions for all windows
+    exprs = []
+    for w in windows:
+        mean_ret = pl.col(returns_col).rolling_mean(w, min_periods=w//2)
+        std_ret = pl.col(returns_col).rolling_std(w, min_periods=w//2)
+        downside_ret = (pl.col(returns_col) * pl.col('neg_mask'))
+        downside_std = downside_ret.rolling_std(w, min_periods=w//2)
+        
+        exprs.extend([
+            ((mean_ret - risk_free_rate) / std_ret * pl.lit(np.sqrt(annualization_factor))).alias(f'{col}_sharpe_ratio_{w}'),
+            (std_ret * pl.lit(np.sqrt(annualization_factor))).alias(f'{col}_volatility_annualized_{w}'),
+            ((mean_ret - risk_free_rate) / downside_std * pl.lit(np.sqrt(annualization_factor))).alias(f'{col}_sortino_ratio_{w}'),
+            ((pl.col(returns_col) * pl.col('pos_mask')).rolling_sum(w, min_periods=w//2) /
+             (pl.col(returns_col) * pl.col('neg_mask')).rolling_sum(w, min_periods=w//2).abs())
+            .replace([np.inf, -np.inf], np.nan).alias(f'{col}_omega_ratio_{w}'),
+            pl.col(returns_col).rolling_map(
+                lambda x: stats.skew(x, nan_policy='omit') if x.is_not_null().sum() >= w//2 else np.nan,
+                window_size=w, min_periods=w//2
+            ).alias(f'{col}_skewness_{w}'),
+            pl.col(returns_col).rolling_map(
+                lambda x: stats.kurtosis(x, nan_policy='omit') if x.is_not_null().sum() >= w//2 else np.nan,
+                window_size=w, min_periods=w//2
+            ).alias(f'{col}_kurtosis_{w}')
+        ])
     
-    # Optimized expressions
-    exprs = [
-        # Sharpe
-        ((mean_ret - risk_free_rate) / std_ret * pl.lit(np.sqrt(annualization_factor))).alias(f'{col}_sharpe_ratio_{window}'),
-        # Volatility
-        (std_ret * pl.lit(np.sqrt(annualization_factor))).alias(f'{col}_volatility_annualized_{window}'),
-    ]
-    
-    # Downside std: use masked returns
-    downside_ret = (pl.col(returns_col) * pl.col('neg_mask')).alias('downside_ret')
-    downside_std_expr = (
-        downside_ret.rolling_std(window, min_periods=window//2)
-        .alias('downside_std_temp')
-    )
-    
-    # Omega: use masked sums
-    pos_sum = (pl.col(returns_col) * pl.col('pos_mask')).rolling_sum(window, min_periods=window//2)
-    neg_sum = (pl.col(returns_col) * pl.col('neg_mask')).rolling_sum(window, min_periods=window//2).abs()
-    omega_expr = (
-        (pos_sum / neg_sum)
-        .replace([np.inf, -np.inf], np.nan)
-        .alias(f'{col}_omega_ratio_{window}')
-    )
-    
-    # Skew and Kurtosis
-    skew_expr = (
-        pl.col(returns_col)
-        .rolling_map(
-            lambda x: stats.skew(x, nan_policy='omit') if x.is_not_null().sum() >= window//2 else np.nan,
-            window_size=window,
-            min_periods=window//2
-        )
-        .alias(f'{col}_skewness_{window}')
-    )
-    kurt_expr = (
-        pl.col(returns_col)
-        .rolling_map(
-            lambda x: stats.kurtosis(x, nan_policy='omit') if x.is_not_null().sum() >= window//2 else np.nan,
-            window_size=window,
-            min_periods=window//2
-        )
-        .alias(f'{col}_kurtosis_{window}')
-    )
-    
+    # Apply expressions with grouping if needed
     if group_names:
-        # Apply grouped rolling calculations
-        df = df.with_columns(
-            downside_ret  # Precompute downside returns
-        ).with_columns(
-            downside_std_expr.over(group_names),
-            omega_expr.over(group_names),
-            skew_expr.over(group_names),
-            kurt_expr.over(group_names)
-        ).with_columns(
-            [e.over(group_names) for e in exprs] + [
-                ((mean_ret - risk_free_rate) / pl.col('downside_std_temp') * pl.lit(np.sqrt(annualization_factor)))
-                .over(group_names)
-                .alias(f'{col}_sortino_ratio_{window}')
-            ]
-        ).drop('downside_std_temp')
-        
-        if benchmark_column:
-            bench_col = f'{benchmark_column}_returns'
-            beta_expr = (
-                pl.col(returns_col).rolling_cov(pl.col(bench_col), window, min_periods=window//2) /
-                pl.col(bench_col).rolling_var(window, min_periods=window//2)
-            ).alias('beta_temp')
-            tracking_error_expr = (
-                (pl.col(returns_col) - pl.col(bench_col))
-                .rolling_std(window, min_periods=window//2)
-                .alias('tracking_error_temp')
-            )
-            df = df.with_columns(
-                beta_expr.over(group_names),
-                tracking_error_expr.over(group_names)
-            ).with_columns([
-                ((mean_ret - risk_free_rate) / pl.col('beta_temp') * pl.lit(np.sqrt(annualization_factor)))
-                .over(group_names)
-                .alias(f'{col}_treynor_ratio_{window}'),
-                ((mean_ret - pl.col(bench_col).rolling_mean(window, min_periods=window//2)) / 
-                 pl.col('tracking_error_temp'))
-                .over(group_names)
-                .alias(f'{col}_information_ratio_{window}')
-            ]).drop(['beta_temp', 'tracking_error_temp'])
+        df = df.with_columns([e.over(group_names) for e in exprs])
     else:
-        # Non-grouped rolling calculations
-        df = df.with_columns(
-            downside_ret  # Precompute downside returns
-        ).with_columns(
-            downside_std_expr,
-            omega_expr,
-            skew_expr,
-            kurt_expr
-        ).with_columns(
-            exprs + [
-                ((mean_ret - risk_free_rate) / pl.col('downside_std_temp') * pl.lit(np.sqrt(annualization_factor)))
-                .alias(f'{col}_sortino_ratio_{window}')
-            ]
-        ).drop('downside_std_temp')
-        
-        if benchmark_column:
-            bench_col = f'{benchmark_column}_returns'
-            beta_expr = (
-                pl.col(returns_col).rolling_cov(pl.col(bench_col), window, min_periods=window//2) /
-                pl.col(bench_col).rolling_var(window, min_periods=window//2)
-            ).alias('beta_temp')
-            tracking_error_expr = (
-                (pl.col(returns_col) - pl.col(bench_col))
-                .rolling_std(window, min_periods=window//2)
-                .alias('tracking_error_temp')
-            )
-            df = df.with_columns(
-                beta_expr,
-                tracking_error_expr
-            ).with_columns([
-                ((mean_ret - risk_free_rate) / pl.col('beta_temp') * pl.lit(np.sqrt(annualization_factor)))
-                .alias(f'{col}_treynor_ratio_{window}'),
-                ((mean_ret - pl.col(bench_col).rolling_mean(window, min_periods=window//2)) / 
-                 pl.col('tracking_error_temp'))
-                .alias(f'{col}_information_ratio_{window}')
-            ]).drop(['beta_temp', 'tracking_error_temp'])
+        df = df.with_columns(exprs)
     
     # Drop temporary columns
-    drop_cols = [f'{col}_returns', 'pos_mask', 'neg_mask', 'downside_ret']
-    if benchmark_column:
-        drop_cols.append(f'{benchmark_column}_returns')
-    df = df.drop(drop_cols)
+    df = df.drop([returns_col, 'pos_mask', 'neg_mask'])
     
-    # Dynamically build column order: original columns + metrics in Pandas order
-    original_cols = [c for c in pandas_df.columns if c not in drop_cols]  # Keep input columns
-    metric_cols = [
-        f'{close_column}_sharpe_ratio_{window}',
-        f'{close_column}_sortino_ratio_{window}',
-        f'{close_column}_volatility_annualized_{window}',
-        f'{close_column}_omega_ratio_{window}',
-        f'{close_column}_skewness_{window}',
-        f'{close_column}_kurtosis_{window}'
-    ]
-    final_columns = original_cols + [c for c in metric_cols if c in df.columns]
-    df = df.select(final_columns)
+    # Order columns
+    original_cols = [c for c in pandas_df.columns if c not in [returns_col]]
+    metric_cols = [c for c in df.columns if c not in original_cols]
+    df = df.select(original_cols + metric_cols)
     
     return df.to_pandas()
