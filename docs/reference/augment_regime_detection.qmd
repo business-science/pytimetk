@@ -1,0 +1,116 @@
+# augment_regime_detection { #pytimetk.augment_regime_detection }
+
+```python
+augment_regime_detection(
+    data,
+    date_column,
+    close_column,
+    window=252,
+    n_regimes=2,
+    method='hmm',
+    step_size=1,
+    n_iter=100,
+    n_jobs=-1,
+    reduce_memory=False,
+    engine='pandas',
+)
+```
+
+Detect regimes in a financial time series using a specified method (e.g., HMM).
+
+## Parameters {.doc-section .doc-section-parameters}
+
+| Name          | Type                                                            | Description                                                                      | Default    |
+|---------------|-----------------------------------------------------------------|----------------------------------------------------------------------------------|------------|
+| data          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | Input pandas DataFrame or GroupBy object with time series data.                  | _required_ |
+| date_column   | str                                                             | Column name containing dates or timestamps.                                      | _required_ |
+| close_column  | str                                                             | Column name with closing prices for regime detection.                            | _required_ |
+| window        | Union\[int, Tuple\[int, int\], List\[int\]\]                    | Size of the rolling window to fit the regime detection model. Default is 252.    | `252`      |
+| n_regimes     | int                                                             | Number of regimes to detect (e.g., 2 for bull/bear). Default is 2.               | `2`        |
+| method        | str                                                             | Method for regime detection. Currently supports 'hmm'. Default is 'hmm'.         | `'hmm'`    |
+| step_size     | int                                                             | Step size between HMM fits (e.g., 10 fits every 10 rows). Default is 1.          | `1`        |
+| n_iter        | int                                                             | Number of iterations for HMM fitting. Default is 100.                            | `100`      |
+| n_jobs        | int                                                             | Number of parallel jobs for group processing (-1 uses all cores). Default is -1. | `-1`       |
+| reduce_memory | bool                                                            | If True, reduces memory usage. Default is False.                                 | `False`    |
+| engine        | str                                                             | Computation engine: 'pandas' or 'polars'. Default is 'pandas'.                   | `'pandas'` |
+
+## Returns {.doc-section .doc-section-returns}
+
+| Name   | Type         | Description                                                                                                       |
+|--------|--------------|-------------------------------------------------------------------------------------------------------------------|
+|        | pd.DataFrame | DataFrame with added columns: - {close_column}_regime_{window}: Integer labels for detected regimes (e.g., 0, 1). |
+
+## Notes {.doc-section .doc-section-notes}
+
+- Uses Hidden Markov Model (HMM) to identify latent regimes based on log returns.
+- Regimes reflect distinct statistical states (e.g., high/low volatility, trending).
+- Requires 'hmmlearn' package. Install with `pip install hmmlearn`.    
+
+## Examples {.doc-section .doc-section-examples}
+
+```python
+import pandas as pd
+import pytimetk as tk
+
+df = tk.load_dataset('stocks_daily', parse_dates=['date'])
+
+# Example 1 - Single stock regime detection with pandas engine
+# Requires hmmlearn: pip install hmmlearn
+regime_df = (
+    df.query("symbol == 'AAPL'")
+    .augment_regime_detection(
+        date_column='date',
+        close_column='close',
+        window=252,
+        n_regimes=2
+    )
+)
+regime_df.head().glimpse()
+```
+
+```python
+# Example 2 - Multiple stocks with groupby using pandas engine
+# Requires hmmlearn: pip install hmmlearn
+regime_df = (
+    df.groupby('symbol')
+    .augment_regime_detection(
+        date_column='date',
+        close_column='close',
+        window=[252, 504],  # One year and two years
+        n_regimes=3
+    )
+)
+regime_df.groupby('symbol').tail(1).glimpse()
+```
+
+```python
+# Example 3 - Single stock regime detection with polars engine
+# Requires hmmlearn: pip install hmmlearn
+regime_df = (
+    df.query("symbol == 'AAPL'")
+    .augment_regime_detection(
+        date_column='date',
+        close_column='close',
+        window=252,
+        n_regimes=2,
+        engine='polars'
+    )
+)
+regime_df.glimpse()
+```
+
+```python
+# Example 4 - Multiple stocks with groupby using polars engine
+# Requires hmmlearn: pip install hmmlearn
+regime_df = (
+    df.groupby('symbol')
+    .augment_regime_detection(
+        date_column='date',
+        close_column='close',
+        window=504,
+        n_regimes=3,
+        engine='polars'
+    )
+)
+regime_df.groupby('symbol').tail(1).glimpse()
+```

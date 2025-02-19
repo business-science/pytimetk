@@ -65,7 +65,8 @@ website:
       - reference/augment_drawdown.qmd
       - reference/augment_rolling_risk_metrics.qmd
       - reference/augment_ewma_volatility.qmd
-      section: "\U0001F4B9 Finance Module (Volatility Indicators)"
+      - reference/augment_regime_detection.qmd
+      section: "\U0001F4B9 Finance Module (Volatility, Risk/Reward and Regime Indicators)"
     - contents:
       - reference/make_future_timeseries.qmd
       - reference/make_weekday_sequence.qmd

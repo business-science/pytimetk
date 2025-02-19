@@ -97,9 +97,9 @@ Momentum indicators for financial time series data.
 | [augment_qsmomentum](augment_qsmomentum.qmd#pytimetk.augment_qsmomentum) | The function `augment_qsmomentum` calculates Quant Science Momentum for financial data. |
 | [augment_fip_momentum](augment_fip_momentum.qmd#pytimetk.augment_fip_momentum) | Calculate the "Frog In The Pan" (FIP) momentum metric over one or more rolling windows  |
 
-## 💹 Finance Module (Volatility Indicators)
+## 💹 Finance Module (Volatility, Risk/Reward and Regime Indicators)
 
-Volatility indicators for financial time series data.
+Volatility, Risk-Reward, and Regime indicators for financial time series data.
 
 | | |
 | --- | --- |
@@ -108,6 +108,7 @@ Volatility indicators for financial time series data.
 | [augment_drawdown](augment_drawdown.qmd#pytimetk.augment_drawdown) | The augment_drawdown function calculates the drawdown metrics for a financial time series |
 | [augment_rolling_risk_metrics](augment_rolling_risk_metrics.qmd#pytimetk.augment_rolling_risk_metrics) | The augment_rolling_risk_metrics function calculates rolling risk-adjusted performance |
 | [augment_ewma_volatility](augment_ewma_volatility.qmd#pytimetk.augment_ewma_volatility) | Calculate Exponentially Weighted Moving Average (EWMA) volatility for a financial time series. |
+| [augment_regime_detection](augment_regime_detection.qmd#pytimetk.augment_regime_detection) | Detect regimes in a financial time series using a specified method (e.g., HMM). |
 
 ## 🐼 Time Series for Pandas Series
 
