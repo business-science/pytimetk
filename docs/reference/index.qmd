@@ -93,6 +93,7 @@ Momentum indicators for financial time series data.
 | [augment_roc](augment_roc.qmd#pytimetk.augment_roc) | Adds rate of change (percentage change) to a Pandas DataFrame or DataFrameGroupBy object. |
 | [augment_adx](augment_adx.qmd#pytimetk.augment_adx) | Calculate Average Directional Index (ADX), +DI, and -DI for a financial time series to determine strength of trend. |
 | [augment_stochastic_oscillator](augment_stochastic_oscillator.qmd#pytimetk.augment_stochastic_oscillator) | The `augment_stochastic_oscillator` function calculates the Stochastic Oscillator (%K and %D) |
+| [augment_hurst_exponent](augment_hurst_exponent.qmd#pytimetk.augment_hurst_exponent) | Calculate the Hurst Exponent on a rolling window for a financial time series. Used for detecting trends and mean-reversion. |
 | [augment_qsmomentum](augment_qsmomentum.qmd#pytimetk.augment_qsmomentum) | The function `augment_qsmomentum` calculates Quant Science Momentum for financial data. |
 | [augment_fip_momentum](augment_fip_momentum.qmd#pytimetk.augment_fip_momentum) | Calculate the "Frog In The Pan" (FIP) momentum metric over one or more rolling windows  |
 

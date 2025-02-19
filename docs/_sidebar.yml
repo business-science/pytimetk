@@ -55,6 +55,7 @@ website:
       - reference/augment_roc.qmd
       - reference/augment_adx.qmd
       - reference/augment_stochastic_oscillator.qmd
+      - reference/augment_hurst_exponent.qmd
       - reference/augment_qsmomentum.qmd
       - reference/augment_fip_momentum.qmd
       section: "\U0001F4B9 Finance Module (Momentum Indicators)"

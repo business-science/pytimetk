@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>pytimetk – index</title>
+<title>pytimetk – augment_hurst_exponent</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -112,7 +146,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reference/index.html">📄 API Reference</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">augment_hurst_exponent</li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -274,7 +308,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/index.html" class="sidebar-item-text sidebar-link active">
+  <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📄 API Reference</span></a>
   </div>
 </li>
@@ -332,434 +366,245 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#function-reference" id="toc-function-reference" class="nav-link active" data-scroll-target="#function-reference">Function reference</a>
-  <ul class="collapse">
-  <li><a href="#data-visualization" id="toc-data-visualization" class="nav-link" data-scroll-target="#data-visualization">🚀 Data Visualization</a></li>
-  <li><a href="#wrangling-pandas-time-series-dataframes" id="toc-wrangling-pandas-time-series-dataframes" class="nav-link" data-scroll-target="#wrangling-pandas-time-series-dataframes">🔥 Wrangling Pandas Time Series DataFrames</a></li>
-  <li><a href="#anomaly-detection" id="toc-anomaly-detection" class="nav-link" data-scroll-target="#anomaly-detection">🔍 Anomaly Detection</a></li>
-  <li><a href="#correlation-funnel" id="toc-correlation-funnel" class="nav-link" data-scroll-target="#correlation-funnel">🌪️ Correlation Funnel</a></li>
-  <li><a href="#feature-engineereing" id="toc-feature-engineereing" class="nav-link" data-scroll-target="#feature-engineereing">🏗️ Feature Engineereing</a></li>
-  <li><a href="#ts-features" id="toc-ts-features" class="nav-link" data-scroll-target="#ts-features">📎 TS Features</a></li>
-  <li><a href="#time-series-cross-validation-tscv" id="toc-time-series-cross-validation-tscv" class="nav-link" data-scroll-target="#time-series-cross-validation-tscv">📈 Time Series Cross Validation (TSCV)</a></li>
-  <li><a href="#finance-module-momentum-indicators" id="toc-finance-module-momentum-indicators" class="nav-link" data-scroll-target="#finance-module-momentum-indicators">💹 Finance Module (Momentum Indicators)</a></li>
-  <li><a href="#finance-module-volatility-indicators" id="toc-finance-module-volatility-indicators" class="nav-link" data-scroll-target="#finance-module-volatility-indicators">💹 Finance Module (Volatility Indicators)</a></li>
-  <li><a href="#time-series-for-pandas-series" id="toc-time-series-for-pandas-series" class="nav-link" data-scroll-target="#time-series-for-pandas-series">🐼 Time Series for Pandas Series</a></li>
-  <li><a href="#date-utilities" id="toc-date-utilities" class="nav-link" data-scroll-target="#date-utilities">🛠️ Date Utilities</a></li>
-  <li><a href="#visualization-utilities" id="toc-visualization-utilities" class="nav-link" data-scroll-target="#visualization-utilities">🛠️ Visualization Utilities</a></li>
-  <li><a href="#extra-pandas-helpers-that-help-beyond-just-time-series" id="toc-extra-pandas-helpers-that-help-beyond-just-time-series" class="nav-link" data-scroll-target="#extra-pandas-helpers-that-help-beyond-just-time-series">Extra Pandas Helpers (That Help Beyond Just Time Series)</a></li>
-  <li><a href="#datasets" id="toc-datasets" class="nav-link" data-scroll-target="#datasets">💾 13 Datasets</a></li>
-  </ul></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples:</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/index.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_hurst_exponent.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">augment_hurst_exponent</h1>
+</div>
 
 
-<section id="function-reference" class="level1 doc doc-index">
-<h1 class="doc doc-index">Function reference</h1>
-<section id="data-visualization" class="level2">
-<h2 class="anchored" data-anchor-id="data-visualization">🚀 Data Visualization</h2>
-<p>Visualize time series data with one line of code.</p>
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>augment_hurst_exponent(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    date_column,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    close_column,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    window<span class="op">=</span><span class="dv">100</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Calculate the Hurst Exponent on a rolling window for a financial time series. Used for detecting trends and mean-reversion.</p>
+<section id="parameters" class="level2 doc-section doc-section-parameters">
+<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 30%">
+<col style="width: 56%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td><a href="../reference/plot_timeseries.html#pytimetk.plot_timeseries">plot_timeseries</a></td>
-<td>Creates time series plots using different plotting engines such as Plotnine,</td>
+<td>data</td>
+<td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
+<td>Input pandas DataFrame or GroupBy object with time series data.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>date_column</td>
+<td>str</td>
+<td>Column name containing dates or timestamps.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>close_column</td>
+<td>str</td>
+<td>Column name with closing prices to calculate the Hurst Exponent.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>window</td>
+<td>Union[int, Tuple[int, int], List[int]]</td>
+<td>Size of the rolling window for Hurst Exponent calculation. Accepts int, tuple (start, end), or list. Default is 100.</td>
+<td><code>100</code></td>
+</tr>
+<tr class="odd">
+<td>reduce_memory</td>
+<td>bool</td>
+<td>If True, reduces memory usage before calculation. Default is False.</td>
+<td><code>False</code></td>
+</tr>
+<tr class="even">
+<td>engine</td>
+<td>str</td>
+<td>Computation engine: ‘pandas’ or ‘polars’. Default is ‘pandas’.</td>
+<td><code>'pandas'</code></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="wrangling-pandas-time-series-dataframes" class="level2">
-<h2 class="anchored" data-anchor-id="wrangling-pandas-time-series-dataframes">🔥 Wrangling Pandas Time Series DataFrames</h2>
-<p>Bend time series data to your will.</p>
+<section id="returns" class="level2 doc-section doc-section-returns">
+<h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 11%">
+<col style="width: 81%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td><a href="../reference/summarize_by_time.html#pytimetk.summarize_by_time">summarize_by_time</a></td>
-<td>Summarize a DataFrame or GroupBy object by time.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/apply_by_time.html#pytimetk.apply_by_time">apply_by_time</a></td>
-<td>Apply for time series.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/pad_by_time.html#pytimetk.pad_by_time">pad_by_time</a></td>
-<td>Make irregular time series regular by padding with missing dates.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/filter_by_time.html#pytimetk.filter_by_time">filter_by_time</a></td>
-<td>Filters a DataFrame or GroupBy object based on a specified date range.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/future_frame.html#pytimetk.future_frame">future_frame</a></td>
-<td>Extend a DataFrame or GroupBy object with future dates.</td>
+<td></td>
+<td>pd.DataFrame</td>
+<td>DataFrame with added columns: - {close_column}<em>hurst</em>{window}: Hurst Exponent for each window size</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="anomaly-detection" class="level2">
-<h2 class="anchored" data-anchor-id="anomaly-detection">🔍 Anomaly Detection</h2>
-<p>Detect anomalies in time series data.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/anomalize.html#pytimetk.anomalize">anomalize</a></td>
-<td>Detects anomalies in time series data, either for a single time</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/plot_anomalies.html#pytimetk.plot_anomalies">plot_anomalies</a></td>
-<td>Creates plot of anomalies in time series data using Plotly, Matplotlib,</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/plot_anomalies_decomp.html#pytimetk.plot_anomalies_decomp">plot_anomalies_decomp</a></td>
-<td>The <code>plot_anomalies_decomp</code> function takes in data from the <code>anomalize()</code></td>
-</tr>
-<tr class="even">
-<td><a href="../reference/plot_anomalies_cleaned.html#pytimetk.plot_anomalies_cleaned">plot_anomalies_cleaned</a></td>
-<td>The <code>plot_anomalies_cleaned</code> function takes in data from the <code>anomalize()</code></td>
-</tr>
-</tbody>
-</table>
+<section id="notes" class="level2 doc-section doc-section-notes">
+<h2 class="doc-section doc-section-notes anchored" data-anchor-id="notes">Notes</h2>
+<p>The Hurst Exponent measures the long-term memory of a time series:</p>
+<ul>
+<li>H &lt; 0.5: Mean-reverting behavior</li>
+<li>H ≈ 0.5: Random walk (no persistence)</li>
+<li>H &gt; 0.5: Trending or persistent behavior Computed using a simplified R/S analysis over rolling windows.</li>
+</ul>
+<p>References:</p>
+<ul>
+<li>https://en.wikipedia.org/wiki/Hurst_exponent</li>
+</ul>
 </section>
-<section id="correlation-funnel" class="level2">
-<h2 class="anchored" data-anchor-id="correlation-funnel">🌪️ Correlation Funnel</h2>
-<p>Visualize correlation on any tabular dataset (not just for Time Series).</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/binarize.html#pytimetk.binarize">binarize</a></td>
-<td>The <code>binarize</code> function prepares data for <code>correlate</code>, which is used for analyzing correlationfunnel plots.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/correlate.html#pytimetk.correlate">correlate</a></td>
-<td>The <code>correlate</code> function calculates the correlation between a target variable and all other</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/plot_correlation_funnel.html#pytimetk.plot_correlation_funnel">plot_correlation_funnel</a></td>
-<td>The <code>plot_correlation_funnel</code> function generates a correlation funnel plot using either Plotly or</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="feature-engineereing" class="level2">
-<h2 class="anchored" data-anchor-id="feature-engineereing">🏗️ Feature Engineereing</h2>
-<p>Adding Features to Time Series DataFrames (Augmenting)</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/augment_timeseries_signature.html#pytimetk.augment_timeseries_signature">augment_timeseries_signature</a></td>
-<td>The function <code>augment_timeseries_signature</code> takes a DataFrame and a date</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_holiday_signature.html#pytimetk.augment_holiday_signature">augment_holiday_signature</a></td>
-<td>Engineers 4 different holiday features from a single datetime for 137 countries</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_lags.html#pytimetk.augment_lags">augment_lags</a></td>
-<td>Adds lags to a Pandas DataFrame or DataFrameGroupBy object.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_leads.html#pytimetk.augment_leads">augment_leads</a></td>
-<td>Adds leads to a Pandas DataFrame or DataFrameGroupBy object.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_diffs.html#pytimetk.augment_diffs">augment_diffs</a></td>
-<td>Adds differences and percentage difference (percentage change) to a Pandas DataFrame or DataFrameGroupBy object.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_pct_change.html#pytimetk.augment_pct_change">augment_pct_change</a></td>
-<td>Adds percentage difference (percentage change) to a Pandas DataFrame or DataFrameGroupBy object.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_rolling.html#pytimetk.augment_rolling">augment_rolling</a></td>
-<td>Apply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_rolling_apply.html#pytimetk.augment_rolling_apply">augment_rolling_apply</a></td>
-<td>Apply one or more DataFrame-based rolling functions and window sizes to one</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_expanding.html#pytimetk.augment_expanding">augment_expanding</a></td>
-<td>Apply one or more Series-based expanding functions to one or more columns of a DataFrame.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_expanding_apply.html#pytimetk.augment_expanding_apply">augment_expanding_apply</a></td>
-<td>Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_ewm.html#pytimetk.augment_ewm">augment_ewm</a></td>
-<td>Add Exponential Weighted Moving (EWM) window functions to a DataFrame or</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_fourier.html#pytimetk.augment_fourier">augment_fourier</a></td>
-<td>Adds Fourier transforms to a Pandas DataFrame or DataFrameGroupBy object.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_hilbert.html#pytimetk.augment_hilbert">augment_hilbert</a></td>
-<td>Apply the Hilbert transform to specified columns of a DataFrame or</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_wavelet.html#pytimetk.augment_wavelet">augment_wavelet</a></td>
-<td>Apply the Wavely transform to specified columns of a DataFrame or</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="ts-features" class="level2">
-<h2 class="anchored" data-anchor-id="ts-features">📎 TS Features</h2>
-<p>Python implementation of the R package <code>tsfeatures</code>.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/ts_features.html#pytimetk.ts_features">ts_features</a></td>
-<td>Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the <code>tsfeatures</code> package.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/ts_summary.html#pytimetk.ts_summary">ts_summary</a></td>
-<td>Computes summary statistics for a time series data, either for the entire</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="time-series-cross-validation-tscv" class="level2">
-<h2 class="anchored" data-anchor-id="time-series-cross-validation-tscv">📈 Time Series Cross Validation (TSCV)</h2>
-<p>Time series cross validation.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/TimeSeriesCV.html#pytimetk.TimeSeriesCV">TimeSeriesCV</a></td>
-<td><code>TimeSeriesCV</code> is a subclass of <code>TimeBasedSplit</code> with default mode set to ‘backward’</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/TimeSeriesCVSplitter.html#pytimetk.TimeSeriesCVSplitter">TimeSeriesCVSplitter</a></td>
-<td>The <code>TimeSeriesCVSplitter</code> is a scikit-learn compatible cross-validator using <code>TimeSeriesCV</code>.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="finance-module-momentum-indicators" class="level2">
-<h2 class="anchored" data-anchor-id="finance-module-momentum-indicators">💹 Finance Module (Momentum Indicators)</h2>
-<p>Momentum indicators for financial time series data.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/augment_macd.html#pytimetk.augment_macd">augment_macd</a></td>
-<td>Calculate MACD for a given financial instrument using either pandas or polars engine.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_ppo.html#pytimetk.augment_ppo">augment_ppo</a></td>
-<td>Calculate PPO for a given financial instrument using either pandas or polars engine.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_rsi.html#pytimetk.augment_rsi">augment_rsi</a></td>
-<td>The <code>augment_rsi</code> function calculates the Relative Strength Index (RSI) for a given financial</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_cmo.html#pytimetk.augment_cmo">augment_cmo</a></td>
-<td>The <code>augment_cmo</code> function calculates the Chande Momentum Oscillator (CMO) for a given financial</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_roc.html#pytimetk.augment_roc">augment_roc</a></td>
-<td>Adds rate of change (percentage change) to a Pandas DataFrame or DataFrameGroupBy object.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_adx.html#pytimetk.augment_adx">augment_adx</a></td>
-<td>Calculate Average Directional Index (ADX), +DI, and -DI for a financial time series to determine strength of trend.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_stochastic_oscillator.html#pytimetk.augment_stochastic_oscillator">augment_stochastic_oscillator</a></td>
-<td>The <code>augment_stochastic_oscillator</code> function calculates the Stochastic Oscillator (%K and %D)</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_hurst_exponent.html#pytimetk.augment_hurst_exponent">augment_hurst_exponent</a></td>
-<td>Calculate the Hurst Exponent on a rolling window for a financial time series. Used for detecting trends and mean-reversion.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_qsmomentum.html#pytimetk.augment_qsmomentum">augment_qsmomentum</a></td>
-<td>The function <code>augment_qsmomentum</code> calculates Quant Science Momentum for financial data.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_fip_momentum.html#pytimetk.augment_fip_momentum">augment_fip_momentum</a></td>
-<td>Calculate the “Frog In The Pan” (FIP) momentum metric over one or more rolling windows</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="finance-module-volatility-indicators" class="level2">
-<h2 class="anchored" data-anchor-id="finance-module-volatility-indicators">💹 Finance Module (Volatility Indicators)</h2>
-<p>Volatility indicators for financial time series data.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/augment_bbands.html#pytimetk.augment_bbands">augment_bbands</a></td>
-<td>The <code>augment_bbands</code> function is used to calculate Bollinger Bands for a given dataset and return</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_atr.html#pytimetk.augment_atr">augment_atr</a></td>
-<td>The <code>augment_atr</code> function is used to calculate Average True Range (ATR) and</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/augment_drawdown.html#pytimetk.augment_drawdown">augment_drawdown</a></td>
-<td>The augment_drawdown function calculates the drawdown metrics for a financial time series</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/augment_rolling_risk_metrics.html#pytimetk.augment_rolling_risk_metrics">augment_rolling_risk_metrics</a></td>
-<td>The augment_rolling_risk_metrics function calculates rolling risk-adjusted performance</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="time-series-for-pandas-series" class="level2">
-<h2 class="anchored" data-anchor-id="time-series-for-pandas-series">🐼 Time Series for Pandas Series</h2>
-<p>Time series functions that generate / manipulate Pandas Series.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/make_future_timeseries.html#pytimetk.make_future_timeseries">make_future_timeseries</a></td>
-<td>Make future dates for a time series.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/make_weekday_sequence.html#pytimetk.make_weekday_sequence">make_weekday_sequence</a></td>
-<td>Generate a sequence of weekday dates within a specified date range,</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/make_weekend_sequence.html#pytimetk.make_weekend_sequence">make_weekend_sequence</a></td>
-<td>Generate a sequence of weekend dates within a specified date range,</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/get_date_summary.html#pytimetk.get_date_summary">get_date_summary</a></td>
-<td>Returns a summary of the date-related information, including the number of</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/get_frequency_summary.html#pytimetk.get_frequency_summary">get_frequency_summary</a></td>
-<td>More robust version of pandas inferred frequency.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/get_diff_summary.html#pytimetk.get_diff_summary">get_diff_summary</a></td>
-<td>Calculates summary statistics of the time differences between consecutive values in a datetime index.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/get_frequency.html#pytimetk.get_frequency">get_frequency</a></td>
-<td>Get the frequency of a pandas Series or DatetimeIndex.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/get_seasonal_frequency.html#pytimetk.get_seasonal_frequency">get_seasonal_frequency</a></td>
-<td>The <code>get_seasonal_frequency</code> function returns the seasonal period of a given</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/get_trend_frequency.html#pytimetk.get_trend_frequency">get_trend_frequency</a></td>
-<td>The <code>get_trend_frequency</code> function returns the trend period of a given time</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/get_timeseries_signature.html#pytimetk.get_timeseries_signature">get_timeseries_signature</a></td>
-<td>Convert a timestamp to a set of 29 time series features.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/get_holiday_signature.html#pytimetk.get_holiday_signature">get_holiday_signature</a></td>
-<td>Engineers 4 different holiday features from a single datetime for 137 countries</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="date-utilities" class="level2">
-<h2 class="anchored" data-anchor-id="date-utilities">🛠️ Date Utilities</h2>
-<p>Helper functions to make your life easier.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/floor_date.html#pytimetk.floor_date">floor_date</a></td>
-<td>Robust date flooring.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/ceil_date.html#pytimetk.ceil_date">ceil_date</a></td>
-<td>Robust date ceiling.</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/is_holiday.html#pytimetk.is_holiday">is_holiday</a></td>
-<td>Check if a given list of dates are holidays for a specified country.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/week_of_month.html#pytimetk.week_of_month">week_of_month</a></td>
-<td>The “week_of_month” function calculates the week number of a given date</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/timeseries_unit_frequency_table.html#pytimetk.timeseries_unit_frequency_table">timeseries_unit_frequency_table</a></td>
-<td>The function <code>timeseries_unit_frequency_table</code> returns a pandas DataFrame</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/time_scale_template.html#pytimetk.time_scale_template">time_scale_template</a></td>
-<td>The function <code>time_scale_template</code> returns a table with time scale</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="visualization-utilities" class="level2">
-<h2 class="anchored" data-anchor-id="visualization-utilities">🛠️ Visualization Utilities</h2>
-<p>Helper functions to make your life easier.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/theme_timetk.html#pytimetk.theme_timetk">theme_timetk</a></td>
-<td>Returns a <code>plotnine</code> theme with timetk styles applied, allowing for</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/palette_timetk.html#pytimetk.palette_timetk">palette_timetk</a></td>
-<td>The function <code>palette_timetk</code> returns a dictionary of color codes for</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="extra-pandas-helpers-that-help-beyond-just-time-series" class="level2">
-<h2 class="anchored" data-anchor-id="extra-pandas-helpers-that-help-beyond-just-time-series">Extra Pandas Helpers (That Help Beyond Just Time Series)</h2>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/glimpse.html#pytimetk.glimpse">glimpse</a></td>
-<td>Takes a pandas DataFrame and prints a summary of its dimensions, column</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/parallel_apply.html#pytimetk.parallel_apply">parallel_apply</a></td>
-<td>The <code>parallel_apply</code> function parallelizes the application of a function on</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/progress_apply.html#pytimetk.progress_apply">progress_apply</a></td>
-<td>Adds a progress bar to pandas apply().</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/drop_zero_variance.html#pytimetk.drop_zero_variance">drop_zero_variance</a></td>
-<td>The function <code>drop_zero_variance</code> takes a pandas DataFrame as input and returns a new DataFrame with</td>
-</tr>
-<tr class="odd">
-<td><a href="../reference/transform_columns.html#pytimetk.transform_columns">transform_columns</a></td>
-<td>The function <code>transform_columns</code> applies a user-provided function to specified columns in a pandas DataFrame.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/flatten_multiindex_column_names.html#pytimetk.flatten_multiindex_column_names">flatten_multiindex_column_names</a></td>
-<td>Takes a DataFrame as input and flattens the column</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="datasets" class="level2">
-<h2 class="anchored" data-anchor-id="datasets">💾 13 Datasets</h2>
-<p>Practice <code>pytimetk</code> with 13 complementary time series datasets.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td><a href="../reference/get_available_datasets.html#pytimetk.get_available_datasets">get_available_datasets</a></td>
-<td>Get a list of 12 datasets that can be loaded with <code>pytimetk.load_dataset</code>.</td>
-</tr>
-<tr class="even">
-<td><a href="../reference/load_dataset.html#pytimetk.load_dataset">load_dataset</a></td>
-<td>Load one of 12 Time Series Datasets.</td>
-</tr>
-</tbody>
-</table>
+<section id="examples" class="level2 doc-section doc-section-examples">
+<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples:</h2>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'stocks_daily'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Single stock Hurst Exponent with pandas engine</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>hurst_df <span class="op">=</span> (</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    df.query(<span class="st">"symbol == 'AAPL'"</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    .augment_hurst_exponent(</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">'close'</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span>[<span class="dv">100</span>, <span class="dv">200</span>]</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>hurst_df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 2699 rows of 10 columns
+symbol:           object            ['AAPL', 'AAPL', 'AAPL', 'AAPL', 'AA ...
+date:             datetime64[ns]    [Timestamp('2013-01-02 00:00:00'), T ...
+open:             float64           [19.779285430908203, 19.567142486572 ...
+high:             float64           [19.821428298950195, 19.631071090698 ...
+low:              float64           [19.343929290771484, 19.321428298950 ...
+close:            float64           [19.608213424682617, 19.360713958740 ...
+volume:           int64             [560518000, 352965200, 594333600, 48 ...
+adjusted:         float64           [16.791179656982422, 16.579240798950 ...
+close_hurst_100:  float64           [nan, nan, nan, nan, nan, nan, nan,  ...
+close_hurst_200:  float64           [nan, nan, nan, nan, nan, nan, nan,  ...</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Multiple stocks with groupby using pandas engine</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>hurst_df <span class="op">=</span> (</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">'symbol'</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    .augment_hurst_exponent(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">'close'</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span><span class="dv">100</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>hurst_df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 9 columns
+symbol:           object            ['META', 'META', 'META', 'META', 'ME ...
+date:             datetime64[ns]    [Timestamp('2013-01-02 00:00:00'), T ...
+open:             float64           [27.440000534057617, 27.879999160766 ...
+high:             float64           [28.18000030517578, 28.4699993133544 ...
+low:              float64           [27.420000076293945, 27.590000152587 ...
+close:            float64           [28.0, 27.770000457763672, 28.760000 ...
+volume:           int64             [69846400, 63140600, 72715400, 83781 ...
+adjusted:         float64           [28.0, 27.770000457763672, 28.760000 ...
+close_hurst_100:  float64           [nan, nan, nan, nan, nan, nan, nan,  ...</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 - Single stock Hurst Exponent with polars engine</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>hurst_df <span class="op">=</span> (</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    df.query(<span class="st">"symbol == 'AAPL'"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    .augment_hurst_exponent(</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">'close'</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span>[<span class="dv">100</span>, <span class="dv">200</span>],</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">'polars'</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>hurst_df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 2699 rows of 10 columns
+symbol:           object            ['AAPL', 'AAPL', 'AAPL', 'AAPL', 'AA ...
+date:             datetime64[ns]    [Timestamp('2013-01-02 00:00:00'), T ...
+open:             float64           [19.779285430908203, 19.567142486572 ...
+high:             float64           [19.821428298950195, 19.631071090698 ...
+low:              float64           [19.343929290771484, 19.321428298950 ...
+close:            float64           [19.608213424682617, 19.360713958740 ...
+volume:           int64             [560518000, 352965200, 594333600, 48 ...
+adjusted:         float64           [16.791179656982422, 16.579240798950 ...
+close_hurst_100:  float64           [nan, nan, nan, nan, nan, nan, nan,  ...
+close_hurst_200:  float64           [nan, nan, nan, nan, nan, nan, nan,  ...</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 4 - Multiple stocks with groupby using polars engine</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>hurst_df <span class="op">=</span> (</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">'symbol'</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    .augment_hurst_exponent(</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">'close'</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span><span class="dv">100</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">'polars'</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>hurst_df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 9 columns
+symbol:           object            ['META', 'META', 'META', 'META', 'ME ...
+date:             datetime64[ns]    [Timestamp('2013-01-02 00:00:00'), T ...
+open:             float64           [27.440000534057617, 27.879999160766 ...
+high:             float64           [28.18000030517578, 28.4699993133544 ...
+low:              float64           [27.420000076293945, 27.590000152587 ...
+close:            float64           [28.0, 27.770000457763672, 28.760000 ...
+volume:           int64             [69846400, 63140600, 72715400, 83781 ...
+adjusted:         float64           [28.0, 27.770000457763672, 28.760000 ...
+close_hurst_100:  float64           [nan, nan, nan, nan, nan, nan, nan,  ...</code></pre>
+</div>
+</div>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->

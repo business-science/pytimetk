@@ -58,6 +58,7 @@ Formula:
 - %D = Moving average of %K over d_periods
 
 References:
+
 - https://www.investopedia.com/terms/s/stochasticoscillator.asp
 
 ## Examples {.doc-section .doc-section-examples}
