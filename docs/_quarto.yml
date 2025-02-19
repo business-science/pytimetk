@@ -177,6 +177,8 @@ quartodoc:
         - augment_rsi
         - augment_cmo
         - augment_roc
+        - augment_adx
+        - augment_stochastic_oscillator
         - augment_qsmomentum
         - augment_fip_momentum
     - title: 💹 Finance Module (Volatility Indicators)

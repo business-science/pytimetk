@@ -71,6 +71,8 @@ from .finance import (
     augment_drawdown,
     augment_rolling_risk_metrics,
     augment_fip_momentum,
+    augment_stochastic_oscillator,
+    augment_adx,
 )
 from .datasets import (
     load_dataset, 
