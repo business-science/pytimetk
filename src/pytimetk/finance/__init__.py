@@ -13,3 +13,4 @@ from .stochastic_oscillator import *
 from .adx import *
 from .hurst_exponent import *
 from .ewma_volatility import *
+from .regime_detection import *

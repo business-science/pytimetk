@@ -182,8 +182,8 @@ quartodoc:
         - augment_hurst_exponent
         - augment_qsmomentum
         - augment_fip_momentum
-    - title: 💹 Finance Module (Volatility Indicators)
-      desc: Volatility indicators for financial time series data.
+    - title: 💹 Finance Module (Volatility, Risk/Reward and Regime Indicators)
+      desc: Volatility, Risk-Reward, and Regime indicators for financial time series data.
       package: pytimetk
       contents:
         - augment_bbands
@@ -191,6 +191,7 @@ quartodoc:
         - augment_drawdown
         - augment_rolling_risk_metrics
         - augment_ewma_volatility
+        - augment_regime_detection
     - title: 🐼 Time Series for Pandas Series
       desc: Time series functions that generate / manipulate Pandas Series.
       package: pytimetk

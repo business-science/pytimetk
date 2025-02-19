@@ -75,6 +75,7 @@ from .finance import (
     augment_adx,
     augment_hurst_exponent,
     augment_ewma_volatility,
+    augment_regime_detection,
 )
 from .datasets import (
     load_dataset, 
