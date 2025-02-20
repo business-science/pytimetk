@@ -6,7 +6,9 @@ toc-depth: 3
 number-sections: false
 ---
 
-# pytimetk 1.1.2.9000
+# pytimetk 1.2.0.9000
+
+# pytimetk 1.2.0
 
 ## New Functions
 
