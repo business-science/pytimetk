@@ -404,9 +404,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    risk_free_rate<span class="op">=</span><span class="fl">0.0</span>,</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    benchmark_column<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    annualization_factor<span class="op">=</span><span class="dv">252</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    metrics<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The augment_rolling_risk_metrics function calculates rolling risk-adjusted performance metrics for a financial time series using either pandas or polars engine, and returns the augmented DataFrame with columns for Sharpe Ratio, Sortino Ratio, and other metrics.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
@@ -685,8 +686,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">adjusted</th>
 <th data-quarto-table-cell-role="th">adjusted_sharpe_ratio_60</th>
-<th data-quarto-table-cell-role="th">adjusted_sortino_ratio_60</th>
 <th data-quarto-table-cell-role="th">adjusted_volatility_annualized_60</th>
+<th data-quarto-table-cell-role="th">adjusted_sortino_ratio_60</th>
 <th data-quarto-table-cell-role="th">adjusted_omega_ratio_60</th>
 <th data-quarto-table-cell-role="th">adjusted_skewness_60</th>
 <th data-quarto-table-cell-role="th">adjusted_kurtosis_60</th>
