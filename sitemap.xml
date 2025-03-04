@@ -2,386 +2,386 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/ts_features.html</loc>
-    <lastmod>2025-03-04T17:58:18.228Z</lastmod>
+    <lastmod>2025-03-04T18:00:59.672Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/floor_date.html</loc>
-    <lastmod>2025-03-04T17:58:16.887Z</lastmod>
+    <lastmod>2025-03-04T18:00:58.356Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/ts_summary.html</loc>
-    <lastmod>2025-03-04T17:58:15.723Z</lastmod>
+    <lastmod>2025-03-04T18:00:57.222Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/timeseries_unit_frequency_table.html</loc>
-    <lastmod>2025-03-04T17:58:14.376Z</lastmod>
+    <lastmod>2025-03-04T18:00:55.895Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/transform_columns.html</loc>
-    <lastmod>2025-03-04T17:58:13.515Z</lastmod>
+    <lastmod>2025-03-04T18:00:55.052Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_timeseries_signature.html</loc>
-    <lastmod>2025-03-04T17:58:12.761Z</lastmod>
+    <lastmod>2025-03-04T18:00:54.294Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/plot_anomalies.html</loc>
-    <lastmod>2025-03-04T17:58:11.794Z</lastmod>
+    <lastmod>2025-03-04T18:00:53.341Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_ewm.html</loc>
-    <lastmod>2025-03-04T17:58:10.432Z</lastmod>
+    <lastmod>2025-03-04T18:00:52.005Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/make_weekend_sequence.html</loc>
-    <lastmod>2025-03-04T17:58:09.384Z</lastmod>
+    <lastmod>2025-03-04T18:00:50.980Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_diff_summary.html</loc>
-    <lastmod>2025-03-04T17:58:08.573Z</lastmod>
+    <lastmod>2025-03-04T18:00:50.197Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/load_dataset.html</loc>
-    <lastmod>2025-03-04T17:58:07.777Z</lastmod>
+    <lastmod>2025-03-04T18:00:49.395Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/binarize.html</loc>
-    <lastmod>2025-03-04T17:58:07.073Z</lastmod>
+    <lastmod>2025-03-04T18:00:48.703Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_leads.html</loc>
-    <lastmod>2025-03-04T17:58:06.202Z</lastmod>
+    <lastmod>2025-03-04T18:00:47.830Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_rsi.html</loc>
-    <lastmod>2025-03-04T17:58:04.953Z</lastmod>
+    <lastmod>2025-03-04T18:00:46.606Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/theme_timetk.html</loc>
-    <lastmod>2025-03-04T17:58:03.794Z</lastmod>
+    <lastmod>2025-03-04T18:00:45.504Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/TimeSeriesCV.html</loc>
-    <lastmod>2025-03-04T17:58:03.002Z</lastmod>
+    <lastmod>2025-03-04T18:00:44.710Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_frequency.html</loc>
-    <lastmod>2025-03-04T17:58:02.077Z</lastmod>
+    <lastmod>2025-03-04T18:00:43.804Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/future_frame.html</loc>
-    <lastmod>2025-03-04T17:58:01.289Z</lastmod>
+    <lastmod>2025-03-04T18:00:42.996Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/week_of_month.html</loc>
-    <lastmod>2025-03-04T17:58:00.108Z</lastmod>
+    <lastmod>2025-03-04T18:00:41.799Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_fourier.html</loc>
-    <lastmod>2025-03-04T17:57:59.060Z</lastmod>
+    <lastmod>2025-03-04T18:00:40.758Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/correlate.html</loc>
-    <lastmod>2025-03-04T17:57:58.132Z</lastmod>
+    <lastmod>2025-03-04T18:00:39.845Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/filter_by_time.html</loc>
-    <lastmod>2025-03-04T17:57:57.125Z</lastmod>
+    <lastmod>2025-03-04T18:00:38.845Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/summarize_by_time.html</loc>
-    <lastmod>2025-03-04T17:57:56.008Z</lastmod>
+    <lastmod>2025-03-04T18:00:37.701Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/plot_anomalies_decomp.html</loc>
-    <lastmod>2025-03-04T17:57:54.744Z</lastmod>
+    <lastmod>2025-03-04T18:00:36.403Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/drop_zero_variance.html</loc>
-    <lastmod>2025-03-04T17:57:44.714Z</lastmod>
+    <lastmod>2025-03-04T18:00:26.342Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2025-03-04T17:57:43.864Z</lastmod>
+    <lastmod>2025-03-04T18:00:25.502Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_pandas_frequency.html</loc>
-    <lastmod>2025-03-04T17:57:42.873Z</lastmod>
+    <lastmod>2025-03-04T18:00:24.469Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/palette_timetk.html</loc>
-    <lastmod>2025-03-04T17:57:42.160Z</lastmod>
+    <lastmod>2025-03-04T18:00:23.744Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_date_summary.html</loc>
-    <lastmod>2025-03-04T17:57:41.440Z</lastmod>
+    <lastmod>2025-03-04T18:00:23.010Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_hurst_exponent.html</loc>
-    <lastmod>2025-03-04T17:57:40.705Z</lastmod>
+    <lastmod>2025-03-04T18:00:22.284Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_seasonal_frequency.html</loc>
-    <lastmod>2025-03-04T17:57:39.930Z</lastmod>
+    <lastmod>2025-03-04T18:00:21.523Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/plot_anomaly_decomp.html</loc>
-    <lastmod>2025-03-04T17:57:39.180Z</lastmod>
+    <lastmod>2025-03-04T18:00:20.798Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/plot_anomalies_cleaned.html</loc>
-    <lastmod>2025-03-04T17:57:38.125Z</lastmod>
+    <lastmod>2025-03-04T18:00:19.720Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_fip_momentum.html</loc>
-    <lastmod>2025-03-04T17:57:36.873Z</lastmod>
+    <lastmod>2025-03-04T18:00:18.477Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_expanding.html</loc>
-    <lastmod>2025-03-04T17:57:35.713Z</lastmod>
+    <lastmod>2025-03-04T18:00:17.312Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/ceil_date.html</loc>
-    <lastmod>2025-03-04T17:57:34.730Z</lastmod>
+    <lastmod>2025-03-04T18:00:16.319Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_rolling_apply.html</loc>
-    <lastmod>2025-03-04T17:57:33.823Z</lastmod>
+    <lastmod>2025-03-04T18:00:15.409Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/plot_timeseries.html</loc>
-    <lastmod>2025-03-04T17:57:32.710Z</lastmod>
+    <lastmod>2025-03-04T18:00:14.286Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_ewma_volatility.html</loc>
-    <lastmod>2025-03-04T17:57:31.332Z</lastmod>
+    <lastmod>2025-03-04T18:00:12.812Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/performance/01_speed_comparisons.html</loc>
-    <lastmod>2025-03-04T17:57:28.635Z</lastmod>
+    <lastmod>2025-03-04T18:00:11.828Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/tutorials/02_finance.html</loc>
-    <lastmod>2025-03-04T17:57:27.586Z</lastmod>
+    <lastmod>2025-03-04T18:00:10.752Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/tutorials/03_demand_forecasting.html</loc>
-    <lastmod>2025-03-04T17:57:22.256Z</lastmod>
+    <lastmod>2025-03-04T18:00:05.297Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/tutorials/06_correlationfunnel.html</loc>
-    <lastmod>2025-03-04T17:57:20.366Z</lastmod>
+    <lastmod>2025-03-04T18:00:03.341Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/05_augmenting.html</loc>
-    <lastmod>2025-03-04T17:57:17.942Z</lastmod>
+    <lastmod>2025-03-04T18:00:00.854Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/06_anomalize.html</loc>
-    <lastmod>2025-03-04T17:57:15.821Z</lastmod>
+    <lastmod>2025-03-04T17:59:58.692Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/03_pandas_frequency.html</loc>
-    <lastmod>2025-03-04T17:57:13.531Z</lastmod>
+    <lastmod>2025-03-04T17:59:56.293Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/getting-started/01_installation.html</loc>
-    <lastmod>2025-03-04T17:57:12.521Z</lastmod>
+    <lastmod>2025-03-04T17:59:55.265Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/contributing.html</loc>
-    <lastmod>2025-03-04T17:57:11.528Z</lastmod>
+    <lastmod>2025-03-04T17:59:54.245Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/index.html</loc>
-    <lastmod>2025-03-04T17:57:12.177Z</lastmod>
+    <lastmod>2025-03-04T17:59:54.896Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/getting-started/02_quick_start.html</loc>
-    <lastmod>2025-03-04T17:57:13.067Z</lastmod>
+    <lastmod>2025-03-04T17:59:55.815Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/02_timetk_concepts.html</loc>
-    <lastmod>2025-03-04T17:57:15.296Z</lastmod>
+    <lastmod>2025-03-04T17:59:58.144Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/01_visualization.html</loc>
-    <lastmod>2025-03-04T17:57:16.393Z</lastmod>
+    <lastmod>2025-03-04T17:59:59.298Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/04_wrangling.html</loc>
-    <lastmod>2025-03-04T17:57:18.876Z</lastmod>
+    <lastmod>2025-03-04T18:00:01.803Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/tutorials/04_anomaly_detection.html</loc>
-    <lastmod>2025-03-04T17:57:19.860Z</lastmod>
+    <lastmod>2025-03-04T18:00:02.822Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/tutorials/05_clustering.html</loc>
-    <lastmod>2025-03-04T17:57:20.711Z</lastmod>
+    <lastmod>2025-03-04T18:00:03.700Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/tutorials/01_sales_crm.html</loc>
-    <lastmod>2025-03-04T17:57:24.242Z</lastmod>
+    <lastmod>2025-03-04T18:00:07.341Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/tutorials/07_timeseries_crossvalidation.html</loc>
-    <lastmod>2025-03-04T17:57:28.093Z</lastmod>
+    <lastmod>2025-03-04T18:00:11.274Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/changelog-news.html</loc>
-    <lastmod>2025-03-04T17:57:30.937Z</lastmod>
+    <lastmod>2025-03-04T18:00:12.397Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_rolling.html</loc>
-    <lastmod>2025-03-04T17:57:32.025Z</lastmod>
+    <lastmod>2025-03-04T18:00:13.578Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_drawdown.html</loc>
-    <lastmod>2025-03-04T17:57:33.337Z</lastmod>
+    <lastmod>2025-03-04T18:00:14.922Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_diffs.html</loc>
-    <lastmod>2025-03-04T17:57:34.364Z</lastmod>
+    <lastmod>2025-03-04T18:00:15.936Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/time_scale_template.html</loc>
-    <lastmod>2025-03-04T17:57:35.105Z</lastmod>
+    <lastmod>2025-03-04T18:00:16.704Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/pad_by_time.html</loc>
-    <lastmod>2025-03-04T17:57:36.424Z</lastmod>
+    <lastmod>2025-03-04T18:00:18.012Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_cmo.html</loc>
-    <lastmod>2025-03-04T17:57:37.609Z</lastmod>
+    <lastmod>2025-03-04T18:00:19.199Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_wavelet.html</loc>
-    <lastmod>2025-03-04T17:57:38.698Z</lastmod>
+    <lastmod>2025-03-04T18:00:20.318Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_available_datasets.html</loc>
-    <lastmod>2025-03-04T17:57:39.550Z</lastmod>
+    <lastmod>2025-03-04T18:00:21.141Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/is_holiday.html</loc>
-    <lastmod>2025-03-04T17:57:40.322Z</lastmod>
+    <lastmod>2025-03-04T18:00:21.903Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/plot_correlation_funnel.html</loc>
-    <lastmod>2025-03-04T17:57:41.170Z</lastmod>
+    <lastmod>2025-03-04T18:00:22.750Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/glimpse.html</loc>
-    <lastmod>2025-03-04T17:57:41.809Z</lastmod>
+    <lastmod>2025-03-04T18:00:23.386Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_ppo.html</loc>
-    <lastmod>2025-03-04T17:57:42.617Z</lastmod>
+    <lastmod>2025-03-04T18:00:24.206Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_bbands.html</loc>
-    <lastmod>2025-03-04T17:57:43.357Z</lastmod>
+    <lastmod>2025-03-04T18:00:24.974Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/apply_by_time.html</loc>
-    <lastmod>2025-03-04T17:57:44.454Z</lastmod>
+    <lastmod>2025-03-04T18:00:26.087Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_rolling_risk_metrics.html</loc>
-    <lastmod>2025-03-04T17:57:54.219Z</lastmod>
+    <lastmod>2025-03-04T18:00:35.886Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_regime_detection.html</loc>
-    <lastmod>2025-03-04T17:57:55.051Z</lastmod>
+    <lastmod>2025-03-04T18:00:36.716Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/parallel_apply.html</loc>
-    <lastmod>2025-03-04T17:57:56.461Z</lastmod>
+    <lastmod>2025-03-04T18:00:38.187Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_expanding_apply.html</loc>
-    <lastmod>2025-03-04T17:57:57.618Z</lastmod>
+    <lastmod>2025-03-04T18:00:39.334Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/TimeSeriesCVSplitter.html</loc>
-    <lastmod>2025-03-04T17:57:58.529Z</lastmod>
+    <lastmod>2025-03-04T18:00:40.232Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_adx.html</loc>
-    <lastmod>2025-03-04T17:57:59.713Z</lastmod>
+    <lastmod>2025-03-04T18:00:41.422Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_trend_frequency.html</loc>
-    <lastmod>2025-03-04T17:58:00.496Z</lastmod>
+    <lastmod>2025-03-04T18:00:42.181Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_pct_change.html</loc>
-    <lastmod>2025-03-04T17:58:01.812Z</lastmod>
+    <lastmod>2025-03-04T18:00:43.526Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/make_weekday_sequence.html</loc>
-    <lastmod>2025-03-04T17:58:02.467Z</lastmod>
+    <lastmod>2025-03-04T18:00:44.191Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/flatten_multiindex_column_names.html</loc>
-    <lastmod>2025-03-04T17:58:03.382Z</lastmod>
+    <lastmod>2025-03-04T18:00:45.079Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/progress_apply.html</loc>
-    <lastmod>2025-03-04T17:58:04.196Z</lastmod>
+    <lastmod>2025-03-04T18:00:45.884Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_hilbert.html</loc>
-    <lastmod>2025-03-04T17:58:05.559Z</lastmod>
+    <lastmod>2025-03-04T18:00:47.201Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_qsmomentum.html</loc>
-    <lastmod>2025-03-04T17:58:06.625Z</lastmod>
+    <lastmod>2025-03-04T18:00:48.251Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_frequency_summary.html</loc>
-    <lastmod>2025-03-04T17:58:07.475Z</lastmod>
+    <lastmod>2025-03-04T18:00:49.097Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_roc.html</loc>
-    <lastmod>2025-03-04T17:58:08.281Z</lastmod>
+    <lastmod>2025-03-04T18:00:49.895Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/make_future_timeseries.html</loc>
-    <lastmod>2025-03-04T17:58:08.975Z</lastmod>
+    <lastmod>2025-03-04T18:00:50.594Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_stochastic_oscillator.html</loc>
-    <lastmod>2025-03-04T17:58:09.980Z</lastmod>
+    <lastmod>2025-03-04T18:00:51.552Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_holiday_signature.html</loc>
-    <lastmod>2025-03-04T17:58:11.158Z</lastmod>
+    <lastmod>2025-03-04T18:00:52.690Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_atr.html</loc>
-    <lastmod>2025-03-04T17:58:12.314Z</lastmod>
+    <lastmod>2025-03-04T18:00:53.855Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_macd.html</loc>
-    <lastmod>2025-03-04T17:58:13.247Z</lastmod>
+    <lastmod>2025-03-04T18:00:54.770Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_timeseries_signature.html</loc>
-    <lastmod>2025-03-04T17:58:13.962Z</lastmod>
+    <lastmod>2025-03-04T18:00:55.492Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_lags.html</loc>
-    <lastmod>2025-03-04T17:58:15.032Z</lastmod>
+    <lastmod>2025-03-04T18:00:56.531Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_holiday_signature.html</loc>
-    <lastmod>2025-03-04T17:58:16.499Z</lastmod>
+    <lastmod>2025-03-04T18:00:57.985Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/anomalize.html</loc>
-    <lastmod>2025-03-04T17:58:17.777Z</lastmod>
+    <lastmod>2025-03-04T18:00:59.221Z</lastmod>
   </url>
 </urlset>
