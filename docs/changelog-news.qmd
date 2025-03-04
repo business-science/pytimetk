@@ -6,7 +6,13 @@ toc-depth: 3
 number-sections: false
 ---
 
-# pytimetk 1.2.1.9000
+# pytimetk 1.2.2.9000
+
+# pytimetk 1.2.2
+
+## Improvements
+
+- `augment_rolling_risk_metrics()`: 100X speedup for polars rolling kurtosis
 
 # pytimetk 1.2.1
 
