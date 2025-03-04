@@ -18,6 +18,7 @@ def augment_rolling_risk_metrics(
     risk_free_rate: float = 0.0,
     benchmark_column: Optional[str] = None,
     annualization_factor: int = 252,
+    metrics: Optional[List[str]] = None,
     reduce_memory: bool = False,
     engine: str = 'pandas'
 ) -> pd.DataFrame:
@@ -110,6 +111,25 @@ def augment_rolling_risk_metrics(
     ```
     '''
     
+    # Define all available metrics
+    ALL_METRICS = [
+        'sharpe_ratio', 'sortino_ratio', 'treynor_ratio', 'information_ratio',
+        'omega_ratio', 'volatility_annualized', 'skewness', 'kurtosis'
+    ]
+    
+    # Set default metrics to all if None
+    if metrics is None:
+        metrics = ALL_METRICS
+    else:
+        # Validate metrics
+        invalid_metrics = [m for m in metrics if m not in ALL_METRICS]
+        if invalid_metrics:
+            raise ValueError(f"Invalid metrics: {invalid_metrics}. Choose from {ALL_METRICS}")
+        # Ensure benchmark-dependent metrics require benchmark_column
+        benchmark_metrics = ['treynor_ratio', 'information_ratio']
+        if any(m in metrics for m in benchmark_metrics) and benchmark_column is None:
+            raise ValueError("Metrics 'treynor_ratio' and 'information_ratio' require a benchmark_column")
+    
     # Convert single int to list for consistency
     windows = [window] if isinstance(window, int) else window
     
@@ -128,12 +148,12 @@ def augment_rolling_risk_metrics(
     if engine == 'pandas':
         ret = _augment_rolling_risk_metrics_pandas(
             data, date_column, close_column, windows, risk_free_rate,
-            benchmark_column, annualization_factor
+            benchmark_column, annualization_factor, metrics
         )
     elif engine == 'polars':
         ret = _augment_rolling_risk_metrics_polars(
             data, date_column, close_column, windows, risk_free_rate,
-            benchmark_column, annualization_factor
+            benchmark_column, annualization_factor, metrics
         )
         ret.index = idx_unsorted
     else:
@@ -154,13 +174,13 @@ def _augment_rolling_risk_metrics_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
     close_column: str,
-    window: Union[int, List[int]],  # Updated to accept int or list
+    windows: List[int],
     risk_free_rate: float,
     benchmark_column: Optional[str],
-    annualization_factor: int
+    annualization_factor: int,
+    metrics: List[str]
 ) -> pd.DataFrame:
-    """Pandas implementation of rolling risk metrics calculation, Supports multiple window sizes.
-    """
+    """Pandas implementation of rolling risk metrics calculation with selective metrics."""
     if isinstance(data, pd.DataFrame):
         df = data.copy()
         group_names = None
@@ -169,16 +189,18 @@ def _augment_rolling_risk_metrics_pandas(
         df = data.obj.copy()
     
     col = close_column
-    # Calculate log returns
-    df[f'{col}_returns'] = np.log(df[col] / df[col].shift(1))
+    # Calculate log returns only if needed by selected metrics
+    required_returns = any(m in metrics for m in [
+        'sharpe_ratio', 'sortino_ratio', 'treynor_ratio', 'information_ratio',
+        'omega_ratio', 'volatility_annualized', 'skewness', 'kurtosis'
+    ])
+    if required_returns:
+        df[f'{col}_returns'] = np.log(df[col] / df[col].shift(1))
     
-    if benchmark_column:
+    if benchmark_column and any(m in metrics for m in ['treynor_ratio', 'information_ratio']):
         df[f'{benchmark_column}_returns'] = np.log(df[benchmark_column] / df[benchmark_column].shift(1))
     
-    # Convert window to list if single integer
-    windows = [window] if isinstance(window, int) else window
-    
-    # Define helper functions for rolling metrics
+    # Define helper functions only if needed
     def roll_downside_std(ser, window_size, **kwargs):
         return ser.rolling(window_size, min_periods=window_size//2).apply(
             lambda x: np.std(x[x < 0]) if np.any(x < 0) else np.nan, raw=True
@@ -203,80 +225,100 @@ def _augment_rolling_risk_metrics_pandas(
         grouped = df.groupby(group_names)
         
         for w in windows:
-            # Precompute rolling metrics for all groups
-            mean_ret = grouped[f'{col}_returns'].rolling(w, min_periods=w//2).mean()
-            std_ret = grouped[f'{col}_returns'].rolling(w, min_periods=w//2).std()
-            downside_std = grouped[f'{col}_returns'].apply(roll_downside_std, raw=False, window_size=w)
-            omega = grouped[f'{col}_returns'].apply(roll_omega, raw=False, window_size=w)
+            # Precompute only needed metrics
+            mean_ret = grouped[f'{col}_returns'].rolling(w, min_periods=w//2).mean() if required_returns else None
+            std_ret = grouped[f'{col}_returns'].rolling(w, min_periods=w//2).std() if any(m in metrics for m in ['sharpe_ratio', 'volatility_annualized']) else None
+            downside_std = grouped[f'{col}_returns'].apply(roll_downside_std, raw=False, window_size=w) if 'sortino_ratio' in metrics else None
+            omega = grouped[f'{col}_returns'].apply(roll_omega, raw=False, window_size=w) if 'omega_ratio' in metrics else None
             skew = grouped[f'{col}_returns'].rolling(w, min_periods=w//2).apply(
                 lambda x: stats.skew(x, nan_policy='omit'), raw=True
-            )
+            ) if 'skewness' in metrics else None
             kurt = grouped[f'{col}_returns'].rolling(w, min_periods=w//2).apply(
                 lambda x: stats.kurtosis(x, nan_policy='omit'), raw=True
-            )
+            ) if 'kurtosis' in metrics else None
             
-            # Assign metrics
-            df[f'{col}_sharpe_ratio_{w}'] = ((mean_ret - risk_free_rate) / std_ret * np.sqrt(annualization_factor)).reset_index(level=0, drop=True)
-            df[f'{col}_sortino_ratio_{w}'] = ((mean_ret - risk_free_rate) / downside_std * np.sqrt(annualization_factor)).reset_index(level=0, drop=True)
-            df[f'{col}_volatility_annualized_{w}'] = (std_ret * np.sqrt(annualization_factor)).reset_index(level=0, drop=True)
-            df[f'{col}_omega_ratio_{w}'] = omega.reset_index(level=0, drop=True)
-            df[f'{col}_skewness_{w}'] = skew.reset_index(level=0, drop=True)
-            df[f'{col}_kurtosis_{w}'] = kurt.reset_index(level=0, drop=True)
+            # Assign only selected metrics
+            if 'sharpe_ratio' in metrics:
+                df[f'{col}_sharpe_ratio_{w}'] = ((mean_ret - risk_free_rate) / std_ret * np.sqrt(annualization_factor)).reset_index(level=0, drop=True)
+            if 'sortino_ratio' in metrics:
+                df[f'{col}_sortino_ratio_{w}'] = ((mean_ret - risk_free_rate) / downside_std * np.sqrt(annualization_factor)).reset_index(level=0, drop=True)
+            if 'volatility_annualized' in metrics:
+                df[f'{col}_volatility_annualized_{w}'] = (std_ret * np.sqrt(annualization_factor)).reset_index(level=0, drop=True)
+            if 'omega_ratio' in metrics:
+                df[f'{col}_omega_ratio_{w}'] = omega.reset_index(level=0, drop=True)
+            if 'skewness' in metrics:
+                df[f'{col}_skewness_{w}'] = skew.reset_index(level=0, drop=True)
+            if 'kurtosis' in metrics:
+                df[f'{col}_kurtosis_{w}'] = kurt.reset_index(level=0, drop=True)
             
             if benchmark_column:
-                bench_mean = grouped[f'{benchmark_column}_returns'].rolling(w, min_periods=w//2).mean()
+                bench_mean = grouped[f'{benchmark_column}_returns'].rolling(w, min_periods=w//2).mean() if 'information_ratio' in metrics else None
                 beta = grouped[f'{col}_returns'].apply(
                     lambda x: roll_beta(x, df.loc[x.index, f'{benchmark_column}_returns'], window_size=w), raw=False
-                )
+                ) if 'treynor_ratio' in metrics else None
                 tracking_error = grouped[f'{col}_returns'].apply(
                     lambda x: (x - df.loc[x.index, f'{benchmark_column}_returns']).rolling(w, min_periods=w//2).std(), raw=False
-                )
+                ) if 'information_ratio' in metrics else None
                 
-                df[f'{col}_treynor_ratio_{w}'] = ((mean_ret - risk_free_rate) / beta * np.sqrt(annualization_factor)).reset_index(level=0, drop=True)
-                df[f'{col}_information_ratio_{w}'] = ((mean_ret - bench_mean) / tracking_error).reset_index(level=0, drop=True)
+                if 'treynor_ratio' in metrics:
+                    df[f'{col}_treynor_ratio_{w}'] = ((mean_ret - risk_free_rate) / beta * np.sqrt(annualization_factor)).reset_index(level=0, drop=True)
+                if 'information_ratio' in metrics:
+                    df[f'{col}_information_ratio_{w}'] = ((mean_ret - bench_mean) / tracking_error).reset_index(level=0, drop=True)
     else:
         for w in windows:
-            # Base rolling metrics for non-grouped data
-            mean_ret = df[f'{col}_returns'].rolling(w, min_periods=w//2).mean()
-            std_ret = df[f'{col}_returns'].rolling(w, min_periods=w//2).std()
-            downside_std = roll_downside_std(df[f'{col}_returns'], window_size=w)
-            
-            # Assign metrics
-            df[f'{col}_sharpe_ratio_{w}'] = (mean_ret - risk_free_rate) / std_ret * np.sqrt(annualization_factor)
-            df[f'{col}_sortino_ratio_{w}'] = (mean_ret - risk_free_rate) / downside_std * np.sqrt(annualization_factor)
-            df[f'{col}_volatility_annualized_{w}'] = std_ret * np.sqrt(annualization_factor)
-            df[f'{col}_omega_ratio_{w}'] = roll_omega(df[f'{col}_returns'], window_size=w)
-            df[f'{col}_skewness_{w}'] = df[f'{col}_returns'].rolling(w, min_periods=w//2).apply(
+            mean_ret = df[f'{col}_returns'].rolling(w, min_periods=w//2).mean() if required_returns else None
+            std_ret = df[f'{col}_returns'].rolling(w, min_periods=w//2).std() if any(m in metrics for m in ['sharpe_ratio', 'volatility_annualized']) else None
+            downside_std = roll_downside_std(df[f'{col}_returns'], window_size=w) if 'sortino_ratio' in metrics else None
+            omega = roll_omega(df[f'{col}_returns'], window_size=w) if 'omega_ratio' in metrics else None
+            skew = df[f'{col}_returns'].rolling(w, min_periods=w//2).apply(
                 lambda x: stats.skew(x, nan_policy='omit'), raw=True
-            )
-            df[f'{col}_kurtosis_{w}'] = df[f'{col}_returns'].rolling(w, min_periods=w//2).apply(
+            ) if 'skewness' in metrics else None
+            kurt = df[f'{col}_returns'].rolling(w, min_periods=w//2).apply(
                 lambda x: stats.kurtosis(x, nan_policy='omit'), raw=True
-            )
+            ) if 'kurtosis' in metrics else None
+            
+            if 'sharpe_ratio' in metrics:
+                df[f'{col}_sharpe_ratio_{w}'] = (mean_ret - risk_free_rate) / std_ret * np.sqrt(annualization_factor)
+            if 'sortino_ratio' in metrics:
+                df[f'{col}_sortino_ratio_{w}'] = (mean_ret - risk_free_rate) / downside_std * np.sqrt(annualization_factor)
+            if 'volatility_annualized' in metrics:
+                df[f'{col}_volatility_annualized_{w}'] = std_ret * np.sqrt(annualization_factor)
+            if 'omega_ratio' in metrics:
+                df[f'{col}_omega_ratio_{w}'] = omega
+            if 'skewness' in metrics:
+                df[f'{col}_skewness_{w}'] = skew
+            if 'kurtosis' in metrics:
+                df[f'{col}_kurtosis_{w}'] = kurt
             
             if benchmark_column:
-                bench_mean = df[f'{benchmark_column}_returns'].rolling(w, min_periods=w//2).mean()
-                beta = roll_beta(df[f'{col}_returns'], df[f'{benchmark_column}_returns'], window_size=w)
-                tracking_error = (df[f'{col}_returns'] - df[f'{benchmark_column}_returns']).rolling(w, min_periods=w//2).std()
+                bench_mean = df[f'{benchmark_column}_returns'].rolling(w, min_periods=w//2).mean() if 'information_ratio' in metrics else None
+                beta = roll_beta(df[f'{col}_returns'], df[f'{benchmark_column}_returns'], window_size=w) if 'treynor_ratio' in metrics else None
+                tracking_error = (df[f'{col}_returns'] - df[f'{benchmark_column}_returns']).rolling(w, min_periods=w//2).std() if 'information_ratio' in metrics else None
                 
-                df[f'{col}_treynor_ratio_{w}'] = (mean_ret - risk_free_rate) / beta * np.sqrt(annualization_factor)
-                df[f'{col}_information_ratio_{w}'] = (mean_ret - bench_mean) / tracking_error
+                if 'treynor_ratio' in metrics:
+                    df[f'{col}_treynor_ratio_{w}'] = (mean_ret - risk_free_rate) / beta * np.sqrt(annualization_factor)
+                if 'information_ratio' in metrics:
+                    df[f'{col}_information_ratio_{w}'] = (mean_ret - bench_mean) / tracking_error
     
-    # Drop temporary returns columns
-    df.drop(columns=[f'{col}_returns'], inplace=True)
-    if benchmark_column:
+    # Drop temporary returns columns if computed
+    if required_returns:
+        df.drop(columns=[f'{col}_returns'], inplace=True)
+    if benchmark_column and any(m in metrics for m in ['treynor_ratio', 'information_ratio']):
         df.drop(columns=[f'{benchmark_column}_returns'], inplace=True)
     
     return df
+
 
 
 def _augment_rolling_risk_metrics_polars(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], 
     date_column: str,
     close_column: str,
-    windows: List[int],  # Updated to List[int]
+    windows: List[int],
     risk_free_rate: float,
     benchmark_column: Optional[str],
-    annualization_factor: int
+    annualization_factor: int,
+    metrics: List[str]
 ) -> pd.DataFrame:
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         pandas_df = data.obj
@@ -286,55 +328,93 @@ def _augment_rolling_risk_metrics_polars(
     else:
         pandas_df = data.copy()
         group_names = None
-    
+
     df = pl.from_pandas(pandas_df)
     col = close_column
-    
-    # Calculate returns and masks
-    returns_col = f'{col}_returns'
-    df = df.with_columns(
-        (pl.col(col).log() - pl.col(col).log().shift(1)).alias(returns_col),
-        (pl.col(col).log() - pl.col(col).log().shift(1) > 0).cast(pl.Float64).alias('pos_mask'),
-        (pl.col(col).log() - pl.col(col).log().shift(1) < 0).cast(pl.Float64).alias('neg_mask')
-    )
-    
-    # Compute expressions for all windows
-    exprs = []
+
+    # Calculate returns and masks if needed
+    required_returns = any(m in metrics for m in [
+        'sharpe_ratio', 'sortino_ratio', 'treynor_ratio', 'information_ratio',
+        'omega_ratio', 'volatility_annualized', 'skewness', 'kurtosis'
+    ])
+    if required_returns:
+        df = df.with_columns(
+            (pl.col(col).log() - pl.col(col).log().shift(1)).alias(f'{col}_returns'),
+            (pl.col(col).log() - pl.col(col).log().shift(1) > 0)
+                .cast(pl.Float64)
+                .alias('pos_mask'),
+            (pl.col(col).log() - pl.col(col).log().shift(1) < 0)
+                .cast(pl.Float64)
+                .alias('neg_mask')
+        )
+    if benchmark_column and any(m in metrics for m in ['treynor_ratio', 'information_ratio']):
+        df = df.with_columns(
+            (pl.col(benchmark_column).log() - pl.col(benchmark_column).log().shift(1))
+                .alias(f'{benchmark_column}_returns')
+        )
+
+    # Loop over each window separately
     for w in windows:
-        mean_ret = pl.col(returns_col).rolling_mean(w, min_periods=w//2)
-        std_ret = pl.col(returns_col).rolling_std(w, min_periods=w//2)
-        downside_ret = (pl.col(returns_col) * pl.col('neg_mask'))
-        downside_std = downside_ret.rolling_std(w, min_periods=w//2)
-        
-        exprs.extend([
-            ((mean_ret - risk_free_rate) / std_ret * pl.lit(np.sqrt(annualization_factor))).alias(f'{col}_sharpe_ratio_{w}'),
-            (std_ret * pl.lit(np.sqrt(annualization_factor))).alias(f'{col}_volatility_annualized_{w}'),
-            ((mean_ret - risk_free_rate) / downside_std * pl.lit(np.sqrt(annualization_factor))).alias(f'{col}_sortino_ratio_{w}'),
-            ((pl.col(returns_col) * pl.col('pos_mask')).rolling_sum(w, min_periods=w//2) /
-             (pl.col(returns_col) * pl.col('neg_mask')).rolling_sum(w, min_periods=w//2).abs())
-            .replace([np.inf, -np.inf], np.nan).alias(f'{col}_omega_ratio_{w}'),
-            pl.col(returns_col).rolling_map(
-                lambda x: stats.skew(x, nan_policy='omit') if x.is_not_null().sum() >= w//2 else np.nan,
-                window_size=w, min_periods=w//2
-            ).alias(f'{col}_skewness_{w}'),
-            pl.col(returns_col).rolling_map(
-                lambda x: stats.kurtosis(x, nan_policy='omit') if x.is_not_null().sum() >= w//2 else np.nan,
-                window_size=w, min_periods=w//2
-            ).alias(f'{col}_kurtosis_{w}')
-        ])
-    
-    # Apply expressions with grouping if needed
-    if group_names:
-        df = df.with_columns([e.over(group_names) for e in exprs])
-    else:
-        df = df.with_columns(exprs)
-    
+        exprs = []
+        if 'sharpe_ratio' in metrics:
+            exprs.append(
+                ((pl.col(f'{col}_returns').rolling_mean(w, min_periods=w//2) - risk_free_rate) /
+                 pl.col(f'{col}_returns').rolling_std(w, min_periods=w//2) *
+                 pl.lit(np.sqrt(annualization_factor))
+                ).alias(f'{col}_sharpe_ratio_{w}')
+            )
+        if 'volatility_annualized' in metrics:
+            exprs.append(
+                (pl.col(f'{col}_returns').rolling_std(w, min_periods=w//2) *
+                 pl.lit(np.sqrt(annualization_factor))
+                ).alias(f'{col}_volatility_annualized_{w}')
+            )
+        if 'sortino_ratio' in metrics:
+            # Note: we use the rolling_std on the product with the negative mask
+            exprs.append(
+                ((pl.col(f'{col}_returns').rolling_mean(w, min_periods=w//2) - risk_free_rate) /
+                 (pl.col(f'{col}_returns') * pl.col('neg_mask')).rolling_std(w, min_periods=w//2) *
+                 pl.lit(np.sqrt(annualization_factor))
+                ).alias(f'{col}_sortino_ratio_{w}')
+            )
+        if 'omega_ratio' in metrics:
+            exprs.append(
+                (
+                    (pl.col(f'{col}_returns') * pl.col('pos_mask')).rolling_sum(w, min_periods=w//2) /
+                    (pl.col(f'{col}_returns') * pl.col('neg_mask')).rolling_sum(w, min_periods=w//2).abs()
+                ).replace([np.inf, -np.inf], np.nan).alias(f'{col}_omega_ratio_{w}')
+            )
+        if 'skewness' in metrics:
+            exprs.append(
+                pl.col(f'{col}_returns').rolling_skew(w).alias(f'{col}_skewness_{w}')
+            )
+        if 'kurtosis' in metrics:
+            exprs.append(
+                pl.col(f'{col}_returns').rolling_map(
+                    lambda x: stats.kurtosis(x.drop_nulls().to_numpy(), nan_policy='omit')
+                        if len(x.drop_nulls()) >= w//2 else np.nan,
+                    window_size=w, min_periods=w//2
+                ).alias(f'{col}_kurtosis_{w}')
+
+            )
+        # For benchmark-dependent metrics, you would add similar expressions here.
+
+        # Apply the expressions for this window in a separate call
+        if group_names:
+            df = df.with_columns([e.over(group_names) for e in exprs])
+        else:
+            df = df.with_columns(exprs)
+
     # Drop temporary columns
-    df = df.drop([returns_col, 'pos_mask', 'neg_mask'])
-    
+    if required_returns:
+        df = df.drop([f'{col}_returns', 'pos_mask', 'neg_mask'])
+    if benchmark_column and any(m in metrics for m in ['treynor_ratio', 'information_ratio']):
+        df = df.drop([f'{benchmark_column}_returns'])
+
     # Order columns
-    original_cols = [c for c in pandas_df.columns if c not in [returns_col]]
+    original_cols = [c for c in pandas_df.columns if c not in [f'{col}_returns', f'{benchmark_column}_returns']]
     metric_cols = [c for c in df.columns if c not in original_cols]
     df = df.select(original_cols + metric_cols)
-    
+
     return df.to_pandas()
+
