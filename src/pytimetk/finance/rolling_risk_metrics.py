@@ -44,6 +44,10 @@ def augment_rolling_risk_metrics(
         Default is None.
     annualization_factor : int, optional
         The factor to annualize returns and volatility (e.g., 252 for daily data). Default is 252.
+    metrics : List[str] or None, optional
+        The list of risk metrics to calculate. Choose from: 'sharpe_ratio', 'sortino_ratio',
+        'treynor_ratio', 'information_ratio', 'omega_ratio', 'volatility_annualized',
+        'skewness', 'kurtosis'. Default is None (all metrics).
     reduce_memory : bool, optional
         If True, reduces memory usage of the DataFrame before calculation. Default is False.
     engine : str, optional
@@ -109,6 +113,19 @@ def augment_rolling_risk_metrics(
     )
     risk_df.head()
     ```
+    
+    ``` {python}
+    # Selective metrics
+    risk_df = (
+        df.groupby('symbol')
+        .augment_rolling_risk_metrics(
+            date_column='date',
+            close_column='adjusted',
+            window=252,
+            metrics=['sharpe_ratio', 'sortino_ratio', 'volatility_annualized'],
+        )
+    )
+    risk_df.tail()
     '''
     
     # Define all available metrics
