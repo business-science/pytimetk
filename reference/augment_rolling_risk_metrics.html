@@ -373,7 +373,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
   <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
-  <li><a href="#selective-metrics" id="toc-selective-metrics" class="nav-link" data-scroll-target="#selective-metrics">Selective metrics</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_rolling_risk_metrics.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -792,10 +791,116 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 </div>
-</section>
-<section id="selective-metrics" class="level1">
-<h1>Selective metrics</h1>
-<p>risk_df = ( df.groupby(‘symbol’) .augment_rolling_risk_metrics( date_column=‘date’, close_column=‘adjusted’, window=252, metrics=[‘sharpe_ratio’, ‘sortino_ratio’, ‘volatility_annualized’], ) ) risk_df.tail()</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Selective metrics</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>risk_df <span class="op">=</span> (</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">'symbol'</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    .augment_rolling_risk_metrics(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">'adjusted'</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span><span class="dv">252</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        metrics<span class="op">=</span>[<span class="st">'sharpe_ratio'</span>, <span class="st">'sortino_ratio'</span>, <span class="st">'volatility_annualized'</span>],</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>risk_df.tail()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">adjusted</th>
+<th data-quarto-table-cell-role="th">adjusted_sharpe_ratio_252</th>
+<th data-quarto-table-cell-role="th">adjusted_sortino_ratio_252</th>
+<th data-quarto-table-cell-role="th">adjusted_volatility_annualized_252</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16189</td>
+<td>GOOG</td>
+<td>2023-09-15</td>
+<td>138.800003</td>
+<td>139.360001</td>
+<td>137.179993</td>
+<td>138.300003</td>
+<td>48947600</td>
+<td>138.300003</td>
+<td>0.779725</td>
+<td>1.180882</td>
+<td>0.342702</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">16190</td>
+<td>GOOG</td>
+<td>2023-09-18</td>
+<td>137.630005</td>
+<td>139.929993</td>
+<td>137.630005</td>
+<td>138.960007</td>
+<td>16233600</td>
+<td>138.960007</td>
+<td>0.849816</td>
+<td>1.280206</td>
+<td>0.342142</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16191</td>
+<td>GOOG</td>
+<td>2023-09-19</td>
+<td>138.250000</td>
+<td>139.175003</td>
+<td>137.500000</td>
+<td>138.830002</td>
+<td>15479100</td>
+<td>138.830002</td>
+<td>0.854721</td>
+<td>1.286448</td>
+<td>0.342127</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">16192</td>
+<td>GOOG</td>
+<td>2023-09-20</td>
+<td>138.830002</td>
+<td>138.839996</td>
+<td>134.520004</td>
+<td>134.589996</td>
+<td>21473500</td>
+<td>134.589996</td>
+<td>0.754537</td>
+<td>1.139451</td>
+<td>0.343635</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16193</td>
+<td>GOOG</td>
+<td>2023-09-21</td>
+<td>132.389999</td>
+<td>133.190002</td>
+<td>131.089996</td>
+<td>131.360001</td>
+<td>22042700</td>
+<td>131.360001</td>
+<td>0.740337</td>
+<td>1.117618</td>
+<td>0.343947</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
 
 
 </section>
