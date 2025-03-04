@@ -338,7 +338,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#pytimetk-1.1.2.9000" id="toc-pytimetk-1.1.2.9000" class="nav-link active" data-scroll-target="#pytimetk-1.1.2.9000">pytimetk 1.1.2.9000</a>
+  <li><a href="#pytimetk-1.2.1.9000" id="toc-pytimetk-1.2.1.9000" class="nav-link active" data-scroll-target="#pytimetk-1.2.1.9000">pytimetk 1.2.1.9000</a></li>
+  <li><a href="#pytimetk-1.2.1" id="toc-pytimetk-1.2.1" class="nav-link" data-scroll-target="#pytimetk-1.2.1">pytimetk 1.2.1</a>
+  <ul class="collapse">
+  <li><a href="#improvements" id="toc-improvements" class="nav-link" data-scroll-target="#improvements">Improvements:</a></li>
+  </ul></li>
+  <li><a href="#pytimetk-1.2.0" id="toc-pytimetk-1.2.0" class="nav-link" data-scroll-target="#pytimetk-1.2.0">pytimetk 1.2.0</a>
   <ul class="collapse">
   <li><a href="#new-functions" id="toc-new-functions" class="nav-link" data-scroll-target="#new-functions">New Functions</a></li>
   <li><a href="#bug-fixes-and-speed-improvements" id="toc-bug-fixes-and-speed-improvements" class="nav-link" data-scroll-target="#bug-fixes-and-speed-improvements">Bug Fixes and Speed Improvements</a></li>
@@ -367,7 +372,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#pytimetk-1.0.0" id="toc-pytimetk-1.0.0" class="nav-link" data-scroll-target="#pytimetk-1.0.0">pytimetk 1.0.0</a>
   <ul class="collapse">
   <li><a href="#pandas-and-polars-compatibility" id="toc-pandas-and-polars-compatibility" class="nav-link" data-scroll-target="#pandas-and-polars-compatibility">Pandas and Polars Compatibility:</a></li>
-  <li><a href="#improvements" id="toc-improvements" class="nav-link" data-scroll-target="#improvements">Improvements:</a></li>
+  <li><a href="#improvements-1" id="toc-improvements-1" class="nav-link" data-scroll-target="#improvements-1">Improvements:</a></li>
   </ul></li>
   <li><a href="#pytimetk-0.4.0" id="toc-pytimetk-0.4.0" class="nav-link" data-scroll-target="#pytimetk-0.4.0">pytimetk 0.4.0</a>
   <ul class="collapse">
@@ -424,8 +429,20 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<section id="pytimetk-1.1.2.9000" class="level1">
-<h1>pytimetk 1.1.2.9000</h1>
+<section id="pytimetk-1.2.1.9000" class="level1">
+<h1>pytimetk 1.2.1.9000</h1>
+</section>
+<section id="pytimetk-1.2.1" class="level1">
+<h1>pytimetk 1.2.1</h1>
+<section id="improvements" class="level2">
+<h2 class="anchored" data-anchor-id="improvements">Improvements:</h2>
+<ul>
+<li><code>augment_rolling_risk_metrics()</code>: Gains a new <code>metrics</code> argument allowing users to speed up calculations by only requesting the rolling risk metrics they need. Default <code>None</code> is all metrics.</li>
+</ul>
+</section>
+</section>
+<section id="pytimetk-1.2.0" class="level1">
+<h1>pytimetk 1.2.0</h1>
 <section id="new-functions" class="level2">
 <h2 class="anchored" data-anchor-id="new-functions">New Functions</h2>
 <ul>
@@ -521,8 +538,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <li>polars &lt;1.0.0</li>
 </ul>
 </section>
-<section id="improvements" class="level2">
-<h2 class="anchored" data-anchor-id="improvements">Improvements:</h2>
+<section id="improvements-1" class="level2">
+<h2 class="anchored" data-anchor-id="improvements-1">Improvements:</h2>
 <ul>
 <li>Implement <code>sort_dataframe()</code>: This function is used internally to make sure Polars and Pandas engines perform grouped operations consistently and correctly. #286 #290</li>
 <li><code>.augment_lags()</code> and <code>.augment_leads()</code>: value_column now accepts any dtype. #295</li>

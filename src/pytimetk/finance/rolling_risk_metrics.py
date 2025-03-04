@@ -126,6 +126,7 @@ def augment_rolling_risk_metrics(
         )
     )
     risk_df.tail()
+    ```
     '''
     
     # Define all available metrics
@@ -406,15 +407,19 @@ def _augment_rolling_risk_metrics_polars(
                 pl.col(f'{col}_returns').rolling_skew(w).alias(f'{col}_skewness_{w}')
             )
         if 'kurtosis' in metrics:
-            exprs.append(
-                pl.col(f'{col}_returns').rolling_map(
-                    lambda x: stats.kurtosis(x.drop_nulls().to_numpy(), nan_policy='omit')
-                        if len(x.drop_nulls()) >= w//2 else np.nan,
-                    window_size=w, min_periods=w//2
-                ).alias(f'{col}_kurtosis_{w}')
-
-            )
-        # For benchmark-dependent metrics, you would add similar expressions here.
+            # Fast rolling kurtosis (excess kurtosis = kurtosis - 3)
+            # Compute rolling sums of powers over the returns column:
+            S1 = pl.col(f'{col}_returns').rolling_sum(window_size=w, min_periods=w)
+            S2 = (pl.col(f'{col}_returns') ** 2).rolling_sum(window_size=w, min_periods=w)
+            S3 = (pl.col(f'{col}_returns') ** 3).rolling_sum(window_size=w, min_periods=w)
+            S4 = (pl.col(f'{col}_returns') ** 4).rolling_sum(window_size=w, min_periods=w)
+            mean_expr = S1 / w
+            var_expr = S2 / w - mean_expr ** 2
+            m4_expr = (S4 / w) - 4 * mean_expr * (S3 / w) + 6 * mean_expr ** 2 * (S2 / w) - 3 * mean_expr ** 4
+            kurt_expr = m4_expr / (var_expr ** 2)
+            excess_kurt_expr = kurt_expr - 3
+            exprs.append(excess_kurt_expr.alias(f'{col}_kurtosis_{w}'))
+            # For benchmark-dependent metrics, you would add similar expressions here.
 
         # Apply the expressions for this window in a separate call
         if group_names:

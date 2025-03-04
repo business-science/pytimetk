@@ -404,18 +404,19 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    risk_free_rate<span class="op">=</span><span class="fl">0.0</span>,</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    benchmark_column<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    annualization_factor<span class="op">=</span><span class="dv">252</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    metrics<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The augment_rolling_risk_metrics function calculates rolling risk-adjusted performance metrics for a financial time series using either pandas or polars engine, and returns the augmented DataFrame with columns for Sharpe Ratio, Sortino Ratio, and other metrics.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 9%">
-<col style="width: 27%">
-<col style="width: 58%">
-<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 20%">
+<col style="width: 68%">
+<col style="width: 3%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -469,12 +470,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><code>252</code></td>
 </tr>
 <tr class="even">
+<td>metrics</td>
+<td>List[str] or None</td>
+<td>The list of risk metrics to calculate. Choose from: ‘sharpe_ratio’, ‘sortino_ratio’, ‘treynor_ratio’, ‘information_ratio’, ‘omega_ratio’, ‘volatility_annualized’, ‘skewness’, ‘kurtosis’. Default is None (all metrics).</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
 <td>reduce_memory</td>
 <td>bool</td>
 <td>If True, reduces memory usage of the DataFrame before calculation. Default is False.</td>
 <td><code>False</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>engine</td>
 <td>str</td>
 <td>The computation engine to use: ‘pandas’ or ‘polars’. Default is ‘pandas’.</td>
@@ -685,8 +692,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">adjusted</th>
 <th data-quarto-table-cell-role="th">adjusted_sharpe_ratio_60</th>
-<th data-quarto-table-cell-role="th">adjusted_sortino_ratio_60</th>
 <th data-quarto-table-cell-role="th">adjusted_volatility_annualized_60</th>
+<th data-quarto-table-cell-role="th">adjusted_sortino_ratio_60</th>
 <th data-quarto-table-cell-role="th">adjusted_omega_ratio_60</th>
 <th data-quarto-table-cell-role="th">adjusted_skewness_60</th>
 <th data-quarto-table-cell-role="th">adjusted_kurtosis_60</th>
@@ -777,6 +784,116 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Selective metrics</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>risk_df <span class="op">=</span> (</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">'symbol'</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    .augment_rolling_risk_metrics(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">'adjusted'</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span><span class="dv">252</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        metrics<span class="op">=</span>[<span class="st">'sharpe_ratio'</span>, <span class="st">'sortino_ratio'</span>, <span class="st">'volatility_annualized'</span>],</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>risk_df.tail()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">adjusted</th>
+<th data-quarto-table-cell-role="th">adjusted_sharpe_ratio_252</th>
+<th data-quarto-table-cell-role="th">adjusted_sortino_ratio_252</th>
+<th data-quarto-table-cell-role="th">adjusted_volatility_annualized_252</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16189</td>
+<td>GOOG</td>
+<td>2023-09-15</td>
+<td>138.800003</td>
+<td>139.360001</td>
+<td>137.179993</td>
+<td>138.300003</td>
+<td>48947600</td>
+<td>138.300003</td>
+<td>0.779725</td>
+<td>1.180882</td>
+<td>0.342702</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">16190</td>
+<td>GOOG</td>
+<td>2023-09-18</td>
+<td>137.630005</td>
+<td>139.929993</td>
+<td>137.630005</td>
+<td>138.960007</td>
+<td>16233600</td>
+<td>138.960007</td>
+<td>0.849816</td>
+<td>1.280206</td>
+<td>0.342142</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16191</td>
+<td>GOOG</td>
+<td>2023-09-19</td>
+<td>138.250000</td>
+<td>139.175003</td>
+<td>137.500000</td>
+<td>138.830002</td>
+<td>15479100</td>
+<td>138.830002</td>
+<td>0.854721</td>
+<td>1.286448</td>
+<td>0.342127</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">16192</td>
+<td>GOOG</td>
+<td>2023-09-20</td>
+<td>138.830002</td>
+<td>138.839996</td>
+<td>134.520004</td>
+<td>134.589996</td>
+<td>21473500</td>
+<td>134.589996</td>
+<td>0.754537</td>
+<td>1.139451</td>
+<td>0.343635</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16193</td>
+<td>GOOG</td>
+<td>2023-09-21</td>
+<td>132.389999</td>
+<td>133.190002</td>
+<td>131.089996</td>
+<td>131.360001</td>
+<td>22042700</td>
+<td>131.360001</td>
+<td>0.740337</td>
+<td>1.117618</td>
+<td>0.343947</td>
 </tr>
 </tbody>
 </table>

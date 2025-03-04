@@ -6,7 +6,13 @@ toc-depth: 3
 number-sections: false
 ---
 
-# pytimetk 1.2.0.9000
+# pytimetk 1.2.1.9000
+
+# pytimetk 1.2.1
+
+## Improvements:
+
+- `augment_rolling_risk_metrics()`: Gains a new `metrics` argument allowing users to speed up calculations by only requesting the rolling risk metrics they need. Default `None` is all metrics. 
 
 # pytimetk 1.2.0
 
