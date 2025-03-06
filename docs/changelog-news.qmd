@@ -8,6 +8,10 @@ number-sections: false
 
 # pytimetk 1.2.2.9000
 
+## Improvements
+
+- `augment_fip_momentum()`: Improve calculation. Allow user to flip the sign with `fip_method = 'modified'`. Users can also use `skip_window` to skip the first n periods before the calculation. This helps with mean reversion.
+
 # pytimetk 1.2.2
 
 ## Improvements
