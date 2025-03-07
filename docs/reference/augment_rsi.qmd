@@ -36,12 +36,12 @@ instrument using either pandas or polars engine, and returns the augmented DataF
 The Relative Strength Index (RSI) is a momentum oscillator that measures the speed and change of price movements. Developed by J. Welles Wilder Jr. and introduced in his 1978 book "New Concepts in Technical Trading Systems", the RSI is one of the most well-known and widely used technical analysis indicators.
 
 - Range: The RSI oscillates between 0 and 100.
-- Overbought and Oversold Levels: Traditionally, the RSI is 
+- Overbought and Oversold Levels: Traditionally, the RSI is
 considered overbought when above 70 and oversold when below
-30. These thresholds can indicate potential reversal points 
+30. These thresholds can indicate potential reversal points
 where a security is overvalued or undervalued.
 - Divergence: RSI can also be used to identify potential
-reversals by looking for bearish and bullish divergences.  
+reversals by looking for bearish and bullish divergences.
 
 ## Examples {.doc-section .doc-section-examples}
 

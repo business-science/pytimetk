@@ -14,22 +14,21 @@ from timebasedcv.utils._types import SeriesLike
 from timebasedcv.utils._types import DateTimeLike
 
 from typing import Generator
-from typing import Literal
 from typing import Tuple
 from typing import TypeVar
 from typing import Union
-from typing import TypeVar
-from typing import Optional, Union
+from typing import Optional
 
 from pytimetk.plot.theme import palette_timetk
 
 TL = TypeVar("TL", bound=TensorLike)
 
+
 class TimeSeriesCV(TimeBasedSplit):
     """
-    `TimeSeriesCV` is a subclass of `TimeBasedSplit` with default mode set to 'backward' 
+    `TimeSeriesCV` is a subclass of `TimeBasedSplit` with default mode set to 'backward'
     and an optional `split_limit` to return the first `n` slices of time series cross-validation sets.
-    
+
     Parameters
     ----------
     frequency: str
@@ -42,33 +41,33 @@ class TimeSeriesCV(TimeBasedSplit):
         Specifies the number of time units to forecast.
     gap: int
         Sets the number of time units to skip between the end of the train set and the start of the forecast set.
-    stride: int 
+    stride: int
         How many time unit to move forward after each split. If `None` (or set to 0), the stride is equal to the
         `forecast_horizon` quantity.
-    window: 
+    window:
         The type of window to use, either "rolling" or "expanding".
     mode: ModeType, optional
         The mode to use for cross-validation. Default is 'backward'.
     split_limit: int, optional
         The maximum number of splits to return. If not provided, all splits are returned.
-    
+
     Raises:
-    ----------   
+    ----------
     ValueError:
-    
+
     - If `frequency` is not one of "days", "seconds", "microseconds", "milliseconds", "minutes", "hours",
     "weeks".
     - If `window` is not one of "rolling" or "expanding".
     - If `mode` is not one of "forward" or "backward"
     - If `train_size`, `forecast_horizon`, `gap` or `stride` are not strictly positive.
-        
-    TypeError: 
-        
+
+    TypeError:
+
     If `train_size`, `forecast_horizon`, `gap` or `stride` are not of type `int`.
-    
+
     Examples:
     ---------
-    
+
     ``` {python}
     import pandas as pd
     import numpy as np
@@ -98,7 +97,7 @@ class TimeSeriesCV(TimeBasedSplit):
 
     # Set index
     df.set_index("time", inplace=True)
-    
+
     # Create an X dataframeand y series
     X, y = df.loc[:, ["a", "b"]], df["y"]
 
@@ -111,7 +110,7 @@ class TimeSeriesCV(TimeBasedSplit):
         stride=0,
         split_limit=3  # Limiting to 3 splits
     )
-    
+
     tscv
     ```
 
@@ -123,7 +122,7 @@ class TimeSeriesCV(TimeBasedSplit):
         print(X_train)
         print(X_forecast)
     ```
-    
+
     ``` {python}
     # Also, you can use `glimpse()` to print summary information about the splits
 
@@ -147,24 +146,23 @@ class TimeSeriesCV(TimeBasedSplit):
         window: str = "rolling",
         mode: ModeType = "backward",
         split_limit: int = None,
-        **kwargs
+        **kwargs,
     ):
         # Initialize the parent class
         super().__init__(
-            frequency = frequency,
-            train_size = train_size,
-            forecast_horizon = forecast_horizon,
-            gap = gap,
-            stride = stride,
-            window = window,
-            mode=mode, 
-            **kwargs
+            frequency=frequency,
+            train_size=train_size,
+            forecast_horizon=forecast_horizon,
+            gap=gap,
+            stride=stride,
+            window=window,
+            mode=mode,
+            **kwargs,
         )
-        
+
         self.split_limit = split_limit
 
         # Assign the parameters to the class
-        
 
     def split(
         self,
@@ -173,7 +171,9 @@ class TimeSeriesCV(TimeBasedSplit):
         start_dt: NullableDatetime = None,
         end_dt: NullableDatetime = None,
         return_splitstate: bool = False,
-    ) -> Generator[Union[Tuple[TL, ...], Tuple[Tuple[TL, ...], SplitState]], None, None]:
+    ) -> Generator[
+        Union[Tuple[TL, ...], Tuple[Tuple[TL, ...], SplitState]], None, None
+    ]:
         """Returns a generator of split arrays.
 
         Parameters
@@ -181,7 +181,7 @@ class TimeSeriesCV(TimeBasedSplit):
         *arrays: pd.DataFrame, pd.Series
             The arrays to split. Must have the same length as `time_series`.
         time_series: pd.Series
-            The time series used to create boolean masks for splits. If not provided, the method will try 
+            The time series used to create boolean masks for splits. If not provided, the method will try
             to use the index of the first array (if it is a DataFrame or Series) as the time series.
         start_dt: pd.Timestamp
             The start of the time period. If provided, it is used in place of `time_series.min()`.
@@ -192,7 +192,7 @@ class TimeSeriesCV(TimeBasedSplit):
 
         Returns:
         -------
-        A generator of tuples of arrays containing the training and forecast data. If `split_limit` is set, 
+        A generator of tuples of arrays containing the training and forecast data. If `split_limit` is set,
         yields only up to `split_limit` splits.
         """
         # If time_series is not provided, attempt to extract it from the index of the first array
@@ -200,14 +200,20 @@ class TimeSeriesCV(TimeBasedSplit):
             if isinstance(arrays[0], (pd.DataFrame, pd.Series)):
                 time_series = arrays[0].index
             else:
-                raise ValueError("time_series must be provided if arrays do not have a time-based index.")
+                raise ValueError(
+                    "time_series must be provided if arrays do not have a time-based index."
+                )
 
         # Ensure the time_series is compatible with Narwhals
         if isinstance(time_series, pd.Index):
             time_series = pd.Series(time_series, index=time_series)
 
         split_generator = super().split(
-            *arrays, time_series=time_series, start_dt=start_dt, end_dt=end_dt, return_splitstate=return_splitstate
+            *arrays,
+            time_series=time_series,
+            start_dt=start_dt,
+            end_dt=end_dt,
+            return_splitstate=return_splitstate,
         )
 
         if self.split_limit is not None:
@@ -222,9 +228,9 @@ class TimeSeriesCV(TimeBasedSplit):
         """Prints summary information about the splits, focusing on the first two arrays.
 
         Arguments:
-            *arrays: 
+            *arrays:
                 The arrays to split. Only the first one will be used for summary information.
-            time_series: 
+            time_series:
                 The time series used for splitting. If not provided, the index of the first array is used. Default is None.
         """
 
@@ -235,14 +241,18 @@ class TimeSeriesCV(TimeBasedSplit):
             if isinstance(X, (pd.DataFrame, pd.Series)):
                 time_series = X.index
             else:
-                raise ValueError("time_series must be provided if the first array does not have a time-based index.")
+                raise ValueError(
+                    "time_series must be provided if the first array does not have a time-based index."
+                )
 
         # If the time_series is an index, convert it to a Series for easier handling
         if isinstance(time_series, pd.Index):
             time_series = pd.Series(time_series, index=time_series)
 
         # Iterate through the splits and print summary information
-        for split_number, (X_train, X_forecast) in enumerate(self.split(X, time_series=time_series), start=1):
+        for split_number, (X_train, X_forecast) in enumerate(
+            self.split(X, time_series=time_series), start=1
+        ):
             # Get the start and end dates for the training and forecast periods
             train_start_date = time_series[X_train.index[0]]
             train_end_date = time_series[X_train.index[-1]]
@@ -254,21 +264,21 @@ class TimeSeriesCV(TimeBasedSplit):
             print(f"Train Shape: {X_train.shape}, Forecast Shape: {X_forecast.shape}")
             print(f"Train Period: {train_start_date} to {train_end_date}")
             print(f"Forecast Period: {forecast_start_date} to {forecast_end_date}\n")
-            
+
     def plot(
-        self, 
-        y: pd.Series, 
+        self,
+        y: pd.Series,
         time_series: pd.Series = None,
         color_palette: Optional[Union[dict, list, str]] = None,
-        bar_height: float = 0.3,  
+        bar_height: float = 0.3,
         title: str = "Time Series Cross-Validation Plot",
         x_lab: str = "",
         y_lab: str = "Fold",
-        x_axis_date_labels: str = None, 
+        x_axis_date_labels: str = None,
         base_size: float = 11,
         width: Optional[int] = None,
         height: Optional[int] = None,
-        engine: str = "plotly"
+        engine: str = "plotly",
     ):
         """Plots the cross-validation folds on a single plot with folds on the y-axis and dates on the x-axis using filled Scatter traces.
 
@@ -311,14 +321,18 @@ class TimeSeriesCV(TimeBasedSplit):
                 color_palette.get("forecast", list(palette_timetk().values())[1]),
             ]
         elif not isinstance(color_palette, list):
-            raise ValueError("Invalid `color_palette` parameter. It must be a dictionary, list, or string.")
+            raise ValueError(
+                "Invalid `color_palette` parameter. It must be a dictionary, list, or string."
+            )
 
         # Use the index of y if time_series is not provided
         if time_series is None:
             if isinstance(y, pd.Series):
                 time_series = y.index
             else:
-                raise ValueError("time_series must be provided if y does not have a time-based index.")
+                raise ValueError(
+                    "time_series must be provided if y does not have a time-based index."
+                )
 
         # Ensure time_series is a DatetimeIndex
         if not isinstance(time_series, pd.DatetimeIndex):
@@ -370,36 +384,40 @@ class TimeSeriesCV(TimeBasedSplit):
             y_train = [y0, y0, y1, y1, y0]
 
             # Add Scatter trace for the training period
-            fig.add_trace(go.Scatter(
-                x=x_train,
-                y=y_train,
-                mode='lines',
-                fill='toself',
-                fillcolor=color_palette[0],
-                line=dict(width=0),
-                hoverinfo='text',
-                hoverlabel=dict(font_size=base_size * 0.8),
-                text=f"Fold {fold}<br>Train Period<br>{ts_date.date()} to {te_date.date()}",
-                showlegend=False,
-            ))
+            fig.add_trace(
+                go.Scatter(
+                    x=x_train,
+                    y=y_train,
+                    mode="lines",
+                    fill="toself",
+                    fillcolor=color_palette[0],
+                    line=dict(width=0),
+                    hoverinfo="text",
+                    hoverlabel=dict(font_size=base_size * 0.8),
+                    text=f"Fold {fold}<br>Train Period<br>{ts_date.date()} to {te_date.date()}",
+                    showlegend=False,
+                )
+            )
 
             # Create coordinates for the forecast period rectangle
             x_forecast = [fs_date, fe_date, fe_date, fs_date, fs_date]
             y_forecast = [y0, y0, y1, y1, y0]
 
             # Add Scatter trace for the forecast period
-            fig.add_trace(go.Scatter(
-                x=x_forecast,
-                y=y_forecast,
-                mode='lines',
-                fill='toself',
-                fillcolor=color_palette[1],
-                line=dict(width=0),
-                hoverinfo='text',
-                hoverlabel=dict(font_size=base_size * 0.8),
-                text=f"Fold {fold}<br>Forecast Period<br>{fs_date.date()} to {fe_date.date()}",
-                showlegend=False,
-            ))
+            fig.add_trace(
+                go.Scatter(
+                    x=x_forecast,
+                    y=y_forecast,
+                    mode="lines",
+                    fill="toself",
+                    fillcolor=color_palette[1],
+                    line=dict(width=0),
+                    hoverinfo="text",
+                    hoverlabel=dict(font_size=base_size * 0.8),
+                    text=f"Fold {fold}<br>Forecast Period<br>{fs_date.date()} to {fe_date.date()}",
+                    showlegend=False,
+                )
+            )
 
         # Update layout
         fig.update_layout(
@@ -407,17 +425,17 @@ class TimeSeriesCV(TimeBasedSplit):
             xaxis_title=x_lab,
             yaxis_title=y_lab,
             xaxis=dict(
-                type='date',
+                type="date",
                 tickformat=x_axis_date_labels,
                 tickfont=dict(size=base_size * 0.8),
                 showgrid=True,
             ),
             yaxis=dict(
-                tickmode='array',
+                tickmode="array",
                 tickvals=fold_positions,
-                ticktext=[f'Fold {i}' for i in fold_positions],
+                ticktext=[f"Fold {i}" for i in fold_positions],
                 range=[0.5, num_folds + 0.5],
-                autorange='reversed',  # Place Fold 1 at the top
+                autorange="reversed",  # Place Fold 1 at the top
                 tickfont=dict(size=base_size * 0.8),
                 showgrid=False,
             ),
@@ -434,12 +452,11 @@ class TimeSeriesCV(TimeBasedSplit):
         return fig
 
 
-
 class TimeSeriesCVSplitter(BaseCrossValidator):
     """The `TimeSeriesCVSplitter` is a scikit-learn compatible cross-validator using `TimeSeriesCV`.
 
     This cross-validator generates splits based on time values, making it suitable for time series data.
-    
+
     Parameters:
     -----------
     frequency: str
@@ -460,26 +477,26 @@ class TimeSeriesCVSplitter(BaseCrossValidator):
         Type of window, either "rolling" or "expanding".
     mode: str
         Order of split generation, "forward" or "backward".
-    start_dt: pd.Timestamp 
+    start_dt: pd.Timestamp
         Start date for the time period.
     end_dt: pd.Timestamp
         End date for the time period.
     split_limit: int
         Maximum number of splits to generate. If None, all possible splits will be generated.
-        
+
     Raises:
     -------
-    ValueError: 
+    ValueError:
         If the input arrays are incompatible in length with the time series.
-        
+
     Returns:
     --------
     A generator of tuples of arrays containing the training and forecast data.
-    
+
     See Also:
     --------
     TimeSeriesCV
-    
+
     Examples
     --------
     ``` {python}
@@ -487,7 +504,7 @@ class TimeSeriesCVSplitter(BaseCrossValidator):
     import numpy as np
 
     from pytimetk import TimeSeriesCVSplitter
-    
+
     start_dt = pd.Timestamp(2023, 1, 1)
     end_dt = pd.Timestamp(2023, 1, 31)
 
@@ -507,18 +524,18 @@ class TimeSeriesCVSplitter(BaseCrossValidator):
         stride=1,
         window="rolling",
     )
-    
+
     cv
     ```
-    
+
     ``` {python}
     # Insepct the cross-validation splits
     cv.splitter.plot(y, time_series = time_series)
     ```
-    
+
     ``` {python}
     # Using the TimeSeriesCVSplitter in a scikit-learn CV model
-    
+
     from sklearn.linear_model import Ridge
     from sklearn.model_selection import RandomizedSearchCV
 
@@ -535,7 +552,7 @@ class TimeSeriesCVSplitter(BaseCrossValidator):
         cv=cv,
         n_jobs=-1,
     ).fit(X, y)
-    
+
     random_search_cv.best_estimator_
     ```
     """
@@ -563,7 +580,7 @@ class TimeSeriesCVSplitter(BaseCrossValidator):
             stride=stride,
             window=window,
             mode=mode,
-            split_limit=split_limit
+            split_limit=split_limit,
         )
         self.time_series_ = time_series
         self.start_dt_ = start_dt
@@ -581,11 +598,11 @@ class TimeSeriesCVSplitter(BaseCrossValidator):
 
         Parameters:
         -----------
-        X: 
+        X:
             Optional input features (ignored, for compatibility with scikit-learn).
-        y: 
+        y:
             Optional target variable (ignored, for compatibility with scikit-learn).
-        groups: 
+        groups:
             Optional group labels (ignored, for compatibility with scikit-learn).
 
         Yields:
@@ -631,13 +648,14 @@ class TimeSeriesCVSplitter(BaseCrossValidator):
     ) -> None:
         """Validates that input arrays match the expected size."""
         if X is not None and len(X) != size:
-            raise ValueError(f"Invalid shape: X has {len(X)} elements, expected {size}.")
+            raise ValueError(
+                f"Invalid shape: X has {len(X)} elements, expected {size}."
+            )
         if y is not None and len(y) != size:
-            raise ValueError(f"Invalid shape: y has {len(y)} elements, expected {size}.")
+            raise ValueError(
+                f"Invalid shape: y has {len(y)} elements, expected {size}."
+            )
         if groups is not None and len(groups) != size:
-            raise ValueError(f"Invalid shape: groups has {len(groups)} elements, expected {size}.")
-
-
-
-    
-    
+            raise ValueError(
+                f"Invalid shape: groups has {len(groups)} elements, expected {size}."
+            )

@@ -6,18 +6,18 @@ make_future_timeseries(idx, length_out, freq=None, force_regular=False)
 
 Make future dates for a time series.
 
-The function `make_future_timeseries` takes a pandas Series or DateTimeIndex 
-and generates a future sequence of dates based on the frequency of the input 
+The function `make_future_timeseries` takes a pandas Series or DateTimeIndex
+and generates a future sequence of dates based on the frequency of the input
 series.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                             | Default    |
-|---------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| idx           | pd.Series or pd.DateTimeIndex | The `idx` parameter is the input time series data. It can be either a  pandas Series or a pandas DateTimeIndex. It represents the existing dates  in the time series.                                                                                                                                                                                                                                                                   | _required_ |
-| length_out    | int                           | The parameter `length_out` is an integer that represents the number of  future dates to generate for the time series.                                                                                                                                                                                                                                                                                                                   | _required_ |
-| freq          | str                           | The `frequency` parameter is a string that specifies the frequency of the  future dates. If `frequency` is set to `None`, the frequency of the future  dates will be inferred from the input data (e.g. business calendars might  be used). The default value is `None`.                                                                                                                                                                | `None`     |
-| force_regular | bool                          | The `force_regular` parameter is a boolean flag that determines whether  the frequency of the future dates should be forced to be regular. If  `force_regular` is set to `True`, the frequency of the future dates will  be forced to be regular. If `force_regular` is set to `False`, the  frequency of the future dates will be inferred from the input data (e.g.  business calendars might be used). The default value is `False`. | `False`    |
+| Name          | Type                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                        | Default    |
+|---------------|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| idx           | pd.Series or pd.DateTimeIndex | The `idx` parameter is the input time series data. It can be either a pandas Series or a pandas DateTimeIndex. It represents the existing dates in the time series.                                                                                                                                                                                                                                                                | _required_ |
+| length_out    | int                           | The parameter `length_out` is an integer that represents the number of future dates to generate for the time series.                                                                                                                                                                                                                                                                                                               | _required_ |
+| freq          | str                           | The `frequency` parameter is a string that specifies the frequency of the future dates. If `frequency` is set to `None`, the frequency of the future dates will be inferred from the input data (e.g. business calendars might be used). The default value is `None`.                                                                                                                                                              | `None`     |
+| force_regular | bool                          | The `force_regular` parameter is a boolean flag that determines whether the frequency of the future dates should be forced to be regular. If `force_regular` is set to `True`, the frequency of the future dates will be forced to be regular. If `force_regular` is set to `False`, the frequency of the future dates will be inferred from the input data (e.g. business calendars might be used). The default value is `False`. | `False`    |
 
 ## Returns {.doc-section .doc-section-returns}
 
@@ -31,7 +31,7 @@ series.
 import pandas as pd
 import pytimetk as tk
 
-# Works with a single date (must provide a length out and frequency if only 
+# Works with a single date (must provide a length out and frequency if only
 # 1 date is provided)
 tk.make_future_timeseries("2011-01-01", 5, "D")
 ```
@@ -83,6 +83,6 @@ tk.make_future_timeseries(dates, 4)
 ```
 
 ```{python}
-# Irregular Dates: Business Days (Force Regular)    
+# Irregular Dates: Business Days (Force Regular)
 tk.make_future_timeseries(dates, 4, force_regular=True)
 ```

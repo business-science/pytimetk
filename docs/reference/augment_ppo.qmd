@@ -35,21 +35,21 @@ Calculate PPO for a given financial instrument using either pandas or polars eng
 ## Notes {.doc-section .doc-section-notes}
 
 
-The Percentage Price Oscillator (PPO) is a momentum oscillator 
-that measures the difference between two moving averages as a 
+The Percentage Price Oscillator (PPO) is a momentum oscillator
+that measures the difference between two moving averages as a
 percentage of the larger moving average. The PPO is best used
-to confirm the direction of the price trend and gauge its 
-momentum. 
+to confirm the direction of the price trend and gauge its
+momentum.
 
-The PPO is calculated by subtracting a long-term EMA from a 
+The PPO is calculated by subtracting a long-term EMA from a
 short-term EMA, then dividing the result by the long-term EMA,
 and finally multiplying by 100.
 
-Advantages Over MACD: The PPO's percentage-based calculation 
-allows for easier comparisons between different securities, 
+Advantages Over MACD: The PPO's percentage-based calculation
+allows for easier comparisons between different securities,
 regardless of their price levels. This is a distinct advantage
 over the MACD, which provides absolute values and can be less
-meaningful when comparing stocks with significantly different 
+meaningful when comparing stocks with significantly different
 prices.
 
 ## Examples {.doc-section .doc-section-examples}
@@ -69,10 +69,10 @@ df_ppo = (
     df
         .groupby('symbol')
         .augment_ppo(
-            date_column = 'date', 
-            close_column = 'close', 
-            fast_period = 12, 
-            slow_period = 26, 
+            date_column = 'date',
+            close_column = 'close',
+            fast_period = 12,
+            slow_period = 26,
             engine = "pandas"
         )
 )
@@ -86,10 +86,10 @@ df_ppo = (
     df
         .groupby('symbol')
         .augment_ppo(
-            date_column = 'date', 
-            close_column = 'close', 
-            fast_period = 12, 
-            slow_period = 26, 
+            date_column = 'date',
+            close_column = 'close',
+            fast_period = 12,
+            slow_period = 26,
             engine = "polars"
         )
 )

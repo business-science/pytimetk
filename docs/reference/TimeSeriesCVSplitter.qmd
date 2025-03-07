@@ -42,7 +42,7 @@ window: str
     Type of window, either "rolling" or "expanding".
 mode: str
     Order of split generation, "forward" or "backward".
-start_dt: pd.Timestamp 
+start_dt: pd.Timestamp
     Start date for the time period.
 end_dt: pd.Timestamp
     End date for the time period.
@@ -51,7 +51,7 @@ split_limit: int
 
 ## Raises: {.doc-section .doc-section-raises}
 
-ValueError: 
+ValueError:
     If the input arrays are incompatible in length with the time series.
 
 ## Returns: {.doc-section .doc-section-returns}
@@ -146,11 +146,11 @@ Generates train and test indices for cross-validation.
 
 #### Parameters: {.doc-section .doc-section-parameters}
 
-X: 
+X:
     Optional input features (ignored, for compatibility with scikit-learn).
-y: 
+y:
     Optional target variable (ignored, for compatibility with scikit-learn).
-groups: 
+groups:
     Optional group labels (ignored, for compatibility with scikit-learn).
 
 #### Yields: {.doc-section .doc-section-yields}

@@ -4,23 +4,23 @@
 get_date_summary(idx, engine='pandas')
 ```
 
-Returns a summary of the date-related information, including the number of 
+Returns a summary of the date-related information, including the number of
 dates, the time zone, the start date, and the end date.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name   | Type                          | Description                                                                                                                                                   | Default    |
-|--------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| idx    | pd.Series or pd.DateTimeIndex | The parameter `idx` can be either a pandas Series or a pandas  DateTimeIndex. It represents the dates or timestamps for which we want  to generate a summary. | _required_ |
-| engine | str                           | The `engine` parameter is used to specify the engine to use for  generating a date summary. It can be either "pandas" or "polars".  Default is "pandas".      | `'pandas'` |
+| Name   | Type                          | Description                                                                                                                                                 | Default    |
+|--------|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| idx    | pd.Series or pd.DateTimeIndex | The parameter `idx` can be either a pandas Series or a pandas DateTimeIndex. It represents the dates or timestamps for which we want to generate a summary. | _required_ |
+| engine | str                           | The `engine` parameter is used to specify the engine to use for generating a date summary. It can be either "pandas" or "polars". Default is "pandas".      | `'pandas'` |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type         | Description                                                                                                                                                                                                                                |
-|--------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|        | pd.DataFrame | A pandas DataFrame with the following columns:  - `date_n`: The number of dates in the index. - `date_tz`: The time zone of the dates in the index. - `date_start`: The first date in the index. - `date_end`: The last date in the index. |
+| Name   | Type         | Description                                                                                                                                                                                                                               |
+|--------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|        | pd.DataFrame | A pandas DataFrame with the following columns: - `date_n`: The number of dates in the index. - `date_tz`: The time zone of the dates in the index. - `date_start`: The first date in the index. - `date_end`: The last date in the index. |
 
 ## Notes {.doc-section .doc-section-notes}
 
-- When using the 'polars' engine, timezone information is derived from the 
+- When using the 'polars' engine, timezone information is derived from the
   pandas input before conversion, as Polars does not natively preserve it.

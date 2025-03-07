@@ -6,7 +6,7 @@ Visualize time series data with one line of code.
 
 | | |
 | --- | --- |
-| [plot_timeseries](plot_timeseries.qmd#pytimetk.plot_timeseries) | Creates time series plots using different plotting engines such as Plotnine,  |
+| [plot_timeseries](plot_timeseries.qmd#pytimetk.plot_timeseries) | Creates time series plots using different plotting engines such as Plotnine, |
 
 ## 🔥 Wrangling Pandas Time Series DataFrames
 
@@ -27,9 +27,9 @@ Detect anomalies in time series data.
 | | |
 | --- | --- |
 | [anomalize](anomalize.qmd#pytimetk.anomalize) | Detects anomalies in time series data, either for a single time |
-| [plot_anomalies](plot_anomalies.qmd#pytimetk.plot_anomalies) | Creates plot of anomalies in time series data using Plotly, Matplotlib,  |
-| [plot_anomalies_decomp](plot_anomalies_decomp.qmd#pytimetk.plot_anomalies_decomp) | The `plot_anomalies_decomp` function takes in data from the `anomalize()`  |
-| [plot_anomalies_cleaned](plot_anomalies_cleaned.qmd#pytimetk.plot_anomalies_cleaned) | The `plot_anomalies_cleaned` function takes in data from the `anomalize()`  |
+| [plot_anomalies](plot_anomalies.qmd#pytimetk.plot_anomalies) | Creates plot of anomalies in time series data using Plotly, Matplotlib, |
+| [plot_anomalies_decomp](plot_anomalies_decomp.qmd#pytimetk.plot_anomalies_decomp) | The `plot_anomalies_decomp` function takes in data from the `anomalize()` |
+| [plot_anomalies_cleaned](plot_anomalies_cleaned.qmd#pytimetk.plot_anomalies_cleaned) | The `plot_anomalies_cleaned` function takes in data from the `anomalize()` |
 
 ## 🌪️ Correlation Funnel
 
@@ -37,7 +37,7 @@ Visualize correlation on any tabular dataset (not just for Time Series).
 
 | | |
 | --- | --- |
-| [binarize](binarize.qmd#pytimetk.binarize) | The `binarize` function prepares data for `correlate`, which is used for analyzing correlationfunnel plots.  |
+| [binarize](binarize.qmd#pytimetk.binarize) | The `binarize` function prepares data for `correlate`, which is used for analyzing correlationfunnel plots. |
 | [correlate](correlate.qmd#pytimetk.correlate) | The `correlate` function calculates the correlation between a target variable and all other |
 | [plot_correlation_funnel](plot_correlation_funnel.qmd#pytimetk.plot_correlation_funnel) | The `plot_correlation_funnel` function generates a correlation funnel plot using either Plotly or |
 
@@ -47,20 +47,20 @@ Adding Features to Time Series DataFrames (Augmenting)
 
 | | |
 | --- | --- |
-| [augment_timeseries_signature](augment_timeseries_signature.qmd#pytimetk.augment_timeseries_signature) | The function `augment_timeseries_signature` takes a DataFrame and a date  |
-| [augment_holiday_signature](augment_holiday_signature.qmd#pytimetk.augment_holiday_signature) | Engineers 4 different holiday features from a single datetime for 137 countries  |
+| [augment_timeseries_signature](augment_timeseries_signature.qmd#pytimetk.augment_timeseries_signature) | The function `augment_timeseries_signature` takes a DataFrame and a date |
+| [augment_holiday_signature](augment_holiday_signature.qmd#pytimetk.augment_holiday_signature) | Engineers 4 different holiday features from a single datetime for 137 countries |
 | [augment_lags](augment_lags.qmd#pytimetk.augment_lags) | Adds lags to a Pandas DataFrame or DataFrameGroupBy object. |
 | [augment_leads](augment_leads.qmd#pytimetk.augment_leads) | Adds leads to a Pandas DataFrame or DataFrameGroupBy object. |
 | [augment_diffs](augment_diffs.qmd#pytimetk.augment_diffs) | Adds differences and percentage difference (percentage change) to a Pandas DataFrame or DataFrameGroupBy object. |
 | [augment_pct_change](augment_pct_change.qmd#pytimetk.augment_pct_change) | Adds percentage difference (percentage change) to a Pandas DataFrame or DataFrameGroupBy object. |
 | [augment_rolling](augment_rolling.qmd#pytimetk.augment_rolling) | Apply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame. |
-| [augment_rolling_apply](augment_rolling_apply.qmd#pytimetk.augment_rolling_apply) | Apply one or more DataFrame-based rolling functions and window sizes to one  |
+| [augment_rolling_apply](augment_rolling_apply.qmd#pytimetk.augment_rolling_apply) | Apply one or more DataFrame-based rolling functions and window sizes to one |
 | [augment_expanding](augment_expanding.qmd#pytimetk.augment_expanding) | Apply one or more Series-based expanding functions to one or more columns of a DataFrame. |
 | [augment_expanding_apply](augment_expanding_apply.qmd#pytimetk.augment_expanding_apply) | Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame. |
-| [augment_ewm](augment_ewm.qmd#pytimetk.augment_ewm) | Add Exponential Weighted Moving (EWM) window functions to a DataFrame or  |
+| [augment_ewm](augment_ewm.qmd#pytimetk.augment_ewm) | Add Exponential Weighted Moving (EWM) window functions to a DataFrame or |
 | [augment_fourier](augment_fourier.qmd#pytimetk.augment_fourier) | Adds Fourier transforms to a Pandas DataFrame or DataFrameGroupBy object. |
-| [augment_hilbert](augment_hilbert.qmd#pytimetk.augment_hilbert) | Apply the Hilbert transform to specified columns of a DataFrame or  |
-| [augment_wavelet](augment_wavelet.qmd#pytimetk.augment_wavelet) | Apply the Wavely transform to specified columns of a DataFrame or  |
+| [augment_hilbert](augment_hilbert.qmd#pytimetk.augment_hilbert) | Apply the Hilbert transform to specified columns of a DataFrame or |
+| [augment_wavelet](augment_wavelet.qmd#pytimetk.augment_wavelet) | Apply the Wavely transform to specified columns of a DataFrame or |
 
 ## 📎 TS Features
 
@@ -69,7 +69,7 @@ Python implementation of the R package `tsfeatures`.
 | | |
 | --- | --- |
 | [ts_features](ts_features.qmd#pytimetk.ts_features) | Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the `tsfeatures` package. |
-| [ts_summary](ts_summary.qmd#pytimetk.ts_summary) | Computes summary statistics for a time series data, either for the entire  |
+| [ts_summary](ts_summary.qmd#pytimetk.ts_summary) | Computes summary statistics for a time series data, either for the entire |
 
 ## 📈 Time Series Cross Validation (TSCV)
 
@@ -77,7 +77,7 @@ Time series cross validation.
 
 | | |
 | --- | --- |
-| [TimeSeriesCV](TimeSeriesCV.qmd#pytimetk.TimeSeriesCV) | `TimeSeriesCV` is a subclass of `TimeBasedSplit` with default mode set to 'backward'  |
+| [TimeSeriesCV](TimeSeriesCV.qmd#pytimetk.TimeSeriesCV) | `TimeSeriesCV` is a subclass of `TimeBasedSplit` with default mode set to 'backward' |
 | [TimeSeriesCVSplitter](TimeSeriesCVSplitter.qmd#pytimetk.TimeSeriesCVSplitter) | The `TimeSeriesCVSplitter` is a scikit-learn compatible cross-validator using `TimeSeriesCV`. |
 
 ## 💹 Finance Module (Momentum Indicators)
@@ -95,7 +95,7 @@ Momentum indicators for financial time series data.
 | [augment_stochastic_oscillator](augment_stochastic_oscillator.qmd#pytimetk.augment_stochastic_oscillator) | The `augment_stochastic_oscillator` function calculates the Stochastic Oscillator (%K and %D) |
 | [augment_hurst_exponent](augment_hurst_exponent.qmd#pytimetk.augment_hurst_exponent) | Calculate the Hurst Exponent on a rolling window for a financial time series. Used for detecting trends and mean-reversion. |
 | [augment_qsmomentum](augment_qsmomentum.qmd#pytimetk.augment_qsmomentum) | The function `augment_qsmomentum` calculates Quant Science Momentum for financial data. |
-| [augment_fip_momentum](augment_fip_momentum.qmd#pytimetk.augment_fip_momentum) | Calculate the "Frog In The Pan" (FIP) momentum metric over one or more rolling windows  |
+| [augment_fip_momentum](augment_fip_momentum.qmd#pytimetk.augment_fip_momentum) | Calculate the "Frog In The Pan" (FIP) momentum metric over one or more rolling windows |
 
 ## 💹 Finance Module (Volatility, Risk/Reward and Regime Indicators)
 
@@ -104,7 +104,7 @@ Volatility, Risk-Reward, and Regime indicators for financial time series data.
 | | |
 | --- | --- |
 | [augment_bbands](augment_bbands.qmd#pytimetk.augment_bbands) | The `augment_bbands` function is used to calculate Bollinger Bands for a given dataset and return |
-| [augment_atr](augment_atr.qmd#pytimetk.augment_atr) | The `augment_atr` function is used to calculate Average True Range (ATR) and  |
+| [augment_atr](augment_atr.qmd#pytimetk.augment_atr) | The `augment_atr` function is used to calculate Average True Range (ATR) and |
 | [augment_drawdown](augment_drawdown.qmd#pytimetk.augment_drawdown) | The augment_drawdown function calculates the drawdown metrics for a financial time series |
 | [augment_rolling_risk_metrics](augment_rolling_risk_metrics.qmd#pytimetk.augment_rolling_risk_metrics) | The augment_rolling_risk_metrics function calculates rolling risk-adjusted performance |
 | [augment_ewma_volatility](augment_ewma_volatility.qmd#pytimetk.augment_ewma_volatility) | Calculate Exponentially Weighted Moving Average (EWMA) volatility for a financial time series. |
@@ -117,16 +117,16 @@ Time series functions that generate / manipulate Pandas Series.
 | | |
 | --- | --- |
 | [make_future_timeseries](make_future_timeseries.qmd#pytimetk.make_future_timeseries) | Make future dates for a time series. |
-| [make_weekday_sequence](make_weekday_sequence.qmd#pytimetk.make_weekday_sequence) | Generate a sequence of weekday dates within a specified date range,  |
-| [make_weekend_sequence](make_weekend_sequence.qmd#pytimetk.make_weekend_sequence) | Generate a sequence of weekend dates within a specified date range,  |
-| [get_date_summary](get_date_summary.qmd#pytimetk.get_date_summary) | Returns a summary of the date-related information, including the number of  |
+| [make_weekday_sequence](make_weekday_sequence.qmd#pytimetk.make_weekday_sequence) | Generate a sequence of weekday dates within a specified date range, |
+| [make_weekend_sequence](make_weekend_sequence.qmd#pytimetk.make_weekend_sequence) | Generate a sequence of weekend dates within a specified date range, |
+| [get_date_summary](get_date_summary.qmd#pytimetk.get_date_summary) | Returns a summary of the date-related information, including the number of |
 | [get_frequency_summary](get_frequency_summary.qmd#pytimetk.get_frequency_summary) | More robust version of pandas inferred frequency. |
 | [get_diff_summary](get_diff_summary.qmd#pytimetk.get_diff_summary) | Calculates summary statistics of the time differences between consecutive values in a datetime index. |
 | [get_frequency](get_frequency.qmd#pytimetk.get_frequency) | Get the frequency of a pandas Series or DatetimeIndex. |
-| [get_seasonal_frequency](get_seasonal_frequency.qmd#pytimetk.get_seasonal_frequency) | The `get_seasonal_frequency` function returns the seasonal period of a given  |
-| [get_trend_frequency](get_trend_frequency.qmd#pytimetk.get_trend_frequency) | The `get_trend_frequency` function returns the trend period of a given time  |
+| [get_seasonal_frequency](get_seasonal_frequency.qmd#pytimetk.get_seasonal_frequency) | The `get_seasonal_frequency` function returns the seasonal period of a given |
+| [get_trend_frequency](get_trend_frequency.qmd#pytimetk.get_trend_frequency) | The `get_trend_frequency` function returns the trend period of a given time |
 | [get_timeseries_signature](get_timeseries_signature.qmd#pytimetk.get_timeseries_signature) | Convert a timestamp to a set of 29 time series features. |
-| [get_holiday_signature](get_holiday_signature.qmd#pytimetk.get_holiday_signature) | Engineers 4 different holiday features from a single datetime for 137 countries  |
+| [get_holiday_signature](get_holiday_signature.qmd#pytimetk.get_holiday_signature) | Engineers 4 different holiday features from a single datetime for 137 countries |
 
 ## 🛠️ Date Utilities
 
@@ -137,9 +137,9 @@ Helper functions to make your life easier.
 | [floor_date](floor_date.qmd#pytimetk.floor_date) | Robust date flooring. |
 | [ceil_date](ceil_date.qmd#pytimetk.ceil_date) | Robust date ceiling. |
 | [is_holiday](is_holiday.qmd#pytimetk.is_holiday) | Check if a given list of dates are holidays for a specified country. |
-| [week_of_month](week_of_month.qmd#pytimetk.week_of_month) | The "week_of_month" function calculates the week number of a given date  |
-| [timeseries_unit_frequency_table](timeseries_unit_frequency_table.qmd#pytimetk.timeseries_unit_frequency_table) | The function `timeseries_unit_frequency_table` returns a pandas DataFrame  |
-| [time_scale_template](time_scale_template.qmd#pytimetk.time_scale_template) | The function `time_scale_template` returns a table with time scale  |
+| [week_of_month](week_of_month.qmd#pytimetk.week_of_month) | The "week_of_month" function calculates the week number of a given date |
+| [timeseries_unit_frequency_table](timeseries_unit_frequency_table.qmd#pytimetk.timeseries_unit_frequency_table) | The function `timeseries_unit_frequency_table` returns a pandas DataFrame |
+| [time_scale_template](time_scale_template.qmd#pytimetk.time_scale_template) | The function `time_scale_template` returns a table with time scale |
 
 ## 🛠️ Visualization Utilities
 
@@ -147,15 +147,15 @@ Helper functions to make your life easier.
 
 | | |
 | --- | --- |
-| [theme_timetk](theme_timetk.qmd#pytimetk.theme_timetk) | Returns a `plotnine` theme with timetk styles applied, allowing for  |
-| [palette_timetk](palette_timetk.qmd#pytimetk.palette_timetk) | The function `palette_timetk` returns a dictionary of color codes for  |
+| [theme_timetk](theme_timetk.qmd#pytimetk.theme_timetk) | Returns a `plotnine` theme with timetk styles applied, allowing for |
+| [palette_timetk](palette_timetk.qmd#pytimetk.palette_timetk) | The function `palette_timetk` returns a dictionary of color codes for |
 
 ## Extra Pandas Helpers (That Help Beyond Just Time Series)
 
 | | |
 | --- | --- |
-| [glimpse](glimpse.qmd#pytimetk.glimpse) | Takes a pandas DataFrame and prints a summary of its dimensions, column  |
-| [parallel_apply](parallel_apply.qmd#pytimetk.parallel_apply) | The `parallel_apply` function parallelizes the application of a function on  |
+| [glimpse](glimpse.qmd#pytimetk.glimpse) | Takes a pandas DataFrame and prints a summary of its dimensions, column |
+| [parallel_apply](parallel_apply.qmd#pytimetk.parallel_apply) | The `parallel_apply` function parallelizes the application of a function on |
 | [progress_apply](progress_apply.qmd#pytimetk.progress_apply) | Adds a progress bar to pandas apply(). |
 | [drop_zero_variance](drop_zero_variance.qmd#pytimetk.drop_zero_variance) | The function `drop_zero_variance` takes a pandas DataFrame as input and returns a new DataFrame with |
 | [transform_columns](transform_columns.qmd#pytimetk.transform_columns) | The function `transform_columns` applies a user-provided function to specified columns in a pandas DataFrame. |

@@ -4,15 +4,15 @@
 time_scale_template(wide_format=False, engine='pandas')
 ```
 
-The function `time_scale_template` returns a table with time scale 
+The function `time_scale_template` returns a table with time scale
 information in either wide or long format.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name        | Type   | Description                                                                                                                                                                                                                                                                                 | Default    |
-|-------------|--------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| wide_format | bool   | The wide_format parameter determines the format of the output table. If  wide_format is set to True, the table will be transposed.                                                                                                                                                          | `False`    |
-| engine      | str    | The `engine` parameter is used to specify the engine to use for  generating a date summary. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library    for generating the time scale information. | `'pandas'` |
+| Name        | Type   | Description                                                                                                                                                                                                                                                                              | Default    |
+|-------------|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| wide_format | bool   | The wide_format parameter determines the format of the output table. If wide_format is set to True, the table will be transposed.                                                                                                                                                        | `False`    |
+| engine      | str    | The `engine` parameter is used to specify the engine to use for generating a date summary. It can be either "pandas" or "polars".  - The default value is "pandas".  - When "polars", the function will internally use the `polars` library   for generating the time scale information. | `'pandas'` |
 
 ## Examples {.doc-section .doc-section-examples}
 

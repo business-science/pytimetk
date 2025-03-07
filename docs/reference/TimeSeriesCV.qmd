@@ -15,7 +15,7 @@ TimeSeriesCV(
 )
 ```
 
-`TimeSeriesCV` is a subclass of `TimeBasedSplit` with default mode set to 'backward' 
+`TimeSeriesCV` is a subclass of `TimeBasedSplit` with default mode set to 'backward'
 and an optional `split_limit` to return the first `n` slices of time series cross-validation sets.
 
 ## Parameters {.doc-section .doc-section-parameters}
@@ -41,7 +41,7 @@ ValueError:
 - If `mode` is not one of "forward" or "backward"
 - If `train_size`, `forecast_horizon`, `gap` or `stride` are not strictly positive.
 
-TypeError: 
+TypeError:
 
 If `train_size`, `forecast_horizon`, `gap` or `stride` are not of type `int`.
 
@@ -132,9 +132,9 @@ TimeSeriesCV.glimpse(*arrays, time_series=None)
 Prints summary information about the splits, focusing on the first two arrays.
 
 Arguments:
-    *arrays: 
+    *arrays:
         The arrays to split. Only the first one will be used for summary information.
-    time_series: 
+    time_series:
         The time series used for splitting. If not provided, the index of the first array is used. Default is None.
 
 ### plot { #pytimetk.TimeSeriesCV.plot }
@@ -191,15 +191,15 @@ Returns a generator of split arrays.
 
 #### Parameters {.doc-section .doc-section-parameters}
 
-| Name              | Type                       | Description                                                                                                                                                                             | Default   |
-|-------------------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
-| *arrays           | TL                         | The arrays to split. Must have the same length as `time_series`.                                                                                                                        | `()`      |
-| time_series       | SeriesLike\[DateTimeLike\] | The time series used to create boolean masks for splits. If not provided, the method will try  to use the index of the first array (if it is a DataFrame or Series) as the time series. | `None`    |
-| start_dt          | NullableDatetime           | The start of the time period. If provided, it is used in place of `time_series.min()`.                                                                                                  | `None`    |
-| end_dt            | NullableDatetime           | The end of the time period. If provided, it is used in place of `time_series.max()`.                                                                                                    | `None`    |
-| return_splitstate | bool                       | Whether to return the `SplitState` instance for each split.                                                                                                                             | `False`   |
+| Name              | Type                       | Description                                                                                                                                                                            | Default   |
+|-------------------|----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| *arrays           | TL                         | The arrays to split. Must have the same length as `time_series`.                                                                                                                       | `()`      |
+| time_series       | SeriesLike\[DateTimeLike\] | The time series used to create boolean masks for splits. If not provided, the method will try to use the index of the first array (if it is a DataFrame or Series) as the time series. | `None`    |
+| start_dt          | NullableDatetime           | The start of the time period. If provided, it is used in place of `time_series.min()`.                                                                                                 | `None`    |
+| end_dt            | NullableDatetime           | The end of the time period. If provided, it is used in place of `time_series.max()`.                                                                                                   | `None`    |
+| return_splitstate | bool                       | Whether to return the `SplitState` instance for each split.                                                                                                                            | `False`   |
 
 #### Returns: {.doc-section .doc-section-returns}
 
-A generator of tuples of arrays containing the training and forecast data. If `split_limit` is set, 
+A generator of tuples of arrays containing the training and forecast data. If `split_limit` is set,
 yields only up to `split_limit` splits.

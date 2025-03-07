@@ -6,14 +6,14 @@ get_available_datasets()
 
 Get a list of 12 datasets that can be loaded with `pytimetk.load_dataset`.
 
-The `get_available_datasets` function returns a sorted list of available 
+The `get_available_datasets` function returns a sorted list of available
 dataset names from the `pytimetk.datasets` module. The available datasets are:
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type   | Description                                                                                                                  |
-|--------|--------|------------------------------------------------------------------------------------------------------------------------------|
-|        | list   | The function `get_available_datasets` returns a sorted list of available  dataset names from the `pytimetk.datasets` module. |
+| Name   | Type   | Description                                                                                                                 |
+|--------|--------|-----------------------------------------------------------------------------------------------------------------------------|
+|        | list   | The function `get_available_datasets` returns a sorted list of available dataset names from the `pytimetk.datasets` module. |
 
 ## Examples {.doc-section .doc-section-examples}
 

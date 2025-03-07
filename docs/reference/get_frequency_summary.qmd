@@ -8,36 +8,36 @@ More robust version of pandas inferred frequency.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                          | Description                                                                                                                                                                                                                                                                                                                                                  | Default    |
-|---------------|-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| idx           | pd.Series or pd.DateTimeIndex | The `idx` parameter is either a `pd.Series` or a `pd.DateTimeIndex`. It  represents the index of a pandas DataFrame or Series, which contains  datetime values.                                                                                                                                                                                              | _required_ |
-| force_regular | bool                          | The `force_regular` parameter is a boolean flag that determines whether  to force the frequency to be regular. If set to `True`, the function  will convert irregular frequencies to their regular counterparts. For  example, if the inferred frequency is 'B' (business days), it will be  converted to 'D' (calendar days). The default value is `False`. | `False`    |
+| Name          | Type                          | Description                                                                                                                                                                                                                                                                                                                                              | Default    |
+|---------------|-------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| idx           | pd.Series or pd.DateTimeIndex | The `idx` parameter is either a `pd.Series` or a `pd.DateTimeIndex`. It represents the index of a pandas DataFrame or Series, which contains datetime values.                                                                                                                                                                                            | _required_ |
+| force_regular | bool                          | The `force_regular` parameter is a boolean flag that determines whether to force the frequency to be regular. If set to `True`, the function will convert irregular frequencies to their regular counterparts. For example, if the inferred frequency is 'B' (business days), it will be converted to 'D' (calendar days). The default value is `False`. | `False`    |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-|--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|        | pd.DataFrame | A pandas DataFrame with the following columns: - `freq_inferred_unit`: The inferred frequency of the time series from `pandas`. - `freq_median_timedelta`: The median time difference between consecutive     observations in the time series. - `freq_median_scale`: The median time difference between consecutive     observations in the time series, scaled to a common unit. - `freq_median_unit`: The unit of the median time difference between     consecutive observations in the time series. |
+| Name   | Type         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+|--------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|        | pd.DataFrame | A pandas DataFrame with the following columns: - `freq_inferred_unit`: The inferred frequency of the time series from `pandas`. - `freq_median_timedelta`: The median time difference between consecutive    observations in the time series. - `freq_median_scale`: The median time difference between consecutive    observations in the time series, scaled to a common unit. - `freq_median_unit`: The unit of the median time difference between    consecutive observations in the time series. |
 
 ## Examples {.doc-section .doc-section-examples}
 
 ```{python}
 import pytimetk as tk
 import pandas as pd
-    
+
 dates = pd.date_range(start = '2020-01-01', end = '2020-01-10', freq = 'D')
-    
+
 tk.get_frequency_summary(dates)
 ```
-    
+
 ```{python}
 # pandas inferred frequency fails
 dates = pd.to_datetime(["2021-01-01", "2021-02-01"])
-    
+
 # Returns None
 dates.inferred_freq == None
-    
+
 # Returns '1MS'
 tk.get_frequency_summary(dates)
-    
+
 ```

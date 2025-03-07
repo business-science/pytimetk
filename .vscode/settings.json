@@ -11,4 +11,8 @@
     "jupyter.interactiveWindow.textEditor.executeSelection": true,
     "jupyter.notebookFileRoot": "${workspaceFolder}",
     "dbcode.connections": [],
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    }
 }

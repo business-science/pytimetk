@@ -19,24 +19,24 @@ Apply one or more Series-based expanding functions to one or more columns of a D
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                                                            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Default    |
-|---------------|-----------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| data          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | Input data to be processed. Can be a Pandas DataFrame or a GroupBy object.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | _required_ |
-| date_column   | str                                                             | Name of the datetime column. Data is sorted by this column within each group.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | _required_ |
-| value_column  | Union\[str, list\]                                              | Column(s) to which the expanding window functions should be applied. Can be  a single column name or a list.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | _required_ |
-| window_func   | Union\[str, list, Tuple\[str, Callable\]\]                      | The `window_func` parameter in the `augment_expanding` function specifies  the function(s) to be applied to the expanding windows of the value column(s).  1. It can be either:     - A string representing the name of a standard function (e.g., 'mean', 'sum').  2. For custom functions:     - Provide a list of tuples. Each tuple should contain a custom name for        the function and the function itself.     - Each custom function should accept a Pandas Series as its input and        operate on that series. Example: ("range", lambda x: x.max() - x.min())  (See more Examples below.)  Note: If your function needs to operate on multiple columns (i.e., it        requires access to a DataFrame rather than just a Series), consider        using the `augment_expanding_apply` function in this library. | `'mean'`   |
-| min_periods   | int                                                             | Minimum observations in the window to have a value. Defaults to the window  size. If set, a value will be produced even if fewer observations are  present than the window size.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | `None`     |
-| engine        | str                                                             | Specifies the backend computation library for augmenting expanding window  functions.   The options are:     - "pandas" (default): Uses the `pandas` library.     - "polars": Uses the `polars` library, which may offer performance         benefits for larger datasets.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `'pandas'` |
-| threads       | int                                                             | Number of threads to use for parallel processing. If `threads` is set to  1, parallel processing will be disabled. Set to -1 to use all available CPU cores.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `1`        |
-| show_progress | bool                                                            | If `True`, a progress bar will be displayed during parallel processing.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `True`     |
-| reduce_memory | bool                                                            | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `False`    |
-| **kwargs      | additional keyword arguments                                    | Additional arguments passed to the `pandas.Series.expanding` method when  using the Pandas engine.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | `{}`       |
+| Name          | Type                                                            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Default    |
+|---------------|-----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | Input data to be processed. Can be a Pandas DataFrame or a GroupBy object.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | _required_ |
+| date_column   | str                                                             | Name of the datetime column. Data is sorted by this column within each group.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | _required_ |
+| value_column  | Union\[str, list\]                                              | Column(s) to which the expanding window functions should be applied. Can be a single column name or a list.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | _required_ |
+| window_func   | Union\[str, list, Tuple\[str, Callable\]\]                      | The `window_func` parameter in the `augment_expanding` function specifies the function(s) to be applied to the expanding windows of the value column(s).  1. It can be either:     - A string representing the name of a standard function (e.g., 'mean', 'sum').  2. For custom functions:     - Provide a list of tuples. Each tuple should contain a custom name for       the function and the function itself.     - Each custom function should accept a Pandas Series as its input and       operate on that series. Example: ("range", lambda x: x.max() - x.min())  (See more Examples below.)  Note: If your function needs to operate on multiple columns (i.e., it       requires access to a DataFrame rather than just a Series), consider       using the `augment_expanding_apply` function in this library. | `'mean'`   |
+| min_periods   | int                                                             | Minimum observations in the window to have a value. Defaults to the window size. If set, a value will be produced even if fewer observations are present than the window size.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | `None`     |
+| engine        | str                                                             | Specifies the backend computation library for augmenting expanding window functions.  The options are:     - "pandas" (default): Uses the `pandas` library.     - "polars": Uses the `polars` library, which may offer performance        benefits for larger datasets.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `'pandas'` |
+| threads       | int                                                             | Number of threads to use for parallel processing. If `threads` is set to 1, parallel processing will be disabled. Set to -1 to use all available CPU cores.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | `1`        |
+| show_progress | bool                                                            | If `True`, a progress bar will be displayed during parallel processing.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `True`     |
+| reduce_memory | bool                                                            | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | `False`    |
+| **kwargs      | additional keyword arguments                                    | Additional arguments passed to the `pandas.Series.expanding` method when using the Pandas engine.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `{}`       |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type         | Description                                                                                                                      |
-|--------|--------------|----------------------------------------------------------------------------------------------------------------------------------|
-|        | pd.DataFrame | The `augment_expanding` function returns a DataFrame with new columns for  each applied function, window size, and value column. |
+| Name   | Type         | Description                                                                                                                     |
+|--------|--------------|---------------------------------------------------------------------------------------------------------------------------------|
+|        | pd.DataFrame | The `augment_expanding` function returns a DataFrame with new columns for each applied function, window size, and value column. |
 
 ## Notes {.doc-section .doc-section-notes}
 
@@ -45,12 +45,12 @@ Apply one or more Series-based expanding functions to one or more columns of a D
 
 ### Polars Engine (3X faster than Pandas)
 
-In most cases, the `polars` engine will be faster than the `pandas` engine. Speed tests indicate 3X or more. 
+In most cases, the `polars` engine will be faster than the `pandas` engine. Speed tests indicate 3X or more.
 
 ### Parallel Processing (Pandas Engine Only)
 
-This function uses parallel processing to speed up computation for large 
-datasets with many time series groups: 
+This function uses parallel processing to speed up computation for large
+datasets with many time series groups:
 
 Parallel processing has overhead and may not be faster on small datasets.
 
@@ -60,9 +60,9 @@ To use parallel processing, set `threads = -1` to use all available processors.
 
 ```{python}
 # Example 1 - Pandas Backend for Expanding Window Functions
-# This example demonstrates the use of string-named functions 
+# This example demonstrates the use of string-named functions
 # on an expanding window using the Pandas backend for computations.
-    
+
 import pytimetk as tk
 import pandas as pd
 import numpy as np
@@ -73,13 +73,13 @@ expanded_df = (
     df
         .groupby('id')
         .augment_expanding(
-            date_column = 'date', 
-            value_column = 'value', 
+            date_column = 'date',
+            value_column = 'value',
             window_func = [
                 'mean',  # Built-in mean function
                 'std',   # Built-in standard deviation function,
                  ('quantile_75', lambda x: pd.Series(x).quantile(0.75)),  # Custom quantile function
-                    
+
             ],
             min_periods = 1,
             engine = 'pandas',  # Utilize pandas for the underlying computations
@@ -92,14 +92,14 @@ display(expanded_df)
 
 
 ```{python}
-# Example 2 - Polars Backend for Expanding Window Functions using Built-Ins 
+# Example 2 - Polars Backend for Expanding Window Functions using Built-Ins
 #             (538X Faster than Pandas)
-#  This example demonstrates the use of string-named functions and configurable 
-#  functions using the Polars backend for computations. Configurable functions, 
-#  like pl_quantile, allow the use of specific parameters associated with their 
+#  This example demonstrates the use of string-named functions and configurable
+#  functions using the Polars backend for computations. Configurable functions,
+#  like pl_quantile, allow the use of specific parameters associated with their
 #  corresponding polars.Expr.rolling_<function_name> method.
 #  For instance, pl_quantile corresponds to polars.Expr.rolling_quantile.
-    
+
 import pytimetk as tk
 import pandas as pd
 import polars as pl
@@ -113,8 +113,8 @@ expanded_df = (
     df
         .groupby('id')
         .augment_expanding(
-            date_column = 'date', 
-            value_column = 'value', 
+            date_column = 'date',
+            value_column = 'value',
             window_func = [
                 'mean',  # Built-in mean function
                 'std',   # Built-in std function
@@ -126,7 +126,7 @@ expanded_df = (
 )
 display(expanded_df)
 ```
-    
+
 ```{python}
 # Example 3 - Lambda Functions for Expanding Window Functions are faster in Pandas than Polars
 # This example demonstrates the use of lambda functions of the form lambda x: x
@@ -143,10 +143,10 @@ expanded_df = (
     df
         .groupby('id')
         .augment_expanding(
-            date_column = 'date', 
-            value_column = 'value', 
+            date_column = 'date',
+            value_column = 'value',
             window_func = [
-                
+
                 ('range', lambda x: x.max() - x.min()),  # Identity lambda function: can be slower, especially in Polars
             ],
             min_periods = 1,

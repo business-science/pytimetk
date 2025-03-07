@@ -44,7 +44,7 @@ Detect regimes in a financial time series using a specified method (e.g., HMM).
 
 - Uses Hidden Markov Model (HMM) to identify latent regimes based on log returns.
 - Regimes reflect distinct statistical states (e.g., high/low volatility, trending).
-- Requires 'hmmlearn' package. Install with `pip install hmmlearn`.    
+- Requires 'hmmlearn' package. Install with `pip install hmmlearn`.
 
 ## Examples {.doc-section .doc-section-examples}
 

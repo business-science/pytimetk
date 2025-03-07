@@ -40,7 +40,7 @@ DataFrame and GroupBy objects.
 
 ## Notes {.doc-section .doc-section-notes}
 
-- The function uses pd.to_datetime to convert the start date 
+- The function uses pd.to_datetime to convert the start date
   (e.g. start_date = "2014" becomes "2014-01-01").
 - The function internally uses the `parse_end_date` function to convert the
   end dates (e.g. end_date = "2014" becomes "2014-12-31").

@@ -37,7 +37,7 @@ The function `augment_qsmomentum` calculates Quant Science Momentum for financia
 ## Notes {.doc-section .doc-section-notes}
 
 
-The Quant Science Momentum (QSM) is a momentum indicator that is calculated based on the Slow Rate of Change (ROC) usually over a 252-day period and the Fast Rate of Change (ROC) usually over a 21-day period. 
+The Quant Science Momentum (QSM) is a momentum indicator that is calculated based on the Slow Rate of Change (ROC) usually over a 252-day period and the Fast Rate of Change (ROC) usually over a 21-day period.
 
 The QSM is calculated as the difference between the slow and fast ROCs divided by the standard deviation of the returns over a specified period.
 
@@ -58,16 +58,16 @@ df.glimpse()
 ``` {python}
 # PANDAS QS MOMENTUM CALCULATION
 df_qsmom = (
-    df 
-        .query('symbol == "GOOG"') 
+    df
+        .query('symbol == "GOOG"')
         .augment_qsmomentum(
-            date_column = 'date', 
-            close_column = 'close', 
-            roc_fast_period = [1, 5, 21], 
-            roc_slow_period = 252, 
-            returns_period = 126, 
+            date_column = 'date',
+            close_column = 'close',
+            roc_fast_period = [1, 5, 21],
+            roc_slow_period = 252,
+            returns_period = 126,
             engine = "pandas"
-        ) 
+        )
 )
 
 df_qsmom.dropna().glimpse()
@@ -76,16 +76,16 @@ df_qsmom.dropna().glimpse()
 ``` {python}
 # POLARS QS MOMENTUM CALCULATION
 df_qsmom = (
-    df 
-        .query('symbol == "GOOG"') 
+    df
+        .query('symbol == "GOOG"')
         .augment_qsmomentum(
-            date_column = 'date', 
-            close_column = 'close', 
-            roc_fast_period = [1, 5, 21], 
-            roc_slow_period = 252, 
-            returns_period = 126, 
+            date_column = 'date',
+            close_column = 'close',
+            roc_fast_period = [1, 5, 21],
+            roc_slow_period = 252,
+            returns_period = 126,
             engine = "polars"
-        ) 
+        )
 )
 
 df_qsmom.dropna().glimpse()

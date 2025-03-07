@@ -63,7 +63,7 @@ df = pd.DataFrame(data)
 # Binarize the data
 df_binarized = df.binarize(n_bins=4, thresh_infreq=0.01, name_infreq="-OTHER", one_hot=True)
 
-df_binarized.glimpse()    
+df_binarized.glimpse()
 ```
 
 ``` {python}
@@ -74,7 +74,7 @@ df_correlated
 ``` {python}
 # Interactive
 df_correlated.plot_correlation_funnel(
-    engine='plotly', 
+    engine='plotly',
     height=400
 )
 ```
@@ -82,7 +82,7 @@ df_correlated.plot_correlation_funnel(
 ``` {python}
 # Static
 fig = df_correlated.plot_correlation_funnel(
-    engine ='plotnine', 
+    engine ='plotnine',
     height = 600
 )
 fig

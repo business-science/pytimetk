@@ -6,8 +6,8 @@ load_dataset(name='m4_daily', verbose=False, engine='pandas', **kwargs)
 
 Load one of 12 Time Series Datasets.
 
-The `load_dataset` function is used to load various time series datasets by 
-name, with options to print the available datasets and pass additional 
+The `load_dataset` function is used to load various time series datasets by
+name, with options to print the available datasets and pass additional
 arguments to `pandas.read_csv`. The available datasets are:
 
 - `m4_hourly`: The M4 hourly dataset
@@ -24,25 +24,25 @@ arguments to `pandas.read_csv`. The available datasets are:
 - `stocks_daily`: The MAANNG stocks dataset
 - `expedia`: Expedia Hotel Time Series Dataset
 
-The datasets can be loaded with `load_dataset(name)`, where `name` is the 
-name of the dataset that you want to load. The default value is set to 
-"m4_daily", which is the M4 daily dataset. However, you can choose from a 
+The datasets can be loaded with `load_dataset(name)`, where `name` is the
+name of the dataset that you want to load. The default value is set to
+"m4_daily", which is the M4 daily dataset. However, you can choose from a
 list of available datasets mentioned above.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name     | Type   | Description                                                                                                                                                                                                                                                                                    | Default      |
-|----------|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| name     | str    | The `name` parameter is used to specify the name of the dataset that  you want to load. The default value is set to "m4_daily", which is the  M4 daily dataset. However, you can choose from a list of available  datasets mentioned in the function's docstring.                              | `'m4_daily'` |
-| verbose  | bool   | The `verbose` parameter is a boolean flag that determines whether or not  to print the names of the available datasets. If `verbose` is set to  `True`, the function will print the names of the available datasets.  If `verbose` is set to `False`, the function will not print anything.    | `False`      |
-| engine   | str    | The `engine` parameter is used to specify the engine to use for reading  the csv file. The default value is set to "pandas", which uses pandas to  read the csv file. If `engine` is set to "polars", the function will use  polars to read the csv file and convert it to a pandas DataFrame. | `'pandas'`   |
-| **kwargs |        | The `**kwargs` parameter is used to pass additional arguments to  `pandas.read_csv`.                                                                                                                                                                                                           | `{}`         |
+| Name     | Type   | Description                                                                                                                                                                                                                                                                                 | Default      |
+|----------|--------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| name     | str    | The `name` parameter is used to specify the name of the dataset that you want to load. The default value is set to "m4_daily", which is the M4 daily dataset. However, you can choose from a list of available datasets mentioned in the function's docstring.                              | `'m4_daily'` |
+| verbose  | bool   | The `verbose` parameter is a boolean flag that determines whether or not to print the names of the available datasets. If `verbose` is set to `True`, the function will print the names of the available datasets. If `verbose` is set to `False`, the function will not print anything.    | `False`      |
+| engine   | str    | The `engine` parameter is used to specify the engine to use for reading the csv file. The default value is set to "pandas", which uses pandas to read the csv file. If `engine` is set to "polars", the function will use polars to read the csv file and convert it to a pandas DataFrame. | `'pandas'`   |
+| **kwargs |        | The `**kwargs` parameter is used to pass additional arguments to `pandas.read_csv`.                                                                                                                                                                                                         | `{}`         |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type         | Description                                                                       |
-|--------|--------------|-----------------------------------------------------------------------------------|
-|        | pd.DataFrame | The `load_dataset` function returns the requested dataset as a pandas  DataFrame. |
+| Name   | Type         | Description                                                                      |
+|--------|--------------|----------------------------------------------------------------------------------|
+|        | pd.DataFrame | The `load_dataset` function returns the requested dataset as a pandas DataFrame. |
 
 ## Examples {.doc-section .doc-section-examples}
 

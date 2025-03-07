@@ -12,10 +12,10 @@ augment_wavelet(
 )
 ```
 
-Apply the Wavely transform to specified columns of a DataFrame or 
+Apply the Wavely transform to specified columns of a DataFrame or
 DataFrameGroupBy object.
 
-A wavelet transform is a mathematical tool used to decompose a signal or function into different frequency components and then study each component with a resolution matched to its scale. The wavelet transform uses wavelets, which are functions that are localized in both time and frequency. 
+A wavelet transform is a mathematical tool used to decompose a signal or function into different frequency components and then study each component with a resolution matched to its scale. The wavelet transform uses wavelets, which are functions that are localized in both time and frequency.
 
 Uses:
 
@@ -25,73 +25,73 @@ Uses:
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Default    |
-|---------------|----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| data          | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | Input DataFrame or DataFrameGroupBy object with one or more columns of  real-valued signals.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | _required_ |
-| value_column  | str or list                                              | List of column names in 'data' to which the Hilbert transform will be  applied.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | _required_ |
-| sample_rate   | str                                                      | Sampling rate of the input data. For time-series data, the sample rate (sample_rate) typically refers  to the frequency at which data points are collected.  For example, if your data has a 30-minute interval, if you think of the  data in terms of "samples per hour", the sample rate would be:  sample_rate = samples / hour = 1 / 0.5 = 2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | _required_ |
-| scales        | str or list                                              | Array of scales to use in the transform. The choice of scales in wavelet analysis determines which frequencies  (or periodicities) in the data you want to analyze. In other words, the  scales determine the "window size" or the "look-back period" the wavelet  uses to analyze the data.  Smaller scales: Correspond to analyzing high-frequency changes  (short-term fluctuations) in the data.  Larger scales: Correspond to analyzing low-frequency changes  (long-term fluctuations) in the data.  The specific values for scales depend on what frequencies or  periodicities you expect in your data and wish to study.  For instance, if you believe there are daily, weekly, and monthly  patterns in your data, you'd choose scales that correspond to these  periodicities given your sampling rate.  For a daily pattern with data at 30-minute intervals: scales = 2 * 24 = 48 because there are 48 half hour intervals in a day  For a weekly pattern with data at 30-minute intervals: scales = 48 * 7 = 336 because there are 336 half hour intervals in a  week  Recommendation, use a range of values to cover both short term and long term patterns, then adjust accordingly. | _required_ |
-| reduce_memory | bool                                                     | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | `False`    |
+| Name          | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Default    |
+|---------------|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | Input DataFrame or DataFrameGroupBy object with one or more columns of real-valued signals.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | _required_ |
+| value_column  | str or list                                              | List of column names in 'data' to which the Hilbert transform will be applied.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | _required_ |
+| sample_rate   | str                                                      | Sampling rate of the input data. For time-series data, the sample rate (sample_rate) typically refers to the frequency at which data points are collected.  For example, if your data has a 30-minute interval, if you think of the data in terms of "samples per hour", the sample rate would be:  sample_rate = samples / hour = 1 / 0.5 = 2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | _required_ |
+| scales        | str or list                                              | Array of scales to use in the transform. The choice of scales in wavelet analysis determines which frequencies (or periodicities) in the data you want to analyze. In other words, the scales determine the "window size" or the "look-back period" the wavelet uses to analyze the data.  Smaller scales: Correspond to analyzing high-frequency changes (short-term fluctuations) in the data.  Larger scales: Correspond to analyzing low-frequency changes (long-term fluctuations) in the data.  The specific values for scales depend on what frequencies or periodicities you expect in your data and wish to study.  For instance, if you believe there are daily, weekly, and monthly patterns in your data, you'd choose scales that correspond to these periodicities given your sampling rate.  For a daily pattern with data at 30-minute intervals: scales = 2 * 24 = 48 because there are 48 half hour intervals in a day  For a weekly pattern with data at 30-minute intervals: scales = 48 * 7 = 336 because there are 336 half hour intervals in a week  Recommendation, use a range of values to cover both short term and long term patterns, then adjust accordingly. | _required_ |
+| reduce_memory | bool                                                     | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | `False`    |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name       | Type         | Description                                                                                                |
-|------------|--------------|------------------------------------------------------------------------------------------------------------|
-| df_wavelet | pd.DataFrame | DataFrame with added columns for CWT coefficients for each scale, with  a real and imaginary column added. |
+| Name       | Type         | Description                                                                                               |
+|------------|--------------|-----------------------------------------------------------------------------------------------------------|
+| df_wavelet | pd.DataFrame | DataFrame with added columns for CWT coefficients for each scale, with a real and imaginary column added. |
 
 ## Notes {.doc-section .doc-section-notes}
 
-For a detailed introduction to wavelet transforms, you can visit this 
+For a detailed introduction to wavelet transforms, you can visit this
 website.
 https://ataspinar.com/2018/12/21/a-guide-for-using-the-wavelet-transform-in-machine-learning/
 
-The Bump wavelet is a real-valued wavelet function, so its imaginary 
+The Bump wavelet is a real-valued wavelet function, so its imaginary
 part is inherently zero.
 
-In the continuous wavelet transform (CWT), the Morlet and Analytic 
-Morlet wavelets are complex-valued, so their convolutions with the signal 
-yield complex results (with both real and imaginary parts). 
+In the continuous wavelet transform (CWT), the Morlet and Analytic
+Morlet wavelets are complex-valued, so their convolutions with the signal
+yield complex results (with both real and imaginary parts).
 
-Wavelets, in general, are mathematical functions that can decompose a 
-signal into its constituent parts at different scales. Different wavelet 
-functions are suitable for different types of signals and analytical goals. 
+Wavelets, in general, are mathematical functions that can decompose a
+signal into its constituent parts at different scales. Different wavelet
+functions are suitable for different types of signals and analytical goals.
 Let's look at the three wavelet methods:
 
 1. Morlet Wavelet:
 
     Characteristics:
     Essentially a complex sinusoid modulated by a Gaussian window.
-    It provides a good balance between time localization and frequency 
+    It provides a good balance between time localization and frequency
     localization.
 
     When to use:
     When you want a good compromise between time and frequency localization.
-    Particularly useful when you're interested in sinusoidal components or 
-    oscillatory patterns of your data. Commonly used in time-frequency analysis 
+    Particularly useful when you're interested in sinusoidal components or
+    oscillatory patterns of your data. Commonly used in time-frequency analysis
     because of its simplicity and effectiveness.
 
 2. Bump Wavelet:
 
     Characteristics:
-    Has an oscillating behavior similar to the Morlet but has sharper time 
-    localization. Its frequency localization isn't as sharp as its time 
+    Has an oscillating behavior similar to the Morlet but has sharper time
+    localization. Its frequency localization isn't as sharp as its time
     localization.
 
     When to use:
-    When you are more interested in precisely identifying when certain events or 
-    anomalies occur in your data. It can be especially useful for detecting 
+    When you are more interested in precisely identifying when certain events or
+    anomalies occur in your data. It can be especially useful for detecting
     sharp spikes or short-lived events in your signal.
 
 3. Analytic Morlet Wavelet:
 
     Characteristics:
-    A variation of the Morlet wavelet that is designed to have no negative 
-    frequencies when transformed. This means it's "analytic." Offers slightly 
+    A variation of the Morlet wavelet that is designed to have no negative
+    frequencies when transformed. This means it's "analytic." Offers slightly
     better frequency localization than the standard Morlet wavelet.
 
     When to use:
     When you're interested in phase properties of your signal.
-    Can be used when you need to avoid negative frequencies in your analysis, 
+    Can be used when you need to avoid negative frequencies in your analysis,
     making it useful for certain types of signals, like analytic signals.
     Offers a cleaner spectrum in the frequency domain than the standard Morlet.
 
@@ -109,7 +109,7 @@ wavelet_df = (
         .groupby('id')
         .augment_wavelet(
             date_column = 'Date',
-            value_column ='Weekly_Sales', 
+            value_column ='Weekly_Sales',
             scales = [15],
             sample_rate =1,
             method = 'bump'
@@ -128,9 +128,9 @@ df = tk.load_dataset('taylor_30_min', parse_dates = ['date'])
 
 result_df = (
     tk.augment_wavelet(
-        df, 
+        df,
         date_column = 'date',
-        value_column ='value', 
+        value_column ='value',
         scales = [15],
         sample_rate =1000,
         method = 'morlet'

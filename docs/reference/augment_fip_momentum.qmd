@@ -13,7 +13,7 @@ augment_fip_momentum(
 )
 ```
 
-Calculate the "Frog In The Pan" (FIP) momentum metric over one or more rolling windows 
+Calculate the "Frog In The Pan" (FIP) momentum metric over one or more rolling windows
 using either the pandas or polars engine, augmenting the DataFrame with FIP columns.
 
 The FIP momentum is defined as:
@@ -21,7 +21,7 @@ The FIP momentum is defined as:
 - For `fip_method = 'original'`: FIP = Total Return * (percent of negative returns - percent of positive returns)
 - For `fip_method = 'modified'`: FIP = sign(Total Return) * (percent of positive returns - percent of negative returns)
 
-An optional parameter, `skip_window`, allows you to skip the first n periods (e.g., one month) 
+An optional parameter, `skip_window`, allows you to skip the first n periods (e.g., one month)
 to mitigate the effects of mean reversion.
 
 ## Parameters {.doc-section .doc-section-parameters}
@@ -69,7 +69,7 @@ fip_df = (
 fip_df.tail()
 ```
 
-```{python}    
+```{python}
 # Multiple windows, polars engine, modified FIP
 fip_df = (
     df.groupby('symbol')

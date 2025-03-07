@@ -8,6 +8,10 @@ number-sections: false
 
 # pytimetk 1.2.3.9000
 
+## Improvements
+
+- Documentation: Ruff formatting
+
 # pytimetk 1.2.3
 
 ## Improvements

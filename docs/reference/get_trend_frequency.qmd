@@ -4,23 +4,23 @@
 get_trend_frequency(idx, force_regular=False, numeric=False, engine='pandas')
 ```
 
-The `get_trend_frequency` function returns the trend period of a given time 
+The `get_trend_frequency` function returns the trend period of a given time
 series or datetime index.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                                 | Description                                                                                                                                                                                                                                                                                                | Default    |
-|---------------|--------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| idx           | Union\[pd.Series, pd.DatetimeIndex\] | The `idx` parameter can be either a pandas Series or a pandas  DatetimeIndex. It represents the time index for which you want to  calculate the trend frequency.                                                                                                                                           | _required_ |
-| force_regular | bool                                 | force_regular is a boolean parameter that determines whether to force the  frequency to be regular. If set to True, the function will try to find a  regular frequency even if the data is irregular. If set to False, the  function will return the actual frequency of the data.                         | `False`    |
-| numeric       | bool                                 | The `numeric` parameter is a boolean flag that determines whether the  output should be in numeric format or a string Pandas Frequency Alias.  If `numeric` is set to `True`, the output will be a numeric representation  of the trend period. If `numeric` is set to `False` (default), the output  will | `False`    |
-| engine        | str                                  | The `engine` parameter is used to specify the engine to use for  generating a date summary. It can be either "pandas" or "polars".   - The default value is "pandas".  - When "polars", the function will internally use the `polars` library    for generating the time scale information.                | `'pandas'` |
+| Name          | Type                                 | Description                                                                                                                                                                                                                                                                                            | Default    |
+|---------------|--------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| idx           | Union\[pd.Series, pd.DatetimeIndex\] | The `idx` parameter can be either a pandas Series or a pandas DatetimeIndex. It represents the time index for which you want to calculate the trend frequency.                                                                                                                                         | _required_ |
+| force_regular | bool                                 | force_regular is a boolean parameter that determines whether to force the frequency to be regular. If set to True, the function will try to find a regular frequency even if the data is irregular. If set to False, the function will return the actual frequency of the data.                        | `False`    |
+| numeric       | bool                                 | The `numeric` parameter is a boolean flag that determines whether the output should be in numeric format or a string Pandas Frequency Alias. If `numeric` is set to `True`, the output will be a numeric representation of the trend period. If `numeric` is set to `False` (default), the output will | `False`    |
+| engine        | str                                  | The `engine` parameter is used to specify the engine to use for generating a date summary. It can be either "pandas" or "polars".  - The default value is "pandas".  - When "polars", the function will internally use the `polars` library   for generating the time scale information.               | `'pandas'` |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type                                                                     | Description                                                                                                                                                                                                                                                                                                     |
-|--------|--------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|        | The function `get_trend_frequency` returns the trend period based on the | input index. If the index is a `pd.DatetimeIndex`, it is converted to a  `pd.Series` with the name "idx". The function then calculates the summary  frequency of the index using the `get_frequency_summary` function. It  determines the scale and unit of the frequency and adjusts the unit if  the scale is |
+| Name   | Type                                                                     | Description                                                                                                                                                                                                                                                                                                 |
+|--------|--------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|        | The function `get_trend_frequency` returns the trend period based on the | input index. If the index is a `pd.DatetimeIndex`, it is converted to a `pd.Series` with the name "idx". The function then calculates the summary frequency of the index using the `get_frequency_summary` function. It determines the scale and unit of the frequency and adjusts the unit if the scale is |
 
 ## Examples {.doc-section .doc-section-examples}
 
@@ -30,5 +30,5 @@ import pandas as pd
 
 dates = pd.date_range(start='2021-01-01', end='2024-01-01', freq='MS')
 
-tk.get_trend_frequency(dates)    
+tk.get_trend_frequency(dates)
 ```

@@ -1,12 +1,14 @@
-
 # Imports
 import pandas as pd
-import datetime
 import pandas_flavor as pf
-from typing import Union, Callable, Tuple, List
+from typing import Union
 
-from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
+from pytimetk.utils.checks import (
+    check_dataframe_or_groupby,
+    check_date_column,
+)
 from pytimetk.utils.datetime_helpers import parse_end_date
+
 
 # Function ----
 @pf.register_dataframe_method
@@ -15,9 +17,8 @@ def filter_by_time(
     date_column: str,
     start_date: str = "start",
     end_date: str = "end",
-    engine: str = 'pandas'
+    engine: str = "pandas",
 ):
-
     """
     Filters a DataFrame or GroupBy object based on a specified date range.
 
@@ -57,11 +58,11 @@ def filter_by_time(
 
     Notes
     -----
-    - The function uses pd.to_datetime to convert the start date 
+    - The function uses pd.to_datetime to convert the start date
       (e.g. start_date = "2014" becomes "2014-01-01").
     - The function internally uses the `parse_end_date` function to convert the
       end dates (e.g. end_date = "2014" becomes "2014-12-31").
-    
+
 
     Examples
     --------
@@ -170,7 +171,7 @@ def filter_by_time(
     check_date_column(data, date_column)
 
     # Engine
-    if engine == 'pandas':
+    if engine == "pandas":
         return _filter_by_time_pandas(data, date_column, start_date, end_date)
     else:
         raise ValueError("Invalid engine. Current supported engines: 'pandas'")
@@ -179,30 +180,30 @@ def filter_by_time(
 # Monkey Patch the Method to Pandas Grouby Objects
 pd.core.groupby.generic.DataFrameGroupBy.filter_by_time = filter_by_time
 
+
 def _filter_by_time_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
     start_date: str,
-    end_date: str
+    end_date: str,
 ):
-    
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         data = data.obj
-        
-    df = data.copy()  
-    df[date_column] = pd.to_datetime(df[date_column])      
-    
+
+    df = data.copy()
+    df[date_column] = pd.to_datetime(df[date_column])
+
     # Handle start/end dates and parsing
-    if start_date == 'start':
+    if start_date == "start":
         start_date = df[date_column].min()
-    if end_date == 'end':
+    if end_date == "end":
         end_date = df[date_column].max()
-    
+
     if isinstance(start_date, str):
         start_date_parsed = pd.to_datetime(start_date)
     else:
         start_date_parsed = start_date
-        
+
     if isinstance(end_date, str):
         end_date_parsed = parse_end_date(end_date)
     else:
@@ -212,17 +213,14 @@ def _filter_by_time_pandas(
     if df[date_column].dt.tz is not None:
         start_date_parsed = start_date_parsed.tz_localize(df[date_column].dt.tz)
         end_date_parsed = end_date_parsed.tz_localize(df[date_column].dt.tz)
-    
-    
+
     # Filter
-    filtered_df = df[(df[date_column] >= start_date_parsed) & (df[date_column] <= end_date_parsed)]
+    filtered_df = df[
+        (df[date_column] >= start_date_parsed) & (df[date_column] <= end_date_parsed)
+    ]
 
     # Return
     return filtered_df
 
 
-
-
 # Utilities ----
-
-
