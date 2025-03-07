@@ -371,6 +371,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <ul>
   <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_fip_momentum.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
@@ -402,17 +403,20 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    window<span class="op">=</span><span class="dv">252</span>,</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Calculate the “Frog In The Pan” (FIP) momentum metric over one or more rolling windows using either pandas or polars engine, augmenting the DataFrame with FIP columns.</p>
-<p>The FIP momentum is defined as: FIP = Total Return * (percent of negative returns - percent of positive returns)</p>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    fip_method<span class="op">=</span><span class="st">'original'</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    skip_window<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Calculate the “Frog In The Pan” (FIP) momentum metric over one or more rolling windows using either the pandas or polars engine, augmenting the DataFrame with FIP columns.</p>
+<p>The FIP momentum is defined as: - For ‘original’: FIP = Total Return * (percent of negative returns - percent of positive returns) - For ‘modified’: FIP = sign(Total Return) * (percent of positive returns - percent of negative returns)</p>
+<p>An optional parameter, skip_window, allows you to skip the first n periods (e.g., one month) to mitigate the effects of mean reversion.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 8%">
-<col style="width: 37%">
-<col style="width: 47%">
-<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 22%">
+<col style="width: 67%">
+<col style="width: 4%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -459,6 +463,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>Computation engine: ‘pandas’ or ‘polars’. Default is ‘pandas’.</td>
 <td><code>'pandas'</code></td>
 </tr>
+<tr class="odd">
+<td>fip_method</td>
+<td>str</td>
+<td>Type of FIP calculation: - ‘original’: Original FIP calculation (default) where negative FIP indicates greater momentum. - ‘modified’: Modified FIP where positive FIP indicates greater momentum.</td>
+<td><code>'original'</code></td>
+</tr>
+<tr class="even">
+<td>skip_window</td>
+<td>int</td>
+<td>Number of initial periods to skip (set to NA) for each rolling calculation. Default is 0.</td>
+<td><code>0</code></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -486,6 +502,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tbody>
 </table>
 </section>
+<section id="notes" class="level2 doc-section doc-section-notes">
+<h2 class="doc-section doc-section-notes anchored" data-anchor-id="notes">Notes</h2>
+<ul>
+<li>For ‘original’, a positive FIP may indicate inconsistency in the trend.</li>
+<li>For ‘modified’, a positive FIP indicates stronger momentum in the direction of the trend (upward or downward).</li>
+</ul>
+</section>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
@@ -494,7 +517,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'stocks_daily'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Single window</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Single window with original FIP</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>fip_df <span class="op">=</span> (</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    df.query(<span class="st">"symbol == 'AAPL'"</span>)</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    .augment_fip_momentum(</span>
