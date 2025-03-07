@@ -467,7 +467,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 8%">
+<col style="width: 9%">
 <col style="width: 10%">
 <col style="width: 80%">
 </colgroup>
@@ -519,7 +519,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        .augment_wavelet(</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'Date'</span>,</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span><span class="st">'Weekly_Sales'</span>, </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span><span class="st">'Weekly_Sales'</span>,</span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>            scales <span class="op">=</span> [<span class="dv">15</span>],</span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>            sample_rate <span class="op">=</span><span class="dv">1</span>,</span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>            method <span class="op">=</span> <span class="st">'bump'</span></span>
@@ -681,9 +681,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>result_df <span class="op">=</span> (</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    tk.augment_wavelet(</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        df, </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        df,</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span><span class="st">'value'</span>, </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span><span class="st">'value'</span>,</span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        scales <span class="op">=</span> [<span class="dv">15</span>],</span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        sample_rate <span class="op">=</span><span class="dv">1000</span>,</span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        method <span class="op">=</span> <span class="st">'morlet'</span></span>

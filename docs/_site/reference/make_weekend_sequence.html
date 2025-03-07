@@ -439,7 +439,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="even">
 <td>remove_holidays</td>
-<td>(bool, optional)</td>
+<td>bool</td>
 <td>If True, excludes holidays (based on the specified country) from the generated sequence. If False (default), includes holidays in the sequence.</td>
 <td><code>False</code></td>
 </tr>
@@ -489,9 +489,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># United States has Saturday and Sunday as weekends</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>tk.make_weekend_sequence(<span class="st">"2023-01-01"</span>, <span class="st">"2023-01-31"</span>, </span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                         friday_saturday <span class="op">=</span> <span class="va">False</span>, </span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                         remove_holidays <span class="op">=</span> <span class="va">True</span>, </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>tk.make_weekend_sequence(<span class="st">"2023-01-01"</span>, <span class="st">"2023-01-31"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                         friday_saturday <span class="op">=</span> <span class="va">False</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                         remove_holidays <span class="op">=</span> <span class="va">True</span>,</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                         country         <span class="op">=</span> <span class="st">'UnitedStates'</span>,</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                         engine          <span class="op">=</span> <span class="st">'pandas'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
@@ -508,9 +508,9 @@ Name: Weekend Dates, dtype: datetime64[ns]</code></pre>
 </div>
 <div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Saudi Arabia has Friday and Saturday as weekends</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>tk.make_weekend_sequence(<span class="st">"2023-01-01"</span>, <span class="st">"2023-01-31"</span>, </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                         friday_saturday <span class="op">=</span> <span class="va">True</span>, </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                         remove_holidays <span class="op">=</span> <span class="va">True</span>, </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>tk.make_weekend_sequence(<span class="st">"2023-01-01"</span>, <span class="st">"2023-01-31"</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                         friday_saturday <span class="op">=</span> <span class="va">True</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                         remove_holidays <span class="op">=</span> <span class="va">True</span>,</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                         country         <span class="op">=</span> <span class="st">'SaudiArabia'</span>,</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                         engine          <span class="op">=</span> <span class="st">'pandas'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
