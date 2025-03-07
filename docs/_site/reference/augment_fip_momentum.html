@@ -407,8 +407,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    skip_window<span class="op">=</span><span class="dv">0</span>,</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Calculate the “Frog In The Pan” (FIP) momentum metric over one or more rolling windows using either the pandas or polars engine, augmenting the DataFrame with FIP columns.</p>
-<p>The FIP momentum is defined as: - For ‘original’: FIP = Total Return * (percent of negative returns - percent of positive returns) - For ‘modified’: FIP = sign(Total Return) * (percent of positive returns - percent of negative returns)</p>
-<p>An optional parameter, skip_window, allows you to skip the first n periods (e.g., one month) to mitigate the effects of mean reversion.</p>
+<p>The FIP momentum is defined as:</p>
+<ul>
+<li>For <code>fip_method = 'original'</code>: FIP = Total Return * (percent of negative returns - percent of positive returns)</li>
+<li>For <code>fip_method = 'modified'</code>: FIP = sign(Total Return) * (percent of positive returns - percent of negative returns)</li>
+</ul>
+<p>An optional parameter, <code>skip_window</code>, allows you to skip the first n periods (e.g., one month) to mitigate the effects of mean reversion.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
@@ -614,17 +618,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple windows</span></span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple windows, polars engine, modified FIP</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fip_df <span class="op">=</span> (</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">'symbol'</span>)</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    .augment_fip_momentum(</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">'close'</span>,</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span>[<span class="dv">63</span>, <span class="dv">252</span>],</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">'polars'</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>fip_df.tail()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        fip_method<span class="op">=</span><span class="st">'modified'</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">'polars'</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>fip_df.tail()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
@@ -656,7 +661,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>138.300003</td>
 <td>48947600</td>
 <td>138.300003</td>
-<td>-0.004736</td>
+<td>0.047619</td>
 <td>0.000000</td>
 </tr>
 <tr class="even">
@@ -669,8 +674,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>138.960007</td>
 <td>16233600</td>
 <td>138.960007</td>
-<td>-0.009532</td>
-<td>-0.002678</td>
+<td>0.079365</td>
+<td>0.007937</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">16191</td>
@@ -682,8 +687,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>138.830002</td>
 <td>15479100</td>
 <td>138.830002</td>
-<td>-0.009599</td>
-<td>-0.002696</td>
+<td>0.079365</td>
+<td>0.007937</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">16192</td>
@@ -695,7 +700,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>134.589996</td>
 <td>21473500</td>
 <td>134.589996</td>
-<td>-0.008725</td>
+<td>0.079365</td>
 <td>0.000000</td>
 </tr>
 <tr class="odd">
@@ -708,7 +713,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>131.360001</td>
 <td>22042700</td>
 <td>131.360001</td>
-<td>-0.002879</td>
+<td>0.047619</td>
 <td>0.000000</td>
 </tr>
 </tbody>

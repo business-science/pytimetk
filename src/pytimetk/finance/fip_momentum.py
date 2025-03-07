@@ -2,8 +2,7 @@ import pandas as pd
 import polars as pl
 import numpy as np
 import pandas_flavor as pf
-from typing import Union, List, Tuple
-from pytimetk.utils.parallel_helpers import progress_apply
+from typing import Union, List
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column, check_value_column
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -24,10 +23,11 @@ def augment_fip_momentum(
     using either the pandas or polars engine, augmenting the DataFrame with FIP columns.
     
     The FIP momentum is defined as:
-    - For 'original': FIP = Total Return * (percent of negative returns - percent of positive returns)
-    - For 'modified': FIP = sign(Total Return) * (percent of positive returns - percent of negative returns)
     
-    An optional parameter, skip_window, allows you to skip the first n periods (e.g., one month) 
+    - For `fip_method = 'original'`: FIP = Total Return * (percent of negative returns - percent of positive returns)
+    - For `fip_method = 'modified'`: FIP = sign(Total Return) * (percent of positive returns - percent of negative returns)
+    
+    An optional parameter, `skip_window`, allows you to skip the first n periods (e.g., one month) 
     to mitigate the effects of mean reversion.
     
     Parameters
@@ -55,11 +55,13 @@ def augment_fip_momentum(
     -------
     pd.DataFrame
         DataFrame augmented with FIP momentum columns:
+        
         - {close_column}_fip_momentum_{w}: Rolling FIP momentum for each window w
     
     
     Notes
     -----
+    
     - For 'original', a positive FIP may indicate inconsistency in the trend.
     - For 'modified', a positive FIP indicates stronger momentum in the direction of the trend (upward or downward).
     
@@ -84,13 +86,14 @@ def augment_fip_momentum(
     ```
     
     ```{python}    
-    # Multiple windows
+    # Multiple windows, polars engine, modified FIP
     fip_df = (
         df.groupby('symbol')
         .augment_fip_momentum(
             date_column='date',
             close_column='close',
             window=[63, 252],
+            fip_method='modified',
             engine='polars'
         )
     )

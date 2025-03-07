@@ -17,10 +17,11 @@ Calculate the "Frog In The Pan" (FIP) momentum metric over one or more rolling w
 using either the pandas or polars engine, augmenting the DataFrame with FIP columns.
 
 The FIP momentum is defined as:
-- For 'original': FIP = Total Return * (percent of negative returns - percent of positive returns)
-- For 'modified': FIP = sign(Total Return) * (percent of positive returns - percent of negative returns)
 
-An optional parameter, skip_window, allows you to skip the first n periods (e.g., one month) 
+- For `fip_method = 'original'`: FIP = Total Return * (percent of negative returns - percent of positive returns)
+- For `fip_method = 'modified'`: FIP = sign(Total Return) * (percent of positive returns - percent of negative returns)
+
+An optional parameter, `skip_window`, allows you to skip the first n periods (e.g., one month) 
 to mitigate the effects of mean reversion.
 
 ## Parameters {.doc-section .doc-section-parameters}
@@ -38,11 +39,12 @@ to mitigate the effects of mean reversion.
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type         | Description                                                                                                              |
-|--------|--------------|--------------------------------------------------------------------------------------------------------------------------|
-|        | pd.DataFrame | DataFrame augmented with FIP momentum columns: - {close_column}_fip_momentum_{w}: Rolling FIP momentum for each window w |
+| Name   | Type         | Description                                                                                                               |
+|--------|--------------|---------------------------------------------------------------------------------------------------------------------------|
+|        | pd.DataFrame | DataFrame augmented with FIP momentum columns:  - {close_column}_fip_momentum_{w}: Rolling FIP momentum for each window w |
 
 ## Notes {.doc-section .doc-section-notes}
+
 
 - For 'original', a positive FIP may indicate inconsistency in the trend.
 - For 'modified', a positive FIP indicates stronger momentum in the direction of the trend (upward or downward).
@@ -68,13 +70,14 @@ fip_df.tail()
 ```
 
 ```{python}    
-# Multiple windows
+# Multiple windows, polars engine, modified FIP
 fip_df = (
     df.groupby('symbol')
     .augment_fip_momentum(
         date_column='date',
         close_column='close',
         window=[63, 252],
+        fip_method='modified',
         engine='polars'
     )
 )
