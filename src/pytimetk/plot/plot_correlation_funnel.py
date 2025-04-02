@@ -20,6 +20,7 @@ def plot_correlation_funnel(
     x_lab: str = "Correlation",
     y_lab: str = "Feature",
     base_size: float = 11,
+    point_color: str = "#2c3e50",
     width: Optional[int] = None,
     height: Optional[int] = None,
     engine: str = "plotly",
@@ -183,7 +184,7 @@ def plot_correlation_funnel(
             showlegend=False,
         )
         fig.update_traces(
-            marker=dict(color="#2c3e50", opacity=alpha),
+            marker=dict(color=point_color, opacity=alpha),
             selector=dict(mode="markers"),
             text=data["bin"],
             hoverlabel=dict(font_size=base_size * 0.8),
@@ -199,7 +200,7 @@ def plot_correlation_funnel(
         p = (
             ggplot(data, aes(x="correlation", y="feature"))
             + geom_vline(xintercept=0, linetype="dashed", color="red")
-            + geom_point(color="#2c3e50", alpha=alpha)
+            + geom_point(color=point_color, alpha=alpha)
             + labs(title=title, x=x_lab, y=y_lab)
             + xlim(limits[0], limits[1])
         )
@@ -208,7 +209,7 @@ def plot_correlation_funnel(
         p = p + geom_text(
             aes(label="bin"),
             size=base_size * 0.8,
-            color="#2c3e50",
+            color=point_color,
             nudge_y=0.3,
             adjust_text={
                 "expand_points": (0.5, 0.5),
