@@ -4,13 +4,16 @@
 
 <div align="center">
   <a href="https://github.com/business-science/pytimetk/actions">
-  <img alt="Github Actions" src="https://github.com/business-science/pytimetk/actions/workflows/timetk-checks.yaml/badge.svg"/>
+  <img alt="Github Actions" src="https://github.com/business-science/pytimetk/actions/workflows/timetk-checks.yaml/badge.svg?style=for-the-badge"/>
   </a>
   <a href="https://pypi.python.org/pypi/pytimetk">
-  <img alt="PyPI Version" src="https://img.shields.io/pypi/v/pytimetk.svg"/>
+  <img alt="PyPI Version" src="https://img.shields.io/pypi/v/pytimetk.svg?style=for-the-badge"/>
   </a>
+  <a href="https://github.com/business-science/pytimetk"><img src="https://img.shields.io/pypi/pyversions/pytimetk.svg?style=for-the-badge" alt="versions"></a>
   <a href="https://business-science.github.io/pytimetk/contributing.html">
-  <img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"/>
+  <a href="https://github.com/business-science/pytimetk/blob/main/LICENSE"><img src="https://img.shields.io/github/license/business-science/pytimetk.svg?style=for-the-badge" alt="license"></a>
+  <img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge"/>
+  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/business-science/pytimetk?style=for-the-badge">
   </a>
 </div>
 

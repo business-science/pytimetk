@@ -150,7 +150,7 @@ Next step? Learn more with the [pytimetk documentation](https://business-science
 - [📈 Overview](https://business-science.github.io/pytimetk/)
 - [🏁 Getting Started](https://business-science.github.io/pytimetk/getting-started/02_quick_start.html)
 - [🗺️ Beginner Guides](https://business-science.github.io/pytimetk/guides/01_visualization.html)
-- [📘Applied Data Science Tutorials with PyTimeTK](https://business-science.github.io/pytimetk/tutorials/01_sales_crm.html)
+- [📘Applied Data Science Tutorials](https://business-science.github.io/pytimetk/tutorials/01_sales_crm.html)
 - [🏎️Speed Comparisons](https://business-science.github.io/pytimetk/performance/01_speed_comparisons.html)
 - [📄 API Reference](https://business-science.github.io/pytimetk/reference/)
 
@@ -168,3 +168,8 @@ We are in the early stages of development. But it's obvious the potential for `p
 - To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 
 - Want to contribute? [See our contributing guide here.](/contributing.html) 
 
+# ⭐️ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=business-science/pytimetk&type=Date)](https://www.star-history.com/#business-science/pytimetk&Date)
+
+[**Please ⭐ us on GitHub (it takes 2 seconds and means a lot).**](https://github.com/business-science/pytimetk)
