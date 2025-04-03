@@ -4,7 +4,7 @@
 
 <div align="center">
   <a href="https://github.com/business-science/pytimetk/actions">
-  <img alt="Github Actions" src="https://github.com/business-science/pytimetk/actions/workflows/timetk-checks.yaml/badge.svg?style=for-the-badge"/>
+  <img alt="Github Actions" src="https://img.shields.io/github/actions/workflow/status/business-science/pytimetk/timetk-checks.yaml?style=for-the-badge"/>
   </a>
   <a href="https://pypi.python.org/pypi/pytimetk">
   <img alt="PyPI Version" src="https://img.shields.io/pypi/v/pytimetk.svg?style=for-the-badge"/>
