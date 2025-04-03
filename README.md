@@ -90,44 +90,8 @@ Get started with the [pytimetk documentation](https://business-science.github.io
 - [📈 Overview](https://business-science.github.io/pytimetk/)
 - [🏁 Getting Started](https://business-science.github.io/pytimetk/getting-started/02_quick_start.html)
 - [🗺️ Beginner Guides](https://business-science.github.io/pytimetk/guides/01_visualization.html)
-- [📘Applied Data Science Tutorials with PyTimeTK](https://business-science.github.io/pytimetk/tutorials/01_sales_crm.html)
-
+- [📘Applied Data Science Tutorials](https://business-science.github.io/pytimetk/tutorials/01_sales_crm.html)
 - [📄 API Reference](https://business-science.github.io/pytimetk/reference/)
-
-# Developers (Contributors): Installation
-
-To install `pytimetk` using [Poetry](https://python-poetry.org/), follow these steps:
-
-### 1. Prerequisites
-
-Make sure you have Python 3.9 or later installed on your system.
-
-### 2. Install Poetry
-
-To install Poetry, you can use the [official installer](https://python-poetry.org/docs/#installing-with-the-official-installer)  provided by Poetry. Do not use pip.
-
-### 3. Clone the Repository
-
-Clone the `pytimetk` repository from GitHub:
-
-```bash
-git clone https://github.com/business-science/pytimetk
-```
-
-### 4. Install Dependencies
-
-Use Poetry to install the package and its dependencies:
-
-```bash
-poetry install
-```
-
-or you can create a virtualenv with poetry and install the dependencies
-
-```bash
-poetry shell
-poetry install
-```
 
 # 🏆 More Coming Soon...
 
@@ -135,4 +99,10 @@ We are in the early stages of development. But it's obvious the potential for `p
 
 - Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). 
 - To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 
-- Want to contribute? [See our contributing guide here.](/contributing.html) 
+- Want to contribute? [See our contributing guide here.](/contributing.html)
+
+# ⭐️ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=business-science/pytimetk&type=Date)](https://star-history.com/#)
+
+[**Please ⭐ us on GitHub (it takes 2 seconds and means a lot).**](https://github.com/business-science/pytimetk)
