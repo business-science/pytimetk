@@ -103,6 +103,6 @@ We are in the early stages of development. But it's obvious the potential for `p
 
 # ⭐️ Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=business-science/pytimetk&type=Date)](https://star-history.com/#)
+[![Star History Chart](https://api.star-history.com/svg?repos=business-science/pytimetk&type=Date)](https://www.star-history.com/#business-science/pytimetk&Date)
 
 [**Please ⭐ us on GitHub (it takes 2 seconds and means a lot).**](https://github.com/business-science/pytimetk)
