@@ -122,14 +122,14 @@ def augment_qsmomentum(
     ```
     """
 
-    # Run common checks
+    # --- Common checks ---
     check_dataframe_or_groupby(data)
     check_value_column(data, close_column)
     check_date_column(data, date_column)
 
     data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
 
-    # Check if roc_fast_period lists, tuples or integers
+    # Normalize params to lists
     if isinstance(roc_fast_period, int):
         roc_fast_period = [roc_fast_period]
     elif isinstance(roc_fast_period, tuple):
@@ -151,52 +151,63 @@ def augment_qsmomentum(
     elif not isinstance(returns_period, list):
         raise ValueError("returns_period must be an int, tuple or list")
 
-    # Reduce memory usage
+    if engine not in {"pandas", "polars"}:
+        raise ValueError("engine must be 'pandas' or 'polars'")
+
     if reduce_memory:
         data = reduce_memory_usage(data)
 
-    # CALCULATE MOMENTUM:
-
-    if engine == "pandas":
-        func = _calculate_qsmomentum_pandas
-    elif engine == "polars":
-        func = _calculate_qsmomentum_polars
+    # Select compute kernel
+    func = (
+        _calculate_qsmomentum_pandas
+        if engine == "pandas"
+        else _calculate_qsmomentum_polars
+    )
 
     ret = data
+    computed_any = False  # track whether we actually added at least one column
 
     for fp in roc_fast_period:
         for sp in roc_slow_period:
-            for np in returns_period:
-                if fp < sp:
-                    if np < sp:
+            for np_ in returns_period:
+                # Require fast < slow (kept), but allow returns_period <= slow (relaxed)
+                if fp < sp and np_ <= sp:
 
-                        def f(close):
-                            return func(close, fp, sp, np)
+                    def f(close):
+                        return func(close, fp, sp, np_)
 
-                        ret = ret.augment_rolling(
-                            date_column=date_column,
-                            value_column=close_column,
-                            window=sp,
-                            window_func=("f", f),
-                            engine=engine,
-                        )
+                    ret = ret.augment_rolling(
+                        date_column=date_column,
+                        value_column=close_column,
+                        window=sp,
+                        window_func=("f", f),
+                        engine=engine,
+                    )
 
-                        ret.rename(
-                            columns={
-                                ret.columns[-1]: f"{close_column}_qsmom_{fp}_{sp}_{np}"
-                            },
-                            inplace=True,
-                        )
+                    ret.rename(
+                        columns={
+                            ret.columns[-1]: f"{close_column}_qsmom_{fp}_{sp}_{np_}"
+                        },
+                        inplace=True,
+                    )
+                    computed_any = True
 
-    # if engine == 'polars':
-    #     # Polars Index to Match Pandas
-    #     ret.index = idx_unsorted
+    if not computed_any:
+        # If the loop never produced a column, explain why.
+        raise ValueError(
+            "augment_qsmomentum generated no columns. "
+            "Ensure roc_fast_period < roc_slow_period and returns_period <= roc_slow_period. "
+            f"Got fast={roc_fast_period}, slow={roc_slow_period}, returns={returns_period}."
+        )
+
+    # Ensure we return a DataFrame, not a GroupBy, before sorting
+    if isinstance(ret, pd.core.groupby.generic.DataFrameGroupBy):
+        ret = ret.obj
 
     if reduce_memory:
         ret = reduce_memory_usage(ret)
 
     ret = ret.sort_index()
-
     return ret
 
 
