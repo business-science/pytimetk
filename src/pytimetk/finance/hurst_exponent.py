@@ -267,7 +267,7 @@ def _augment_hurst_exponent_polars(
             df = df.with_columns(
                 pl.col(col)
                 .rolling_map(hurst_udf, window_size=window, min_periods=window)
-                .over(group_names)
+                .over(partition_by=group_names, order_by=date_column)
                 .alias(f"{col}_hurst_{window}")
             )
         else:

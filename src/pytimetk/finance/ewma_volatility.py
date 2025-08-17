@@ -239,7 +239,7 @@ def _augment_ewma_volatility_polars(
             df = df.with_columns(
                 pl.col("squared_returns")
                 .ewm_mean(alpha=1 - decay_factor, adjust=False, min_periods=win)
-                .over(group_names)
+                .over(partition_by=group_names, order_by=date_column)
                 .sqrt()
                 .alias(col_name)
             )

@@ -292,7 +292,8 @@ def _augment_atr_polars(
     # Add ATR/NATR columns
     for period in periods:
         atr = tr.rolling_mean(window_size=period, min_periods=1).over(
-            group_names if group_names else None
+            partition_by=group_names if group_names else None,
+            order_by=date_column,
         )
         if normalize:
             atr = (atr / pl.col(close_column) * 100).replace(

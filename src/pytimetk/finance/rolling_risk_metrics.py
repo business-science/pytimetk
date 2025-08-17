@@ -637,7 +637,9 @@ def _augment_rolling_risk_metrics_polars(
 
         # Apply the expressions for this window in a separate call
         if group_names:
-            df = df.with_columns([e.over(group_names) for e in exprs])
+            df = df.with_columns(
+                [e.over(partition_by=group_names, order_by=date_column) for e in exprs]
+            )
         else:
             df = df.with_columns(exprs)
 

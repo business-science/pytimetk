@@ -266,13 +266,17 @@ def _augment_fip_momentum_polars(
 
         if group_names:
             # Apply the rolling map within groups.
-            df = df.with_columns(expr.over(group_names))
+            df = df.with_columns(
+                expr.over(partition_by=group_names, order_by=date_column)
+            )
             # Instead of pl.cumcount(), add a global row count and subtract the group minimum.
             df = df.with_row_count("global_row_nr")
             df = df.with_columns(
                 (
                     pl.col("global_row_nr")
-                    - pl.col("global_row_nr").min().over(group_names)
+                    - pl.col("global_row_nr")
+                    .min()
+                    .over(partition_by=group_names, order_by=date_column)
                 ).alias("row_nr")
             )
             df = df.with_columns(

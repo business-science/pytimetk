@@ -177,7 +177,12 @@ def _augment_drawdown_polars(
     if group_names:
         # Grouped calculation
         # Step 1: Calculate peak
-        peak_expr = pl.col(col).cum_max().over(group_names).alias(f"{col}_peak")
+        peak_expr = (
+            pl.col(col)
+            .cum_max()
+            .over(partition_by=group_names, order_by=date_column)
+            .alias(f"{col}_peak")
+        )
         df = df.with_columns(peak_expr)
 
         # Step 2: Calculate drawdown using the peak

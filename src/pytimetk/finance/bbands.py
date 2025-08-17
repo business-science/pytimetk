@@ -284,14 +284,14 @@ def _augment_bbands_polars(
                 ma = (
                     pl.col(close_column)
                     .rolling_mean(window_size=period)
-                    .over(group_names)
+                    .over(partition_by=group_names, order_by=date_column)
                     .alias(f"{close_column}_bband_middle_{period}_{sd}")
                 )
 
                 std = (
                     pl.col(close_column)
                     .rolling_std(window_size=period)
-                    .over(group_names)
+                    .over(partition_by=group_names, order_by=date_column)
                     .alias("std")
                 )
 

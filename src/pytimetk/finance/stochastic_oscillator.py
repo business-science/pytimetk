@@ -316,10 +316,14 @@ def _augment_stochastic_oscillator_polars(
         k_exprs = []
         for k_period in k_periods:
             lowest_low = (
-                pl.col(low_column).rolling_min(window_size=k_period).over(group_names)
+                pl.col(low_column)
+                .rolling_min(window_size=k_period)
+                .over(partition_by=group_names, order_by=date_column)
             )
             highest_high = (
-                pl.col(high_column).rolling_max(window_size=k_period).over(group_names)
+                pl.col(high_column)
+                .rolling_max(window_size=k_period)
+                .over(partition_by=group_names, order_by=date_column)
             )
             k_expr = (
                 100 * (pl.col(col) - lowest_low) / (highest_high - lowest_low)

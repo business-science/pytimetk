@@ -345,15 +345,15 @@ def _augment_adx_polars(
                 [
                     pl.col("tr")
                     .rolling_mean(window_size=period, min_periods=1)
-                    .over(group_names)
+                    .over(partition_by=group_names, order_by=date_column)
                     .alias("tr_smooth"),
                     pl.col("plus_dm")
                     .rolling_mean(window_size=period, min_periods=1)
-                    .over(group_names)
+                    .over(partition_by=group_names, order_by=date_column)
                     .alias("plus_dm_smooth"),
                     pl.col("minus_dm")
                     .rolling_mean(window_size=period, min_periods=1)
-                    .over(group_names)
+                    .over(partition_by=group_names, order_by=date_column)
                     .alias("minus_dm_smooth"),
                 ]
             )
@@ -392,7 +392,7 @@ def _augment_adx_polars(
             df = df.with_columns(
                 pl.col(f"dx_{period}")
                 .rolling_mean(window_size=period, min_periods=period)
-                .over(group_names)
+                .over(partition_by=group_names, order_by=date_column)
                 .alias(f"{col}_adx_{period}")
             )
         else:
