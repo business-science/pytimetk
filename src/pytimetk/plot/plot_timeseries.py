@@ -846,8 +846,9 @@ def _plot_timeseries_plotly(
             xaxis_title=x_lab,
             yaxis_title=y_lab,
             legend_title_text=color_lab,
-            xaxis=dict(tickformat=x_axis_date_labels),
         )
+        if x_axis_date_labels is not None:
+            fig.update_xaxes(tickformat=x_axis_date_labels)
 
         # Apply styling and layout updates
         fig.update_layout(margin=dict(l=10, r=10, t=40, b=40))
@@ -1095,13 +1096,9 @@ def _plot_timeseries_plotly(
             xaxis_title=x_lab,
             yaxis_title=y_lab,
             legend_title_text=color_lab,
-            xaxis=dict(tickformat=x_axis_date_labels),
         )
-        fig.update_xaxes(
-            matches=None,
-            showticklabels=True,
-            visible=True,
-        )
+        if x_axis_date_labels is not None:
+            fig.update_xaxes(tickformat=x_axis_date_labels)
         fig.update_layout(margin=dict(l=10, r=10, t=40, b=40))
         fig.update_layout(
             template="plotly_white",
