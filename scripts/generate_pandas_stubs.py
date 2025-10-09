@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import ast
 import re
+from inspect import cleandoc
 from pathlib import Path
 from typing import Dict, Iterable, Set
 
@@ -47,9 +48,16 @@ def read_python_files(paths: Iterable[Path]) -> Dict[Path, str]:
     return {path: path.read_text(encoding="utf-8") for path in paths}
 
 
-def collect_dataframe_methods(files: Dict[Path, str]) -> Set[str]:
+def _clean_doc(doc: str | None) -> str:
+    if not doc:
+        return ""
+    cleaned = cleandoc(doc)
+    return cleaned.replace('"""', r'\"\"\"')
+
+
+def collect_dataframe_methods(files: Dict[Path, str]) -> Dict[str, str]:
     """Extract function names decorated with register_dataframe_method."""
-    names: Set[str] = set()
+    result: Dict[str, str] = {}
     for path, text in files.items():
         try:
             tree = ast.parse(text, filename=str(path))
@@ -63,23 +71,35 @@ def collect_dataframe_methods(files: Dict[Path, str]) -> Set[str]:
                         isinstance(deco, ast.Attribute)
                         and deco.attr == "register_dataframe_method"
                     ):
-                        names.add(node.name)
+                        result[node.name] = _clean_doc(ast.get_docstring(node))
                         break
-    return names
+    return result
 
 
-def collect_groupby_methods(files: Dict[Path, str]) -> Set[str]:
+def collect_groupby_methods(files: Dict[Path, str]) -> Dict[str, str]:
     """Find methods assigned to DataFrameGroupBy.*."""
     pattern = re.compile(r"DataFrameGroupBy\.([a-zA-Z0-9_]+)")
-    names: Set[str] = set()
-    for text in files.values():
-        names.update(pattern.findall(text))
-    return names
+    result: Dict[str, str] = {}
+    for path, text in files.items():
+        matches = pattern.findall(text)
+        if not matches:
+            continue
+        try:
+            tree = ast.parse(text, filename=str(path))
+        except SyntaxError:
+            continue
+        doc_map: Dict[str, str] = {}
+        for node in tree.body:
+            if isinstance(node, ast.FunctionDef):
+                doc_map[node.name] = _clean_doc(ast.get_docstring(node))
+        for name in matches:
+            result.setdefault(name, doc_map.get(name, ""))
+    return result
 
 
 def render_methods(
     class_name: str,
-    methods: Iterable[str],
+    methods: Dict[str, str],
     plot_methods: Set[str],
 ) -> str:
     """Render method signatures for either DataFrame or GroupBy classes."""
@@ -107,12 +127,25 @@ def render_methods(
     lines.append("")
     for name in sorted(methods):
         ret = "Any" if name in plot_methods else return_type
-        lines.append(f"{indent}def {name}(self, *args: Any, **kwargs: Any) -> {ret}: ...")
+        lines.append(f"{indent}def {name}(self, *args: Any, **kwargs: Any) -> {ret}:")
+        doc = methods.get(name, "")
+        if doc:
+            doc_lines = doc.splitlines()
+            if len(doc_lines) == 1:
+                lines.append(f'{indent}    """{doc_lines[0]}"""')
+            else:
+                lines.append(f'{indent}    """')
+                for doc_line in doc_lines:
+                    lines.append(f"{indent}    {doc_line}")
+                lines.append(f'{indent}    """')
+        lines.append(f"{indent}    ...")
     lines.append("")
     return "\n".join(lines)
 
 
-def write_stubs(dataframe_methods: Set[str], groupby_methods: Set[str]) -> None:
+def write_stubs(
+    dataframe_methods: Dict[str, str], groupby_methods: Dict[str, str]
+) -> None:
     """Write the .pyi overlay files."""
     (TYPINGS_ROOT / "pandas" / "core" / "groupby").mkdir(parents=True, exist_ok=True)
 
