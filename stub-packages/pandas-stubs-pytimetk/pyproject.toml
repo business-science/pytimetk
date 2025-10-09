@@ -1,0 +1,24 @@
+[project]
+name = "pandas-stubs-pytimetk"
+version = "0.1.0"
+description = "Additional pandas type stubs that expose pytimetk accessor methods."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Business Science", email = "info@business-science.io" }
+]
+keywords = ["pandas", "stubs", "typing", "pytimetk"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Typing :: Stubs Only",
+]
+
+[project.urls]
+Homepage = "https://business-science.github.io/pytimetk/"
+Repository = "https://github.com/business-science/pytimetk"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

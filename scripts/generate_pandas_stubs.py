@@ -6,8 +6,9 @@ the accessor methods registered by pytimetk.
 The script inspects the pytimetk source for functions decorated with
 `pandas_flavor.register_dataframe_method` and for assignments that
 attach callables to `pd.core.groupby.generic.DataFrameGroupBy`.  It then
-materialises `.pyi` files under `typings/pandas/...` that declare those
-methods with simple `(*args: Any, **kwargs: Any)` signatures.
+materialises `.pyi` files under `typings/pandas/...` (used for in-repo
+development) and copies them into the stub package at
+`stub-packages/pandas-stubs-pytimetk` ready for distribution.
 
 Run this whenever accessor functions are added, renamed, or removed:
 
@@ -25,6 +26,13 @@ from typing import Dict, Iterable, Set
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = REPO_ROOT / "src" / "pytimetk"
 TYPINGS_ROOT = REPO_ROOT / "typings"
+STUB_PACKAGE_ROOT = (
+    REPO_ROOT
+    / "stub-packages"
+    / "pandas-stubs-pytimetk"
+    / "pandas-stubs-pytimetk"
+    / "pandas"
+)
 
 # Methods that return plotting objects rather than DataFrames.
 PLOT_METHODS_DF: Set[str] = {
@@ -172,25 +180,27 @@ def render_methods(
     return "\n".join(lines)
 
 
+def _write_to_base(base: Path, frame_stub: str, groupby_stub: str) -> None:
+    (base / "core" / "groupby").mkdir(parents=True, exist_ok=True)
+    (base / "core" / "frame.pyi").write_text(frame_stub, encoding="utf-8")
+    (base / "core" / "groupby" / "generic.pyi").write_text(
+        groupby_stub, encoding="utf-8"
+    )
+
+
 def write_stubs(
     dataframe_methods: Dict[str, str], groupby_methods: Dict[str, str]
 ) -> None:
     """Write the .pyi overlay files."""
-    (TYPINGS_ROOT / "pandas" / "core" / "groupby").mkdir(parents=True, exist_ok=True)
-
-    frame_stub = render_methods(
-        "DataFrame", dataframe_methods, PLOT_METHODS_DF
-    )
-    (TYPINGS_ROOT / "pandas" / "core" / "frame.pyi").write_text(
-        frame_stub, encoding="utf-8"
-    )
-
+    frame_stub = render_methods("DataFrame", dataframe_methods, PLOT_METHODS_DF)
     groupby_stub = render_methods(
         "DataFrameGroupBy", groupby_methods, PLOT_METHODS_GB
     )
-    (TYPINGS_ROOT / "pandas" / "core" / "groupby" / "generic.pyi").write_text(
-        groupby_stub, encoding="utf-8"
-    )
+
+    _write_to_base(TYPINGS_ROOT / "pandas", frame_stub, groupby_stub)
+
+    if STUB_PACKAGE_ROOT.exists():
+        _write_to_base(STUB_PACKAGE_ROOT, frame_stub, groupby_stub)
 
 
 def main() -> None:
@@ -205,10 +215,15 @@ def main() -> None:
         raise SystemExit("No dataframe methods discovered; aborting.")
 
     write_stubs(dataframe_methods, groupby_methods)
+    locations = [TYPINGS_ROOT]
+    if STUB_PACKAGE_ROOT.exists():
+        locations.append(STUB_PACKAGE_ROOT)
+
     print(
         "Generated stub overlays for "
         f"{len(dataframe_methods)} DataFrame methods and "
-        f"{len(groupby_methods)} GroupBy methods in {TYPINGS_ROOT}"
+        f"{len(groupby_methods)} GroupBy methods in "
+        + ", ".join(str(loc) for loc in locations)
     )
 
 
