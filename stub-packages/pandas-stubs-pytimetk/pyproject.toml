@@ -1,6 +1,6 @@
 [project]
 name = "pandas-stubs-pytimetk"
-version = "0.1.0"
+version = "0.1.1"
 description = "Additional pandas type stubs that expose pytimetk accessor methods."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -23,19 +23,19 @@ Repository = "https://github.com/business-science/pytimetk"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build.sources]
+src = ["src"]
+
 [tool.hatch.build.targets.wheel]
-packages = ["pandas-stubs-pytimetk"]
+packages = [{ include = "pandas", from = "src" }]
 include = [
-    "pandas-stubs-pytimetk/pandas/**/*.pyi",
-    "pandas-stubs-pytimetk/__init__.pyi",
     "README.md",
     "LICENSE",
 ]
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "pandas-stubs-pytimetk/pandas/**/*.pyi",
-    "pandas-stubs-pytimetk/__init__.pyi",
+    "src/pandas/**/*.pyi",
     "pyproject.toml",
     "README.md",
     "LICENSE",

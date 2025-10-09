@@ -30,7 +30,7 @@ STUB_PACKAGE_ROOT = (
     REPO_ROOT
     / "stub-packages"
     / "pandas-stubs-pytimetk"
-    / "pandas-stubs-pytimetk"
+    / "src"
     / "pandas"
 )
 
