@@ -27,7 +27,7 @@ build-backend = "hatchling.build"
 src = ["src"]
 
 [tool.hatch.build.targets.wheel]
-packages = [{ include = "pandas", from = "src" }]
+packages = ["src/pandas"]
 include = [
     "README.md",
     "LICENSE",
@@ -40,3 +40,4 @@ include = [
     "README.md",
     "LICENSE",
 ]
+
