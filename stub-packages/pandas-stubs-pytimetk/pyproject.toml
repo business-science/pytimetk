@@ -28,7 +28,7 @@ include = [
     "README.md",
     "LICENSE",
 ]
-force-include = {"src/pandas": "pandas"}
+force-include = {"src/pandas" = "pandas"}
 
 [tool.hatch.build.targets.sdist]
 include = [
