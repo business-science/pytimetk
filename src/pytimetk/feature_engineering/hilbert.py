@@ -4,6 +4,7 @@ import pandas_flavor as pf
 import polars as pl
 from typing import Union, List
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -14,8 +15,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_hilbert(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
     reduce_memory: bool = True,
@@ -29,7 +31,7 @@ def augment_hilbert(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
+    data : pd.DataFrame or DataFrameGroupBy
         Input DataFrame or DataFrameGroupBy object with one or more columns of
         real-valued signals.
     value_column : str or list
@@ -177,16 +179,13 @@ def augment_hilbert(
 
 
 # Monkey-patch the method to the DataFrameGroupBy class
-pd.core.groupby.DataFrameGroupBy.augment_hilbert = augment_hilbert
-
-
 def _augment_hilbert_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
 ):
     # Type checks
-    # if not isinstance(data, (pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy)):
+    # if not isinstance(data, (pd.DataFrame, DataFrameGroupBy)):
     #     raise TypeError("Input must be a pandas DataFrame or DataFrameGroupBy object")
     if not isinstance(value_column, list) or not all(
         isinstance(col, str) for col in value_column
@@ -244,7 +243,7 @@ def _augment_hilbert_pandas(
 
 
 def _augment_hilbert_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
 ) -> pd.DataFrame:
@@ -253,11 +252,11 @@ def _augment_hilbert_polars(
 
     df_pl = pl.from_pandas(
         data.obj.copy()
-        if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy)
+        if isinstance(data, DataFrameGroupBy)
         else data.copy()
     )
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         groups = (
             data.grouper.names
             if isinstance(data.grouper.names, list)

@@ -9,6 +9,7 @@ from typing import Union, Optional, Callable, Tuple
 from pathos.multiprocessing import ProcessingPool
 from functools import partial
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -21,8 +22,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_expanding(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, list],
     window_func: Union[str, list, Tuple[str, Callable]] = "mean",
@@ -38,7 +40,7 @@ def augment_expanding(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         Input data to be processed. Can be a Pandas DataFrame or a GroupBy object.
     date_column : str
         Name of the datetime column. Data is sorted by this column within each group.
@@ -267,12 +269,8 @@ def augment_expanding(
     return ret
 
 
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_expanding = augment_expanding
-
-
 def _augment_expanding_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, list],
     window_func: Union[str, list, Tuple[str, Callable]] = "mean",
@@ -289,7 +287,7 @@ def _augment_expanding_pandas(
     data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
 
     # Group data if it's a GroupBy object; otherwise, prepare it for the expanding calculations
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         grouped = data_copy.sort_values(by=[*group_names, date_column]).groupby(
             group_names
@@ -468,7 +466,7 @@ def _process_expanding_window(
 
 
 def _augment_expanding_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, list],
     window_func: Union[str, list, Tuple[str, Callable]] = "mean",
@@ -480,13 +478,13 @@ def _augment_expanding_polars(
     """
 
     # Retrieve the group column names if the input data is a GroupBy object
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
     else:
         group_names = None
 
     # Convert data into a Pandas DataFrame format for processing
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         pandas_df = data.obj.copy()
     elif isinstance(data, pd.DataFrame):
         pandas_df = data.copy()
@@ -628,7 +626,7 @@ def _augment_expanding_polars(
     selected_columns = expanding_exprs
 
     df = pl.DataFrame(pandas_df)
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         out_df = df.group_by(data.grouper.names, maintain_order=True).agg(
             selected_columns
         )

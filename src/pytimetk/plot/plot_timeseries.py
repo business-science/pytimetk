@@ -14,6 +14,7 @@ from pytimetk.utils.plot_helpers import hex_to_rgba, name_to_hex
 
 from typing import Union, Optional, List
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -22,8 +23,9 @@ from pytimetk.utils.checks import (
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def plot_timeseries(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
     color_column: Union[str, List[str]] = None,
@@ -65,7 +67,7 @@ def plot_timeseries(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
+    data : pd.DataFrame or DataFrameGroupBy
         The input data for the plot. It can be either a Pandas DataFrame or a
         Pandas DataFrameGroupBy object.
     date_column : str
@@ -462,7 +464,7 @@ def plot_timeseries(
     group_names = None
 
     # Handle DataFrames and GroupBy objects
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         data = data.obj.copy()
     elif isinstance(data, pd.DataFrame):
@@ -631,10 +633,6 @@ def plot_timeseries(
         )
 
     return fig
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.plot_timeseries = plot_timeseries
 
 
 def _plot_timeseries_plotly(

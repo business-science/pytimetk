@@ -4,6 +4,7 @@ import polars as pl
 import pandas_flavor as pf
 from typing import Union, List, Tuple
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -14,8 +15,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_bbands(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     periods: Union[int, Tuple[int, int], List[int]] = 20,
@@ -28,7 +30,7 @@ def augment_bbands(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         The `data` parameter is the input data that can be either a pandas DataFrame or a pandas
         DataFrameGroupBy object. It contains the data on which the Bollinger Bands will be calculated.
     date_column : str
@@ -188,12 +190,8 @@ def augment_bbands(
     return ret
 
 
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_bbands = augment_bbands
-
-
 def _augment_bbands_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     periods: Union[int, Tuple[int, int], List[int]] = 20,
@@ -202,7 +200,7 @@ def _augment_bbands_pandas(
     """
     Internal function to calculate BBANDS using Pandas.
     """
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         data = data.obj
         df = data.copy()
@@ -253,13 +251,13 @@ def _augment_bbands_pandas(
 
 
 def _augment_bbands_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     periods: Union[int, Tuple[int, int], List[int]] = 20,
     std_dev: Union[float, List[float]] = 2.0,
 ) -> pd.DataFrame:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         # Data is a GroupBy object, use apply to get a DataFrame
         pandas_df = data.obj.copy()
     elif isinstance(data, pd.DataFrame):
@@ -273,7 +271,7 @@ def _augment_bbands_polars(
             "data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame"
         )
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         # Get the group names and original ungrouped data
         group_names = data.grouper.names
 

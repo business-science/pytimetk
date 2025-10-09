@@ -6,6 +6,7 @@ from typing import Union, Optional, Callable, Tuple, List
 
 from pathos.multiprocessing import ProcessingPool
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -14,8 +15,9 @@ from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_rolling_apply(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     window_func: Union[Tuple[str, Callable], List[Tuple[str, Callable]]],
     window: Union[int, tuple, list] = 2,
@@ -30,7 +32,7 @@ def augment_rolling_apply(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         Input data to be processed. Can be a Pandas DataFrame or a GroupBy object.
     date_column : str
         Name of the datetime column. Data is sorted by this column within each
@@ -202,7 +204,7 @@ def augment_rolling_apply(
     original_index = data_copy.index
 
     # Group data if it's a GroupBy object; otherwise, prepare it for the rolling calculations
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         grouped = data_copy.sort_values(by=[*group_names, date_column]).groupby(
             group_names
@@ -244,10 +246,6 @@ def augment_rolling_apply(
     result_df.index = original_index
 
     return result_df
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_rolling_apply = augment_rolling_apply
 
 
 def _process_single_rolling_apply_group(args):

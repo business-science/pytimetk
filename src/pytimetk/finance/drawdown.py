@@ -3,6 +3,7 @@ import polars as pl
 import pandas_flavor as pf
 from typing import Union
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -13,8 +14,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_drawdown(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     reduce_memory: bool = False,
@@ -26,7 +28,7 @@ def augment_drawdown(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         The input data can be either a pandas DataFrame or a pandas DataFrameGroupBy object
         containing the time series data for drawdown calculation.
     date_column : str
@@ -122,12 +124,8 @@ def augment_drawdown(
     return ret
 
 
-# Monkey patch to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_drawdown = augment_drawdown
-
-
 def _augment_drawdown_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
 ) -> pd.DataFrame:
@@ -142,7 +140,7 @@ def _augment_drawdown_pandas(
         df[f"{col}_drawdown"] = df[col] - df[f"{col}_peak"]
         df[f"{col}_drawdown_pct"] = df[f"{col}_drawdown"] / df[f"{col}_peak"]
 
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    elif isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         df = data.obj.copy()
         col = close_column
@@ -156,13 +154,13 @@ def _augment_drawdown_pandas(
 
 
 def _augment_drawdown_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
 ) -> pd.DataFrame:
     """Polars implementation of drawdown calculation."""
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         pandas_df = data.obj
         group_names = data.grouper.names
         if not isinstance(group_names, list):

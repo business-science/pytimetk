@@ -4,6 +4,7 @@ import polars as pl
 import pandas_flavor as pf
 from typing import Union, List, Tuple
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -14,8 +15,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_qsmomentum(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     roc_fast_period: Union[int, Tuple[int, int], List[int]] = 21,
@@ -28,7 +30,7 @@ def augment_qsmomentum(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         The `data` parameter in the `augment_qsmomentum` function is expected to be a pandas DataFrame or a
         pandas DataFrameGroupBy object. This parameter represents the input data on which the momentum
         calculations will be performed.
@@ -201,7 +203,7 @@ def augment_qsmomentum(
         )
 
     # Ensure we return a DataFrame, not a GroupBy, before sorting
-    if isinstance(ret, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(ret, DataFrameGroupBy):
         ret = ret.obj
 
     if reduce_memory:
@@ -209,10 +211,6 @@ def augment_qsmomentum(
 
     ret = ret.sort_index()
     return ret
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_qsmomentum = augment_qsmomentum
 
 
 def _calculate_qsmomentum_pandas(

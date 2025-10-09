@@ -3,6 +3,7 @@ import pandas_flavor as pf
 
 from typing import Union
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -11,8 +12,9 @@ from pytimetk.utils.checks import (
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_ewm(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, list],
     window_func: Union[str, list] = "mean",
@@ -29,7 +31,7 @@ def augment_ewm(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         The input DataFrame or GroupBy object.
     date_column : str
         The name of the column containing date information in the input
@@ -127,7 +129,7 @@ def augment_ewm(
     data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
 
     # Group data if it's a GroupBy object; otherwise, prepare it for the EWM calculations
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         grouped = data_copy.sort_values(by=[*group_names, date_column]).groupby(
             group_names
@@ -195,7 +197,3 @@ def augment_ewm(
     result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
 
     return result_df
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_ewm = augment_ewm

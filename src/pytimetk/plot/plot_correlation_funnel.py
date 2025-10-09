@@ -12,6 +12,7 @@ from pytimetk.plot.theme import theme_timetk
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def plot_correlation_funnel(
     data: pd.DataFrame,
     limits: tuple = (-1, 1),

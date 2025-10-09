@@ -8,6 +8,7 @@ from plotnine import *
 
 from pytimetk.plot import plot_timeseries
 from pytimetk.utils.plot_helpers import hex_to_rgba, rgba_to_hex, parse_rgba
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -17,8 +18,9 @@ from pytimetk.plot.theme import theme_timetk
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def plot_anomalies(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     facet_ncol: int = 1,
     facet_nrow: Optional[int] = None,
@@ -58,7 +60,7 @@ def plot_anomalies(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         The input data for the plot. It can be either a pandas DataFrame or a
         pandas DataFrameGroupBy object.
     date_column : str
@@ -432,12 +434,8 @@ def plot_anomalies(
     return fig
 
 
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.plot_anomalies = plot_anomalies
-
-
 def _plot_anomalies_plotly(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     facet_ncol: int = 1,
     facet_nrow: Optional[int] = None,
@@ -509,7 +507,7 @@ def _plot_anomalies_plotly(
     # 1.0 Create Main Plot
 
     is_grouped = False
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         data = data.obj.copy()
         is_grouped = True
@@ -836,7 +834,7 @@ def _plot_anomalies_plotly(
 
 
 def _plot_anomalies_plotnine(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     facet_ncol: int = 1,
     facet_nrow: Optional[int] = None,
@@ -865,7 +863,7 @@ def _plot_anomalies_plotnine(
     width: Optional[int] = None,
     height: Optional[int] = None,
 ):
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
 
         data = data.obj.copy()

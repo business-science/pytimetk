@@ -3,6 +3,7 @@ import polars as pl
 import pandas_flavor as pf
 from typing import Union, List, Tuple
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -13,8 +14,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_diffs(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
     periods: Union[int, Tuple[int, int], List[int]] = 1,
@@ -31,7 +33,7 @@ def augment_diffs(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
+    data : pd.DataFrame or DataFrameGroupBy
         The `data` parameter is the input DataFrame or DataFrameGroupBy object
         that you want to add differenced columns to.
     date_column : str
@@ -161,12 +163,8 @@ def augment_diffs(
     return ret
 
 
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_diffs = augment_diffs
-
-
 def _augment_diffs_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
     periods: Union[int, Tuple[int, int], List[int]] = 1,
@@ -201,7 +199,7 @@ def _augment_diffs_pandas(
                     df[f"{col}_diff_{period}"] = df[col].diff(period)
 
     # GROUPED EXTENSION - If data is a GroupBy object, add differences by group
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         # Get the group names and original ungrouped data
         group_names = data.grouper.names
         data = data.obj
@@ -227,13 +225,13 @@ def _augment_diffs_pandas(
 
 
 def _augment_diffs_polars(
-    data: Union[pl.DataFrame, pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pl.DataFrame, pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
     periods: Union[int, Tuple[int, int], List[int]] = 1,
     normalize: bool = False,
 ) -> pl.DataFrame:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         # Data is a GroupBy object, use apply to get a DataFrame
         pandas_df = data.obj.copy()
     elif isinstance(data, pd.DataFrame):
@@ -286,7 +284,7 @@ def _augment_diffs_polars(
 
     # Select the columns
     df = pl.DataFrame(pandas_df)
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         out_df = df.group_by(data.grouper.names, maintain_order=True).agg(
             selected_columns
         )

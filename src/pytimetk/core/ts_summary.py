@@ -7,6 +7,7 @@ from typing import Union
 
 from pytimetk.core.frequency import get_frequency_summary
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -17,8 +18,9 @@ from pytimetk.utils.parallel_helpers import parallel_apply, get_threads, progres
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def ts_summary(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     threads=1,
     show_progress=True,
@@ -30,7 +32,7 @@ def ts_summary(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
+    data : pd.DataFrame or DataFrameGroupBy
         The `data` parameter can be either a Pandas DataFrame or a Pandas
         DataFrameGroupBy object. It represents the data that you want to
         summarize.
@@ -152,7 +154,7 @@ def ts_summary(
     if isinstance(data, pd.DataFrame):
         return summarize_func(data, date_column)
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
 
         # Get threads
@@ -178,10 +180,6 @@ def ts_summary(
             )
 
         return result.reset_index(level=group_names)
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.ts_summary = ts_summary
 
 
 def _ts_summary(group: pd.DataFrame, date_column: str) -> pd.DataFrame:

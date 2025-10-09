@@ -4,6 +4,7 @@ import numpy as np
 from typing import Union, List, Tuple
 
 import pandas_flavor as pf
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -14,8 +15,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_hurst_exponent(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     window: Union[int, Tuple[int, int], List[int]] = 100,
@@ -26,7 +28,7 @@ def augment_hurst_exponent(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         Input pandas DataFrame or GroupBy object with time series data.
     date_column : str
         Column name containing dates or timestamps.
@@ -158,12 +160,8 @@ def augment_hurst_exponent(
     return ret
 
 
-# Monkey patch to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_hurst_exponent = augment_hurst_exponent
-
-
 def _augment_hurst_exponent_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     windows: List[int],
@@ -173,7 +171,7 @@ def _augment_hurst_exponent_pandas(
     if isinstance(data, pd.DataFrame):
         df = data.copy()
         group_names = None
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    elif isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         df = data.obj.copy()
 
@@ -223,14 +221,14 @@ def _augment_hurst_exponent_pandas(
 
 
 def _augment_hurst_exponent_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     windows: List[int],
 ) -> pd.DataFrame:
     """Polars implementation of Hurst Exponent calculation."""
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         pandas_df = data.obj
         group_names = data.grouper.names
         if not isinstance(group_names, list):

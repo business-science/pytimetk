@@ -3,6 +3,7 @@ import polars as pl
 import pandas_flavor as pf
 import numpy as np
 from typing import Union, List, Optional
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -14,8 +15,9 @@ from scipy import stats  # For skewness and kurtosis
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_rolling_risk_metrics(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     window: Union[int, List[int]] = 252,
@@ -32,7 +34,7 @@ def augment_rolling_risk_metrics(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         The input data can be a pandas DataFrame or a pandas DataFrameGroupBy object
         containing the time series data for risk metric calculations.
     date_column : str
@@ -209,16 +211,8 @@ def augment_rolling_risk_metrics(
     ret = ret.sort_index()
 
     return ret
-
-
-# Monkey patch to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_rolling_risk_metrics = (
-    augment_rolling_risk_metrics
-)
-
-
 def _augment_rolling_risk_metrics_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     windows: List[int],
@@ -231,7 +225,7 @@ def _augment_rolling_risk_metrics_pandas(
     if isinstance(data, pd.DataFrame):
         df = data.copy()
         group_names = None
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    elif isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         df = data.obj.copy()
 
@@ -503,7 +497,7 @@ def _augment_rolling_risk_metrics_pandas(
 
 
 def _augment_rolling_risk_metrics_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     windows: List[int],
@@ -512,7 +506,7 @@ def _augment_rolling_risk_metrics_polars(
     annualization_factor: int,
     metrics: List[str],
 ) -> pd.DataFrame:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         pandas_df = data.obj
         group_names = data.grouper.names
         if not isinstance(group_names, list):

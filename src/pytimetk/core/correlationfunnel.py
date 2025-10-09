@@ -3,11 +3,13 @@ import numpy as np
 import pandas_flavor as pf
 
 from typing import Union
+from pandas.core.groupby.generic import DataFrameGroupBy
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def binarize(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     n_bins: int = 4,
     thresh_infreq: float = 0.01,
     name_infreq: str = "-OTHER",
@@ -29,7 +31,7 @@ def binarize(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         The `data` parameter is the input data that you want to binarize. It can be either a pandas
         DataFrame or a DataFrameGroupBy object.
     n_bins : int
@@ -124,7 +126,7 @@ def binarize(
 
     """
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         data = data.obj
 
     if not isinstance(data, pd.DataFrame):
@@ -173,13 +175,10 @@ def binarize(
     return data_transformed
 
 
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.binarize = binarize
-
-
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def correlate(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     target: str,
     method: str = "pearson",
 ):
@@ -189,7 +188,7 @@ def correlate(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         The `data` parameter is the input data that you want to calculate correlations for. It can be
         either a pandas DataFrame or a grouped DataFrame obtained from a groupby operation.
     target : str
@@ -280,7 +279,7 @@ def correlate(
 
     """
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         data = data.obj
 
     if not isinstance(data, pd.DataFrame):
@@ -313,10 +312,6 @@ def correlate(
     correlations = correlations[["feature", "bin", "correlation"]]
 
     return correlations
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.correlate = correlate
 
 
 # UTILITIES ----

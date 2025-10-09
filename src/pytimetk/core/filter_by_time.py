@@ -3,6 +3,7 @@ import pandas as pd
 import pandas_flavor as pf
 from typing import Union
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -12,8 +13,9 @@ from pytimetk.utils.datetime_helpers import parse_end_date
 
 # Function ----
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def filter_by_time(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     start_date: str = "start",
     end_date: str = "end",
@@ -28,7 +30,7 @@ def filter_by_time(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
+    data : pd.DataFrame or DataFrameGroupBy
         The data to be filtered. It can be a pandas DataFrame or a pandas
         GroupBy object.
     date_column : str
@@ -178,16 +180,15 @@ def filter_by_time(
 
 
 # Monkey Patch the Method to Pandas Grouby Objects
-pd.core.groupby.generic.DataFrameGroupBy.filter_by_time = filter_by_time
 
 
 def _filter_by_time_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     start_date: str,
     end_date: str,
 ):
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         data = data.obj
 
     df = data.copy()

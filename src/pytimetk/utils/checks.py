@@ -5,12 +5,13 @@ import polars as pl
 from importlib.metadata import distribution, PackageNotFoundError
 
 from typing import Union, List
+from pandas.core.groupby.generic import DataFrameGroupBy
 
 
 def check_anomalize_data(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
 ) -> None:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         data = data.obj
 
     expected_colnames = [
@@ -43,11 +44,11 @@ def check_data_type(data, authorized_dtypes: list, error_str=None):
 
 
 def check_dataframe_or_groupby(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
 ) -> None:
     check_data_type(
         data,
-        authorized_dtypes=[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+        authorized_dtypes=[pd.DataFrame, DataFrameGroupBy],
         error_str="`data` is not a Pandas DataFrame or GroupBy object.",
     )
 
@@ -71,10 +72,10 @@ def check_series_polars(data: pl.Series) -> None:
 
 
 def check_date_column(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
 ) -> None:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         data = data.obj
 
     if date_column not in data.columns:
@@ -90,11 +91,11 @@ def check_date_column(
 
 
 def check_value_column(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     value_column: Union[str, List[str]],
     require_numeric_dtype=True,
 ) -> None:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         data = data.obj
 
     if not isinstance(value_column, list):
@@ -129,10 +130,10 @@ def check_installed(package_name: str):
         )
 
 
-# def ensure_datetime64_date_column(data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy], date_column = str) -> Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]:
+# def ensure_datetime64_date_column(data: Union[pd.DataFrame, DataFrameGroupBy], date_column = str) -> Union[pd.DataFrame, DataFrameGroupBy]:
 
 #     group_names = None
-#     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+#     if isinstance(data, DataFrameGroupBy):
 #         group_names = list(data.groups.keys())
 #         data = data.obj
 

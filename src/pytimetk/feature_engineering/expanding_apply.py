@@ -6,6 +6,7 @@ from typing import Union, Optional, Callable, Tuple, List
 
 from pathos.multiprocessing import ProcessingPool
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -15,8 +16,9 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_expanding_apply(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     window_func: Union[Tuple[str, Callable], List[Tuple[str, Callable]]],
     min_periods: Optional[int] = None,
@@ -29,7 +31,7 @@ def augment_expanding_apply(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         Input data to be processed. Can be a Pandas DataFrame or a GroupBy object.
     date_column : str
         Name of the datetime column. Data is sorted by this column within each group.
@@ -158,7 +160,7 @@ def augment_expanding_apply(
     threads = get_threads(threads)
 
     # Group data if it's a GroupBy object; otherwise, prepare it for the expanding calculations
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         grouped = data_copy.sort_values(by=[*group_names, date_column]).groupby(
             group_names
@@ -201,14 +203,6 @@ def augment_expanding_apply(
         result_df = reduce_memory_usage(result_df)
 
     return result_df
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_expanding_apply = (
-    augment_expanding_apply
-)
-
-
 def _process_single_expanding_apply_group(args):
     group, window_func, min_periods = args
 

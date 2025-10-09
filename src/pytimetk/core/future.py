@@ -12,11 +12,13 @@ from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 from concurrent.futures import ProcessPoolExecutor
 
 from pytimetk.utils.memory_helpers import reduce_memory_usage
+from pandas.core.groupby.generic import DataFrameGroupBy
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def future_frame(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     length_out: int,
     freq: Optional[str] = None,
@@ -36,7 +38,7 @@ def future_frame(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
+    data : pd.DataFrame or DataFrameGroupBy
         The `data` parameter is the input DataFrame or DataFrameGroupBy object
         that you want to extend with future dates.
     date_column : str
@@ -221,12 +223,8 @@ def future_frame(
     return ret
 
 
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.future_frame = future_frame
-
-
 def _future_frame_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     length_out: int,
     freq: Optional[str] = None,
@@ -263,7 +261,7 @@ def _future_frame_pandas(
         return extended_df
 
     # If the data is grouped
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    elif isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
 
         # If freq is None, infer the frequency from the first series in the data

@@ -4,6 +4,7 @@ import polars as pl
 import pandas_flavor as pf
 from typing import Union, List, Tuple
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -14,8 +15,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_cmo(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     periods: Union[int, Tuple[int, int], List[int]] = 14,
@@ -27,7 +29,7 @@ def augment_cmo(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         The `data` parameter is the input data that can be either a pandas DataFrame or a pandas
         DataFrameGroupBy object. It contains the data on which the Chande Momentum  Oscillator (CMO) will be
         calculated.
@@ -188,12 +190,8 @@ def augment_cmo(
     return ret
 
 
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_cmo = augment_cmo
-
-
 def _augment_cmo_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     periods: Union[int, Tuple[int, int], List[int]] = 14,
@@ -207,7 +205,7 @@ def _augment_cmo_pandas(
             df[f"{col}_cmo_{period}"] = _calculate_cmo_pandas(df[col], period=period)
 
     # GROUPBY EXTENSION - If data is a Pandas GroupBy object, apply cmo function BY GROUP
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         data = data.obj
 
@@ -241,12 +239,12 @@ def _calculate_cmo_pandas(series: pd.Series, period=14):
 
 
 def _augment_cmo_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     periods: Union[int, Tuple[int, int], List[int]] = 14,
 ) -> pd.DataFrame:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         # Data is a GroupBy object, use apply to get a DataFrame
         pandas_df = data.obj
     elif isinstance(data, pd.DataFrame):
@@ -260,7 +258,7 @@ def _augment_cmo_polars(
             "data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame"
         )
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
 
         def apply_cmo(pl_df):
             col = close_column

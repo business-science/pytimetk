@@ -5,11 +5,13 @@ from typing import Union
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column
 from pytimetk.utils.pandas_helpers import flatten_multiindex_column_names
 from pytimetk.utils.memory_helpers import reduce_memory_usage
+from pandas.core.groupby.generic import DataFrameGroupBy
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def apply_by_time(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     freq: str = "D",
     wide_format: bool = False,
@@ -22,7 +24,7 @@ def apply_by_time(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         The `data` parameter can be either a pandas DataFrame or a pandas
         DataFrameGroupBy object. It represents the data on which the apply operation
         will be performed.
@@ -154,7 +156,7 @@ def apply_by_time(
     # Start by setting the index of data to the date_column
     if isinstance(data, pd.DataFrame):
         data = data.set_index(date_column)
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    elif isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         if date_column not in group_names:
             data = data.obj.set_index(date_column).groupby(group_names)
@@ -191,7 +193,3 @@ def apply_by_time(
         data = reduce_memory_usage(data)
 
     return data
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.apply_by_time = apply_by_time

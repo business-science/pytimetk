@@ -8,6 +8,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -45,8 +46,9 @@ dict_freqs = {"H": 24, "D": 1, "M": 12, "Q": 4, "W": 1, "Y": 1}
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def ts_features(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: str,
     features: Optional[list] = None,
@@ -62,7 +64,7 @@ def ts_features(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
+    data : pd.DataFrame or DataFrameGroupBy
         The `data` parameter is the input data that can be either a Pandas
         DataFrame or a grouped DataFrame. It contains the time series data that
         you want to extract features from.
@@ -192,7 +194,7 @@ def ts_features(
         df = df[["unique_id", date_column, value_column]]
         group_names = ["unique_id"]
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         df = data.obj.copy()
         df.sort_values(by=[*group_names, date_column], inplace=True)
@@ -309,7 +311,3 @@ def ts_features(
         ts_features.drop(columns=["unique_id"], inplace=True)
 
         return ts_features
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.ts_features = ts_features

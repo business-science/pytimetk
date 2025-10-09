@@ -2,11 +2,13 @@ import pandas as pd
 import pandas_flavor as pf
 from typing import Union, List, Tuple
 from pytimetk.feature_engineering import augment_diffs
+from pandas.core.groupby.generic import DataFrameGroupBy
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_pct_change(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
     periods: Union[int, Tuple[int, int], List[int]] = 1,
@@ -18,7 +20,7 @@ def augment_pct_change(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
+    data : pd.DataFrame or DataFrameGroupBy
         The `data` parameter is the input DataFrame or DataFrameGroupBy object
         that you want to add percentage differenced columns to.
     date_column : str
@@ -125,7 +127,3 @@ def augment_pct_change(
     )
 
     return ret
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_pct_change = augment_pct_change

@@ -8,6 +8,7 @@ from itertools import cycle
 
 from pytimetk.utils.pandas_helpers import flatten_multiindex_column_names
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -24,8 +25,9 @@ from pytimetk.utils.polars_helpers import (
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def summarize_by_time(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
     freq: str = "D",
@@ -43,7 +45,7 @@ def summarize_by_time(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
+    data : pd.DataFrame or DataFrameGroupBy
         A pandas DataFrame or a pandas GroupBy object. This is the data that you
         want to summarize by time.
     date_column : str
@@ -223,12 +225,8 @@ def summarize_by_time(
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
 
 
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.summarize_by_time = summarize_by_time
-
-
 def _summarize_by_time_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, list],
     freq: str = "D",
@@ -247,7 +245,7 @@ def _summarize_by_time_pandas(
         data = data.set_index(date_column)
 
     group_names = None
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         data = data.obj.set_index(date_column).groupby(group_names)
 
@@ -310,7 +308,7 @@ def _summarize_by_time_pandas(
 
 
 def _summarize_by_time_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
     freq: str = "D",
@@ -335,7 +333,7 @@ def _summarize_by_time_polars(
         for func in agg_func
     ]
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         groups = (
             data.grouper.names
             if isinstance(data.grouper.names, list)

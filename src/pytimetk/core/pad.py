@@ -2,6 +2,7 @@ import pandas as pd
 import pandas_flavor as pf
 from typing import Union
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -9,8 +10,9 @@ from pytimetk.utils.checks import (
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def pad_by_time(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     freq: str = "D",
     start_date: str = None,
@@ -25,7 +27,7 @@ def pad_by_time(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
+    data : pd.DataFrame or DataFrameGroupBy
         The `data` parameter can be either a Pandas DataFrame or a Pandas
         DataFrameGroupBy object. It represents the data that you want to pad
         with missing dates.
@@ -180,7 +182,7 @@ def pad_by_time(
         return padded_df
 
     # Handling DataFrameGroupBy
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    elif isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         data = data.obj
         df = data.copy()
@@ -230,7 +232,3 @@ def _pad_by_time_vectorized(
     )
 
     return padded_data
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.pad_by_time = pad_by_time

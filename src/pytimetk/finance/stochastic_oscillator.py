@@ -4,6 +4,7 @@ import polars as pl
 import pandas_flavor as pf
 from typing import Union, List, Tuple
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -14,8 +15,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_stochastic_oscillator(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     high_column: str,
     low_column: str,
@@ -30,7 +32,7 @@ def augment_stochastic_oscillator(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         The input data can be a pandas DataFrame or a pandas DataFrameGroupBy object containing
         the time series data for Stochastic Oscillator calculations.
     date_column : str
@@ -216,16 +218,8 @@ def augment_stochastic_oscillator(
     ret = ret.sort_index()
 
     return ret
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_stochastic_oscillator = (
-    augment_stochastic_oscillator
-)
-
-
 def _augment_stochastic_oscillator_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     high_column: str,
     low_column: str,
@@ -238,7 +232,7 @@ def _augment_stochastic_oscillator_pandas(
     if isinstance(data, pd.DataFrame):
         df = data.copy()
         group_names = None
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    elif isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         df = data.obj.copy()
 
@@ -289,7 +283,7 @@ def _augment_stochastic_oscillator_pandas(
 
 
 def _augment_stochastic_oscillator_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     high_column: str,
     low_column: str,
@@ -299,7 +293,7 @@ def _augment_stochastic_oscillator_polars(
 ) -> pd.DataFrame:
     """Polars implementation of Stochastic Oscillator calculation."""
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         pandas_df = data.obj
         group_names = data.grouper.names
         if not isinstance(group_names, list):

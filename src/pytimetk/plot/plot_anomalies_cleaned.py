@@ -3,6 +3,7 @@ import pandas_flavor as pf
 
 from typing import Union, Optional
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -11,8 +12,9 @@ from pytimetk.utils.checks import (
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def plot_anomalies_cleaned(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     facet_ncol: int = 1,
     line_color: str = "#2c3e50",
@@ -39,7 +41,7 @@ def plot_anomalies_cleaned(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         The input data for the plot from `anomalize`. It can be either a pandas
         DataFrame or a pandas DataFrameGroupBy object.
     date_column : str
@@ -198,7 +200,7 @@ def plot_anomalies_cleaned(
     check_date_column(data, date_column)
     check_anomalize_data(data)
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         data = data.obj.copy()
         data = data[[*group_names, date_column, "observed", "observed_clean"]]
@@ -242,7 +244,3 @@ def plot_anomalies_cleaned(
     )
 
     return fig
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.plot_anomalies_cleaned = plot_anomalies_cleaned

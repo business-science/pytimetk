@@ -3,6 +3,7 @@ import polars as pl
 import pandas_flavor as pf
 from typing import Union
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -13,8 +14,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_macd(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     fast_period: int = 12,
@@ -28,7 +30,7 @@ def augment_macd(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         Pandas DataFrame or GroupBy object containing financial data.
     date_column : str
         Name of the column containing date information.
@@ -157,17 +159,13 @@ def augment_macd(
     return ret
 
 
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_macd = augment_macd
-
-
 def _augment_macd_pandas(
     data, date_column, close_column, fast_period, slow_period, signal_period
 ):
     """
     Internal function to calculate MACD using Pandas.
     """
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         # If data is a GroupBy object, apply MACD calculation for each group
         group_names = data.grouper.names
         data = data.obj
@@ -238,7 +236,7 @@ def _augment_macd_polars(
     Internal function to calculate MACD using Polars.
     """
     # Convert to Polars DataFrame if input is a pandas DataFrame or GroupBy object
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         # Data is a GroupBy object, use apply to get a DataFrame
         group_names = data.grouper.names
         if not isinstance(group_names, list):

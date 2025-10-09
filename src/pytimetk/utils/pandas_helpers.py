@@ -6,9 +6,11 @@ import re
 from pytimetk.utils.checks import check_dataframe_or_groupby
 
 from typing import Union, List, Callable
+from pandas.core.groupby.generic import DataFrameGroupBy
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def glimpse(data: pd.DataFrame, max_width: int = 76, engine: str = "pandas") -> None:
     """
     Takes a pandas DataFrame and prints a summary of its dimensions, column
@@ -124,17 +126,18 @@ def _glimpse_polars(df, max_width=76):
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def sort_dataframe(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     keep_grouped_df: bool = True,
-) -> Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]:
+) -> Union[pd.DataFrame, DataFrameGroupBy]:
     """The function `sort_dataframe` sorts a DataFrame by a specified date column, handling both regular
     DataFrames and grouped DataFrames.
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         The `data` parameter in the `sort_dataframe` function can accept either a pandas DataFrame or a
         grouped DataFrame (DataFrameGroupBy object).
     date_column
@@ -174,7 +177,7 @@ def sort_dataframe(
         df.sort_values(by=[date_column], inplace=True)
         index_after_sort = df.index
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         df = data.obj.copy()
         df.sort_values(by=[*group_names, date_column], inplace=True)
@@ -185,10 +188,8 @@ def sort_dataframe(
     return df, index_after_sort
 
 
-pd.core.groupby.generic.DataFrameGroupBy.sort_dataframe = sort_dataframe
-
-
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def drop_zero_variance(
     data: pd.DataFrame,
 ):
@@ -211,7 +212,7 @@ def drop_zero_variance(
     # Common checks
     check_dataframe_or_groupby(data)
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         data = data.obj
 
     df = data.copy()
@@ -229,6 +230,7 @@ def drop_zero_variance(
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def transform_columns(
     data: pd.DataFrame,
     columns: Union[str, List[str]],
@@ -259,7 +261,7 @@ def transform_columns(
     # Common checks
     check_dataframe_or_groupby(data)
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         data = data.obj
 
     df = data.copy()
@@ -274,6 +276,7 @@ def transform_columns(
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def flatten_multiindex_column_names(data: pd.DataFrame, sep="_") -> pd.DataFrame:
     """Takes a DataFrame as input and flattens the column
     names if they are in a multi-index format.

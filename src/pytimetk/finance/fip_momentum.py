@@ -3,6 +3,7 @@ import polars as pl
 import numpy as np
 import pandas_flavor as pf
 from typing import Union, List
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -13,8 +14,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_fip_momentum(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     window: Union[int, List[int]] = 252,
@@ -37,7 +39,7 @@ def augment_fip_momentum(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         Input pandas DataFrame or grouped DataFrame containing time series data.
     date_column : str
         Name of the column with dates or timestamps.
@@ -148,11 +150,8 @@ def augment_fip_momentum(
     return ret
 
 
-pd.core.groupby.generic.DataFrameGroupBy.augment_fip_momentum = augment_fip_momentum
-
-
 def _augment_fip_momentum_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     windows: List[int],
@@ -162,7 +161,7 @@ def _augment_fip_momentum_pandas(
     if isinstance(data, pd.DataFrame):
         df = data.copy()
         group_names = None
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    elif isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         df = data.obj.copy()
 
@@ -212,7 +211,7 @@ def _augment_fip_momentum_pandas(
 
 
 def _augment_fip_momentum_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     windows: List[int],
@@ -236,7 +235,7 @@ def _augment_fip_momentum_polars(
     if isinstance(data, pd.DataFrame):
         pandas_df = data.copy()
         group_names = None
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    elif isinstance(data, DataFrameGroupBy):
         pandas_df = data.obj.copy()
         group_names = data.grouper.names
         if not isinstance(group_names, list):

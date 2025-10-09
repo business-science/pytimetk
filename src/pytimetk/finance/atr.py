@@ -4,6 +4,7 @@ import polars as pl
 import pandas_flavor as pf
 from typing import Union, List, Tuple
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -14,8 +15,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_atr(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     high_column: str,
     low_column: str,
@@ -32,7 +34,7 @@ def augment_atr(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         The `data` parameter is the input data that can be either a pandas DataFrame or a pandas
         DataFrameGroupBy object. It contains the data on which the Bollinger Bands will be calculated.
     date_column : str
@@ -187,12 +189,8 @@ def augment_atr(
     return ret.sort_index()
 
 
-# Monkey patch
-pd.core.groupby.generic.DataFrameGroupBy.augment_atr = augment_atr
-
-
 def _augment_atr_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     high_column: str,
     low_column: str,
@@ -225,7 +223,7 @@ def _augment_atr_pandas(
 
         df = df.drop(columns=["tr"])
 
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    elif isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         df = data.obj.copy()
         # True Range calculation with group-aware shift
@@ -258,7 +256,7 @@ def _augment_atr_pandas(
 
 
 def _augment_atr_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     high_column: str,
     low_column: str,
@@ -269,7 +267,7 @@ def _augment_atr_polars(
     """Polars implementation of ATR/NATR calculation."""
     type_str = "natr" if normalize else "atr"
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         df = pl.from_pandas(data.obj)
         group_names = (
             data.grouper.names

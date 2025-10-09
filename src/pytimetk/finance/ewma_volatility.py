@@ -4,6 +4,7 @@ import numpy as np
 from typing import Union, List, Tuple
 
 import pandas_flavor as pf
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -14,8 +15,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_ewma_volatility(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     decay_factor: float = 0.94,
@@ -27,7 +29,7 @@ def augment_ewma_volatility(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         Input pandas DataFrame or GroupBy object with time series data.
     date_column : str
         Column name containing dates or timestamps.
@@ -155,15 +157,8 @@ def augment_ewma_volatility(
     ret = ret.sort_index()
 
     return ret
-
-
-pd.core.groupby.generic.DataFrameGroupBy.augment_ewma_volatility = (
-    augment_ewma_volatility
-)
-
-
 def _augment_ewma_volatility_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     decay_factor: float,
@@ -174,7 +169,7 @@ def _augment_ewma_volatility_pandas(
     if isinstance(data, pd.DataFrame):
         df = data.copy()
         group_names = None
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    elif isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
         df = data.obj.copy()
 
@@ -208,7 +203,7 @@ def _augment_ewma_volatility_pandas(
 
 
 def _augment_ewma_volatility_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     close_column: str,
     decay_factor: float,
@@ -216,7 +211,7 @@ def _augment_ewma_volatility_polars(
 ) -> pd.DataFrame:
     """Polars implementation of EWMA volatility calculation with varying minimum periods."""
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         pandas_df = data.obj
         group_names = data.grouper.names
         if not isinstance(group_names, list):

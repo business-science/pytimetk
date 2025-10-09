@@ -4,6 +4,7 @@ import numpy as np
 import polars as pl
 import math
 import pandas_flavor as pf
+from pandas.core.groupby.generic import DataFrameGroupBy
 
 try:
     import holidays
@@ -23,8 +24,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_holiday_signature(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     country_name: str = "UnitedStates",
     reduce_memory: bool = False,
@@ -228,20 +230,12 @@ def augment_holiday_signature(
     ret = ret.sort_index()
 
     return ret
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_holiday_signature = (
-    augment_holiday_signature
-)
-
-
 def _augment_holiday_signature_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     country_name: str = "UnitedStates",
 ) -> pd.DataFrame:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         data = data.obj
 
     # Extract start and end years directly from the Series
@@ -329,11 +323,11 @@ def _augment_holiday_signature_pandas(
 
 
 def _augment_holiday_signature_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     country_name: str = "UnitedStates",
 ) -> pd.DataFrame:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         data = data.obj
 
     # Convert to Polars DataFrame

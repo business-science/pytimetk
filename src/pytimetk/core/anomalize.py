@@ -4,6 +4,7 @@ import numpy as np
 
 from typing import Union, Optional
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -25,8 +26,9 @@ from statsmodels.tsa.seasonal import STL
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def anomalize(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: str,
     period: Optional[int] = None,
@@ -49,7 +51,7 @@ def anomalize(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : Union[pd.DataFrame, DataFrameGroupBy]
         The input data, which can be either a pandas DataFrame or a pandas
         DataFrameGroupBy object.
     date_column : str
@@ -313,7 +315,7 @@ def anomalize(
             verbose=verbose,
         )
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         group_names = data.grouper.names
 
         # Get threads
@@ -369,12 +371,8 @@ def anomalize(
     return result
 
 
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.anomalize = anomalize
-
-
 def _anomalize(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: str,
     period: Optional[int] = None,

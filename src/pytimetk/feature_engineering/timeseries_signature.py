@@ -6,6 +6,7 @@ import pandas_flavor as pf
 from typing import Union
 
 from pytimetk.utils.datetime_helpers import week_of_month
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_series_or_datetime,
     check_dataframe_or_groupby,
@@ -15,8 +16,9 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_timeseries_signature(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     reduce_memory: bool = False,
     engine: str = "pandas",
@@ -113,7 +115,7 @@ def augment_timeseries_signature(
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         data = data.obj
 
     if reduce_memory:
@@ -142,14 +144,6 @@ def augment_timeseries_signature(
         ret = reduce_memory_usage(ret)
 
     return ret
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_timeseries_signature = (
-    augment_timeseries_signature
-)
-
-
 @pf.register_series_method
 def get_timeseries_signature(
     idx: Union[pd.Series, pd.DatetimeIndex],
@@ -260,9 +254,6 @@ def get_timeseries_signature(
         ret = reduce_memory_usage(ret)
 
     return ret
-
-
-# Monkey patch the method to Pandas Series objects
 pd.Series.get_timeseries_signature = get_timeseries_signature
 
 

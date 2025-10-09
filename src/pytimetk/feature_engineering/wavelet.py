@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
+import pandas_flavor as pf
 
 from typing import Union, List
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -11,9 +13,10 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
-# @pf.register_dataframe_method
+@pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_wavelet(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     value_column: str,
     method: str,
@@ -35,7 +38,7 @@ def augment_wavelet(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
+    data : pd.DataFrame or DataFrameGroupBy
         Input DataFrame or DataFrameGroupBy object with one or more columns of
         real-valued signals.
     value_column : str or list
@@ -241,7 +244,7 @@ def augment_wavelet(
         return df
 
     # Check if data is a groupby object
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         ret = pd.concat(
             [_apply_cwt(group.sort_values(by=date_column)) for _, group in data]
         ).reset_index(drop=True)
@@ -257,9 +260,6 @@ def augment_wavelet(
 
 
 # Monkey-patch the method to the DataFrameGroupBy class
-pd.core.groupby.DataFrameGroupBy.augment_wavelet = augment_wavelet
-
-
 def morlet_wavelet(t, fc=1.0):
     """Compute the Complex Morlet wavelet"""
     return np.exp(1j * np.pi * fc * t) * np.exp(-(t**2) / 2)

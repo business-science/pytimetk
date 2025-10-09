@@ -5,6 +5,7 @@ import pandas_flavor as pf
 from typing import Tuple
 from typing import Union, List
 
+from pandas.core.groupby.generic import DataFrameGroupBy
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -16,8 +17,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_fourier(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
     date_column: str,
     periods: Union[int, Tuple[int, int], List[int]] = 1,
     max_order: int = 1,
@@ -31,7 +33,7 @@ def augment_fourier(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
+    data : pd.DataFrame or DataFrameGroupBy
         The `data` parameter is the input DataFrame or DataFrameGroupBy object that you want to add Fourier-transformed columns to.
     date_column : str
         The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to compute the Fourier transforms.
@@ -129,7 +131,7 @@ def augment_fourier(
             f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list."
         )
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         data = data.obj.copy().reset_index(drop=True)
 
     # Reduce memory usage
@@ -150,10 +152,6 @@ def augment_fourier(
     ret = ret.sort_index()
 
     return ret
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_fourier = augment_fourier
 
 
 def calc_fourier(x, period, type: str, K=1):

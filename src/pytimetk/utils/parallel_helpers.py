@@ -4,10 +4,11 @@ from multiprocessing import cpu_count
 from pathos.multiprocessing import ProcessingPool
 
 from typing import Iterable, Callable
+from pandas.core.groupby.generic import DataFrameGroupBy
 
 
 def progress_apply(
-    data: pd.core.groupby.generic.DataFrameGroupBy,
+    data: DataFrameGroupBy,
     func: Callable,
     show_progress: bool = True,
     desc: str = "Processing...",
@@ -18,7 +19,7 @@ def progress_apply(
 
     Parameters
     ----------
-    data : pd.core.groupby.generic.DataFrameGroupBy
+    data : DataFrameGroupBy
         The `data` parameter is a pandas DataFrameGroupBy object. It represents
         a grouped DataFrame, where the data is grouped based on one or more
         columns.
@@ -69,7 +70,7 @@ def progress_apply(
     )
 
     # BugFix: prior to pandas 2.0.0 the group_keys parameter was set to _NoDefault.no_default. After 2.0.0 group_keys is set to True by default. This causes an error when trying to apply a function to a grouped dataframe. The following code fixes this issue.
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         if data.group_keys is not True:
             data.group_keys = True
 
@@ -81,12 +82,8 @@ def progress_apply(
     return ret
 
 
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.progress_apply = progress_apply
-
-
 def parallel_apply(
-    data: pd.core.groupby.generic.DataFrameGroupBy,
+    data: DataFrameGroupBy,
     func: Callable,
     show_progress: bool = True,
     threads: int = None,
@@ -100,7 +97,7 @@ def parallel_apply(
 
     Parameters
     ----------
-    data : pd.core.groupby.generic.DataFrameGroupBy
+    data : DataFrameGroupBy
         The `data` parameter is a Pandas DataFrameGroupBy object, which is the
         result of grouping a DataFrame by one or more columns. It represents the
         grouped data that you want to apply the function to.
@@ -234,7 +231,7 @@ def parallel_apply(
     ```
     """
 
-    if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if not isinstance(data, DataFrameGroupBy):
         raise TypeError("`data` is not a Pandas DataFrameGroupBy object.")
 
     if threads is None:
@@ -288,10 +285,6 @@ def parallel_apply(
     ordered_results = [results_dict[key] for key in grouped_df_groups_keys]
 
     return pd.concat(ordered_results, axis=0)
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.parallel_apply = parallel_apply
 
 
 # Utility functions

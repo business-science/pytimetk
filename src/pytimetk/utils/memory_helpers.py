@@ -3,11 +3,13 @@ import pandas as pd
 import pandas_flavor as pf
 
 from typing import Union
+from pandas.core.groupby.generic import DataFrameGroupBy
 
 
 @pf.register_dataframe_method
+@pf.register_groupby_method
 def reduce_memory_usage(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pd.DataFrame, DataFrameGroupBy],
 ):
     """
     Iterate through all columns of a Pandas DataFrame and modify the dtypes to reduce memory usage.
@@ -24,7 +26,7 @@ def reduce_memory_usage(
 
     """
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+    if isinstance(data, DataFrameGroupBy):
         try:
             data.obj = _reduce_memory(data.obj, convert_string_to_categorical=True)
         except:
@@ -42,10 +44,6 @@ def reduce_memory_usage(
             except:
                 data = data
         return data
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.reduce_memory_usage = reduce_memory_usage
 
 
 def _reduce_memory(
