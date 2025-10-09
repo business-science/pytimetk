@@ -91,7 +91,6 @@ from .utils import (
     parse_freq_str,
 )
 
-
 from importlib.metadata import version
 
 __version__ = version("pytimetk")

@@ -1,7 +1,7 @@
 {
-    "python.analysis.extraPaths": [
-        "./src"
-    ],
+    // "python.analysis.extraPaths": [
+    //     "./src"
+    // ],
     "files.exclude": {
         "**/.git": false
     },

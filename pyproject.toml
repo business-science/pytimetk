@@ -22,6 +22,12 @@ keywords = ["time series", "forecasting", "machine learning", "data science"]
 homepage = "https://business-science.github.io/pytimetk/"
 repository = "https://github.com/business-science/pytimetk"
 documentation = "https://business-science.github.io/pytimetk/reference/"
+include = [
+    { path = "src/pytimetk/py.typed", format = "wheel" },
+    { path = "src/pytimetk/py.typed", format = "sdist" },
+    { path = "typings", format = "wheel" },
+    { path = "typings", format = "sdist" },
+]
 
 [tool.poetry.dependencies]
 python = ">=3.9"
