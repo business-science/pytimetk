@@ -23,15 +23,12 @@ Repository = "https://github.com/business-science/pytimetk"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.hatch.build.sources]
-src = ["src"]
-
 [tool.hatch.build.targets.wheel]
-packages = ["src/pandas"]
 include = [
     "README.md",
     "LICENSE",
 ]
+force-include = {"src/pandas": "pandas"}
 
 [tool.hatch.build.targets.sdist]
 include = [
@@ -40,4 +37,3 @@ include = [
     "README.md",
     "LICENSE",
 ]
-

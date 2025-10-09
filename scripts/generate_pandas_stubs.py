@@ -182,6 +182,9 @@ def render_methods(
 
 def _write_to_base(base: Path, frame_stub: str, groupby_stub: str) -> None:
     (base / "core" / "groupby").mkdir(parents=True, exist_ok=True)
+    init_file = base / "__init__.pyi"
+    if not init_file.exists():
+        init_file.write_text("from __future__ import annotations\n", encoding="utf-8")
     (base / "core" / "frame.pyi").write_text(frame_stub, encoding="utf-8")
     (base / "core" / "groupby" / "generic.pyi").write_text(
         groupby_stub, encoding="utf-8"
