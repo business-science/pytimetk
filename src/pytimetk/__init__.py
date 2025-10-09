@@ -91,6 +91,8 @@ from .utils import (
     parse_freq_str,
 )
 
+from ._typing_support import get_typing_stub_path
+
 from importlib.metadata import version
 
 __version__ = version("pytimetk")
