@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import ast
 import re
-from inspect import cleandoc
+from inspect import cleandoc, getdoc, isfunction, signature
 from pathlib import Path
 from typing import Dict, Iterable, Set
 
@@ -97,6 +97,35 @@ def collect_groupby_methods(files: Dict[Path, str]) -> Dict[str, str]:
     return result
 
 
+def collect_runtime_dataframe_methods() -> Dict[str, str]:
+    """Inspect pandas.DataFrame to capture method docs."""
+    import pandas as pd  # local import to keep script fast when unused
+
+    result: Dict[str, str] = {}
+    for name in dir(pd.DataFrame):
+        if name.startswith("_"):
+            continue
+        attr = getattr(pd.DataFrame, name, None)
+        if attr is None or not callable(attr):
+            continue
+        result[name] = _clean_doc(getdoc(attr))
+    return result
+
+
+def collect_runtime_groupby_methods() -> Dict[str, str]:
+    from pandas.core.groupby.generic import DataFrameGroupBy
+
+    result: Dict[str, str] = {}
+    for name in dir(DataFrameGroupBy):
+        if name.startswith("_"):
+            continue
+        attr = getattr(DataFrameGroupBy, name, None)
+        if attr is None or not callable(attr):
+            continue
+        result[name] = _clean_doc(getdoc(attr))
+    return result
+
+
 def render_methods(
     class_name: str,
     methods: Dict[str, str],
@@ -166,8 +195,11 @@ def write_stubs(
 
 def main() -> None:
     files = read_python_files(SRC_ROOT.rglob("*.py"))
-    dataframe_methods = collect_dataframe_methods(files)
-    groupby_methods = collect_groupby_methods(files)
+    dataframe_methods = collect_runtime_dataframe_methods()
+    dataframe_methods.update(collect_dataframe_methods(files))
+
+    groupby_methods = collect_runtime_groupby_methods()
+    groupby_methods.update(collect_groupby_methods(files))
 
     if not dataframe_methods:
         raise SystemExit("No dataframe methods discovered; aborting.")
