@@ -22,3 +22,21 @@ Repository = "https://github.com/business-science/pytimetk"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pandas-stubs-pytimetk"]
+include = [
+    "pandas-stubs-pytimetk/pandas/**/*.pyi",
+    "pandas-stubs-pytimetk/__init__.pyi",
+    "README.md",
+    "LICENSE",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "pandas-stubs-pytimetk/pandas/**/*.pyi",
+    "pandas-stubs-pytimetk/__init__.pyi",
+    "pyproject.toml",
+    "README.md",
+    "LICENSE",
+]
