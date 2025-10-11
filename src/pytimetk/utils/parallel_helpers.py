@@ -1,4 +1,5 @@
 import pandas as pd
+import pandas_flavor as pf
 from functools import partial
 from multiprocessing import cpu_count
 from pathos.multiprocessing import ProcessingPool
@@ -6,6 +7,7 @@ from pathos.multiprocessing import ProcessingPool
 from typing import Iterable, Callable
 
 
+@pf.register_groupby_method
 def progress_apply(
     data: pd.core.groupby.generic.DataFrameGroupBy,
     func: Callable,
@@ -81,10 +83,7 @@ def progress_apply(
     return ret
 
 
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.progress_apply = progress_apply
-
-
+@pf.register_groupby_method
 def parallel_apply(
     data: pd.core.groupby.generic.DataFrameGroupBy,
     func: Callable,
@@ -288,10 +287,6 @@ def parallel_apply(
     ordered_results = [results_dict[key] for key in grouped_df_groups_keys]
 
     return pd.concat(ordered_results, axis=0)
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.parallel_apply = parallel_apply
 
 
 # Utility functions

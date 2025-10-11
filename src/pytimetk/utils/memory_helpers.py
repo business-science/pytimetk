@@ -5,6 +5,7 @@ import pandas_flavor as pf
 from typing import Union
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def reduce_memory_usage(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -42,10 +43,6 @@ def reduce_memory_usage(
             except:
                 data = data
         return data
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.reduce_memory_usage = reduce_memory_usage
 
 
 def _reduce_memory(

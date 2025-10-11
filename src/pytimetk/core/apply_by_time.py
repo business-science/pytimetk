@@ -7,6 +7,7 @@ from pytimetk.utils.pandas_helpers import flatten_multiindex_column_names
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def apply_by_time(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -192,6 +193,3 @@ def apply_by_time(
 
     return data
 
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.apply_by_time = apply_by_time

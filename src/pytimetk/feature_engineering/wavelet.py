@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pandas_flavor as pf
 
 from typing import Union, List
 from pytimetk.utils.checks import (
@@ -11,7 +12,7 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
-# @pf.register_dataframe_method
+@pf.register_groupby_method
 def augment_wavelet(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
@@ -254,12 +255,6 @@ def augment_wavelet(
     ret = ret.sort_index()
 
     return ret
-
-
-# Monkey-patch the method to the DataFrameGroupBy class
-pd.core.groupby.DataFrameGroupBy.augment_wavelet = augment_wavelet
-
-
 def morlet_wavelet(t, fc=1.0):
     """Compute the Complex Morlet wavelet"""
     return np.exp(1j * np.pi * fc * t) * np.exp(-(t**2) / 2)

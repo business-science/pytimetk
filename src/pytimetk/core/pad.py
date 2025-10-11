@@ -8,6 +8,7 @@ from pytimetk.utils.checks import (
 )
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def pad_by_time(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -231,6 +232,3 @@ def _pad_by_time_vectorized(
 
     return padded_data
 
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.pad_by_time = pad_by_time

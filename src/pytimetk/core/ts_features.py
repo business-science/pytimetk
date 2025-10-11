@@ -44,6 +44,7 @@ except ImportError:
 dict_freqs = {"H": 24, "D": 1, "M": 12, "Q": 4, "W": 1, "Y": 1}
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def ts_features(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -310,6 +311,3 @@ def ts_features(
 
         return ts_features
 
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.ts_features = ts_features

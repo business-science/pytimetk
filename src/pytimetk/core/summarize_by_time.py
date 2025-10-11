@@ -23,6 +23,7 @@ from pytimetk.utils.polars_helpers import (
 # FUNCTIONS -------------------------------------------------------------------
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def summarize_by_time(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -221,10 +222,6 @@ def summarize_by_time(
         )
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.summarize_by_time = summarize_by_time
 
 
 def _summarize_by_time_pandas(

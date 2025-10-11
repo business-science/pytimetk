@@ -5,6 +5,7 @@ import pandas_flavor as pf
 from typing import Union
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def binarize(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -173,10 +174,7 @@ def binarize(
     return data_transformed
 
 
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.binarize = binarize
-
-
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def correlate(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -313,10 +311,6 @@ def correlate(
     correlations = correlations[["feature", "bin", "correlation"]]
 
     return correlations
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.correlate = correlate
 
 
 # UTILITIES ----

@@ -123,6 +123,7 @@ def _glimpse_polars(df, max_width=76):
     return None
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def sort_dataframe(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -183,9 +184,6 @@ def sort_dataframe(
             df = df.groupby(group_names)
 
     return df, index_after_sort
-
-
-pd.core.groupby.generic.DataFrameGroupBy.sort_dataframe = sort_dataframe
 
 
 @pf.register_dataframe_method

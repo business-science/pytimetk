@@ -10,6 +10,7 @@ from pytimetk.utils.checks import (
 )
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_ewm(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -196,6 +197,3 @@ def augment_ewm(
 
     return result_df
 
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_ewm = augment_ewm

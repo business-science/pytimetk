@@ -13,6 +13,7 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_hilbert(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -174,12 +175,6 @@ def augment_hilbert(
         ret = reduce_memory_usage(ret)
 
     return ret.sort_index()
-
-
-# Monkey-patch the method to the DataFrameGroupBy class
-pd.core.groupby.DataFrameGroupBy.augment_hilbert = augment_hilbert
-
-
 def _augment_hilbert_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,

@@ -13,6 +13,7 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_atr(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -185,10 +186,6 @@ def augment_atr(
         ret = reduce_memory_usage(ret)
 
     return ret.sort_index()
-
-
-# Monkey patch
-pd.core.groupby.generic.DataFrameGroupBy.augment_atr = augment_atr
 
 
 def _augment_atr_pandas(

@@ -16,6 +16,7 @@ from pytimetk.utils.checks import (
 from pytimetk.plot.theme import theme_timetk
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def plot_anomalies(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -430,10 +431,6 @@ def plot_anomalies(
             fig = fig.draw()
 
     return fig
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.plot_anomalies = plot_anomalies
 
 
 def _plot_anomalies_plotly(

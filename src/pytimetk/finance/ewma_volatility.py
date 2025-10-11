@@ -13,6 +13,7 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_ewma_volatility(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -155,11 +156,6 @@ def augment_ewma_volatility(
     ret = ret.sort_index()
 
     return ret
-
-
-pd.core.groupby.generic.DataFrameGroupBy.augment_ewma_volatility = (
-    augment_ewma_volatility
-)
 
 
 def _augment_ewma_volatility_pandas(

@@ -13,6 +13,7 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_cmo(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -186,10 +187,6 @@ def augment_cmo(
     ret = ret.sort_index()
 
     return ret
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_cmo = augment_cmo
 
 
 def _augment_cmo_pandas(

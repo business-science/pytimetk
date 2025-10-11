@@ -24,6 +24,7 @@ from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.seasonal import STL
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def anomalize(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -367,10 +368,6 @@ def anomalize(
     result = result.sort_index()
 
     return result
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.anomalize = anomalize
 
 
 def _anomalize(

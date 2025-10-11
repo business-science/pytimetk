@@ -13,6 +13,7 @@ from pytimetk.utils.checks import (
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_rolling_apply(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -244,10 +245,6 @@ def augment_rolling_apply(
     result_df.index = original_index
 
     return result_df
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_rolling_apply = augment_rolling_apply
 
 
 def _process_single_rolling_apply_group(args):

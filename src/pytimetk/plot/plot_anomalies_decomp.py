@@ -10,6 +10,7 @@ from pytimetk.utils.checks import (
 )
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def plot_anomalies_decomp(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -259,6 +260,3 @@ def plot_anomalies_decomp(
 
     return fig
 
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.plot_anomalies_decomp = plot_anomalies_decomp

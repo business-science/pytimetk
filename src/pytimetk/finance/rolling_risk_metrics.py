@@ -13,6 +13,7 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 from scipy import stats  # For skewness and kurtosis
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_rolling_risk_metrics(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -209,12 +210,6 @@ def augment_rolling_risk_metrics(
     ret = ret.sort_index()
 
     return ret
-
-
-# Monkey patch to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_rolling_risk_metrics = (
-    augment_rolling_risk_metrics
-)
 
 
 def _augment_rolling_risk_metrics_pandas(

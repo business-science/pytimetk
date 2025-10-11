@@ -14,6 +14,7 @@ from pytimetk.utils.checks import (
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_timeseries_signature(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -142,12 +143,6 @@ def augment_timeseries_signature(
         ret = reduce_memory_usage(ret)
 
     return ret
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_timeseries_signature = (
-    augment_timeseries_signature
-)
 
 
 @pf.register_series_method

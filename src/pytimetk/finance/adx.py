@@ -14,6 +14,7 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_adx(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -185,10 +186,6 @@ def augment_adx(
     ret = ret.sort_index()
 
     return ret
-
-
-# Monkey patch to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_adx = augment_adx
 
 
 def _augment_adx_pandas(

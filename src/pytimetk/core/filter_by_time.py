@@ -11,6 +11,7 @@ from pytimetk.utils.datetime_helpers import parse_end_date
 
 
 # Function ----
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def filter_by_time(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -178,9 +179,6 @@ def filter_by_time(
 
 
 # Monkey Patch the Method to Pandas Grouby Objects
-pd.core.groupby.generic.DataFrameGroupBy.filter_by_time = filter_by_time
-
-
 def _filter_by_time_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,

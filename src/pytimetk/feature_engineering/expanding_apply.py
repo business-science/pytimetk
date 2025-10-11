@@ -14,6 +14,7 @@ from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_expanding_apply(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -201,12 +202,6 @@ def augment_expanding_apply(
         result_df = reduce_memory_usage(result_df)
 
     return result_df
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.augment_expanding_apply = (
-    augment_expanding_apply
-)
 
 
 def _process_single_expanding_apply_group(args):

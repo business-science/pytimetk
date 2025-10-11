@@ -21,6 +21,7 @@ from pytimetk.utils.checks import (
 )
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def plot_timeseries(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -631,10 +632,6 @@ def plot_timeseries(
         )
 
     return fig
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.plot_timeseries = plot_timeseries
 
 
 def _plot_timeseries_plotly(

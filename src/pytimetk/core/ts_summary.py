@@ -16,6 +16,7 @@ from pytimetk.utils.checks import (
 from pytimetk.utils.parallel_helpers import parallel_apply, get_threads, progress_apply
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def ts_summary(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -178,10 +179,6 @@ def ts_summary(
             )
 
         return result.reset_index(level=group_names)
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.ts_summary = ts_summary
 
 
 def _ts_summary(group: pd.DataFrame, date_column: str) -> pd.DataFrame:

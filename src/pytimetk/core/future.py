@@ -14,6 +14,7 @@ from concurrent.futures import ProcessPoolExecutor
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 
+@pf.register_groupby_method
 @pf.register_dataframe_method
 def future_frame(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -219,10 +220,6 @@ def future_frame(
         ret = reduce_memory_usage(ret)
 
     return ret
-
-
-# Monkey patch the method to pandas groupby objects
-pd.core.groupby.generic.DataFrameGroupBy.future_frame = future_frame
 
 
 def _future_frame_pandas(
