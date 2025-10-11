@@ -2,12 +2,21 @@ import pandas as pd
 import polars as pl
 
 import pandas_flavor as pf
-from typing import Union, List, Tuple
+import warnings
+from typing import List, Optional, Sequence, Tuple, Union
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
     check_value_column,
+)
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    resolve_polars_group_columns,
+    restore_output_type,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -16,315 +25,254 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_bbands(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     close_column: str,
     periods: Union[int, Tuple[int, int], List[int]] = 20,
     std_dev: Union[int, float, List[float]] = 2,
     reduce_memory: bool = False,
-    engine: str = "pandas",
-) -> pd.DataFrame:
-    """The `augment_bbands` function is used to calculate Bollinger Bands for a given dataset and return
-    the augmented dataset.
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
+    """
+    Calculate Bollinger Bands for pandas or polars data.
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        The `data` parameter is the input data that can be either a pandas DataFrame or a pandas
-        DataFrameGroupBy object. It contains the data on which the Bollinger Bands will be calculated.
+    data : DataFrame or GroupBy (pandas or polars)
+        Input financial data. Grouped inputs are processed per group before the
+        bands are appended.
     date_column : str
-        The `date_column` parameter is a string that specifies the name of the column in the `data`
-        DataFrame that contains the dates.
+        Name of the column containing date information. Used to preserve the
+        original ordering of results.
     close_column : str
-        The `close_column` parameter is a string that specifies the name of the column in the `data`
-        DataFrame that contains the closing prices of the asset.
-    periods : Union[int, Tuple[int, int], List[int]], optional
-        The `periods` parameter in the `augment_bbands` function can be specified as an integer, a tuple,
-        or a list. This parameter specifies the number of rolling periods to use when calculating the Bollinger Bands.
-    std_dev : float, optional
-        The `std_dev` parameter is a float that represents the number of standard deviations to use
-        when calculating the Bollinger Bands. Bollinger Bands are a technical analysis tool that consists of
-        a middle band (usually a simple moving average) and an upper and lower band that are typically two
-        standard deviations away from the middle band. The `std_dev` parameter specifies the number of standard deviations. `std_dev` can be a list of floats as well.
+        Name of the closing price column used to compute the moving average and
+        standard deviation.
+    periods : int, tuple, or list, optional
+        Rolling window lengths. An integer adds a single window, a tuple
+        ``(start, end)`` expands to every integer in the inclusive range, and a
+        list provides explicit windows. Defaults to ``20``.
+    std_dev : float, int, or list, optional
+        Number(s) of standard deviations used when constructing the upper and
+        lower bands. Integers are converted to floats. Defaults to ``2``.
     reduce_memory : bool, optional
-        The `reduce_memory` parameter is a boolean flag that indicates whether or not to reduce the memory
-        usage of the input data before performing the calculation. If set to `True`, the function will
-        attempt to reduce the memory usage of the input data using techniques such as downcasting numeric
-        columns and converting object columns
-    engine : str, optional
-        The `engine` parameter specifies the computation engine to use for calculating the Bollinger Bands.
-        It can take two values: 'pandas' or 'polars'. If 'pandas' is selected, the function will use the
-        pandas library for computation. If 'polars' is selected,
+        Attempt to reduce memory usage when operating on pandas data. If a
+        polars input is supplied a warning is emitted and no conversion occurs.
+    engine : {"auto", "pandas", "polars"}, optional
+        Execution engine. ``"auto"`` (default) infers the backend from the
+        input data while allowing explicit overrides.
 
     Returns
     -------
-    pd.DataFrame
-        The function `augment_bbands` returns a pandas DataFrame.
+    DataFrame
+        DataFrame with middle/upper/lower band columns appended for each
+        ``period`` and ``std_dev`` combination. The return type matches the
+        input backend (pandas or polars).
 
     Notes
     -----
-
-    Bollinger Bands are a technical analysis tool developed by John
-    Bollinger in the 1980s. They are used to measure the
-    'volatility' of a stock price or other financial instrument.
-    This indicator consists of three lines which are plotted in
-    relation to an asset's price:
-
-    1. The Middle Band: This is typically a simple moving average
-    (SMA) of the closing prices over a certain number of days
-    (commonly 20 days).
-
-    2. The Upper Band: This is set a specified number of standard
-    deviations (usually two) above the middle band.
-
-    3. The Lower Band: This is set the same number of standard
-    deviations (again, usually two) below the middle band.
-
-    Volatility Indicator: The width of the bands is a measure of
-    volatility. When the bands widen, it indicates increased
-    volatility, and when they contract, it suggests decreased
-    volatility.
-
-    Overbought and Oversold Conditions: Prices are considered
-    overbought near the upper band and oversold near the lower
-    band. However, these conditions do not necessarily signal a
-    reversal; prices can remain overbought or oversold for extended
-    periods during strong trends.
-
+    The middle band is the rolling mean of ``close_column``. The upper band is
+    the middle band plus ``std_dev`` times the rolling standard deviation, and
+    the lower band subtracts the same quantity. Rolling statistics are
+    calculated with a minimum window equal to ``period`` which matches the
+    behaviour of the pandas implementation.
 
     Examples
     --------
-
-    ``` {python}
-    import pandas as pd
+    ```python
     import pytimetk as tk
 
-    df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
+    df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-    df
-    ```
-
-    ``` {python}
-    # BBANDS pandas engine
-    df_bbands = (
-        df
-            .groupby('symbol')
-            .augment_bbands(
-                date_column = 'date',
-                close_column='close',
-                periods = [20, 40],
-                std_dev = 2,
-                engine = "pandas"
-            )
+    # Augment a pandas DataFrame (engine inferred)
+    bbands_df = df.groupby("symbol").augment_bbands(
+        date_column="date",
+        close_column="close",
+        periods=[20, 40],
+        std_dev=[1.5, 2.0],
     )
 
-    df_bbands.glimpse()
-    ```
-
-    ``` {python}
-    # BBANDS polars engine
-    df_bbands = (
-        df
-            .groupby('symbol')
-            .augment_bbands(
-                date_column = 'date',
-                close_column='close',
-                periods = [20, 40],
-                std_dev = 2,
-                engine = "polars"
-            )
+    # Polars DataFrame using the automatic engine detection
+    import polars as pl
+    bbands_pl = tk.augment_bbands(
+        data=pl.from_pandas(df.query("symbol == 'AAPL'")),
+        date_column="date",
+        close_column="close",
+        periods=(10, 15),
+        std_dev=2,
     )
-
-    df_bbands.glimpse()
     ```
-
     """
 
-    # Run common checks
     check_dataframe_or_groupby(data)
     check_value_column(data, close_column)
     check_date_column(data, date_column)
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    period_list = _normalize_periods(periods)
+    std_list = _normalize_std_dev(std_dev)
 
-    if isinstance(periods, int):
-        periods = [periods]
+    engine_resolved = normalize_engine(engine, data)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
 
-    elif isinstance(periods, tuple):
-        periods = list(range(periods[0], periods[1] + 1))
-
-    elif not isinstance(periods, list):
-        raise TypeError(
-            f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list."
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
         )
 
-    if isinstance(std_dev, float):
-        std_dev = [std_dev]
-    elif isinstance(std_dev, int):
-        std_dev = [float(std_dev)]
-    elif isinstance(std_dev, list):
-        std_dev = [float(i) for i in std_dev]
-    elif not isinstance(std_dev, list):
-        raise TypeError(
-            f"Invalid std_dev specification: type: {type(std_dev)}. Please use float or list."
+    if engine_resolved == "pandas":
+        sorted_data, _ = sort_dataframe(
+            prepared_data, date_column, keep_grouped_df=True
         )
-
-    if reduce_memory:
-        data = reduce_memory_usage(data)
-
-    if engine == "pandas":
-        ret = _augment_bbands_pandas(data, date_column, close_column, periods, std_dev)
-    elif engine == "polars":
-        ret = _augment_bbands_polars(data, date_column, close_column, periods, std_dev)
-        # Polars Index to Match Pandas
-        ret.index = idx_unsorted
+        result = _augment_bbands_pandas(
+            data=sorted_data,
+            close_column=close_column,
+            periods=period_list,
+            std_dev=std_list,
+        )
+        if reduce_memory:
+            result = reduce_memory_usage(result)
     else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+        result = _augment_bbands_polars(
+            data=prepared_data,
+            date_column=date_column,
+            close_column=close_column,
+            periods=period_list,
+            std_dev=std_list,
+            group_columns=conversion.group_columns,
+            row_id_column=conversion.row_id_column,
+        )
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    restored = restore_output_type(result, conversion)
 
-    ret = ret.sort_index()
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
 
-    return ret
+    return restored
 
 
 def _augment_bbands_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
-    date_column: str,
+    data,
     close_column: str,
-    periods: Union[int, Tuple[int, int], List[int]] = 20,
-    std_dev: Union[float, List[float]] = 2.0,
+    periods: List[int],
+    std_dev: List[float],
 ) -> pd.DataFrame:
-    """
-    Internal function to calculate BBANDS using Pandas.
-    """
+    if isinstance(data, pd.DataFrame):
+        df = data.copy()
+        for period in periods:
+            ma = df[close_column].rolling(period).mean()
+            std = df[close_column].rolling(period).std()
+            for sd in std_dev:
+                fmt = _format_sd(sd)
+                df[f"{close_column}_bband_middle_{period}_{fmt}"] = ma
+                df[f"{close_column}_bband_upper_{period}_{fmt}"] = ma + (std * sd)
+                df[f"{close_column}_bband_lower_{period}_{fmt}"] = ma - (std * sd)
+        return df
+
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        data = data.obj
-        df = data.copy()
+        base_df = data.obj.copy()
 
         for period in periods:
+            rolling = (
+                base_df.groupby(group_names)[close_column]
+                .rolling(period)
+                .agg(["mean", "std"])
+                .rename(columns={"mean": "_mean", "std": "_std"})
+            )
+            rolling = rolling.reset_index(level=0, drop=True)
+
             for sd in std_dev:
-                ma = (
-                    df.groupby(group_names)[close_column]
-                    .rolling(period)
-                    .mean()
-                    .reset_index(level=0, drop=True)
+                fmt = _format_sd(sd)
+                base_df[f"{close_column}_bband_middle_{period}_{fmt}"] = rolling["_mean"]
+                base_df[f"{close_column}_bband_upper_{period}_{fmt}"] = (
+                    rolling["_mean"] + rolling["_std"] * sd
+                )
+                base_df[f"{close_column}_bband_lower_{period}_{fmt}"] = (
+                    rolling["_mean"] - rolling["_std"] * sd
                 )
 
-                std = (
-                    df.groupby(group_names)[close_column]
-                    .rolling(period)
-                    .std()
-                    .reset_index(level=0, drop=True)
-                )
+        return base_df
 
-                # Add upper and lower bband columns
-                df[f"{close_column}_bband_middle_{period}_{sd}"] = ma
-
-                df[f"{close_column}_bband_upper_{period}_{sd}"] = ma + (std * sd)
-
-                df[f"{close_column}_bband_lower_{period}_{sd}"] = ma - (std * sd)
-
-    elif isinstance(data, pd.DataFrame):
-        df = data.copy()
-
-        for period in periods:
-            for sd in std_dev:
-                ma = df[close_column].rolling(period).mean()
-
-                std = df[close_column].rolling(period).std()
-
-                # Add upper and lower bband columns
-                df[f"{close_column}_bband_middle_{period}_{sd}"] = ma
-
-                df[f"{close_column}_bband_upper_{period}_{sd}"] = ma + (std * sd)
-
-                df[f"{close_column}_bband_lower_{period}_{sd}"] = ma - (std * sd)
-
-    else:
-        raise ValueError("data must be a pandas DataFrame or a pandas GroupBy object")
-
-    return df
+    raise TypeError("Unsupported data type passed to _augment_bbands_pandas.")
 
 
 def _augment_bbands_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
     close_column: str,
-    periods: Union[int, Tuple[int, int], List[int]] = 20,
-    std_dev: Union[float, List[float]] = 2.0,
-) -> pd.DataFrame:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        # Data is a GroupBy object, use apply to get a DataFrame
-        pandas_df = data.obj.copy()
-    elif isinstance(data, pd.DataFrame):
-        # Data is already a DataFrame
-        pandas_df = data.copy()
-    elif isinstance(data, pl.DataFrame):
-        # Data is already a Polars DataFrame
-        pandas_df = data.to_pandas()
-    else:
-        raise ValueError(
-            "data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame"
-        )
+    periods: List[int],
+    std_dev: List[float],
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> pl.DataFrame:
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+    frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        # Get the group names and original ungrouped data
-        group_names = data.grouper.names
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    sorted_frame = frame_with_id.sort(sort_keys)
 
-        pl_df = pl.from_pandas(pandas_df)
+    band_exprs = []
+    for period in periods:
+        mean_expr = pl.col(close_column).rolling_mean(window_size=period)
+        std_expr = pl.col(close_column).rolling_std(window_size=period)
 
-        for period in periods:
-            for sd in std_dev:
-                ma = (
-                    pl.col(close_column)
-                    .rolling_mean(window_size=period)
-                    .over(partition_by=group_names, order_by=date_column)
-                    .alias(f"{close_column}_bband_middle_{period}_{sd}")
-                )
+        if resolved_groups:
+            mean_expr = mean_expr.over(resolved_groups)
+            std_expr = std_expr.over(resolved_groups)
 
-                std = (
-                    pl.col(close_column)
-                    .rolling_std(window_size=period)
-                    .over(partition_by=group_names, order_by=date_column)
-                    .alias("std")
-                )
+        for sd in std_dev:
+            fmt = _format_sd(sd)
+            middle_alias = f"{close_column}_bband_middle_{period}_{fmt}"
+            upper_alias = f"{close_column}_bband_upper_{period}_{fmt}"
+            lower_alias = f"{close_column}_bband_lower_{period}_{fmt}"
 
-                # Add upper and lower bband columns
-                upper_band = (ma + std * sd).alias(
-                    f"{close_column}_bband_upper_{period}_{sd}"
-                )
+            band_exprs.append(mean_expr.alias(middle_alias))
+            band_exprs.append((mean_expr + std_expr * sd).alias(upper_alias))
+            band_exprs.append((mean_expr - std_expr * sd).alias(lower_alias))
 
-                lower_band = (ma - std * sd).alias(
-                    f"{close_column}_bband_lower_{period}_{sd}"
-                )
+    augmented = sorted_frame.with_columns(band_exprs).sort(row_col)
 
-                pl_df = pl_df.with_columns([ma, upper_band, lower_band])
+    if generated:
+        augmented = augmented.drop(row_col)
 
-    else:
-        pl_df = pl.from_pandas(pandas_df)
+    return augmented
 
-        for period in periods:
-            for sd in std_dev:
-                ma = (
-                    pl.col(close_column)
-                    .rolling_mean(window_size=period)
-                    .alias(f"{close_column}_bband_middle_{period}_{sd}")
-                )
 
-                std = pl.col(close_column).rolling_std(window_size=period).alias("std")
+def _normalize_periods(periods: Union[int, Tuple[int, int], List[int]]) -> List[int]:
+    if isinstance(periods, int):
+        return [periods]
+    if isinstance(periods, tuple):
+        if len(periods) != 2:
+            raise ValueError("Expected tuple of length 2 for `periods`.")
+        start, end = periods
+        return list(range(start, end + 1))
+    if isinstance(periods, list):
+        return [int(p) for p in periods]
+    raise TypeError(
+        f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list."
+    )
 
-                # Add upper and lower bband columns
-                upper_band = (ma + std * sd).alias(
-                    f"{close_column}_bband_upper_{period}_{sd}"
-                )
 
-                lower_band = (ma - std * sd).alias(
-                    f"{close_column}_bband_lower_{period}_{sd}"
-                )
+def _normalize_std_dev(std_dev: Union[int, float, List[float]]) -> List[float]:
+    if isinstance(std_dev, (int, float)):
+        return [float(std_dev)]
+    if isinstance(std_dev, list):
+        return [float(sd) for sd in std_dev]
+    raise TypeError(
+        f"Invalid std_dev specification: type: {type(std_dev)}. Please use float or list."
+    )
 
-                pl_df = pl_df.with_columns([ma, upper_band, lower_band])
 
-    return pl_df.to_pandas()
+def _format_sd(sd: float) -> str:
+    return f"{sd:.1f}"

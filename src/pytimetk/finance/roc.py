@@ -1,12 +1,22 @@
 import pandas as pd
 import polars as pl
+
 import pandas_flavor as pf
-from typing import Union, List, Tuple
+import warnings
+from typing import List, Optional, Sequence, Tuple, Union
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
     check_value_column,
+)
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    resolve_polars_group_columns,
+    restore_output_type,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -15,260 +25,252 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_roc(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     close_column: str,
     periods: Union[int, Tuple[int, int], List[int]] = 1,
     start_index: int = 0,
     reduce_memory: bool = False,
-    engine: str = "pandas",
-) -> pd.DataFrame:
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
-    Adds rate of change (percentage change) to a Pandas DataFrame or DataFrameGroupBy object.
+    Add rate-of-change (ROC) columns to a pandas or polars DataFrame.
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter is the input DataFrame or DataFrameGroupBy object
-        that you want to add percentage differenced columns to.
+    data : DataFrame or GroupBy (pandas or polars)
+        Input financial data. Grouped inputs are expanded per group before
+        computing ROC features.
     date_column : str
-        The `date_column` parameter is a string that specifies the name of the
-        column in the DataFrame that contains the dates. This column will be
-        used to sort the data before adding the percentage differenced values.
+        Name of the column containing date information. Used to preserve the
+        original ordering.
     close_column : str
-        The `close_column` parameter in the `augment_qsmomentum` function refers to the column in the input
-        DataFrame that contains the closing prices of the financial instrument or asset for which you want
-        to calculate the momentum.
-    periods : int or tuple or list, optional
-        The `periods` parameter is an integer, tuple, or list that specifies the
-        periods to shift values when percentage differencing.
-
-        - If it is an integer, the function will add that number of percentage differences
-          values for each column specified in the `value_column` parameter.
-
-        - If it is a tuple, it will generate percentage differences from the first to the second
-          value (inclusive).
-
-        - If it is a list, it will generate percentage differences based on the values in the list.
+        Name of the column containing closing prices on which the ROC is
+        computed.
+    periods : int, tuple, or list, optional
+        Lookback windows used for the denominator term. An integer adds a
+        single ROC column, a tuple ``(start, end)`` expands to the inclusive
+        range ``start..end``, and a list provides explicit periods. Defaults to
+        ``1``.
     start_index : int, optional
-        The `start_index` parameter is an integer that specifies the starting index for the percentage difference calculation.
-        Default is 0 which is the last element in the group.
+        Offset applied to the numerator. When ``0`` (default) the current value
+        is used; otherwise the numerator uses ``close.shift(start_index)``.
     reduce_memory : bool, optional
-        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
-    engine : str, optional
-        The `engine` parameter is used to specify the engine to use for
-        augmenting percentage differences. It can be either "pandas" or "polars".
-
-        - The default value is "pandas".
-
-        - When "polars", the function will internally use the `polars` library
-        for augmenting percentage diffs. This can be faster than using "pandas" for large
-        datasets.
+        Attempt to reduce memory usage when operating on pandas data. If used
+        with polars inputs a warning is emitted and no conversion is performed.
+    engine : {"auto", "pandas", "polars"}, optional
+        Execution engine. ``"auto"`` (default) infers the backend from the
+        input data type while also accepting explicit overrides.
 
     Returns
     -------
-    pd.DataFrame
-        A Pandas DataFrame with percentage differenced columns added to it.
+    DataFrame
+        DataFrame with ROC columns appended. The return type matches the input
+        backend (pandas or polars).
 
     Notes
     -----
-    The rate of change (ROC) calculation is a momentum indicator that measures the percentage change in price between the current price and the price a certain number of periods ago. The ROC indicator is used to identify the speed and direction of price movements. It is calculated as follows:
+    Rate of change is defined as ::
 
-    ROC = [(Close - Close n periods ago) / (Close n periods ago)]
+        ROC = (Value_t - Value_{t-period}) / Value_{t-period}
 
-    When `start_index` is used, the formula becomes:
-
-    ROC = [(Close start_index periods ago - Close n periods ago) / (Close n periods ago)]
+    When ``start_index`` is non-zero the numerator is taken from
+    ``Value_{t-start_index}`` instead of the current value. The implementation
+    safeguards against division by zero by returning ``NaN`` whenever the
+    denominator is zero.
 
     Examples
     --------
-    ```{python}
-    import pandas as pd
+    ```python
     import pytimetk as tk
 
-    df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
+    df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-    df.glimpse()
-    ```
-
-    ```{python}
-    # Example 1 - Add 7 roc values for a single DataFrame object, pandas engine
-    roc_df = (
-        df
-            .query('symbol == "GOOG"')
-            .augment_roc(
-                date_column='date',
-                close_column='close',
-                periods=(1, 7),
-                engine='pandas'
-            )
+    # Pandas DataFrame input (engine inferred)
+    roc_df = df.groupby("symbol").augment_roc(
+        date_column="date",
+        close_column="close",
+        periods=[22, 63],
+        start_index=5,
     )
-    roc_df.glimpse()
-    ```
 
-    ```{python}
-    # Example 2 - Add 2 ROC with start index 21 using GroupBy object, polars engine
-    roc_df = (
-        df
-            .groupby('symbol')
-            .augment_roc(
-                date_column='date',
-                close_column='close',
-                periods=[63, 252],
-                start_index=21,
-                engine='polars'
-            )
+    # Polars DataFrame input (engine inferred)
+    import polars as pl
+    roc_pl = tk.augment_roc(
+        data=pl.from_pandas(df.query("symbol == 'AAPL'")),
+        date_column="date",
+        close_column="close",
+        periods=(5, 10),
     )
-    roc_df
     ```
     """
 
-    # Run common checks
     check_dataframe_or_groupby(data)
     check_value_column(data, close_column)
     check_date_column(data, date_column)
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
-
-    # Check start_index > periods
-    if start_index >= min(periods):
+    periods_list = _normalize_periods(periods)
+    if start_index >= min(periods_list):
         raise ValueError("start_index must be less than the minimum value in periods.")
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    engine_resolved = normalize_engine(engine, data)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
 
-    # Make close column iterable
-    if isinstance(close_column, str):
-        close_column = [close_column]
-
-    # Make periods iterable
-    if isinstance(periods, int):
-        periods = [periods]  # Convert to a list with a single value
-    elif isinstance(periods, tuple):
-        periods = list(range(periods[0], periods[1] + 1))
-    elif not isinstance(periods, list):
-        raise TypeError(
-            f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list."
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
         )
 
-    # Augment the data
-    if engine == "pandas":
-        ret = _augment_roc_pandas(
-            data, date_column, close_column, periods, start_index=start_index
+    close_columns = [close_column]
+
+    if engine_resolved == "pandas":
+        sorted_data, _ = sort_dataframe(
+            prepared_data, date_column, keep_grouped_df=True
         )
-    elif engine == "polars":
-        ret = _augment_roc_polars(
-            data, date_column, close_column, periods, start_index=start_index
+        result = _augment_roc_pandas(
+            data=sorted_data,
+            close_columns=close_columns,
+            periods=periods_list,
+            start_index=start_index,
         )
-        # Polars Index to Match Pandas
-        ret.index = idx_unsorted
+        if reduce_memory:
+            result = reduce_memory_usage(result)
     else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+        result = _augment_roc_polars(
+            data=prepared_data,
+            date_column=date_column,
+            close_columns=close_columns,
+            periods=periods_list,
+            start_index=start_index,
+            group_columns=conversion.group_columns,
+            row_id_column=conversion.row_id_column,
+        )
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    restored = restore_output_type(result, conversion)
 
-    ret = ret.sort_index()
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
 
-    return ret
+    return restored
 
 
 def _augment_roc_pandas(
-    data, date_column, close_column, periods, start_index
+    data,
+    close_columns: List[str],
+    periods: List[int],
+    start_index: int,
 ) -> pd.DataFrame:
-    # DATAFRAME EXTENSION - If data is a Pandas DataFrame, extend with future dates
     if isinstance(data, pd.DataFrame):
         df = data.copy()
-
-        df.sort_values(by=[date_column], inplace=True)
-
-        for col in close_column:
+        for col in close_columns:
             for period in periods:
-                if start_index == 0:
-                    df[f"{col}_roc_{start_index}_{period}"] = df[col].pct_change(period)
-                else:
-                    df[f"{col}_roc_{start_index}_{period}"] = (
-                        df[col].shift(start_index) / df[col].shift(period)
-                    ) - 1
+                df[_roc_column(col, start_index, period)] = _roc_pandas_series(
+                    df[col], period, start_index
+                )
+        return df
 
-    # GROUPED EXTENSION - If data is a GroupBy object, add differences by group
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        # Get the group names and original ungrouped data
         group_names = data.grouper.names
-        data = data.obj
+        base_df = data.obj.copy()
+        grouped = base_df.groupby(group_names)
 
-        df = data.copy()
-
-        df.sort_values(by=[*group_names, date_column], inplace=True)
-
-        for col in close_column:
+        for col in close_columns:
+            grouped_col = grouped[col]
             for period in periods:
-                if start_index == 0:
-                    df[f"{col}_roc_{start_index}_{period}"] = df.groupby(group_names)[
-                        col
-                    ].pct_change(period)
+                numerator = (
+                    base_df[col]
+                    if start_index == 0
+                    else grouped_col.shift(start_index)
+                )
+                denominator = grouped_col.shift(period)
+                result = (numerator / denominator) - 1
+                result = result.where(denominator != 0)
+                base_df[_roc_column(col, start_index, period)] = result
+        return base_df
 
-                else:
-                    df[f"{col}_roc_{start_index}_{period}"] = (
-                        df.groupby(group_names)[col].shift(start_index)
-                        / df.groupby(group_names)[col].shift(period)
-                    ) - 1
+    raise TypeError("Unsupported data type passed to _augment_roc_pandas.")
 
-    return df
+
+def _roc_pandas_series(series: pd.Series, period: int, start_index: int) -> pd.Series:
+    if start_index == 0:
+        return series.pct_change(period)
+    numerator = series.shift(start_index)
+    denominator = series.shift(period)
+    return (numerator / denominator) - 1
 
 
 def _augment_roc_polars(
-    data, date_column, close_column, periods, start_index
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
+    date_column: str,
+    close_columns: List[str],
+    periods: List[int],
+    start_index: int,
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
 ) -> pl.DataFrame:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        # Data is a GroupBy object, use apply to get a DataFrame
-        pandas_df = data.obj.copy()
-    elif isinstance(data, pd.DataFrame):
-        # Data is already a DataFrame
-        pandas_df = data
-    elif isinstance(data, pl.DataFrame):
-        # Data is already a Polars DataFrame
-        pandas_df = data.to_pandas()
-    else:
-        raise ValueError(
-            "data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame"
-        )
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+    frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
 
-    roc_foo = pl.col(date_column).shift(1).alias("_diff_1")
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    sorted_frame = frame_with_id.sort(sort_keys)
 
-    period_exprs = []
+    roc_columns = [
+        _roc_expression(col, period, start_index, resolved_groups)
+        for col in close_columns
+        for period in periods
+    ]
 
-    for col in close_column:
-        for period in periods:
-            if start_index == 0:
-                period_expr = ((pl.col(col) / pl.col(col).shift(period)) - 1).alias(
-                    f"{col}_roc_{start_index}_{period}"
-                )
-                period_exprs.append(period_expr)
-            else:
-                period_expr = (
-                    (pl.col(col).shift(start_index) / pl.col(col).shift(period)) - 1
-                ).alias(f"{col}_roc_{start_index}_{period}")
-                period_exprs.append(period_expr)
+    augmented = sorted_frame.with_columns(roc_columns).sort(row_col)
 
-    # Select columns
-    selected_columns = [roc_foo] + period_exprs
+    if generated:
+        augmented = augmented.drop(row_col)
 
-    # Drop the first column by position (index)
-    selected_columns = selected_columns[1:]
+    return augmented
 
-    # Select the columns
-    df = pl.DataFrame(pandas_df)
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        out_df = df.group_by(data.grouper.names, maintain_order=True).agg(
-            selected_columns
-        )
-        out_df = out_df.explode(out_df.columns[len(data.grouper.names) :])
-        out_df = out_df.drop(data.grouper.names)
-    else:  # a dataframe
-        out_df = df.select(selected_columns)
 
-    # Concatenate the DataFrames horizontally
-    df = pl.concat([df, out_df], how="horizontal").to_pandas()
+def _roc_expression(
+    col: str,
+    period: int,
+    start_index: int,
+    groups: Sequence[str],
+) -> pl.Expr:
+    numerator = pl.col(col) if start_index == 0 else pl.col(col).shift(start_index)
+    denominator = pl.col(col).shift(period)
 
-    return df
+    if groups:
+        numerator = numerator.over(groups)
+        denominator = denominator.over(groups)
+
+    expr = pl.when(denominator == 0).then(None).otherwise((numerator / denominator) - 1)
+    return expr.alias(_roc_column(col, start_index, period))
+
+
+def _roc_column(col: str, start_index: int, period: int) -> str:
+    return f"{col}_roc_{start_index}_{period}"
+
+
+def _normalize_periods(periods: Union[int, Tuple[int, int], List[int]]) -> List[int]:
+    if isinstance(periods, int):
+        return [periods]
+    if isinstance(periods, tuple):
+        if len(periods) != 2:
+            raise ValueError("Expected tuple of length 2 for `periods`.")
+        start, end = periods
+        return list(range(start, end + 1))
+    if isinstance(periods, list):
+        return [int(p) for p in periods]
+    raise TypeError(
+        f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list."
+    )

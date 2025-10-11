@@ -1,5 +1,6 @@
 import pytest
 import pandas as pd
+import polars as pl
 import pytimetk as tk
 import os
 import multiprocess as mp
@@ -18,6 +19,15 @@ def df():
     return tk.load_dataset("stocks_daily", parse_dates=["date"])
 
 
+@pytest.fixture(scope="module")
+def pl_df(df):
+    return pl.from_pandas(df)
+
+
+def _to_pandas(df):
+    return df.to_pandas() if isinstance(df, pl.DataFrame) else df
+
+
 @pytest.mark.parametrize(
     "engine,periods,std_dev",
     product(["pandas", "polars"], [[20], [20, 40]], [2, [1.5, 2]]),
@@ -32,6 +42,7 @@ def test_bbands(df, engine, periods, std_dev):
         std_dev=std_dev,
         engine=engine,
     )
+    result_grouped = _to_pandas(result_grouped)
     expected_cols = [
         "symbol",
         "date",
@@ -64,6 +75,7 @@ def test_bbands(df, engine, periods, std_dev):
         std_dev=std_dev,
         engine=engine,
     )
+    result_single = _to_pandas(result_single)
     assert result_single.shape == (2699, len(expected_cols)), (
         f"Expected shape (2699, {len(expected_cols)})"
     )
@@ -108,3 +120,56 @@ def test_bbands_edge_cases(df):
             std_dev=2,
             engine="pandas",
         )
+
+
+def test_bbands_polars_dataframe_roundtrip(pl_df):
+    pandas_single = (
+        tk.load_dataset("stocks_daily", parse_dates=["date"])
+        .query("symbol == 'AAPL'")
+    )
+
+    pandas_result = pandas_single.augment_bbands(
+        date_column="date",
+        close_column="close",
+        periods=[20],
+        std_dev=[1.5, 2],
+    )
+
+    polars_result = tk.augment_bbands(
+        data=pl_df.filter(pl.col("symbol") == "AAPL"),
+        date_column="date",
+        close_column="close",
+        periods=[20],
+        std_dev=[1.5, 2],
+    )
+
+    pd.testing.assert_frame_equal(
+        pandas_result.reset_index(drop=True),
+        polars_result.to_pandas().reset_index(drop=True),
+    )
+
+
+def test_bbands_polars_groupby_roundtrip(pl_df):
+    pandas_group = (
+        tk.load_dataset("stocks_daily", parse_dates=["date"])
+        .groupby("symbol")
+        .augment_bbands(
+            date_column="date",
+            close_column="close",
+            periods=[20],
+            std_dev=2,
+        )
+    )
+
+    polars_group = tk.augment_bbands(
+        data=pl_df.group_by("symbol"),
+        date_column="date",
+        close_column="close",
+        periods=[20],
+        std_dev=2,
+    )
+
+    pd.testing.assert_frame_equal(
+        pandas_group.reset_index(drop=True),
+        polars_group.to_pandas().reset_index(drop=True),
+    )

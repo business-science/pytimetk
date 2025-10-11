@@ -4,6 +4,7 @@ import re
 import pytest
 import pandas as pd
 import numpy as np
+import polars as pl
 import pytimetk as tk
 import os
 import multiprocess as mp
@@ -19,6 +20,15 @@ os.environ["OPENBLAS_NUM_THREADS"] = "1"
 @pytest.fixture(scope="module")
 def df():
     return tk.load_dataset("stocks_daily", parse_dates=["date"])
+
+
+@pytest.fixture(scope="module")
+def pl_df(df):
+    return pl.from_pandas(df)
+
+
+def _to_pandas(frame):
+    return frame.to_pandas() if isinstance(frame, pl.DataFrame) else frame
 
 
 # ---------- Helpers ----------
@@ -126,6 +136,7 @@ def test_roc(df, engine, periods, start_index):
         start_index=start_index,
         engine=engine,
     )
+    res_g = _to_pandas(res_g)
     for p in period_list:
         col = _resolve_roc_col(res_g.columns, value_prefix, start_index, p)
         # Warm-up NaNs per group: require at least start_index NaNs (loose check)
@@ -143,6 +154,7 @@ def test_roc(df, engine, periods, start_index):
         start_index=start_index,
         engine=engine,
     )
+    res_u = _to_pandas(res_u)
     for p in period_list:
         col = _resolve_roc_col(res_u.columns, value_prefix, start_index, p)
         # Warm-up NaNs (single series): at least start_index NaNs allowed (many impls pad)
@@ -201,6 +213,59 @@ def test_roc_edge_cases(df):
             start_index=1,
             engine="pandas",
         )
+
+
+def test_roc_polars_dataframe_roundtrip(pl_df):
+    pandas_single = (
+        tk.load_dataset("stocks_daily", parse_dates=["date"])
+        .query("symbol == 'AAPL'")
+    )
+
+    pandas_result = pandas_single.augment_roc(
+        date_column="date",
+        close_column="close",
+        periods=[22, 63],
+        start_index=5,
+    )
+
+    polars_result = tk.augment_roc(
+        data=pl_df.filter(pl.col("symbol") == "AAPL"),
+        date_column="date",
+        close_column="close",
+        periods=[22, 63],
+        start_index=5,
+    )
+
+    pd.testing.assert_frame_equal(
+        pandas_result.reset_index(drop=True),
+        polars_result.to_pandas().reset_index(drop=True),
+    )
+
+
+def test_roc_polars_groupby_roundtrip(pl_df, df):
+    pandas_group = (
+        tk.load_dataset("stocks_daily", parse_dates=["date"])
+        .groupby("symbol")
+        .augment_roc(
+            date_column="date",
+            close_column="close",
+            periods=[22],
+            start_index=5,
+        )
+    )
+
+    polars_group = tk.augment_roc(
+        data=pl_df.group_by("symbol"),
+        date_column="date",
+        close_column="close",
+        periods=[22],
+        start_index=5,
+    )
+
+    pd.testing.assert_frame_equal(
+        pandas_group.reset_index(drop=True),
+        polars_group.to_pandas().reset_index(drop=True),
+    )
 
     # Invalid periods (non-integer item)
     with pytest.raises((ValueError, TypeError), match=r"period|int|integer|numeric"):
