@@ -1,12 +1,21 @@
 import pandas as pd
 import polars as pl
 import pandas_flavor as pf
-from typing import Union
+import warnings
+from typing import Optional, Sequence, Union
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
     check_value_column,
+)
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    resolve_polars_group_columns,
+    restore_output_type,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -15,117 +24,94 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_drawdown(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     close_column: str,
     reduce_memory: bool = False,
-    engine: str = "pandas",
-) -> pd.DataFrame:
-    """The augment_drawdown function calculates the drawdown metrics for a financial time series
-    using either pandas or polars engine, and returns the augmented DataFrame with peak value,
-    drawdown, and drawdown percentage columns.
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
+    """
+    Calculate running drawdown statistics for pandas or polars data.
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        The input data can be either a pandas DataFrame or a pandas DataFrameGroupBy object
-        containing the time series data for drawdown calculation.
+    data : DataFrame or GroupBy (pandas or polars)
+        Input time-series data. Grouped inputs are processed per group before
+        the drawdown metrics are appended.
     date_column : str
-        The name of the column containing dates or timestamps.
+        Name of the column containing date information.
     close_column : str
-        The column containing the values (e.g., price) to calculate drawdowns from.
+        Name of the column containing the values used to compute drawdowns.
     reduce_memory : bool, optional
-        If True, reduces memory usage of the DataFrame before calculation. Default is False.
-    engine : str, optional
-        The computation engine to use: 'pandas' or 'polars'. Default is 'pandas'.
+        Attempt to reduce memory usage when operating on pandas data. If a
+        polars input is supplied a warning is emitted and no conversion occurs.
+    engine : {"auto", "pandas", "polars"}, optional
+        Execution engine. ``"auto"`` (default) infers the backend from the
+        input data while allowing explicit overrides.
 
     Returns
     -------
-    pd.DataFrame
-        A pandas DataFrame augmented with three columns:
-        - {close_column}_peak: Running maximum value up to each point
-        - {close_column}_drawdown: Absolute difference from peak to current value
-        - {close_column}_drawdown_pct: Percentage decline from peak to current value
+    DataFrame
+        DataFrame with the following columns appended:
 
-    Notes
-    -----
-    Drawdown is a measure of peak-to-trough decline in a time series, typically used to assess
-    the risk of a financial instrument:
+        - ``{close_column}_peak``
+        - ``{close_column}_drawdown``
+        - ``{close_column}_drawdown_pct``
 
-    - Peak Value: The highest value observed up to each point in time
-    - Drawdown: The absolute difference between the peak and current value
-    - Drawdown Percentage: The percentage decline from the peak value
-
-    Examples
-    --------
-    ``` {python}
-    import pandas as pd
-    import pytimetk as tk
-
-    df = tk.load_dataset('stocks_daily', parse_dates=['date'])
-
-    # Single stock drawdown
-    dd_df = (
-        df.query("symbol == 'AAPL'")
-        .augment_drawdown(
-            date_column='date',
-            close_column='close',
-        )
-    )
-    dd_df.head()
-    ```
-
-    ``` {python}
-    dd_df.groupby('symbol').plot_timeseries('date', 'close_drawdown_pct')
-    ```
-
-    ``` {python}
-    # Multiple stocks with groupby
-    dd_df = (
-        df.groupby('symbol')
-        .augment_drawdown(
-            date_column='date',
-            close_column='close',
-            engine='polars'
-        )
-    )
-    dd_df.head()
-    ```
-
-    ``` {python}
-    dd_df.groupby('symbol').plot_timeseries('date', 'close_drawdown_pct')
-    ```
+        The return type matches the input backend.
     """
 
-    # Run common checks
     check_dataframe_or_groupby(data)
-    check_value_column(data, close_column)
+    check_value_column(data, close_column, require_numeric_dtype=True)
     check_date_column(data, date_column)
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    engine_resolved = normalize_engine(engine, data)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
-    if engine == "pandas":
-        ret = _augment_drawdown_pandas(data, date_column, close_column)
-    elif engine == "polars":
-        ret = _augment_drawdown_polars(data, date_column, close_column)
-        ret.index = idx_unsorted
+    if engine_resolved == "pandas":
+        sorted_data, _ = sort_dataframe(
+            prepared_data, date_column, keep_grouped_df=True
+        )
+        result = _augment_drawdown_pandas(
+            data=sorted_data,
+            close_column=close_column,
+        )
+        if reduce_memory:
+            result = reduce_memory_usage(result)
     else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+        result = _augment_drawdown_polars(
+            data=prepared_data,
+            date_column=date_column,
+            close_column=close_column,
+            group_columns=conversion.group_columns,
+            row_id_column=conversion.row_id_column,
+        )
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    restored = restore_output_type(result, conversion)
 
-    ret = ret.sort_index()
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
 
-    return ret
+    return restored
 
 
 def _augment_drawdown_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
-    date_column: str,
     close_column: str,
 ) -> pd.DataFrame:
     """Pandas implementation of drawdown calculation."""
@@ -139,73 +125,58 @@ def _augment_drawdown_pandas(
         df[f"{col}_drawdown"] = df[col] - df[f"{col}_peak"]
         df[f"{col}_drawdown_pct"] = df[f"{col}_drawdown"] / df[f"{col}_peak"]
 
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
+        return df
+
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        group_names = list(data.grouper.names)
         df = data.obj.copy()
         col = close_column
 
-        # Groupby calculations
         df[f"{col}_peak"] = df.groupby(group_names)[col].cummax()
         df[f"{col}_drawdown"] = df[col] - df[f"{col}_peak"]
         df[f"{col}_drawdown_pct"] = df[f"{col}_drawdown"] / df[f"{col}_peak"]
 
-    return df
+        return df
+
+    raise TypeError("Unsupported data type passed to _augment_drawdown_pandas.")
 
 
 def _augment_drawdown_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
     close_column: str,
-) -> pd.DataFrame:
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> pl.DataFrame:
     """Polars implementation of drawdown calculation."""
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        pandas_df = data.obj
-        group_names = data.grouper.names
-        if not isinstance(group_names, list):
-            group_names = [group_names]
-    else:
-        pandas_df = data.copy()
-        group_names = None
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+    frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
 
-    df = pl.from_pandas(pandas_df)
-    col = close_column
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    sorted_frame = frame_with_id.sort(sort_keys)
 
-    if group_names:
-        # Grouped calculation
-        # Step 1: Calculate peak
-        peak_expr = (
-            pl.col(col)
-            .cum_max()
-            .over(partition_by=group_names, order_by=date_column)
-            .alias(f"{col}_peak")
+    peak_expr = (
+        pl.col(close_column).cum_max().over(resolved_groups)
+        if resolved_groups
+        else pl.col(close_column).cum_max()
+    )
+
+    result = sorted_frame.with_columns(peak_expr.alias(f"{close_column}_peak"))
+    result = result.with_columns(
+        (pl.col(close_column) - pl.col(f"{close_column}_peak")).alias(
+            f"{close_column}_drawdown"
         )
-        df = df.with_columns(peak_expr)
+    )
+    result = result.with_columns(
+        (
+            pl.col(f"{close_column}_drawdown") / pl.col(f"{close_column}_peak")
+        ).alias(f"{close_column}_drawdown_pct")
+    ).sort(row_col)
 
-        # Step 2: Calculate drawdown using the peak
-        drawdown_expr = (pl.col(col) - pl.col(f"{col}_peak")).alias(f"{col}_drawdown")
-        df = df.with_columns(drawdown_expr)
+    if generated:
+        result = result.drop(row_col)
 
-        # Step 3: Calculate drawdown percentage
-        drawdown_pct_expr = (pl.col(f"{col}_drawdown") / pl.col(f"{col}_peak")).alias(
-            f"{col}_drawdown_pct"
-        )
-        df = df.with_columns(drawdown_pct_expr)
-
-    else:
-        # Single series calculation
-        # Step 1: Calculate peak
-        peak_expr = pl.col(col).cum_max().alias(f"{col}_peak")
-        df = df.with_columns(peak_expr)
-
-        # Step 2: Calculate drawdown using the peak
-        drawdown_expr = (pl.col(col) - pl.col(f"{col}_peak")).alias(f"{col}_drawdown")
-        df = df.with_columns(drawdown_expr)
-
-        # Step 3: Calculate drawdown percentage
-        drawdown_pct_expr = (pl.col(f"{col}_drawdown") / pl.col(f"{col}_peak")).alias(
-            f"{col}_drawdown_pct"
-        )
-        df = df.with_columns(drawdown_pct_expr)
-
-    return df.to_pandas()
+    return result

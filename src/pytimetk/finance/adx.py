@@ -1,14 +1,23 @@
+import numpy as np
 import pandas as pd
 import polars as pl
-import numpy as np
 
 import pandas_flavor as pf
-from typing import Union, List, Tuple
+import warnings
+from typing import List, Optional, Sequence, Tuple, Union
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
     check_value_column,
+)
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    resolve_polars_group_columns,
+    restore_output_type,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -17,202 +26,174 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_adx(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     high_column: str,
     low_column: str,
     close_column: str,
     periods: Union[int, Tuple[int, int], List[int]] = 14,
     reduce_memory: bool = False,
-    engine: str = "pandas",
-) -> pd.DataFrame:
-    """Calculate Average Directional Index (ADX), +DI, and -DI for a financial time series to determine strength of trend.
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
+    """
+    Calculate Average Directional Index (ADX), +DI, and -DI using pandas or polars backends.
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        Input pandas DataFrame or GroupBy object with time series data.
+    data : DataFrame or GroupBy (pandas or polars)
+        Input financial data. Grouped inputs are processed per group before the
+        indicators are appended.
     date_column : str
-        Column name containing dates or timestamps.
+        Name of the column containing date information.
     high_column : str
-        Column name with high prices.
+        Name of the column containing high prices.
     low_column : str
-        Column name with low prices.
+        Name of the column containing low prices.
     close_column : str
-        Column name with closing prices.
-    periods : Union[int, Tuple[int, int], List[int]], optional
-        Number of periods for ADX calculation. Accepts int, tuple (start, end), or list. Default is 14.
+        Name of the column containing closing prices. Indicator columns are
+        prefixed with this name.
+    periods : int, tuple, or list, optional
+        Lookback windows for smoothing. Accepts an integer, a tuple specifying
+        an inclusive range, or a list of explicit periods. Defaults to ``14``.
     reduce_memory : bool, optional
-        If True, reduces memory usage before calculation. Default is False.
-    engine : str, optional
-        Computation engine: 'pandas' or 'polars'. Default is 'pandas'.
+        Attempt to reduce memory usage when operating on pandas data. If a
+        polars input is supplied a warning is emitted and no conversion occurs.
+    engine : {"auto", "pandas", "polars"}, optional
+        Execution engine. ``"auto"`` (default) infers the backend from the
+        input data while allowing explicit overrides.
 
     Returns
     -------
-    pd.DataFrame
-        DataFrame with added columns:
-        - {close_column}_plus_di_{period}: Positive Directional Indicator (+DI)
-        - {close_column}_minus_di_{period}: Negative Directional Indicator (-DI)
-        - {close_column}_adx_{period}: Average Directional Index (ADX)
+    DataFrame
+        DataFrame with the following columns appended for each ``period``:
+
+        - ``{close_column}_plus_di_{period}``
+        - ``{close_column}_minus_di_{period}``
+        - ``{close_column}_adx_{period}``
+
+        The return type matches the input backend.
 
     Notes
     -----
-    - The ADX is a trend strength indicator that ranges from 0 to 100.
-    - A high ADX value indicates a strong trend, while a low ADX value indicates a weak trend.
-    - The +DI and -DI values range from 0 to 100.
-    - The ADX is calculated as the average of the DX values over the specified period.
-    - The DX value is calculated as 100 * |(+DI - -DI)| / (+DI + -DI).
-    - The True Range (TR) is the maximum of the following:
-        - High - Low
-        - High - Previous Close
-        - Low - Previous Close
-    - The +DM is calculated as follows:
-        - If High - Previous High > Previous Low - Low, then +DM = max(High - Previous High, 0)
-        - Otherwise, +DM = 0
-    - The -DM is calculated as follows:
-        - If Previous Low - Low > High - Previous High, then -DM = max(Previous Low - Low, 0)
-        - Otherwise, -DM = 0
-
-    References:
-
-    - https://www.investopedia.com/terms/a/adx.asp
+    The implementation follows Wilder's smoothing approach using exponential
+    moving averages with ``alpha = 1 / period`` for the true range (TR) and
+    directional movement (+DM, -DM) components. Division by zero is guarded by
+    returning ``NaN`` when the denominator is zero.
 
     Examples
     --------
-    ```{python}
-    import pandas as pd
+    ```python
     import pytimetk as tk
 
-    df = tk.load_dataset('stocks_daily', parse_dates=['date'])
+    df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-    # Example 1 - Single stock ADX with pandas engine
+    # Pandas example (engine inferred)
     adx_df = (
-        df.query("symbol == 'AAPL'")
+        df.groupby("symbol")
         .augment_adx(
-            date_column='date',
-            high_column='high',
-            low_column='low',
-            close_column='close',
-            periods=[14, 28]
-        )
-    )
-    adx_df.head()
-    ```
-
-    ```{python}
-    # Example 2 - Multiple stocks with groupby using pandas engine
-    adx_df = (
-        df.groupby('symbol')
-        .augment_adx(
-            date_column='date',
-            high_column='high',
-            low_column='low',
-            close_column='close',
-            periods=14
-        )
-    )
-    adx_df.groupby('symbol').tail(1)
-    ```
-
-    ```{python}
-    # Example 3 - Single stock ADX with polars engine
-    adx_df = (
-        df.query("symbol == 'AAPL'")
-        .augment_adx(
-            date_column='date',
-            high_column='high',
-            low_column='low',
-            close_column='close',
+            date_column="date",
+            high_column="high",
+            low_column="low",
+            close_column="close",
             periods=[14, 28],
-            engine='polars'
         )
     )
-    adx_df.head()
-    ```
 
-    ```{python}
-    # Example 4 - Multiple stocks with groupby using polars engine
-    adx_df = (
-        df.groupby('symbol')
-        .augment_adx(
-            date_column='date',
-            high_column='high',
-            low_column='low',
-            close_column='close',
-            periods=14,
-            engine='polars'
-        )
+    # Polars example (engine inferred)
+    import polars as pl
+    adx_pl = tk.augment_adx(
+        data=pl.from_pandas(df.query("symbol == 'AAPL'")),
+        date_column="date",
+        high_column="high",
+        low_column="low",
+        close_column="close",
+        periods=14,
     )
-    adx_df.groupby('symbol').tail(1)
     ```
     """
 
-    # Run common checks
     check_dataframe_or_groupby(data)
     check_value_column(data, high_column)
     check_value_column(data, low_column)
     check_value_column(data, close_column)
     check_date_column(data, date_column)
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    periods_list = _normalize_periods(periods)
 
-    if isinstance(periods, int):
-        periods = [periods]
-    elif isinstance(periods, tuple):
-        periods = list(range(periods[0], periods[1] + 1))
-    elif not isinstance(periods, list):
-        raise TypeError(
-            f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list."
+    engine_resolved = normalize_engine(engine, data)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
+
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
         )
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
-
-    if engine == "pandas":
-        ret = _augment_adx_pandas(
-            data, date_column, high_column, low_column, close_column, periods
+    if engine_resolved == "pandas":
+        sorted_data, _ = sort_dataframe(
+            prepared_data, date_column, keep_grouped_df=True
         )
-    elif engine == "polars":
-        ret = _augment_adx_polars(
-            data, date_column, high_column, low_column, close_column, periods
+        result = _augment_adx_pandas(
+            data=sorted_data,
+            high_column=high_column,
+            low_column=low_column,
+            close_column=close_column,
+            periods=periods_list,
         )
-        ret.index = idx_unsorted
+        if reduce_memory:
+            result = reduce_memory_usage(result)
     else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+        result = _augment_adx_polars(
+            data=prepared_data,
+            date_column=date_column,
+            high_column=high_column,
+            low_column=low_column,
+            close_column=close_column,
+            periods=periods_list,
+            group_columns=conversion.group_columns,
+            row_id_column=conversion.row_id_column,
+        )
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    restored = restore_output_type(result, conversion)
 
-    ret = ret.sort_index()
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
 
-    return ret
+    return restored
 
 
 def _augment_adx_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
-    date_column: str,
+    data,
     high_column: str,
     low_column: str,
     close_column: str,
     periods: List[int],
 ) -> pd.DataFrame:
-    """Pandas implementation of ADX calculation."""
-
     if isinstance(data, pd.DataFrame):
         df = data.copy()
-        group_names = None
+        grouped = None
     elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
+        grouped = data.grouper.names
         df = data.obj.copy()
+    else:
+        raise TypeError("Unsupported data type passed to _augment_adx_pandas.")
 
     col = close_column
 
-    # Calculate True Range (TR) and Directional Movement (+DM, -DM)
     df["tr"] = pd.concat(
         [
             df[high_column] - df[low_column],
-            (df[high_column] - df[close_column].shift(1)).abs(),
-            (df[low_column] - df[close_column].shift(1)).abs(),
+            (df[high_column] - df[col].shift(1)).abs(),
+            (df[low_column] - df[col].shift(1)).abs(),
         ],
         axis=1,
     ).max(axis=1)
@@ -230,179 +211,148 @@ def _augment_adx_pandas(
         0,
     )
 
+    if grouped is not None:
+        grouped_obj = df.groupby(grouped)
+
     for period in periods:
-        if group_names:
-            tr_smooth = (
-                df.groupby(group_names)["tr"]
-                .rolling(window=period, min_periods=1)
-                .mean()
-                .reset_index(level=0, drop=True)
+        alpha = 1 / period
+        if grouped is not None:
+            tr_smooth = grouped_obj["tr"].transform(
+                lambda s: s.ewm(alpha=alpha, adjust=False).mean()
             )
-            plus_dm_smooth = (
-                df.groupby(group_names)["plus_dm"]
-                .rolling(window=period, min_periods=1)
-                .mean()
-                .reset_index(level=0, drop=True)
+            plus_dm_smooth = grouped_obj["plus_dm"].transform(
+                lambda s: s.ewm(alpha=alpha, adjust=False).mean()
             )
-            minus_dm_smooth = (
-                df.groupby(group_names)["minus_dm"]
-                .rolling(window=period, min_periods=1)
-                .mean()
-                .reset_index(level=0, drop=True)
+            minus_dm_smooth = grouped_obj["minus_dm"].transform(
+                lambda s: s.ewm(alpha=alpha, adjust=False).mean()
             )
         else:
-            tr_smooth = df["tr"].rolling(window=period, min_periods=1).mean()
-            plus_dm_smooth = df["plus_dm"].rolling(window=period, min_periods=1).mean()
-            minus_dm_smooth = (
-                df["minus_dm"].rolling(window=period, min_periods=1).mean()
-            )
+            tr_smooth = df["tr"].ewm(alpha=alpha, adjust=False).mean()
+            plus_dm_smooth = df["plus_dm"].ewm(alpha=alpha, adjust=False).mean()
+            minus_dm_smooth = df["minus_dm"].ewm(alpha=alpha, adjust=False).mean()
 
-        df[f"{col}_plus_di_{period}"] = 100 * plus_dm_smooth / tr_smooth
-        df[f"{col}_minus_di_{period}"] = 100 * minus_dm_smooth / tr_smooth
+        plus_di = 100 * (plus_dm_smooth / tr_smooth)
+        minus_di = 100 * (minus_dm_smooth / tr_smooth)
+        dx = 100 * ((plus_di - minus_di).abs() / (plus_di + minus_di))
+        adx = dx.ewm(alpha=alpha, adjust=False).mean()
 
-        # Calculate DX and ADX with proper warmup
-        dx = (
-            100
-            * np.abs(plus_dm_smooth - minus_dm_smooth)
-            / (plus_dm_smooth + minus_dm_smooth)
-        )
-        df[f"dx_{period}"] = dx  # Temporary column
-        if group_names:
-            df[f"{col}_adx_{period}"] = (
-                df.groupby(group_names)[f"dx_{period}"]
-                .rolling(window=period, min_periods=period)
-                .mean()
-                .reset_index(level=0, drop=True)
-            )
-        else:
-            df[f"{col}_adx_{period}"] = (
-                df[f"dx_{period}"].rolling(window=period, min_periods=period).mean()
-            )
+        df[f"{col}_plus_di_{period}"] = plus_di
+        df[f"{col}_minus_di_{period}"] = minus_di
+        df[f"{col}_adx_{period}"] = adx
 
-    # Drop temporary columns
-    df = df.drop(columns=["tr", "plus_dm", "minus_dm"] + [f"dx_{p}" for p in periods])
-
+    df.drop(columns=["tr", "plus_dm", "minus_dm"], inplace=True)
     return df
 
 
 def _augment_adx_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
     high_column: str,
     low_column: str,
     close_column: str,
     periods: List[int],
-) -> pd.DataFrame:
-    """Polars implementation of ADX calculation."""
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> pl.DataFrame:
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+    frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        pandas_df = data.obj
-        group_names = data.grouper.names
-        if not isinstance(group_names, list):
-            group_names = [group_names]
-    else:
-        pandas_df = data.copy()
-        group_names = None
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    sorted_frame = frame_with_id.sort(sort_keys)
 
-    df = pl.from_pandas(pandas_df)
-    col = close_column
+    delta_high = pl.col(high_column) - pl.col(high_column).shift(1)
+    delta_low = pl.col(low_column).shift(1) - pl.col(low_column)
 
-    # Calculate True Range (TR) and Directional Movement (+DM, -DM)
-    df = df.with_columns(
-        [
-            pl.max_horizontal(
-                [
-                    (pl.col(high_column) - pl.col(low_column)),
-                    (pl.col(high_column) - pl.col(close_column).shift(1)).abs(),
-                    (pl.col(low_column) - pl.col(close_column).shift(1)).abs(),
-                ]
-            ).alias("tr"),
-            pl.when(
-                (pl.col(high_column) - pl.col(high_column).shift(1))
-                > (pl.col(low_column).shift(1) - pl.col(low_column))
-            )
-            .then(pl.col(high_column) - pl.col(high_column).shift(1))
-            .otherwise(0)
-            .clip(lower_bound=0)  # Fixed to use lower_bound
-            .alias("plus_dm"),
-            pl.when(
-                (pl.col(low_column).shift(1) - pl.col(low_column))
-                > (pl.col(high_column) - pl.col(high_column).shift(1))
-            )
-            .then(pl.col(low_column).shift(1) - pl.col(low_column))
-            .otherwise(0)
-            .clip(lower_bound=0)  # Fixed to use lower_bound
-            .alias("minus_dm"),
-        ]
+    tr_expr = pl.max_horizontal(
+        pl.col(high_column) - pl.col(low_column),
+        (pl.col(high_column) - pl.col(close_column).shift(1)).abs(),
+        (pl.col(low_column) - pl.col(close_column).shift(1)).abs(),
     )
 
-    for period in periods:
-        if group_names:
-            df = df.with_columns(
-                [
-                    pl.col("tr")
-                    .rolling_mean(window_size=period, min_periods=1)
-                    .over(partition_by=group_names, order_by=date_column)
-                    .alias("tr_smooth"),
-                    pl.col("plus_dm")
-                    .rolling_mean(window_size=period, min_periods=1)
-                    .over(partition_by=group_names, order_by=date_column)
-                    .alias("plus_dm_smooth"),
-                    pl.col("minus_dm")
-                    .rolling_mean(window_size=period, min_periods=1)
-                    .over(partition_by=group_names, order_by=date_column)
-                    .alias("minus_dm_smooth"),
-                ]
-            )
-        else:
-            df = df.with_columns(
-                [
-                    pl.col("tr")
-                    .rolling_mean(window_size=period, min_periods=1)
-                    .alias("tr_smooth"),
-                    pl.col("plus_dm")
-                    .rolling_mean(window_size=period, min_periods=1)
-                    .alias("plus_dm_smooth"),
-                    pl.col("minus_dm")
-                    .rolling_mean(window_size=period, min_periods=1)
-                    .alias("minus_dm_smooth"),
-                ]
-            )
+    zero = pl.lit(0.0)
 
-        df = df.with_columns(
+    plus_dm_expr = pl.when(delta_high > delta_low).then(
+        pl.max_horizontal(delta_high, zero)
+    ).otherwise(0.0)
+    minus_dm_expr = pl.when(delta_low > delta_high).then(
+        pl.max_horizontal(delta_low, zero)
+    ).otherwise(0.0)
+
+    def compute(frame: pl.DataFrame) -> pl.DataFrame:
+
+        df = frame.with_columns(
             [
-                (100 * pl.col("plus_dm_smooth") / pl.col("tr_smooth")).alias(
-                    f"{col}_plus_di_{period}"
-                ),
-                (100 * pl.col("minus_dm_smooth") / pl.col("tr_smooth")).alias(
-                    f"{col}_minus_di_{period}"
-                ),
-                (
-                    100
-                    * (pl.col("plus_dm_smooth") - pl.col("minus_dm_smooth")).abs()
-                    / (pl.col("plus_dm_smooth") + pl.col("minus_dm_smooth"))
-                ).alias(f"dx_{period}"),
+                tr_expr.alias("tr"),
+                plus_dm_expr.alias("plus_dm"),
+                minus_dm_expr.alias("minus_dm"),
             ]
         )
 
-        if group_names:
+        for period in periods:
+            alpha = 1 / period
+            plus_alias = f"{close_column}_plus_di_{period}"
+            minus_alias = f"{close_column}_minus_di_{period}"
+            adx_alias = f"{close_column}_adx_{period}"
+
             df = df.with_columns(
-                pl.col(f"dx_{period}")
-                .rolling_mean(window_size=period, min_periods=period)
-                .over(partition_by=group_names, order_by=date_column)
-                .alias(f"{col}_adx_{period}")
-            )
-        else:
-            df = df.with_columns(
-                pl.col(f"dx_{period}")
-                .rolling_mean(window_size=period, min_periods=period)
-                .alias(f"{col}_adx_{period}")
+                [
+                    (
+                        100
+                        * (
+                            pl.col("plus_dm").ewm_mean(alpha=alpha, adjust=False)
+                            / pl.col("tr").ewm_mean(alpha=alpha, adjust=False)
+                        )
+                    ).alias(plus_alias),
+                    (
+                        100
+                        * (
+                            pl.col("minus_dm").ewm_mean(alpha=alpha, adjust=False)
+                            / pl.col("tr").ewm_mean(alpha=alpha, adjust=False)
+                        )
+                    ).alias(minus_alias),
+                ]
             )
 
-    # Drop temporary columns
-    df = df.drop(
-        ["tr", "plus_dm", "minus_dm", "tr_smooth", "plus_dm_smooth", "minus_dm_smooth"]
-        + [f"dx_{p}" for p in periods]
+            df = df.with_columns(
+                (
+                    100
+                    * (pl.col(plus_alias) - pl.col(minus_alias)).abs()
+                    / (pl.col(plus_alias) + pl.col(minus_alias))
+                )
+                .ewm_mean(alpha=alpha, adjust=False)
+                .alias(adx_alias)
+            )
+
+        return df.drop(["tr", "plus_dm", "minus_dm"])
+
+    if resolved_groups:
+        group_key = resolved_groups if len(resolved_groups) > 1 else resolved_groups[0]
+        result = (
+            sorted_frame.group_by(group_key, maintain_order=True)
+            .map_groups(compute)
+            .sort(row_col)
+        )
+    else:
+        result = compute(sorted_frame).sort(row_col)
+
+    if generated:
+        result = result.drop(row_col)
+
+    return result
+
+
+def _normalize_periods(periods: Union[int, Tuple[int, int], List[int]]) -> List[int]:
+    if isinstance(periods, int):
+        return [periods]
+    if isinstance(periods, tuple):
+        if len(periods) != 2:
+            raise ValueError("Expected tuple of length 2 for `periods`.")
+        start, end = periods
+        return list(range(start, end + 1))
+    if isinstance(periods, list):
+        return [int(p) for p in periods]
+    raise TypeError(
+        f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list."
     )
-
-    return df.to_pandas()

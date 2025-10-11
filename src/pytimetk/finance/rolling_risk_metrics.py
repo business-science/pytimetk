@@ -2,11 +2,20 @@ import pandas as pd
 import polars as pl
 import pandas_flavor as pf
 import numpy as np
-from typing import Union, List, Optional
+import warnings
+from typing import List, Optional, Sequence, Union
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
     check_value_column,
+)
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    resolve_polars_group_columns,
+    restore_output_type,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -16,7 +25,12 @@ from scipy import stats  # For skewness and kurtosis
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_rolling_risk_metrics(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     close_column: str,
     window: Union[int, List[int]] = 252,
@@ -25,8 +39,8 @@ def augment_rolling_risk_metrics(
     annualization_factor: int = 252,
     metrics: Optional[List[str]] = None,
     reduce_memory: bool = False,
-    engine: str = "pandas",
-) -> pd.DataFrame:
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """The augment_rolling_risk_metrics function calculates rolling risk-adjusted performance
     metrics for a financial time series using either pandas or polars engine, and returns
     the augmented DataFrame with columns for Sharpe Ratio, Sortino Ratio, and other metrics.
@@ -173,43 +187,55 @@ def augment_rolling_risk_metrics(
     if benchmark_column is not None:
         check_value_column(data, benchmark_column)
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    engine_resolved = normalize_engine(engine, data)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
-    if engine == "pandas":
-        ret = _augment_rolling_risk_metrics_pandas(
-            data,
-            date_column,
-            close_column,
-            windows,
-            risk_free_rate,
-            benchmark_column,
-            annualization_factor,
-            metrics,
+    if engine_resolved == "pandas":
+        sorted_data, _ = sort_dataframe(
+            prepared_data, date_column, keep_grouped_df=True
         )
-    elif engine == "polars":
-        ret = _augment_rolling_risk_metrics_polars(
-            data,
-            date_column,
-            close_column,
-            windows,
-            risk_free_rate,
-            benchmark_column,
-            annualization_factor,
-            metrics,
+        result = _augment_rolling_risk_metrics_pandas(
+            data=sorted_data,
+            date_column=date_column,
+            close_column=close_column,
+            windows=windows,
+            risk_free_rate=risk_free_rate,
+            benchmark_column=benchmark_column,
+            annualization_factor=annualization_factor,
+            metrics=metrics,
         )
-        ret.index = idx_unsorted
+        if reduce_memory:
+            result = reduce_memory_usage(result)
     else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+        result = _augment_rolling_risk_metrics_polars(
+            data=prepared_data,
+            date_column=date_column,
+            close_column=close_column,
+            windows=windows,
+            risk_free_rate=risk_free_rate,
+            benchmark_column=benchmark_column,
+            annualization_factor=annualization_factor,
+            metrics=metrics,
+            group_columns=conversion.group_columns,
+            row_id_column=conversion.row_id_column,
+        )
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    restored = restore_output_type(result, conversion)
 
-    ret = ret.sort_index()
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
 
-    return ret
+    return restored
 
 
 def _augment_rolling_risk_metrics_pandas(
@@ -498,7 +524,7 @@ def _augment_rolling_risk_metrics_pandas(
 
 
 def _augment_rolling_risk_metrics_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
     close_column: str,
     windows: List[int],
@@ -506,18 +532,18 @@ def _augment_rolling_risk_metrics_polars(
     benchmark_column: Optional[str],
     annualization_factor: int,
     metrics: List[str],
-) -> pd.DataFrame:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        pandas_df = data.obj
-        group_names = data.grouper.names
-        if not isinstance(group_names, list):
-            group_names = [group_names]
-    else:
-        pandas_df = data.copy()
-        group_names = None
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> pl.DataFrame:
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+    frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
 
-    df = pl.from_pandas(pandas_df)
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    df = frame_with_id.sort(sort_keys)
     col = close_column
+    original_cols = df.columns
 
     # Calculate returns and masks if needed
     required_returns = any(
@@ -534,23 +560,23 @@ def _augment_rolling_risk_metrics_polars(
         ]
     )
     if required_returns:
+        returns_expr = pl.col(col).log() - pl.col(col).log().shift(1)
+        if resolved_groups:
+            returns_expr = returns_expr.over(resolved_groups)
         df = df.with_columns(
-            (pl.col(col).log() - pl.col(col).log().shift(1)).alias(f"{col}_returns"),
-            (pl.col(col).log() - pl.col(col).log().shift(1) > 0)
-            .cast(pl.Float64)
-            .alias("pos_mask"),
-            (pl.col(col).log() - pl.col(col).log().shift(1) < 0)
-            .cast(pl.Float64)
-            .alias("neg_mask"),
+            returns_expr.alias(f"{col}_returns"),
+            (returns_expr > 0).cast(pl.Float64).alias("pos_mask"),
+            (returns_expr < 0).cast(pl.Float64).alias("neg_mask"),
         )
     if benchmark_column and any(
         m in metrics for m in ["treynor_ratio", "information_ratio"]
     ):
-        df = df.with_columns(
-            (
-                pl.col(benchmark_column).log() - pl.col(benchmark_column).log().shift(1)
-            ).alias(f"{benchmark_column}_returns")
+        bench_returns = (
+            pl.col(benchmark_column).log() - pl.col(benchmark_column).log().shift(1)
         )
+        if resolved_groups:
+            bench_returns = bench_returns.over(resolved_groups)
+        df = df.with_columns(bench_returns.alias(f"{benchmark_column}_returns"))
 
     # Loop over each window separately
     for w in windows:
@@ -631,9 +657,9 @@ def _augment_rolling_risk_metrics_polars(
             # For benchmark-dependent metrics, you would add similar expressions here.
 
         # Apply the expressions for this window in a separate call
-        if group_names:
+        if resolved_groups:
             df = df.with_columns(
-                [e.over(partition_by=group_names, order_by=date_column) for e in exprs]
+                [e.over(resolved_groups) for e in exprs]
             )
         else:
             df = df.with_columns(exprs)
@@ -647,12 +673,12 @@ def _augment_rolling_risk_metrics_polars(
         df = df.drop([f"{benchmark_column}_returns"])
 
     # Order columns
-    original_cols = [
-        c
-        for c in pandas_df.columns
-        if c not in [f"{col}_returns", f"{benchmark_column}_returns"]
-    ]
     metric_cols = [c for c in df.columns if c not in original_cols]
     df = df.select(original_cols + metric_cols)
 
-    return df.to_pandas()
+    df = df.sort(row_col)
+
+    if generated:
+        df = df.drop(row_col)
+
+    return df

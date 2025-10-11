@@ -3,6 +3,7 @@
 import re
 import pytest
 import pandas as pd
+import polars as pl
 import numpy as np
 import pytimetk as tk
 import os
@@ -19,6 +20,15 @@ os.environ["OPENBLAS_NUM_THREADS"] = "1"
 @pytest.fixture(scope="module")
 def df():
     return tk.load_dataset("stocks_daily", parse_dates=["date"])
+
+
+@pytest.fixture(scope="module")
+def pl_df(df):
+    return pl.from_pandas(df)
+
+
+def _to_pandas(frame):
+    return frame.to_pandas() if isinstance(frame, pl.DataFrame) else frame
 
 
 # ---------- Helpers ----------
@@ -179,6 +189,7 @@ def test_stochastic_oscillator(df, engine, k_periods, d_periods):
         d_periods=d_periods,
         engine=engine,
     )
+    res_g = _to_pandas(res_g)
     k_list = k_periods if isinstance(k_periods, list) else [k_periods]
     d_list = (
         d_periods
@@ -203,6 +214,7 @@ def test_stochastic_oscillator(df, engine, k_periods, d_periods):
         d_periods=d_periods,
         engine=engine,
     )
+    res_u = _to_pandas(res_u)
     for k in k_list:
         k_col = _resolve_stoch_k_col(res_u.columns, value_prefix, k)
         _assert_stoch_range(res_u[k_col], f"{k_col} (ungrouped)")
@@ -296,3 +308,57 @@ def test_stochastic_oscillator_edge_cases(df):
             k_periods=[14],
             d_periods=["bad"],
         )
+
+
+def test_stochastic_oscillator_polars_dataframe_roundtrip(pl_df, df):
+    pandas_single = df.query('symbol == "AAPL"')
+    pandas_result = pandas_single.augment_stochastic_oscillator(
+        date_column="date",
+        high_column="high",
+        low_column="low",
+        close_column="close",
+        k_periods=[14, 21],
+        d_periods=[3],
+    )
+
+    polars_result = tk.augment_stochastic_oscillator(
+        data=pl_df.filter(pl.col("symbol") == "AAPL"),
+        date_column="date",
+        high_column="high",
+        low_column="low",
+        close_column="close",
+        k_periods=[14, 21],
+        d_periods=[3],
+    )
+
+    pd.testing.assert_frame_equal(
+        pandas_result.reset_index(drop=True),
+        polars_result.to_pandas().reset_index(drop=True),
+    )
+
+
+def test_stochastic_oscillator_polars_groupby_roundtrip(pl_df, df):
+    pandas_group = (
+        df.groupby("symbol")
+        .augment_stochastic_oscillator(
+            date_column="date",
+            high_column="high",
+            low_column="low",
+            close_column="close",
+            k_periods=[14],
+            d_periods=[3, 5],
+        )
+        .reset_index(drop=True)
+    )
+
+    polars_group = tk.augment_stochastic_oscillator(
+        data=pl_df.group_by("symbol"),
+        date_column="date",
+        high_column="high",
+        low_column="low",
+        close_column="close",
+        k_periods=[14],
+        d_periods=[3, 5],
+    ).to_pandas().reset_index(drop=True)
+
+    pd.testing.assert_frame_equal(pandas_group, polars_group)

@@ -2,12 +2,21 @@ import pandas as pd
 import polars as pl
 
 import pandas_flavor as pf
-from typing import Union, List, Tuple
+import warnings
+from typing import List, Optional, Sequence, Tuple, Union
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
     check_value_column,
+)
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    resolve_polars_group_columns,
+    restore_output_type,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -16,7 +25,12 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_atr(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     high_column: str,
     low_column: str,
@@ -24,127 +38,39 @@ def augment_atr(
     periods: Union[int, Tuple[int, int], List[int]] = 20,
     normalize: bool = False,
     reduce_memory: bool = False,
-    engine: str = "pandas",
-) -> pd.DataFrame:
-    """The `augment_atr` function is used to calculate Average True Range (ATR) and
-    Normalized Average True Range (NATR) for a given dataset and return
-    the augmented dataset.
-    Set the `normalize` parameter to `True` to calculate NATR.
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
+    """
+    Calculate Average True Range (ATR) or Normalised ATR for pandas or polars data.
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        The `data` parameter is the input data that can be either a pandas DataFrame or a pandas
-        DataFrameGroupBy object. It contains the data on which the Bollinger Bands will be calculated.
+    data : DataFrame or GroupBy (pandas or polars)
+        Input financial data. Grouped inputs are processed per group before the
+        indicators are appended.
     date_column : str
-        The `date_column` parameter is a string that specifies the name of the column in the `data`
-        DataFrame that contains the dates.
-    high_column : str
-        The `high_column` parameter is a string that specifies the name of the column in the `data`
-        DataFrame that contains the high prices of the asset.
-    low_column : str
-        The `low_column` parameter is a string that specifies the name of the column in the `data`
-        DataFrame that contains the low prices of the asset.
-    close_column : str
-        The `close_column` parameter is a string that specifies the name of the column in the `data`
-        DataFrame that contains the closing prices of the asset.
-    periods : Union[int, Tuple[int, int], List[int]], optional
-        The `periods` parameter in the `augment_atr` function can be specified as an integer, a tuple,
-        or a list. This parameter specifies the number of rolling periods to use when calculating the ATR.
+        Name of the column containing date information.
+    high_column, low_column, close_column : str
+        Column names used to compute the true range and ATR.
+    periods : int, tuple, or list, optional
+        Rolling window lengths. Accepts an integer, an inclusive tuple range,
+        or an explicit list. Defaults to ``20``.
     normalize : bool, optional
-        The `normalize` parameter is a boolean flag that indicates whether or not to normalize the ATR
-        values. If set to `True`, the function will normalize the ATR values to express this volatility as a percentage of
-        the closing price.
+        When ``True``, report the normalised ATR (``ATR / close * 100``). Defaults
+        to ``False``.
     reduce_memory : bool, optional
-        The `reduce_memory` parameter is a boolean flag that indicates whether or not to reduce the memory
-        usage of the input data before performing the calculation. If set to `True`, the function will
-        attempt to reduce the memory usage of the input data using techniques such as downcasting numeric
-        columns and converting object columns
-    engine : str, optional
-        The `engine` parameter specifies the computation engine to use for calculating the Bollinger Bands.
-        It can take two values: 'pandas' or 'polars'. If 'pandas' is selected, the function will use the
-        pandas library for computation. If 'polars' is selected,
+        Attempt to reduce memory usage when operating on pandas data. If a
+        polars input is supplied a warning is emitted and no conversion occurs.
+    engine : {"auto", "pandas", "polars"}, optional
+        Execution engine. ``"auto"`` (default) infers the backend from the
+        input data while allowing explicit overrides.
 
     Returns
     -------
-    pd.DataFrame
-        The function `augment_atr` returns a pandas DataFrame.
-
-    Notes
-    -----
-
-    ## ATR (Average True Range)
-
-    The Average True Range (ATR) is a technical analysis indicator used to measure market volatility. It was introduced by J. Welles Wilder Jr. in his 1978 book "New Concepts in Technical Trading Systems."
-
-    The ATR is calculated as follows:
-
-    1. True Range: For each period (typically a day), the True Range is the greatest of the following:
-
-        - The current high minus the current low.
-        - The absolute value of the current high minus the previous close.
-        - The absolute value of the current low minus the previous close.
-
-    2. Average True Range: The ATR is an average of the True Range over a specified number of periods (commonly 14 days).
-
-    ## NATR (Normalized Average True Range)
-
-    The NATR (Normalized Average True Range) is a variation of the ATR that normalizes the ATR values to express this volatility as a percentage of the closing price.
-
-    The NATR (`normalize = True`) is calculated as follows:
-    NATR = (ATR / Close) * 100
-
-
-    Examples
-    --------
-
-    ``` {python}
-    import pandas as pd
-    import pytimetk as tk
-
-    df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
-
-    df
-    ```
-
-    ``` {python}
-    # ATR pandas engine
-    df_atr = (
-        df
-            .groupby('symbol')
-            .augment_atr(
-                date_column = 'date',
-                high_column='high',
-                low_column='low',
-                close_column='close',
-                periods = [14, 28],
-                normalize = False, # True for NATR
-                engine = "pandas"
-            )
-    )
-
-    df_atr.glimpse()
-    ```
-
-    ``` {python}
-    # ATR polars engine
-    df_atr = (
-        df
-            .groupby('symbol')
-            .augment_atr(
-                date_column = 'date',
-                high_column='high',
-                low_column='low',
-                close_column='close',
-                periods = [14, 28],
-                normalize = False, # True for NATR
-                engine = "polars"
-            )
-    )
-
-    df_atr.glimpse()
-    ```
-
+    DataFrame
+        DataFrame with ``{close_column}_atr_{period}`` (or ``_natr_`` when
+        ``normalize=True``) columns appended for each requested period. The
+        return type matches the input backend.
     """
 
     # Run common checks
@@ -154,43 +80,58 @@ def augment_atr(
     check_value_column(data, low_column)
     check_date_column(data, date_column)
 
-    # Handle periods
-    if isinstance(periods, int):
-        periods = [periods]
-    elif isinstance(periods, tuple):
-        periods = list(range(periods[0], periods[1] + 1))
-    elif not isinstance(periods, list):
-        raise TypeError(
-            f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list."
+    period_list = _normalize_periods(periods)
+
+    engine_resolved = normalize_engine(engine, data)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
+
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
         )
 
-    # Sort data and preserve index
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
-
-    if reduce_memory:
-        data = reduce_memory_usage(data)
-
-    if engine == "pandas":
-        ret = _augment_atr_pandas(
-            data, date_column, high_column, low_column, close_column, periods, normalize
+    if engine_resolved == "pandas":
+        sorted_data, _ = sort_dataframe(
+            prepared_data, date_column, keep_grouped_df=True
         )
-    elif engine == "polars":
-        ret = _augment_atr_polars(
-            data, date_column, high_column, low_column, close_column, periods, normalize
+        result = _augment_atr_pandas(
+            data=sorted_data,
+            high_column=high_column,
+            low_column=low_column,
+            close_column=close_column,
+            periods=period_list,
+            normalize=normalize,
         )
-        ret.index = idx_unsorted
+        if reduce_memory:
+            result = reduce_memory_usage(result)
     else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+        result = _augment_atr_polars(
+            data=prepared_data,
+            date_column=date_column,
+            high_column=high_column,
+            low_column=low_column,
+            close_column=close_column,
+            periods=period_list,
+            normalize=normalize,
+            group_columns=conversion.group_columns,
+            row_id_column=conversion.row_id_column,
+        )
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    restored = restore_output_type(result, conversion)
 
-    return ret.sort_index()
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
+
+    return restored
 
 
 def _augment_atr_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
-    date_column: str,
     high_column: str,
     low_column: str,
     close_column: str,
@@ -222,8 +163,10 @@ def _augment_atr_pandas(
 
         df = df.drop(columns=["tr"])
 
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
+        return df
+
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        group_names = list(data.grouper.names)
         df = data.obj.copy()
         # True Range calculation with group-aware shift
         prev_close = df.groupby(group_names)[close_column].shift(1)
@@ -251,34 +194,34 @@ def _augment_atr_pandas(
 
         df = df.drop(columns=["tr"])
 
-    return df
+        return df
+
+    raise TypeError("Unsupported data type passed to _augment_atr_pandas.")
 
 
 def _augment_atr_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
     high_column: str,
     low_column: str,
     close_column: str,
     periods: List[int],
     normalize: bool,
-) -> pd.DataFrame:
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> pl.DataFrame:
     """Polars implementation of ATR/NATR calculation."""
     type_str = "natr" if normalize else "atr"
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        df = pl.from_pandas(data.obj)
-        group_names = (
-            data.grouper.names
-            if isinstance(data.grouper.names, list)
-            else [data.grouper.names]
-        )
-    else:
-        df = pl.from_pandas(data.copy())
-        group_names = None
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+    frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
 
-    # True Range calculation
-    tr = pl.max_horizontal(
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    sorted_frame = frame_with_id.sort(sort_keys)
+
+    tr_expr = pl.max_horizontal(
         [
             pl.col(high_column) - pl.col(low_column),
             (pl.col(high_column) - pl.col(close_column).shift(1)).abs(),
@@ -286,16 +229,49 @@ def _augment_atr_polars(
         ]
     )
 
-    # Add ATR/NATR columns
-    for period in periods:
-        atr = tr.rolling_mean(window_size=period, min_periods=1).over(
-            partition_by=group_names if group_names else None,
-            order_by=date_column,
-        )
-        if normalize:
-            atr = (atr / pl.col(close_column) * 100).replace(
-                [float("inf"), -float("inf")], None
-            )
-        df = df.with_columns(atr.alias(f"{close_column}_{type_str}_{period}"))
+    def compute(frame: pl.DataFrame) -> pl.DataFrame:
+        df = frame.with_columns(tr_expr.alias("_atr_tr"))
 
-    return df.to_pandas()
+        for period in periods:
+            atr_expr = pl.col("_atr_tr").rolling_mean(
+                window_size=period, min_samples=1
+            )
+            if normalize:
+                atr_expr = pl.when(pl.col(close_column) == 0).then(None).otherwise(
+                    atr_expr / pl.col(close_column) * 100
+                )
+            df = df.with_columns(
+                atr_expr.alias(f"{close_column}_{type_str}_{period}")
+            )
+
+        return df.drop(["_atr_tr"])
+
+    if resolved_groups:
+        group_key = resolved_groups if len(resolved_groups) > 1 else resolved_groups[0]
+        result = (
+            sorted_frame.group_by(group_key, maintain_order=True)
+            .map_groups(compute)
+            .sort(row_col)
+        )
+    else:
+        result = compute(sorted_frame).sort(row_col)
+
+    if generated:
+        result = result.drop(row_col)
+
+    return result
+
+
+def _normalize_periods(periods: Union[int, Tuple[int, int], List[int]]) -> List[int]:
+    if isinstance(periods, int):
+        return [periods]
+    if isinstance(periods, tuple):
+        if len(periods) != 2:
+            raise ValueError("Expected tuple of length 2 for `periods`.")
+        start, end = periods
+        return list(range(start, end + 1))
+    if isinstance(periods, list):
+        return [int(p) for p in periods]
+    raise TypeError(
+        f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list."
+    )

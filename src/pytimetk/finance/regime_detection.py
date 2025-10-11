@@ -1,7 +1,10 @@
 import pandas as pd
 import polars as pl
 import numpy as np
-from typing import Union, List, Tuple
+
+import pandas_flavor as pf
+import warnings
+from typing import List, Optional, Sequence, Tuple, Union
 from joblib import Parallel, delayed
 
 try:
@@ -9,11 +12,18 @@ try:
 except ImportError:
     GaussianHMM = None
 
-import pandas_flavor as pf
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
     check_value_column,
+)
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    resolve_polars_group_columns,
+    restore_output_type,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -22,7 +32,12 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_regime_detection(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     close_column: str,
     window: Union[int, Tuple[int, int], List[int]] = 252,
@@ -32,14 +47,15 @@ def augment_regime_detection(
     n_iter: int = 100,
     n_jobs: int = -1,
     reduce_memory: bool = False,
-    engine: str = "pandas",
-) -> pd.DataFrame:
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """Detect regimes in a financial time series using a specified method (e.g., HMM).
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        Input pandas DataFrame or GroupBy object with time series data.
+    data : DataFrame or GroupBy (pandas or polars)
+        Input time-series data. Grouped inputs are processed per group before
+        the regime labels are appended.
     date_column : str
         Column name containing dates or timestamps.
     close_column : str
@@ -58,12 +74,13 @@ def augment_regime_detection(
         Number of parallel jobs for group processing (-1 uses all cores). Default is -1.
     reduce_memory : bool, optional
         If True, reduces memory usage. Default is False.
-    engine : str, optional
-        Computation engine: 'pandas' or 'polars'. Default is 'pandas'.
+    engine : {"auto", "pandas", "polars"}, optional
+        Execution engine. ``"auto"`` (default) infers the backend from the
+        input data while allowing explicit overrides.
 
     Returns
     -------
-    pd.DataFrame
+    DataFrame
         DataFrame with added columns:
         - {close_column}_regime_{window}: Integer labels for detected regimes (e.g., 0, 1).
 
@@ -167,54 +184,57 @@ def augment_regime_detection(
     if step_size < 1:
         raise ValueError("step_size must be at least 1.")
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    windows = _normalize_windows(window)
 
-    if isinstance(window, int):
-        windows = [window]
-    elif isinstance(window, tuple):
-        windows = list(range(window[0], window[1] + 1))
-    elif isinstance(window, list):
-        windows = window
+    engine_resolved = normalize_engine(engine, data)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
+
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+    if engine_resolved == "pandas":
+        sorted_data, _ = sort_dataframe(
+            prepared_data, date_column, keep_grouped_df=True
+        )
+        result = _augment_regime_detection_pandas(
+            data=sorted_data,
+            date_column=date_column,
+            close_column=close_column,
+            windows=windows,
+            n_regimes=n_regimes,
+            step_size=step_size,
+            n_iter=n_iter,
+            n_jobs=n_jobs,
+        )
+        if reduce_memory:
+            result = reduce_memory_usage(result)
     else:
-        raise TypeError(
-            f"Invalid window specification: type: {type(window)}. Please use int, tuple, or list."
+        result = _augment_regime_detection_polars(
+            data=prepared_data,
+            date_column=date_column,
+            close_column=close_column,
+            windows=windows,
+            n_regimes=n_regimes,
+            step_size=step_size,
+            n_iter=n_iter,
+            n_jobs=n_jobs,
+            group_columns=conversion.group_columns,
+            row_id_column=conversion.row_id_column,
         )
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    restored = restore_output_type(result, conversion)
 
-    if engine == "pandas":
-        ret = _augment_regime_detection_pandas(
-            data,
-            date_column,
-            close_column,
-            windows,
-            n_regimes,
-            step_size,
-            n_iter,
-            n_jobs,
-        )
-    elif engine == "polars":
-        ret = _augment_regime_detection_polars(
-            data,
-            date_column,
-            close_column,
-            windows,
-            n_regimes,
-            step_size,
-            n_iter,
-            n_jobs,
-        )
-        ret.index = idx_unsorted
-    else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
-
-    ret = ret.sort_index()
-
-    return ret
+    return restored
 
 
 def _augment_regime_detection_pandas(
@@ -287,7 +307,7 @@ def _augment_regime_detection_pandas(
 
 
 def _augment_regime_detection_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
     close_column: str,
     windows: List[int],
@@ -295,62 +315,63 @@ def _augment_regime_detection_polars(
     step_size: int,
     n_iter: int,
     n_jobs: int,
-) -> pd.DataFrame:
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> pl.DataFrame:
     """Polars implementation of regime detection using HMM (via pandas)."""
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        pandas_df = data.obj
-        group_names = data.grouper.names
-        if not isinstance(group_names, list):
-            group_names = [group_names]
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+    frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
+
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    sorted_frame = frame_with_id.sort(sort_keys)
+
+    pandas_df = sorted_frame.to_pandas()
+
+    if resolved_groups:
+        pandas_groupby = pandas_df.groupby(resolved_groups, sort=False)
+        result_pd = _augment_regime_detection_pandas(
+            data=pandas_groupby,
+            date_column=date_column,
+            close_column=close_column,
+            windows=windows,
+            n_regimes=n_regimes,
+            step_size=step_size,
+            n_iter=n_iter,
+            n_jobs=n_jobs,
+        )
     else:
-        pandas_df = data.copy()
-        group_names = None
+        result_pd = _augment_regime_detection_pandas(
+            data=pandas_df,
+            date_column=date_column,
+            close_column=close_column,
+            windows=windows,
+            n_regimes=n_regimes,
+            step_size=step_size,
+            n_iter=n_iter,
+            n_jobs=n_jobs,
+        )
 
-    df = pandas_df.copy()
-    col = close_column
+    result = pl.from_pandas(result_pd).sort(row_col)
 
-    df["log_returns"] = np.log(df[col] / df[col].shift(1))
-    df["log_returns"] = df["log_returns"].replace([np.inf, -np.inf], np.nan)
+    if generated:
+        result = result.drop(row_col)
 
-    def detect_regimes(series, window, n_regimes, step_size, n_iter):
-        n = len(series)
-        regimes = np.full(n, np.nan, dtype=float)
-        for i in range(window - 1, n, step_size):
-            window_data = series[max(0, i - window + 1) : i + 1].dropna()
-            if len(window_data) < max(window // 2, n_regimes * 10):
-                continue
-            window_data = window_data.values.reshape(-1, 1)
-            if not np.all(np.isfinite(window_data)):
-                continue
-            try:
-                model = GaussianHMM(
-                    n_components=n_regimes, covariance_type="diag", n_iter=n_iter
-                )
-                model.fit(window_data)
-                predicted = model.predict(window_data)
-                start_idx = max(0, i - step_size + 1)
-                regimes[start_idx : i + 1] = predicted[
-                    -step_size if i > window - 1 else -start_idx :
-                ]
-            except ValueError as e:
-                print(f"Warning: HMM fit failed at index {i} with error: {e}")
-                continue
-        return pd.Series(regimes, index=series.index)
+    return result
 
-    for window in windows:
-        if group_names:
-            results = Parallel(n_jobs=n_jobs)(
-                delayed(detect_regimes)(
-                    group["log_returns"], window, n_regimes, step_size, n_iter
-                )
-                for _, group in df.groupby(group_names)
-            )
-            df[f"{col}_regime_{window}"] = pd.concat(results).reindex(df.index)
-        else:
-            df[f"{col}_regime_{window}"] = detect_regimes(
-                df["log_returns"], window, n_regimes, step_size, n_iter
-            )
 
-    df = df.drop(columns=["log_returns"])
-    return df
+def _normalize_windows(window: Union[int, Tuple[int, int], List[int]]) -> List[int]:
+    if isinstance(window, int):
+        return [window]
+    if isinstance(window, tuple):
+        if len(window) != 2:
+            raise ValueError("Expected tuple of length 2 for `window`.")
+        start, end = window
+        return list(range(start, end + 1))
+    if isinstance(window, list):
+        return [int(w) for w in window]
+    raise TypeError(
+        f"Invalid window specification: type: {type(window)}. Please use int, tuple, or list."
+    )

@@ -1,13 +1,23 @@
 import pandas as pd
 import polars as pl
 import numpy as np
-from typing import Union, List, Tuple
 
 import pandas_flavor as pf
+import warnings
+from typing import List, Optional, Sequence, Tuple, Union
+
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
     check_value_column,
+)
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    resolve_polars_group_columns,
+    restore_output_type,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -16,19 +26,25 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_hurst_exponent(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     close_column: str,
     window: Union[int, Tuple[int, int], List[int]] = 100,
     reduce_memory: bool = False,
-    engine: str = "pandas",
-) -> pd.DataFrame:
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """Calculate the Hurst Exponent on a rolling window for a financial time series. Used for detecting trends and mean-reversion.
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        Input pandas DataFrame or GroupBy object with time series data.
+    data : DataFrame or GroupBy (pandas or polars)
+        Input time-series data. Grouped inputs are processed per group before
+        the exponent is appended.
     date_column : str
         Column name containing dates or timestamps.
     close_column : str
@@ -37,12 +53,13 @@ def augment_hurst_exponent(
         Size of the rolling window for Hurst Exponent calculation. Accepts int, tuple (start, end), or list. Default is 100.
     reduce_memory : bool, optional
         If True, reduces memory usage before calculation. Default is False.
-    engine : str, optional
-        Computation engine: 'pandas' or 'polars'. Default is 'pandas'.
+    engine : {"auto", "pandas", "polars"}, optional
+        Execution engine. ``"auto"`` (default) infers the backend from the
+        input data while allowing explicit overrides.
 
     Returns
     -------
-    pd.DataFrame
+    DataFrame
         DataFrame with added columns:
         - {close_column}_hurst_{window}: Hurst Exponent for each window size
 
@@ -126,42 +143,52 @@ def augment_hurst_exponent(
     check_value_column(data, close_column)
     check_date_column(data, date_column)
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    windows = _normalize_windows(window)
 
-    # Convert window to a list of windows
-    if isinstance(window, int):
-        windows = [window]
-    elif isinstance(window, tuple):
-        windows = list(range(window[0], window[1] + 1))
-    elif isinstance(window, list):
-        windows = window
-    else:
-        raise TypeError(
-            f"Invalid window specification: type: {type(window)}. Please use int, tuple, or list."
+    engine_resolved = normalize_engine(engine, data)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
+
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
         )
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
-
-    if engine == "pandas":
-        ret = _augment_hurst_exponent_pandas(data, date_column, close_column, windows)
-    elif engine == "polars":
-        ret = _augment_hurst_exponent_polars(data, date_column, close_column, windows)
-        ret.index = idx_unsorted
+    if engine_resolved == "pandas":
+        sorted_data, _ = sort_dataframe(
+            prepared_data, date_column, keep_grouped_df=True
+        )
+        result = _augment_hurst_exponent_pandas(
+            data=sorted_data,
+            close_column=close_column,
+            windows=windows,
+        )
+        if reduce_memory:
+            result = reduce_memory_usage(result)
     else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+        result = _augment_hurst_exponent_polars(
+            data=prepared_data,
+            date_column=date_column,
+            close_column=close_column,
+            windows=windows,
+            group_columns=conversion.group_columns,
+            row_id_column=conversion.row_id_column,
+        )
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    restored = restore_output_type(result, conversion)
 
-    ret = ret.sort_index()
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
 
-    return ret
+    return restored
 
 
 def _augment_hurst_exponent_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
-    date_column: str,
     close_column: str,
     windows: List[int],
 ) -> pd.DataFrame:
@@ -169,10 +196,12 @@ def _augment_hurst_exponent_pandas(
 
     if isinstance(data, pd.DataFrame):
         df = data.copy()
-        group_names = None
+        group_names: Optional[List[str]] = None
     elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
+        group_names = list(data.grouper.names)
         df = data.obj.copy()
+    else:
+        raise TypeError("Unsupported data type passed to _augment_hurst_exponent_pandas.")
 
     col = close_column
 
@@ -220,23 +249,23 @@ def _augment_hurst_exponent_pandas(
 
 
 def _augment_hurst_exponent_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
     close_column: str,
     windows: List[int],
-) -> pd.DataFrame:
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> pl.DataFrame:
     """Polars implementation of Hurst Exponent calculation."""
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        pandas_df = data.obj
-        group_names = data.grouper.names
-        if not isinstance(group_names, list):
-            group_names = [group_names]
-    else:
-        pandas_df = data.copy()
-        group_names = None
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+    frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
 
-    df = pl.from_pandas(pandas_df)
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    sorted_frame = frame_with_id.sort(sort_keys)
+
     col = close_column
 
     def hurst_udf(series):
@@ -259,19 +288,42 @@ def _augment_hurst_exponent_polars(
         h = np.log(rs) / np.log(n)
         return h if 0 <= h <= 1 else np.nan
 
-    for window in windows:
-        if group_names:
-            df = df.with_columns(
-                pl.col(col)
-                .rolling_map(hurst_udf, window_size=window, min_periods=window)
-                .over(partition_by=group_names, order_by=date_column)
-                .alias(f"{col}_hurst_{window}")
-            )
-        else:
+    def compute(frame: pl.DataFrame) -> pl.DataFrame:
+        df = frame
+        for window in windows:
             df = df.with_columns(
                 pl.col(col)
                 .rolling_map(hurst_udf, window_size=window, min_periods=window)
                 .alias(f"{col}_hurst_{window}")
             )
+        return df
 
-    return df.to_pandas()
+    if resolved_groups:
+        group_key = resolved_groups if len(resolved_groups) > 1 else resolved_groups[0]
+        result = (
+            sorted_frame.group_by(group_key, maintain_order=True)
+            .map_groups(compute)
+            .sort(row_col)
+        )
+    else:
+        result = compute(sorted_frame).sort(row_col)
+
+    if generated:
+        result = result.drop(row_col)
+
+    return result
+
+
+def _normalize_windows(window: Union[int, Tuple[int, int], List[int]]) -> List[int]:
+    if isinstance(window, int):
+        return [window]
+    if isinstance(window, tuple):
+        if len(window) != 2:
+            raise ValueError("Expected tuple of length 2 for `window`.")
+        start, end = window
+        return list(range(start, end + 1))
+    if isinstance(window, list):
+        return [int(w) for w in window]
+    raise TypeError(
+        f"Invalid window specification: type: {type(window)}. Please use int, tuple, or list."
+    )

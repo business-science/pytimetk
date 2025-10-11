@@ -1,13 +1,23 @@
 import pandas as pd
 import polars as pl
 import numpy as np
-from typing import Union, List, Tuple
 
 import pandas_flavor as pf
+import warnings
+from typing import List, Optional, Sequence, Tuple, Union
+
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
     check_value_column,
+)
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    resolve_polars_group_columns,
+    restore_output_type,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -16,20 +26,26 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_ewma_volatility(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     close_column: str,
     decay_factor: float = 0.94,
     window: Union[int, Tuple[int, int], List[int]] = 20,
     reduce_memory: bool = False,
-    engine: str = "pandas",
-) -> pd.DataFrame:
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """Calculate Exponentially Weighted Moving Average (EWMA) volatility for a financial time series.
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        Input pandas DataFrame or GroupBy object with time series data.
+    data : DataFrame or GroupBy (pandas or polars)
+        Input time-series data. Grouped inputs are processed per group before
+        the indicator is appended.
     date_column : str
         Column name containing dates or timestamps.
     close_column : str
@@ -41,12 +57,13 @@ def augment_ewma_volatility(
         You may provide a single integer or multiple values (via tuple or list). Default is 20.
     reduce_memory : bool, optional
         If True, reduces memory usage before calculation. Default is False.
-    engine : str, optional
-        Computation engine: 'pandas' or 'polars'. Default is 'pandas'.
+    engine : {"auto", "pandas", "polars"}, optional
+        Execution engine. ``"auto"`` (default) infers the backend from the
+        input data while allowing explicit overrides.
 
     Returns
     -------
-    pd.DataFrame
+    DataFrame
         DataFrame with added columns:
         - {close_column}_ewma_vol_{window}_{decay_factor}: EWMA volatility calculated using a minimum number of periods equal to each specified window.
 
@@ -122,45 +139,54 @@ def augment_ewma_volatility(
     if not 0 < decay_factor < 1:
         raise ValueError("decay_factor must be between 0 and 1.")
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    window_list = _normalize_windows(window)
 
-    if isinstance(window, int):
-        windows = [window]
-    elif isinstance(window, tuple):
-        windows = list(range(window[0], window[1] + 1))
-    elif isinstance(window, list):
-        windows = window
+    engine_resolved = normalize_engine(engine, data)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
+
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+    if engine_resolved == "pandas":
+        sorted_data, _ = sort_dataframe(
+            prepared_data, date_column, keep_grouped_df=True
+        )
+        result = _augment_ewma_volatility_pandas(
+            data=sorted_data,
+            close_column=close_column,
+            decay_factor=decay_factor,
+            windows=window_list,
+        )
+        if reduce_memory:
+            result = reduce_memory_usage(result)
     else:
-        raise TypeError(
-            f"Invalid window specification: type: {type(window)}. Please use int, tuple, or list."
+        result = _augment_ewma_volatility_polars(
+            data=prepared_data,
+            date_column=date_column,
+            close_column=close_column,
+            decay_factor=decay_factor,
+            windows=window_list,
+            group_columns=conversion.group_columns,
+            row_id_column=conversion.row_id_column,
         )
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    restored = restore_output_type(result, conversion)
 
-    if engine == "pandas":
-        ret = _augment_ewma_volatility_pandas(
-            data, date_column, close_column, decay_factor, windows
-        )
-    elif engine == "polars":
-        ret = _augment_ewma_volatility_polars(
-            data, date_column, close_column, decay_factor, windows
-        )
-        ret.index = idx_unsorted
-    else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
-
-    ret = ret.sort_index()
-
-    return ret
+    return restored
 
 
 def _augment_ewma_volatility_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
-    date_column: str,
     close_column: str,
     decay_factor: float,
     windows: List[int],
@@ -169,83 +195,116 @@ def _augment_ewma_volatility_pandas(
 
     if isinstance(data, pd.DataFrame):
         df = data.copy()
-        group_names = None
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
+        ratio = df[close_column] / df[close_column].shift(1)
+        ratio = ratio.replace([0, np.inf, -np.inf], np.nan)
+        df["log_returns"] = np.log(ratio)
+        df["squared_returns"] = df["log_returns"] ** 2
+
+        for win in windows:
+            col_name = f"{close_column}_ewma_vol_{win}_{decay_factor:.2f}"
+            ewma_variance = df["squared_returns"].ewm(
+                alpha=1 - decay_factor, adjust=False, min_periods=win
+            ).mean()
+            df[col_name] = np.sqrt(ewma_variance)
+
+        return df.drop(columns=["log_returns", "squared_returns"])
+
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        group_names = list(data.grouper.names)
         df = data.obj.copy()
+        shifted = df.groupby(group_names)[close_column].shift(1)
+        ratio = df[close_column] / shifted
+        ratio = ratio.replace([0, np.inf, -np.inf], np.nan)
+        df["log_returns"] = np.log(ratio)
+        df["squared_returns"] = df["log_returns"] ** 2
 
-    col = close_column
-
-    # Calculate log returns and squared returns
-    df["log_returns"] = np.log(df[col] / df[col].shift(1))
-    df["squared_returns"] = df["log_returns"] ** 2
-
-    # For each specified window (i.e. min_periods), compute EWMA volatility
-    for win in windows:
-        col_name = f"{col}_ewma_vol_{win}_{decay_factor:.2f}"
-        if group_names:
-            # Compute groupwise EWMA with a minimum number of periods equal to win
+        for win in windows:
+            col_name = f"{close_column}_ewma_vol_{win}_{decay_factor:.2f}"
             ewma_variance = (
                 df.groupby(group_names)["squared_returns"]
                 .ewm(alpha=1 - decay_factor, adjust=False, min_periods=win)
                 .mean()
             )
-            df[col_name] = ewma_variance.apply(np.sqrt).reset_index(level=0, drop=True)
-        else:
-            ewma_variance = (
-                df["squared_returns"]
-                .ewm(alpha=1 - decay_factor, adjust=False, min_periods=win)
-                .mean()
+            df[col_name] = (
+                ewma_variance.apply(np.sqrt).reset_index(level=0, drop=True)
             )
-            df[col_name] = np.sqrt(ewma_variance)
 
-    df = df.drop(columns=["log_returns", "squared_returns"])
-    return df
+        return df.drop(columns=["log_returns", "squared_returns"])
+
+    raise TypeError("Unsupported data type passed to _augment_ewma_volatility_pandas.")
 
 
 def _augment_ewma_volatility_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
     close_column: str,
     decay_factor: float,
     windows: List[int],
-) -> pd.DataFrame:
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> pl.DataFrame:
     """Polars implementation of EWMA volatility calculation with varying minimum periods."""
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        pandas_df = data.obj
-        group_names = data.grouper.names
-        if not isinstance(group_names, list):
-            group_names = [group_names]
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+    frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
+
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    sorted_frame = frame_with_id.sort(sort_keys)
+
+    def compute(frame: pl.DataFrame) -> pl.DataFrame:
+        df = frame.with_columns(
+            (
+                pl.col(close_column).log()
+                - pl.col(close_column).shift(1).log()
+            ).alias("_log_return")
+        )
+        df = df.with_columns(
+            pl.when(pl.col("_log_return").is_finite())
+            .then(pl.col("_log_return"))
+            .otherwise(None)
+            .alias("_log_return")
+        )
+        df = df.with_columns((pl.col("_log_return") ** 2).alias("_sq_return"))
+
+        for win in windows:
+            vol_expr = (
+                pl.col("_sq_return")
+                .ewm_mean(alpha=1 - decay_factor, adjust=False, min_periods=win)
+                .sqrt()
+                .alias(f"{close_column}_ewma_vol_{win}_{decay_factor:.2f}")
+            )
+            df = df.with_columns(vol_expr)
+
+        return df.drop(["_log_return", "_sq_return"])
+
+    if resolved_groups:
+        group_key = resolved_groups if len(resolved_groups) > 1 else resolved_groups[0]
+        result = (
+            sorted_frame.group_by(group_key, maintain_order=True)
+            .map_groups(compute)
+            .sort(row_col)
+        )
     else:
-        pandas_df = data.copy()
-        group_names = None
+        result = compute(sorted_frame).sort(row_col)
 
-    df = pl.from_pandas(pandas_df)
-    col = close_column
+    if generated:
+        result = result.drop(row_col)
 
-    # Calculate log returns and squared returns
-    df = df.with_columns(
-        (pl.col(col).log() - pl.col(col).shift(1).log()).alias("log_returns")
-    ).with_columns((pl.col("log_returns") ** 2).alias("squared_returns"))
+    return result
 
-    for win in windows:
-        col_name = f"{col}_ewma_vol_{win}_{decay_factor:.2f}"
-        if group_names:
-            df = df.with_columns(
-                pl.col("squared_returns")
-                .ewm_mean(alpha=1 - decay_factor, adjust=False, min_periods=win)
-                .over(partition_by=group_names, order_by=date_column)
-                .sqrt()
-                .alias(col_name)
-            )
-        else:
-            df = df.with_columns(
-                pl.col("squared_returns")
-                .ewm_mean(alpha=1 - decay_factor, adjust=False, min_periods=win)
-                .sqrt()
-                .alias(col_name)
-            )
 
-    df = df.drop(["log_returns", "squared_returns"])
-    return df.to_pandas()
+def _normalize_windows(window: Union[int, Tuple[int, int], List[int]]) -> List[int]:
+    if isinstance(window, int):
+        return [window]
+    if isinstance(window, tuple):
+        if len(window) != 2:
+            raise ValueError("Expected tuple of length 2 for `window`.")
+        start, end = window
+        return list(range(start, end + 1))
+    if isinstance(window, list):
+        return [int(w) for w in window]
+    raise TypeError(
+        f"Invalid window specification: type: {type(window)}. Please use int, tuple, or list."
+    )
