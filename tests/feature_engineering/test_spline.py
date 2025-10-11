@@ -1,3 +1,4 @@
+import pandas as pd
 import pytest
 import pytimetk as tk
 
@@ -30,7 +31,12 @@ def test_dataframe_function_equivalence():
         prefix="step_bs",
     )
 
-    assert list(result_df.columns[-4:]) == ["step_bs_1", "step_bs_2", "step_bs_3", "step_bs_4"]
+    assert list(result_df.columns[-4:]) == [
+        "step_bs_1",
+        "step_bs_2",
+        "step_bs_3",
+        "step_bs_4",
+    ]
     assert result_df.equals(result_fn)
 
 
@@ -58,6 +64,61 @@ def test_groupby_function_equivalence():
     )
 
     assert result_group.equals(result_fn)
+
+
+def test_polars_engine_dataframe_equivalence():
+    df = _prepare_dataframe()
+
+    result_pandas = tk.augment_spline(
+        data=df,
+        column_name="step",
+        spline_type="bs",
+        df=4,
+        degree=3,
+        include_intercept=False,
+        prefix="step_bs",
+    )
+
+    result_polars_mode = tk.augment_spline(
+        data=df,
+        column_name="step",
+        spline_type="bs",
+        df=4,
+        degree=3,
+        include_intercept=False,
+        prefix="step_bs",
+        engine="polars",
+    )
+
+    pd.testing.assert_frame_equal(result_pandas, result_polars_mode)
+
+
+def test_polars_engine_groupby_equivalence():
+    df = _prepare_dataframe()
+    grouped = df.groupby("id")
+
+    result_pandas = tk.augment_spline(
+        data=grouped,
+        column_name="step",
+        spline_type="bs",
+        df=4,
+        degree=3,
+        include_intercept=False,
+        prefix="step_bs",
+    )
+
+    result_polars_mode = tk.augment_spline(
+        data=grouped,
+        column_name="step",
+        spline_type="bs",
+        df=4,
+        degree=3,
+        include_intercept=False,
+        prefix="step_bs",
+        engine="polars",
+    )
+
+    pd.testing.assert_frame_equal(result_pandas, result_polars_mode)
 
 
 def test_spline_type_aliases_and_prefix():

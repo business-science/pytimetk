@@ -16,13 +16,13 @@ augment_spline(
 )
 ```
 
-Add spline basis expansions for a numeric column.
+Adds spline basis expansions for a numeric column. Supports both pandas and polars engines.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
 | Name              | Type                                                     | Description                                                                                                                                     | Default    |
 |-------------------|----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| data              | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | Input data or grouped data.                                                                                                                     | _required_ |
+| data              | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy / pl.DataFrame or pl.dataframe.group_by.GroupBy | Input data or grouped data.                                                                                                                     | _required_ |
 | column_name       | str                                                      | Name of the numeric column to transform into spline basis features.                                                                             | _required_ |
 | spline_type       | str                                                      | Spline family. Supported values are "bs" (B-spline), "natural"/"cr" (natural cubic spline) and "cyclic"/"cc" (cyclic spline). Defaults to "bs". | `'bs'`     |
 | df                | int                                                      | Degrees of freedom passed to the spline constructor. Required unless `knots` are supplied. Defaults to 5.                                       | `5`        |
@@ -32,10 +32,55 @@ Add spline basis expansions for a numeric column.
 | lower_bound       | float                                                    | Lower boundary for the spline. When omitted the minimum value of `column_name` is used.                                                         | `None`     |
 | upper_bound       | float                                                    | Upper boundary for the spline. When omitted the maximum value of `column_name` is used.                                                         | `None`     |
 | prefix            | str                                                      | Custom prefix for the generated column names. When omitted a name is derived from `column_name` and `spline_type`.                              | `None`     |
-| reduce_memory     | bool                                                     | If True, attempt to downcast numeric columns to reduce memory usage.                                                                            | `False`    |
+| reduce_memory     | bool                                                     | If True, attempt to downcast numeric columns to reduce memory usage (pandas engine only).                                                       | `False`    |
+| engine            | str                                                      | Execution engine. Use `'pandas'` for pandas objects or `'polars'` for polars DataFrames/GroupBy objects.                                        | `'pandas'` |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type         | Description                                   |
-|--------|--------------|-----------------------------------------------|
-|        | pd.DataFrame | DataFrame with spline basis columns appended. |
+| Name   | Type                       | Description                                   |
+|--------|----------------------------|-----------------------------------------------|
+|        | pd.DataFrame \| pl.DataFrame | DataFrame with spline basis columns appended. |
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import pytimetk as tk
+
+df = tk.load_dataset('m4_daily', parse_dates=['date'])
+df = df.assign(step=lambda d: d.groupby('id').cumcount())
+
+df_spline = (
+    df
+        .query("id == 'D10'")
+        .augment_spline(
+            column_name='step',
+            spline_type='bs',
+            df=5,
+            degree=3,
+            prefix='step_bs'
+        )
+)
+
+df_spline.head()
+```
+
+```{python}
+import polars as pl
+import pytimetk as tk
+
+df = tk.load_dataset('m4_daily', parse_dates=['date'])
+df = df.assign(step=lambda d: d.groupby('id').cumcount())
+
+df_polars = pl.from_pandas(df)
+df_polars_spline = tk.augment_spline(
+    data=df_polars,
+    column_name='step',
+    spline_type='bs',
+    df=5,
+    degree=3,
+    prefix='step_bs',
+    engine='polars'
+)
+
+df_polars_spline.head()
+```

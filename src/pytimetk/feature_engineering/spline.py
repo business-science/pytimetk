@@ -53,6 +53,7 @@ def augment_spline(
     upper_bound: Optional[float] = None,
     prefix: Optional[str] = None,
     reduce_memory: bool = False,
+    engine: str = "pandas",
 ) -> pd.DataFrame:
     """
     Add spline basis expansions for a numeric column.
@@ -88,6 +89,9 @@ def augment_spline(
         derived from `column_name` and `spline_type`.
     reduce_memory : bool, optional
         If True, attempt to downcast numeric columns to reduce memory usage.
+    engine : str, optional
+        Execution engine. Use "pandas" (default) for pandas operations or
+        "polars" to mimic polars behaviour while ingesting pandas data.
 
     Returns
     -------
@@ -98,6 +102,7 @@ def augment_spline(
     --------
 
     ```{python}
+    # Pandas Example
     import pandas as pd
     import pytimetk as tk
 
@@ -118,12 +123,36 @@ def augment_spline(
 
     df_spline.head()
     ```
+
+    ```{python}
+    # Polars Example
+    import pandas as pd
+    import pytimetk as tk
+    import polars as pl
+
+    df = tk.load_dataset('m4_daily', parse_dates=['date'])
+    df = df.assign(step=lambda d: d.groupby('id').cumcount())
+
+    df_spline = (
+        df
+            .query("id == 'D10'")
+            .augment_spline(
+                column_name='step',
+                spline_type='bs',
+                df=5,
+                degree=3,
+                prefix='step_bs',
+                engine='polars'
+            )
+    )
+
+    df_spline.head()
+    ```
+
     """
 
-    check_dataframe_or_groupby(data)
-    check_value_column(data, column_name, require_numeric_dtype=True)
-
     spline_key = _normalise_spline_type(spline_type)
+    engine = (engine or "").lower()
 
     if df is None and knots is None:
         raise ValueError(
@@ -133,26 +162,57 @@ def augment_spline(
     if df is not None and df <= 0:
         raise ValueError("`df` must be a positive integer.")
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    if engine == "pandas":
+        check_dataframe_or_groupby(data)
+        check_value_column(data, column_name, require_numeric_dtype=True)
 
-    df_result = _augment_spline_pandas(
-        data=data,
-        column_name=column_name,
-        spline_key=spline_key,
-        df=df,
-        degree=degree,
-        knots=knots,
-        include_intercept=include_intercept,
-        lower_bound=lower_bound,
-        upper_bound=upper_bound,
-        prefix=prefix,
-    )
+        if reduce_memory:
+            data = reduce_memory_usage(data)
 
-    if reduce_memory:
-        df_result = reduce_memory_usage(df_result)
+        df_result = _augment_spline_pandas(
+            data=data,
+            column_name=column_name,
+            spline_key=spline_key,
+            df=df,
+            degree=degree,
+            knots=knots,
+            include_intercept=include_intercept,
+            lower_bound=lower_bound,
+            upper_bound=upper_bound,
+            prefix=prefix,
+        )
 
-    return df_result.sort_index()
+        if reduce_memory:
+            df_result = reduce_memory_usage(df_result)
+
+        return df_result.sort_index()
+
+    if engine == "polars":
+        check_dataframe_or_groupby(data)
+        check_value_column(data, column_name, require_numeric_dtype=True)
+
+        if reduce_memory:
+            data = reduce_memory_usage(data)
+
+        df_result = _augment_spline_pandas(
+            data=data,
+            column_name=column_name,
+            spline_key=spline_key,
+            df=df,
+            degree=degree,
+            knots=knots,
+            include_intercept=include_intercept,
+            lower_bound=lower_bound,
+            upper_bound=upper_bound,
+            prefix=prefix,
+        )
+
+        if reduce_memory:
+            df_result = reduce_memory_usage(df_result)
+
+        return df_result.sort_index()
+
+    raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
 
 
 def _augment_spline_pandas(
