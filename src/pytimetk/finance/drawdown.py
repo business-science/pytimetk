@@ -64,6 +64,39 @@ def augment_drawdown(
         - ``{close_column}_drawdown_pct``
 
         The return type matches the input backend.
+
+    Notes
+    -----
+    Drawdown measures the peak-to-trough decline of a series. The running peak
+    is computed with a cumulative maximum per group (if present) and the
+    drawdown percentage is expressed relative to that peak. When the peak is
+    zero the percentage drawdown is left as ``NaN`` to avoid division by zero.
+
+    Examples
+    --------
+    ```python
+    import pytimetk as tk
+    import polars as pl
+
+    df = tk.load_dataset("stocks_daily", parse_dates=["date"])
+
+    # Pandas DataFrame (engine inferred)
+    dd_pd = (
+        df.groupby("symbol")
+        .augment_drawdown(
+            date_column="date",
+            close_column="close",
+        )
+    )
+
+    # Polars DataFrame with explicit engine
+    dd_pl = tk.augment_drawdown(
+        data=pl.from_pandas(df.query("symbol == 'AAPL'")),
+        date_column="date",
+        close_column="close",
+        engine="polars",
+    )
+    ```
     """
 
     check_dataframe_or_groupby(data)
