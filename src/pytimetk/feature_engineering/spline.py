@@ -80,6 +80,29 @@ def augment_spline(
     -------
     pd.DataFrame
         DataFrame with spline basis columns appended.
+
+    Examples
+    --------
+    ```{python}
+    import pytimetk as tk
+
+    df = tk.load_dataset('m4_daily', parse_dates=['date'])
+    df = df.assign(step=lambda d: d.groupby('id').cumcount())
+
+    df_spline = (
+        df
+            .query("id == 'D10'")
+            .augment_spline(
+                column_name='step',
+                spline_type='bs',
+                df=5,
+                degree=3,
+                prefix='step_bs'
+            )
+    )
+
+    df_spline.head()
+    ```
     """
 
     check_dataframe_or_groupby(data)
@@ -88,7 +111,9 @@ def augment_spline(
     spline_key = _normalise_spline_type(spline_type)
 
     if df is None and knots is None:
-        raise ValueError("Either `df` or `knots` must be provided to define the spline.")
+        raise ValueError(
+            "Either `df` or `knots` must be provided to define the spline."
+        )
 
     if df is not None and df <= 0:
         raise ValueError("`df` must be a positive integer.")
@@ -193,7 +218,7 @@ def _augment_spline_frame(
     )
 
     prefix_value = prefix or _default_prefix(column_name, spline_key, degree)
-    column_names = [f"{prefix_value}_{i+1}" for i in range(basis.shape[1])]
+    column_names = [f"{prefix_value}_{i + 1}" for i in range(basis.shape[1])]
     basis_df = pd.DataFrame(basis, index=frame.index, columns=column_names)
 
     return pd.concat([frame, basis_df], axis=1)
