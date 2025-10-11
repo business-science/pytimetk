@@ -9,6 +9,7 @@ plot_correlation_funnel(
     x_lab='Correlation',
     y_lab='Feature',
     base_size=11,
+    point_color='#2c3e50',
     width=None,
     height=None,
     engine='plotly',

@@ -61,6 +61,7 @@ Adding Features to Time Series DataFrames (Augmenting)
 | [augment_fourier](augment_fourier.qmd#pytimetk.augment_fourier) | Adds Fourier transforms to a Pandas DataFrame or DataFrameGroupBy object. |
 | [augment_hilbert](augment_hilbert.qmd#pytimetk.augment_hilbert) | Apply the Hilbert transform to specified columns of a DataFrame or |
 | [augment_wavelet](augment_wavelet.qmd#pytimetk.augment_wavelet) | Apply the Wavely transform to specified columns of a DataFrame or |
+| [augment_spline](augment_spline.qmd#pytimetk.augment_spline) | Add spline basis expansions for a numeric column. |
 
 ## 📎 TS Features
 

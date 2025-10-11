@@ -2,7 +2,6 @@
 
 ```python
 TimeSeriesCV(
-    self,
     frequency,
     train_size,
     forecast_horizon,

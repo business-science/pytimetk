@@ -2,8 +2,6 @@
 
 ```python
 TimeSeriesCVSplitter(
-    self,
-    *,
     frequency,
     train_size,
     forecast_horizon,

@@ -156,6 +156,7 @@ quartodoc:
         - augment_fourier
         - augment_hilbert
         - augment_wavelet
+        - augment_spline
     - title: 📎 TS Features
       desc: Python implementation of the R package `tsfeatures`.
       package: pytimetk

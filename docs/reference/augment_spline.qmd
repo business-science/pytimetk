@@ -1,0 +1,41 @@
+# augment_spline { #pytimetk.augment_spline }
+
+```python
+augment_spline(
+    data,
+    column_name,
+    spline_type='bs',
+    df=5,
+    degree=3,
+    knots=None,
+    include_intercept=False,
+    lower_bound=None,
+    upper_bound=None,
+    prefix=None,
+    reduce_memory=False,
+)
+```
+
+Add spline basis expansions for a numeric column.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+| Name              | Type                                                     | Description                                                                                                                                     | Default    |
+|-------------------|----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data              | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | Input data or grouped data.                                                                                                                     | _required_ |
+| column_name       | str                                                      | Name of the numeric column to transform into spline basis features.                                                                             | _required_ |
+| spline_type       | str                                                      | Spline family. Supported values are "bs" (B-spline), "natural"/"cr" (natural cubic spline) and "cyclic"/"cc" (cyclic spline). Defaults to "bs". | `'bs'`     |
+| df                | int                                                      | Degrees of freedom passed to the spline constructor. Required unless `knots` are supplied. Defaults to 5.                                       | `5`        |
+| degree            | int                                                      | Degree of the polynomial pieces (B-spline only). Defaults to 3.                                                                                 | `3`        |
+| knots             | Sequence\[float\]                                        | Internal knot positions to use when constructing the spline basis.                                                                              | `None`     |
+| include_intercept | bool                                                     | Whether to include the intercept column (B-spline only). Defaults to False.                                                                     | `False`    |
+| lower_bound       | float                                                    | Lower boundary for the spline. When omitted the minimum value of `column_name` is used.                                                         | `None`     |
+| upper_bound       | float                                                    | Upper boundary for the spline. When omitted the maximum value of `column_name` is used.                                                         | `None`     |
+| prefix            | str                                                      | Custom prefix for the generated column names. When omitted a name is derived from `column_name` and `spline_type`.                              | `None`     |
+| reduce_memory     | bool                                                     | If True, attempt to downcast numeric columns to reduce memory usage.                                                                            | `False`    |
+
+## Returns {.doc-section .doc-section-returns}
+
+| Name   | Type         | Description                                   |
+|--------|--------------|-----------------------------------------------|
+|        | pd.DataFrame | DataFrame with spline basis columns appended. |

@@ -38,6 +38,7 @@ website:
       - reference/augment_fourier.qmd
       - reference/augment_hilbert.qmd
       - reference/augment_wavelet.qmd
+      - reference/augment_spline.qmd
       section: "\U0001F3D7\uFE0F Feature Engineereing"
     - contents:
       - reference/ts_features.qmd
