@@ -466,7 +466,7 @@
     "href": "reference/TimeSeriesCV.html",
     "title": "TimeSeriesCV",
     "section": "",
-    "text": "TimeSeriesCV(\n    self,\n    frequency,\n    train_size,\n    forecast_horizon,\n    gap,\n    stride=0,\n    window='rolling',\n    mode='backward',\n    split_limit=None,\n    **kwargs,\n)\nTimeSeriesCV is a subclass of TimeBasedSplit with default mode set to ‘backward’ and an optional split_limit to return the first n slices of time series cross-validation sets."
+    "text": "TimeSeriesCV(\n    frequency,\n    train_size,\n    forecast_horizon,\n    gap,\n    stride=0,\n    window='rolling',\n    mode='backward',\n    split_limit=None,\n    **kwargs,\n)\nTimeSeriesCV is a subclass of TimeBasedSplit with default mode set to ‘backward’ and an optional split_limit to return the first n slices of time series cross-validation sets."
   },
   {
     "objectID": "reference/TimeSeriesCV.html#parameters",
@@ -2384,7 +2384,7 @@
     "href": "reference/plot_correlation_funnel.html",
     "title": "plot_correlation_funnel",
     "section": "",
-    "text": "plot_correlation_funnel(\n    data,\n    limits=(-1, 1),\n    alpha=1.0,\n    title='Correlation Funnel Plot',\n    x_lab='Correlation',\n    y_lab='Feature',\n    base_size=11,\n    width=None,\n    height=None,\n    engine='plotly',\n)\nThe plot_correlation_funnel function generates a correlation funnel plot using either Plotly or plotnine in Python."
+    "text": "plot_correlation_funnel(\n    data,\n    limits=(-1, 1),\n    alpha=1.0,\n    title='Correlation Funnel Plot',\n    x_lab='Correlation',\n    y_lab='Feature',\n    base_size=11,\n    point_color='#2c3e50',\n    width=None,\n    height=None,\n    engine='plotly',\n)\nThe plot_correlation_funnel function generates a correlation funnel plot using either Plotly or plotnine in Python."
   },
   {
     "objectID": "reference/plot_correlation_funnel.html#parameters",
@@ -2664,7 +2664,7 @@
     "href": "reference/TimeSeriesCVSplitter.html",
     "title": "TimeSeriesCVSplitter",
     "section": "",
-    "text": "TimeSeriesCVSplitter(\n    self,\n    *,\n    frequency,\n    train_size,\n    forecast_horizon,\n    time_series,\n    gap=0,\n    stride=None,\n    window='rolling',\n    mode='backward',\n    start_dt=None,\n    end_dt=None,\n    split_limit=None,\n)\nThe TimeSeriesCVSplitter is a scikit-learn compatible cross-validator using TimeSeriesCV.\nThis cross-validator generates splits based on time values, making it suitable for time series data."
+    "text": "TimeSeriesCVSplitter(\n    frequency,\n    train_size,\n    forecast_horizon,\n    time_series,\n    gap=0,\n    stride=None,\n    window='rolling',\n    mode='backward',\n    start_dt=None,\n    end_dt=None,\n    split_limit=None,\n)\nThe TimeSeriesCVSplitter is a scikit-learn compatible cross-validator using TimeSeriesCV.\nThis cross-validator generates splits based on time values, making it suitable for time series data."
   },
   {
     "objectID": "reference/TimeSeriesCVSplitter.html#parameters",
