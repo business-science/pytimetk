@@ -1,27 +1,33 @@
 import pandas as pd
+import polars as pl
 import pandas_flavor as pf
-from typing import Union, List, Tuple
+from typing import List, Optional, Tuple, Union
+
 from pytimetk.feature_engineering import augment_diffs
 
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_pct_change(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     value_column: Union[str, List[str]],
     periods: Union[int, Tuple[int, int], List[int]] = 1,
     reduce_memory: bool = False,
-    engine: str = "pandas",
-) -> pd.DataFrame:
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
-    Adds percentage difference (percentage change) to a Pandas DataFrame or DataFrameGroupBy object.
+    Adds percentage difference (percentage change) columns to pandas or polars data.
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter is the input DataFrame or DataFrameGroupBy object
-        that you want to add percentage differenced columns to.
+    data : DataFrame or GroupBy (pandas or polars)
+        Input data to augment with percentage change columns.
     date_column : str
         The `date_column` parameter is a string that specifies the name of the
         column in the DataFrame that contains the dates. This column will be
@@ -43,20 +49,15 @@ def augment_pct_change(
         - If it is a list, it will generate percentage differences based on the values in the list.
     reduce_memory : bool, optional
         The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
-    engine : str, optional
-        The `engine` parameter is used to specify the engine to use for
-        augmenting percentage differences. It can be either "pandas" or "polars".
-
-        - The default value is "pandas".
-
-        - When "polars", the function will internally use the `polars` library
-        for augmenting percentage diffs. This can be faster than using "pandas" for large
-        datasets.
+    engine : {"auto", "pandas", "polars"}, optional
+        Execution engine. When "auto" (default) the backend is inferred from the
+        input data type. Use "pandas" or "polars" to force a specific backend.
 
     Returns
     -------
-    pd.DataFrame
-        A Pandas DataFrame with percentage differenced columns added to it.
+    DataFrame
+        DataFrame with percentage differenced columns added, matching the
+        backend of the input data.
 
     Examples
     --------
@@ -126,4 +127,3 @@ def augment_pct_change(
     )
 
     return ret
-

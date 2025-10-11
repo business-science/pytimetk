@@ -1,12 +1,22 @@
 import pandas as pd
 import polars as pl
 import pandas_flavor as pf
-from typing import Union, List, Tuple
+import warnings
+
+from typing import List, Optional, Sequence, Tuple, Union
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
     check_value_column,
+)
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    resolve_polars_group_columns,
+    restore_output_type,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -15,14 +25,19 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_diffs(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     value_column: Union[str, List[str]],
     periods: Union[int, Tuple[int, int], List[int]] = 1,
     normalize: bool = False,
     reduce_memory: bool = False,
-    engine: str = "pandas",
-) -> pd.DataFrame:
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Adds differences and percentage difference (percentage change) to a Pandas DataFrame or DataFrameGroupBy object.
 
@@ -32,9 +47,8 @@ def augment_diffs(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter is the input DataFrame or DataFrameGroupBy object
-        that you want to add differenced columns to.
+    data : DataFrame or GroupBy (pandas or polars)
+        The input data to augment with differenced columns.
     date_column : str
         The `date_column` parameter is a string that specifies the name of the
         column in the DataFrame that contains the dates. This column will be
@@ -59,20 +73,15 @@ def augment_diffs(
         differenced values as a percentage difference. Default is False.
     reduce_memory : bool, optional
         The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
-    engine : str, optional
-        The `engine` parameter is used to specify the engine to use for
-        augmenting differences. It can be either "pandas" or "polars".
-
-        - The default value is "pandas".
-
-        - When "polars", the function will internally use the `polars` library
-          for augmenting diffs. This can be faster than using "pandas" for large
-          datasets.
+    engine : {"auto", "pandas", "polars"}, optional
+        Execution engine. When "auto" (default) the backend is inferred from the
+        input data type. Use "pandas" or "polars" to force a specific backend.
 
     Returns
     -------
-    pd.DataFrame
-        A Pandas DataFrame with differenced columns added to it.
+    DataFrame
+        DataFrame with differenced columns added. The return type matches the
+        input backend.
 
     Examples
     --------
@@ -128,171 +137,159 @@ def augment_diffs(
     diffed_df_single_two
     ```
     """
-    # Run common checks
     check_dataframe_or_groupby(data)
     check_value_column(data, value_column)
     check_date_column(data, date_column)
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    engine_resolved = normalize_engine(engine, data)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
-
-    if engine == "pandas":
-        ret = _augment_diffs_pandas(
-            data, date_column, value_column, periods, normalize=normalize
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
         )
-    elif engine == "polars":
-        ret = _augment_diffs_polars(
-            data, date_column, value_column, periods, normalize=normalize
+
+    if engine_resolved == "pandas":
+        sorted_data, _ = sort_dataframe(
+            prepared_data, date_column, keep_grouped_df=True
         )
-
-        # Polars Index to Match Pandas
-        ret.index = idx_unsorted
-
+        result = _augment_diffs_pandas(
+            data=sorted_data,
+            value_column=value_column,
+            periods=periods,
+            normalize=normalize,
+        )
+        if reduce_memory:
+            result = reduce_memory_usage(result)
     else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+        result = _augment_diffs_polars(
+            data=prepared_data,
+            date_column=date_column,
+            value_column=value_column,
+            periods=periods,
+            normalize=normalize,
+            group_columns=conversion.group_columns,
+            row_id_column=conversion.row_id_column,
+        )
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    restored = restore_output_type(result, conversion)
 
-    # Sort index
-    ret = ret.sort_index()
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
 
-    return ret
+    return restored
 
 
 def _augment_diffs_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
-    date_column: str,
     value_column: Union[str, List[str]],
-    periods: Union[int, Tuple[int, int], List[int]] = 1,
-    normalize: bool = False,
+    periods: Union[int, Tuple[int, int], List[int]],
+    normalize: bool,
 ) -> pd.DataFrame:
     if isinstance(value_column, str):
         value_column = [value_column]
 
-    if isinstance(periods, int):
-        periods = [periods]
-    elif isinstance(periods, tuple):
-        periods = list(range(periods[0], periods[1] + 1))
-    elif not isinstance(periods, list):
-        raise TypeError(
-            f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list."
-        )
+    periods = _normalize_shift_values(periods, label="periods")
 
-    # DATAFRAME EXTENSION - If data is a Pandas DataFrame, extend with future dates
     if isinstance(data, pd.DataFrame):
         df = data.copy()
-
-        df.sort_values(by=[date_column], inplace=True)
 
         if normalize:
             for col in value_column:
                 for period in periods:
                     df[f"{col}_pctdiff_{period}"] = df[col].pct_change(period)
-
         else:
             for col in value_column:
                 for period in periods:
                     df[f"{col}_diff_{period}"] = df[col].diff(period)
 
-    # GROUPED EXTENSION - If data is a GroupBy object, add differences by group
+        return df
+
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        # Get the group names and original ungrouped data
         group_names = data.grouper.names
-        data = data.obj
-
-        df = data.copy()
-
-        df.sort_values(by=[*group_names, date_column], inplace=True)
+        base_df = data.obj.copy()
 
         if normalize:
             for col in value_column:
                 for period in periods:
-                    df[f"{col}_pctdiff_{period}"] = df.groupby(group_names)[
-                        col
-                    ].pct_change(period)
+                    base_df[f"{col}_pctdiff_{period}"] = (
+                        base_df.groupby(group_names)[col].pct_change(period)
+                    )
         else:
             for col in value_column:
                 for period in periods:
-                    df[f"{col}_diff_{period}"] = df.groupby(group_names)[col].diff(
-                        period
+                    base_df[f"{col}_diff_{period}"] = (
+                        base_df.groupby(group_names)[col].diff(period)
                     )
 
-    return df
+        return base_df
+
+    raise TypeError("Unsupported data type passed to _augment_diffs_pandas.")
 
 
 def _augment_diffs_polars(
-    data: Union[pl.DataFrame, pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
-    periods: Union[int, Tuple[int, int], List[int]] = 1,
-    normalize: bool = False,
+    periods: Union[int, Tuple[int, int], List[int]],
+    normalize: bool,
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
 ) -> pl.DataFrame:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        # Data is a GroupBy object, use apply to get a DataFrame
-        pandas_df = data.obj.copy()
-    elif isinstance(data, pd.DataFrame):
-        # Data is already a DataFrame
-        pandas_df = data
-    elif isinstance(data, pl.DataFrame):
-        # Data is already a Polars DataFrame
-        pandas_df = data.to_pandas()
-    else:
-        raise ValueError(
-            "data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame"
-        )
-
     if isinstance(value_column, str):
         value_column = [value_column]
 
-    diff_foo = pl.col(date_column).shift(1).alias("_diff_1")
+    periods = _normalize_shift_values(periods, label="periods")
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
 
-    if isinstance(periods, int):
-        periods = [periods]  # Convert to a list with a single value
-    elif isinstance(periods, tuple):
-        periods = list(range(periods[0], periods[1] + 1))
-    elif not isinstance(periods, list):
-        raise TypeError(
-            f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list."
-        )
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+    frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
 
-    period_exprs = []
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    sorted_frame = frame_with_id.sort(sort_keys)
 
-    if normalize:
-        for col in value_column:
-            for period in periods:
-                period_expr = ((pl.col(col) / pl.col(col).shift(period)) - 1).alias(
-                    f"{col}_pctdiff_{period}"
-                )
-                period_exprs.append(period_expr)
-    else:
-        for col in value_column:
-            for period in periods:
-                period_expr = (pl.col(col) - pl.col(col).shift(period)).alias(
-                    f"{col}_diff_{period}"
-                )
-                period_exprs.append(period_expr)
+    diff_columns = []
+    for col in value_column:
+        for period in periods:
+            if normalize:
+                expr = pl.col(col).pct_change(n=period)
+                name = f"{col}_pctdiff_{period}"
+            else:
+                expr = pl.col(col).diff(n=period)
+                name = f"{col}_diff_{period}"
 
-    # Select columns
-    selected_columns = [diff_foo] + period_exprs
+            if resolved_groups:
+                expr = expr.over(resolved_groups)
 
-    # Drop the first column by position (index)
-    selected_columns = selected_columns[1:]
+            diff_columns.append(expr.alias(name))
 
-    # Select the columns
-    df = pl.DataFrame(pandas_df)
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        out_df = df.group_by(data.grouper.names, maintain_order=True).agg(
-            selected_columns
-        )
-        out_df = out_df.explode(out_df.columns[len(data.grouper.names) :])
-        out_df = out_df.drop(data.grouper.names)
-    else:  # a dataframe
-        out_df = df.select(selected_columns)
+    augmented = sorted_frame.with_columns(diff_columns).sort(row_col)
 
-    # Concatenate the DataFrames horizontally
-    df = pl.concat([df, out_df], how="horizontal").to_pandas()
+    if generated:
+        augmented = augmented.drop(row_col)
 
-    return df
+    return augmented
+
+
+def _normalize_shift_values(
+    values: Union[int, Tuple[int, int], List[int]],
+    label: str,
+) -> List[int]:
+    if isinstance(values, int):
+        return [values]
+    if isinstance(values, tuple):
+        if len(values) != 2:
+            raise ValueError(f"Invalid {label} specification: tuple must be length 2.")
+        start, end = values
+        return list(range(start, end + 1))
+    if isinstance(values, list):
+        return [int(v) for v in values]
+    raise TypeError(
+        f"Invalid {label} specification: type: {type(values)}. Please use int, tuple, or list."
+    )

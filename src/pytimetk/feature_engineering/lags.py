@@ -15,6 +15,7 @@ from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
     ensure_row_id_column,
     normalize_engine,
+    resolve_polars_group_columns,
     restore_output_type,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
@@ -224,9 +225,7 @@ def _augment_lags_polars(
         value_column = [value_column]
 
     lags = _normalize_shift_values(lags, label="lags")
-    resolved_groups: Sequence[str] = (
-        list(group_columns) if group_columns else _resolve_group_columns(data)
-    )
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
     frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
 
@@ -266,23 +265,3 @@ def _normalize_shift_values(
     raise TypeError(
         f"Invalid {label} specification: type: {type(values)}. Please use int, tuple, or list."
     )
-
-
-def _resolve_group_columns(
-    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
-) -> Sequence[str]:
-    if isinstance(data, pl.dataframe.group_by.GroupBy):
-        columns = []
-        for entry in data.by:
-            if isinstance(entry, str):
-                columns.append(entry)
-            elif hasattr(entry, "meta"):
-                columns.append(entry.meta.output_name())
-            elif isinstance(entry, list) and entry and all(
-                isinstance(item, str) for item in entry
-            ):
-                columns.extend(entry)
-            else:
-                raise TypeError("Unsupported polars group key type.")
-        return columns
-    return []

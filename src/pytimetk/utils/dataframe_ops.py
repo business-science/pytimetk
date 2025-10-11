@@ -201,6 +201,10 @@ def _extract_polars_group_columns(
             columns.append(entry)
         elif hasattr(entry, "meta"):
             columns.append(entry.meta.output_name())
+        elif isinstance(entry, list) and entry and all(
+            isinstance(item, str) for item in entry
+        ):
+            columns.extend(entry)
         else:
             raise TypeError("Unsupported polars groupby key type.")
     return columns
@@ -210,6 +214,21 @@ def _extract_pandas_group_columns(
     groupby: pd.core.groupby.generic.DataFrameGroupBy,
 ) -> Sequence[str]:
     return [str(col) for col in groupby.grouper.names]
+
+
+def resolve_polars_group_columns(
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
+    group_columns: Optional[Sequence[str]] = None,
+) -> Sequence[str]:
+    """
+    Resolve the list of polars group columns from either stored metadata or the
+    groupby object itself.
+    """
+    if group_columns:
+        return list(group_columns)
+    if isinstance(data, pl.dataframe.group_by.GroupBy):
+        return list(_extract_polars_group_columns(data))
+    return []
 
 
 def _engine_for_kind(kind: FrameKind) -> Literal["pandas", "polars"]:
