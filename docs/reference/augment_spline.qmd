@@ -39,3 +39,27 @@ Add spline basis expansions for a numeric column.
 | Name   | Type         | Description                                   |
 |--------|--------------|-----------------------------------------------|
 |        | pd.DataFrame | DataFrame with spline basis columns appended. |
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import pandas as pd
+import pytimetk as tk
+
+df = tk.load_dataset('m4_daily', parse_dates=['date'])
+df = df.assign(step=lambda d: d.groupby('id').cumcount())
+
+df_spline = (
+    df
+        .query("id == 'D10'")
+        .augment_spline(
+            column_name='step',
+            spline_type='bs',
+            df=5,
+            degree=3,
+            prefix='step_bs'
+        )
+)
+
+df_spline.head()
+```

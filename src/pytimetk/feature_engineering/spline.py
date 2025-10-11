@@ -1,10 +1,23 @@
 import pandas as pd
 import pandas_flavor as pf
 from patsy import bs, cr, cc
-from typing import Optional, Sequence, Union
+from typing import Literal, Optional, Sequence, Union
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_value_column
 from pytimetk.utils.memory_helpers import reduce_memory_usage
+
+
+SplineTypeInput = Literal[
+    "bs",
+    "basis",
+    "b-spline",
+    "bspline",
+    "natural",
+    "ns",
+    "cr",
+    "cyclic",
+    "cc",
+]
 
 
 VALID_SPLINE_TYPES = {
@@ -31,7 +44,7 @@ SPLINE_NAME_MAP = {
 def augment_spline(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     column_name: str,
-    spline_type: str = "bs",
+    spline_type: SplineTypeInput = "bs",
     df: Optional[int] = 5,
     degree: int = 3,
     knots: Optional[Sequence[float]] = None,
@@ -83,7 +96,9 @@ def augment_spline(
 
     Examples
     --------
+
     ```{python}
+    import pandas as pd
     import pytimetk as tk
 
     df = tk.load_dataset('m4_daily', parse_dates=['date'])
@@ -280,7 +295,7 @@ def _build_spline_basis(
     return full_basis.to_numpy()
 
 
-def _normalise_spline_type(spline_type: str) -> str:
+def _normalise_spline_type(spline_type: SplineTypeInput) -> str:
     key = (spline_type or "").strip().lower()
     if key not in VALID_SPLINE_TYPES:
         valid = "', '".join(sorted(set(VALID_SPLINE_TYPES.keys())))
