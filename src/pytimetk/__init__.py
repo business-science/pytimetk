@@ -91,7 +91,7 @@ from .utils import (
     progress_apply,
     parse_freq_str,
 )
-
+from . import polars_namespace  # noqa: F401
 
 from importlib.metadata import version
 
