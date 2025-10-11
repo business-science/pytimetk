@@ -1,5 +1,6 @@
 import pytest
 import pandas as pd
+import polars as pl
 import pytimetk as tk
 import os
 import multiprocess as mp
@@ -16,6 +17,11 @@ os.environ["OPENBLAS_NUM_THREADS"] = "1"
 @pytest.fixture(scope="module")
 def df():
     return tk.load_dataset("stocks_daily", parse_dates=["date"])
+
+
+@pytest.fixture(scope="module")
+def pl_df(df):
+    return pl.from_pandas(df)
 
 
 @pytest.mark.parametrize(
@@ -148,3 +154,63 @@ def test_macd_edge_cases(df):
             signal_period=9,
             engine="pandas",
         )
+
+
+def test_macd_polars_dataframe_roundtrip(pl_df):
+    pl_single = pl_df.filter(pl.col("symbol") == "AAPL")
+    pandas_single = (
+        tk.load_dataset("stocks_daily", parse_dates=["date"])
+        .query("symbol == 'AAPL'")
+    )
+
+    pandas_result = pandas_single.augment_macd(
+        date_column="date",
+        close_column="close",
+        fast_period=12,
+        slow_period=26,
+        signal_period=9,
+    )
+
+    polars_result = tk.augment_macd(
+        data=pl_single,
+        date_column="date",
+        close_column="close",
+        fast_period=12,
+        slow_period=26,
+        signal_period=9,
+    )
+
+    assert isinstance(polars_result, pl.DataFrame)
+    pd.testing.assert_frame_equal(
+        pandas_result.reset_index(drop=True),
+        polars_result.to_pandas().reset_index(drop=True),
+    )
+
+
+def test_macd_polars_groupby_roundtrip(pl_df):
+    pandas_group = (
+        tk.load_dataset("stocks_daily", parse_dates=["date"])
+        .groupby("symbol")
+        .augment_macd(
+            date_column="date",
+            close_column="close",
+            fast_period=12,
+            slow_period=26,
+            signal_period=9,
+        )
+    )
+
+    polars_group = tk.augment_macd(
+        data=pl_df.group_by("symbol"),
+        date_column="date",
+        close_column="close",
+        fast_period=12,
+        slow_period=26,
+        signal_period=9,
+    )
+
+    assert isinstance(polars_group, pl.DataFrame)
+    pd.testing.assert_frame_equal(
+        pandas_group.reset_index(drop=True),
+        polars_group.to_pandas().reset_index(drop=True),
+    )

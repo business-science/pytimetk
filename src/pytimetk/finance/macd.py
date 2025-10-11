@@ -1,12 +1,22 @@
 import pandas as pd
 import polars as pl
 import pandas_flavor as pf
-from typing import Union
+import warnings
+
+from typing import Optional, Union
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
     check_value_column,
+)
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    resolve_polars_group_columns,
+    restore_output_type,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -15,22 +25,27 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_macd(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     close_column: str,
     fast_period: int = 12,
     slow_period: int = 26,
     signal_period: int = 9,
     reduce_memory: bool = False,
-    engine: str = "pandas",
-) -> pd.DataFrame:
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Calculate MACD for a given financial instrument using either pandas or polars engine.
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        Pandas DataFrame or GroupBy object containing financial data.
+    data : DataFrame or GroupBy (pandas or polars)
+        Input financial data.
     date_column : str
         Name of the column containing date information.
     close_column : str
@@ -43,13 +58,14 @@ def augment_macd(
         Number of periods for the signal line EMA in MACD calculation.
     reduce_memory : bool, optional
         Whether to reduce memory usage of the data before performing the calculation.
-    engine : str, optional
-        Computation engine to use ('pandas' or 'polars').
+    engine : {"auto", "pandas", "polars"}, optional
+        Computation engine to use. Defaults to infer from the input data type.
 
     Returns
     -------
-    pd.DataFrame
-        DataFrame with MACD line, signal line, and MACD histogram added.
+    DataFrame
+        DataFrame with MACD line, signal line, and MACD histogram added. Matches
+        the backend of the input data.
 
     Notes
     -----
@@ -132,34 +148,58 @@ def augment_macd(
     check_value_column(data, close_column)
     check_date_column(data, date_column)
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    engine_resolved = normalize_engine(engine, data)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
-    if engine == "pandas":
-        ret = _augment_macd_pandas(
-            data, date_column, close_column, fast_period, slow_period, signal_period
+    if engine_resolved == "pandas":
+        sorted_data, _ = sort_dataframe(
+            prepared_data, date_column, keep_grouped_df=True
         )
-    elif engine == "polars":
-        ret = _augment_macd_polars(
-            data, date_column, close_column, fast_period, slow_period, signal_period
+        result = _augment_macd_pandas(
+            data=sorted_data,
+            close_column=close_column,
+            fast_period=fast_period,
+            slow_period=slow_period,
+            signal_period=signal_period,
         )
-        # Polars Index to Match Pandas
-        ret.index = idx_unsorted
+        if reduce_memory:
+            result = reduce_memory_usage(result)
     else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+        result = _augment_macd_polars(
+            data=prepared_data,
+            date_column=date_column,
+            close_column=close_column,
+            fast_period=fast_period,
+            slow_period=slow_period,
+            signal_period=signal_period,
+            group_columns=conversion.group_columns,
+            row_id_column=conversion.row_id_column,
+        )
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    restored = restore_output_type(result, conversion)
 
-    ret = ret.sort_index()
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
 
-    return ret
+    return restored
 
 
 def _augment_macd_pandas(
-    data, date_column, close_column, fast_period, slow_period, signal_period
+    data,
+    close_column,
+    fast_period,
+    slow_period,
+    signal_period,
 ):
     """
     Internal function to calculate MACD using Pandas.
@@ -178,7 +218,7 @@ def _augment_macd_pandas(
         )
     elif isinstance(data, pd.DataFrame):
         # If data is a DataFrame, apply MACD calculation directly
-        df = data.copy().sort_values(by=date_column)
+        df = data.copy()
         df = _calculate_macd_pandas(
             df, close_column, fast_period, slow_period, signal_period
         )
@@ -229,70 +269,72 @@ def _calculate_macd_pandas(df, close_column, fast_period, slow_period, signal_pe
 
 
 def _augment_macd_polars(
-    data, date_column, close_column, fast_period, slow_period, signal_period
+    data,
+    date_column,
+    close_column,
+    fast_period,
+    slow_period,
+    signal_period,
+    group_columns,
+    row_id_column,
 ):
     """
     Internal function to calculate MACD using Polars.
     """
-    # Convert to Polars DataFrame if input is a pandas DataFrame or GroupBy object
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        # Data is a GroupBy object, use apply to get a DataFrame
-        group_names = data.grouper.names
-        if not isinstance(group_names, list):
-            group_names = [group_names]
-        pandas_df = data.obj
-        pl_df = pl.from_pandas(pandas_df)
-    elif isinstance(data, pd.DataFrame):
-        pl_df = pl.from_pandas(data.copy())
-    else:
-        raise ValueError(
-            "data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame"
-        )
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+    frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
 
-    # Define the function to calculate MACD for a single DataFrame
-    def calculate_macd_single(pl_df):
-        # Calculate Fast and Slow EMAs
-        fast_ema = pl_df[close_column].ewm_mean(
-            span=fast_period, adjust=False, min_periods=0
-        )
-        slow_ema = pl_df[close_column].ewm_mean(
-            span=slow_period, adjust=False, min_periods=0
-        )
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    sorted_frame = frame_with_id.sort(sort_keys)
 
-        # Calculate MACD Line
-        macd_line = fast_ema - slow_ema
+    fast_ema_expr = pl.col(close_column).ewm_mean(
+        span=fast_period, adjust=False, min_periods=0
+    )
+    slow_ema_expr = pl.col(close_column).ewm_mean(
+        span=slow_period, adjust=False, min_periods=0
+    )
 
-        # Calculate Signal Line
-        signal_line = macd_line.ewm_mean(
-            span=signal_period, adjust=False, min_periods=0
-        )
+    if resolved_groups:
+        fast_ema_expr = fast_ema_expr.over(resolved_groups)
+        slow_ema_expr = slow_ema_expr.over(resolved_groups)
 
-        # Calculate MACD Histogram
-        macd_histogram = macd_line - signal_line
+    fast_alias = "_macd_fast_ema"
+    slow_alias = "_macd_slow_ema"
+    macd_alias = f"{close_column}_macd_line_{fast_period}_{slow_period}_{signal_period}"
+    signal_alias = (
+        f"{close_column}_macd_signal_line_{fast_period}_{slow_period}_{signal_period}"
+    )
+    hist_alias = (
+        f"{close_column}_macd_histogram_{fast_period}_{slow_period}_{signal_period}"
+    )
 
-        return pl_df.with_columns(
-            [
-                macd_line.alias(
-                    f"{close_column}_macd_line_{fast_period}_{slow_period}_{signal_period}"
-                ),
-                signal_line.alias(
-                    f"{close_column}_macd_signal_line_{fast_period}_{slow_period}_{signal_period}"
-                ),
-                macd_histogram.alias(
-                    f"{close_column}_macd_histogram_{fast_period}_{slow_period}_{signal_period}"
-                ),
-            ]
-        )
+    augmented = sorted_frame.with_columns(
+        [
+            fast_ema_expr.alias(fast_alias),
+            slow_ema_expr.alias(slow_alias),
+        ]
+    ).with_columns(
+        [
+            (pl.col(fast_alias) - pl.col(slow_alias)).alias(macd_alias),
+        ]
+    )
 
-    # Apply the calculation to each group if data is grouped, otherwise apply directly
-    if "groupby" in str(type(data)):
-        result_df = (
-            pl_df.group_by(*group_names, maintain_order=True)
-            .map_groups(calculate_macd_single)
-            .to_pandas()
-        )
+    signal_expr = pl.col(macd_alias).ewm_mean(
+        span=signal_period, adjust=False, min_periods=0
+    )
+    if resolved_groups:
+        signal_expr = signal_expr.over(resolved_groups)
 
-    else:
-        result_df = calculate_macd_single(pl_df).to_pandas()
+    augmented = augmented.with_columns(signal_expr.alias(signal_alias))
+    augmented = augmented.with_columns(
+        (pl.col(macd_alias) - pl.col(signal_alias)).alias(hist_alias)
+    ).drop([fast_alias, slow_alias])
 
-    return result_df
+    augmented = augmented.sort(row_col)
+
+    if generated:
+        augmented = augmented.drop(row_col)
+
+    return augmented
