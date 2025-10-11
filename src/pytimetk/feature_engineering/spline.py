@@ -1,10 +1,20 @@
+import numpy as np
 import pandas as pd
+import polars as pl
 import pandas_flavor as pf
 from patsy import bs, cr, cc
 from typing import Literal, Optional, Sequence, Union
+import warnings
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_value_column
 from pytimetk.utils.memory_helpers import reduce_memory_usage
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    restore_output_type,
+)
 
 
 SplineTypeInput = Literal[
@@ -42,7 +52,12 @@ SPLINE_NAME_MAP = {
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_spline(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     column_name: str,
     spline_type: SplineTypeInput = "bs",
     df: Optional[int] = 5,
@@ -53,15 +68,15 @@ def augment_spline(
     upper_bound: Optional[float] = None,
     prefix: Optional[str] = None,
     reduce_memory: bool = False,
-    engine: str = "pandas",
-) -> pd.DataFrame:
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Add spline basis expansions for a numeric column.
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        Input data or grouped data.
+    data : DataFrame or GroupBy (pandas or polars)
+        Input tabular data or grouped data.
     column_name : str
         Name of the numeric column to transform into spline basis features.
     spline_type : str, optional
@@ -89,14 +104,16 @@ def augment_spline(
         derived from `column_name` and `spline_type`.
     reduce_memory : bool, optional
         If True, attempt to downcast numeric columns to reduce memory usage.
-    engine : str, optional
-        Execution engine. Use "pandas" (default) for pandas operations or
-        "polars" to mimic polars behaviour while ingesting pandas data.
+    engine : {"auto", "pandas", "polars"}, optional
+        Execution engine. When set to "auto" (default) the backend is inferred
+        from the input data type. Use "pandas" or "polars" to force a specific
+        backend regardless of input type.
 
     Returns
     -------
-    pd.DataFrame
-        DataFrame with spline basis columns appended.
+    DataFrame
+        DataFrame with spline basis columns appended. The result matches the
+        input data backend (pandas or polars).
 
     Examples
     --------
@@ -125,34 +142,29 @@ def augment_spline(
     ```
 
     ```{python}
-    # Polars Example
-    import pandas as pd
     import pytimetk as tk
     import polars as pl
 
-    df = tk.load_dataset('m4_daily', parse_dates=['date'])
+    df = tk.load_dataset('m4_daily', parse_dates=['date']).query("id == 'D10'")
     df = df.assign(step=lambda d: d.groupby('id').cumcount())
+    pl_df = pl.from_pandas(df)
 
-    df_spline = (
-        df
-            .query("id == 'D10'")
-            .augment_spline(
-                column_name='step',
-                spline_type='bs',
-                df=5,
-                degree=3,
-                prefix='step_bs',
-                engine='polars'
-            )
+    pl_spline = tk.augment_spline(
+        data=pl_df,
+        column_name='step',
+        spline_type='bs',
+        df=5,
+        degree=3,
+        prefix='step_bs'
     )
 
-    df_spline.head()
+    pl_spline.head()
     ```
 
     """
 
     spline_key = _normalise_spline_type(spline_type)
-    engine = (engine or "").lower()
+    engine_resolved = normalize_engine(engine, data)
 
     if df is None and knots is None:
         raise ValueError(
@@ -162,15 +174,24 @@ def augment_spline(
     if df is not None and df <= 0:
         raise ValueError("`df` must be a positive integer.")
 
-    if engine == "pandas":
-        check_dataframe_or_groupby(data)
-        check_value_column(data, column_name, require_numeric_dtype=True)
+    check_dataframe_or_groupby(data)
+    check_value_column(data, column_name, require_numeric_dtype=True)
 
-        if reduce_memory:
-            data = reduce_memory_usage(data)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
 
-        df_result = _augment_spline_pandas(
-            data=data,
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+    if engine_resolved == "pandas":
+        result = _augment_spline_pandas(
+            data=prepared_data,
             column_name=column_name,
             spline_key=spline_key,
             df=df,
@@ -183,19 +204,10 @@ def augment_spline(
         )
 
         if reduce_memory:
-            df_result = reduce_memory_usage(df_result)
-
-        return df_result.sort_index()
-
-    if engine == "polars":
-        check_dataframe_or_groupby(data)
-        check_value_column(data, column_name, require_numeric_dtype=True)
-
-        if reduce_memory:
-            data = reduce_memory_usage(data)
-
-        df_result = _augment_spline_pandas(
-            data=data,
+            result = reduce_memory_usage(result)
+    elif engine_resolved == "polars":
+        result = _augment_spline_polars(
+            data=prepared_data,
             column_name=column_name,
             spline_key=spline_key,
             df=df,
@@ -205,14 +217,18 @@ def augment_spline(
             lower_bound=lower_bound,
             upper_bound=upper_bound,
             prefix=prefix,
+            row_id_column=conversion.row_id_column,
+            group_columns=conversion.group_columns,
         )
+    else:
+        raise ValueError("Invalid engine. Use 'pandas', 'polars', or 'auto'.")
 
-        if reduce_memory:
-            df_result = reduce_memory_usage(df_result)
+    restored = restore_output_type(result, conversion)
 
-        return df_result.sort_index()
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
 
-    raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    return restored
 
 
 def _augment_spline_pandas(
@@ -246,8 +262,7 @@ def _augment_spline_pandas(
             )
             for _, group in grouped
         ]
-        result = pd.concat(augmented).sort_index()
-        return result
+        return pd.concat(augmented).sort_index()
 
     if not isinstance(data, pd.DataFrame):
         raise TypeError(
@@ -280,9 +295,9 @@ def _augment_spline_frame(
     upper_bound: Optional[float],
     prefix: Optional[str],
 ) -> pd.DataFrame:
-    col_series = frame[column_name]
-    basis = _build_spline_basis(
-        series=col_series,
+    basis = _build_spline_basis_matrix(
+        values=frame[column_name].to_numpy(copy=False),
+        column_name=column_name,
         spline_key=spline_key,
         df=df,
         degree=degree,
@@ -299,8 +314,9 @@ def _augment_spline_frame(
     return pd.concat([frame, basis_df], axis=1)
 
 
-def _build_spline_basis(
-    series: pd.Series,
+def _augment_spline_polars(
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
+    column_name: str,
     spline_key: str,
     df: Optional[int],
     degree: int,
@@ -308,20 +324,135 @@ def _build_spline_basis(
     include_intercept: bool,
     lower_bound: Optional[float],
     upper_bound: Optional[float],
-) -> pd.DataFrame:
-    values = series.to_numpy(dtype=float, copy=True)
-    mask = ~pd.isna(values)
+    prefix: Optional[str],
+    row_id_column: Optional[str],
+    group_columns: Optional[Sequence[str]],
+) -> pl.DataFrame:
+    if isinstance(data, pl.dataframe.group_by.GroupBy):
+        base_df = data.df
+        grouped_cols = list(group_columns or _resolve_polars_group_columns(data))
+        frame_with_id, row_col, generated = ensure_row_id_column(
+            base_df, row_id_column
+        )
+        group_key = grouped_cols if len(grouped_cols) > 1 else grouped_cols[0]
+
+        augmented = (
+            frame_with_id.group_by(group_key, maintain_order=True)
+            .map_groups(
+                lambda group: _augment_spline_polars_frame(
+                    frame=group,
+                    column_name=column_name,
+                    spline_key=spline_key,
+                    df=df,
+                    degree=degree,
+                    knots=knots,
+                    include_intercept=include_intercept,
+                    lower_bound=lower_bound,
+                    upper_bound=upper_bound,
+                    prefix=prefix,
+                )
+            )
+            .sort(row_col)
+        )
+
+        if generated:
+            augmented = augmented.drop(row_col)
+
+        return augmented
+
+    if isinstance(data, pl.DataFrame):
+        frame_with_id, row_col, generated = ensure_row_id_column(data, row_id_column)
+        augmented = _augment_spline_polars_frame(
+            frame=frame_with_id,
+            column_name=column_name,
+            spline_key=spline_key,
+            df=df,
+            degree=degree,
+            knots=knots,
+            include_intercept=include_intercept,
+            lower_bound=lower_bound,
+            upper_bound=upper_bound,
+            prefix=prefix,
+        )
+        if generated:
+            augmented = augmented.drop(row_col)
+        return augmented
+
+    raise TypeError(
+        f"Unsupported data type: {type(data)}. Expected polars DataFrame or GroupBy."
+    )
+
+
+def _resolve_polars_group_columns(
+    groupby: pl.dataframe.group_by.GroupBy,
+) -> Sequence[str]:
+    columns = []
+    for entry in groupby.by:
+        if isinstance(entry, str):
+            columns.append(entry)
+        elif hasattr(entry, "meta"):
+            columns.append(entry.meta.output_name())
+        else:
+            raise TypeError("Unsupported polars groupby key type.")
+    return columns
+
+
+def _augment_spline_polars_frame(
+    frame: pl.DataFrame,
+    column_name: str,
+    spline_key: str,
+    df: Optional[int],
+    degree: int,
+    knots: Optional[Sequence[float]],
+    include_intercept: bool,
+    lower_bound: Optional[float],
+    upper_bound: Optional[float],
+    prefix: Optional[str],
+) -> pl.DataFrame:
+    basis = _build_spline_basis_matrix(
+        values=frame[column_name].to_numpy(),
+        column_name=column_name,
+        spline_key=spline_key,
+        df=df,
+        degree=degree,
+        knots=knots,
+        include_intercept=include_intercept,
+        lower_bound=lower_bound,
+        upper_bound=upper_bound,
+    )
+
+    prefix_value = prefix or _default_prefix(column_name, spline_key, degree)
+    new_columns = [
+        pl.Series(f"{prefix_value}_{i + 1}", basis[:, i])
+        for i in range(basis.shape[1])
+    ]
+
+    return frame.with_columns(new_columns)
+
+
+def _build_spline_basis_matrix(
+    values: Union[Sequence[float], np.ndarray],
+    column_name: str,
+    spline_key: str,
+    df: Optional[int],
+    degree: int,
+    knots: Optional[Sequence[float]],
+    include_intercept: bool,
+    lower_bound: Optional[float],
+    upper_bound: Optional[float],
+) -> np.ndarray:
+    array = np.asarray(values, dtype=float)
+    mask = ~np.isnan(array)
 
     if not mask.any():
         raise ValueError(
-            f"`column_name` ({series.name}) contains only missing values. Cannot construct spline basis."
+            f"`column_name` ({column_name}) contains only missing values. Cannot construct spline basis."
         )
 
-    x = values[mask]
+    x = array[mask]
     lb = lower_bound if lower_bound is not None else float(x.min())
     ub = upper_bound if upper_bound is not None else float(x.max())
 
-    # Ensure bounds make sense for cyclic splines
     if spline_key == "cc" and lb >= ub:
         raise ValueError(
             "For cyclic splines `lower_bound` must be less than `upper_bound`."
@@ -340,19 +471,10 @@ def _build_spline_basis(
     else:
         raise ValueError(f"Unsupported spline type: {spline_key}")
 
-    basis = pd.DataFrame(transformed, index=series.index[mask])
-
-    if mask.all():
-        return basis.to_numpy()
-
-    # Reinsert NaN rows to preserve original alignment.
-    full_basis = pd.DataFrame(
-        data=float("nan"),
-        index=series.index,
-        columns=basis.columns,
-    )
-    full_basis.loc[mask] = basis.values
-    return full_basis.to_numpy()
+    transformed_array = np.asarray(transformed, dtype=float)
+    basis = np.full((array.shape[0], transformed_array.shape[1]), np.nan, dtype=float)
+    basis[mask] = transformed_array
+    return basis
 
 
 def _normalise_spline_type(spline_type: SplineTypeInput) -> str:

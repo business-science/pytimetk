@@ -1,4 +1,5 @@
 import pandas as pd
+import polars as pl
 import pytest
 import pytimetk as tk
 
@@ -119,6 +120,62 @@ def test_polars_engine_groupby_equivalence():
     )
 
     pd.testing.assert_frame_equal(result_pandas, result_polars_mode)
+
+
+def test_polars_dataframe_roundtrip_matches_pandas():
+    df = _prepare_dataframe()
+    pl_df = pl.from_pandas(df)
+
+    pandas_result = tk.augment_spline(
+        data=df,
+        column_name="step",
+        spline_type="bs",
+        df=4,
+        degree=3,
+        include_intercept=False,
+        prefix="step_bs",
+    )
+
+    polars_result = tk.augment_spline(
+        data=pl_df,
+        column_name="step",
+        spline_type="bs",
+        df=4,
+        degree=3,
+        include_intercept=False,
+        prefix="step_bs",
+    )
+
+    assert isinstance(polars_result, pl.DataFrame)
+    pd.testing.assert_frame_equal(pandas_result, polars_result.to_pandas())
+
+
+def test_polars_groupby_roundtrip_matches_pandas():
+    df = _prepare_dataframe()
+    pl_df = pl.from_pandas(df)
+
+    pandas_group = tk.augment_spline(
+        data=df.groupby("id"),
+        column_name="step",
+        spline_type="bs",
+        df=4,
+        degree=3,
+        include_intercept=False,
+        prefix="step_bs",
+    )
+
+    polars_group = tk.augment_spline(
+        data=pl_df.group_by("id"),
+        column_name="step",
+        spline_type="bs",
+        df=4,
+        degree=3,
+        include_intercept=False,
+        prefix="step_bs",
+    )
+
+    assert isinstance(polars_group, pl.DataFrame)
+    pd.testing.assert_frame_equal(pandas_group, polars_group.to_pandas())
 
 
 def test_spline_type_aliases_and_prefix():

@@ -4,7 +4,7 @@ import polars as pl
 
 from importlib.metadata import distribution, PackageNotFoundError
 
-from typing import Union, List
+from typing import Union, List, Iterable
 
 
 def check_anomalize_data(
@@ -43,11 +43,26 @@ def check_data_type(data, authorized_dtypes: list, error_str=None):
 
 
 def check_dataframe_or_groupby(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        "pl.DataFrame",
+        "pl.dataframe.group_by.GroupBy",
+    ],
 ) -> None:
+    authorized: Iterable[type] = [
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+    ]
+
+    try:
+        authorized += [pl.DataFrame, pl.dataframe.group_by.GroupBy]  # type: ignore[attr-defined]
+    except AttributeError:
+        pass
+
     check_data_type(
         data,
-        authorized_dtypes=[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+        authorized_dtypes=list(authorized),
         error_str="`data` is not a Pandas DataFrame or GroupBy object.",
     )
 
@@ -71,45 +86,125 @@ def check_series_polars(data: pl.Series) -> None:
 
 
 def check_date_column(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        "pl.DataFrame",
+        "pl.dataframe.group_by.GroupBy",
+    ],
     date_column: str,
 ) -> None:
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        data = data.obj
+        frame = data.obj
+        dtype = frame[date_column].dtype if date_column in frame.columns else None
+        if dtype is None:
+            raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
+        if not pd.api.types.is_datetime64_any_dtype(dtype):
+            raise TypeError(
+                f"`date_column` ({date_column}) is not a datetime64[ns] dtype. "
+                f"Dtype Found: {dtype}"
+            )
+        return None
 
-    if date_column not in data.columns:
-        raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
+    if isinstance(data, pd.DataFrame):
+        if date_column not in data.columns:
+            raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
+        if not pd.api.types.is_datetime64_any_dtype(data[date_column]):
+            raise TypeError(
+                f"`date_column` ({date_column}) is not a datetime64[ns] dtype. "
+                f"Dtype Found: {data[date_column].dtype}"
+            )
+        return None
 
-    # Check if date_column is a datetime64[ns] dtype
-    if not pd.api.types.is_datetime64_any_dtype(data[date_column]):
-        raise TypeError(
-            f"`date_column` ({date_column}) is not a datetime64[ns] dtype. Dtype Found: {data[date_column].dtype}"
-        )
+    if isinstance(data, pl.dataframe.group_by.GroupBy):
+        frame = data.df
+        schema = frame.schema
+        if date_column not in schema:
+            raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
+        dtype = schema[date_column]
+        if not dtype.is_temporal():
+            raise TypeError(
+                f"`date_column` ({date_column}) is not a temporal dtype. "
+                f"Dtype Found: {dtype}"
+            )
+        return None
 
-    return None
+    if isinstance(data, pl.DataFrame):
+        schema = data.schema
+        if date_column not in schema:
+            raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
+        dtype = schema[date_column]
+        if not dtype.is_temporal():
+            raise TypeError(
+                f"`date_column` ({date_column}) is not a temporal dtype. "
+                f"Dtype Found: {dtype}"
+            )
+        return None
+
+    raise TypeError(
+        "`data` is not a Pandas/Polars DataFrame or GroupBy object."
+    )
 
 
 def check_value_column(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        "pl.DataFrame",
+        "pl.dataframe.group_by.GroupBy",
+    ],
     value_column: Union[str, List[str]],
-    require_numeric_dtype=True,
+    require_numeric_dtype: bool = True,
 ) -> None:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        data = data.obj
-
     if not isinstance(value_column, list):
         value_column = [value_column]
 
-    for column in value_column:
-        if column not in data.columns:
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        frame = data.obj
+        _check_columns_pandas(frame, value_column, require_numeric_dtype)
+        return None
+
+    if isinstance(data, pd.DataFrame):
+        _check_columns_pandas(data, value_column, require_numeric_dtype)
+        return None
+
+    if isinstance(data, pl.dataframe.group_by.GroupBy):
+        frame = data.df
+        _check_columns_polars(frame, value_column, require_numeric_dtype)
+        return None
+
+    if isinstance(data, pl.DataFrame):
+        _check_columns_polars(data, value_column, require_numeric_dtype)
+        return None
+
+    raise TypeError(
+        "`data` is not a Pandas/Polars DataFrame or GroupBy object."
+    )
+
+
+def _check_columns_pandas(
+    frame: pd.DataFrame,
+    columns: List[str],
+    require_numeric_dtype: bool,
+) -> None:
+    for column in columns:
+        if column not in frame.columns:
             raise ValueError(f"`value_column` ({column}) not found in `data`.")
+        if require_numeric_dtype and not np.issubdtype(frame[column].dtype, np.number):
+            raise TypeError(f"`value_column` ({column}) is not a numeric dtype.")
 
-        # Check if value_column is a numeric dtype
-        if require_numeric_dtype:
-            if not np.issubdtype(data[column].dtype, np.number):
-                raise TypeError(f"`value_column` ({column}) is not a numeric dtype.")
 
-    return None
+def _check_columns_polars(
+    frame: pl.DataFrame,
+    columns: List[str],
+    require_numeric_dtype: bool,
+) -> None:
+    schema = frame.schema
+    for column in columns:
+        if column not in schema:
+            raise ValueError(f"`value_column` ({column}) not found in `data`.")
+        if require_numeric_dtype and not schema[column].is_numeric():
+            raise TypeError(f"`value_column` ({column}) is not a numeric dtype.")
 
 
 def check_series_or_datetime(data: Union[pd.Series, pd.DatetimeIndex]) -> None:
