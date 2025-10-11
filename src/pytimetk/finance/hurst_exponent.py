@@ -78,8 +78,9 @@ def augment_hurst_exponent(
 
     Examples:
     ---------
-    ``` {python}
+    ```{python}
     import pandas as pd
+    import polars as pl
     import pytimetk as tk
 
     df = tk.load_dataset('stocks_daily', parse_dates=['date'])
@@ -96,7 +97,7 @@ def augment_hurst_exponent(
     hurst_df.glimpse()
     ```
 
-    ``` {python}
+    ```{python}
     # Example 2 - Multiple stocks with groupby using pandas engine
     hurst_df = (
         df.groupby('symbol')
@@ -109,29 +110,26 @@ def augment_hurst_exponent(
     hurst_df.glimpse()
     ```
 
-    ``` {python}
+    ```{python}
     # Example 3 - Single stock Hurst Exponent with polars engine
-    hurst_df = (
-        df.query("symbol == 'AAPL'")
-        .augment_hurst_exponent(
-            date_column='date',
-            close_column='close',
-            window=[100, 200],
-            engine='polars'
-        )
+    pl_single = pl.from_pandas(df.query("symbol == 'AAPL'"))
+    hurst_df = pl_single.tk.augment_hurst_exponent(
+        date_column='date',
+        close_column='close',
+        window=[100, 200]
     )
     hurst_df.glimpse()
     ```
 
-    ``` {python}
+    ```{python}
     # Example 4 - Multiple stocks with groupby using polars engine
+    pl_grouped = pl.from_pandas(df)
     hurst_df = (
-        df.groupby('symbol')
-        .augment_hurst_exponent(
+        pl_grouped.group_by('symbol')
+        .tk.augment_hurst_exponent(
             date_column='date',
             close_column='close',
             window=100,
-            engine='polars'
         )
     )
     hurst_df.glimpse()

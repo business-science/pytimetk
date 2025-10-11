@@ -74,7 +74,7 @@ def augment_drawdown(
 
     Examples
     --------
-    ```python
+    ```{python}
     import pytimetk as tk
     import polars as pl
 
@@ -89,12 +89,13 @@ def augment_drawdown(
         )
     )
 
-    # Polars DataFrame with explicit engine
-    dd_pl = tk.augment_drawdown(
-        data=pl.from_pandas(df.query("symbol == 'AAPL'")),
-        date_column="date",
-        close_column="close",
-        engine="polars",
+    # Polars DataFrame using the tk accessor
+    dd_pl = (
+        pl.from_pandas(df.query("symbol == 'AAPL'"))
+        .tk.augment_drawdown(
+            date_column="date",
+            close_column="close",
+        )
     )
     ```
     """

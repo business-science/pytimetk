@@ -87,7 +87,7 @@ def augment_adx(
 
     Examples
     --------
-    ```python
+    ```{python}
     import pytimetk as tk
 
     df = tk.load_dataset("stocks_daily", parse_dates=["date"])
@@ -104,10 +104,10 @@ def augment_adx(
         )
     )
 
-    # Polars example (engine inferred)
+    # Polars example (method chaining)
     import polars as pl
-    adx_pl = tk.augment_adx(
-        data=pl.from_pandas(df.query("symbol == 'AAPL'")),
+    pl_df = pl.from_pandas(df.query("symbol == 'AAPL'"))
+    adx_pl = pl_df.tk.augment_adx(
         date_column="date",
         high_column="high",
         low_column="low",

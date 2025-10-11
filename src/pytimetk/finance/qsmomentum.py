@@ -82,7 +82,7 @@ def augment_qsmomentum(
 
     Examples
     --------
-    ```python
+    ```{python}
     import pytimetk as tk
     import polars as pl
 
@@ -100,15 +100,16 @@ def augment_qsmomentum(
         )
     )
 
-    # Compute QSM on a polars DataFrame
-    qsm_pl = tk.augment_qsmomentum(
-        data=pl.from_pandas(df.query("symbol == 'AAPL'")),
-        date_column="date",
-        close_column="close",
-        roc_fast_period=[5, 21],
-        roc_slow_period=252,
-        returns_period=126,
-        engine="polars",
+    # Compute QSM on a polars DataFrame via the tk accessor
+    qsm_pl = (
+        pl.from_pandas(df.query("symbol == 'AAPL'"))
+        .tk.augment_qsmomentum(
+            date_column="date",
+            close_column="close",
+            roc_fast_period=[5, 21],
+            roc_slow_period=252,
+            returns_period=126,
+        )
     )
     ```
     """

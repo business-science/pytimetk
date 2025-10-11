@@ -74,7 +74,7 @@ def augment_cmo(
 
     Examples
     --------
-    ```python
+    ```{python}
     import pytimetk as tk
     import polars as pl
 
@@ -90,13 +90,14 @@ def augment_cmo(
         )
     )
 
-    # Polars example using explicit engine
-    cmo_pl = tk.augment_cmo(
-        data=pl.from_pandas(df.query("symbol == 'AAPL'")),
-        date_column="date",
-        close_column="close",
-        periods=14,
-        engine="polars",
+    # Polars example using the tk accessor
+    cmo_pl = (
+        pl.from_pandas(df.query("symbol == 'AAPL'"))
+        .tk.augment_cmo(
+            date_column="date",
+            close_column="close",
+            periods=14,
+        )
     )
     ```
     """
@@ -232,8 +233,10 @@ def _augment_cmo_polars(
                 window_size=period, min_samples=period
             )
             denom = gain_sum + loss_sum
-            cmo_expr = pl.when(denom == 0).then(None).otherwise(
-                100 * (gain_sum - loss_sum) / denom
+            cmo_expr = (
+                pl.when(denom == 0)
+                .then(None)
+                .otherwise(100 * (gain_sum - loss_sum) / denom)
             )
             df = df.with_columns(cmo_expr.alias(f"{close_column}_cmo_{period}"))
 

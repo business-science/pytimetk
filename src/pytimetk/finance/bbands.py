@@ -83,7 +83,8 @@ def augment_bbands(
 
     Examples
     --------
-    ```python
+    ```{python}
+    import polars as pl
     import pytimetk as tk
 
     df = tk.load_dataset("stocks_daily", parse_dates=["date"])
@@ -96,14 +97,15 @@ def augment_bbands(
         std_dev=[1.5, 2.0],
     )
 
-    # Polars DataFrame using the automatic engine detection
-    import polars as pl
-    bbands_pl = tk.augment_bbands(
-        data=pl.from_pandas(df.query("symbol == 'AAPL'")),
-        date_column="date",
-        close_column="close",
-        periods=(10, 15),
-        std_dev=2,
+    # Polars DataFrame using the tk accessor
+    bbands_pl = (
+        pl.from_pandas(df.query("symbol == 'AAPL'"))
+        .tk.augment_bbands(
+            date_column="date",
+            close_column="close",
+            periods=(10, 15),
+            std_dev=2,
+        )
     )
     ```
     """

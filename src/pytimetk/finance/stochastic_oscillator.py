@@ -85,7 +85,8 @@ def augment_stochastic_oscillator(
 
     Examples
     --------
-    ```python
+    ```{python}
+    import polars as pl
     import pytimetk as tk
 
     df = tk.load_dataset("stocks_daily", parse_dates=["date"])
@@ -100,16 +101,17 @@ def augment_stochastic_oscillator(
         d_periods=[3, 9],
     )
 
-    # Polars example (engine inferred)
-    import polars as pl
-    stoch_pl = tk.augment_stochastic_oscillator(
-        data=pl.from_pandas(df.query("symbol == 'AAPL'")),
-        date_column="date",
-        high_column="high",
-        low_column="low",
-        close_column="close",
-        k_periods=14,
-        d_periods=[3],
+    # Polars example (method chaining)
+    stoch_pl = (
+        pl.from_pandas(df.query("symbol == 'AAPL'"))
+        .tk.augment_stochastic_oscillator(
+            date_column="date",
+            high_column="high",
+            low_column="low",
+            close_column="close",
+            k_periods=14,
+            d_periods=[3],
+        )
     )
     ```
     """

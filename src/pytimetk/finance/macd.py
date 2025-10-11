@@ -97,8 +97,9 @@ def augment_macd(
     Examples
     --------
 
-    ``` {python}
+    ```{python}
     import pandas as pd
+    import polars as pl
     import pytimetk as tk
 
     df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
@@ -106,7 +107,7 @@ def augment_macd(
     df
     ```
 
-    ``` {python}
+    ```{python}
     # MACD pandas engine
     df_macd = (
         df
@@ -124,18 +125,18 @@ def augment_macd(
     df_macd.glimpse()
     ```
 
-    ``` {python}
+    ```{python}
     # MACD polars engine
+    pl_df = pl.from_pandas(df)
     df_macd = (
-        df
-            .groupby('symbol')
-            .augment_macd(
+        pl_df
+            .group_by('symbol')
+            .tk.augment_macd(
                 date_column = 'date',
                 close_column = 'close',
                 fast_period = 12,
                 slow_period = 26,
                 signal_period = 9,
-                engine = "polars"
             )
     )
 

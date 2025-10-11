@@ -89,6 +89,7 @@ def augment_fip_momentum(
     --------
     ```{python}
     import pandas as pd
+    import polars as pl
     import pytimetk as tk
 
     df = tk.load_dataset('stocks_daily', parse_dates=['date'])
@@ -107,14 +108,14 @@ def augment_fip_momentum(
 
     ```{python}
     # Multiple windows, polars engine, modified FIP
+    pl_df = pl.from_pandas(df)
     fip_df = (
-        df.groupby('symbol')
-        .augment_fip_momentum(
+        pl_df.group_by('symbol')
+        .tk.augment_fip_momentum(
             date_column='date',
             close_column='close',
             window=[63, 252],
             fip_method='modified',
-            engine='polars'
         )
     )
     fip_df.tail()

@@ -83,6 +83,7 @@ def augment_ewma_volatility(
     --------
     ```{python}
     import pandas as pd
+    import polars as pl
     import pytimetk as tk
 
     df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
@@ -109,24 +110,23 @@ def augment_ewma_volatility(
 
     ```{python}
     # Example 3 - Calculate EWMA volatility using Polars engine
-    df.query("symbol == 'AAPL'").augment_ewma_volatility(
+    pl_df = pl.from_pandas(df.query("symbol == 'AAPL'"))
+    pl_df.tk.augment_ewma_volatility(
         date_column='date',
         close_column='close',
         decay_factor=0.94,
-        window=[20, 50],
-        engine='polars'
+        window=[20, 50]
     ).glimpse()
     ```
 
     ```{python}
     # Example 4 - Calculate EWMA volatility for multiple stocks using Polars engine
-
-    df.groupby('symbol').augment_ewma_volatility(
+    pl_df_full = pl.from_pandas(df)
+    pl_df_full.group_by('symbol').tk.augment_ewma_volatility(
         date_column='date',
         close_column='close',
         decay_factor=0.94,
-        window=[20, 50],
-        engine='polars'
+        window=[20, 50]
     ).glimpse()
     ```
     """

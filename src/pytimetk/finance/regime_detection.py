@@ -92,8 +92,9 @@ def augment_regime_detection(
 
     Examples
     --------
-    ```python
+    ```{python}
     import pandas as pd
+    import polars as pl
     import pytimetk as tk
 
     df = tk.load_dataset('stocks_daily', parse_dates=['date'])
@@ -112,7 +113,7 @@ def augment_regime_detection(
     regime_df.head().glimpse()
     ```
 
-    ```python
+    ```{python}
     # Example 2 - Multiple stocks with groupby using pandas engine
     # Requires hmmlearn: pip install hmmlearn
     regime_df = (
@@ -127,33 +128,30 @@ def augment_regime_detection(
     regime_df.groupby('symbol').tail(1).glimpse()
     ```
 
-    ```python
+    ```{python}
     # Example 3 - Single stock regime detection with polars engine
     # Requires hmmlearn: pip install hmmlearn
-    regime_df = (
-        df.query("symbol == 'AAPL'")
-        .augment_regime_detection(
-            date_column='date',
-            close_column='close',
-            window=252,
-            n_regimes=2,
-            engine='polars'
-        )
+    pl_single = pl.from_pandas(df.query("symbol == 'AAPL'"))
+    regime_df = pl_single.tk.augment_regime_detection(
+        date_column='date',
+        close_column='close',
+        window=252,
+        n_regimes=2
     )
     regime_df.glimpse()
     ```
 
-    ```python
+    ```{python}
     # Example 4 - Multiple stocks with groupby using polars engine
     # Requires hmmlearn: pip install hmmlearn
+    pl_df = pl.from_pandas(df)
     regime_df = (
-        df.groupby('symbol')
-        .augment_regime_detection(
+        pl_df.group_by('symbol')
+        .tk.augment_regime_detection(
             date_column='date',
             close_column='close',
             window=504,
             n_regimes=3,
-            engine='polars'
         )
     )
     regime_df.groupby('symbol').tail(1).glimpse()

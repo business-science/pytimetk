@@ -100,8 +100,9 @@ def augment_rolling_risk_metrics(
 
     Examples
     --------
-    ``` {python}
+    ```{python}
     import pandas as pd
+    import polars as pl
     import pytimetk as tk
 
     df = tk.load_dataset('stocks_daily', parse_dates=['date'])
@@ -118,22 +119,22 @@ def augment_rolling_risk_metrics(
     risk_df.head()
     ```
 
-    ``` {python}
-    # Multiple stocks with groupby and benchmark
+    ```{python}
+    # Multiple stocks with groupby and benchmark (polars)
+    pl_df = pl.from_pandas(df)
     risk_df = (
-        df.groupby('symbol')
-        .augment_rolling_risk_metrics(
+        pl_df.group_by('symbol')
+        .tk.augment_rolling_risk_metrics(
             date_column='date',
             close_column='adjusted',
             # benchmark_column='market_adjusted_returns',  # Use if a benchmark returns column exists
             window=60,
-            engine='polars'
         )
     )
     risk_df.head()
     ```
 
-    ``` {python}
+    ```{python}
     # Selective metrics
     risk_df = (
         df.groupby('symbol')
