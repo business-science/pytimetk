@@ -1,12 +1,21 @@
 import pandas as pd
 import polars as pl
 import pandas_flavor as pf
-from typing import Union, List, Tuple
+import warnings
+
+from typing import List, Optional, Sequence, Tuple, Union
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
     check_value_column,
+)
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    restore_output_type,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -15,13 +24,18 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_lags(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     value_column: Union[str, List[str]],
     lags: Union[int, Tuple[int, int], List[int]] = 1,
     reduce_memory: bool = False,
-    engine: str = "pandas",
-) -> pd.DataFrame:
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Adds lags to a Pandas DataFrame or DataFrameGroupBy object.
 
@@ -31,9 +45,8 @@ def augment_lags(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter is the input DataFrame or DataFrameGroupBy object
-        that you want to add lagged columns to.
+    data : DataFrame or GroupBy (pandas or polars)
+        The input tabular data or grouped data to augment with lagged columns.
     date_column : str
         The `date_column` parameter is a string that specifies the name of the
         column in the DataFrame that contains the dates. This column will be
@@ -53,20 +66,15 @@ def augment_lags(
           value (inclusive).
 
         - If it is a list, it will generate lags based on the values in the list.
-    engine : str, optional
-        The `engine` parameter is used to specify the engine to use for
-        augmenting lags. It can be either "pandas" or "polars".
-
-        - The default value is "pandas".
-
-        - When "polars", the function will internally use the `polars` library
-          for augmenting lags. This can be faster than using "pandas" for large
-          datasets.
+    engine : {"auto", "pandas", "polars"}, optional
+        Execution engine. When "auto" (default) the backend is inferred from the
+        input data type. Use "pandas" or "polars" to force a specific backend.
 
     Returns
     -------
-    pd.DataFrame
-        A Pandas DataFrame with lagged columns added to it.
+    DataFrame
+        A DataFrame with lagged columns appended. The returned object matches the
+        backend of the input (pandas or polars).
 
     Examples
     --------
@@ -127,26 +135,47 @@ def augment_lags(
     check_value_column(data, value_column, require_numeric_dtype=False)
     check_date_column(data, date_column)
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    engine_resolved = normalize_engine(engine, data)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
-    if engine == "pandas":
-        ret = _augment_lags_pandas(data, date_column, value_column, lags)
-    elif engine == "polars":
-        ret = _augment_lags_polars(data, date_column, value_column, lags)
-        # Polars Index to Match Pandas
-        ret.index = idx_unsorted
+    if engine_resolved == "pandas":
+        sorted_data, _ = sort_dataframe(
+            prepared_data, date_column, keep_grouped_df=True
+        )
+        result = _augment_lags_pandas(
+            data=sorted_data,
+            date_column=date_column,
+            value_column=value_column,
+            lags=lags,
+        )
+        if reduce_memory:
+            result = reduce_memory_usage(result)
     else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+        result = _augment_lags_polars(
+            data=prepared_data,
+            date_column=date_column,
+            value_column=value_column,
+            lags=lags,
+            group_columns=conversion.group_columns,
+            row_id_column=conversion.row_id_column,
+        )
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    restored = restore_output_type(result, conversion)
 
-    ret = ret.sort_index()
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
 
-    return ret
+    return restored
 
 
 def _augment_lags_pandas(
@@ -158,14 +187,7 @@ def _augment_lags_pandas(
     if isinstance(value_column, str):
         value_column = [value_column]
 
-    if isinstance(lags, int):
-        lags = [lags]
-    elif isinstance(lags, tuple):
-        lags = list(range(lags[0], lags[1] + 1))
-    elif not isinstance(lags, list):
-        raise TypeError(
-            f"Invalid lags specification: type: {type(lags)}. Please use int, tuple, or list."
-        )
+    lags = _normalize_shift_values(lags, label="lags")
 
     # DATAFRAME EXTENSION - If data is a Pandas DataFrame, apply lag function
     if isinstance(data, pd.DataFrame):
@@ -191,65 +213,76 @@ def _augment_lags_pandas(
 
 
 def _augment_lags_polars(
-    data: Union[pl.DataFrame, pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
-    lags: Union[int, Tuple[int, int], List[int]] = 1,
+    lags: Union[int, Tuple[int, int], List[int]],
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
 ) -> pl.DataFrame:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        # Data is a GroupBy object, use apply to get a DataFrame
-        pandas_df = data.obj
-    elif isinstance(data, pd.DataFrame):
-        # Data is already a DataFrame
-        pandas_df = data
-    elif isinstance(data, pl.DataFrame):
-        # Data is already a Polars DataFrame
-        pandas_df = data.to_pandas()
-    else:
-        raise ValueError(
-            "data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame"
-        )
-
     if isinstance(value_column, str):
         value_column = [value_column]
 
-    lag_foo = pl.col(date_column).shift(1).alias(f"_lag_1")
+    lags = _normalize_shift_values(lags, label="lags")
+    resolved_groups: Sequence[str] = (
+        list(group_columns) if group_columns else _resolve_group_columns(data)
+    )
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+    frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
 
-    if isinstance(lags, int):
-        lags = [lags]  # Convert to a list with a single value
-    elif isinstance(lags, tuple):
-        lags = list(range(lags[0], lags[1] + 1))
-    elif not isinstance(lags, list):
-        raise TypeError(
-            f"Invalid lags specification: type: {type(lags)}. Please use int, tuple, or list."
-        )
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    sorted_frame = frame_with_id.sort(sort_keys)
 
-    lag_exprs = []
-
+    lag_columns = []
     for col in value_column:
         for lag in lags:
-            lag_expr = pl.col(col).shift(lag).alias(f"{col}_lag_{lag}")
-            lag_exprs.append(lag_expr)
+            expr = pl.col(col).shift(lag)
+            if resolved_groups:
+                expr = expr.over(resolved_groups)
+            lag_columns.append(expr.alias(f"{col}_lag_{lag}"))
 
-    # Select columns
-    selected_columns = [lag_foo] + lag_exprs
+    augmented = sorted_frame.with_columns(lag_columns).sort(row_col)
 
-    # Drop the first column by position (index)
-    selected_columns = selected_columns[1:]
+    if generated:
+        augmented = augmented.drop(row_col)
 
-    # Select the columns
-    df = pl.DataFrame(pandas_df)
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        out_df = df.group_by(data.grouper.names, maintain_order=True).agg(
-            selected_columns
-        )
+    return augmented
 
-        out_df = out_df.explode(out_df.columns[len(data.grouper.names) :])
-        out_df = out_df.drop(data.grouper.names)
-    else:  # a dataframe
-        out_df = df.select(selected_columns)
 
-    # Concatenate the DataFrames horizontally
-    df = pl.concat([df, out_df], how="horizontal").to_pandas()
+def _normalize_shift_values(
+    values: Union[int, Tuple[int, int], List[int]],
+    label: str,
+) -> List[int]:
+    if isinstance(values, int):
+        return [values]
+    if isinstance(values, tuple):
+        if len(values) != 2:
+            raise ValueError(f"Invalid {label} specification: tuple must be length 2.")
+        start, end = values
+        return list(range(start, end + 1))
+    if isinstance(values, list):
+        return [int(v) for v in values]
+    raise TypeError(
+        f"Invalid {label} specification: type: {type(values)}. Please use int, tuple, or list."
+    )
 
-    return df
+
+def _resolve_group_columns(
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
+) -> Sequence[str]:
+    if isinstance(data, pl.dataframe.group_by.GroupBy):
+        columns = []
+        for entry in data.by:
+            if isinstance(entry, str):
+                columns.append(entry)
+            elif hasattr(entry, "meta"):
+                columns.append(entry.meta.output_name())
+            elif isinstance(entry, list) and entry and all(
+                isinstance(item, str) for item in entry
+            ):
+                columns.extend(entry)
+            else:
+                raise TypeError("Unsupported polars group key type.")
+        return columns
+    return []

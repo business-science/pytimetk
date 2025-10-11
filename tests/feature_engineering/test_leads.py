@@ -1,4 +1,5 @@
 import pandas as pd
+import polars as pl
 import pytest
 import numpy as np
 from pytimetk import augment_leads  
@@ -14,6 +15,11 @@ def df_sample():
     })
 
     return df_sample
+
+
+@pytest.fixture
+def pl_df_sample(df_sample):
+    return pl.from_pandas(df_sample)
 
 @pytest.mark.parametrize("engine", ["pandas", "polars"])
 def test_single_lead(df_sample, engine):
@@ -58,6 +64,36 @@ def test_lags_string():
     df_result = df.augment_leads("date", "id", leads = (1,7))
     
     assert "id_lead_1" in df_result.columns
+
+
+def test_polars_dataframe_roundtrip(df_sample, pl_df_sample):
+    pandas_result = augment_leads(
+        df_sample, date_column="date", value_column="value", leads=[1, 2]
+    )
+    polars_result = augment_leads(
+        pl_df_sample, date_column="date", value_column="value", leads=[1, 2]
+    )
+
+    assert isinstance(polars_result, pl.DataFrame)
+    pd.testing.assert_frame_equal(pandas_result, polars_result.to_pandas())
+
+
+def test_polars_groupby_roundtrip(df_sample, pl_df_sample):
+    pandas_group = augment_leads(
+        df_sample.groupby("id"),
+        date_column="date",
+        value_column="value",
+        leads=[1, 2],
+    )
+    polars_group = augment_leads(
+        pl_df_sample.group_by("id"),
+        date_column="date",
+        value_column="value",
+        leads=[1, 2],
+    )
+
+    assert isinstance(polars_group, pl.DataFrame)
+    pd.testing.assert_frame_equal(pandas_group, polars_group.to_pandas())
 
 if __name__ == "__main__":
     pytest.main()

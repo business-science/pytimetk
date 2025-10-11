@@ -1,4 +1,5 @@
 import pandas as pd
+import polars as pl
 import pytest
 
 # Ensure the function and dependencies are imported
@@ -14,6 +15,11 @@ def df_sample():
     })
 
     return df_sample
+
+
+@pytest.fixture
+def pl_df_sample(df_sample):
+    return pl.from_pandas(df_sample)
 
 # Basic Functionality Test
 @pytest.mark.parametrize("engine", ["pandas", "polars"])
@@ -75,7 +81,34 @@ def test_lags_string():
     df_result = df.augment_lags("date", "id", lags = (1,7))
     
     assert "id_lag_1" in df_result.columns
-    
+
+
+def test_polars_dataframe_roundtrip(df_sample, pl_df_sample):
+    pandas_result = df_sample.augment_lags(
+        date_column="date", value_column="value", lags=(1, 2)
+    )
+    polars_result = tk.augment_lags(
+        data=pl_df_sample, date_column="date", value_column="value", lags=(1, 2)
+    )
+
+    assert isinstance(polars_result, pl.DataFrame)
+    pd.testing.assert_frame_equal(pandas_result, polars_result.to_pandas())
+
+
+def test_polars_groupby_roundtrip(df_sample, pl_df_sample):
+    pandas_group = df_sample.groupby("id").augment_lags(
+        date_column="date", value_column="value", lags=(1, 2)
+    )
+    polars_group = tk.augment_lags(
+        data=pl_df_sample.group_by("id"),
+        date_column="date",
+        value_column="value",
+        lags=(1, 2),
+    )
+
+    assert isinstance(polars_group, pl.DataFrame)
+    pd.testing.assert_frame_equal(pandas_group, polars_group.to_pandas())
+
 
 if __name__ == "__main__":
     pytest.main()

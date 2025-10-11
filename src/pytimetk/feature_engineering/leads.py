@@ -1,12 +1,21 @@
 import pandas as pd
 import polars as pl
 import pandas_flavor as pf
-from typing import Union, List, Tuple
+import warnings
+
+from typing import List, Optional, Sequence, Tuple, Union
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
     check_value_column,
+)
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    restore_output_type,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -15,139 +24,92 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_leads(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     value_column: Union[str, List[str]],
     leads: Union[int, Tuple[int, int], List[int]] = 1,
     reduce_memory: bool = False,
-    engine: str = "pandas",
-) -> pd.DataFrame:
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
-    Adds leads to a Pandas DataFrame or DataFrameGroupBy object.
-
-    The `augment_leads` function takes a Pandas DataFrame or GroupBy object, a
-    date column, a value column or list of value columns, and a lag or list of
-    lags, and adds lagged versions of the value columns to the DataFrame.
+    Adds lead columns to a pandas or polars DataFrame (or grouped DataFrame).
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter is the input DataFrame or DataFrameGroupBy object
-        that you want to add lagged columns to.
+    data : DataFrame or GroupBy (pandas or polars)
+        Input tabular data to augment.
     date_column : str
-        The `date_column` parameter is a string that specifies the name of the
-        column in the DataFrame that contains the dates. This column will be
-        used to sort the data before adding the lagged values.
+        Name of the date column used to determine ordering prior to shifting.
     value_column : str or list
-        The `value_column` parameter is the column(s) in the DataFrame that you
-        want to add lagged values for. It can be either a single column name
-        (string) or a list of column names.
+        One or more column names whose lead values will be appended.
     leads : int or tuple or list, optional
-        The `leads` parameter is an integer, tuple, or list that specifies the
-        number of lead values to add to the DataFrame.
+        Lead specification. Accepts:
 
-        - If it is an integer, the function will add that number of lead values
-          for each column specified in the `value_column` parameter.
-
-        - If it is a tuple, it will generate leads from the first to the second
-          value (inclusive).
-
-        - If it is a list, it will generate leads based on the values in the list.
+        - int: single lead value
+        - tuple(start, end): inclusive range of leads
+        - list[int]: explicit list of lead values
     reduce_memory : bool, optional
-        The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.
-    engine : str, optional
-        The `engine` parameter is used to specify the engine to use for
-        augmenting lags. It can be either "pandas" or "polars".
-
-        - The default value is "pandas".
-
-        - When "polars", the function will internally use the `polars` library
-          for augmenting lags. This can be faster than using "pandas" for large datasets.
+        If True, attempts to reduce memory usage (pandas only).
+    engine : {"auto", "pandas", "polars"}, optional
+        Execution engine. When "auto" (default) the backend is inferred from the
+        input data type.
 
     Returns
     -------
-    pd.DataFrame
-        A Pandas DataFrame with lead columns added to it.
-
-    Examples
-    --------
-    ```{python}
-    import pandas as pd
-    import pytimetk as tk
-
-    df = tk.load_dataset('m4_daily', parse_dates=['date'])
-    df
-    ```
-
-    ```{python}
-    # Example 1 - Add 7 lead values for a single DataFrame object, pandas engine
-    lead_df_single = (
-        df
-            .query('id == "D10"')
-            .augment_leads(
-                date_column='date',
-                value_column='value',
-                leads=(1, 7),
-                engine='pandas'
-            )
-    )
-    lead_df_single
-    ```
-    ```{python}
-    # Example 2 - Add a single lead value of 2 for each GroupBy object, polars engine
-    lead_df = (
-        df
-            .groupby('id')
-            .augment_leads(
-                date_column='date',
-                value_column='value',
-                leads=2,
-                engine='polars'
-            )
-    )
-    lead_df
-    ```
-
-    ```{python}
-    # Example 3 add 2 lead values, 2 and 4, for a single DataFrame object, pandas engine
-    lead_df_single_two = (
-        df
-            .query('id == "D10"')
-            .augment_leads(
-                date_column='date',
-                value_column='value',
-                leads=[2, 4],
-                engine='pandas'
-            )
-    )
-    lead_df_single_two
-    ```
+    DataFrame
+        DataFrame with lead columns appended. The return type matches the input backend.
     """
-    # Run common checks
+
     check_dataframe_or_groupby(data)
     check_value_column(data, value_column, require_numeric_dtype=False)
     check_date_column(data, date_column)
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    engine_resolved = normalize_engine(engine, data)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
-    if engine == "pandas":
-        ret = _augment_leads_pandas(data, date_column, value_column, leads)
-    elif engine == "polars":
-        ret = _augment_leads_polars(data, date_column, value_column, leads)
-        # Polars Index to Match Pandas
-        ret.index = idx_unsorted
+    if engine_resolved == "pandas":
+        sorted_data, _ = sort_dataframe(
+            prepared_data, date_column, keep_grouped_df=True
+        )
+        result = _augment_leads_pandas(
+            data=sorted_data,
+            date_column=date_column,
+            value_column=value_column,
+            leads=leads,
+        )
+        if reduce_memory:
+            result = reduce_memory_usage(result)
     else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+        result = _augment_leads_polars(
+            data=prepared_data,
+            date_column=date_column,
+            value_column=value_column,
+            leads=leads,
+            group_columns=conversion.group_columns,
+            row_id_column=conversion.row_id_column,
+        )
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    restored = restore_output_type(result, conversion)
 
-    ret = ret.sort_index()
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
 
-    return ret
+    return restored
 
 
 def _augment_leads_pandas(
@@ -159,99 +121,99 @@ def _augment_leads_pandas(
     if isinstance(value_column, str):
         value_column = [value_column]
 
-    if isinstance(leads, int):
-        leads = [leads]
-    elif isinstance(leads, tuple):
-        leads = list(range(leads[0], leads[1] + 1))
-    elif not isinstance(leads, list):
-        raise ValueError("Invalid leads specification. Please use int, tuple, or list.")
+    leads = _normalize_shift_values(leads, label="leads")
 
-    # DATAFRAME EXTENSION - If data is a Pandas DataFrame, extend with future dates
     if isinstance(data, pd.DataFrame):
         df = data.copy()
-
-        df.sort_values(by=[date_column], inplace=True)
-
         for col in value_column:
             for lead in leads:
                 df[f"{col}_lead_{lead}"] = df[col].shift(-lead)
+        return df
 
-    # GROUPED EXTENSION - If data is a GroupBy object, add leads by group
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        # Get the group names and original ungrouped data
         group_names = data.grouper.names
-        data = data.obj
-
-        df = data.copy()
-
-        df.sort_values(by=[*group_names, date_column], inplace=True)
-
+        base_df = data.obj.copy()
         for col in value_column:
             for lead in leads:
-                df[f"{col}_lead_{lead}"] = df.groupby(group_names)[col].shift(-lead)
+                base_df[f"{col}_lead_{lead}"] = base_df.groupby(group_names)[col].shift(
+                    -lead
+                )
+        return base_df
 
-    return df
+    raise TypeError("Unsupported data type passed to _augment_leads_pandas.")
 
 
 def _augment_leads_polars(
-    data: Union[pl.DataFrame, pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
-    value_columns: Union[str, List[str]],
-    leads: Union[int, Tuple[int, int], List[int]] = 1,
+    value_column: Union[str, List[str]],
+    leads: Union[int, Tuple[int, int], List[int]],
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
 ) -> pl.DataFrame:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        # Data is a GroupBy object, use apply to get a DataFrame
-        pandas_df = data.obj.copy()
-    elif isinstance(data, pd.DataFrame):
-        # Data is already a DataFrame
-        pandas_df = data
-    elif isinstance(data, pl.DataFrame):
-        # Data is already a Polars DataFrame
-        pandas_df = data.to_pandas()
-    else:
-        raise ValueError(
-            "data must be a pandas DataFrame, pandas GroupBy object, or a Polars DataFrame"
-        )
+    if isinstance(value_column, str):
+        value_column = [value_column]
 
-    if isinstance(value_columns, str):
-        value_columns = [value_columns]
+    leads = _normalize_shift_values(leads, label="leads")
+    resolved_groups: Sequence[str] = (
+        list(group_columns) if group_columns else _resolve_group_columns(data)
+    )
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+    frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
 
-    lead_foo = pl.col(date_column).shift(-1).alias("_lead_1")
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    sorted_frame = frame_with_id.sort(sort_keys)
 
-    if isinstance(leads, int):
-        leads = [leads]  # Convert to a list with a single value
-    elif isinstance(leads, tuple):
-        leads = list(range(leads[0], leads[1] + 1))
-    elif not isinstance(leads, list):
-        raise TypeError(
-            f"Invalid leads specification: type: {type(leads)}. Please use int, tuple, or list."
-        )
-
-    lead_exprs = []
-
-    for col in value_columns:
+    lead_columns = []
+    for col in value_column:
         for lead in leads:
-            lead_expr = pl.col(col).shift(-lead).alias(f"{col}_lead_{lead}")
-            lead_exprs.append(lead_expr)
+            expr = pl.col(col).shift(-lead)
+            if resolved_groups:
+                expr = expr.over(resolved_groups)
+            lead_columns.append(expr.alias(f"{col}_lead_{lead}"))
 
-    # Select columns
-    selected_columns = [lead_foo] + lead_exprs
+    augmented = sorted_frame.with_columns(lead_columns).sort(row_col)
 
-    # Drop the first column by position (index)
-    selected_columns = selected_columns[1:]
+    if generated:
+        augmented = augmented.drop(row_col)
 
-    # Select the columns
-    df = pl.DataFrame(pandas_df)
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        out_df = df.group_by(data.grouper.names, maintain_order=True).agg(
-            selected_columns
-        )
-        out_df = out_df.explode(out_df.columns[len(data.grouper.names) :])
-        out_df = out_df.drop(data.grouper.names)
-    else:  # a dataframe
-        out_df = df.select(selected_columns)
+    return augmented
 
-    # Concatenate the DataFrames horizontally
-    df = pl.concat([df, out_df], how="horizontal").to_pandas()
 
-    return df
+def _normalize_shift_values(
+    values: Union[int, Tuple[int, int], List[int]],
+    label: str,
+) -> List[int]:
+    if isinstance(values, int):
+        return [values]
+    if isinstance(values, tuple):
+        if len(values) != 2:
+            raise ValueError(f"Invalid {label} specification: tuple must be length 2.")
+        start, end = values
+        return list(range(start, end + 1))
+    if isinstance(values, list):
+        return [int(v) for v in values]
+    raise TypeError(
+        f"Invalid {label} specification: type: {type(values)}. Please use int, tuple, or list."
+    )
+
+
+def _resolve_group_columns(
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
+) -> Sequence[str]:
+    if isinstance(data, pl.dataframe.group_by.GroupBy):
+        columns = []
+        for entry in data.by:
+            if isinstance(entry, str):
+                columns.append(entry)
+            elif hasattr(entry, "meta"):
+                columns.append(entry.meta.output_name())
+            elif isinstance(entry, list) and entry and all(
+                isinstance(item, str) for item in entry
+            ):
+                columns.extend(entry)
+            else:
+                raise TypeError("Unsupported polars group key type.")
+        return columns
+    return []
