@@ -52,6 +52,7 @@ from .feature_engineering import (
     augment_expanding_apply,
     augment_fourier,
     augment_ewm,
+    augment_spline,
 )
 
 from .crossvalidation import TimeSeriesCV, TimeSeriesCVSplitter

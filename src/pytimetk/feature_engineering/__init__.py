@@ -12,3 +12,4 @@ from .ewm import *
 from .fourier import *
 from .diffs import *
 from .pct_change import *
+from .spline import *
