@@ -1,6 +1,7 @@
 import pytest
 import polars as pl
 import pandas as pd
+import pytimetk.polars_namespace  # noqa: F401
 from pytimetk import ts_summary, get_frequency
 from pytimetk import load_dataset
 
@@ -403,27 +404,57 @@ def test_examples_02():
     assert list(test_1.columns) == expected_columns
     
 def test_ts_summary_polars_df():
-    
+
     pd_output = df_sample.ts_summary(date_column='date', engine="pandas").drop("date_tz", axis=1)
-    
+
     pl_output = df_sample.ts_summary(date_column='date', engine="polars").drop("date_tz", axis=1)
-    
-    pd.testing.assert_frame_equal(pd_output, pl_output)
+
+    pd.testing.assert_frame_equal(pd_output.reset_index(drop=True), pl_output.reset_index(drop=True))
+
+
+def test_ts_summary_polars_dataframe_input():
+    pl_df = pl.from_pandas(df_sample)
+    result = ts_summary(pl_df, 'date', engine='polars')
+    expected = df_sample.ts_summary(date_column='date', engine='pandas')
+    pd.testing.assert_frame_equal(result.to_pandas().reset_index(drop=True), expected.reset_index(drop=True))
 
 
 def test_ts_summary_polars_grouped():
-    
+
     df_grouped = df_sample.copy()
     
     df_grouped['group'] = ['A', 'B', 'A', 'B', 'A', 'B', 'A']
     
     groups = df_grouped.groupby('group')
-    
+
     pd_output = groups.ts_summary(date_column='date', engine="pandas").drop("date_tz", axis=1)
-    
+
     pl_output = groups.ts_summary(date_column='date', engine="polars").drop("date_tz", axis=1)
-    
-    pd.testing.assert_frame_equal(pd_output, pl_output)
+
+    pd.testing.assert_frame_equal(
+        pd_output.reset_index(drop=True),
+        pl_output.reset_index(drop=True),
+    )
+
+
+def test_ts_summary_polars_accessor_grouped():
+    df_grouped = df_sample.copy()
+    df_grouped['group'] = ['A', 'B', 'A', 'B', 'A', 'B', 'A']
+    pl_df = pl.from_pandas(df_grouped)
+
+    result = (
+        pl_df
+        .group_by('group')
+        .tk.ts_summary(date_column='date')
+        .drop("date_tz")
+    )
+
+    expected = df_grouped.groupby('group').ts_summary(date_column='date', engine='pandas').drop('date_tz', axis=1)
+
+    result_pd = result.to_pandas().reset_index(drop=True)
+    expected_pd = expected.reset_index(drop=True)
+
+    pd.testing.assert_frame_equal(result_pd, expected_pd)
 
 
 if __name__ == "__main__":

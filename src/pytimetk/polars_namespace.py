@@ -51,6 +51,7 @@ from pytimetk.feature_engineering import (
     augment_wavelet,
 )
 from pytimetk.core.summarize_by_time import summarize_by_time
+from pytimetk.core.ts_summary import ts_summary
 
 FinanceFunc = Callable[..., pl.DataFrame]
 
@@ -88,6 +89,7 @@ _AUGMENT_FUNCTIONS: Dict[str, FinanceFunc] = {
     "augment_timeseries_signature": augment_timeseries_signature,
     "augment_wavelet": augment_wavelet,
     "summarize_by_time": summarize_by_time,
+    "ts_summary": ts_summary,
 }
 
 

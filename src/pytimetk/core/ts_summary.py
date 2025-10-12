@@ -3,7 +3,7 @@ import pandas_flavor as pf
 import numpy as np
 import polars as pl
 
-from typing import Union
+from typing import List, Sequence, Union
 
 from pytimetk.core.frequency import get_frequency_summary
 
@@ -13,35 +13,46 @@ from pytimetk.utils.checks import (
     check_series_or_datetime,
 )
 
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    normalize_engine,
+    restore_output_type,
+)
 from pytimetk.utils.parallel_helpers import parallel_apply, get_threads, progress_apply
 
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def ts_summary(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     threads=1,
     show_progress=True,
     engine: str = "pandas",
-) -> pd.DataFrame:
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Computes summary statistics for a time series data, either for the entire
     dataset or grouped by a specific column.
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter can be either a Pandas DataFrame or a Pandas
-        DataFrameGroupBy object. It represents the data that you want to
-        summarize.
+    data : DataFrame or GroupBy (pandas or polars)
+        Tabular time series data. Grouped inputs are processed per group
+        before the summary statistics are appended. Accepts both pandas and
+        polars objects.
     date_column : str
         The `date_column` parameter is a string that specifies the name of the
         column in the DataFrame that contains the dates. This column will be
         used to compute summary statistics for the time series data.
     engine : str, optional
-        The `engine` parameter is used to specify the engine to use for
-        augmenting lags. It can be either "pandas" or "polars".
+        Execution engine. ``"pandas"`` (default) uses pandas for the summary
+        calculations. When "polars", the function operates on polars frames.
 
         - The default value is "pandas".
 
@@ -50,8 +61,9 @@ def ts_summary(
 
     Returns
     -------
-    pd.DataFrame
-        The `ts_summary` function returns a summary of time series data. The
+    DataFrame
+        Summary statistics for the time series. The concrete return type matches
+        the engine used for computation.
         summary includes the following statistics:
         - If grouped data is provided, the returned data will contain the
           grouping columns first.
@@ -137,48 +149,56 @@ def ts_summary(
             )
     )
     ```
+
+    ```{python}
+    # Polars DataFrame using the tk accessor
+    import polars as pl
+    import pytimetk.polars_namespace
+
+    pl_df = pl.from_pandas(df)
+
+    pl_df.tk.ts_summary(date_column='date')
+    ```
     """
 
-    if not engine in ["pandas", "polars"]:
+    if engine not in ["pandas", "polars"]:
         raise ValueError(
             f"Supported engines are 'pandas' or 'polars'. Found {engine}. Please select an authorized engine."
         )
 
-    # Run common checks
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
 
-    summarize_func = _ts_summary if engine == "pandas" else _ts_summary_polars
+    engine_resolved = normalize_engine(engine, data)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared = conversion.data
 
-    if isinstance(data, pd.DataFrame):
-        return summarize_func(data, date_column)
+    if engine_resolved == "pandas":
+        result = _ts_summary_pandas_dispatch(
+            prepared,
+            date_column=date_column,
+            threads=threads,
+            show_progress=show_progress,
+        )
+    else:
+        result = _ts_summary_polars_dispatch(
+            prepared,
+            date_column=date_column,
+            group_columns=list(conversion.group_columns or []),
+        )
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
+    if engine_resolved == "polars" and conversion.original_kind in (
+        "pandas_df",
+        "pandas_groupby",
+    ):
+        conversion.pandas_index = None
 
-        # Get threads
-        threads = get_threads(threads)
+    restored = restore_output_type(result, conversion)
 
-        if threads == 1:
-            result = progress_apply(
-                data,
-                func=summarize_func,
-                date_column=date_column,
-                show_progress=show_progress,
-                desc="TS Summarizing...",
-            )
+    if isinstance(restored, pd.DataFrame):
+        return restored
 
-        else:
-            result = parallel_apply(
-                data,
-                func=summarize_func,
-                date_column=date_column,
-                threads=threads,
-                show_progress=show_progress,
-                desc="TS Summarizing...",
-            )
-
-        return result.reset_index(level=group_names)
+    return restored
 
 
 def _ts_summary(group: pd.DataFrame, date_column: str) -> pd.DataFrame:
@@ -199,24 +219,89 @@ def _ts_summary(group: pd.DataFrame, date_column: str) -> pd.DataFrame:
     )
 
 
+def _ts_summary_pandas_dispatch(
+    prepared: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    date_column: str,
+    threads: int,
+    show_progress: bool,
+) -> pd.DataFrame:
+    if isinstance(prepared, pd.DataFrame):
+        return _ts_summary(prepared, date_column)
+
+    group_names = prepared.grouper.names
+    threads_resolved = get_threads(threads)
+
+    if threads_resolved == 1:
+        result = progress_apply(
+            prepared,
+            func=_ts_summary,
+            date_column=date_column,
+            show_progress=show_progress,
+            desc="TS Summarizing...",
+        )
+    else:
+        result = parallel_apply(
+            prepared,
+            func=_ts_summary,
+            date_column=date_column,
+            threads=threads_resolved,
+            show_progress=show_progress,
+            desc="TS Summarizing...",
+        )
+
+    return result.reset_index(level=group_names)
+
+
+def _ts_summary_polars_dispatch(
+    prepared: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
+    date_column: str,
+    group_columns: Sequence[str],
+) -> pl.DataFrame:
+    if isinstance(prepared, pl.DataFrame):
+        return _ts_summary_polars(prepared, date_column)
+
+    frame = prepared.df
+    partitions = frame.partition_by(group_columns, maintain_order=True, as_dict=True)
+
+    summaries: List[pl.DataFrame] = []
+    for key, subgroup in partitions.items():
+        summary = _ts_summary_polars(subgroup, date_column)
+        key_tuple = key if isinstance(key, tuple) else (key,)
+        for col, value in zip(group_columns, key_tuple):
+            summary = summary.with_columns(pl.lit(value).alias(col))
+        ordered_cols = list(group_columns) + [
+            col for col in summary.columns if col not in group_columns
+        ]
+        summaries.append(summary.select(ordered_cols))
+
+    if not summaries:
+        return pl.DataFrame()
+
+    return pl.concat(summaries, how="vertical")
+
+
 def _ts_summary_polars(data: pl.DataFrame, date_column: str) -> pl.DataFrame:
     """Compute time series summary for a single group. Polars version."""
 
-    # Make sure date is sorted
-    date = pl.from_pandas(data)[date_column].sort(descending=False)
+    frame = data.sort(date_column)
+    date = frame[date_column]
 
     # Compute summary statistics
     date_summary = compute_date_summary_polars(date, output_type="polars")
-    frequency_summary = pl.from_pandas(get_frequency_summary(date.to_pandas()))
+    frequency_summary = pl.from_pandas(
+        get_frequency_summary(date.to_pandas(), engine="pandas")
+    )
     diff_summary = get_diff_summary_polars(date).cast(pl.Duration("ns"))
     diff_summary_num = get_diff_summary_polars(date, numeric=True).cast(pl.Float64)
 
-    # Combine summary statistics into a single DataFrame
     df = pl.concat(
         [date_summary, frequency_summary, diff_summary, diff_summary_num],
         how="horizontal",
-    ).to_pandas()
-    df.date_tz = df.date_tz.astype(str).replace("nan", None)
+    )
+
+    if "date_tz" in df.columns:
+        df = df.with_columns(pl.col("date_tz").cast(pl.Utf8()))
+
     return df
 
 
