@@ -32,3 +32,13 @@ dates = pd.date_range(start='2021-01-01', end='2024-01-01', freq='MS')
 
 tk.get_seasonal_frequency(dates)
 ```
+
+```{python}
+# Polars Series example
+import polars as pl
+from datetime import datetime, timezone
+
+idx = pl.Series("date", pl.date_range(start=datetime(2021, 1, 1, tzinfo=timezone.utc), end=datetime(2024, 1, 1, tzinfo=timezone.utc), interval="1mo", eager=True))
+
+tk.get_seasonal_frequency(idx, engine='polars')
+```

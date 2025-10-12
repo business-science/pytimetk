@@ -77,7 +77,7 @@ df_hilbert.head()
 # Example 2: Using the polars accessor on a grouped table
 import pytimetk as tk
 import polars as pl
-import pytimetk.polars_namespace
+
 
 df = tk.load_dataset('walmart_sales_weekly', parse_dates=['Date'])
 df_hilbert = (
@@ -96,7 +96,7 @@ df_hilbert.head()
 # Example 3: Using the polars accessor on a DataFrame
 import pytimetk as tk
 import polars as pl
-import pytimetk.polars_namespace
+
 
 df = tk.load_dataset('taylor_30_min', parse_dates=['date'])
 df_hilbert = (

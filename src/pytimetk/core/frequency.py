@@ -162,8 +162,9 @@ def get_frequency_summary(
     ```{python}
     # Polars Series example
     import polars as pl
+    from datetime import datetime, timezone
 
-    idx = pl.Series("date", pl.date_range(low="2020-01-01", high="2020-01-10", interval="1d"))
+    idx = pl.Series("date", pl.date_range(start=datetime(2020, 1, 1, tzinfo=timezone.utc), end=datetime(2020, 1, 10, tzinfo=timezone.utc), interval="1d", eager=True))
 
     tk.get_frequency_summary(idx, engine="polars")
     ```
@@ -459,8 +460,9 @@ def get_seasonal_frequency(
     ```{python}
     # Polars Series example
     import polars as pl
+    from datetime import datetime, timezone
 
-    idx = pl.Series("date", pl.date_range(low="2021-01-01", high="2024-01-01", interval="1mo"))
+    idx = pl.Series("date", pl.date_range(start=datetime(2021, 1, 1, tzinfo=timezone.utc), end=datetime(2024, 1, 1, tzinfo=timezone.utc), interval="1mo", eager=True))
 
     tk.get_seasonal_frequency(idx, engine='polars')
     ```
@@ -572,8 +574,9 @@ def get_trend_frequency(
     ```{python}
     # Polars Series example
     import polars as pl
+    from datetime import datetime, timezone
 
-    idx = pl.Series("date", pl.date_range(low="2021-01-01", high="2024-01-01", interval="1mo"))
+    idx = pl.Series("date", pl.date_range(start=datetime(2021, 1, 1, tzinfo=timezone.utc), end=datetime(2024, 1, 1, tzinfo=timezone.utc), interval="1mo", eager=True))
 
     tk.get_trend_frequency(idx, engine='polars')
     ```

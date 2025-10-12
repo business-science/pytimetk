@@ -116,6 +116,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <!-- SUMO -->
 <script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -462,9 +465,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 11%">
-<col style="width: 15%">
-<col style="width: 72%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 85%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -476,8 +479,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td></td>
-<td>pd.Series</td>
-<td>A Series containing the generated weekday dates.</td>
+<td>Series</td>
+<td>A Series containing the generated weekday dates. The concrete type matches the requested engine.</td>
 </tr>
 </tbody>
 </table>
@@ -540,15 +543,60 @@ Name: Weekday Dates, dtype: datetime64[ns]</code></pre>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                          country            <span class="op">=</span> <span class="st">'Israel'</span>,</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                          engine             <span class="op">=</span> <span class="st">'polars'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>0   2023-01-02
-1   2023-01-03
-2   2023-01-04
-3   2023-01-05
-4   2023-01-09
-5   2023-01-10
-6   2023-01-11
-7   2023-01-12
-Name: Weekday Dates, dtype: datetime64[ms]</code></pre>
+<div><style>
+.dataframe > thead > tr,
+.dataframe > tbody > tr {
+  text-align: right;
+  white-space: pre-wrap;
+}
+</style>
+<small>shape: (11,)</small>
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Weekday Dates</th>
+</tr>
+<tr class="odd">
+<th>object</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2023-01-01 00:00:00</td>
+</tr>
+<tr class="even">
+<td>2023-01-02 00:00:00</td>
+</tr>
+<tr class="odd">
+<td>2023-01-03 00:00:00</td>
+</tr>
+<tr class="even">
+<td>2023-01-04 00:00:00</td>
+</tr>
+<tr class="odd">
+<td>2023-01-05 00:00:00</td>
+</tr>
+<tr class="even">
+<td>…</td>
+</tr>
+<tr class="odd">
+<td>2023-01-09 00:00:00</td>
+</tr>
+<tr class="even">
+<td>2023-01-10 00:00:00</td>
+</tr>
+<tr class="odd">
+<td>2023-01-11 00:00:00</td>
+</tr>
+<tr class="even">
+<td>2023-01-12 00:00:00</td>
+</tr>
+<tr class="odd">
+<td>2023-01-15 00:00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 

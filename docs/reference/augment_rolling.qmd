@@ -118,7 +118,7 @@ display(rolled_df)
 # Example 3 - Multiple groups, polars engine
 
 import polars as pl
-import pytimetk.polars_namespace
+
 
 rolled_df = (
     pl.from_pandas(df)

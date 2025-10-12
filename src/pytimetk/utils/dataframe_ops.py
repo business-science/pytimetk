@@ -156,7 +156,7 @@ def restore_output_type(
     if conversion.original_kind in ("pandas_df", "pandas_groupby"):
         if isinstance(result, pl.DataFrame):
             result = result.to_pandas()
-        if conversion.pandas_index is not None:
+        if conversion.pandas_index is not None and len(conversion.pandas_index) == len(result):
             result.index = conversion.pandas_index
         return result
 

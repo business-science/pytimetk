@@ -537,6 +537,88 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 </div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Polars engine example</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>tk.timeseries_unit_frequency_table(engine<span class="op">=</span><span class="st">'polars'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">unit</th>
+<th data-quarto-table-cell-role="th">freq</th>
+<th data-quarto-table-cell-role="th">freq_min</th>
+<th data-quarto-table-cell-role="th">freq_max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>sec</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>min</td>
+<td>60</td>
+<td>60</td>
+<td>60</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>hour</td>
+<td>3600</td>
+<td>3600</td>
+<td>3600</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>day</td>
+<td>86400</td>
+<td>86400</td>
+<td>86400</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>week</td>
+<td>604800</td>
+<td>604800</td>
+<td>604800</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>month</td>
+<td>2678400</td>
+<td>2419200</td>
+<td>2678400</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>quarter</td>
+<td>7948800</td>
+<td>7776000</td>
+<td>7948800</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>year</td>
+<td>31622400</td>
+<td>31536000</td>
+<td>31622400</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
 
 
 </section>

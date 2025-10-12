@@ -125,7 +125,7 @@ wavelet_df.head()
 # Example 2: Using the polars accessor on a DataFrame
 import pytimetk as tk
 import polars as pl
-import pytimetk.polars_namespace
+
 
 df = tk.load_dataset('taylor_30_min', parse_dates = ['date'])
 

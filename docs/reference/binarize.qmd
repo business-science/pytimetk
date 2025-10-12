@@ -1,7 +1,14 @@
 # binarize { #pytimetk.binarize }
 
 ```python
-binarize(data, n_bins=4, thresh_infreq=0.01, name_infreq='-OTHER', one_hot=True)
+binarize(
+    data,
+    n_bins=4,
+    thresh_infreq=0.01,
+    name_infreq='-OTHER',
+    one_hot=True,
+    engine='pandas',
+)
 ```
 
 The `binarize` function prepares data for `correlate`, which is used for analyzing correlationfunnel plots.
@@ -20,19 +27,20 @@ transformation to create a new DataFrame with binarized data.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                                                            | Description                                                                                                                                                                                                                                                                                    | Default    |
-|---------------|-----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| data          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | The `data` parameter is the input data that you want to binarize. It can be either a pandas DataFrame or a DataFrameGroupBy object.                                                                                                                                                            | _required_ |
-| n_bins        | int                                                             | The `n_bins` parameter specifies the number of bins to use when binarizing numeric data. It is used in the `create_recipe` function to determine the number of bins for each numeric column. `pd.qcut()` is used to bin the numeric data.                                                      | `4`        |
-| thresh_infreq | float                                                           | The `thresh_infreq` parameter is a float that represents the threshold for infrequent categories. Categories that have a frequency below this threshold will be grouped together and labeled with the name specified in the `name_infreq` parameter. By default, the threshold is set to 0.01. | `0.01`     |
-| name_infreq   | str                                                             | The `name_infreq` parameter is used to specify the name that will be assigned to the category representing infrequent values in a column. This is applicable when performing binarization on non-numeric columns. By default, the name assigned is "-OTHER".                                   | `'-OTHER'` |
-| one_hot       | bool                                                            | The `one_hot` parameter is a boolean flag that determines whether or not to perform one-hot encoding on the categorical variables after binarization. If `one_hot` is set to `True`, the categorical variables will be one-hot encoded, creating binary columns for each unique category.      | `True`     |
+| Name          | Type                                   | Description                                                                                                                                                                                                                                                                                    | Default    |
+|---------------|----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | DataFrame or GroupBy(pandas or polars) | The `data` parameter is the input data that you want to binarize. It can be either a pandas/polars DataFrame or a grouped object.                                                                                                                                                              | _required_ |
+| n_bins        | int                                    | The `n_bins` parameter specifies the number of bins to use when binarizing numeric data. It is used in the `create_recipe` function to determine the number of bins for each numeric column. `pd.qcut()` is used to bin the numeric data.                                                      | `4`        |
+| thresh_infreq | float                                  | The `thresh_infreq` parameter is a float that represents the threshold for infrequent categories. Categories that have a frequency below this threshold will be grouped together and labeled with the name specified in the `name_infreq` parameter. By default, the threshold is set to 0.01. | `0.01`     |
+| name_infreq   | str                                    | The `name_infreq` parameter is used to specify the name that will be assigned to the category representing infrequent values in a column. This is applicable when performing binarization on non-numeric columns. By default, the name assigned is "-OTHER".                                   | `'-OTHER'` |
+| one_hot       | bool                                   | The `one_hot` parameter is a boolean flag that determines whether or not to perform one-hot encoding on the categorical variables after binarization. If `one_hot` is set to `True`, the categorical variables will be one-hot encoded, creating binary columns for each unique category.      | `True`     |
+| engine        | (pandas, polars, auto)                 | Execution engine. ``"pandas"`` (default) performs the computation using pandas. ``"polars"`` converts the result to a polars DataFrame on return. ``"auto"`` infers the engine from the input data.                                                                                            | `"pandas"` |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type                                                                                           | Description                                                                                                                                                                                                       |
-|--------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|        | The function `binarize` returns the transformed data after applying various data preprocessing | steps such as converting non-numeric columns to categorical, replacing boolean columns with integers, fixing low cardinality numeric data, fixing high skew numeric data, and creating a recipe for binarization. |
+| Name   | Type                                                                                           | Description                                                                                                                                                                                                                                                                                |
+|--------|------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|        | The function `binarize` returns the transformed data after applying various data preprocessing | steps such as converting non-numeric columns to categorical, replacing boolean columns with integers, fixing low cardinality numeric data, fixing high skew numeric data, and creating a recipe for binarization. The concrete DataFrame type matches the engine used to process the data. |
 
 ## See Also {.doc-section .doc-section-see-also}
 

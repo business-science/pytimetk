@@ -21,3 +21,10 @@ import pytimetk as tk
 
 tk.time_scale_template()
 ```
+
+```{python}
+# Polars engine example
+import pytimetk as tk
+
+tk.time_scale_template(engine='polars')
+```

@@ -503,6 +503,79 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 </div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Polars engine example</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>tk.time_scale_template(engine<span class="op">=</span><span class="st">'polars'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">median_unit</th>
+<th data-quarto-table-cell-role="th">seasonal_period</th>
+<th data-quarto-table-cell-role="th">trend_period</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>S</td>
+<td>1H</td>
+<td>12H</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>T</td>
+<td>1D</td>
+<td>14D</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>H</td>
+<td>1D</td>
+<td>1M</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>D</td>
+<td>1W</td>
+<td>1Q</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>W</td>
+<td>1Q</td>
+<td>1Y</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>M</td>
+<td>1Y</td>
+<td>5Y</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>Q</td>
+<td>1Y</td>
+<td>10Y</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>Y</td>
+<td>5Y</td>
+<td>30Y</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
 
 
 </section>

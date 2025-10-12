@@ -115,9 +115,15 @@ def augment_expanding_apply(
     ```{python}
     # Example (polars engine via tk accessor)
     import polars as pl
+    import pandas as pd
 
+    df = pd.DataFrame({
+        'id': [1, 1, 1, 2, 2, 2],
+        'date': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06']),
+        'value1': [10, 20, 29, 42, 53, 59],
+        'value2': [2, 16, 20, 40, 41, 50],
+    })
 
-    df = generate_sample_data_1()
     (
         pl.from_pandas(df)
           .group_by('id')

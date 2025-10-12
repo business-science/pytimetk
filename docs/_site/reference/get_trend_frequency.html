@@ -476,6 +476,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <pre><code>'5Y'</code></pre>
 </div>
 </div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Polars Series example</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datetime <span class="im">import</span> datetime, timezone</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>idx <span class="op">=</span> pl.Series(<span class="st">"date"</span>, pl.date_range(start<span class="op">=</span>datetime(<span class="dv">2021</span>, <span class="dv">1</span>, <span class="dv">1</span>, tzinfo<span class="op">=</span>timezone.utc), end<span class="op">=</span>datetime(<span class="dv">2024</span>, <span class="dv">1</span>, <span class="dv">1</span>, tzinfo<span class="op">=</span>timezone.utc), interval<span class="op">=</span><span class="st">"1mo"</span>, eager<span class="op">=</span><span class="va">True</span>))</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>tk.get_trend_frequency(idx, engine<span class="op">=</span><span class="st">'polars'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>'5Y'</code></pre>
+</div>
+</div>
 
 
 </section>

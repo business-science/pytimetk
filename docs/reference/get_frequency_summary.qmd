@@ -41,3 +41,12 @@ dates.inferred_freq == None
 tk.get_frequency_summary(dates)
 
 ```
+```{python}
+# Polars Series example
+import polars as pl
+from datetime import datetime, timezone
+
+idx = pl.Series("date", pl.date_range(start=datetime(2020, 1, 1, tzinfo=timezone.utc), end=datetime(2020, 1, 10, tzinfo=timezone.utc), interval="1d", eager=True))
+
+tk.get_frequency_summary(idx, engine="polars")
+```

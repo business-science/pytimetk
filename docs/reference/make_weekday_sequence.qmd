@@ -27,9 +27,9 @@ optionally excluding weekends and holidays.
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type      | Description                                      |
-|--------|-----------|--------------------------------------------------|
-|        | pd.Series | A Series containing the generated weekday dates. |
+| Name   | Type   | Description                                                                                      |
+|--------|--------|--------------------------------------------------------------------------------------------------|
+|        | Series | A Series containing the generated weekday dates. The concrete type matches the requested engine. |
 
 ## Examples {.doc-section .doc-section-examples}
 

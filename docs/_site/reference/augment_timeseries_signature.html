@@ -116,6 +116,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <!-- SUMO -->
 <script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -403,9 +406,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 4%">
 <col style="width: 3%">
-<col style="width: 89%">
+<col style="width: 10%">
+<col style="width: 83%">
 <col style="width: 3%">
 </colgroup>
 <thead>
@@ -419,8 +422,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>data</td>
-<td>pd.DataFrame</td>
-<td>The <code>data</code> parameter is a pandas DataFrame that contains the time series data.</td>
+<td>DataFrame or GroupBy(pandas or polars)</td>
+<td>Tabular time series data. Grouped inputs are processed per group before the signature columns are appended. Accepts both pandas and polars inputs.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
@@ -449,8 +452,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <table class="table">
 <colgroup>
 <col style="width: 4%">
-<col style="width: 59%">
-<col style="width: 35%">
+<col style="width: 51%">
+<col style="width: 44%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -462,8 +465,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td></td>
-<td>pd.DataFrame</td>
-<td>A Pandas DataFrame with 29 datetime features added to it.</td>
+<td>DataFrame</td>
+<td>Data with 29 datetime features appended. The return type matches the input backend.</td>
 </tr>
 <tr class="even">
 <td></td>
@@ -696,35 +699,633 @@ frame_material:           object            ['Carbon', 'Carbon', 'Alumin ...
 bikeshop_name:            object            ['Ithaca Mountain Climbers', ...
 city:                     object            ['Ithaca', 'Ithaca', 'Kansas ...
 state:                    object            ['NY', 'NY', 'KS', 'KS', 'KY ...
-order_date_index_num:     float64           [1294358400.0, 1294358400.0, ...
+order_date_index_num:     int64             [1294358400, 1294358400, 129 ...
 order_date_year:          int32             [2011, 2011, 2011, 2011, 201 ...
-order_date_year_iso:      int32             [2011, 2011, 2011, 2011, 201 ...
-order_date_yearstart:     int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_yearend:       int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_leapyear:      int8              [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_half:          int32             [1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
-order_date_quarter:       int8              [1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
+order_date_year_iso:      UInt32            [2011, 2011, 2011, 2011, 201 ...
+order_date_yearstart:     uint8             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_yearend:       uint8             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_leapyear:      uint8             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_half:          int64             [1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
+order_date_quarter:       int32             [1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
 order_date_quarteryear:   object            ['2011Q1', '2011Q1', '2011Q1 ...
-order_date_quarterstart:  int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_quarterend:    int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_month:         int8              [1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
+order_date_quarterstart:  uint8             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_quarterend:    uint8             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_month:         int32             [1, 1, 1, 1, 1, 1, 1, 1, 1,  ...
 order_date_month_lbl:     object            ['January', 'January', 'Janu ...
-order_date_monthstart:    int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_monthend:      int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_yweek:         int8              [1, 1, 2, 2, 2, 2, 2, 2, 2,  ...
-order_date_mweek:         int8              [1, 1, 2, 2, 2, 2, 2, 2, 2,  ...
-order_date_wday:          int8              [5, 5, 1, 1, 1, 1, 1, 1, 1,  ...
+order_date_monthstart:    uint8             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_monthend:      uint8             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_yweek:         UInt32            [1, 1, 2, 2, 2, 2, 2, 2, 2,  ...
+order_date_mweek:         int32             [1, 1, 2, 2, 2, 2, 2, 2, 2,  ...
+order_date_wday:          int32             [5, 5, 1, 1, 1, 1, 1, 1, 1,  ...
 order_date_wday_lbl:      object            ['Friday', 'Friday', 'Monday ...
-order_date_mday:          int8              [7, 7, 10, 10, 10, 10, 10, 1 ...
-order_date_qday:          int16             [7, 7, 10, 10, 10, 10, 10, 1 ...
-order_date_yday:          int16             [7, 7, 10, 10, 10, 10, 10, 1 ...
-order_date_weekend:       int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_hour:          int8              [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_minute:        int8              [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
-order_date_second:        int8              [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_mday:          int32             [7, 7, 10, 10, 10, 10, 10, 1 ...
+order_date_qday:          int64             [7, 7, 10, 10, 10, 10, 10, 1 ...
+order_date_yday:          int32             [7, 7, 10, 10, 10, 10, 10, 1 ...
+order_date_weekend:       int64             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_hour:          int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_minute:        int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
+order_date_second:        int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
 order_date_msecond:       int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
 order_date_nsecond:       int32             [0, 0, 0, 0, 0, 0, 0, 0, 0,  ...
 order_date_am_pm:         object            ['am', 'am', 'am', 'am', 'am ...</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Polars DataFrame using the tk accessor</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>pl_df <span class="op">=</span> pl.from_pandas(df)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>pl_df.tk.augment_timeseries_signature(date_column<span class="op">=</span><span class="st">'order_date'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div><style>
+.dataframe > thead > tr,
+.dataframe > tbody > tr {
+  text-align: right;
+  white-space: pre-wrap;
+}
+</style>
+<small>shape: (2_466, 42)</small>
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">order_id</th>
+<th data-quarto-table-cell-role="th">order_line</th>
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">quantity</th>
+<th data-quarto-table-cell-role="th">price</th>
+<th data-quarto-table-cell-role="th">total_price</th>
+<th data-quarto-table-cell-role="th">model</th>
+<th data-quarto-table-cell-role="th">category_1</th>
+<th data-quarto-table-cell-role="th">category_2</th>
+<th data-quarto-table-cell-role="th">frame_material</th>
+<th data-quarto-table-cell-role="th">bikeshop_name</th>
+<th data-quarto-table-cell-role="th">city</th>
+<th data-quarto-table-cell-role="th">state</th>
+<th data-quarto-table-cell-role="th">order_date_index_num</th>
+<th data-quarto-table-cell-role="th">order_date_year</th>
+<th data-quarto-table-cell-role="th">order_date_year_iso</th>
+<th data-quarto-table-cell-role="th">order_date_yearstart</th>
+<th data-quarto-table-cell-role="th">order_date_yearend</th>
+<th data-quarto-table-cell-role="th">order_date_leapyear</th>
+<th data-quarto-table-cell-role="th">order_date_half</th>
+<th data-quarto-table-cell-role="th">order_date_quarter</th>
+<th data-quarto-table-cell-role="th">order_date_quarteryear</th>
+<th data-quarto-table-cell-role="th">order_date_quarterstart</th>
+<th data-quarto-table-cell-role="th">order_date_quarterend</th>
+<th data-quarto-table-cell-role="th">order_date_month</th>
+<th data-quarto-table-cell-role="th">order_date_month_lbl</th>
+<th data-quarto-table-cell-role="th">order_date_monthstart</th>
+<th data-quarto-table-cell-role="th">order_date_monthend</th>
+<th data-quarto-table-cell-role="th">order_date_yweek</th>
+<th data-quarto-table-cell-role="th">order_date_mweek</th>
+<th data-quarto-table-cell-role="th">order_date_wday</th>
+<th data-quarto-table-cell-role="th">order_date_wday_lbl</th>
+<th data-quarto-table-cell-role="th">order_date_mday</th>
+<th data-quarto-table-cell-role="th">order_date_qday</th>
+<th data-quarto-table-cell-role="th">order_date_yday</th>
+<th data-quarto-table-cell-role="th">order_date_weekend</th>
+<th data-quarto-table-cell-role="th">order_date_hour</th>
+<th data-quarto-table-cell-role="th">order_date_minute</th>
+<th data-quarto-table-cell-role="th">order_date_second</th>
+<th data-quarto-table-cell-role="th">order_date_msecond</th>
+<th data-quarto-table-cell-role="th">order_date_nsecond</th>
+<th data-quarto-table-cell-role="th">order_date_am_pm</th>
+</tr>
+<tr class="odd">
+<th>i64</th>
+<th>i64</th>
+<th>datetime[ns]</th>
+<th>i64</th>
+<th>i64</th>
+<th>i64</th>
+<th>str</th>
+<th>str</th>
+<th>str</th>
+<th>str</th>
+<th>str</th>
+<th>str</th>
+<th>str</th>
+<th>i64</th>
+<th>i32</th>
+<th>u32</th>
+<th>u8</th>
+<th>u8</th>
+<th>u8</th>
+<th>i64</th>
+<th>i32</th>
+<th>str</th>
+<th>u8</th>
+<th>u8</th>
+<th>i32</th>
+<th>str</th>
+<th>u8</th>
+<th>u8</th>
+<th>u32</th>
+<th>i32</th>
+<th>i32</th>
+<th>str</th>
+<th>i32</th>
+<th>i64</th>
+<th>i32</th>
+<th>i64</th>
+<th>i32</th>
+<th>i32</th>
+<th>i32</th>
+<th>i32</th>
+<th>i32</th>
+<th>str</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>1</td>
+<td>2011-01-07 00:00:00</td>
+<td>1</td>
+<td>6070</td>
+<td>6070</td>
+<td>"Jekyll Carbon 2"</td>
+<td>"Mountain"</td>
+<td>"Over Mountain"</td>
+<td>"Carbon"</td>
+<td>"Ithaca Mountain Climbers"</td>
+<td>"Ithaca"</td>
+<td>"NY"</td>
+<td>1294358400</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>"2011Q1"</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>"January"</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>5</td>
+<td>"Friday"</td>
+<td>7</td>
+<td>7</td>
+<td>7</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>"am"</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>2</td>
+<td>2011-01-07 00:00:00</td>
+<td>1</td>
+<td>5970</td>
+<td>5970</td>
+<td>"Trigger Carbon 2"</td>
+<td>"Mountain"</td>
+<td>"Over Mountain"</td>
+<td>"Carbon"</td>
+<td>"Ithaca Mountain Climbers"</td>
+<td>"Ithaca"</td>
+<td>"NY"</td>
+<td>1294358400</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>"2011Q1"</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>"January"</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>5</td>
+<td>"Friday"</td>
+<td>7</td>
+<td>7</td>
+<td>7</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>"am"</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>1</td>
+<td>2011-01-10 00:00:00</td>
+<td>1</td>
+<td>2770</td>
+<td>2770</td>
+<td>"Beast of the East 1"</td>
+<td>"Mountain"</td>
+<td>"Trail"</td>
+<td>"Aluminum"</td>
+<td>"Kansas City 29ers"</td>
+<td>"Kansas City"</td>
+<td>"KS"</td>
+<td>1294617600</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>"2011Q1"</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>"January"</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>2</td>
+<td>1</td>
+<td>"Monday"</td>
+<td>10</td>
+<td>10</td>
+<td>10</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>"am"</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>2</td>
+<td>2011-01-10 00:00:00</td>
+<td>1</td>
+<td>5970</td>
+<td>5970</td>
+<td>"Trigger Carbon 2"</td>
+<td>"Mountain"</td>
+<td>"Over Mountain"</td>
+<td>"Carbon"</td>
+<td>"Kansas City 29ers"</td>
+<td>"Kansas City"</td>
+<td>"KS"</td>
+<td>1294617600</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>"2011Q1"</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>"January"</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>2</td>
+<td>1</td>
+<td>"Monday"</td>
+<td>10</td>
+<td>10</td>
+<td>10</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>"am"</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>1</td>
+<td>2011-01-10 00:00:00</td>
+<td>1</td>
+<td>10660</td>
+<td>10660</td>
+<td>"Supersix Evo Hi-Mod Team"</td>
+<td>"Road"</td>
+<td>"Elite Road"</td>
+<td>"Carbon"</td>
+<td>"Louisville Race Equipment"</td>
+<td>"Louisville"</td>
+<td>"KY"</td>
+<td>1294617600</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>"2011Q1"</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>"January"</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>2</td>
+<td>1</td>
+<td>"Monday"</td>
+<td>10</td>
+<td>10</td>
+<td>10</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>"am"</td>
+</tr>
+<tr class="even">
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr class="odd">
+<td>321</td>
+<td>3</td>
+<td>2011-12-22 00:00:00</td>
+<td>1</td>
+<td>1410</td>
+<td>1410</td>
+<td>"CAAD8 105"</td>
+<td>"Road"</td>
+<td>"Elite Road"</td>
+<td>"Aluminum"</td>
+<td>"Miami Race Equipment"</td>
+<td>"Miami"</td>
+<td>"FL"</td>
+<td>1324512000</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>4</td>
+<td>"2011Q4"</td>
+<td>0</td>
+<td>0</td>
+<td>12</td>
+<td>"December"</td>
+<td>0</td>
+<td>0</td>
+<td>51</td>
+<td>4</td>
+<td>4</td>
+<td>"Thursday"</td>
+<td>22</td>
+<td>83</td>
+<td>356</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>"am"</td>
+</tr>
+<tr class="even">
+<td>322</td>
+<td>1</td>
+<td>2011-12-28 00:00:00</td>
+<td>1</td>
+<td>1250</td>
+<td>1250</td>
+<td>"Synapse Disc Tiagra"</td>
+<td>"Road"</td>
+<td>"Endurance Road"</td>
+<td>"Aluminum"</td>
+<td>"Phoenix Bi-peds"</td>
+<td>"Phoenix"</td>
+<td>"AZ"</td>
+<td>1325030400</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>4</td>
+<td>"2011Q4"</td>
+<td>0</td>
+<td>0</td>
+<td>12</td>
+<td>"December"</td>
+<td>0</td>
+<td>0</td>
+<td>52</td>
+<td>4</td>
+<td>3</td>
+<td>"Wednesday"</td>
+<td>28</td>
+<td>89</td>
+<td>362</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>"am"</td>
+</tr>
+<tr class="odd">
+<td>322</td>
+<td>2</td>
+<td>2011-12-28 00:00:00</td>
+<td>1</td>
+<td>2660</td>
+<td>2660</td>
+<td>"Bad Habit 2"</td>
+<td>"Mountain"</td>
+<td>"Trail"</td>
+<td>"Aluminum"</td>
+<td>"Phoenix Bi-peds"</td>
+<td>"Phoenix"</td>
+<td>"AZ"</td>
+<td>1325030400</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>4</td>
+<td>"2011Q4"</td>
+<td>0</td>
+<td>0</td>
+<td>12</td>
+<td>"December"</td>
+<td>0</td>
+<td>0</td>
+<td>52</td>
+<td>4</td>
+<td>3</td>
+<td>"Wednesday"</td>
+<td>28</td>
+<td>89</td>
+<td>362</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>"am"</td>
+</tr>
+<tr class="even">
+<td>322</td>
+<td>3</td>
+<td>2011-12-28 00:00:00</td>
+<td>1</td>
+<td>2340</td>
+<td>2340</td>
+<td>"F-Si 1"</td>
+<td>"Mountain"</td>
+<td>"Cross Country Race"</td>
+<td>"Aluminum"</td>
+<td>"Phoenix Bi-peds"</td>
+<td>"Phoenix"</td>
+<td>"AZ"</td>
+<td>1325030400</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>4</td>
+<td>"2011Q4"</td>
+<td>0</td>
+<td>0</td>
+<td>12</td>
+<td>"December"</td>
+<td>0</td>
+<td>0</td>
+<td>52</td>
+<td>4</td>
+<td>3</td>
+<td>"Wednesday"</td>
+<td>28</td>
+<td>89</td>
+<td>362</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>"am"</td>
+</tr>
+<tr class="odd">
+<td>322</td>
+<td>4</td>
+<td>2011-12-28 00:00:00</td>
+<td>1</td>
+<td>5860</td>
+<td>5860</td>
+<td>"Synapse Hi-Mod Dura Ace"</td>
+<td>"Road"</td>
+<td>"Endurance Road"</td>
+<td>"Carbon"</td>
+<td>"Phoenix Bi-peds"</td>
+<td>"Phoenix"</td>
+<td>"AZ"</td>
+<td>1325030400</td>
+<td>2011</td>
+<td>2011</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>4</td>
+<td>"2011Q4"</td>
+<td>0</td>
+<td>0</td>
+<td>12</td>
+<td>"December"</td>
+<td>0</td>
+<td>0</td>
+<td>52</td>
+<td>4</td>
+<td>3</td>
+<td>"Wednesday"</td>
+<td>28</td>
+<td>89</td>
+<td>362</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>"am"</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 

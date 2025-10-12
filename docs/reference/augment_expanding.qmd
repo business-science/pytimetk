@@ -104,7 +104,7 @@ import pytimetk as tk
 import pandas as pd
 import polars as pl
 import numpy as np
-import pytimetk.polars_namespace
+
 from pytimetk.utils.polars_helpers import pl_quantile
 from pytimetk.utils.pandas_helpers import pd_quantile
 
