@@ -1,19 +1,33 @@
 import pandas as pd
+import polars as pl
 import numpy as np
 import pandas_flavor as pf
 
 from typing import Union
 
+from pytimetk.utils.dataframe_ops import (
+    convert_to_engine,
+    normalize_engine,
+    restore_output_type,
+    conversion_to_pandas,
+)
+
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def binarize(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     n_bins: int = 4,
     thresh_infreq: float = 0.01,
     name_infreq: str = "-OTHER",
     one_hot: bool = True,
-):
+    engine: str = "pandas",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """The `binarize` function prepares data for `correlate`, which is used for analyzing correlationfunnel plots.
 
     Binarization does the following:
@@ -30,9 +44,9 @@ def binarize(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        The `data` parameter is the input data that you want to binarize. It can be either a pandas
-        DataFrame or a DataFrameGroupBy object.
+    data : DataFrame or GroupBy (pandas or polars)
+        The `data` parameter is the input data that you want to binarize. It can be either a pandas/polars
+        DataFrame or a grouped object.
     n_bins : int
         The `n_bins` parameter specifies the number of bins to use when binarizing numeric data. It is used
         in the `create_recipe` function to determine the number of bins for each numeric column.
@@ -49,13 +63,17 @@ def binarize(
         The `one_hot` parameter is a boolean flag that determines whether or not to perform one-hot
         encoding on the categorical variables after binarization. If `one_hot` is set to `True`, the
         categorical variables will be one-hot encoded, creating binary columns for each unique category.
+    engine : {"pandas", "polars", "auto"}, optional
+        Execution engine. ``"pandas"`` (default) performs the computation using pandas.
+        ``"polars"`` converts the result to a polars DataFrame on return. ``"auto"``
+        infers the engine from the input data.
 
     Returns
     -------
         The function `binarize` returns the transformed data after applying various data preprocessing
         steps such as converting non-numeric columns to categorical, replacing boolean columns with
         integers, fixing low cardinality numeric data, fixing high skew numeric data, and creating a recipe
-        for binarization.
+        for binarization. The concrete DataFrame type matches the engine used to process the data.
 
     See Also
     --------
@@ -125,50 +143,76 @@ def binarize(
 
     """
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        data = data.obj
+    engine_resolved = normalize_engine(engine, data)
 
-    if not isinstance(data, pd.DataFrame):
+    if engine_resolved == "pandas":
+        conversion = convert_to_engine(data, "pandas")
+        prepared = conversion.data
+        result = _binarize_pandas(
+            prepared,
+            n_bins=n_bins,
+            thresh_infreq=thresh_infreq,
+            name_infreq=name_infreq,
+            one_hot=one_hot,
+        )
+        return restore_output_type(result, conversion)
+
+    conversion = convert_to_engine(data, "polars")
+    pandas_prepared = conversion_to_pandas(conversion)
+    result_pd = _binarize_pandas(
+        pandas_prepared,
+        n_bins=n_bins,
+        thresh_infreq=thresh_infreq,
+        name_infreq=name_infreq,
+        one_hot=one_hot,
+    )
+    return pl.from_pandas(result_pd)
+
+
+def _binarize_pandas(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    *,
+    n_bins: int,
+    thresh_infreq: float,
+    name_infreq: str,
+    one_hot: bool,
+) -> pd.DataFrame:
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        frame = data.obj.copy()
+    elif isinstance(data, pd.DataFrame):
+        frame = data.copy()
+    else:
         raise ValueError("Error binarize(): Object is not of class `pd.DataFrame`.")
 
-    # Get a list of columns with non-numeric and non-boolean data types
-    non_numeric_columns = data.select_dtypes(
+    non_numeric_columns = frame.select_dtypes(
         exclude=["number", "bool"]
     ).columns.tolist()
+    frame[non_numeric_columns] = frame[non_numeric_columns].astype("object")
 
-    # Convert non-numeric columns to categorical
-    data[non_numeric_columns] = data[non_numeric_columns].astype("object")
+    for col in frame.columns:
+        if frame[col].dtype == bool:
+            frame[col] = frame[col].astype(int)
 
-    # The below part is me trying to fix the datatypes :(
-    # Replace boolean columns with integers (0 and 1)
-    for col in data.columns:
-        if data[col].dtype == bool:
-            data[col] = data[col].astype(int)
-
-    # CHECKS ----
-    # Check data types
     classes_not_allowed = ["datetime64", "timedelta[ns]", "complex64", "complex128"]
-    check_data_type(data, classes_not_allowed, "binarize")
+    check_data_type(frame, classes_not_allowed, "binarize")
 
-    # Check for missing values
-    check_missing(data, "binarize")
+    check_missing(frame, "binarize")
 
-    # FIXES ----
-    data = logical_to_integer(data)
+    frame = logical_to_integer(frame)
 
-    # NON-BINARY DATA ----
-    if len(data.select_dtypes(include=["number"]).columns) > 0:
-        data = fix_low_cardinality_numeric(data, thresh=n_bins + 3)
+    numeric_cols = frame.select_dtypes(include=["number"]).columns
+    if len(numeric_cols) > 0:
+        frame = fix_low_cardinality_numeric(frame, thresh=n_bins + 3)
+        frame = fix_high_skew_numeric_data(frame, unique_limit=2)
 
-        # Check & fix skewed data
-        data = fix_high_skew_numeric_data(data, unique_limit=2)
-
-        # TRANSFORMATION STEPS ----
         data_transformed = create_recipe(
-            data, n_bins, thresh_infreq, name_infreq, one_hot
+            frame, n_bins, thresh_infreq, name_infreq, one_hot
+        )
+    else:
+        data_transformed = create_recipe(
+            frame, n_bins, thresh_infreq, name_infreq, one_hot
         )
 
-    # Ensure that the data is binary
     data_transformed = logical_to_integer(data_transformed)
 
     return data_transformed
@@ -177,19 +221,25 @@ def binarize(
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def correlate(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     target: str,
     method: str = "pearson",
-):
+    engine: str = "pandas",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """The `correlate` function calculates the correlation between a target variable and all other
     variables in a pandas DataFrame, and returns the results sorted by absolute correlation in
     descending order.
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
+    data : DataFrame or GroupBy (pandas or polars)
         The `data` parameter is the input data that you want to calculate correlations for. It can be
-        either a pandas DataFrame or a grouped DataFrame obtained from a groupby operation.
+        either a pandas/polars DataFrame or a grouped DataFrame obtained from a groupby operation.
     target : str
         The `target` parameter is a string that represents the column name in the DataFrame for which you
         want to calculate the correlation with other columns.
@@ -200,6 +250,10 @@ def correlate(
         * pearson : standard correlation coefficient
         * kendall : Kendall Tau correlation coefficient
         * spearman : Spearman rank correlation
+    engine : {"pandas", "polars", "auto"}, optional
+        Execution engine. ``"pandas"`` (default) performs the computation using pandas.
+        ``"polars"`` converts the result to a polars DataFrame on return. ``"auto"``
+        infers the engine from the input data.
 
 
     Returns
@@ -207,7 +261,8 @@ def correlate(
         The function `correlate` returns a DataFrame with two columns: 'feature' and 'correlation'. The
         'feature' column contains the names of the features in the input data, and the 'correlation' column
         contains the correlation coefficients between each feature and the target variable. The DataFrame is
-        sorted in descending order based on the absolute correlation values.
+        sorted in descending order based on the absolute correlation values. The concrete type matches the
+        engine used to process the data.
 
     See Also
     --------
@@ -276,15 +331,69 @@ def correlate(
     fig
     ```
 
+    ``` {python}
+    # Polars DataFrame using the tk accessor
+    import pandas as pd
+    import polars as pl
+    import pytimetk.polars_namespace
+
+    sample = pd.DataFrame(
+        {
+            "Outcome": ["Yes", "No", "Yes", "No"],
+            "Segment": ["A", "A", "B", "B"],
+        }
+    )
+
+    pl_df = pl.from_pandas(sample)
+
+    binarized = pl_df.tk.binarize(
+        n_bins=2,
+        thresh_infreq=0.0,
+        name_infreq="-OTHER",
+        one_hot=True,
+    )
+
+    binarized.tk.correlate(target='Outcome__Yes')
+    ```
+
     """
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        data = data.obj
+    engine_resolved = normalize_engine(engine, data)
 
-    if not isinstance(data, pd.DataFrame):
+    if engine_resolved == "pandas":
+        conversion = convert_to_engine(data, "pandas")
+        prepared = conversion.data
+        result = _correlate_pandas(
+            prepared,
+            target=target,
+            method=method,
+        )
+        return restore_output_type(result, conversion)
+
+    conversion = convert_to_engine(data, "polars")
+    pandas_prepared = conversion_to_pandas(conversion)
+    result_pd = _correlate_pandas(
+        pandas_prepared,
+        target=target,
+        method=method,
+    )
+    return pl.from_pandas(result_pd)
+
+
+def _correlate_pandas(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    *,
+    target: str,
+    method: str,
+) -> pd.DataFrame:
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        frame = data.obj.copy()
+    elif isinstance(data, pd.DataFrame):
+        frame = data.copy()
+    else:
         raise ValueError("Error correlate(): Object is not of class `pd.DataFrame`.")
 
-    if target not in data.columns:
+    if target not in frame.columns:
         raise ValueError(
             f"Error in correlate(): '{target}' not found in the DataFrame columns."
         )
@@ -294,20 +403,16 @@ def correlate(
             "Invalid correlation method. Choose from 'pearson', 'kendall', or 'spearman'."
         )
 
-    # Calculate the correlation
-    correlations = data.corrwith(data[target], method=method)
+    correlations = frame.corrwith(frame[target], method=method)
     correlations = correlations.reset_index()
     correlations.columns = ["feature", "correlation"]
 
-    # Sort by absolute correlation in descending order
     correlations = correlations.sort_values(by="correlation", key=abs, ascending=False)
 
-    # Splitting the 'feature' column
     correlations[["feature", "bin"]] = correlations["feature"].str.split(
         "__", expand=True
     )
 
-    # Reorder the columns
     correlations = correlations[["feature", "bin", "correlation"]]
 
     return correlations

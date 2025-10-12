@@ -1,8 +1,10 @@
 import pandas as pd
 import numpy as np
+import polars as pl
 import pytest
 from pandas.testing import assert_series_equal, assert_frame_equal
 import pytimetk
+import pytimetk.polars_namespace  # noqa: F401
 
 # Creates a sample DataFrame for testing
 data = {
@@ -166,6 +168,29 @@ def test_example_5():
     
     
     assert extended_df.shape[0] == 16266
+
+
+def test_future_frame_polars_accessor():
+    sample = pd.DataFrame(
+        {
+            "date": pd.date_range("2022-01-03", periods=4, freq="D"),
+            "value": [1, 2, 3, 4],
+        }
+    )
+
+    pl_df = pl.from_pandas(sample)
+
+    result = pl_df.tk.future_frame(
+        date_column="date",
+        length_out=2,
+    )
+
+    assert isinstance(result, pl.DataFrame)
+
+    expected = sample.future_frame(date_column="date", length_out=2)
+    result_pd = result.to_pandas()
+
+    assert_frame_equal(result_pd, expected, check_dtype=False)
     
     
     

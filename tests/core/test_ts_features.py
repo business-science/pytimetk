@@ -1,6 +1,8 @@
 import pytest
 import pandas as pd
+import polars as pl
 import pytimetk as tk
+import pytimetk.polars_namespace  # noqa: F401
 
 from tsfeatures import (
     acf_features, series_length, hurst
@@ -169,6 +171,24 @@ def test_ts_features_grouped_dataframe_parallel_processing(grouped_data_frame_to
 
     # Assert if was generated four rows
     assert result.shape[0] == 4
+
+
+def test_ts_features_polars_accessor(data_frame_to_test):
+    pl_df = pl.from_pandas(data_frame_to_test)
+
+    result = pl_df.tk.ts_features(
+        date_column="date",
+        value_column="value",
+        features=[hurst, series_length],
+        show_progress=False,
+    )
+
+    assert isinstance(result, pl.DataFrame)
+
+    result_pd = result.to_pandas()
+
+    assert result_pd.loc[0, "series_length"] == len(data_frame_to_test)
+    assert "hurst" in result_pd.columns
 
 
 if __name__ == "__main__":

@@ -1,32 +1,44 @@
 import pandas as pd
+import polars as pl
 import pandas_flavor as pf
-from typing import Union
+from typing import Callable, Dict, Union
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column
 from pytimetk.utils.pandas_helpers import flatten_multiindex_column_names
 from pytimetk.utils.memory_helpers import reduce_memory_usage
+from pytimetk.utils.dataframe_ops import (
+    convert_to_engine,
+    normalize_engine,
+    restore_output_type,
+    FrameConversion,
+)
 
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def apply_by_time(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     freq: str = "D",
     wide_format: bool = False,
     fillna: int = 0,
     reduce_memory: bool = False,
+    engine: str = "pandas",
     **named_funcs,
-) -> pd.DataFrame:
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Apply for time series.
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        The `data` parameter can be either a pandas DataFrame or a pandas
-        DataFrameGroupBy object. It represents the data on which the apply operation
-        will be performed.
+    data : DataFrame or GroupBy (pandas or polars)
+        Tabular data on which the operation is performed. Supports both pandas
+        and polars DataFrames / GroupBy objects.
     date_column : str
         The name of the column in the DataFrame that contains the dates.
     freq : str, optional
@@ -59,6 +71,10 @@ def apply_by_time(
         fill missing values in the resulting DataFrame. By default, it is set to 0.
     reduce_memory : bool, optional
         The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
+    engine : {"pandas", "polars", "auto"}, optional
+        Execution engine. ``"pandas"`` (default) performs the computation using pandas.
+        When "polars" the data is converted to pandas for evaluation and converted
+        back to polars on return. ``"auto"`` infers the engine from the input data.
     **named_funcs
         The `**named_funcs` parameter is used to specify one or more custom
         aggregation functions to apply to the data. It accepts named functions
@@ -75,8 +91,9 @@ def apply_by_time(
 
     Returns
     -------
-    pd.DataFrame
-        The function `apply_by_time` returns a pandas DataFrame object.
+    DataFrame
+        The resulting data after applying the functions. The concrete type matches
+        the engine used to process the data.
 
     Examples
     --------
@@ -143,53 +160,136 @@ def apply_by_time(
             )
     )
     ```
+
+    ```{python}
+    # Polars DataFrame using the tk accessor
+    import polars as pl
+    import pytimetk.polars_namespace
+
+    pl_df = pl.from_pandas(df[['order_date', 'price', 'quantity']])
+
+    (
+        pl_df
+            .tk.apply_by_time(
+                date_column='order_date',
+                freq='MS',
+                total = lambda frame: (frame['price'] * frame['quantity']).sum(),
+            )
+    )
+    ```
     """
 
     # Run common checks
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    engine_resolved = normalize_engine(engine, data)
 
-    # Start by setting the index of data to the date_column
+    if engine_resolved == "pandas":
+        conversion = convert_to_engine(data, "pandas")
+        prepared = conversion.data
+        result = _apply_by_time_pandas(
+            prepared,
+            date_column=date_column,
+            freq=freq,
+            wide_format=wide_format,
+            fillna=fillna,
+            reduce_memory=reduce_memory,
+            named_funcs=named_funcs,
+        )
+        return restore_output_type(result, conversion)
+
+    # polars engine - operate via pandas fallback
+    conversion = convert_to_engine(data, "polars")
+    prepared = conversion.data
+
+    pandas_prepared = _polars_to_pandas(prepared, date_column)
+    result_pd = _apply_by_time_pandas(
+        pandas_prepared,
+        date_column=date_column,
+        freq=freq,
+        wide_format=wide_format,
+        fillna=fillna,
+        reduce_memory=reduce_memory,
+        named_funcs=named_funcs,
+    )
+
+    return pl.from_pandas(result_pd)
+
+
+def _apply_by_time_pandas(
+    prepared: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    *,
+    date_column: str,
+    freq: str,
+    wide_format: bool,
+    fillna: int,
+    reduce_memory: bool,
+    named_funcs: Dict[str, callable],
+) -> pd.DataFrame:
+    data = prepared
+
+    if reduce_memory:
+        if isinstance(data, pd.DataFrame):
+            data = reduce_memory_usage(data)
+        else:
+            data = data.obj.copy()
+            data = reduce_memory_usage(data)
+            data = data.groupby(prepared.grouper.names)
+
+    group_names = None
     if isinstance(data, pd.DataFrame):
         data = data.set_index(date_column)
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
+    else:
+        group_names = list(data.grouper.names)
         if date_column not in group_names:
             data = data.obj.set_index(date_column).groupby(group_names)
 
-    # Resample data based on the specified freq and kind
     grouped = data.resample(rule=freq, kind="timestamp")
 
-    # Apply custom aggregation functions using apply
     def custom_agg(group):
         agg_values = {}
-
-        # Apply column-specific functions from **named_funcs
         for name, func in named_funcs.items():
             agg_values[name] = func(group)
-
         return pd.Series(agg_values)
 
-    data = grouped.apply(custom_agg)
+    result = grouped.apply(custom_agg)
 
-    # Unstack the grouped columns if wide_format is True and group_names is not None
     if wide_format and group_names is not None:
-        data = data.unstack(group_names)
+        result = result.unstack(group_names)
 
-    # Fill missing values with the specified fillna value
-    data = data.fillna(fillna)
-
-    # Flatten the multiindex column names if needed
-    data = flatten_multiindex_column_names(data)
-
-    # Reset the index of data
-    data.reset_index(inplace=True)
+    result = result.fillna(fillna)
+    result = flatten_multiindex_column_names(result)
+    result.reset_index(inplace=True)
 
     if reduce_memory:
-        data = reduce_memory_usage(data)
+        result = reduce_memory_usage(result)
 
-    return data
+    return result
 
+
+def _polars_to_pandas(
+    prepared: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
+    date_column: str,
+) -> Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]:
+    if isinstance(prepared, pl.DataFrame):
+        return prepared.to_pandas()
+
+    raw = prepared.by
+    if isinstance(raw, list):
+        group_cols = []
+        for item in raw:
+            if isinstance(item, tuple):
+                group_cols.extend(item)
+            else:
+                group_cols.append(item)
+    elif isinstance(raw, tuple):
+        group_cols = list(raw)
+    else:
+        group_cols = [raw]
+
+    group_cols = [str(col) for col in group_cols]
+    pandas_df = prepared.df.to_pandas()
+    if date_column not in pandas_df.columns:
+        raise KeyError(f"{date_column} not found in DataFrame")
+    return pandas_df.groupby(group_cols, sort=False)

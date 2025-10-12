@@ -1,22 +1,35 @@
 import pandas as pd
+import polars as pl
 import pandas_flavor as pf
-from typing import Union
+from typing import Optional, Union
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
+)
+from pytimetk.utils.dataframe_ops import (
+    convert_to_engine,
+    normalize_engine,
+    restore_output_type,
+    conversion_to_pandas,
 )
 
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def pad_by_time(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     freq: str = "D",
-    start_date: str = None,
-    end_date: str = None,
-) -> pd.DataFrame:
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    engine: str = "pandas",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Make irregular time series regular by padding with missing dates.
 
@@ -26,10 +39,9 @@ def pad_by_time(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter can be either a Pandas DataFrame or a Pandas
-        DataFrameGroupBy object. It represents the data that you want to pad
-        with missing dates.
+    data : DataFrame or GroupBy (pandas or polars)
+        The `data` parameter can be either a pandas/polars DataFrame or a grouped
+        object. It represents the data that you want to pad with missing dates.
     date_column : str
         The `date_column` parameter is a string that specifies the name of the
         column in the DataFrame that contains the dates. This column will be
@@ -62,13 +74,17 @@ def pad_by_time(
         Specifies the end of the padded series.  If NULL, it will use the highest
         value of the input variable.  In the case of groups, it will use the
         highest value by group.
+    engine : {"pandas", "polars", "auto"}, optional
+        Execution engine. ``"pandas"`` (default) performs the computation using pandas.
+        ``"polars"`` converts the result to a polars DataFrame on return. ``"auto"``
+        infers the engine from the input data.
 
 
     Returns
     -------
-    pd.DataFrame
-        The function `pad_by_time` returns a Pandas DataFrame that has been
-        extended with future dates.
+    DataFrame
+        The function `pad_by_time` returns a DataFrame extended with the padded dates.
+        The concrete type matches the engine used to process the data.
 
     Notes
     -----
@@ -137,30 +153,79 @@ def pad_by_time(
     )
     padded_df.query('symbol == "AAPL"')
     ```
+
+    ```{python}
+    # Polars DataFrame using the tk accessor
+    import pandas as pd
+    import polars as pl
+    import pytimetk.polars_namespace
+
+    sample = pd.DataFrame(
+        {
+            "date": pd.date_range("2022-01-01", periods=3, freq="D"),
+            "value": [1, 2, 3],
+        }
+    )
+
+    pl_df = pl.from_pandas(sample)
+
+    pl_df.tk.pad_by_time(
+        date_column='date',
+        freq='D',
+    )
+    ```
     """
     # Common checks
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
 
-    # Prep Inputs
-    if start_date is not None:
-        start_date = pd.Timestamp(start_date)
-    if end_date is not None:
-        end_date = pd.Timestamp(end_date)
+    engine_resolved = normalize_engine(engine, data)
 
-    # Check if start_date is greater than end_date
-    if start_date and end_date:
-        if start_date > end_date:
-            raise ValueError("Start date cannot be greater than end date.")
+    start_ts = pd.Timestamp(start_date) if start_date is not None else None
+    end_ts = pd.Timestamp(end_date) if end_date is not None else None
 
-    # Handling DataFrame
+    if start_ts is not None and end_ts is not None and start_ts > end_ts:
+        raise ValueError("Start date cannot be greater than end date.")
+
+    if engine_resolved == "pandas":
+        conversion = convert_to_engine(data, "pandas")
+        prepared = conversion.data
+        result = _pad_by_time_pandas(
+            prepared,
+            date_column=date_column,
+            freq=freq,
+            start_date=start_ts,
+            end_date=end_ts,
+        )
+        return restore_output_type(result, conversion)
+
+    conversion = convert_to_engine(data, "polars")
+    pandas_prepared = conversion_to_pandas(conversion)
+    result_pd = _pad_by_time_pandas(
+        pandas_prepared,
+        date_column=date_column,
+        freq=freq,
+        start_date=start_ts,
+        end_date=end_ts,
+    )
+    return pl.from_pandas(result_pd)
+
+
+def _pad_by_time_pandas(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    *,
+    date_column: str,
+    freq: str,
+    start_date: Optional[pd.Timestamp],
+    end_date: Optional[pd.Timestamp],
+) -> pd.DataFrame:
     if isinstance(data, pd.DataFrame):
         df = data.copy()
         df[date_column] = pd.to_datetime(df[date_column])
         df.sort_values(by=[date_column], inplace=True)
 
-        min_date = start_date if start_date else df[date_column].min()
-        max_date = end_date if end_date else df[date_column].max()
+        min_date = start_date if start_date is not None else df[date_column].min()
+        max_date = end_date if end_date is not None else df[date_column].max()
 
         date_range = pd.date_range(start=min_date, end=max_date, freq=freq)
         padded_df = pd.DataFrame({date_column: date_range})
@@ -169,36 +234,30 @@ def pad_by_time(
         padded_df.sort_values(by=[date_column], inplace=True)
         padded_df.reset_index(drop=True, inplace=True)
 
-        col_name = padded_df.columns[padded_df.nunique() == 1]
-        if not col_name.empty:
-            col_name = col_name[0]
-        else:
-            col_name = None
+        col_name_candidates = padded_df.columns[padded_df.nunique() == 1]
+        col_name = col_name_candidates[0] if not col_name_candidates.empty else None
 
         if col_name is not None:
-            padded_df = padded_df.assign(**{f"{col_name}": padded_df[col_name].ffill()})
+            padded_df = padded_df.assign(**{col_name: padded_df[col_name].ffill()})
 
         return padded_df
 
-    # Handling DataFrameGroupBy
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
-        data = data.obj
-        df = data.copy()
+    group_names = data.grouper.names
+    df = data.obj.copy()
 
-        df[date_column] = pd.to_datetime(df[date_column])
-        df.sort_values(by=[*group_names, date_column], inplace=True)
+    df[date_column] = pd.to_datetime(df[date_column])
+    df.sort_values(by=[*group_names, date_column], inplace=True)
 
-        padded_df = _pad_by_time_vectorized(
-            data=df,
-            date_column=date_column,
-            groupby_columns=group_names,
-            freq=freq,
-            start_date=start_date,
-            end_date=end_date,
-        )
+    padded_df = _pad_by_time_vectorized(
+        data=df,
+        date_column=date_column,
+        groupby_columns=list(group_names),
+        freq=freq,
+        start_date=start_date,
+        end_date=end_date,
+    )
 
-        return padded_df[df.columns]
+    return padded_df[df.columns]
 
 
 def _pad_by_time_vectorized(
@@ -206,13 +265,13 @@ def _pad_by_time_vectorized(
     date_column: str,
     groupby_columns: list,
     freq: str = "D",
-    start_date: Union[str, None] = None,
-    end_date: Union[str, None] = None,
+    start_date: Optional[pd.Timestamp] = None,
+    end_date: Optional[pd.Timestamp] = None,
 ) -> pd.DataFrame:
     # Calculate the overall min and max dates across the entire dataset if not provided
-    if not start_date:
+    if start_date is None:
         start_date = data[date_column].min()
-    if not end_date:
+    if end_date is None:
         end_date = data[date_column].max()
 
     # Create a full date range
@@ -231,4 +290,3 @@ def _pad_by_time_vectorized(
     )
 
     return padded_data
-

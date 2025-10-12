@@ -168,6 +168,43 @@ def restore_output_type(
     raise RuntimeError("Unknown frame kind encountered during restoration.")
 
 
+def conversion_to_pandas(
+    conversion: FrameConversion,
+) -> Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]:
+    """
+    Convenience helper that converts the stored frame within a conversion object
+    to its pandas representation. When the conversion originates from a pandas
+    -> polars transformation a temporary row identifier may exist; this helper
+    strips that column before returning the pandas frame.
+    """
+    data = conversion.data
+
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        return data
+    if isinstance(data, pd.DataFrame):
+        return data
+    if isinstance(data, pl.DataFrame):
+        pandas_df = data.to_pandas()
+        row_id = conversion.row_id_column
+        if row_id and row_id in pandas_df.columns:
+            pandas_df = pandas_df.drop(columns=[row_id])
+        return pandas_df
+    if isinstance(data, pl.dataframe.group_by.GroupBy):
+        pandas_df = data.df.to_pandas()
+        row_id = conversion.row_id_column
+        if row_id and row_id in pandas_df.columns:
+            pandas_df = pandas_df.drop(columns=[row_id])
+        group_cols = resolve_polars_group_columns(
+            data,
+            group_columns=conversion.group_columns,
+        )
+        if not group_cols:
+            raise ValueError("Unable to resolve group columns from polars GroupBy object.")
+        return pandas_df.groupby(group_cols, sort=False)
+
+    raise TypeError("Unsupported frame data type during pandas conversion.")
+
+
 def ensure_row_id_column(
     frame: pl.DataFrame,
     existing_column: Optional[str] = None,

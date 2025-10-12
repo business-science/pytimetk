@@ -1,9 +1,9 @@
 import pandas as pd
+import polars as pl
 import pandas_flavor as pf
 
 from functools import partial
 
-from multiprocessing import cpu_count
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
@@ -16,6 +16,13 @@ from pytimetk.utils.checks import (
 )
 
 from typing import Optional, Union
+
+from pytimetk.utils.dataframe_ops import (
+    convert_to_engine,
+    normalize_engine,
+    restore_output_type,
+    conversion_to_pandas,
+)
 
 try:
     from tsfeatures import (
@@ -47,7 +54,12 @@ dict_freqs = {"H": 24, "D": 1, "M": 12, "Q": 4, "W": 1, "Y": 1}
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def ts_features(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     value_column: str,
     features: Optional[list] = None,
@@ -55,7 +67,8 @@ def ts_features(
     scale: bool = True,
     threads: Optional[int] = 1,
     show_progress: bool = True,
-) -> pd.DataFrame:
+    engine: str = "pandas",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the `tsfeatures` package.
 
@@ -63,8 +76,8 @@ def ts_features(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter is the input data that can be either a Pandas
+    data : DataFrame or GroupBy (pandas or polars)
+        The `data` parameter is the input data that can be either a pandas/polars
         DataFrame or a grouped DataFrame. It contains the time series data that
         you want to extract features from.
     date_column : str
@@ -122,13 +135,17 @@ def ts_features(
     show_progress : bool
         The `show_progress` parameter is a boolean parameter that determines
         whether or not to show a progress bar when extracting features.
+    engine : {"pandas", "polars", "auto"}, optional
+        Execution engine. ``"pandas"`` (default) performs the computation using pandas.
+        ``"polars"`` converts the result to a polars DataFrame on return. ``"auto"``
+        infers the engine from the input data.
 
     Returns
     -------
-    pd.DataFrame
-        The function `ts_features` returns a pandas DataFrame containing the
-        extracted time series features. If grouped data is provided, the DataFrame
-        will contain the grouping columns as well.
+    DataFrame
+        A DataFrame containing the extracted time series features. If grouped data is provided,
+        the DataFrame will contain the grouping columns as well. The concrete type matches the
+        engine used to process the data.
 
     Notes
     -----
@@ -175,32 +192,92 @@ def ts_features(
     )
     feature_df
     ```
+
+    ```{python}
+    # Polars DataFrame using the tk accessor
+    import pandas as pd
+    import polars as pl
+    import pytimetk.polars_namespace
+    from tsfeatures import acf_features, hurst
+
+    sample = pd.DataFrame(
+        {
+            "date": pd.date_range(start="2020-01-01", periods=10, freq="D"),
+            "value": range(10),
+        }
+    )
+
+    pl_df = pl.from_pandas(sample)
+
+    pl_df.tk.ts_features(
+        date_column='date',
+        value_column='value',
+        features=[acf_features, hurst],
+        show_progress=False,
+    )
+    ```
     """
-    # Checks
-    check_installed("tsfeatures")
-    check_dataframe_or_groupby(data)
-    check_date_column(data, date_column)
-    check_value_column(data, value_column)
+    engine_resolved = normalize_engine(engine, data)
 
-    # Get threads
-    threads = get_threads(threads)
+    if engine_resolved == "pandas":
+        conversion = convert_to_engine(data, "pandas")
+        prepared = conversion.data
+        result = _ts_features_pandas(
+            prepared,
+            date_column=date_column,
+            value_column=value_column,
+            features=features,
+            freq=freq,
+            scale=scale,
+            threads=threads,
+            show_progress=show_progress,
+        )
+        return restore_output_type(result, conversion)
 
-    group_names = None
+    conversion = convert_to_engine(data, "polars")
+    pandas_prepared = conversion_to_pandas(conversion)
+    result_pd = _ts_features_pandas(
+        pandas_prepared,
+        date_column=date_column,
+        value_column=value_column,
+        features=features,
+        freq=freq,
+        scale=scale,
+        threads=threads,
+        show_progress=show_progress,
+    )
+    return pl.from_pandas(result_pd)
+
+
+def _ts_features_pandas(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    *,
+    date_column: str,
+    value_column: str,
+    features: Optional[list],
+    freq: Optional[str],
+    scale: bool,
+    threads: Optional[int],
+    show_progress: bool,
+) -> pd.DataFrame:
+    threads_resolved = get_threads(threads)
+
     if isinstance(data, pd.DataFrame):
         df = data.copy()
         df.sort_values(by=[date_column], inplace=True)
         df["unique_id"] = "X1"
         df = df[["unique_id", date_column, value_column]]
         group_names = ["unique_id"]
-
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
+    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        group_names = list(data.grouper.names)
         df = data.obj.copy()
         df.sort_values(by=[*group_names, date_column], inplace=True)
         df = df[[*group_names, date_column, value_column]]
+    else:
+        raise TypeError("Unsupported data type for ts_features.")
 
-    if features is None:
-        features = [
+    features_to_use = (
+        [
             acf_features,
             arch_stat,
             crossing_points,
@@ -219,14 +296,16 @@ def ts_features(
             series_length,
             hurst,
         ]
+        if features is None
+        else features
+    )
 
-    # Construct the DataFrame for tsfeatures
     if isinstance(data, pd.DataFrame):
-        construct_df = df[group_names]
+        construct_df = df[group_names].copy()
         construct_df["ds"] = df[date_column]
         construct_df["y"] = df[value_column]
-    else:  # grouped dataframe
-        construct_df = df[group_names]
+    else:
+        construct_df = df[group_names].copy()
         for col in group_names:
             construct_df[col] = df[col].astype(str)
         construct_df["unique_id"] = construct_df[group_names].apply(
@@ -239,75 +318,56 @@ def ts_features(
             .reset_index(drop=True)
         )
 
-        construct_df.drop(columns=group_names, inplace=True)
+        construct_df = construct_df.drop(columns=group_names)
         construct_df["ds"] = df[date_column]
         construct_df["y"] = df[value_column]
 
-    # Run tsfeatures
-    # features_df = tsf.tsfeatures(construct_df, features=features, freq=freq, scale=scale, threads=threads)
-
     partial_get_feats = partial(
-        _get_feats, freq=freq, scale=scale, features=features, dict_freqs=dict_freqs
+        _get_feats,
+        freq=freq,
+        scale=scale,
+        features=features_to_use,
+        dict_freqs=dict_freqs,
     )
 
     if isinstance(data, pd.DataFrame):
         name = "X1"
         group = construct_df
-        result = partial_get_feats(name, group, features=features)
+        return partial_get_feats(name, group, features=features_to_use)
 
-        # RETURN SINGLE DATA FRAME HERE
-        return result
+    if threads_resolved != 1:
+        with ProcessPoolExecutor(threads_resolved) as executor:
+            futures = [
+                executor.submit(partial_get_feats, *args)
+                for args in construct_df.groupby("unique_id")
+            ]
 
-    else:  # grouped dataframe
-        # Replicate tsfeatures without threads
-        # https://github.com/Nixtla/tsfeatures/blob/fe4f6e63b8883f84922354b7a57056cf534aa4ae/tsfeatures/tsfeatures.py#L967
-
-        if threads != 1:
-            if threads is None:
-                threads = cpu_count()
-            if threads == -1:
-                threads = cpu_count()
-
-            # Switch to concurrent.futures for better performance
-            # multiprocessing.Pool is slower than concurrent.futures.ProcessPoolExecutor
-            with ProcessPoolExecutor(threads) as executor:
-                futures = [
-                    executor.submit(partial_get_feats, *args)
-                    for args in construct_df.groupby("unique_id")
-                ]
-
-                ts_features = []
-                for future in conditional_tqdm(
-                    as_completed(futures),
-                    total=len(futures),
-                    desc="TS Featurizing...",
-                    display=show_progress,
-                ):
-                    ts_features.append(future.result())
-
-        else:
-            # Don't parallel process
-            ts_features = []
-            for name, group in conditional_tqdm(
-                construct_df.groupby("unique_id"),
-                total=len(construct_df.unique_id.unique()),
+            ts_features_frames = []
+            for future in conditional_tqdm(
+                as_completed(futures),
+                total=len(futures),
                 desc="TS Featurizing...",
                 display=show_progress,
             ):
-                result = partial_get_feats(name, group, features=features)
-                ts_features.append(result)
+                ts_features_frames.append(future.result())
+    else:
+        ts_features_frames = []
+        total_groups = construct_df["unique_id"].nunique()
+        for name, group in conditional_tqdm(
+            construct_df.groupby("unique_id"),
+            total=total_groups,
+            desc="TS Featurizing...",
+            display=show_progress,
+        ):
+            result = partial_get_feats(name, group, features=features_to_use)
+            ts_features_frames.append(result)
 
-        # Combine the list to a DataFrame
-        ts_features = pd.concat(ts_features).rename_axis("unique_id")
-        ts_features = ts_features.reset_index()
+    ts_features_df = pd.concat(ts_features_frames).rename_axis("unique_id")
+    ts_features_df = ts_features_df.reset_index()
 
-        # Finalize id or grouping columns
-        ts_features = group_names_lookup_df.merge(
-            ts_features, on="unique_id", how="left"
-        )
+    ts_features_df = group_names_lookup_df.merge(
+        ts_features_df, on="unique_id", how="left"
+    )
+    ts_features_df.drop(columns=["unique_id"], inplace=True)
 
-        # drop unique_id column
-        ts_features.drop(columns=["unique_id"], inplace=True)
-
-        return ts_features
-
+    return ts_features_df

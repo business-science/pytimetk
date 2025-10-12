@@ -1,8 +1,10 @@
 import pytimetk as tk
 import pandas as pd
+import polars as pl
 import pytest
 import multiprocess as mp  # Use multiprocess instead of multiprocessing
 from itertools import product
+import pytimetk.polars_namespace  # noqa: F401
 
 # Set spawn start method before tests
 mp.set_start_method("spawn", force=True)
@@ -50,3 +52,29 @@ def test_01_grouped_anomalize(threads, method):
 
 
 # Rest of the test file remains unchanged
+
+
+def test_anomalize_polars_accessor():
+    sample = pd.DataFrame(
+        {
+            "date": pd.date_range(start="2021-01-01", periods=12, freq="MS"),
+            "value": [10, 12, 13, 14, 50, 18, 19, 20, 21, 22, 23, 24],
+        }
+    )
+
+    pl_df = pl.from_pandas(sample)
+
+    result = pl_df.tk.anomalize(
+        date_column="date",
+        value_column="value",
+        period=12,
+        method="stl",
+        show_progress=False,
+    )
+
+    assert isinstance(result, pl.DataFrame)
+
+    result_pd = result.to_pandas()
+
+    assert {"observed", "anomaly", "observed_clean"}.issubset(result_pd.columns)
+    assert len(result_pd) == len(sample)

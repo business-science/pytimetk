@@ -1,4 +1,5 @@
 import pandas as pd
+import polars as pl
 import pandas_flavor as pf
 import numpy as np
 
@@ -23,11 +24,23 @@ from pytimetk.utils.parallel_helpers import parallel_apply, get_threads, progres
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.seasonal import STL
 
+from pytimetk.utils.dataframe_ops import (
+    convert_to_engine,
+    normalize_engine,
+    restore_output_type,
+    conversion_to_pandas,
+)
+
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def anomalize(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     value_column: str,
     period: Optional[int] = None,
@@ -42,17 +55,18 @@ def anomalize(
     reduce_memory: bool = False,
     threads: int = 1,
     show_progress: bool = True,
-    verbose=False,
-) -> pd.DataFrame:
+    verbose: bool = False,
+    engine: str = "pandas",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Detects anomalies in time series data, either for a single time
     series or for multiple time series grouped by a specific column.
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        The input data, which can be either a pandas DataFrame or a pandas
-        DataFrameGroupBy object.
+    data : DataFrame or GroupBy (pandas or polars)
+        The input data, which can be either a pandas/polars DataFrame or a grouped
+        object.
     date_column : str
         The name of the column in the data that contains the dates or timestamps.
     value_column : str
@@ -130,11 +144,16 @@ def anomalize(
         display additional information and progress updates during the execution of
         the `anomalize` function. If `verbose` is set to `True`, you will see more
         detailed output.
+    engine : {"pandas", "polars", "auto"}, optional
+        Execution engine. ``"pandas"`` (default) performs the computation using pandas.
+        ``"polars"`` converts the result to a polars DataFrame on return. ``"auto"``
+        infers the engine from the input data.
 
     Returns
     -------
-    pd.DataFrame
-        Returns a pandas DataFrame containing the original data with additional columns.
+    DataFrame
+        Returns the original data with additional anomaly diagnostics. The concrete type
+        matches the engine used to process the data.
 
     - observed: original data
     - seasonal: seasonal component
@@ -286,20 +305,112 @@ def anomalize(
             )
     )
     ```
+
+    ``` {python}
+    # Polars DataFrame using the tk accessor
+    import pandas as pd
+    import polars as pl
+    import pytimetk.polars_namespace
+
+    sample = pd.DataFrame(
+        {
+            "date": pd.date_range(start="2021-01-01", periods=12, freq="MS"),
+            "value": [10, 12, 13, 14, 50, 18, 19, 20, 21, 22, 23, 24],
+        }
+    )
+
+    pl_df = pl.from_pandas(sample)
+
+    pl_df.tk.anomalize(
+        date_column="date",
+        value_column="value",
+        period=12,
+        method="stl",
+        show_progress=False,
+    )
+    ```
     """
 
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
     check_value_column(data, value_column)
 
+    engine_resolved = normalize_engine(engine, data)
+
+    if engine_resolved == "pandas":
+        conversion = convert_to_engine(data, "pandas")
+        prepared = conversion.data
+        result = _anomalize_dispatch_pandas(
+            prepared,
+            date_column=date_column,
+            value_column=value_column,
+            period=period,
+            trend=trend,
+            method=method,
+            decomp=decomp,
+            clean=clean,
+            iqr_alpha=iqr_alpha,
+            clean_alpha=clean_alpha,
+            max_anomalies=max_anomalies,
+            bind_data=bind_data,
+            reduce_memory=reduce_memory,
+            threads=threads,
+            show_progress=show_progress,
+            verbose=verbose,
+        )
+        return restore_output_type(result, conversion)
+
+    conversion = convert_to_engine(data, "polars")
+    pandas_prepared = conversion_to_pandas(conversion)
+    result_pd = _anomalize_dispatch_pandas(
+        pandas_prepared,
+        date_column=date_column,
+        value_column=value_column,
+        period=period,
+        trend=trend,
+        method=method,
+        decomp=decomp,
+        clean=clean,
+        iqr_alpha=iqr_alpha,
+        clean_alpha=clean_alpha,
+        max_anomalies=max_anomalies,
+        bind_data=bind_data,
+        reduce_memory=reduce_memory,
+        threads=threads,
+        show_progress=show_progress,
+        verbose=verbose,
+    )
+    return pl.from_pandas(result_pd)
+
+
+def _anomalize_dispatch_pandas(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    *,
+    date_column: str,
+    value_column: str,
+    period: Optional[int],
+    trend: Optional[int],
+    method: str,
+    decomp: str,
+    clean: str,
+    iqr_alpha: float,
+    clean_alpha: float,
+    max_anomalies: float,
+    bind_data: bool,
+    reduce_memory: bool,
+    threads: int,
+    show_progress: bool,
+    verbose: bool,
+) -> pd.DataFrame:
+    working = data
     if reduce_memory:
-        data = reduce_memory_usage(data)
+        working = reduce_memory_usage(working)
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    sorted_data, _ = sort_dataframe(working, date_column, keep_grouped_df=True)
 
-    if isinstance(data, pd.DataFrame):
+    if isinstance(sorted_data, pd.DataFrame):
         result = _anomalize(
-            data=data,
+            data=sorted_data,
             date_column=date_column,
             value_column=value_column,
             period=period,
@@ -313,20 +424,16 @@ def anomalize(
             bind_data=bind_data,
             verbose=verbose,
         )
+    elif isinstance(sorted_data, pd.core.groupby.generic.DataFrameGroupBy):
+        group_names = sorted_data.grouper.names
+        threads_resolved = get_threads(threads)
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
-
-        # Get threads
-        threads = get_threads(threads)
-
-        if threads == 1:
+        if threads_resolved == 1:
             result = progress_apply(
-                data,
+                sorted_data,
                 func=_anomalize,
                 show_progress=show_progress,
                 desc="Anomalizing...",
-                # kwargs
                 date_column=date_column,
                 value_column=value_column,
                 period=period,
@@ -340,10 +447,9 @@ def anomalize(
                 bind_data=bind_data,
                 verbose=verbose,
             ).reset_index(level=group_names)
-
         else:
             result = parallel_apply(
-                data,
+                sorted_data,
                 _anomalize,
                 date_column=date_column,
                 value_column=value_column,
@@ -356,18 +462,18 @@ def anomalize(
                 clean_alpha=clean_alpha,
                 max_anomalies=max_anomalies,
                 bind_data=bind_data,
-                threads=threads,
+                threads=threads_resolved,
                 show_progress=show_progress,
                 verbose=verbose,
                 desc="Anomalizing...",
             ).reset_index(level=group_names)
+    else:
+        raise TypeError("Unsupported data type for anomalize().")
 
     if reduce_memory:
         result = reduce_memory_usage(result)
 
-    result = result.sort_index()
-
-    return result
+    return result.sort_index()
 
 
 def _anomalize(

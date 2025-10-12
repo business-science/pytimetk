@@ -53,6 +53,12 @@ from pytimetk.feature_engineering import (
 from pytimetk.core.summarize_by_time import summarize_by_time
 from pytimetk.core.ts_summary import ts_summary
 from pytimetk.core.filter_by_time import filter_by_time
+from pytimetk.core.apply_by_time import apply_by_time
+from pytimetk.core.pad import pad_by_time
+from pytimetk.core.ts_features import ts_features
+from pytimetk.core.correlationfunnel import binarize, correlate
+from pytimetk.core.anomalize import anomalize
+from pytimetk.core.future import future_frame
 
 FinanceFunc = Callable[..., pl.DataFrame]
 
@@ -92,6 +98,13 @@ _AUGMENT_FUNCTIONS: Dict[str, FinanceFunc] = {
     "summarize_by_time": summarize_by_time,
     "ts_summary": ts_summary,
     "filter_by_time": filter_by_time,
+    "apply_by_time": apply_by_time,
+    "pad_by_time": pad_by_time,
+    "ts_features": ts_features,
+    "binarize": binarize,
+    "correlate": correlate,
+    "anomalize": anomalize,
+    "future_frame": future_frame,
 }
 
 

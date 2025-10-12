@@ -1,7 +1,9 @@
 import pandas as pd
 import pytest
 import numpy as np
+import polars as pl
 from pandas.testing import assert_frame_equal
+import pytimetk.polars_namespace  # noqa: F401
 
 # Import the pad_by_time function from your module
 from pytimetk import pad_by_time
@@ -125,6 +127,25 @@ def test_pad_by_time_grouped_end(test_dataframe):
 #     assert_frame_equal(padded_df, expected_df, check_dtype=False)
 
 # Add more test cases as needed
+
+def test_pad_by_time_polars_accessor():
+    sample = pd.DataFrame(
+        {
+            "date": pd.to_datetime(["2022-01-01", "2022-01-03"]),
+            "value": [1, 3],
+        }
+    )
+
+    pl_df = pl.from_pandas(sample)
+
+    result = pl_df.tk.pad_by_time(date_column="date", freq="D")
+
+    assert isinstance(result, pl.DataFrame)
+
+    expected = sample.pad_by_time(date_column="date", freq="D")
+    result_pd = result.to_pandas()
+
+    assert_frame_equal(result_pd, expected, check_dtype=False)
 
 if __name__ == "__main__":
     pytest.main()

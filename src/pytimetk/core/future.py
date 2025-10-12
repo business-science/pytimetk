@@ -1,4 +1,5 @@
 import pandas as pd
+import polars as pl
 import pandas_flavor as pf
 from typing import Union, Optional
 
@@ -12,12 +13,23 @@ from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 from concurrent.futures import ProcessPoolExecutor
 
 from pytimetk.utils.memory_helpers import reduce_memory_usage
+from pytimetk.utils.dataframe_ops import (
+    convert_to_engine,
+    normalize_engine,
+    restore_output_type,
+    conversion_to_pandas,
+)
 
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def future_frame(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     length_out: int,
     freq: Optional[str] = None,
@@ -27,7 +39,7 @@ def future_frame(
     show_progress: bool = True,
     reduce_memory: bool = False,
     engine: str = "pandas",
-) -> pd.DataFrame:
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Extend a DataFrame or GroupBy object with future dates.
 
@@ -37,9 +49,9 @@ def future_frame(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The `data` parameter is the input DataFrame or DataFrameGroupBy object
-        that you want to extend with future dates.
+    data : DataFrame or GroupBy (pandas or polars)
+        The `data` parameter is the input DataFrame or grouped object that you want to
+        extend with future dates.
     date_column : str
         The `date_column` parameter is a string that specifies the name of the
         column in the DataFrame that contains the dates. This column will be
@@ -73,15 +85,17 @@ def future_frame(
         will not be displayed.
     reduce_memory : bool, optional
         The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
-    engine : str, optional
+    engine : {"pandas", "polars", "auto"}, optional
         The `engine` parameter specifies the engine to use for computation.
-        - Currently only `pandas` is supported.
-        - `polars` will be supported in the future.
+        ``"pandas"`` (default) performs the computation using pandas. ``"polars"``
+        converts the result to a polars DataFrame on return. ``"auto"`` infers the
+        engine from the input data.
 
     Returns
     -------
-    pd.DataFrame
-        An extended DataFrame with future dates.
+    DataFrame
+        An extended DataFrame with future dates. The concrete type matches the engine
+        used to process the data.
 
     Notes
     -----
@@ -191,18 +205,40 @@ def future_frame(
     )
     extended_df
     ```
+
+    ```{python}
+    # Polars DataFrame using the tk accessor
+    import pandas as pd
+    import polars as pl
+    import pytimetk.polars_namespace
+
+    sample = pd.DataFrame(
+        {
+            "date": pd.date_range("2022-01-03", periods=4, freq="D"),
+            "value": [1, 2, 3, 4],
+        }
+    )
+
+    pl_df = pl.from_pandas(sample)
+
+    pl_df.tk.future_frame(
+        date_column='date',
+        length_out=2,
+    )
+    ```
     """
 
     # Common checks
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    engine_resolved = normalize_engine(engine, data)
 
-    if engine == "pandas":
-        ret = _future_frame_pandas(
-            data=data,
+    if engine_resolved == "pandas":
+        conversion = convert_to_engine(data, "pandas")
+        prepared = conversion.data
+        result = _future_frame_pandas(
+            data=prepared,
             date_column=date_column,
             length_out=length_out,
             freq=freq,
@@ -210,16 +246,24 @@ def future_frame(
             bind_data=bind_data,
             threads=threads,
             show_progress=show_progress,
+            reduce_memory=reduce_memory,
         )
-    elif engine == "polars":
-        raise NotImplementedError("Polars engine is not yet supported.")
-    else:
-        raise ValueError(f"Unknown engine: {engine}")
+        return restore_output_type(result, conversion)
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
-
-    return ret
+    conversion = convert_to_engine(data, "polars")
+    pandas_prepared = conversion_to_pandas(conversion)
+    result_pd = _future_frame_pandas(
+        data=pandas_prepared,
+        date_column=date_column,
+        length_out=length_out,
+        freq=freq,
+        force_regular=force_regular,
+        bind_data=bind_data,
+        threads=threads,
+        show_progress=show_progress,
+        reduce_memory=reduce_memory,
+    )
+    return pl.from_pandas(result_pd)
 
 
 def _future_frame_pandas(
@@ -231,9 +275,15 @@ def _future_frame_pandas(
     bind_data: bool = True,
     threads: int = 1,
     show_progress: bool = True,
-):
-    if isinstance(data, pd.DataFrame):
-        ts_series = data[date_column]
+    reduce_memory: bool = False,
+) -> pd.DataFrame:
+    working = data
+    if reduce_memory:
+        working = reduce_memory_usage(working)
+
+    if isinstance(working, pd.DataFrame):
+        df = working.copy()
+        ts_series = df[date_column]
 
         new_dates = make_future_timeseries(
             idx=ts_series, length_out=length_out, freq=freq, force_regular=force_regular
@@ -242,51 +292,50 @@ def _future_frame_pandas(
         new_rows = pd.DataFrame({date_column: new_dates})
 
         if bind_data:
-            extended_df = pd.concat([data, new_rows], axis=0, ignore_index=True)
+            extended_df = pd.concat([df, new_rows], axis=0, ignore_index=True)
         else:
             extended_df = new_rows
 
-        col_name = extended_df.columns[extended_df.nunique() == 1]
-        if not col_name.empty:
-            col_name = col_name[0]
-        else:
-            col_name = None
+        col_name_candidates = extended_df.columns[extended_df.nunique() == 1]
+        col_name = col_name_candidates[0] if not col_name_candidates.empty else None
 
         if col_name is not None:
             extended_df = extended_df.assign(
-                **{f"{col_name}": extended_df[col_name].ffill()}
+                **{col_name: extended_df[col_name].ffill()}
             )
 
-        return extended_df
+        result = extended_df
 
     # If the data is grouped
-    elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
+    elif isinstance(working, pd.core.groupby.generic.DataFrameGroupBy):
+        grouped = working
+        group_names = grouped.grouper.names
 
         # If freq is None, infer the frequency from the first series in the data
-        if freq is None:
-            label_of_first_group = list(data.groups.keys())[0]
+        freq_local = freq
+        if freq_local is None:
+            label_of_first_group = list(grouped.groups.keys())[0]
 
-            first_group = data.get_group(label_of_first_group)
+            first_group = grouped.get_group(label_of_first_group)
 
-            freq = get_frequency(
+            freq_local = get_frequency(
                 first_group[date_column].sort_values(), force_regular=force_regular
             )
 
-        last_dates_df = data.agg({date_column: "max"}).reset_index()
+        last_dates_df = grouped.agg({date_column: "max"}).reset_index()
 
         # Use parallel processing if threads is greater than 1
         if threads != 1:
-            threads = get_threads(threads)
+            threads_resolved = get_threads(threads)
 
-            chunk_size = int(len(last_dates_df) / threads)
+            chunk_size = int(len(last_dates_df) / threads_resolved)
             subsets = [
                 last_dates_df.iloc[i : i + chunk_size]
                 for i in range(0, len(last_dates_df), chunk_size)
             ]
 
             future_dates_list = []
-            with ProcessPoolExecutor(max_workers=threads) as executor:
+            with ProcessPoolExecutor(max_workers=threads_resolved) as executor:
                 results = list(
                     conditional_tqdm(
                         executor.map(
@@ -295,7 +344,7 @@ def _future_frame_pandas(
                             [date_column] * len(subsets),
                             [group_names] * len(subsets),
                             [length_out] * len(subsets),
-                            [freq] * len(subsets),
+                            [freq_local] * len(subsets),
                             [force_regular] * len(subsets),
                         ),
                         total=len(subsets),
@@ -312,25 +361,31 @@ def _future_frame_pandas(
             for _, row in conditional_tqdm(
                 last_dates_df.iterrows(),
                 total=len(last_dates_df),
-                disable=not show_progress,
                 display=show_progress,
                 desc="Future framing...",
             ):
                 future_dates_subset = _process_future_frame_rows(
-                    row, date_column, group_names, length_out, freq, force_regular
+                    row, date_column, group_names, length_out, freq_local, force_regular
                 )
                 future_dates_list.append(future_dates_subset)
 
         future_dates_df = pd.concat(future_dates_list, axis=0).reset_index(drop=True)
 
         if bind_data:
-            extended_df = pd.concat([data.obj, future_dates_df], axis=0).reset_index(
+            extended_df = pd.concat([grouped.obj, future_dates_df], axis=0).reset_index(
                 drop=True
             )
         else:
             extended_df = future_dates_df
 
-        return extended_df
+        result = extended_df
+    else:
+        raise TypeError("Unsupported data type for future_frame().")
+
+    if reduce_memory:
+        result = reduce_memory_usage(result)
+
+    return result
 
 
 # UTILITIES ------------------------------------------------------------------
