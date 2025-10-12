@@ -404,17 +404,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    slow_period<span class="op">=</span><span class="dv">26</span>,</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    signal_period<span class="op">=</span><span class="dv">9</span>,</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'auto'</span>,</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Calculate MACD for a given financial instrument using either pandas or polars engine.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
+<col style="width: 10%">
+<col style="width: 27%">
+<col style="width: 54%">
 <col style="width: 8%">
-<col style="width: 38%">
-<col style="width: 46%">
-<col style="width: 7%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -427,8 +427,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>data</td>
-<td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
-<td>Pandas DataFrame or GroupBy object containing financial data.</td>
+<td>DataFrame or GroupBy(pandas or polars)</td>
+<td>Input financial data.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
@@ -469,9 +469,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="even">
 <td>engine</td>
-<td>str</td>
-<td>Computation engine to use (‘pandas’ or ‘polars’).</td>
-<td><code>'pandas'</code></td>
+<td>(auto, pandas, polars)</td>
+<td>Computation engine to use. Defaults to infer from the input data type.</td>
+<td><code>"auto"</code></td>
 </tr>
 </tbody>
 </table>
@@ -480,9 +480,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 9%">
-<col style="width: 15%">
-<col style="width: 75%">
+<col style="width: 6%">
+<col style="width: 8%">
+<col style="width: 84%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -494,8 +494,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td></td>
-<td>pd.DataFrame</td>
-<td>DataFrame with MACD line, signal line, and MACD histogram added.</td>
+<td>DataFrame</td>
+<td>DataFrame with MACD line, signal line, and MACD histogram added. Matches the backend of the input data.</td>
 </tr>
 </tbody>
 </table>
@@ -512,11 +512,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"stocks_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"stocks_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -697,33 +698,35 @@ close_macd_histogram_12_26_9:    float64           [0.0, -0.014678033464 ...</co
 </div>
 <div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># MACD polars engine</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_macd <span class="op">=</span> (</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        .augment_macd(</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            close_column <span class="op">=</span> <span class="st">'close'</span>,</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            fast_period <span class="op">=</span> <span class="dv">12</span>,</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            slow_period <span class="op">=</span> <span class="dv">26</span>,</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            signal_period <span class="op">=</span> <span class="dv">9</span>,</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>            engine <span class="op">=</span> <span class="st">"polars"</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pl_df <span class="op">=</span> pl.from_pandas(df)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>df_macd <span class="op">=</span> (</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    pl_df</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        .group_by(<span class="st">'symbol'</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        .tk.augment_macd(</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            close_column <span class="op">=</span> <span class="st">'close'</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            fast_period <span class="op">=</span> <span class="dv">12</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            slow_period <span class="op">=</span> <span class="dv">26</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>            signal_period <span class="op">=</span> <span class="dv">9</span>,</span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>df_macd.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 11 columns
-symbol:                          object            ['META', 'META', 'MET ...
-date:                            datetime64[ns]    [Timestamp('2013-01-0 ...
-open:                            float64           [27.440000534057617,  ...
-high:                            float64           [28.18000030517578, 2 ...
-low:                             float64           [27.420000076293945,  ...
-close:                           float64           [28.0, 27.77000045776 ...
-volume:                          int64             [69846400, 63140600,  ...
-adjusted:                        float64           [28.0, 27.77000045776 ...
-close_macd_line_12_26_9:         float64           [0.0, -0.018347541830 ...
-close_macd_signal_line_12_26_9:  float64           [0.0, -0.003669508366 ...
-close_macd_histogram_12_26_9:    float64           [0.0, -0.014678033464 ...</code></pre>
+<pre><code>Rows: 16194
+Columns: 11
+$ symbol                                  &lt;str&gt; 'META', 'META', 'META', 'META', 'META', 'META', 'META', 'META', 'META', 'META'
+$ date                           &lt;datetime[ns]&gt; 2013-01-02 00:00:00, 2013-01-03 00:00:00, 2013-01-04 00:00:00, 2013-01-07 00:00:00, 2013-01-08 00:00:00, 2013-01-09 00:00:00, 2013-01-10 00:00:00, 2013-01-11 00:00:00, 2013-01-14 00:00:00, 2013-01-15 00:00:00
+$ open                                    &lt;f64&gt; 27.440000534057617, 27.8799991607666, 28.010000228881836, 28.690000534057617, 29.510000228881836, 29.670000076293945, 30.600000381469727, 31.280000686645508, 32.08000183105469, 30.63999938964844
+$ high                                    &lt;f64&gt; 28.18000030517578, 28.469999313354492, 28.93000030517578, 29.790000915527344, 29.600000381469727, 30.600000381469727, 31.450000762939453, 31.959999084472656, 32.209999084472656, 31.709999084472656
+$ low                                     &lt;f64&gt; 27.420000076293945, 27.59000015258789, 27.829999923706055, 28.649999618530273, 28.86000061035156, 29.489999771118164, 30.280000686645508, 31.100000381469727, 30.6200008392334, 29.8799991607666
+$ close                                   &lt;f64&gt; 28.0, 27.770000457763672, 28.760000228881836, 29.420000076293945, 29.059999465942383, 30.59000015258789, 31.299999237060547, 31.719999313354492, 30.950000762939453, 30.100000381469727
+$ volume                                  &lt;i64&gt; 69846400, 63140600, 72715400, 83781800, 45871300, 104787700, 95316400, 89598000, 98892800, 173242600
+$ adjusted                                &lt;f64&gt; 28.0, 27.770000457763672, 28.760000228881836, 29.420000076293945, 29.059999465942383, 30.59000015258789, 31.299999237060547, 31.719999313354492, 30.950000762939453, 30.100000381469727
+$ close_macd_line_12_26_9                 &lt;f64&gt; 0.0, -0.018347541830820546, 0.04646103297019977, 0.14935707190449676, 0.19955355432464117, 0.35865850496371365, 0.5358642080153508, 0.7020981500192534, 0.7629129136641914, 0.7340593457626241
+$ close_macd_signal_line_12_26_9          &lt;f64&gt; 0.0, -0.0036695083661641096, 0.006356599901108666, 0.03495669430178629, 0.06787606630635726, 0.12603255403782854, 0.207998884833333, 0.3068187378705171, 0.398037573029252, 0.46524192757592653
+$ close_macd_histogram_12_26_9            &lt;f64&gt; 0.0, -0.014678033464656437, 0.0401044330690911, 0.11440037760271048, 0.1316774880182839, 0.23262595092588512, 0.32786532318201783, 0.39527941214873624, 0.3648753406349394, 0.2688174181866976
+</code></pre>
 </div>
 </div>
 

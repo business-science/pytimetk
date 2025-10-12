@@ -6,75 +6,58 @@ augment_drawdown(
     date_column,
     close_column,
     reduce_memory=False,
-    engine='pandas',
+    engine='auto',
 )
 ```
 
-The augment_drawdown function calculates the drawdown metrics for a financial time series
-using either pandas or polars engine, and returns the augmented DataFrame with peak value,
-drawdown, and drawdown percentage columns.
+Calculate running drawdown statistics for pandas or polars data.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                                                            | Description                                                                                                                                   | Default    |
-|---------------|-----------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| data          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | The input data can be either a pandas DataFrame or a pandas DataFrameGroupBy object containing the time series data for drawdown calculation. | _required_ |
-| date_column   | str                                                             | The name of the column containing dates or timestamps.                                                                                        | _required_ |
-| close_column  | str                                                             | The column containing the values (e.g., price) to calculate drawdowns from.                                                                   | _required_ |
-| reduce_memory | bool                                                            | If True, reduces memory usage of the DataFrame before calculation. Default is False.                                                          | `False`    |
-| engine        | str                                                             | The computation engine to use: 'pandas' or 'polars'. Default is 'pandas'.                                                                     | `'pandas'` |
+| Name          | Type                                   | Description                                                                                                                                | Default    |
+|---------------|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | DataFrame or GroupBy(pandas or polars) | Input time-series data. Grouped inputs are processed per group before the drawdown metrics are appended.                                   | _required_ |
+| date_column   | str                                    | Name of the column containing date information.                                                                                            | _required_ |
+| close_column  | str                                    | Name of the column containing the values used to compute drawdowns.                                                                        | _required_ |
+| reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data. If a polars input is supplied a warning is emitted and no conversion occurs. | `False`    |
+| engine        | (auto, pandas, polars)                 | Execution engine. ``"auto"`` (default) infers the backend from the input data while allowing explicit overrides.                           | `"auto"`   |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type         | Description                                                                                                                                                                                                                                                           |
-|--------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|        | pd.DataFrame | A pandas DataFrame augmented with three columns: - {close_column}_peak: Running maximum value up to each point - {close_column}_drawdown: Absolute difference from peak to current value - {close_column}_drawdown_pct: Percentage decline from peak to current value |
+| Name   | Type      | Description                                                                                                                                                                           |
+|--------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|        | DataFrame | DataFrame with the following columns appended:  - ``{close_column}_peak`` - ``{close_column}_drawdown`` - ``{close_column}_drawdown_pct``  The return type matches the input backend. |
 
 ## Notes {.doc-section .doc-section-notes}
 
-Drawdown is a measure of peak-to-trough decline in a time series, typically used to assess
-the risk of a financial instrument:
-
-- Peak Value: The highest value observed up to each point in time
-- Drawdown: The absolute difference between the peak and current value
-- Drawdown Percentage: The percentage decline from the peak value
+Drawdown measures the peak-to-trough decline of a series. The running peak
+is computed with a cumulative maximum per group (if present) and the
+drawdown percentage is expressed relative to that peak. When the peak is
+zero the percentage drawdown is left as ``NaN`` to avoid division by zero.
 
 ## Examples {.doc-section .doc-section-examples}
 
-``` {python}
-import pandas as pd
+```{python}
 import pytimetk as tk
+import polars as pl
 
-df = tk.load_dataset('stocks_daily', parse_dates=['date'])
+df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-# Single stock drawdown
-dd_df = (
-    df.query("symbol == 'AAPL'")
+# Pandas DataFrame (engine inferred)
+dd_pd = (
+    df.groupby("symbol")
     .augment_drawdown(
-        date_column='date',
-        close_column='close',
+        date_column="date",
+        close_column="close",
     )
 )
-dd_df.head()
-```
 
-``` {python}
-dd_df.groupby('symbol').plot_timeseries('date', 'close_drawdown_pct')
-```
-
-``` {python}
-# Multiple stocks with groupby
-dd_df = (
-    df.groupby('symbol')
-    .augment_drawdown(
-        date_column='date',
-        close_column='close',
-        engine='polars'
+# Polars DataFrame using the tk accessor
+dd_pl = (
+    pl.from_pandas(df.query("symbol == 'AAPL'"))
+    .tk.augment_drawdown(
+        date_column="date",
+        close_column="close",
     )
 )
-dd_df.head()
-```
-
-``` {python}
-dd_df.groupby('symbol').plot_timeseries('date', 'close_drawdown_pct')
 ```

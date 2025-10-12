@@ -10,125 +10,67 @@ augment_stochastic_oscillator(
     k_periods=14,
     d_periods=3,
     reduce_memory=False,
-    engine='pandas',
+    engine='auto',
 )
 ```
 
-The `augment_stochastic_oscillator` function calculates the Stochastic Oscillator (%K and %D)
-for a financial instrument using either pandas or polars engine, and returns the augmented DataFrame.
+Calculate Stochastic Oscillator (%K and %D) using pandas or polars backends.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                                                            | Description                                                                                                                                                           | Default    |
-|---------------|-----------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| data          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | The input data can be a pandas DataFrame or a pandas DataFrameGroupBy object containing the time series data for Stochastic Oscillator calculations.                  | _required_ |
-| date_column   | str                                                             | The name of the column containing dates or timestamps.                                                                                                                | _required_ |
-| high_column   | str                                                             | The column containing high prices for the financial instrument.                                                                                                       | _required_ |
-| low_column    | str                                                             | The column containing low prices for the financial instrument.                                                                                                        | _required_ |
-| close_column  | str                                                             | The column containing closing prices for the financial instrument.                                                                                                    | _required_ |
-| k_periods     | Union\[int, Tuple\[int, int\], List\[int\]\]                    | The number of periods for calculating %K (fast stochastic). Can be an integer, a tuple of two integers (start and end periods), or a list of integers. Default is 14. | `14`       |
-| d_periods     | int                                                             | The number of periods for calculating %D (slow stochastic), typically a moving average of %K. Default is 3.                                                           | `3`        |
-| reduce_memory | bool                                                            | If True, reduces memory usage of the DataFrame before calculation. Default is False.                                                                                  | `False`    |
-| engine        | str                                                             | The computation engine to use: 'pandas' or 'polars'. Default is 'pandas'.                                                                                             | `'pandas'` |
+| Name          | Type                                   | Description                                                                                                                                | Default    |
+|---------------|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | DataFrame or GroupBy(pandas or polars) | Input financial data. Grouped inputs are processed per group before the indicators are appended.                                           | _required_ |
+| date_column   | str                                    | Name of the column containing date information.                                                                                            | _required_ |
+| high_column   | str                                    | Column containing high prices.                                                                                                             | _required_ |
+| low_column    | str                                    | Column containing low prices.                                                                                                              | _required_ |
+| close_column  | str                                    | Column containing closing prices. Resulting columns are prefixed with this name.                                                           | _required_ |
+| k_periods     | int, tuple, or list                    | Lookback window(s) for the %K calculation. Accepts a single integer, an inclusive tuple range, or an explicit list. Defaults to ``14``.    | `14`       |
+| d_periods     | int or list                            | Lookback window(s) for the %D smoothing calculation. Defaults to ``3``.                                                                    | `3`        |
+| reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data. If a polars input is supplied a warning is emitted and no conversion occurs. | `False`    |
+| engine        | (auto, pandas, polars)                 | Execution engine. ``"auto"`` (default) infers the backend from the input data while allowing explicit overrides.                           | `"auto"`   |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type         | Description                                                                                                                                                                                                           |
-|--------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|        | pd.DataFrame | A pandas DataFrame augmented with columns: - {close_column}_stoch_k_{k_period}: Stochastic Oscillator %K for each k_period - {close_column}_stoch_d_{k_period}_{d_period}: Stochastic Oscillator %D for each k_period |
+| Name   | Type      | Description                                                                                                                                    |
+|--------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------|
+|        | DataFrame | DataFrame with %K and %D columns appended for every combination of ``k_periods`` and ``d_periods``. The return type matches the input backend. |
 
 ## Notes {.doc-section .doc-section-notes}
 
-The Stochastic Oscillator is a momentum indicator that compares a security's closing price to its
-price range over a specific period, developed by George Lane. It consists of two lines:
-
-- %K: Measures the current close relative to the high-low range over k_periods.
-- %D: A moving average of %K over d_periods, smoothing the %K line.
-
-Key interpretations:
-
-- Values above 80 indicate overbought conditions, suggesting a potential price reversal downward.
-- Values below 20 indicate oversold conditions, suggesting a potential price reversal upward.
-- Crossovers of %K and %D can signal buy/sell opportunities.
-- Divergences between price and the oscillator can indicate trend reversals.
-
-Formula:
-
-- %K = 100 * (Close - Lowest Low in k_periods) / (Highest High in k_periods - Lowest Low in k_periods)
-- %D = Moving average of %K over d_periods
-
-References:
-
-- https://www.investopedia.com/terms/s/stochasticoscillator.asp
+%K is defined as ``100 * (Close - LowestLow) / (HighestHigh - LowestLow)``
+where LowestLow/HighestHigh span the specified lookback window. %D is the
+rolling mean of %K over ``d_periods``. Division-by-zero scenarios yield
+``NaN`` values to match the pandas behaviour.
 
 ## Examples {.doc-section .doc-section-examples}
 
 ```{python}
-import pandas as pd
+import polars as pl
 import pytimetk as tk
 
-df = tk.load_dataset('stocks_daily', parse_dates=['date'])
+df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-# Example 1 - Single stock stochastic oscillator
-stoch_df = (
-    df.query("symbol == 'AAPL'")
-    .augment_stochastic_oscillator(
-        date_column='date',
-        high_column='high',
-        low_column='low',
-        close_column='close',
-        k_periods=[14, 28],
-        d_periods=3
-    )
+# Pandas example (engine inferred)
+stoch_df = df.groupby("symbol").augment_stochastic_oscillator(
+    date_column="date",
+    high_column="high",
+    low_column="low",
+    close_column="close",
+    k_periods=[14, 21],
+    d_periods=[3, 9],
 )
-stoch_df.head()
-```
 
-``` {python}
-# Example 2 - Multiple stocks with groupby
-stoch_df = (
-    df.groupby('symbol')
-    .augment_stochastic_oscillator(
-        date_column='date',
-        high_column='high',
-        low_column='low',
-        close_column='close',
+# Polars example (method chaining)
+stoch_pl = (
+    pl.from_pandas(df.query("symbol == 'AAPL'"))
+    .tk.augment_stochastic_oscillator(
+        date_column="date",
+        high_column="high",
+        low_column="low",
+        close_column="close",
         k_periods=14,
-        d_periods=3
+        d_periods=[3],
     )
 )
-stoch_df.groupby('symbol').tail(1)
 ```
-
-``` {python}
-# Example 3 - Polars engine for single stock
-stoch_df = (
-    df.query("symbol == 'AAPL'")
-    .augment_stochastic_oscillator(
-        date_column='date',
-        high_column='high',
-        low_column='low',
-        close_column='close',
-        k_periods=[14, 28],
-        d_periods=3,
-        engine='polars'
-    )
-)
-stoch_df.head()
-```
-
-``` {python}
-# Example 4 - Polars engine with groupby
-stoch_df = (
-    df.groupby('symbol')
-    .augment_stochastic_oscillator(
-        date_column='date',
-        high_column='high',
-        low_column='low',
-        close_column='close',
-        k_periods=14,
-        d_periods=3,
-        engine='polars'
-    )
-)
-stoch_df.groupby('symbol').tail(1)

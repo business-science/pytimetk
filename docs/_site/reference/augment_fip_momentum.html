@@ -402,7 +402,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    close_column,</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    window<span class="op">=</span><span class="dv">252</span>,</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'auto'</span>,</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    fip_method<span class="op">=</span><span class="st">'original'</span>,</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    skip_window<span class="op">=</span><span class="dv">0</span>,</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -465,7 +465,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>engine</td>
 <td>str</td>
 <td>Computation engine: ‘pandas’ or ‘polars’. Default is ‘pandas’.</td>
-<td><code>'pandas'</code></td>
+<td><code>'auto'</code></td>
 </tr>
 <tr class="odd">
 <td>fip_method</td>
@@ -517,20 +517,21 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'stocks_daily'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Single window with original FIP</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>fip_df <span class="op">=</span> (</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    df.query(<span class="st">"symbol == 'AAPL'"</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    .augment_fip_momentum(</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">'close'</span>,</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span><span class="dv">252</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>fip_df.tail()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'stocks_daily'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Single window with original FIP</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>fip_df <span class="op">=</span> (</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    df.query(<span class="st">"symbol == 'AAPL'"</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    .augment_fip_momentum(</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">'close'</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span><span class="dv">252</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>fip_df.tail()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -619,25 +620,29 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 <div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple windows, polars engine, modified FIP</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fip_df <span class="op">=</span> (</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    .augment_fip_momentum(</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">'close'</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span>[<span class="dv">63</span>, <span class="dv">252</span>],</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        fip_method<span class="op">=</span><span class="st">'modified'</span>,</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">'polars'</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>pl_df <span class="op">=</span> pl.from_pandas(df)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>fip_df <span class="op">=</span> (</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    pl_df.group_by(<span class="st">'symbol'</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    .tk.augment_fip_momentum(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">'close'</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span>[<span class="dv">63</span>, <span class="dv">252</span>],</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        fip_method<span class="op">=</span><span class="st">'modified'</span>,</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>fip_df.tail()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
-<div>
-
-
+<div><style>
+.dataframe > thead > tr,
+.dataframe > tbody > tr {
+  text-align: right;
+  white-space: pre-wrap;
+}
+</style>
+<small>shape: (5, 10)</small>
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">symbol</th>
 <th data-quarto-table-cell-role="th">date</th>
 <th data-quarto-table-cell-role="th">open</th>
@@ -649,12 +654,23 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <th data-quarto-table-cell-role="th">close_fip_momentum_63</th>
 <th data-quarto-table-cell-role="th">close_fip_momentum_252</th>
 </tr>
+<tr class="odd">
+<th>str</th>
+<th>datetime[ns]</th>
+<th>f64</th>
+<th>f64</th>
+<th>f64</th>
+<th>f64</th>
+<th>i64</th>
+<th>f64</th>
+<th>f64</th>
+<th>f64</th>
+</tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">16189</td>
-<td>GOOG</td>
-<td>2023-09-15</td>
+<td>"GOOG"</td>
+<td>2023-09-15 00:00:00</td>
 <td>138.800003</td>
 <td>139.360001</td>
 <td>137.179993</td>
@@ -662,12 +678,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>48947600</td>
 <td>138.300003</td>
 <td>0.047619</td>
-<td>0.000000</td>
+<td>0.0</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">16190</td>
-<td>GOOG</td>
-<td>2023-09-18</td>
+<td>"GOOG"</td>
+<td>2023-09-18 00:00:00</td>
 <td>137.630005</td>
 <td>139.929993</td>
 <td>137.630005</td>
@@ -678,12 +693,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0.007937</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">16191</td>
-<td>GOOG</td>
-<td>2023-09-19</td>
-<td>138.250000</td>
+<td>"GOOG"</td>
+<td>2023-09-19 00:00:00</td>
+<td>138.25</td>
 <td>139.175003</td>
-<td>137.500000</td>
+<td>137.5</td>
 <td>138.830002</td>
 <td>15479100</td>
 <td>138.830002</td>
@@ -691,9 +705,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0.007937</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">16192</td>
-<td>GOOG</td>
-<td>2023-09-20</td>
+<td>"GOOG"</td>
+<td>2023-09-20 00:00:00</td>
 <td>138.830002</td>
 <td>138.839996</td>
 <td>134.520004</td>
@@ -701,12 +714,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>21473500</td>
 <td>134.589996</td>
 <td>0.079365</td>
-<td>0.000000</td>
+<td>0.0</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">16193</td>
-<td>GOOG</td>
-<td>2023-09-21</td>
+<td>"GOOG"</td>
+<td>2023-09-21 00:00:00</td>
 <td>132.389999</td>
 <td>133.190002</td>
 <td>131.089996</td>
@@ -714,11 +726,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>22042700</td>
 <td>131.360001</td>
 <td>0.047619</td>
-<td>0.000000</td>
+<td>0.0</td>
 </tr>
 </tbody>
 </table>
-
 </div>
 </div>
 </div>

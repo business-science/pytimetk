@@ -7,83 +7,25 @@ augment_leads(
     value_column,
     leads=1,
     reduce_memory=False,
-    engine='pandas',
+    engine='auto',
 )
 ```
 
-Adds leads to a Pandas DataFrame or DataFrameGroupBy object.
-
-The `augment_leads` function takes a Pandas DataFrame or GroupBy object, a
-date column, a value column or list of value columns, and a lag or list of
-lags, and adds lagged versions of the value columns to the DataFrame.
+Adds lead columns to a pandas or polars DataFrame (or grouped DataFrame).
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                           | Default    |
-|---------------|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| data          | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | The `data` parameter is the input DataFrame or DataFrameGroupBy object that you want to add lagged columns to.                                                                                                                                                                                                                                                                                                                        | _required_ |
-| date_column   | str                                                      | The `date_column` parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the lagged values.                                                                                                                                                                                                                                    | _required_ |
-| value_column  | str or list                                              | The `value_column` parameter is the column(s) in the DataFrame that you want to add lagged values for. It can be either a single column name (string) or a list of column names.                                                                                                                                                                                                                                                      | _required_ |
-| leads         | int or tuple or list                                     | The `leads` parameter is an integer, tuple, or list that specifies the number of lead values to add to the DataFrame.  - If it is an integer, the function will add that number of lead values   for each column specified in the `value_column` parameter.  - If it is a tuple, it will generate leads from the first to the second   value (inclusive).  - If it is a list, it will generate leads based on the values in the list. | `1`        |
-| reduce_memory | bool                                                     | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.                                                                                                                               | `False`    |
-| engine        | str                                                      | The `engine` parameter is used to specify the engine to use for augmenting lags. It can be either "pandas" or "polars".  - The default value is "pandas".  - When "polars", the function will internally use the `polars` library   for augmenting lags. This can be faster than using "pandas" for large datasets.                                                                                                                   | `'pandas'` |
+| Name          | Type                                   | Description                                                                                                                                    | Default    |
+|---------------|----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | DataFrame or GroupBy(pandas or polars) | Input tabular data to augment.                                                                                                                 | _required_ |
+| date_column   | str                                    | Name of the date column used to determine ordering prior to shifting.                                                                          | _required_ |
+| value_column  | str or list                            | One or more column names whose lead values will be appended.                                                                                   | _required_ |
+| leads         | int or tuple or list                   | Lead specification. Accepts:  - int: single lead value - tuple(start, end): inclusive range of leads - list[int]: explicit list of lead values | `1`        |
+| reduce_memory | bool                                   | If True, attempts to reduce memory usage (pandas only).                                                                                        | `False`    |
+| engine        | (auto, pandas, polars)                 | Execution engine. When "auto" (default) the backend is inferred from the input data type.                                                      | `"auto"`   |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type         | Description                                       |
-|--------|--------------|---------------------------------------------------|
-|        | pd.DataFrame | A Pandas DataFrame with lead columns added to it. |
-
-## Examples {.doc-section .doc-section-examples}
-
-```{python}
-import pandas as pd
-import pytimetk as tk
-
-df = tk.load_dataset('m4_daily', parse_dates=['date'])
-df
-```
-
-```{python}
-# Example 1 - Add 7 lead values for a single DataFrame object, pandas engine
-lead_df_single = (
-    df
-        .query('id == "D10"')
-        .augment_leads(
-            date_column='date',
-            value_column='value',
-            leads=(1, 7),
-            engine='pandas'
-        )
-)
-lead_df_single
-```
-```{python}
-# Example 2 - Add a single lead value of 2 for each GroupBy object, polars engine
-lead_df = (
-    df
-        .groupby('id')
-        .augment_leads(
-            date_column='date',
-            value_column='value',
-            leads=2,
-            engine='polars'
-        )
-)
-lead_df
-```
-
-```{python}
-# Example 3 add 2 lead values, 2 and 4, for a single DataFrame object, pandas engine
-lead_df_single_two = (
-    df
-        .query('id == "D10"')
-        .augment_leads(
-            date_column='date',
-            value_column='value',
-            leads=[2, 4],
-            engine='pandas'
-        )
-)
-lead_df_single_two
-```
+| Name   | Type      | Description                                                                      |
+|--------|-----------|----------------------------------------------------------------------------------|
+|        | DataFrame | DataFrame with lead columns appended. The return type matches the input backend. |

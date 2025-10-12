@@ -9,7 +9,7 @@ augment_macd(
     slow_period=26,
     signal_period=9,
     reduce_memory=False,
-    engine='pandas',
+    engine='auto',
 )
 ```
 
@@ -17,22 +17,22 @@ Calculate MACD for a given financial instrument using either pandas or polars en
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                                                            | Description                                                                   | Default    |
-|---------------|-----------------------------------------------------------------|-------------------------------------------------------------------------------|------------|
-| data          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | Pandas DataFrame or GroupBy object containing financial data.                 | _required_ |
-| date_column   | str                                                             | Name of the column containing date information.                               | _required_ |
-| close_column  | str                                                             | Name of the column containing closing price data.                             | _required_ |
-| fast_period   | int                                                             | Number of periods for the fast EMA in MACD calculation.                       | `12`       |
-| slow_period   | int                                                             | Number of periods for the slow EMA in MACD calculation.                       | `26`       |
-| signal_period | int                                                             | Number of periods for the signal line EMA in MACD calculation.                | `9`        |
-| reduce_memory | bool                                                            | Whether to reduce memory usage of the data before performing the calculation. | `False`    |
-| engine        | str                                                             | Computation engine to use ('pandas' or 'polars').                             | `'pandas'` |
+| Name          | Type                                   | Description                                                                   | Default    |
+|---------------|----------------------------------------|-------------------------------------------------------------------------------|------------|
+| data          | DataFrame or GroupBy(pandas or polars) | Input financial data.                                                         | _required_ |
+| date_column   | str                                    | Name of the column containing date information.                               | _required_ |
+| close_column  | str                                    | Name of the column containing closing price data.                             | _required_ |
+| fast_period   | int                                    | Number of periods for the fast EMA in MACD calculation.                       | `12`       |
+| slow_period   | int                                    | Number of periods for the slow EMA in MACD calculation.                       | `26`       |
+| signal_period | int                                    | Number of periods for the signal line EMA in MACD calculation.                | `9`        |
+| reduce_memory | bool                                   | Whether to reduce memory usage of the data before performing the calculation. | `False`    |
+| engine        | (auto, pandas, polars)                 | Computation engine to use. Defaults to infer from the input data type.        | `"auto"`   |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type         | Description                                                      |
-|--------|--------------|------------------------------------------------------------------|
-|        | pd.DataFrame | DataFrame with MACD line, signal line, and MACD histogram added. |
+| Name   | Type      | Description                                                                                             |
+|--------|-----------|---------------------------------------------------------------------------------------------------------|
+|        | DataFrame | DataFrame with MACD line, signal line, and MACD histogram added. Matches the backend of the input data. |
 
 ## Notes {.doc-section .doc-section-notes}
 
@@ -62,8 +62,9 @@ suggesting it might be time to sell.
 
 ## Examples {.doc-section .doc-section-examples}
 
-``` {python}
+```{python}
 import pandas as pd
+import polars as pl
 import pytimetk as tk
 
 df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
@@ -71,7 +72,7 @@ df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
 df
 ```
 
-``` {python}
+```{python}
 # MACD pandas engine
 df_macd = (
     df
@@ -89,18 +90,18 @@ df_macd = (
 df_macd.glimpse()
 ```
 
-``` {python}
+```{python}
 # MACD polars engine
+pl_df = pl.from_pandas(df)
 df_macd = (
-    df
-        .groupby('symbol')
-        .augment_macd(
+    pl_df
+        .group_by('symbol')
+        .tk.augment_macd(
             date_column = 'date',
             close_column = 'close',
             fast_period = 12,
             slow_period = 26,
             signal_period = 9,
-            engine = "polars"
         )
 )
 

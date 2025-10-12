@@ -8,91 +8,26 @@ augment_ppo(
     fast_period=12,
     slow_period=26,
     reduce_memory=False,
-    engine='pandas',
+    engine='auto',
 )
 ```
 
-Calculate PPO for a given financial instrument using either pandas or polars engine.
+Calculate PPO using pandas or polars backends.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                                                            | Description                                                                   | Default    |
-|---------------|-----------------------------------------------------------------|-------------------------------------------------------------------------------|------------|
-| data          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | Pandas DataFrame or GroupBy object containing financial data.                 | _required_ |
-| date_column   | str                                                             | Name of the column containing date information.                               | _required_ |
-| close_column  | str                                                             | Name of the column containing closing price data.                             | _required_ |
-| fast_period   | int                                                             | Number of periods for the fast EMA in PPO calculation.                        | `12`       |
-| slow_period   | int                                                             | Number of periods for the slow EMA in PPO calculation.                        | `26`       |
-| reduce_memory | bool                                                            | Whether to reduce memory usage of the data before performing the calculation. | `False`    |
-| engine        | str                                                             | Computation engine to use ('pandas' or 'polars').                             | `'pandas'` |
+| Name          | Type                                   | Description                                                       | Default    |
+|---------------|----------------------------------------|-------------------------------------------------------------------|------------|
+| data          | DataFrame or GroupBy(pandas or polars) | Financial data to augment with PPO values.                        | _required_ |
+| date_column   | str                                    | Name of the column containing date information.                   | _required_ |
+| close_column  | str                                    | Name of the closing price column.                                 | _required_ |
+| fast_period   | int                                    | Lookback window for the fast EMA.                                 | `12`       |
+| slow_period   | int                                    | Lookback window for the slow EMA.                                 | `26`       |
+| reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data.     | `False`    |
+| engine        | (auto, pandas, polars)                 | Execution engine. Defaults to inferring from the input data type. | `"auto"`   |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type         | Description                      |
-|--------|--------------|----------------------------------|
-|        | pd.DataFrame | DataFrame with PPO values added. |
-
-## Notes {.doc-section .doc-section-notes}
-
-
-The Percentage Price Oscillator (PPO) is a momentum oscillator
-that measures the difference between two moving averages as a
-percentage of the larger moving average. The PPO is best used
-to confirm the direction of the price trend and gauge its
-momentum.
-
-The PPO is calculated by subtracting a long-term EMA from a
-short-term EMA, then dividing the result by the long-term EMA,
-and finally multiplying by 100.
-
-Advantages Over MACD: The PPO's percentage-based calculation
-allows for easier comparisons between different securities,
-regardless of their price levels. This is a distinct advantage
-over the MACD, which provides absolute values and can be less
-meaningful when comparing stocks with significantly different
-prices.
-
-## Examples {.doc-section .doc-section-examples}
-
-``` {python}
-import pandas as pd
-import pytimetk as tk
-
-df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
-
-df
-```
-
-``` {python}
-# PPO pandas engine
-df_ppo = (
-    df
-        .groupby('symbol')
-        .augment_ppo(
-            date_column = 'date',
-            close_column = 'close',
-            fast_period = 12,
-            slow_period = 26,
-            engine = "pandas"
-        )
-)
-
-df_ppo.glimpse()
-```
-
-``` {python}
-# PPO polars engine
-df_ppo = (
-    df
-        .groupby('symbol')
-        .augment_ppo(
-            date_column = 'date',
-            close_column = 'close',
-            fast_period = 12,
-            slow_period = 26,
-            engine = "polars"
-        )
-)
-
-df_ppo.glimpse()
-```
+| Name   | Type      | Description                                                                |
+|--------|-----------|----------------------------------------------------------------------------|
+|        | DataFrame | DataFrame with PPO values appended. Matches the backend of the input data. |

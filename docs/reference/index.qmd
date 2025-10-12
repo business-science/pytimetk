@@ -50,9 +50,9 @@ Adding Features to Time Series DataFrames (Augmenting)
 | [augment_timeseries_signature](augment_timeseries_signature.qmd#pytimetk.augment_timeseries_signature) | The function `augment_timeseries_signature` takes a DataFrame and a date |
 | [augment_holiday_signature](augment_holiday_signature.qmd#pytimetk.augment_holiday_signature) | Engineers 4 different holiday features from a single datetime for 137 countries |
 | [augment_lags](augment_lags.qmd#pytimetk.augment_lags) | Adds lags to a Pandas DataFrame or DataFrameGroupBy object. |
-| [augment_leads](augment_leads.qmd#pytimetk.augment_leads) | Adds leads to a Pandas DataFrame or DataFrameGroupBy object. |
+| [augment_leads](augment_leads.qmd#pytimetk.augment_leads) | Adds lead columns to a pandas or polars DataFrame (or grouped DataFrame). |
 | [augment_diffs](augment_diffs.qmd#pytimetk.augment_diffs) | Adds differences and percentage difference (percentage change) to a Pandas DataFrame or DataFrameGroupBy object. |
-| [augment_pct_change](augment_pct_change.qmd#pytimetk.augment_pct_change) | Adds percentage difference (percentage change) to a Pandas DataFrame or DataFrameGroupBy object. |
+| [augment_pct_change](augment_pct_change.qmd#pytimetk.augment_pct_change) | Adds percentage difference (percentage change) columns to pandas or polars data. |
 | [augment_rolling](augment_rolling.qmd#pytimetk.augment_rolling) | Apply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame. |
 | [augment_rolling_apply](augment_rolling_apply.qmd#pytimetk.augment_rolling_apply) | Apply one or more DataFrame-based rolling functions and window sizes to one |
 | [augment_expanding](augment_expanding.qmd#pytimetk.augment_expanding) | Apply one or more Series-based expanding functions to one or more columns of a DataFrame. |
@@ -88,14 +88,14 @@ Momentum indicators for financial time series data.
 | | |
 | --- | --- |
 | [augment_macd](augment_macd.qmd#pytimetk.augment_macd) | Calculate MACD for a given financial instrument using either pandas or polars engine. |
-| [augment_ppo](augment_ppo.qmd#pytimetk.augment_ppo) | Calculate PPO for a given financial instrument using either pandas or polars engine. |
-| [augment_rsi](augment_rsi.qmd#pytimetk.augment_rsi) | The `augment_rsi` function calculates the Relative Strength Index (RSI) for a given financial |
-| [augment_cmo](augment_cmo.qmd#pytimetk.augment_cmo) | The `augment_cmo` function calculates the Chande Momentum Oscillator (CMO) for a given financial |
-| [augment_roc](augment_roc.qmd#pytimetk.augment_roc) | Adds rate of change (percentage change) to a Pandas DataFrame or DataFrameGroupBy object. |
-| [augment_adx](augment_adx.qmd#pytimetk.augment_adx) | Calculate Average Directional Index (ADX), +DI, and -DI for a financial time series to determine strength of trend. |
-| [augment_stochastic_oscillator](augment_stochastic_oscillator.qmd#pytimetk.augment_stochastic_oscillator) | The `augment_stochastic_oscillator` function calculates the Stochastic Oscillator (%K and %D) |
+| [augment_ppo](augment_ppo.qmd#pytimetk.augment_ppo) | Calculate PPO using pandas or polars backends. |
+| [augment_rsi](augment_rsi.qmd#pytimetk.augment_rsi) | Calculate RSI for one or more columns using pandas or polars backends. |
+| [augment_cmo](augment_cmo.qmd#pytimetk.augment_cmo) | Calculate the Chande Momentum Oscillator (CMO) using pandas or polars backends. |
+| [augment_roc](augment_roc.qmd#pytimetk.augment_roc) | Add rate-of-change (ROC) columns to a pandas or polars DataFrame. |
+| [augment_adx](augment_adx.qmd#pytimetk.augment_adx) | Calculate Average Directional Index (ADX), +DI, and -DI using pandas or polars backends. |
+| [augment_stochastic_oscillator](augment_stochastic_oscillator.qmd#pytimetk.augment_stochastic_oscillator) | Calculate Stochastic Oscillator (%K and %D) using pandas or polars backends. |
 | [augment_hurst_exponent](augment_hurst_exponent.qmd#pytimetk.augment_hurst_exponent) | Calculate the Hurst Exponent on a rolling window for a financial time series. Used for detecting trends and mean-reversion. |
-| [augment_qsmomentum](augment_qsmomentum.qmd#pytimetk.augment_qsmomentum) | The function `augment_qsmomentum` calculates Quant Science Momentum for financial data. |
+| [augment_qsmomentum](augment_qsmomentum.qmd#pytimetk.augment_qsmomentum) | Calculate Quant Science Momentum (QSM) for pandas or polars inputs. |
 | [augment_fip_momentum](augment_fip_momentum.qmd#pytimetk.augment_fip_momentum) | Calculate the "Frog In The Pan" (FIP) momentum metric over one or more rolling windows |
 
 ## 💹 Finance Module (Volatility, Risk/Reward and Regime Indicators)
@@ -104,9 +104,9 @@ Volatility, Risk-Reward, and Regime indicators for financial time series data.
 
 | | |
 | --- | --- |
-| [augment_bbands](augment_bbands.qmd#pytimetk.augment_bbands) | The `augment_bbands` function is used to calculate Bollinger Bands for a given dataset and return |
-| [augment_atr](augment_atr.qmd#pytimetk.augment_atr) | The `augment_atr` function is used to calculate Average True Range (ATR) and |
-| [augment_drawdown](augment_drawdown.qmd#pytimetk.augment_drawdown) | The augment_drawdown function calculates the drawdown metrics for a financial time series |
+| [augment_bbands](augment_bbands.qmd#pytimetk.augment_bbands) | Calculate Bollinger Bands for pandas or polars data. |
+| [augment_atr](augment_atr.qmd#pytimetk.augment_atr) | Calculate Average True Range (ATR) or Normalised ATR for pandas or polars data. |
+| [augment_drawdown](augment_drawdown.qmd#pytimetk.augment_drawdown) | Calculate running drawdown statistics for pandas or polars data. |
 | [augment_rolling_risk_metrics](augment_rolling_risk_metrics.qmd#pytimetk.augment_rolling_risk_metrics) | The augment_rolling_risk_metrics function calculates rolling risk-adjusted performance |
 | [augment_ewma_volatility](augment_ewma_volatility.qmd#pytimetk.augment_ewma_volatility) | Calculate Exponentially Weighted Moving Average (EWMA) volatility for a financial time series. |
 | [augment_regime_detection](augment_regime_detection.qmd#pytimetk.augment_regime_detection) | Detect regimes in a financial time series using a specified method (e.g., HMM). |

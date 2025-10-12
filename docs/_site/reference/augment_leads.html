@@ -116,9 +116,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <!-- SUMO -->
 <script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -149,7 +146,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">augment_leads</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -369,50 +366,38 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#pytimetk.augment_leads" id="toc-pytimetk.augment_leads" class="nav-link active" data-scroll-target="#pytimetk.augment_leads">augment_leads</a>
+  <ul class="collapse">
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_leads.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">augment_leads</h1>
-</div>
 
 
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-</header>
-
+<section id="pytimetk.augment_leads" class="level1">
+<h1>augment_leads</h1>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>augment_leads(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data,</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    date_column,</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    value_column,</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    leads<span class="op">=</span><span class="dv">1</span>,</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'auto'</span>,</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Adds leads to a Pandas DataFrame or DataFrameGroupBy object.</p>
-<p>The <code>augment_leads</code> function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a lag or list of lags, and adds lagged versions of the value columns to the DataFrame.</p>
+<p>Adds lead columns to a pandas or polars DataFrame (or grouped DataFrame).</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 2%">
-<col style="width: 11%">
-<col style="width: 83%">
-<col style="width: 2%">
+<col style="width: 7%">
+<col style="width: 18%">
+<col style="width: 68%">
+<col style="width: 5%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -425,39 +410,39 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>data</td>
-<td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
-<td>The <code>data</code> parameter is the input DataFrame or DataFrameGroupBy object that you want to add lagged columns to.</td>
+<td>DataFrame or GroupBy(pandas or polars)</td>
+<td>Input tabular data to augment.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>date_column</td>
 <td>str</td>
-<td>The <code>date_column</code> parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the lagged values.</td>
+<td>Name of the date column used to determine ordering prior to shifting.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>value_column</td>
 <td>str or list</td>
-<td>The <code>value_column</code> parameter is the column(s) in the DataFrame that you want to add lagged values for. It can be either a single column name (string) or a list of column names.</td>
+<td>One or more column names whose lead values will be appended.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>leads</td>
 <td>int or tuple or list</td>
-<td>The <code>leads</code> parameter is an integer, tuple, or list that specifies the number of lead values to add to the DataFrame. - If it is an integer, the function will add that number of lead values for each column specified in the <code>value_column</code> parameter. - If it is a tuple, it will generate leads from the first to the second value (inclusive). - If it is a list, it will generate leads based on the values in the list.</td>
+<td>Lead specification. Accepts: - int: single lead value - tuple(start, end): inclusive range of leads - list[int]: explicit list of lead values</td>
 <td><code>1</code></td>
 </tr>
 <tr class="odd">
 <td>reduce_memory</td>
 <td>bool</td>
-<td>The <code>reduce_memory</code> parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.</td>
+<td>If True, attempts to reduce memory usage (pandas only).</td>
 <td><code>False</code></td>
 </tr>
 <tr class="even">
 <td>engine</td>
-<td>str</td>
-<td>The <code>engine</code> parameter is used to specify the engine to use for augmenting lags. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for augmenting lags. This can be faster than using “pandas” for large datasets.</td>
-<td><code>'pandas'</code></td>
+<td>(auto, pandas, polars)</td>
+<td>Execution engine. When “auto” (default) the backend is inferred from the input data type.</td>
+<td><code>"auto"</code></td>
 </tr>
 </tbody>
 </table>
@@ -466,9 +451,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
+<col style="width: 7%">
 <col style="width: 10%">
-<col style="width: 19%">
-<col style="width: 69%">
+<col style="width: 81%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -480,529 +465,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td></td>
-<td>pd.DataFrame</td>
-<td>A Pandas DataFrame with lead columns added to it.</td>
+<td>DataFrame</td>
+<td>DataFrame with lead columns appended. The return type matches the input backend.</td>
 </tr>
 </tbody>
 </table>
+
+
 </section>
-<section id="examples" class="level2 doc-section doc-section-examples">
-<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'m4_daily'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">id</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>D10</td>
-<td>2014-07-03</td>
-<td>2076.2</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>D10</td>
-<td>2014-07-04</td>
-<td>2073.4</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>D10</td>
-<td>2014-07-05</td>
-<td>2048.7</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>D10</td>
-<td>2014-07-06</td>
-<td>2048.9</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>D10</td>
-<td>2014-07-07</td>
-<td>2006.4</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9738</td>
-<td>D500</td>
-<td>2012-09-19</td>
-<td>9418.8</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9739</td>
-<td>D500</td>
-<td>2012-09-20</td>
-<td>9365.7</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9740</td>
-<td>D500</td>
-<td>2012-09-21</td>
-<td>9445.9</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9741</td>
-<td>D500</td>
-<td>2012-09-22</td>
-<td>9497.9</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9742</td>
-<td>D500</td>
-<td>2012-09-23</td>
-<td>9545.3</td>
-</tr>
-</tbody>
-</table>
-
-<p>9743 rows × 3 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Add 7 lead values for a single DataFrame object, pandas engine</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>lead_df_single <span class="op">=</span> (</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'id == "D10"'</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .augment_leads(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            leads<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">7</span>),</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'pandas'</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>lead_df_single</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">id</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">value</th>
-<th data-quarto-table-cell-role="th">value_lead_1</th>
-<th data-quarto-table-cell-role="th">value_lead_2</th>
-<th data-quarto-table-cell-role="th">value_lead_3</th>
-<th data-quarto-table-cell-role="th">value_lead_4</th>
-<th data-quarto-table-cell-role="th">value_lead_5</th>
-<th data-quarto-table-cell-role="th">value_lead_6</th>
-<th data-quarto-table-cell-role="th">value_lead_7</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>D10</td>
-<td>2014-07-03</td>
-<td>2076.2</td>
-<td>2073.4</td>
-<td>2048.7</td>
-<td>2048.9</td>
-<td>2006.4</td>
-<td>2017.6</td>
-<td>2019.1</td>
-<td>2007.4</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>D10</td>
-<td>2014-07-04</td>
-<td>2073.4</td>
-<td>2048.7</td>
-<td>2048.9</td>
-<td>2006.4</td>
-<td>2017.6</td>
-<td>2019.1</td>
-<td>2007.4</td>
-<td>2010.0</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>D10</td>
-<td>2014-07-05</td>
-<td>2048.7</td>
-<td>2048.9</td>
-<td>2006.4</td>
-<td>2017.6</td>
-<td>2019.1</td>
-<td>2007.4</td>
-<td>2010.0</td>
-<td>2001.5</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>D10</td>
-<td>2014-07-06</td>
-<td>2048.9</td>
-<td>2006.4</td>
-<td>2017.6</td>
-<td>2019.1</td>
-<td>2007.4</td>
-<td>2010.0</td>
-<td>2001.5</td>
-<td>1978.8</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>D10</td>
-<td>2014-07-07</td>
-<td>2006.4</td>
-<td>2017.6</td>
-<td>2019.1</td>
-<td>2007.4</td>
-<td>2010.0</td>
-<td>2001.5</td>
-<td>1978.8</td>
-<td>1988.3</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">669</td>
-<td>D10</td>
-<td>2016-05-02</td>
-<td>2630.7</td>
-<td>2649.3</td>
-<td>2631.8</td>
-<td>2622.5</td>
-<td>2620.1</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">670</td>
-<td>D10</td>
-<td>2016-05-03</td>
-<td>2649.3</td>
-<td>2631.8</td>
-<td>2622.5</td>
-<td>2620.1</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">671</td>
-<td>D10</td>
-<td>2016-05-04</td>
-<td>2631.8</td>
-<td>2622.5</td>
-<td>2620.1</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">672</td>
-<td>D10</td>
-<td>2016-05-05</td>
-<td>2622.5</td>
-<td>2620.1</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">673</td>
-<td>D10</td>
-<td>2016-05-06</td>
-<td>2620.1</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-</tbody>
-</table>
-
-<p>674 rows × 10 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Add a single lead value of 2 for each GroupBy object, polars engine</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>lead_df <span class="op">=</span> (</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .augment_leads(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            leads<span class="op">=</span><span class="dv">2</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'polars'</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>lead_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">id</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">value</th>
-<th data-quarto-table-cell-role="th">value_lead_2</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>D10</td>
-<td>2014-07-03</td>
-<td>2076.2</td>
-<td>2048.7</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>D10</td>
-<td>2014-07-04</td>
-<td>2073.4</td>
-<td>2048.9</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>D10</td>
-<td>2014-07-05</td>
-<td>2048.7</td>
-<td>2006.4</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>D10</td>
-<td>2014-07-06</td>
-<td>2048.9</td>
-<td>2017.6</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>D10</td>
-<td>2014-07-07</td>
-<td>2006.4</td>
-<td>2019.1</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9738</td>
-<td>D500</td>
-<td>2012-09-19</td>
-<td>9418.8</td>
-<td>9445.9</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9739</td>
-<td>D500</td>
-<td>2012-09-20</td>
-<td>9365.7</td>
-<td>9497.9</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9740</td>
-<td>D500</td>
-<td>2012-09-21</td>
-<td>9445.9</td>
-<td>9545.3</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9741</td>
-<td>D500</td>
-<td>2012-09-22</td>
-<td>9497.9</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9742</td>
-<td>D500</td>
-<td>2012-09-23</td>
-<td>9545.3</td>
-<td>NaN</td>
-</tr>
-</tbody>
-</table>
-
-<p>9743 rows × 4 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 add 2 lead values, 2 and 4, for a single DataFrame object, pandas engine</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>lead_df_single_two <span class="op">=</span> (</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'id == "D10"'</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        .augment_leads(</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            leads<span class="op">=</span>[<span class="dv">2</span>, <span class="dv">4</span>],</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'pandas'</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>lead_df_single_two</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">id</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">value</th>
-<th data-quarto-table-cell-role="th">value_lead_2</th>
-<th data-quarto-table-cell-role="th">value_lead_4</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>D10</td>
-<td>2014-07-03</td>
-<td>2076.2</td>
-<td>2048.7</td>
-<td>2006.4</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>D10</td>
-<td>2014-07-04</td>
-<td>2073.4</td>
-<td>2048.9</td>
-<td>2017.6</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>D10</td>
-<td>2014-07-05</td>
-<td>2048.7</td>
-<td>2006.4</td>
-<td>2019.1</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>D10</td>
-<td>2014-07-06</td>
-<td>2048.9</td>
-<td>2017.6</td>
-<td>2007.4</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>D10</td>
-<td>2014-07-07</td>
-<td>2006.4</td>
-<td>2019.1</td>
-<td>2010.0</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">669</td>
-<td>D10</td>
-<td>2016-05-02</td>
-<td>2630.7</td>
-<td>2631.8</td>
-<td>2620.1</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">670</td>
-<td>D10</td>
-<td>2016-05-03</td>
-<td>2649.3</td>
-<td>2622.5</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">671</td>
-<td>D10</td>
-<td>2016-05-04</td>
-<td>2631.8</td>
-<td>2620.1</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">672</td>
-<td>D10</td>
-<td>2016-05-05</td>
-<td>2622.5</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">673</td>
-<td>D10</td>
-<td>2016-05-06</td>
-<td>2620.1</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-</tbody>
-</table>
-
-<p>674 rows × 5 columns</p>
-</div>
-</div>
-</div>
-
-
 </section>
 
 </main> <!-- /main -->

@@ -10,104 +10,28 @@ augment_atr(
     periods=20,
     normalize=False,
     reduce_memory=False,
-    engine='pandas',
+    engine='auto',
 )
 ```
 
-The `augment_atr` function is used to calculate Average True Range (ATR) and
-Normalized Average True Range (NATR) for a given dataset and return
-the augmented dataset.
-Set the `normalize` parameter to `True` to calculate NATR.
+Calculate Average True Range (ATR) or Normalised ATR for pandas or polars data.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                                                            | Description                                                                                                                                                                                                                                                                                                                               | Default    |
-|---------------|-----------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| data          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | The `data` parameter is the input data that can be either a pandas DataFrame or a pandas DataFrameGroupBy object. It contains the data on which the Bollinger Bands will be calculated.                                                                                                                                                   | _required_ |
-| date_column   | str                                                             | The `date_column` parameter is a string that specifies the name of the column in the `data` DataFrame that contains the dates.                                                                                                                                                                                                            | _required_ |
-| high_column   | str                                                             | The `high_column` parameter is a string that specifies the name of the column in the `data` DataFrame that contains the high prices of the asset.                                                                                                                                                                                         | _required_ |
-| low_column    | str                                                             | The `low_column` parameter is a string that specifies the name of the column in the `data` DataFrame that contains the low prices of the asset.                                                                                                                                                                                           | _required_ |
-| close_column  | str                                                             | The `close_column` parameter is a string that specifies the name of the column in the `data` DataFrame that contains the closing prices of the asset.                                                                                                                                                                                     | _required_ |
-| periods       | Union\[int, Tuple\[int, int\], List\[int\]\]                    | The `periods` parameter in the `augment_atr` function can be specified as an integer, a tuple, or a list. This parameter specifies the number of rolling periods to use when calculating the ATR.                                                                                                                                         | `20`       |
-| normalize     | bool                                                            | The `normalize` parameter is a boolean flag that indicates whether or not to normalize the ATR values. If set to `True`, the function will normalize the ATR values to express this volatility as a percentage of the closing price.                                                                                                      | `False`    |
-| reduce_memory | bool                                                            | The `reduce_memory` parameter is a boolean flag that indicates whether or not to reduce the memory usage of the input data before performing the calculation. If set to `True`, the function will attempt to reduce the memory usage of the input data using techniques such as downcasting numeric columns and converting object columns | `False`    |
-| engine        | str                                                             | The `engine` parameter specifies the computation engine to use for calculating the Bollinger Bands. It can take two values: 'pandas' or 'polars'. If 'pandas' is selected, the function will use the pandas library for computation. If 'polars' is selected,                                                                             | `'pandas'` |
+| Name          | Type                                   | Description                                                                                                                                | Default    |
+|---------------|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | DataFrame or GroupBy(pandas or polars) | Input financial data. Grouped inputs are processed per group before the indicators are appended.                                           | _required_ |
+| date_column   | str                                    | Name of the column containing date information.                                                                                            | _required_ |
+| high_column   | str                                    | Column names used to compute the true range and ATR.                                                                                       | _required_ |
+| low_column    | str                                    | Column names used to compute the true range and ATR.                                                                                       | _required_ |
+| close_column  | str                                    | Column names used to compute the true range and ATR.                                                                                       | _required_ |
+| periods       | int, tuple, or list                    | Rolling window lengths. Accepts an integer, an inclusive tuple range, or an explicit list. Defaults to ``20``.                             | `20`       |
+| normalize     | bool                                   | When ``True``, report the normalised ATR (``ATR / close * 100``). Defaults to ``False``.                                                   | `False`    |
+| reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data. If a polars input is supplied a warning is emitted and no conversion occurs. | `False`    |
+| engine        | (auto, pandas, polars)                 | Execution engine. ``"auto"`` (default) infers the backend from the input data while allowing explicit overrides.                           | `"auto"`   |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type         | Description                                            |
-|--------|--------------|--------------------------------------------------------|
-|        | pd.DataFrame | The function `augment_atr` returns a pandas DataFrame. |
-
-## Notes {.doc-section .doc-section-notes}
-
-
-## ATR (Average True Range)
-
-The Average True Range (ATR) is a technical analysis indicator used to measure market volatility. It was introduced by J. Welles Wilder Jr. in his 1978 book "New Concepts in Technical Trading Systems."
-
-The ATR is calculated as follows:
-
-1. True Range: For each period (typically a day), the True Range is the greatest of the following:
-
-    - The current high minus the current low.
-    - The absolute value of the current high minus the previous close.
-    - The absolute value of the current low minus the previous close.
-
-2. Average True Range: The ATR is an average of the True Range over a specified number of periods (commonly 14 days).
-
-## NATR (Normalized Average True Range)
-
-The NATR (Normalized Average True Range) is a variation of the ATR that normalizes the ATR values to express this volatility as a percentage of the closing price.
-
-The NATR (`normalize = True`) is calculated as follows:
-NATR = (ATR / Close) * 100
-
-## Examples {.doc-section .doc-section-examples}
-
-``` {python}
-import pandas as pd
-import pytimetk as tk
-
-df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
-
-df
-```
-
-``` {python}
-# ATR pandas engine
-df_atr = (
-    df
-        .groupby('symbol')
-        .augment_atr(
-            date_column = 'date',
-            high_column='high',
-            low_column='low',
-            close_column='close',
-            periods = [14, 28],
-            normalize = False, # True for NATR
-            engine = "pandas"
-        )
-)
-
-df_atr.glimpse()
-```
-
-``` {python}
-# ATR polars engine
-df_atr = (
-    df
-        .groupby('symbol')
-        .augment_atr(
-            date_column = 'date',
-            high_column='high',
-            low_column='low',
-            close_column='close',
-            periods = [14, 28],
-            normalize = False, # True for NATR
-            engine = "polars"
-        )
-)
-
-df_atr.glimpse()
-```
+| Name   | Type      | Description                                                                                                                                                                   |
+|--------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|        | DataFrame | DataFrame with ``{close_column}_atr_{period}`` (or ``_natr_`` when ``normalize=True``) columns appended for each requested period. The return type matches the input backend. |

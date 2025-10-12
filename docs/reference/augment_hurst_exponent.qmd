@@ -7,7 +7,7 @@ augment_hurst_exponent(
     close_column,
     window=100,
     reduce_memory=False,
-    engine='pandas',
+    engine='auto',
 )
 ```
 
@@ -15,20 +15,20 @@ Calculate the Hurst Exponent on a rolling window for a financial time series. Us
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                                                            | Description                                                                                                          | Default    |
-|---------------|-----------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|------------|
-| data          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | Input pandas DataFrame or GroupBy object with time series data.                                                      | _required_ |
-| date_column   | str                                                             | Column name containing dates or timestamps.                                                                          | _required_ |
-| close_column  | str                                                             | Column name with closing prices to calculate the Hurst Exponent.                                                     | _required_ |
-| window        | Union\[int, Tuple\[int, int\], List\[int\]\]                    | Size of the rolling window for Hurst Exponent calculation. Accepts int, tuple (start, end), or list. Default is 100. | `100`      |
-| reduce_memory | bool                                                            | If True, reduces memory usage before calculation. Default is False.                                                  | `False`    |
-| engine        | str                                                             | Computation engine: 'pandas' or 'polars'. Default is 'pandas'.                                                       | `'pandas'` |
+| Name          | Type                                         | Description                                                                                                          | Default    |
+|---------------|----------------------------------------------|----------------------------------------------------------------------------------------------------------------------|------------|
+| data          | DataFrame or GroupBy(pandas or polars)       | Input time-series data. Grouped inputs are processed per group before the exponent is appended.                      | _required_ |
+| date_column   | str                                          | Column name containing dates or timestamps.                                                                          | _required_ |
+| close_column  | str                                          | Column name with closing prices to calculate the Hurst Exponent.                                                     | _required_ |
+| window        | Union\[int, Tuple\[int, int\], List\[int\]\] | Size of the rolling window for Hurst Exponent calculation. Accepts int, tuple (start, end), or list. Default is 100. | `100`      |
+| reduce_memory | bool                                         | If True, reduces memory usage before calculation. Default is False.                                                  | `False`    |
+| engine        | (auto, pandas, polars)                       | Execution engine. ``"auto"`` (default) infers the backend from the input data while allowing explicit overrides.     | `"auto"`   |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type         | Description                                                                                        |
-|--------|--------------|----------------------------------------------------------------------------------------------------|
-|        | pd.DataFrame | DataFrame with added columns: - {close_column}_hurst_{window}: Hurst Exponent for each window size |
+| Name   | Type      | Description                                                                                        |
+|--------|-----------|----------------------------------------------------------------------------------------------------|
+|        | DataFrame | DataFrame with added columns: - {close_column}_hurst_{window}: Hurst Exponent for each window size |
 
 ## Notes {.doc-section .doc-section-notes}
 
@@ -45,8 +45,9 @@ References:
 
 ## Examples: {.doc-section .doc-section-examples}
 
-``` {python}
+```{python}
 import pandas as pd
+import polars as pl
 import pytimetk as tk
 
 df = tk.load_dataset('stocks_daily', parse_dates=['date'])
@@ -63,7 +64,7 @@ hurst_df = (
 hurst_df.glimpse()
 ```
 
-``` {python}
+```{python}
 # Example 2 - Multiple stocks with groupby using pandas engine
 hurst_df = (
     df.groupby('symbol')
@@ -76,29 +77,26 @@ hurst_df = (
 hurst_df.glimpse()
 ```
 
-``` {python}
+```{python}
 # Example 3 - Single stock Hurst Exponent with polars engine
-hurst_df = (
-    df.query("symbol == 'AAPL'")
-    .augment_hurst_exponent(
-        date_column='date',
-        close_column='close',
-        window=[100, 200],
-        engine='polars'
-    )
+pl_single = pl.from_pandas(df.query("symbol == 'AAPL'"))
+hurst_df = pl_single.tk.augment_hurst_exponent(
+    date_column='date',
+    close_column='close',
+    window=[100, 200]
 )
 hurst_df.glimpse()
 ```
 
-``` {python}
+```{python}
 # Example 4 - Multiple stocks with groupby using polars engine
+pl_grouped = pl.from_pandas(df)
 hurst_df = (
-    df.groupby('symbol')
-    .augment_hurst_exponent(
+    pl_grouped.group_by('symbol')
+    .tk.augment_hurst_exponent(
         date_column='date',
         close_column='close',
         window=100,
-        engine='polars'
     )
 )
 hurst_df.glimpse()

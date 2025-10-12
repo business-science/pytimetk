@@ -8,102 +8,62 @@ augment_bbands(
     periods=20,
     std_dev=2,
     reduce_memory=False,
-    engine='pandas',
+    engine='auto',
 )
 ```
 
-The `augment_bbands` function is used to calculate Bollinger Bands for a given dataset and return
-the augmented dataset.
+Calculate Bollinger Bands for pandas or polars data.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                                                            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Default    |
-|---------------|-----------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| data          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | The `data` parameter is the input data that can be either a pandas DataFrame or a pandas DataFrameGroupBy object. It contains the data on which the Bollinger Bands will be calculated.                                                                                                                                                                                                                                                                            | _required_ |
-| date_column   | str                                                             | The `date_column` parameter is a string that specifies the name of the column in the `data` DataFrame that contains the dates.                                                                                                                                                                                                                                                                                                                                     | _required_ |
-| close_column  | str                                                             | The `close_column` parameter is a string that specifies the name of the column in the `data` DataFrame that contains the closing prices of the asset.                                                                                                                                                                                                                                                                                                              | _required_ |
-| periods       | Union\[int, Tuple\[int, int\], List\[int\]\]                    | The `periods` parameter in the `augment_bbands` function can be specified as an integer, a tuple, or a list. This parameter specifies the number of rolling periods to use when calculating the Bollinger Bands.                                                                                                                                                                                                                                                   | `20`       |
-| std_dev       | float                                                           | The `std_dev` parameter is a float that represents the number of standard deviations to use when calculating the Bollinger Bands. Bollinger Bands are a technical analysis tool that consists of a middle band (usually a simple moving average) and an upper and lower band that are typically two standard deviations away from the middle band. The `std_dev` parameter specifies the number of standard deviations. `std_dev` can be a list of floats as well. | `2`        |
-| reduce_memory | bool                                                            | The `reduce_memory` parameter is a boolean flag that indicates whether or not to reduce the memory usage of the input data before performing the calculation. If set to `True`, the function will attempt to reduce the memory usage of the input data using techniques such as downcasting numeric columns and converting object columns                                                                                                                          | `False`    |
-| engine        | str                                                             | The `engine` parameter specifies the computation engine to use for calculating the Bollinger Bands. It can take two values: 'pandas' or 'polars'. If 'pandas' is selected, the function will use the pandas library for computation. If 'polars' is selected,                                                                                                                                                                                                      | `'pandas'` |
+| Name          | Type                                   | Description                                                                                                                                                                                  | Default    |
+|---------------|----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | DataFrame or GroupBy(pandas or polars) | Input financial data. Grouped inputs are processed per group before the bands are appended.                                                                                                  | _required_ |
+| date_column   | str                                    | Name of the column containing date information. Used to preserve the original ordering of results.                                                                                           | _required_ |
+| close_column  | str                                    | Name of the closing price column used to compute the moving average and standard deviation.                                                                                                  | _required_ |
+| periods       | int, tuple, or list                    | Rolling window lengths. An integer adds a single window, a tuple ``(start, end)`` expands to every integer in the inclusive range, and a list provides explicit windows. Defaults to ``20``. | `20`       |
+| std_dev       | float, int, or list                    | Number(s) of standard deviations used when constructing the upper and lower bands. Integers are converted to floats. Defaults to ``2``.                                                      | `2`        |
+| reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data. If a polars input is supplied a warning is emitted and no conversion occurs.                                                   | `False`    |
+| engine        | (auto, pandas, polars)                 | Execution engine. ``"auto"`` (default) infers the backend from the input data while allowing explicit overrides.                                                                             | `"auto"`   |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type         | Description                                               |
-|--------|--------------|-----------------------------------------------------------|
-|        | pd.DataFrame | The function `augment_bbands` returns a pandas DataFrame. |
+| Name   | Type      | Description                                                                                                                                                            |
+|--------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|        | DataFrame | DataFrame with middle/upper/lower band columns appended for each ``period`` and ``std_dev`` combination. The return type matches the input backend (pandas or polars). |
 
 ## Notes {.doc-section .doc-section-notes}
 
-
-Bollinger Bands are a technical analysis tool developed by John
-Bollinger in the 1980s. They are used to measure the
-'volatility' of a stock price or other financial instrument.
-This indicator consists of three lines which are plotted in
-relation to an asset's price:
-
-1. The Middle Band: This is typically a simple moving average
-(SMA) of the closing prices over a certain number of days
-(commonly 20 days).
-
-2. The Upper Band: This is set a specified number of standard
-deviations (usually two) above the middle band.
-
-3. The Lower Band: This is set the same number of standard
-deviations (again, usually two) below the middle band.
-
-Volatility Indicator: The width of the bands is a measure of
-volatility. When the bands widen, it indicates increased
-volatility, and when they contract, it suggests decreased
-volatility.
-
-Overbought and Oversold Conditions: Prices are considered
-overbought near the upper band and oversold near the lower
-band. However, these conditions do not necessarily signal a
-reversal; prices can remain overbought or oversold for extended
-periods during strong trends.
+The middle band is the rolling mean of ``close_column``. The upper band is
+the middle band plus ``std_dev`` times the rolling standard deviation, and
+the lower band subtracts the same quantity. Rolling statistics are
+calculated with a minimum window equal to ``period`` which matches the
+behaviour of the pandas implementation.
 
 ## Examples {.doc-section .doc-section-examples}
 
-``` {python}
-import pandas as pd
+```{python}
+import polars as pl
 import pytimetk as tk
 
-df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
+df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-df
-```
-
-``` {python}
-# BBANDS pandas engine
-df_bbands = (
-    df
-        .groupby('symbol')
-        .augment_bbands(
-            date_column = 'date',
-            close_column='close',
-            periods = [20, 40],
-            std_dev = 2,
-            engine = "pandas"
-        )
+# Augment a pandas DataFrame (engine inferred)
+bbands_df = df.groupby("symbol").augment_bbands(
+    date_column="date",
+    close_column="close",
+    periods=[20, 40],
+    std_dev=[1.5, 2.0],
 )
 
-df_bbands.glimpse()
-```
-
-``` {python}
-# BBANDS polars engine
-df_bbands = (
-    df
-        .groupby('symbol')
-        .augment_bbands(
-            date_column = 'date',
-            close_column='close',
-            periods = [20, 40],
-            std_dev = 2,
-            engine = "polars"
-        )
+# Polars DataFrame using the tk accessor
+bbands_pl = (
+    pl.from_pandas(df.query("symbol == 'AAPL'"))
+    .tk.augment_bbands(
+        date_column="date",
+        close_column="close",
+        periods=(10, 15),
+        std_dev=2,
+    )
 )
-
-df_bbands.glimpse()
 ```

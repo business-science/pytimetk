@@ -116,9 +116,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <!-- SUMO -->
 <script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -402,17 +399,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    close_column,</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    periods<span class="op">=</span><span class="dv">14</span>,</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'auto'</span>,</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The <code>augment_cmo</code> function calculates the Chande Momentum Oscillator (CMO) for a given financial instrument using either pandas or polars engine, and returns the augmented DataFrame.</p>
+<p>Calculate the Chande Momentum Oscillator (CMO) using pandas or polars backends.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 3%">
-<col style="width: 14%">
-<col style="width: 78%">
-<col style="width: 2%">
+<col style="width: 7%">
+<col style="width: 18%">
+<col style="width: 68%">
+<col style="width: 5%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -425,39 +422,39 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>data</td>
-<td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
-<td>The <code>data</code> parameter is the input data that can be either a pandas DataFrame or a pandas DataFrameGroupBy object. It contains the data on which the Chande Momentum Oscillator (CMO) will be calculated.</td>
+<td>DataFrame or GroupBy(pandas or polars)</td>
+<td>Input financial data. Grouped inputs are processed per group before the indicator columns are appended.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>date_column</td>
 <td>str</td>
-<td>The name of the column in the data that contains the dates or timestamps.</td>
+<td>Name of the column containing date information.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>close_column</td>
 <td>str</td>
-<td>The <code>close_column</code> parameter is used to specify the column in the input data that contain the values on which the CMO will be calculated.</td>
+<td>Name of the column containing closing prices.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>periods</td>
-<td>Union[int, Tuple[int, int], List[int]]</td>
-<td>The <code>periods</code> parameter in the <code>augment_cmo</code> function specifies the number of rolling periods over which the Chande Momentum Oscillator (CMO) is calculated. It can be provided as an integer, a tuple of two integers (start and end periods), or a list of integers.</td>
+<td>int, tuple, or list</td>
+<td>Lookback window(s) applied to the CMO calculation. Accepts a single integer, an inclusive tuple range, or an explicit list. Defaults to <code>14</code>.</td>
 <td><code>14</code></td>
 </tr>
 <tr class="odd">
 <td>reduce_memory</td>
 <td>bool</td>
-<td>The <code>reduce_memory</code> parameter is a boolean flag that indicates whether or not to reduce the memory usage of the data before performing the CMO calculation. If set to <code>True</code>, the function will attempt to reduce the memory usage of the input data. If set to <code>False</code>, the function will not attempt to reduce the memory usage of the input data.</td>
+<td>Attempt to reduce memory usage when operating on pandas data. If a polars input is supplied a warning is emitted and no conversion occurs.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="even">
 <td>engine</td>
-<td>str</td>
-<td>The <code>engine</code> parameter specifies the computation engine to use for calculating the Chande Momentum Oscillator (CMO). It can take two values: ‘pandas’ or ‘polars’.</td>
-<td><code>'pandas'</code></td>
+<td>(auto, pandas, polars)</td>
+<td>Execution engine. <code>"auto"</code> (default) infers the backend from the input data while allowing explicit overrides.</td>
+<td><code>"auto"</code></td>
 </tr>
 </tbody>
 </table>
@@ -466,9 +463,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 4%">
-<col style="width: 8%">
-<col style="width: 86%">
+<col style="width: 5%">
+<col style="width: 7%">
+<col style="width: 87%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -480,633 +477,43 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td></td>
-<td>pd.DataFrame</td>
-<td>The function <code>augment_cmo</code> returns a pandas DataFrame that contains the augmented data with the Chande Momentum Oscillator (CMO) values added.</td>
+<td>DataFrame</td>
+<td>DataFrame with <code>{close_column}_cmo_{period}</code> columns appended for every requested period. The return type matches the input backend.</td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="notes" class="level2 doc-section doc-section-notes">
 <h2 class="doc-section doc-section-notes anchored" data-anchor-id="notes">Notes</h2>
-<p>The Chande Momentum Oscillator (CMO), developed by Tushar Chande, is a technical analysis tool used to gauge the momentum of a financial instrument. It is similar to other momentum indicators like the Relative Strength Index (RSI), but with some distinct characteristics. Here’s what the CMO tells us:</p>
-<p>Momentum of Price Movements:</p>
-<p>The CMO measures the strength of trends in price movements. It calculates the difference between the sum of gains and losses over a specified period, normalized to oscillate between -100 and +100. Overbought and Oversold Conditions:</p>
-<p>Values close to +100 suggest overbought conditions, indicating that the price might be too high and could reverse. Conversely, values near -100 suggest oversold conditions, implying that the price might be too low and could rebound. Trend Strength:</p>
-<p>High absolute values (either positive or negative) indicate strong trends, while values near zero suggest a lack of trend or a weak trend. Divergences:</p>
-<p>Divergences between the CMO and price movements can be significant. For example, if the price is making new highs but the CMO is declining, it may indicate weakening momentum and a potential trend reversal. Crossing the Zero Line:</p>
-<p>When the CMO crosses above zero, it can be seen as a bullish signal, whereas a cross below zero can be interpreted as bearish. Customization:</p>
-<p>The period over which the CMO is calculated can be adjusted. A shorter period makes the oscillator more sensitive to price changes, suitable for short-term trading. A longer period smooths out the oscillator for a longer-term perspective. It’s important to note that while the CMO can provide valuable insights into market momentum and potential price reversals, it is most effective when used in conjunction with other indicators and analysis methods. Like all technical indicators, the CMO should not be used in isolation but rather as part of a comprehensive trading strategy.</p>
-<p>References: 1. https://www.fmlabs.com/reference/default.htm?url=CMO.htm</p>
+<p>The Chande Momentum Oscillator (CMO) compares the magnitude of recent gains to recent losses over the supplied lookback window. Values range from -100 (all losses) to +100 (all gains). Division-by-zero cases are guarded by returning <code>NaN</code> which matches the pandas behaviour.</p>
 </section>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'stocks_daily'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Calculate CMO for a single column</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>cmo_df <span class="op">=</span> (</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">"symbol == 'AAPL'"</span>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        .augment_cmo(</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'adjusted'</span>,</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">14</span>, <span class="dv">28</span>]</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>cmo_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-<th data-quarto-table-cell-role="th">adjusted_cmo_14</th>
-<th data-quarto-table-cell-role="th">adjusted_cmo_28</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5398</td>
-<td>AAPL</td>
-<td>2013-01-02</td>
-<td>19.779285</td>
-<td>19.821428</td>
-<td>19.343929</td>
-<td>19.608213</td>
-<td>560518000</td>
-<td>16.791180</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5399</td>
-<td>AAPL</td>
-<td>2013-01-03</td>
-<td>19.567142</td>
-<td>19.631071</td>
-<td>19.321428</td>
-<td>19.360714</td>
-<td>352965200</td>
-<td>16.579241</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5400</td>
-<td>AAPL</td>
-<td>2013-01-04</td>
-<td>19.177500</td>
-<td>19.236786</td>
-<td>18.779642</td>
-<td>18.821428</td>
-<td>594333600</td>
-<td>16.117437</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5401</td>
-<td>AAPL</td>
-<td>2013-01-07</td>
-<td>18.642857</td>
-<td>18.903570</td>
-<td>18.400000</td>
-<td>18.710714</td>
-<td>484156400</td>
-<td>16.022623</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5402</td>
-<td>AAPL</td>
-<td>2013-01-08</td>
-<td>18.900356</td>
-<td>18.996071</td>
-<td>18.616072</td>
-<td>18.761070</td>
-<td>458707200</td>
-<td>16.065746</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8092</td>
-<td>AAPL</td>
-<td>2023-09-15</td>
-<td>176.479996</td>
-<td>176.500000</td>
-<td>173.820007</td>
-<td>175.009995</td>
-<td>109205100</td>
-<td>175.009995</td>
-<td>-11.097429</td>
-<td>-6.370009</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">8093</td>
-<td>AAPL</td>
-<td>2023-09-18</td>
-<td>176.479996</td>
-<td>179.380005</td>
-<td>176.169998</td>
-<td>177.970001</td>
-<td>67257600</td>
-<td>177.970001</td>
-<td>-6.564165</td>
-<td>-2.713367</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8094</td>
-<td>AAPL</td>
-<td>2023-09-19</td>
-<td>177.520004</td>
-<td>179.630005</td>
-<td>177.130005</td>
-<td>179.070007</td>
-<td>51826900</td>
-<td>179.070007</td>
-<td>-16.295529</td>
-<td>1.931561</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">8095</td>
-<td>AAPL</td>
-<td>2023-09-20</td>
-<td>179.259995</td>
-<td>179.699997</td>
-<td>175.399994</td>
-<td>175.490005</td>
-<td>58436200</td>
-<td>175.490005</td>
-<td>-39.175190</td>
-<td>-3.650570</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8096</td>
-<td>AAPL</td>
-<td>2023-09-21</td>
-<td>174.550003</td>
-<td>176.300003</td>
-<td>173.860001</td>
-<td>173.929993</td>
-<td>63047900</td>
-<td>173.929993</td>
-<td>-43.051227</td>
-<td>-6.140628</td>
-</tr>
-</tbody>
-</table>
-
-<p>2699 rows × 10 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Calculate CMO for multiple groups</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>cmo_df <span class="op">=</span> (</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .augment_cmo(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'adjusted'</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">14</span>, <span class="dv">28</span>]</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>cmo_df.groupby(<span class="st">'symbol'</span>).tail(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-<th data-quarto-table-cell-role="th">adjusted_cmo_14</th>
-<th data-quarto-table-cell-role="th">adjusted_cmo_28</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2698</td>
-<td>META</td>
-<td>2023-09-21</td>
-<td>295.700012</td>
-<td>300.260010</td>
-<td>293.269989</td>
-<td>295.730011</td>
-<td>21300500</td>
-<td>295.730011</td>
-<td>-0.277495</td>
-<td>-4.703549</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5397</td>
-<td>AMZN</td>
-<td>2023-09-21</td>
-<td>131.940002</td>
-<td>132.240005</td>
-<td>129.309998</td>
-<td>129.330002</td>
-<td>70234800</td>
-<td>129.330002</td>
-<td>-27.450935</td>
-<td>-16.697312</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8096</td>
-<td>AAPL</td>
-<td>2023-09-21</td>
-<td>174.550003</td>
-<td>176.300003</td>
-<td>173.860001</td>
-<td>173.929993</td>
-<td>63047900</td>
-<td>173.929993</td>
-<td>-43.051227</td>
-<td>-6.140628</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">10795</td>
-<td>NFLX</td>
-<td>2023-09-21</td>
-<td>386.500000</td>
-<td>395.899994</td>
-<td>383.420013</td>
-<td>384.149994</td>
-<td>5547900</td>
-<td>384.149994</td>
-<td>-56.124625</td>
-<td>-19.430200</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">13494</td>
-<td>NVDA</td>
-<td>2023-09-21</td>
-<td>415.829987</td>
-<td>421.000000</td>
-<td>409.799988</td>
-<td>410.170013</td>
-<td>44893000</td>
-<td>410.170013</td>
-<td>-83.624257</td>
-<td>0.671283</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">16193</td>
-<td>GOOG</td>
-<td>2023-09-21</td>
-<td>132.389999</td>
-<td>133.190002</td>
-<td>131.089996</td>
-<td>131.360001</td>
-<td>22042700</td>
-<td>131.360001</td>
-<td>-33.482367</td>
-<td>2.917383</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 - Calculate CMO for polars engine</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>cmo_df <span class="op">=</span> (</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">"symbol == 'AAPL'"</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .augment_cmo(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'adjusted'</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">14</span>, <span class="dv">28</span>],</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'polars'</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>cmo_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-<th data-quarto-table-cell-role="th">adjusted_cmo_14</th>
-<th data-quarto-table-cell-role="th">adjusted_cmo_28</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5398</td>
-<td>AAPL</td>
-<td>2013-01-02</td>
-<td>19.779285</td>
-<td>19.821428</td>
-<td>19.343929</td>
-<td>19.608213</td>
-<td>560518000</td>
-<td>16.791180</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5399</td>
-<td>AAPL</td>
-<td>2013-01-03</td>
-<td>19.567142</td>
-<td>19.631071</td>
-<td>19.321428</td>
-<td>19.360714</td>
-<td>352965200</td>
-<td>16.579241</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5400</td>
-<td>AAPL</td>
-<td>2013-01-04</td>
-<td>19.177500</td>
-<td>19.236786</td>
-<td>18.779642</td>
-<td>18.821428</td>
-<td>594333600</td>
-<td>16.117437</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5401</td>
-<td>AAPL</td>
-<td>2013-01-07</td>
-<td>18.642857</td>
-<td>18.903570</td>
-<td>18.400000</td>
-<td>18.710714</td>
-<td>484156400</td>
-<td>16.022623</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5402</td>
-<td>AAPL</td>
-<td>2013-01-08</td>
-<td>18.900356</td>
-<td>18.996071</td>
-<td>18.616072</td>
-<td>18.761070</td>
-<td>458707200</td>
-<td>16.065746</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8092</td>
-<td>AAPL</td>
-<td>2023-09-15</td>
-<td>176.479996</td>
-<td>176.500000</td>
-<td>173.820007</td>
-<td>175.009995</td>
-<td>109205100</td>
-<td>175.009995</td>
-<td>-11.097429</td>
-<td>-6.370009</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">8093</td>
-<td>AAPL</td>
-<td>2023-09-18</td>
-<td>176.479996</td>
-<td>179.380005</td>
-<td>176.169998</td>
-<td>177.970001</td>
-<td>67257600</td>
-<td>177.970001</td>
-<td>-6.564165</td>
-<td>-2.713367</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8094</td>
-<td>AAPL</td>
-<td>2023-09-19</td>
-<td>177.520004</td>
-<td>179.630005</td>
-<td>177.130005</td>
-<td>179.070007</td>
-<td>51826900</td>
-<td>179.070007</td>
-<td>-16.295529</td>
-<td>1.931561</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">8095</td>
-<td>AAPL</td>
-<td>2023-09-20</td>
-<td>179.259995</td>
-<td>179.699997</td>
-<td>175.399994</td>
-<td>175.490005</td>
-<td>58436200</td>
-<td>175.490005</td>
-<td>-39.175190</td>
-<td>-3.650570</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8096</td>
-<td>AAPL</td>
-<td>2023-09-21</td>
-<td>174.550003</td>
-<td>176.300003</td>
-<td>173.860001</td>
-<td>173.929993</td>
-<td>63047900</td>
-<td>173.929993</td>
-<td>-43.051227</td>
-<td>-6.140628</td>
-</tr>
-</tbody>
-</table>
-
-<p>2699 rows × 10 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 4 - Calculate CMO for polars engine and groups</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>cmo_df <span class="op">=</span> (</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        .augment_cmo(</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'adjusted'</span>,</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">14</span>, <span class="dv">28</span>],</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'polars'</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>cmo_df.groupby(<span class="st">'symbol'</span>).tail(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-<th data-quarto-table-cell-role="th">adjusted_cmo_14</th>
-<th data-quarto-table-cell-role="th">adjusted_cmo_28</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2698</td>
-<td>META</td>
-<td>2023-09-21</td>
-<td>295.700012</td>
-<td>300.260010</td>
-<td>293.269989</td>
-<td>295.730011</td>
-<td>21300500</td>
-<td>295.730011</td>
-<td>-0.277495</td>
-<td>-4.703549</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5397</td>
-<td>AMZN</td>
-<td>2023-09-21</td>
-<td>131.940002</td>
-<td>132.240005</td>
-<td>129.309998</td>
-<td>129.330002</td>
-<td>70234800</td>
-<td>129.330002</td>
-<td>-27.450935</td>
-<td>-16.697312</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8096</td>
-<td>AAPL</td>
-<td>2023-09-21</td>
-<td>174.550003</td>
-<td>176.300003</td>
-<td>173.860001</td>
-<td>173.929993</td>
-<td>63047900</td>
-<td>173.929993</td>
-<td>-43.051227</td>
-<td>-6.140628</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">10795</td>
-<td>NFLX</td>
-<td>2023-09-21</td>
-<td>386.500000</td>
-<td>395.899994</td>
-<td>383.420013</td>
-<td>384.149994</td>
-<td>5547900</td>
-<td>384.149994</td>
-<td>-56.124625</td>
-<td>-19.430200</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">13494</td>
-<td>NVDA</td>
-<td>2023-09-21</td>
-<td>415.829987</td>
-<td>421.000000</td>
-<td>409.799988</td>
-<td>410.170013</td>
-<td>44893000</td>
-<td>410.170013</td>
-<td>-83.624257</td>
-<td>0.671283</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">16193</td>
-<td>GOOG</td>
-<td>2023-09-21</td>
-<td>132.389999</td>
-<td>133.190002</td>
-<td>131.089996</td>
-<td>131.360001</td>
-<td>22042700</td>
-<td>131.360001</td>
-<td>-33.482367</td>
-<td>2.917383</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"stocks_daily"</span>, parse_dates<span class="op">=</span>[<span class="st">"date"</span>])</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Pandas example (engine inferred)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>cmo_pd <span class="op">=</span> (</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">"symbol"</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    .augment_cmo(</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"date"</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">"close"</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        periods<span class="op">=</span>[<span class="dv">14</span>, <span class="dv">28</span>],</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Polars example using the tk accessor</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>cmo_pl <span class="op">=</span> (</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    pl.from_pandas(df.query(<span class="st">"symbol == 'AAPL'"</span>))</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    .tk.augment_cmo(</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"date"</span>,</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">"close"</span>,</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        periods<span class="op">=</span><span class="dv">14</span>,</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
