@@ -116,9 +116,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <!-- SUMO -->
 <script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -149,7 +146,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">augment_rsi</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -369,50 +366,38 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#pytimetk.augment_rsi" id="toc-pytimetk.augment_rsi" class="nav-link active" data-scroll-target="#pytimetk.augment_rsi">augment_rsi</a>
+  <ul class="collapse">
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
-  <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_rsi.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">augment_rsi</h1>
-</div>
 
 
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-</header>
-
+<section id="pytimetk.augment_rsi" class="level1">
+<h1>augment_rsi</h1>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>augment_rsi(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data,</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    date_column,</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    close_column,</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    periods<span class="op">=</span><span class="dv">14</span>,</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'auto'</span>,</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The <code>augment_rsi</code> function calculates the Relative Strength Index (RSI) for a given financial instrument using either pandas or polars engine, and returns the augmented DataFrame.</p>
+<p>Calculate RSI for one or more columns using pandas or polars backends.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 3%">
-<col style="width: 14%">
-<col style="width: 78%">
-<col style="width: 2%">
+<col style="width: 11%">
+<col style="width: 29%">
+<col style="width: 50%">
+<col style="width: 8%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -425,39 +410,39 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>data</td>
-<td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
-<td>The <code>data</code> parameter is the input data that can be either a pandas DataFrame or a pandas DataFrameGroupBy object. It contains the data on which the RSI will be calculated.</td>
+<td>DataFrame or GroupBy(pandas or polars)</td>
+<td>Financial data to augment.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>date_column</td>
 <td>str</td>
-<td>The name of the column in the data that contains the dates or timestamps.</td>
+<td>Name of the column containing date information.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>close_column</td>
-<td>str</td>
-<td>The <code>close_column</code> parameter is used to specify the column(s) in the input data that contain the values on which the RSI will be calculated. It can be either a single column name (string) or a list of column names (if you want to calculate RSI on multiple columns).</td>
+<td>str or list[str]</td>
+<td>Column(s) containing closing price data.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>periods</td>
-<td>Union[int, Tuple[int, int], List[int]]</td>
-<td>The <code>periods</code> parameter in the <code>augment_rsi</code> function specifies the number of rolling periods over which the RSI is calculated. It can be provided as an integer, a tuple of two integers (start and end periods), or a list of integers.</td>
+<td>int, tuple, or list</td>
+<td>Lookback window(s) used when computing RSI.</td>
 <td><code>14</code></td>
 </tr>
 <tr class="odd">
 <td>reduce_memory</td>
 <td>bool</td>
-<td>The <code>reduce_memory</code> parameter is a boolean flag that indicates whether or not to reduce the memory usage of the data before performing the RSI calculation. If set to <code>True</code>, the function will attempt to reduce the memory usage of the input data. If set to <code>False</code>, the function will not attempt to reduce the memory usage of the input data.</td>
+<td>Attempt to reduce memory usage when operating on pandas data.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="even">
 <td>engine</td>
-<td>str</td>
-<td>The <code>engine</code> parameter specifies the computation engine to use for calculating the RSI. It can take two values: ‘pandas’ or ‘polars’.</td>
-<td><code>'pandas'</code></td>
+<td>(auto, pandas, polars)</td>
+<td>Execution engine. Defaults to inferring from the input data type.</td>
+<td><code>"auto"</code></td>
 </tr>
 </tbody>
 </table>
@@ -466,9 +451,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 4%">
 <col style="width: 8%">
-<col style="width: 86%">
+<col style="width: 11%">
+<col style="width: 79%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -480,638 +465,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td></td>
-<td>pd.DataFrame</td>
-<td>The function <code>augment_rsi</code> returns a pandas DataFrame that contains the augmented data with the Relative Strength Index (RSI) values added.</td>
+<td>DataFrame</td>
+<td>DataFrame with RSI values appended. The backend matches the input data.</td>
 </tr>
 </tbody>
 </table>
+
+
 </section>
-<section id="notes" class="level2 doc-section doc-section-notes">
-<h2 class="doc-section doc-section-notes anchored" data-anchor-id="notes">Notes</h2>
-<p>The Relative Strength Index (RSI) is a momentum oscillator that measures the speed and change of price movements. Developed by J. Welles Wilder Jr.&nbsp;and introduced in his 1978 book “New Concepts in Technical Trading Systems”, the RSI is one of the most well-known and widely used technical analysis indicators.</p>
-<ul>
-<li>Range: The RSI oscillates between 0 and 100.</li>
-<li>Overbought and Oversold Levels: Traditionally, the RSI is considered overbought when above 70 and oversold when below</li>
-</ul>
-<ol start="30" type="1">
-<li>These thresholds can indicate potential reversal points where a security is overvalued or undervalued.</li>
-</ol>
-<ul>
-<li>Divergence: RSI can also be used to identify potential reversals by looking for bearish and bullish divergences.</li>
-</ul>
-</section>
-<section id="examples" class="level2 doc-section doc-section-examples">
-<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'stocks_daily'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Calculate RSI for a single column</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>rsi_df <span class="op">=</span> (</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">"symbol == 'AAPL'"</span>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        .augment_rsi(</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'adjusted'</span>,</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">14</span>, <span class="dv">28</span>]</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>rsi_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-<th data-quarto-table-cell-role="th">adjusted_rsi_14</th>
-<th data-quarto-table-cell-role="th">adjusted_rsi_28</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5398</td>
-<td>AAPL</td>
-<td>2013-01-02</td>
-<td>19.779285</td>
-<td>19.821428</td>
-<td>19.343929</td>
-<td>19.608213</td>
-<td>560518000</td>
-<td>16.791180</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5399</td>
-<td>AAPL</td>
-<td>2013-01-03</td>
-<td>19.567142</td>
-<td>19.631071</td>
-<td>19.321428</td>
-<td>19.360714</td>
-<td>352965200</td>
-<td>16.579241</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5400</td>
-<td>AAPL</td>
-<td>2013-01-04</td>
-<td>19.177500</td>
-<td>19.236786</td>
-<td>18.779642</td>
-<td>18.821428</td>
-<td>594333600</td>
-<td>16.117437</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5401</td>
-<td>AAPL</td>
-<td>2013-01-07</td>
-<td>18.642857</td>
-<td>18.903570</td>
-<td>18.400000</td>
-<td>18.710714</td>
-<td>484156400</td>
-<td>16.022623</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5402</td>
-<td>AAPL</td>
-<td>2013-01-08</td>
-<td>18.900356</td>
-<td>18.996071</td>
-<td>18.616072</td>
-<td>18.761070</td>
-<td>458707200</td>
-<td>16.065746</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8092</td>
-<td>AAPL</td>
-<td>2023-09-15</td>
-<td>176.479996</td>
-<td>176.500000</td>
-<td>173.820007</td>
-<td>175.009995</td>
-<td>109205100</td>
-<td>175.009995</td>
-<td>44.451286</td>
-<td>46.814996</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">8093</td>
-<td>AAPL</td>
-<td>2023-09-18</td>
-<td>176.479996</td>
-<td>179.380005</td>
-<td>176.169998</td>
-<td>177.970001</td>
-<td>67257600</td>
-<td>177.970001</td>
-<td>46.717917</td>
-<td>48.643316</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8094</td>
-<td>AAPL</td>
-<td>2023-09-19</td>
-<td>177.520004</td>
-<td>179.630005</td>
-<td>177.130005</td>
-<td>179.070007</td>
-<td>51826900</td>
-<td>179.070007</td>
-<td>41.852236</td>
-<td>50.965781</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">8095</td>
-<td>AAPL</td>
-<td>2023-09-20</td>
-<td>179.259995</td>
-<td>179.699997</td>
-<td>175.399994</td>
-<td>175.490005</td>
-<td>58436200</td>
-<td>175.490005</td>
-<td>30.412405</td>
-<td>48.174715</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8096</td>
-<td>AAPL</td>
-<td>2023-09-21</td>
-<td>174.550003</td>
-<td>176.300003</td>
-<td>173.860001</td>
-<td>173.929993</td>
-<td>63047900</td>
-<td>173.929993</td>
-<td>28.474387</td>
-<td>46.929686</td>
-</tr>
-</tbody>
-</table>
-
-<p>2699 rows × 10 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Calculate RSI for multiple groups</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>rsi_df <span class="op">=</span> (</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .augment_rsi(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'adjusted'</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">14</span>, <span class="dv">28</span>]</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>rsi_df.groupby(<span class="st">'symbol'</span>).tail(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-<th data-quarto-table-cell-role="th">adjusted_rsi_14</th>
-<th data-quarto-table-cell-role="th">adjusted_rsi_28</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2698</td>
-<td>META</td>
-<td>2023-09-21</td>
-<td>295.700012</td>
-<td>300.260010</td>
-<td>293.269989</td>
-<td>295.730011</td>
-<td>21300500</td>
-<td>295.730011</td>
-<td>49.861252</td>
-<td>47.648225</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5397</td>
-<td>AMZN</td>
-<td>2023-09-21</td>
-<td>131.940002</td>
-<td>132.240005</td>
-<td>129.309998</td>
-<td>129.330002</td>
-<td>70234800</td>
-<td>129.330002</td>
-<td>36.274533</td>
-<td>41.651344</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8096</td>
-<td>AAPL</td>
-<td>2023-09-21</td>
-<td>174.550003</td>
-<td>176.300003</td>
-<td>173.860001</td>
-<td>173.929993</td>
-<td>63047900</td>
-<td>173.929993</td>
-<td>28.474387</td>
-<td>46.929686</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">10795</td>
-<td>NFLX</td>
-<td>2023-09-21</td>
-<td>386.500000</td>
-<td>395.899994</td>
-<td>383.420013</td>
-<td>384.149994</td>
-<td>5547900</td>
-<td>384.149994</td>
-<td>21.937687</td>
-<td>40.284900</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">13494</td>
-<td>NVDA</td>
-<td>2023-09-21</td>
-<td>415.829987</td>
-<td>421.000000</td>
-<td>409.799988</td>
-<td>410.170013</td>
-<td>44893000</td>
-<td>410.170013</td>
-<td>8.187872</td>
-<td>50.335641</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">16193</td>
-<td>GOOG</td>
-<td>2023-09-21</td>
-<td>132.389999</td>
-<td>133.190002</td>
-<td>131.089996</td>
-<td>131.360001</td>
-<td>22042700</td>
-<td>131.360001</td>
-<td>33.258816</td>
-<td>51.458691</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 - Calculate RSI for polars engine</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>rsi_df <span class="op">=</span> (</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">"symbol == 'AAPL'"</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .augment_rsi(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'adjusted'</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">14</span>, <span class="dv">28</span>],</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'polars'</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>rsi_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-<th data-quarto-table-cell-role="th">adjusted_rsi_14</th>
-<th data-quarto-table-cell-role="th">adjusted_rsi_28</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5398</td>
-<td>AAPL</td>
-<td>2013-01-02</td>
-<td>19.779285</td>
-<td>19.821428</td>
-<td>19.343929</td>
-<td>19.608213</td>
-<td>560518000</td>
-<td>16.791180</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5399</td>
-<td>AAPL</td>
-<td>2013-01-03</td>
-<td>19.567142</td>
-<td>19.631071</td>
-<td>19.321428</td>
-<td>19.360714</td>
-<td>352965200</td>
-<td>16.579241</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5400</td>
-<td>AAPL</td>
-<td>2013-01-04</td>
-<td>19.177500</td>
-<td>19.236786</td>
-<td>18.779642</td>
-<td>18.821428</td>
-<td>594333600</td>
-<td>16.117437</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5401</td>
-<td>AAPL</td>
-<td>2013-01-07</td>
-<td>18.642857</td>
-<td>18.903570</td>
-<td>18.400000</td>
-<td>18.710714</td>
-<td>484156400</td>
-<td>16.022623</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">5402</td>
-<td>AAPL</td>
-<td>2013-01-08</td>
-<td>18.900356</td>
-<td>18.996071</td>
-<td>18.616072</td>
-<td>18.761070</td>
-<td>458707200</td>
-<td>16.065746</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8092</td>
-<td>AAPL</td>
-<td>2023-09-15</td>
-<td>176.479996</td>
-<td>176.500000</td>
-<td>173.820007</td>
-<td>175.009995</td>
-<td>109205100</td>
-<td>175.009995</td>
-<td>44.451286</td>
-<td>46.814996</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">8093</td>
-<td>AAPL</td>
-<td>2023-09-18</td>
-<td>176.479996</td>
-<td>179.380005</td>
-<td>176.169998</td>
-<td>177.970001</td>
-<td>67257600</td>
-<td>177.970001</td>
-<td>46.717917</td>
-<td>48.643316</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8094</td>
-<td>AAPL</td>
-<td>2023-09-19</td>
-<td>177.520004</td>
-<td>179.630005</td>
-<td>177.130005</td>
-<td>179.070007</td>
-<td>51826900</td>
-<td>179.070007</td>
-<td>41.852236</td>
-<td>50.965781</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">8095</td>
-<td>AAPL</td>
-<td>2023-09-20</td>
-<td>179.259995</td>
-<td>179.699997</td>
-<td>175.399994</td>
-<td>175.490005</td>
-<td>58436200</td>
-<td>175.490005</td>
-<td>30.412405</td>
-<td>48.174715</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8096</td>
-<td>AAPL</td>
-<td>2023-09-21</td>
-<td>174.550003</td>
-<td>176.300003</td>
-<td>173.860001</td>
-<td>173.929993</td>
-<td>63047900</td>
-<td>173.929993</td>
-<td>28.474387</td>
-<td>46.929686</td>
-</tr>
-</tbody>
-</table>
-
-<p>2699 rows × 10 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 4 - Calculate RSI for polars engine and groups</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>rsi_df <span class="op">=</span> (</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        .augment_rsi(</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span><span class="st">'adjusted'</span>,</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">14</span>, <span class="dv">28</span>],</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            engine<span class="op">=</span><span class="st">'polars'</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>rsi_df.groupby(<span class="st">'symbol'</span>).tail(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adjusted</th>
-<th data-quarto-table-cell-role="th">adjusted_rsi_14</th>
-<th data-quarto-table-cell-role="th">adjusted_rsi_28</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2698</td>
-<td>META</td>
-<td>2023-09-21</td>
-<td>295.700012</td>
-<td>300.260010</td>
-<td>293.269989</td>
-<td>295.730011</td>
-<td>21300500</td>
-<td>295.730011</td>
-<td>49.861252</td>
-<td>47.648225</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5397</td>
-<td>AMZN</td>
-<td>2023-09-21</td>
-<td>131.940002</td>
-<td>132.240005</td>
-<td>129.309998</td>
-<td>129.330002</td>
-<td>70234800</td>
-<td>129.330002</td>
-<td>36.274533</td>
-<td>41.651344</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8096</td>
-<td>AAPL</td>
-<td>2023-09-21</td>
-<td>174.550003</td>
-<td>176.300003</td>
-<td>173.860001</td>
-<td>173.929993</td>
-<td>63047900</td>
-<td>173.929993</td>
-<td>28.474387</td>
-<td>46.929686</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">10795</td>
-<td>NFLX</td>
-<td>2023-09-21</td>
-<td>386.500000</td>
-<td>395.899994</td>
-<td>383.420013</td>
-<td>384.149994</td>
-<td>5547900</td>
-<td>384.149994</td>
-<td>21.937687</td>
-<td>40.284900</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">13494</td>
-<td>NVDA</td>
-<td>2023-09-21</td>
-<td>415.829987</td>
-<td>421.000000</td>
-<td>409.799988</td>
-<td>410.170013</td>
-<td>44893000</td>
-<td>410.170013</td>
-<td>8.187872</td>
-<td>50.335641</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">16193</td>
-<td>GOOG</td>
-<td>2023-09-21</td>
-<td>132.389999</td>
-<td>133.190002</td>
-<td>131.089996</td>
-<td>131.360001</td>
-<td>22042700</td>
-<td>131.360001</td>
-<td>33.258816</td>
-<td>51.458691</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-
-
 </section>
 
 </main> <!-- /main -->

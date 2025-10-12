@@ -402,7 +402,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    periods<span class="op">=</span><span class="dv">1</span>,</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    normalize<span class="op">=</span><span class="va">False</span>,</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'auto'</span>,</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Adds differences and percentage difference (percentage change) to a Pandas DataFrame or DataFrameGroupBy object.</p>
 <p>The <code>augment_diffs</code> function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a period or list of periods, and adds differenced versions of the value columns to the DataFrame.</p>
@@ -411,8 +411,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <table class="table">
 <colgroup>
 <col style="width: 2%">
-<col style="width: 11%">
-<col style="width: 83%">
+<col style="width: 7%">
+<col style="width: 86%">
 <col style="width: 2%">
 </colgroup>
 <thead>
@@ -426,8 +426,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>data</td>
-<td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
-<td>The <code>data</code> parameter is the input DataFrame or DataFrameGroupBy object that you want to add differenced columns to.</td>
+<td>DataFrame or GroupBy(pandas or polars)</td>
+<td>The input data to augment with differenced columns.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
@@ -462,9 +462,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="odd">
 <td>engine</td>
-<td>str</td>
-<td>The <code>engine</code> parameter is used to specify the engine to use for augmenting differences. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for augmenting diffs. This can be faster than using “pandas” for large datasets.</td>
-<td><code>'pandas'</code></td>
+<td>(auto, pandas, polars)</td>
+<td>Execution engine. When “auto” (default) the backend is inferred from the input data type. Use “pandas” or “polars” to force a specific backend.</td>
+<td><code>"auto"</code></td>
 </tr>
 </tbody>
 </table>
@@ -473,9 +473,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
+<col style="width: 7%">
 <col style="width: 10%">
-<col style="width: 17%">
-<col style="width: 72%">
+<col style="width: 81%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -487,8 +487,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td></td>
-<td>pd.DataFrame</td>
-<td>A Pandas DataFrame with differenced columns added to it.</td>
+<td>DataFrame</td>
+<td>DataFrame with differenced columns added. The return type matches the input backend.</td>
 </tr>
 </tbody>
 </table>

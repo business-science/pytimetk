@@ -400,7 +400,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    decay_factor<span class="op">=</span><span class="fl">0.94</span>,</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    window<span class="op">=</span><span class="dv">20</span>,</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'auto'</span>,</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Calculate Exponentially Weighted Moving Average (EWMA) volatility for a financial time series.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
@@ -408,8 +408,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <table class="table">
 <colgroup>
 <col style="width: 4%">
-<col style="width: 18%">
-<col style="width: 73%">
+<col style="width: 13%">
+<col style="width: 78%">
 <col style="width: 3%">
 </colgroup>
 <thead>
@@ -423,8 +423,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>data</td>
-<td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
-<td>Input pandas DataFrame or GroupBy object with time series data.</td>
+<td>DataFrame or GroupBy(pandas or polars)</td>
+<td>Input time-series data. Grouped inputs are processed per group before the indicator is appended.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
@@ -459,9 +459,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="odd">
 <td>engine</td>
-<td>str</td>
-<td>Computation engine: ‘pandas’ or ‘polars’. Default is ‘pandas’.</td>
-<td><code>'pandas'</code></td>
+<td>(auto, pandas, polars)</td>
+<td>Execution engine. <code>"auto"</code> (default) infers the backend from the input data while allowing explicit overrides.</td>
+<td><code>"auto"</code></td>
 </tr>
 </tbody>
 </table>
@@ -471,8 +471,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <table class="table">
 <colgroup>
 <col style="width: 4%">
-<col style="width: 7%">
-<col style="width: 88%">
+<col style="width: 5%">
+<col style="width: 90%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -484,7 +484,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td></td>
-<td>pd.DataFrame</td>
+<td>DataFrame</td>
 <td>DataFrame with added columns: - {close_column}<em>ewma_vol</em>{window}_{decay_factor}: EWMA volatility calculated using a minimum number of periods equal to each specified window.</td>
 </tr>
 </tbody>
@@ -504,18 +504,19 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"stocks_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Calculate EWMA volatility for a single stock</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>df.query(<span class="st">"symbol == 'AAPL'"</span>).augment_ewma_volatility(</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    close_column<span class="op">=</span><span class="st">'close'</span>,</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    decay_factor<span class="op">=</span><span class="fl">0.94</span>,</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    window<span class="op">=</span>[<span class="dv">20</span>, <span class="dv">50</span>]</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>).glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"stocks_daily"</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Calculate EWMA volatility for a single stock</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>df.query(<span class="st">"symbol == 'AAPL'"</span>).augment_ewma_volatility(</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    close_column<span class="op">=</span><span class="st">'close'</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    decay_factor<span class="op">=</span><span class="fl">0.94</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    window<span class="op">=</span>[<span class="dv">20</span>, <span class="dv">50</span>]</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>).glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 2699 rows of 10 columns
 symbol:                  object            ['AAPL', 'AAPL', 'AAPL', 'AAP ...
@@ -554,49 +555,52 @@ close_ewma_vol_50_0.94:  float64           [nan, nan, nan, nan, nan, nan ...</co
 </div>
 <div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 - Calculate EWMA volatility using Polars engine</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df.query(<span class="st">"symbol == 'AAPL'"</span>).augment_ewma_volatility(</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    close_column<span class="op">=</span><span class="st">'close'</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    decay_factor<span class="op">=</span><span class="fl">0.94</span>,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    window<span class="op">=</span>[<span class="dv">20</span>, <span class="dv">50</span>],</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'polars'</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>pl_df <span class="op">=</span> pl.from_pandas(df.query(<span class="st">"symbol == 'AAPL'"</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>pl_df.tk.augment_ewma_volatility(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    close_column<span class="op">=</span><span class="st">'close'</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    decay_factor<span class="op">=</span><span class="fl">0.94</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    window<span class="op">=</span>[<span class="dv">20</span>, <span class="dv">50</span>]</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>).glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 2699 rows of 10 columns
-symbol:                  object            ['AAPL', 'AAPL', 'AAPL', 'AAP ...
-date:                    datetime64[ns]    [Timestamp('2013-01-02 00:00: ...
-open:                    float64           [19.779285430908203, 19.56714 ...
-high:                    float64           [19.821428298950195, 19.63107 ...
-low:                     float64           [19.343929290771484, 19.32142 ...
-close:                   float64           [19.608213424682617, 19.36071 ...
-volume:                  int64             [560518000, 352965200, 594333 ...
-adjusted:                float64           [16.791179656982422, 16.57924 ...
-close_ewma_vol_20_0.94:  float64           [nan, nan, nan, nan, nan, nan ...
-close_ewma_vol_50_0.94:  float64           [nan, nan, nan, nan, nan, nan ...</code></pre>
+<pre><code>Rows: 2699
+Columns: 10
+$ symbol                          &lt;str&gt; 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL'
+$ date                   &lt;datetime[ns]&gt; 2013-01-02 00:00:00, 2013-01-03 00:00:00, 2013-01-04 00:00:00, 2013-01-07 00:00:00, 2013-01-08 00:00:00, 2013-01-09 00:00:00, 2013-01-10 00:00:00, 2013-01-11 00:00:00, 2013-01-14 00:00:00, 2013-01-15 00:00:00
+$ open                            &lt;f64&gt; 19.779285430908203, 19.567142486572266, 19.177499771118164, 18.64285659790039, 18.90035629272461, 18.66071319580078, 18.876785278320312, 18.60714340209961, 17.952856063842773, 17.796428680419922
+$ high                            &lt;f64&gt; 19.821428298950195, 19.63107109069824, 19.236785888671875, 18.9035701751709, 18.996070861816406, 18.750356674194336, 18.882856369018555, 18.761428833007812, 18.125, 17.82107162475586
+$ low                             &lt;f64&gt; 19.343929290771484, 19.321428298950195, 18.77964210510254, 18.399999618530273, 18.616071701049805, 18.428213119506836, 18.41142845153809, 18.53642845153809, 17.80392837524414, 17.26357078552246
+$ close                           &lt;f64&gt; 19.608213424682617, 19.36071395874023, 18.821428298950195, 18.71071434020996, 18.761070251464844, 18.467857360839844, 18.696786880493164, 18.582143783569336, 17.91964340209961, 17.354286193847656
+$ volume                          &lt;i64&gt; 560518000, 352965200, 594333600, 484156400, 458707200, 407604400, 601146000, 350506800, 734207600, 876772400
+$ adjusted                        &lt;f64&gt; 16.791179656982422, 16.579240798950195, 16.1174373626709, 16.02262306213379, 16.065746307373047, 15.814659118652344, 16.010698318481445, 15.912524223327637, 15.345203399658203, 14.86106777191162
+$ close_ewma_vol_20_0.94          &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_ewma_vol_50_0.94          &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 4 - Calculate EWMA volatility for multiple stocks using Polars engine</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>df.groupby(<span class="st">'symbol'</span>).augment_ewma_volatility(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>pl_df_full <span class="op">=</span> pl.from_pandas(df)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>pl_df_full.group_by(<span class="st">'symbol'</span>).tk.augment_ewma_volatility(</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    date_column<span class="op">=</span><span class="st">'date'</span>,</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    close_column<span class="op">=</span><span class="st">'close'</span>,</span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    decay_factor<span class="op">=</span><span class="fl">0.94</span>,</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    window<span class="op">=</span>[<span class="dv">20</span>, <span class="dv">50</span>],</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'polars'</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>).glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    window<span class="op">=</span>[<span class="dv">20</span>, <span class="dv">50</span>]</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>).glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 10 columns
-symbol:                  object            ['META', 'META', 'META', 'MET ...
-date:                    datetime64[ns]    [Timestamp('2013-01-02 00:00: ...
-open:                    float64           [27.440000534057617, 27.87999 ...
-high:                    float64           [28.18000030517578, 28.469999 ...
-low:                     float64           [27.420000076293945, 27.59000 ...
-close:                   float64           [28.0, 27.770000457763672, 28 ...
-volume:                  int64             [69846400, 63140600, 72715400 ...
-adjusted:                float64           [28.0, 27.770000457763672, 28 ...
-close_ewma_vol_20_0.94:  float64           [nan, nan, nan, nan, nan, nan ...
-close_ewma_vol_50_0.94:  float64           [nan, nan, nan, nan, nan, nan ...</code></pre>
+<pre><code>Rows: 16194
+Columns: 10
+$ symbol                          &lt;str&gt; 'META', 'META', 'META', 'META', 'META', 'META', 'META', 'META', 'META', 'META'
+$ date                   &lt;datetime[ns]&gt; 2013-01-02 00:00:00, 2013-01-03 00:00:00, 2013-01-04 00:00:00, 2013-01-07 00:00:00, 2013-01-08 00:00:00, 2013-01-09 00:00:00, 2013-01-10 00:00:00, 2013-01-11 00:00:00, 2013-01-14 00:00:00, 2013-01-15 00:00:00
+$ open                            &lt;f64&gt; 27.440000534057617, 27.8799991607666, 28.010000228881836, 28.690000534057617, 29.510000228881836, 29.670000076293945, 30.600000381469727, 31.280000686645508, 32.08000183105469, 30.63999938964844
+$ high                            &lt;f64&gt; 28.18000030517578, 28.469999313354492, 28.93000030517578, 29.790000915527344, 29.600000381469727, 30.600000381469727, 31.450000762939453, 31.959999084472656, 32.209999084472656, 31.709999084472656
+$ low                             &lt;f64&gt; 27.420000076293945, 27.59000015258789, 27.829999923706055, 28.649999618530273, 28.86000061035156, 29.489999771118164, 30.280000686645508, 31.100000381469727, 30.6200008392334, 29.8799991607666
+$ close                           &lt;f64&gt; 28.0, 27.770000457763672, 28.760000228881836, 29.420000076293945, 29.059999465942383, 30.59000015258789, 31.299999237060547, 31.719999313354492, 30.950000762939453, 30.100000381469727
+$ volume                          &lt;i64&gt; 69846400, 63140600, 72715400, 83781800, 45871300, 104787700, 95316400, 89598000, 98892800, 173242600
+$ adjusted                        &lt;f64&gt; 28.0, 27.770000457763672, 28.760000228881836, 29.420000076293945, 29.059999465942383, 30.59000015258789, 31.299999237060547, 31.719999313354492, 30.950000762939453, 30.100000381469727
+$ close_ewma_vol_20_0.94          &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_ewma_vol_50_0.94          &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+</code></pre>
 </div>
 </div>
 
