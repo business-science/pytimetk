@@ -12,22 +12,67 @@ augment_ppo(
 )
 ```
 
-Calculate PPO using pandas or polars backends.
+Calculate the Percentage Price Oscillator (PPO) for pandas or polars data.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                                   | Description                                                       | Default    |
-|---------------|----------------------------------------|-------------------------------------------------------------------|------------|
-| data          | DataFrame or GroupBy(pandas or polars) | Financial data to augment with PPO values.                        | _required_ |
-| date_column   | str                                    | Name of the column containing date information.                   | _required_ |
-| close_column  | str                                    | Name of the closing price column.                                 | _required_ |
-| fast_period   | int                                    | Lookback window for the fast EMA.                                 | `12`       |
-| slow_period   | int                                    | Lookback window for the slow EMA.                                 | `26`       |
-| reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data.     | `False`    |
-| engine        | (auto, pandas, polars)                 | Execution engine. Defaults to inferring from the input data type. | `"auto"`   |
+| Name          | Type                                   | Description                                                                                                                  | Default    |
+|---------------|----------------------------------------|------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | DataFrame or GroupBy(pandas or polars) | Financial data to augment with PPO values. Grouped inputs are processed per group before the indicator columns are appended. | _required_ |
+| date_column   | str                                    | Name of the column containing date information.                                                                              | _required_ |
+| close_column  | str                                    | Name of the closing price column.                                                                                            | _required_ |
+| fast_period   | int                                    | Lookback window for the fast EMA.                                                                                            | `12`       |
+| slow_period   | int                                    | Lookback window for the slow EMA.                                                                                            | `26`       |
+| reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data.                                                                | `False`    |
+| engine        | (auto, pandas, polars)                 | Execution engine. Defaults to inferring from the input data type.                                                            | `"auto"`   |
 
 ## Returns {.doc-section .doc-section-returns}
 
 | Name   | Type      | Description                                                                |
 |--------|-----------|----------------------------------------------------------------------------|
 |        | DataFrame | DataFrame with PPO values appended. Matches the backend of the input data. |
+
+## Notes {.doc-section .doc-section-notes}
+
+The PPO is computed as the percentage difference between a fast and a slow
+exponential moving average (EMA):
+
+    PPO = (EMA_fast - EMA_slow) / EMA_slow * 100
+
+The implementation follows the common convention of using ``min_periods=0``
+on the EMA calculations to accumulate values from the beginning of the
+series. Division-by-zero scenarios yield ``NaN`` to align with pandas'
+behaviour.
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import pandas as pd
+import polars as pl
+import pytimetk as tk
+import pytimetk.polars_namespace
+
+df = tk.load_dataset("stocks_daily", parse_dates=["date"])
+
+# Pandas example (engine inferred)
+ppo_pd = (
+    df.groupby("symbol")
+    .augment_ppo(
+        date_column="date",
+        close_column="close",
+        fast_period=12,
+        slow_period=26,
+    )
+)
+
+# Polars example using the tk accessor
+ppo_pl = (
+    pl.from_pandas(df.query("symbol == 'AAPL'"))
+    .tk.augment_ppo(
+        date_column="date",
+        close_column="close",
+        fast_period=12,
+        slow_period=26,
+    )
+)
+```

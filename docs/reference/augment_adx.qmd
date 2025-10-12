@@ -60,9 +60,15 @@ adx_df = (
     )
 )
 
+adx_df.glimpse()
+```
+
+```{python}
 # Polars example (method chaining)
 import polars as pl
+
 pl_df = pl.from_pandas(df.query("symbol == 'AAPL'"))
+
 adx_pl = pl_df.tk.augment_adx(
     date_column="date",
     high_column="high",
@@ -70,4 +76,6 @@ adx_pl = pl_df.tk.augment_adx(
     close_column="close",
     periods=14,
 )
+
+adx_pl.glimpse()
 ```

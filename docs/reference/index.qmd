@@ -88,8 +88,8 @@ Momentum indicators for financial time series data.
 | | |
 | --- | --- |
 | [augment_macd](augment_macd.qmd#pytimetk.augment_macd) | Calculate MACD for a given financial instrument using either pandas or polars engine. |
-| [augment_ppo](augment_ppo.qmd#pytimetk.augment_ppo) | Calculate PPO using pandas or polars backends. |
-| [augment_rsi](augment_rsi.qmd#pytimetk.augment_rsi) | Calculate RSI for one or more columns using pandas or polars backends. |
+| [augment_ppo](augment_ppo.qmd#pytimetk.augment_ppo) | Calculate the Percentage Price Oscillator (PPO) for pandas or polars data. |
+| [augment_rsi](augment_rsi.qmd#pytimetk.augment_rsi) | Calculate the Relative Strength Index (RSI) for pandas or polars data. |
 | [augment_cmo](augment_cmo.qmd#pytimetk.augment_cmo) | Calculate the Chande Momentum Oscillator (CMO) using pandas or polars backends. |
 | [augment_roc](augment_roc.qmd#pytimetk.augment_roc) | Add rate-of-change (ROC) columns to a pandas or polars DataFrame. |
 | [augment_adx](augment_adx.qmd#pytimetk.augment_adx) | Calculate Average Directional Index (ADX), +DI, and -DI using pandas or polars backends. |

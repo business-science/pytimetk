@@ -37,27 +37,73 @@ def augment_rsi(
     reduce_memory: bool = False,
     engine: Optional[str] = "auto",
 ) -> Union[pd.DataFrame, pl.DataFrame]:
-    """Calculate RSI for one or more columns using pandas or polars backends.
+    """
+    Calculate the Relative Strength Index (RSI) for pandas or polars data.
 
     Parameters
     ----------
     data : DataFrame or GroupBy (pandas or polars)
-        Financial data to augment.
+        Financial data to augment. Grouped inputs are processed per group
+        before RSI columns are appended.
     date_column : str
         Name of the column containing date information.
     close_column : str or list[str]
-        Column(s) containing closing price data.
+        Column name(s) containing the closing prices used to compute RSI. When
+        a list is supplied an RSI is generated for each column.
     periods : int, tuple, or list, optional
-        Lookback window(s) used when computing RSI.
+        Lookback window(s) used when computing RSI. Accepts an integer, an
+        inclusive tuple range, or a list of explicit periods. Defaults to ``14``.
     reduce_memory : bool, optional
-        Attempt to reduce memory usage when operating on pandas data.
+        Attempt to reduce memory usage when operating on pandas data. If a
+        polars input is supplied a warning is emitted and no conversion occurs.
     engine : {"auto", "pandas", "polars"}, optional
-        Execution engine. Defaults to inferring from the input data type.
+        Execution engine. ``"auto"`` (default) infers the backend from the
+        input data while allowing explicit overrides.
 
     Returns
     -------
     DataFrame
-        DataFrame with RSI values appended. The backend matches the input data.
+        DataFrame with ``{close_column}_rsi_{period}`` columns appended. The
+        return type matches the input backend.
+
+    Notes
+    -----
+    RSI follows Wilder's formulation, separating gains and losses before
+    computing smoothed averages and forming the ratio. Values range from 0 to
+    100, with extreme readings typically interpreted as overbought or
+    oversold. Division-by-zero cases yield ``NaN`` which mirrors pandas
+    behaviour.
+
+    Examples
+    --------
+    ```{python}
+    import pandas as pd
+    import polars as pl
+    import pytimetk as tk
+    import pytimetk.polars_namespace
+
+    df = tk.load_dataset("stocks_daily", parse_dates=["date"])
+
+    # Pandas example (engine inferred)
+    rsi_pd = (
+        df.groupby("symbol")
+        .augment_rsi(
+            date_column="date",
+            close_column="close",
+            periods=[14, 28],
+        )
+    )
+
+    # Polars example using the tk accessor
+    rsi_pl = (
+        pl.from_pandas(df.query("symbol == 'AAPL'"))
+        .tk.augment_rsi(
+            date_column="date",
+            close_column=["close"],
+            periods=14,
+        )
+    )
+    ```
     """
 
     check_dataframe_or_groupby(data)

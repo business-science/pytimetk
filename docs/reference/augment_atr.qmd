@@ -35,3 +35,49 @@ Calculate Average True Range (ATR) or Normalised ATR for pandas or polars data.
 | Name   | Type      | Description                                                                                                                                                                   |
 |--------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |        | DataFrame | DataFrame with ``{close_column}_atr_{period}`` (or ``_natr_`` when ``normalize=True``) columns appended for each requested period. The return type matches the input backend. |
+
+## Notes {.doc-section .doc-section-notes}
+
+The Average True Range (ATR) follows Wilder's definition, using the maximum
+of the intra-period range, the high-to-previous-close distance, and the
+low-to-previous-close distance. When ``normalize=True`` the ATR is scaled
+by the close price and expressed as a percentage (often called NATR). Both
+pandas and polars implementations guard against division by zero by
+returning ``NaN`` when the denominator is zero.
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import pandas as pd
+import polars as pl
+import pytimetk as tk
+import pytimetk.polars_namespace
+
+df = tk.load_dataset("stocks_daily", parse_dates=["date"])
+
+# Pandas example (engine inferred)
+atr_pd = (
+    df.groupby("symbol")
+    .augment_atr(
+        date_column="date",
+        high_column="high",
+        low_column="low",
+        close_column="close",
+        periods=[14, 28],
+        normalize=False,
+    )
+)
+
+# Polars example using the tk accessor
+atr_pl = (
+    pl.from_pandas(df.query("symbol == 'AAPL'"))
+    .tk.augment_atr(
+        date_column="date",
+        high_column="high",
+        low_column="low",
+        close_column="close",
+        periods=14,
+        normalize=True,
+    )
+)
+```

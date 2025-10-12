@@ -38,12 +38,14 @@ def augment_ppo(
     reduce_memory: bool = False,
     engine: Optional[str] = "auto",
 ) -> Union[pd.DataFrame, pl.DataFrame]:
-    """Calculate PPO using pandas or polars backends.
+    """
+    Calculate the Percentage Price Oscillator (PPO) for pandas or polars data.
 
     Parameters
     ----------
     data : DataFrame or GroupBy (pandas or polars)
-        Financial data to augment with PPO values.
+        Financial data to augment with PPO values. Grouped inputs are processed
+        per group before the indicator columns are appended.
     date_column : str
         Name of the column containing date information.
     close_column : str
@@ -61,6 +63,51 @@ def augment_ppo(
     -------
     DataFrame
         DataFrame with PPO values appended. Matches the backend of the input data.
+
+    Notes
+    -----
+    The PPO is computed as the percentage difference between a fast and a slow
+    exponential moving average (EMA):
+
+        PPO = (EMA_fast - EMA_slow) / EMA_slow * 100
+
+    The implementation follows the common convention of using ``min_periods=0``
+    on the EMA calculations to accumulate values from the beginning of the
+    series. Division-by-zero scenarios yield ``NaN`` to align with pandas'
+    behaviour.
+
+    Examples
+    --------
+    ```{python}
+    import pandas as pd
+    import polars as pl
+    import pytimetk as tk
+    import pytimetk.polars_namespace
+
+    df = tk.load_dataset("stocks_daily", parse_dates=["date"])
+
+    # Pandas example (engine inferred)
+    ppo_pd = (
+        df.groupby("symbol")
+        .augment_ppo(
+            date_column="date",
+            close_column="close",
+            fast_period=12,
+            slow_period=26,
+        )
+    )
+
+    # Polars example using the tk accessor
+    ppo_pl = (
+        pl.from_pandas(df.query("symbol == 'AAPL'"))
+        .tk.augment_ppo(
+            date_column="date",
+            close_column="close",
+            fast_period=12,
+            slow_period=26,
+        )
+    )
+    ```
     """
 
     check_dataframe_or_groupby(data)

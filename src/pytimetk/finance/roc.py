@@ -86,8 +86,10 @@ def augment_roc(
 
     Examples
     --------
-    ```python
+    ```{python}
+    import polars as pl
     import pytimetk as tk
+    import pytimetk.polars_namespace
 
     df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
@@ -99,13 +101,14 @@ def augment_roc(
         start_index=5,
     )
 
-    # Polars DataFrame input (engine inferred)
-    import polars as pl
-    roc_pl = tk.augment_roc(
-        data=pl.from_pandas(df.query("symbol == 'AAPL'")),
-        date_column="date",
-        close_column="close",
-        periods=(5, 10),
+    # Polars DataFrame input using the tk accessor
+    roc_pl = (
+        pl.from_pandas(df.query("symbol == 'AAPL'"))
+        .tk.augment_roc(
+            date_column="date",
+            close_column="close",
+            periods=(5, 10),
+        )
     )
     ```
     """

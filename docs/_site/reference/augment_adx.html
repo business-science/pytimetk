@@ -520,16 +520,56 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Polars example (method chaining)</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>pl_df <span class="op">=</span> pl.from_pandas(df.query(<span class="st">"symbol == 'AAPL'"</span>))</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>adx_pl <span class="op">=</span> pl_df.tk.augment_adx(</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    date_column<span class="op">=</span><span class="st">"date"</span>,</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    high_column<span class="op">=</span><span class="st">"high"</span>,</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    low_column<span class="op">=</span><span class="st">"low"</span>,</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    close_column<span class="op">=</span><span class="st">"close"</span>,</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    periods<span class="op">=</span><span class="dv">14</span>,</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>adx_df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 14 columns
+symbol:             object            ['META', 'META', 'META', 'META', ' ...
+date:               datetime64[ns]    [Timestamp('2013-01-02 00:00:00'), ...
+open:               float64           [27.440000534057617, 27.8799991607 ...
+high:               float64           [28.18000030517578, 28.46999931335 ...
+low:                float64           [27.420000076293945, 27.5900001525 ...
+close:              float64           [28.0, 27.770000457763672, 28.7600 ...
+volume:             int64             [69846400, 63140600, 72715400, 837 ...
+adjusted:           float64           [28.0, 27.770000457763672, 28.7600 ...
+close_plus_di_14:   float64           [0.0, 0.02144804429181467, 0.05803 ...
+close_minus_di_14:  float64           [99.74023064164554, 99.67531582849 ...
+close_adx_14:       float64           [26.110865164149793, 31.3855871838 ...
+close_plus_di_28:   float64           [0.0, 0.010330322334796915, 0.0273 ...
+close_minus_di_28:  float64           [99.74023064164554, 99.70896480989 ...
+close_adx_28:       float64           [21.4952142144854, 24.298216606705 ...</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Polars example (method chaining)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>pl_df <span class="op">=</span> pl.from_pandas(df.query(<span class="st">"symbol == 'AAPL'"</span>))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>adx_pl <span class="op">=</span> pl_df.tk.augment_adx(</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    date_column<span class="op">=</span><span class="st">"date"</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    high_column<span class="op">=</span><span class="st">"high"</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    low_column<span class="op">=</span><span class="st">"low"</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    close_column<span class="op">=</span><span class="st">"close"</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    periods<span class="op">=</span><span class="dv">14</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>adx_pl.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 2699
+Columns: 11
+$ symbol                     &lt;str&gt; 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL'
+$ date              &lt;datetime[ns]&gt; 2013-01-02 00:00:00, 2013-01-03 00:00:00, 2013-01-04 00:00:00, 2013-01-07 00:00:00, 2013-01-08 00:00:00, 2013-01-09 00:00:00, 2013-01-10 00:00:00, 2013-01-11 00:00:00, 2013-01-14 00:00:00, 2013-01-15 00:00:00
+$ open                       &lt;f64&gt; 19.779285430908203, 19.567142486572266, 19.177499771118164, 18.64285659790039, 18.90035629272461, 18.66071319580078, 18.876785278320312, 18.60714340209961, 17.952856063842773, 17.796428680419922
+$ high                       &lt;f64&gt; 19.821428298950195, 19.63107109069824, 19.236785888671875, 18.9035701751709, 18.996070861816406, 18.750356674194336, 18.882856369018555, 18.761428833007812, 18.125, 17.82107162475586
+$ low                        &lt;f64&gt; 19.343929290771484, 19.321428298950195, 18.77964210510254, 18.399999618530273, 18.616071701049805, 18.428213119506836, 18.41142845153809, 18.53642845153809, 17.80392837524414, 17.26357078552246
+$ close                      &lt;f64&gt; 19.608213424682617, 19.36071395874023, 18.821428298950195, 18.71071434020996, 18.761070251464844, 18.467857360839844, 18.696786880493164, 18.582143783569336, 17.91964340209961, 17.354286193847656
+$ volume                     &lt;i64&gt; 560518000, 352965200, 594333600, 484156400, 458707200, 407604400, 601146000, 350506800, 734207600, 876772400
+$ adjusted                   &lt;f64&gt; 16.791179656982422, 16.579240798950195, 16.1174373626709, 16.02262306213379, 16.065746307373047, 15.814659118652344, 16.010698318481445, 15.912524223327637, 15.345203399658203, 14.86106777191162
+$ close_plus_di_14           &lt;f64&gt; 0.0, 0.0, 0.0, 0.0, 1.4086529900299278, 1.3357370327531486, 3.2946355294876097, 3.175213538310561, 2.7975109354213354, 2.5248350001853535
+$ close_minus_di_14          &lt;f64&gt; 0.0, 0.34525921952158917, 8.48343224466678, 13.540429706785595, 12.756866293718087, 15.017938717809615, 13.919011176217822, 13.41448312903257, 23.015351236530428, 28.79996854804468
+$ close_adx_14               &lt;f64&gt; nan, nan, nan, nan, nan, nan, nan, nan, nan, nan
+</code></pre>
+</div>
 </div>
 
 
