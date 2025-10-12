@@ -39,6 +39,8 @@ Enter **pytimetk**. Crafted with a blend of ease-of-use and computational effici
 | `anomalize()`       | 📈 2 lines, detects and corrects anomalies  | ❌ No equivalent    |
 | `augment_timeseries_signature()` | 📅 1 line, all calendar features    | 🕐 29 lines of `dt` extractors |
 | `augment_rolling()` | 🏎️ 10X to 3500X faster     | 🐢 Slow Rolling Operations |
+| polars `.tk` plotting | ✅ Plot directly on `pl.DataFrame` (`plot_timeseries`, `plot_anomalies`, `plot_correlation_funnel`, …) | ❌ pandas-only accessor |
+| polars `.tk` accessor | ✅ Core, feature, and plotting helpers available via `.tk` on pandas/polars | ❌ N/A |
 
 As evident from the table, **pytimetk** is not just about speed; it also simplifies your codebase. For example, `summarize_by_time()`, converts a 6-line, double for-loop routine in `pandas` into a concise 2-line operation. And with the `polars` engine, get results 13.4X faster than `pandas`!
   
