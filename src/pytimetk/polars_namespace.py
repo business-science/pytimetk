@@ -33,11 +33,19 @@ from pytimetk.finance import (
     augment_rsi,
     augment_stochastic_oscillator,
 )
+from pytimetk.feature_engineering import (
+    augment_diffs,
+    augment_ewm,
+    augment_lags,
+    augment_leads,
+    augment_pct_change,
+    augment_spline,
+)
 
 FinanceFunc = Callable[..., pl.DataFrame]
 
 
-_FINANCE_FUNCTIONS: Dict[str, FinanceFunc] = {
+_AUGMENT_FUNCTIONS: Dict[str, FinanceFunc] = {
     "augment_adx": augment_adx,
     "augment_atr": augment_atr,
     "augment_bbands": augment_bbands,
@@ -54,6 +62,12 @@ _FINANCE_FUNCTIONS: Dict[str, FinanceFunc] = {
     "augment_rolling_risk_metrics": augment_rolling_risk_metrics,
     "augment_rsi": augment_rsi,
     "augment_stochastic_oscillator": augment_stochastic_oscillator,
+    "augment_diffs": augment_diffs,
+    "augment_ewm": augment_ewm,
+    "augment_lags": augment_lags,
+    "augment_leads": augment_leads,
+    "augment_pct_change": augment_pct_change,
+    "augment_spline": augment_spline,
 }
 
 
@@ -108,7 +122,7 @@ def register_polars_namespace() -> None:
     """
     Register ``.tk`` namespace methods on polars DataFrame and GroupBy objects.
     """
-    for name, func in _FINANCE_FUNCTIONS.items():
+    for name, func in _AUGMENT_FUNCTIONS.items():
         setattr(TkDataFrameNamespace, name, _make_df_method(func))
         setattr(_TkGroupByNamespace, name, _make_groupby_method(func))
 

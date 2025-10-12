@@ -87,7 +87,7 @@ def augment_atr(
     import pandas as pd
     import polars as pl
     import pytimetk as tk
-    import pytimetk.polars_namespace
+
 
     df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
@@ -279,16 +279,14 @@ def _augment_atr_polars(
         df = frame.with_columns(tr_expr.alias("_atr_tr"))
 
         for period in periods:
-            atr_expr = pl.col("_atr_tr").rolling_mean(
-                window_size=period, min_samples=1
-            )
+            atr_expr = pl.col("_atr_tr").rolling_mean(window_size=period, min_samples=1)
             if normalize:
-                atr_expr = pl.when(pl.col(close_column) == 0).then(None).otherwise(
-                    atr_expr / pl.col(close_column) * 100
+                atr_expr = (
+                    pl.when(pl.col(close_column) == 0)
+                    .then(None)
+                    .otherwise(atr_expr / pl.col(close_column) * 100)
                 )
-            df = df.with_columns(
-                atr_expr.alias(f"{close_column}_{type_str}_{period}")
-            )
+            df = df.with_columns(atr_expr.alias(f"{close_column}_{type_str}_{period}"))
 
         return df.drop(["_atr_tr"])
 

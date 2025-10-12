@@ -80,7 +80,7 @@ def augment_rsi(
     import pandas as pd
     import polars as pl
     import pytimetk as tk
-    import pytimetk.polars_namespace
+
 
     df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
@@ -123,7 +123,9 @@ def augment_rsi(
             stacklevel=2,
         )
 
-    close_columns = [close_column] if isinstance(close_column, str) else list(close_column)
+    close_columns = (
+        [close_column] if isinstance(close_column, str) else list(close_column)
+    )
     periods_list = _normalize_periods(periods)
 
     if engine_resolved == "pandas":
@@ -207,11 +209,7 @@ def _augment_rsi_polars(
     ]
 
     if resolved_groups:
-        group_key = (
-            resolved_groups
-            if len(resolved_groups) > 1
-            else resolved_groups[0]
-        )
+        group_key = resolved_groups if len(resolved_groups) > 1 else resolved_groups[0]
 
         def apply_group(df_group: pl.DataFrame) -> pl.DataFrame:
             return df_group.with_columns(rsi_columns)

@@ -87,51 +87,50 @@ def augment_diffs(
     --------
     ```{python}
     import pandas as pd
+    import polars as pl
     import pytimetk as tk
+
 
     df = tk.load_dataset('m4_daily', parse_dates=['date'])
     df
     ```
 
     ```{python}
-    # Example 1 - Add 7 differenced values for a single DataFrame object, pandas engine
+    # Example 1 - Add 7 differenced values for a single DataFrame object (pandas)
     diffed_df_single = (
         df
             .query('id == "D10"')
             .augment_diffs(
                 date_column='date',
                 value_column='value',
-                periods=(1, 7),
-                engine='pandas'
+                periods=(1, 7)
             )
     )
     diffed_df_single.glimpse()
     ```
     ```{python}
-    # Example 2 - Add a single differenced value of 2 for each GroupBy object, polars engine
+    # Example 2 - Add differenced values via the polars accessor
     diffed_df = (
-        df
-            .groupby('id')
-            .augment_diffs(
-                date_column='date',
-                value_column='value',
-                periods=2,
-                engine='polars'
-            )
+        pl.from_pandas(df)
+        .group_by('id')
+        .tk.augment_diffs(
+            date_column='date',
+            value_column='value',
+            periods=2,
+        )
     )
     diffed_df
     ```
 
     ```{python}
-    # Example 3 add 2 differenced values, 2 and 4, for a single DataFrame object, pandas engine
+    # Example 3 add 2 differenced values, 2 and 4, for a single DataFrame object (pandas)
     diffed_df_single_two = (
         df
             .query('id == "D10"')
             .augment_diffs(
                 date_column='date',
                 value_column='value',
-                periods=[2, 4],
-                engine='pandas'
+                periods=[2, 4]
             )
     )
     diffed_df_single_two
@@ -217,15 +216,15 @@ def _augment_diffs_pandas(
         if normalize:
             for col in value_column:
                 for period in periods:
-                    base_df[f"{col}_pctdiff_{period}"] = (
-                        base_df.groupby(group_names)[col].pct_change(period)
-                    )
+                    base_df[f"{col}_pctdiff_{period}"] = base_df.groupby(group_names)[
+                        col
+                    ].pct_change(period)
         else:
             for col in value_column:
                 for period in periods:
-                    base_df[f"{col}_diff_{period}"] = (
-                        base_df.groupby(group_names)[col].diff(period)
-                    )
+                    base_df[f"{col}_diff_{period}"] = base_df.groupby(group_names)[
+                        col
+                    ].diff(period)
 
         return base_df
 

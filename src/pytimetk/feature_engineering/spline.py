@@ -121,7 +121,9 @@ def augment_spline(
     ```{python}
     # Pandas Example
     import pandas as pd
+    import polars as pl
     import pytimetk as tk
+
 
     df = tk.load_dataset('m4_daily', parse_dates=['date'])
     df = df.assign(step=lambda d: d.groupby('id').cumcount())
@@ -142,20 +144,15 @@ def augment_spline(
     ```
 
     ```{python}
-    import pytimetk as tk
-    import polars as pl
-
-    df = tk.load_dataset('m4_daily', parse_dates=['date']).query("id == 'D10'")
-    df = df.assign(step=lambda d: d.groupby('id').cumcount())
-    pl_df = pl.from_pandas(df)
-
-    pl_spline = tk.augment_spline(
-        data=pl_df,
-        column_name='step',
-        spline_type='bs',
-        df=5,
-        degree=3,
-        prefix='step_bs'
+    pl_spline = (
+        pl.from_pandas(df.query("id == 'D10'"))
+        .tk.augment_spline(
+            column_name='step',
+            spline_type='bs',
+            df=5,
+            degree=3,
+            prefix='step_bs'
+        )
     )
 
     pl_spline.head()
@@ -331,9 +328,7 @@ def _augment_spline_polars(
     if isinstance(data, pl.dataframe.group_by.GroupBy):
         base_df = data.df
         grouped_cols = list(group_columns or _resolve_polars_group_columns(data))
-        frame_with_id, row_col, generated = ensure_row_id_column(
-            base_df, row_id_column
-        )
+        frame_with_id, row_col, generated = ensure_row_id_column(base_df, row_id_column)
         group_key = grouped_cols if len(grouped_cols) > 1 else grouped_cols[0]
 
         augmented = (
@@ -423,8 +418,7 @@ def _augment_spline_polars_frame(
 
     prefix_value = prefix or _default_prefix(column_name, spline_key, degree)
     new_columns = [
-        pl.Series(f"{prefix_value}_{i + 1}", basis[:, i])
-        for i in range(basis.shape[1])
+        pl.Series(f"{prefix_value}_{i + 1}", basis[:, i]) for i in range(basis.shape[1])
     ]
 
     return frame.with_columns(new_columns)

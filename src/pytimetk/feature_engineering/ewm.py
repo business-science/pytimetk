@@ -1,25 +1,39 @@
 import pandas as pd
+import polars as pl
 import pandas_flavor as pf
+import warnings
 
-from typing import Union
+from typing import Optional, Union, List
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
     check_value_column,
 )
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    normalize_engine,
+    restore_output_type,
+)
+from pytimetk.utils.memory_helpers import reduce_memory_usage
 
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_ewm(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     value_column: Union[str, list],
     window_func: Union[str, list] = "mean",
     alpha: float = None,
     **kwargs,
-) -> pd.DataFrame:
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Add Exponential Weighted Moving (EWM) window functions to a DataFrame or
     GroupBy object.
@@ -30,8 +44,9 @@ def augment_ewm(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        The input DataFrame or GroupBy object.
+    data : DataFrame or GroupBy (pandas or polars)
+        The input data to augment. Grouped inputs are processed per group before
+        the EWM columns are appended.
     date_column : str
         The name of the column containing date information in the input
         DataFrame or GroupBy object.
@@ -55,13 +70,20 @@ def augment_ewm(
         for the Exponential Weighted Moving (EWM) window function. It controls
         the rate at which the weights decrease exponentially as the data points
         move further away from the current point.
+    engine : {"auto", "pandas", "polars"}, optional
+        Execution engine. ``"auto"`` (default) infers the backend from the input
+        data while allowing explicit overrides.
+    reduce_memory : bool, optional
+        Attempt to reduce memory usage before/after computation when operating
+        on pandas data. If a polars input is supplied a warning is emitted and
+        no conversion occurs.
     **kwargs:
         Additional arguments that are directly passed to the pandas EWM method.
         For more details, refer to the "Notes" section below.
 
     Returns
     -------
-    pd.DataFrame
+    DataFrame
         The function `augment_ewm` returns a DataFrame augmented with the
         results of the Exponential Weighted Moving (EWM) calculations.
 
@@ -82,19 +104,14 @@ def augment_ewm(
     Examples
     --------
     ```{python}
-    import pytimetk as tk
-    from pytimetk import augment_ewm
     import pandas as pd
-    import numpy as np
+    import polars as pl
+    import pytimetk as tk
+
 
     df = tk.load_dataset("m4_daily", parse_dates = ['date'])
-    ```
 
-    ```{python}
-    # This example demonstrates the use of string-named functions on an EWM.
-    # The decay parameter used in this example is 'alpha', but other methods
-    #  (e.g., 'com', 'span', 'halflife') can also be utilized.
-
+    # Pandas example (engine inferred)
     ewm_df = (
         df
             .groupby('id')
@@ -108,26 +125,70 @@ def augment_ewm(
                 alpha = 0.1,
             )
     )
-    display(ewm_df)
+
+    # Polars example using the tk accessor
+    ewm_pl = (
+        pl.from_pandas(df)
+        .group_by('id')
+        .tk.augment_ewm(
+            date_column='date',
+            value_column='value',
+            window_func='mean',
+            alpha=0.1,
+        )
+    )
     ```
     """
-    # Checks
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
     check_value_column(data, value_column)
 
-    # Convert string value column to list for consistency
-    if isinstance(value_column, str):
-        value_column = [value_column]
+    engine_resolved = normalize_engine(engine, data)
 
-    # Convert single window function to list for consistent processing
-    if isinstance(window_func, str):
-        window_func = [window_func]
+    if reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
-    # Create a fresh copy of the data, leaving the original untouched
+    conversion: FrameConversion = convert_to_engine(data, "pandas")
+    prepared_data = conversion.data
+
+    result = _augment_ewm_pandas(
+        data=prepared_data,
+        date_column=date_column,
+        value_column=value_column,
+        window_func=window_func,
+        alpha=alpha,
+        reduce_memory=reduce_memory,
+        **kwargs,
+    )
+
+    restored = restore_output_type(result, conversion)
+
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
+
+    return restored
+
+
+def _augment_ewm_pandas(
+    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    date_column: str,
+    value_column: Union[str, List[str]],
+    window_func: Union[str, List[str]],
+    alpha: float,
+    reduce_memory: bool,
+    **kwargs,
+) -> pd.DataFrame:
+    value_columns = (
+        [value_column] if isinstance(value_column, str) else list(value_column)
+    )
+    window_funcs = [window_func] if isinstance(window_func, str) else list(window_func)
+
     data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
 
-    # Group data if it's a GroupBy object; otherwise, prepare it for the EWM calculations
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
         grouped = data_copy.sort_values(by=[*group_names, date_column]).groupby(
@@ -137,8 +198,6 @@ def augment_ewm(
         group_names = None
         grouped = [([], data_copy.sort_values(by=[date_column]))]
 
-    # Helper function to identify and retrieve the active decay parameter (alpha, com, span, halflife)
-    # and its value for inclusion in the column name.
     def determine_decay_parameter(alpha, **kwargs):
         if alpha is not None:
             return "alpha", alpha
@@ -147,53 +206,39 @@ def augment_ewm(
                 return param, kwargs[param]
         return None, None
 
-    # Retrieve active decay parameter and value
     decay_param, value = determine_decay_parameter(alpha, **kwargs)
 
-    # Raise error if no valid decay parameter
     if decay_param is None:
         raise ValueError(
             "No valid decay parameter provided. Specify 'alpha' through function arguments, or one of 'com', 'span', or 'halflife' through **kwargs."
         )
 
-    # Apply Series-based Exponential Weighted Moving window functions
     result_dfs = []
     for _, group_df in grouped:
-        for value_col in value_column:
-            for func in window_func:
-                if isinstance(func, str):
-                    new_column_name = f"{value_col}_ewm_{func}_{decay_param}_{value}"
-                    # Get the EWM function (like mean, sum, etc.) specified by `func` for the given column and window settings
-                    try:
-                        ewm_function = getattr(
-                            group_df[value_col].ewm(alpha=alpha, **kwargs), func, None
-                        )
-                    except Exception as e:
-                        # Check for the specific error message from pandas
-                        if (
-                            str(e)
-                            == "Must pass one of comass, span, halflife, or alpha"
-                        ):
-                            # Raise a new error with more informative message
-                            raise ValueError(
-                                "Must specify the 'alpha' decay parameter through function arguments, or one of 'com', 'span', or 'halflife' through **kwargs."
-                            )
-                        else:
-                            # If it's a different Error, just raise it as is
-                            raise
-
-                    # Apply EWM function to data and store in new column
-                    if ewm_function:
-                        group_df[new_column_name] = ewm_function()
-                    else:
-                        raise ValueError(f"Invalid function name: {func}")
-                else:
-                    raise TypeError(f"Invalid function type: {type(func)}")
-
+        for col in value_columns:
+            for func in window_funcs:
+                result_col_name = f"{col}_ewm_{func}_{decay_param}_{value}"
+                ewm_obj = group_df[col].ewm(alpha=alpha, **kwargs)
+                result_series = _apply_ewm_function(ewm_obj, func)
+                group_df[result_col_name] = result_series
         result_dfs.append(group_df)
 
-    # Combine processed dataframes and sort by index
-    result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
+    result = pd.concat(result_dfs)
+    if group_names is not None:
+        result = result.sort_index(level=group_names)
+    else:
+        result = result.sort_index()
 
-    return result_df
+    if reduce_memory:
+        result = reduce_memory_usage(result)
 
+    return result
+
+
+def _apply_ewm_function(ewm_obj, func: Union[str, callable]) -> pd.Series:
+    if isinstance(func, str):
+        method = getattr(ewm_obj, func, None)
+        if method is None:
+            raise ValueError(f"Invalid function name: {func}")
+        return method()
+    raise TypeError(f"Invalid function type: {type(func)}")

@@ -81,51 +81,50 @@ def augment_lags(
     --------
     ```{python}
     import pandas as pd
+    import polars as pl
     import pytimetk as tk
+
 
     df = tk.load_dataset('m4_daily', parse_dates=['date'])
     df
     ```
 
     ```{python}
-    # Example 1 - Add 7 lagged values for a single DataFrame object, pandas engine
+    # Example 1 - Add 7 lagged values for a single DataFrame object (pandas)
     lagged_df_single = (
         df
             .query('id == "D10"')
             .augment_lags(
                 date_column='date',
                 value_column='value',
-                lags=(1, 7),
-                engine='pandas'
+                lags=(1, 7)
             )
     )
     lagged_df_single
     ```
     ```{python}
-    # Example 2 - Add a single lagged value of 2 for each GroupBy object, polars engine
-    lagged_df = (
-        df
-            .groupby('id')
-            .augment_lags(
-                date_column='date',
-                value_column='value',
-                lags=(1, 3),
-                engine='polars'
-            )
+    # Example 2 - Add lagged values using the polars accessor
+    lagged_pl = (
+        pl.from_pandas(df)
+        .group_by('id')
+        .tk.augment_lags(
+            date_column='date',
+            value_column='value',
+            lags=(1, 3)
+        )
     )
-    lagged_df
+    lagged_pl
     ```
 
     ```{python}
-    # Example 3 add 2 lagged values, 2 and 4, for a single DataFrame object, pandas engine
+    # Example 3 add 2 lagged values, 2 and 4, for a single DataFrame object (pandas)
     lagged_df_single_two = (
         df
             .query('id == "D10"')
             .augment_lags(
                 date_column='date',
                 value_column='value',
-                lags=[2, 4],
-                engine='pandas'
+                lags=[2, 4]
             )
     )
     lagged_df_single_two

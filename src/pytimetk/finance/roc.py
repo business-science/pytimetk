@@ -89,7 +89,7 @@ def augment_roc(
     ```{python}
     import polars as pl
     import pytimetk as tk
-    import pytimetk.polars_namespace
+
 
     df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
@@ -191,9 +191,7 @@ def _augment_roc_pandas(
             grouped_col = grouped[col]
             for period in periods:
                 numerator = (
-                    base_df[col]
-                    if start_index == 0
-                    else grouped_col.shift(start_index)
+                    base_df[col] if start_index == 0 else grouped_col.shift(start_index)
                 )
                 denominator = grouped_col.shift(period)
                 result = (numerator / denominator) - 1

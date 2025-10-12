@@ -82,7 +82,7 @@ def augment_ppo(
     import pandas as pd
     import polars as pl
     import pytimetk as tk
-    import pytimetk.polars_namespace
+
 
     df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
@@ -225,10 +225,9 @@ def _augment_ppo_polars(
     ppo_expr = pl.when(slow_ema == 0)
     ppo_expr = ppo_expr.then(None).otherwise((fast_ema - slow_ema) / slow_ema * 100)
 
-    result = (
-        sorted_frame.with_columns(ppo_expr.alias(f"{close_column}_ppo_line_{fast_period}_{slow_period}"))
-        .sort(row_col)
-    )
+    result = sorted_frame.with_columns(
+        ppo_expr.alias(f"{close_column}_ppo_line_{fast_period}_{slow_period}")
+    ).sort(row_col)
 
     if generated:
         result = result.drop(row_col)
