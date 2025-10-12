@@ -1,12 +1,67 @@
 import pandas as pd
 import polars as pl
-from datetime import datetime, timedelta
+from datetime import datetime
 import pandas_flavor as pf
 
-from pytimetk.utils.datetime_helpers import is_holiday
-from typing import Union
+from typing import List, Sequence, Union
 
 import holidays
+
+
+def _coerce_to_timestamp(
+    value: Union[str, datetime, pd.Timestamp, pd.DatetimeIndex],
+    pick: str,
+) -> pd.Timestamp:
+    if isinstance(value, pd.DatetimeIndex):
+        if len(value) == 0:
+            raise ValueError("DatetimeIndex inputs must contain at least one value.")
+        base = value[0] if pick == "start" else value[-1]
+        return pd.Timestamp(base)
+    return pd.Timestamp(value)
+
+
+def _build_holiday_filter(
+    dates: pd.DatetimeIndex,
+    remove_holidays: bool,
+    country: Union[str, None],
+) -> Sequence[pd.Timestamp]:
+    if not remove_holidays or len(dates) == 0:
+        return ()
+
+    country_key = country or "UnitedStates"
+    years = sorted(set(dates.year))
+    holiday_map = holidays.country_holidays(country_key, years=years)
+    return pd.to_datetime(list(holiday_map.keys()))
+
+
+def _make_sequence(
+    start_date: Union[str, datetime, pd.DatetimeIndex],
+    end_date: Union[str, datetime, pd.DatetimeIndex],
+    allowed_weekdays: List[int],
+    label: str,
+    remove_holidays: bool,
+    country: Union[str, None],
+    engine: str,
+) -> Union[pd.Series, pl.Series]:
+    start_ts = _coerce_to_timestamp(start_date, "start")
+    end_ts = _coerce_to_timestamp(end_date, "end")
+
+    if start_ts > end_ts:
+        raise ValueError("`start_date` must be on or before `end_date`.")
+
+    all_days = pd.date_range(start=start_ts.normalize(), end=end_ts.normalize(), freq="D")
+    filtered = all_days[all_days.dayofweek.isin(allowed_weekdays)]
+
+    holidays_to_remove = _build_holiday_filter(filtered, remove_holidays, country)
+    if len(holidays_to_remove) > 0:
+        normalized_holidays = pd.to_datetime(holidays_to_remove).normalize()
+        filtered = filtered[~filtered.normalize().isin(normalized_holidays)]
+
+    if engine == "polars":
+        return pl.Series(label, filtered.to_pydatetime())
+    if engine == "pandas":
+        return pd.Series(filtered, name=label)
+    raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
 
 
 @pf.register_series_method
@@ -17,7 +72,7 @@ def make_weekday_sequence(
     remove_holidays: bool = False,
     country: str = None,
     engine: str = "pandas",
-) -> pd.Series:
+) -> Union[pd.Series, pl.Series]:
     """
     Generate a sequence of weekday dates within a specified date range,
     optionally excluding weekends and holidays.
@@ -51,8 +106,9 @@ def make_weekday_sequence(
 
     Returns
     -------
-    pd.Series
-        A Series containing the generated weekday dates.
+    Series
+        A Series containing the generated weekday dates. The concrete type
+        matches the requested engine.
 
     Examples
     --------
@@ -90,118 +146,19 @@ def make_weekday_sequence(
     ```
     """
 
-    if engine == "pandas":
-        return _make_weekday_sequence_pandas(
-            start_date, end_date, sunday_to_thursday, remove_holidays, country
-        )
-    elif engine == "polars":
-        return _make_weekday_sequence_polars(
-            start_date, end_date, sunday_to_thursday, remove_holidays, country
-        )
-    else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
-
-
-def _make_weekday_sequence_pandas(
-    start_date: Union[str, datetime, pd.DatetimeIndex],
-    end_date: Union[str, datetime, pd.DatetimeIndex],
-    sunday_to_thursday: bool = False,
-    remove_holidays: bool = False,
-    country: str = None,
-) -> pd.Series:
-    # Convert start_date and end_date to datetime objects if they are strings
-    if isinstance(start_date, str):
-        start_date = pd.to_datetime(start_date)
-    if isinstance(end_date, str):
-        end_date = pd.to_datetime(end_date)
-
-    # Create a list to store weekday dates
-    weekday_dates = []
-
-    # Define the default weekday range (Monday to Friday)
     weekday_range = [0, 1, 2, 3, 4]
-
-    # If Sunday to Thursday schedule is specified, adjust the weekday range
     if sunday_to_thursday:
-        weekday_range = [0, 1, 2, 3, 6]  # Sunday to Thursday
+        weekday_range = [6, 0, 1, 2, 3]
 
-    # Generate weekday dates within the date range
-    current_date = start_date
-    while current_date <= end_date:
-        if current_date.weekday() in weekday_range:
-            if (
-                not remove_holidays
-                or not is_holiday(current_date, country=country).values[0]
-            ):  # Check for holidays if specified
-                weekday_dates.append(current_date)
-        current_date += timedelta(days=1)
-
-    # Convert the list of weekday dates to a DataFrame
-    df = pd.DataFrame({"Weekday Dates": weekday_dates})
-
-    return df["Weekday Dates"]
-
-
-def _make_weekday_sequence_polars(
-    start_date: Union[str, datetime, pd.DatetimeIndex],
-    end_date: Union[str, datetime, pd.DatetimeIndex],
-    sunday_to_thursday: bool = False,
-    remove_holidays: bool = False,
-    country: str = None,
-) -> pd.Series:
-    # Convert start_date and end_date to pl.Date objects if they are strings
-    if isinstance(start_date, str):
-        start_year, start_month, start_day = map(int, start_date.split("-"))
-        start = pl.date(start_year, start_month, start_day)
-    if isinstance(end_date, str):
-        end_year, end_month, end_day = map(int, end_date.split("-"))
-        end = pl.date(end_year, end_month, end_day)
-
-    # Convert start_date and end_date to pl.Date objects if they are Pandas datetime
-    if isinstance(start_date, pd._libs.tslibs.timestamps.Timestamp):
-        start_year, start_month, start_day = (
-            start_date.year,
-            start_date.month,
-            start_date.day,
-        )
-        start = pl.date(start_year, start_month, start_day)
-
-    if isinstance(end_date, pd._libs.tslibs.timestamps.Timestamp):
-        end_year, end_month, end_day = end_date.year, end_date.month, end_date.day
-        end = pl.date(end_year, end_month, end_day)
-
-    # Create a list to store weekday dates
-    weekday_dates = []
-
-    # Define the default weekday range (Monday to Friday)
-    weekday_range = [1, 2, 3, 4, 5]
-
-    # If sunday_to_thursday is True, redefine the weekday range to Sunday to Thursday
-    if sunday_to_thursday:
-        weekday_range = [0, 1, 2, 3, 4]
-
-    # Generate a sequence of dates within the specified date range
-    expr = pl.date_range(start, end)
-
-    # Filter out weekends if sunday_to_thursday is True
-    expr = expr.filter(expr.dt.weekday().is_in(weekday_range))
-
-    # Filter out holidays if remove_holidays is True
-    if remove_holidays:
-        if country:
-            holidays_list = list(
-                holidays.country_holidays(country, years=[start_year, end_year])
-            )
-        else:
-            holidays_list = list(
-                holidays.country_holidays("US", years=[start_year, end_year])
-            )
-        expr = expr.filter(~expr.is_in(holidays_list))
-
-    # Convert the resulting expression to a DataFrame and return it
-    df = pl.select(expr).to_pandas().squeeze()
-
-    return df.rename("Weekday Dates")
+    return _make_sequence(
+        start_date=start_date,
+        end_date=end_date,
+        allowed_weekdays=weekday_range,
+        label="Weekday Dates",
+        remove_holidays=remove_holidays,
+        country=country,
+        engine=engine,
+    )
 
 
 @pf.register_series_method
@@ -212,7 +169,7 @@ def make_weekend_sequence(
     remove_holidays: bool = False,
     country: str = None,
     engine: str = "pandas",
-) -> pd.Series:
+) -> Union[pd.Series, pl.Series]:
     """
     Generate a sequence of weekend dates within a specified date range,
     optionally excluding holidays.
@@ -224,7 +181,7 @@ def make_weekend_sequence(
     end_date : str or datetime or pd.DatetimeIndex
         The end date of the date range.
     friday_saturday (bool, optional):
-        If True, generates a sequence with Friday and Saturday as weekends.If
+        If True, generates a sequence with Friday and Saturday as weekends. If
         False (default), generates a sequence with Saturday and Sunday as
         weekends.
     remove_holidays : bool, optional
@@ -246,8 +203,9 @@ def make_weekend_sequence(
 
     Returns
     -------
-    pd.Series
-        A Series containing the generated weekday dates.
+    Series
+        A Series containing the generated weekend dates. The concrete type
+        matches the requested engine.
 
     Examples
     --------
@@ -272,124 +230,26 @@ def make_weekend_sequence(
                              engine          = 'pandas')
     ```
 
-     # Saudi Arabia has Friday and Saturday as weekends, polars engine
+    ```{python}
+    # Saudi Arabia has Friday and Saturday as weekends (polars engine)
     tk.make_weekend_sequence("2023-01-01", "2023-01-31",
                              friday_saturday = True,
                              remove_holidays = True,
                              country         = 'SaudiArabia',
-                             engine          = '')
+                             engine          = 'polars')
     ```
     """
 
-    if engine == "pandas":
-        return _make_weekend_sequence_pandas(
-            start_date, end_date, friday_saturday, remove_holidays, country
-        )
-    elif engine == "polars":
-        return _make_weekend_sequence_polars(
-            start_date, end_date, friday_saturday, remove_holidays, country
-        )
-    else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
-
-
-def _make_weekend_sequence_pandas(
-    start_date: Union[str, datetime, pd.DatetimeIndex],
-    end_date: Union[str, datetime, pd.DatetimeIndex],
-    friday_saturday: bool = False,
-    remove_holidays: bool = False,
-    country: str = None,
-) -> pd.DataFrame:
-    # Convert start_date and end_date to datetime objects if they are strings
-    if isinstance(start_date, str):
-        start_date = pd.to_datetime(start_date)
-    if isinstance(end_date, str):
-        end_date = pd.to_datetime(end_date)
-
-    # Create a list to store weekend dates
-    weekend_dates = []
-
-    # Define the default weekend range (Saturday and Sunday)
-    weekend_range = [5, 6]
-
-    # If Friday and Saturday schedule is specified, adjust the weekend range
+    weekend_range = [5, 6]  # Saturday=5, Sunday=6
     if friday_saturday:
-        weekend_range = [4, 5]  # Friday and Saturday
+        weekend_range = [4, 5]
 
-    # Generate weekend dates within the date range
-    current_date = start_date
-    while current_date <= end_date:
-        if current_date.weekday() in weekend_range:
-            if (
-                not remove_holidays
-                or not is_holiday(current_date, country=country).values[0]
-            ):  # Check for holidays if specified
-                weekend_dates.append(current_date)
-        current_date += timedelta(days=1)
-
-    # Convert the list of weekend dates to a DataFrame
-    df = pd.DataFrame({"Weekend Dates": weekend_dates})
-
-    return df["Weekend Dates"]
-
-
-def _make_weekend_sequence_polars(
-    start_date: Union[str, datetime, pd.DatetimeIndex],
-    end_date: Union[str, datetime, pd.DatetimeIndex],
-    friday_saturday: bool = False,
-    remove_holidays: bool = False,
-    country: str = None,
-) -> pd.Series:
-    # Convert start_date and end_date to pl.Date objects if they are strings
-    if isinstance(start_date, str):
-        start_year, start_month, start_day = map(int, start_date.split("-"))
-        start = pl.date(start_year, start_month, start_day)
-    if isinstance(end_date, str):
-        end_year, end_month, end_day = map(int, end_date.split("-"))
-        end = pl.date(end_year, end_month, end_day)
-
-    # Convert start_date and end_date to pl.Date objects if they are Pandas datetime
-    if isinstance(start_date, pd._libs.tslibs.timestamps.Timestamp):
-        start_year, start_month, start_day = (
-            start_date.year,
-            start_date.month,
-            start_date.day,
-        )
-        start = pl.date(start_year, start_month, start_day)
-
-    if isinstance(end_date, pd._libs.tslibs.timestamps.Timestamp):
-        end_year, end_month, end_day = end_date.year, end_date.month, end_date.day
-        end = pl.date(end_year, end_month, end_day)
-
-    # Create a list to store weekend dates
-    weekday_dates = []
-
-    # Define the default weekend range (Saturday and Sunday)
-    weekend_range = [6, 7]
-
-    # If Friday and Saturday schedule is specified, adjust the weekend range
-    if friday_saturday:
-        weekday_range = [5, 6]  # Friday and Saturday
-
-    # Generate a sequence of dates within the specified date range
-    expr = pl.date_range(start, end)
-
-    # Filter out weekends if sunday_to_thursday is True
-    expr = expr.filter(expr.dt.weekday().is_in(weekend_range))
-
-    # Filter out holidays if remove_holidays is True
-    if remove_holidays:
-        if country:
-            holidays_list = list(
-                holidays.country_holidays(country, years=[start_year, end_year])
-            )
-        else:
-            holidays_list = list(
-                holidays.country_holidays("US", years=[start_year, end_year])
-            )
-        expr = expr.filter(~expr.is_in(holidays_list))
-
-    # Convert the resulting expression to a DataFrame and return it
-    df = pl.select(expr).to_pandas().squeeze()
-
-    return df.rename("Weekend Dates")
+    return _make_sequence(
+        start_date=start_date,
+        end_date=end_date,
+        allowed_weekdays=weekend_range,
+        label="Weekend Dates",
+        remove_holidays=remove_holidays,
+        country=country,
+        engine=engine,
+    )
