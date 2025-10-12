@@ -2,6 +2,8 @@ import pytest
 import pandas as pd
 import numpy as np
 import pytimetk as tk 
+import polars as pl
+import pytimetk.polars_namespace  # noqa: F401
 from sklearn.linear_model import LinearRegression
 
 import numpy.testing as npt
@@ -83,3 +85,16 @@ def test_example_2_parallel():
 
     assert 'Intercept' in regression_wide_df.columns
     assert 'Slope' in regression_wide_df.columns
+
+
+def test_polars_accessor():
+    df = generate_sample_data_1()
+    result = (
+        pl.from_pandas(df)
+        .group_by('id')
+        .tk.augment_expanding_apply(
+            date_column='date',
+            window_func=[('corr', lambda x: x['value1'].corr(x['value2']))],
+        )
+    )
+    assert 'expanding_corr' in result.columns

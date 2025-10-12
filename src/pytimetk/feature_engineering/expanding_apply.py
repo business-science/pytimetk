@@ -43,8 +43,9 @@ def augment_expanding_apply(
 
     Parameters
     ----------
-    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        Input data to be processed. Can be a Pandas DataFrame or a GroupBy object.
+    data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy, pl.DataFrame, pl.dataframe.group_by.GroupBy]
+        Tabular data (pandas or polars). Grouped inputs are processed per group before
+        the expanding apply results are appended.
     date_column : str
         Name of the datetime column. Data is sorted by this column within each group.
     window_func : Union[Tuple[str, Callable], List[Tuple[str, Callable]]]
@@ -74,9 +75,9 @@ def augment_expanding_apply(
 
     Returns
     -------
-    pd.DataFrame
-        The `augment_expanding` function returns a DataFrame with new columns
-        for each applied function, window size, and value column.
+    DataFrame
+        Data with new columns for each applied expanding function. The return type
+        matches the backend used for computation.
 
     Examples
     --------
@@ -109,6 +110,22 @@ def augment_expanding_apply(
         )
     )
     display(expanding_df)
+    ```
+
+    ```{python}
+    # Example (polars engine via tk accessor)
+    import polars as pl
+    import pytimetk.polars_namespace
+
+    df = generate_sample_data_1()
+    (
+        pl.from_pandas(df)
+          .group_by('id')
+          .tk.augment_expanding_apply(
+              date_column='date',
+              window_func=[('corr', lambda x: x['value1'].corr(x['value2']))],
+          )
+    )
     ```
 
     ```{python}

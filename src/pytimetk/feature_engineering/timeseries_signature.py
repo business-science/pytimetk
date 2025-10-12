@@ -24,11 +24,16 @@ from pytimetk.utils.dataframe_ops import (
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_timeseries_signature(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     reduce_memory: bool = False,
     engine: str = "pandas",
-) -> pd.DataFrame:
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     The function `augment_timeseries_signature` takes a DataFrame and a date
     column as input and returns the original DataFrame with the **29 different
@@ -37,9 +42,9 @@ def augment_timeseries_signature(
 
     Parameters
     ----------
-    data : pd.DataFrame
-        The `data` parameter is a pandas DataFrame that contains the time series
-        data.
+    data : DataFrame or GroupBy (pandas or polars)
+        Tabular time series data. Grouped inputs are processed per group before
+        the signature columns are appended. Accepts both pandas and polars inputs.
     date_column : str
         The `date_column` parameter is a string that represents the name of the
         date column in the `data` DataFrame.
@@ -57,8 +62,9 @@ def augment_timeseries_signature(
 
     Returns
     -------
-    pd.DataFrame
-        A Pandas DataFrame with 29 datetime features added to it.
+    DataFrame
+        Data with 29 datetime features appended. The return type matches the
+        input backend.
 
     - _index_num: An int64 feature that captures the entire datetime as a numeric value to the second
     - _year: The year of the datetime
@@ -362,4 +368,3 @@ def _pandas_timeseries_signature(data: pd.DataFrame, date_column: str) -> pd.Dat
     data[f"{name}_am_pm"] = pd.Series(am_pm, index=idx.index)
 
     return data
-
