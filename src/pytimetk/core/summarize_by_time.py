@@ -14,9 +14,11 @@ from pytimetk.utils.checks import (
     check_value_column,
 )
 
-from pytimetk.utils.polars_helpers import (
-    pandas_to_polars_frequency,
-    pandas_to_polars_aggregation_mapping,
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    normalize_engine,
+    restore_output_type,
 )
 
 
@@ -212,16 +214,35 @@ def summarize_by_time(
     check_value_column(data, value_column)
     check_date_column(data, date_column)
 
-    if engine == "pandas":
-        return _summarize_by_time_pandas(
-            data, date_column, value_column, freq, agg_func, wide_format, fillna
+    engine_resolved = normalize_engine(engine, data)
+    conversion = convert_to_engine(data, engine_resolved)
+    prepared = conversion.data
+
+    if engine_resolved == "pandas":
+        result = _summarize_by_time_pandas(
+            prepared,
+            date_column=date_column,
+            value_column=value_column,
+            freq=freq,
+            agg_func=agg_func,
+            wide_format=wide_format,
+            fillna=fillna,
         )
-    elif engine == "polars":
-        return _summarize_by_time_polars(
-            data, date_column, value_column, freq, agg_func, wide_format, fillna
+    elif engine_resolved == "polars":
+        result = _summarize_by_time_polars(
+            prepared,
+            date_column=date_column,
+            value_column=value_column,
+            freq=freq,
+            agg_func=agg_func,
+            wide_format=wide_format,
+            fillna=fillna,
+            conversion=conversion,
         )
     else:
         raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+
+    return restore_output_type(result, conversion)
 
 
 def _summarize_by_time_pandas(
@@ -232,8 +253,6 @@ def _summarize_by_time_pandas(
     agg_func: Union[str, list, Tuple[str, Callable]] = "sum",
     wide_format: bool = False,
     fillna: int = 0,
-    *args,
-    **kwargs,
 ) -> pd.DataFrame:
     # Convert value_column to a list if it is not already
     if not isinstance(value_column, list):
@@ -273,7 +292,7 @@ def _summarize_by_time_pandas(
             ]
 
     # Apply the aggregation using the dict method of the resampled data
-    data = data.agg(func=agg_dict, *args, **kwargs)
+    data = data.agg(func=agg_dict)
 
     # Unstack the grouped columns if wide_format is True and groups is not None
     if wide_format and group_names is not None:
@@ -307,96 +326,47 @@ def _summarize_by_time_pandas(
 
 
 def _summarize_by_time_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    prepared: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
-    freq: str = "D",
-    agg_func: Union[str, list] = "sum",
-    wide_format: bool = False,
-    fillna: int = 0,
-) -> pd.DataFrame:
-    polars_freq = pandas_to_polars_frequency(freq, default="d")
-    if isinstance(value_column, str):
-        value_column = [value_column]
-    if not isinstance(agg_func, list):
-        agg_func = [agg_func]
-
-    aggregation_mapping = pandas_to_polars_aggregation_mapping(value_column)
-    for func in agg_func:
-        if func not in aggregation_mapping:
-            raise ValueError(f"Unsupported aggregation function '{func}' for Polars.")
-
-    agg_columns = [
-        pl.col(val_col).sum().fill_null(fillna).alias(f"{val_col}_{func}")
-        for val_col in value_column
-        for func in agg_func
-    ]
-
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        groups = (
-            data.grouper.names
-            if isinstance(data.grouper.names, list)
-            else [data.grouper.names]
-        )
-        df_pl = pl.from_pandas(data.obj.copy(), include_index=False)[
-            groups + [date_column] + value_column
-        ]
-
-        # Get group combinations in pandas-like order
-        group_combinations = (
-            df_pl.select(groups).unique(maintain_order=False).sort(groups).rows()
+    freq: str,
+    agg_func: Union[str, List[str]],
+    wide_format: bool,
+    fillna: int,
+    conversion: FrameConversion,
+) -> pl.DataFrame:
+    agg_funcs = [agg_func] if isinstance(agg_func, str) else list(agg_func)
+    if any(not isinstance(func, str) for func in agg_funcs):
+        raise ValueError(
+            "Polars engine only supports string aggregation functions. "
+            "Use the pandas engine for custom callables."
         )
 
-        data = (
-            df_pl.lazy()
-            .with_columns(pl.col(date_column).dt.truncate(polars_freq))
-            .group_by(groups + [date_column], maintain_order=True)
-            .agg(agg_columns)
-            .sort(groups + [date_column])
-            .collect(streaming=True)
-        )
+    frame = (
+        prepared.df if isinstance(prepared, pl.dataframe.group_by.GroupBy) else prepared
+    )
 
-        if wide_format:
-            values = data.select(pl.exclude([date_column] + groups)).columns
-            data = data.pivot(
-                values=values,
-                index=[date_column],
-                columns=groups,
-                aggregate_function="sum",
-            ).fill_null(fillna)
+    row_id_col = conversion.row_id_column
+    if row_id_col and row_id_col in frame.columns:
+        frame = frame.drop(row_id_col)
 
-            # Rename columns to match pandas style and order
-            new_columns = [date_column]
-            for val_col in value_column:  # Preserve value_column order
-                for group_vals in group_combinations:  # Use sorted group combinations
-                    new_columns.append(
-                        f"{val_col}_{'_'.join(str(col) for col in group_vals)}"
-                    )
+    pandas_frame = frame.to_pandas()
 
-            data = data.to_pandas()
-            data.columns = new_columns
-        else:
-            data = data.to_pandas()
+    if conversion.group_columns:
+        pandas_data: Union[
+            pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy
+        ] = pandas_frame.groupby(conversion.group_columns, sort=False)
+    else:
+        pandas_data = pandas_frame
 
-    elif isinstance(data, pd.DataFrame):
-        df_pl = pl.from_pandas(data, include_index=False)[[date_column] + value_column]
-        data = (
-            df_pl.lazy()
-            .with_columns(pl.col(date_column).dt.truncate(polars_freq))
-            .group_by([date_column], maintain_order=True)
-            .agg(agg_columns)
-            .sort([date_column])
-            .collect(streaming=True)
-        )
+    pandas_result = _summarize_by_time_pandas(
+        pandas_data,
+        date_column=date_column,
+        value_column=value_column,
+        freq=freq,
+        agg_func=agg_func,
+        wide_format=wide_format,
+        fillna=fillna,
+    )
 
-        if wide_format and len(value_column) > 1:
-            values = data.select(pl.exclude([date_column])).columns
-            data = (
-                data.pivot(values=values, index=[date_column])
-                .fill_null(fillna)
-                .to_pandas()
-            )
-        else:
-            data = data.to_pandas()
-
-    return data
+    return pl.from_pandas(pandas_result)

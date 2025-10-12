@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
+import polars as pl
 import pytest
 import pytimetk
+import pytimetk.polars_namespace  # noqa: F401
 
 @pytest.fixture
 def summarize_by_time_data_test():
@@ -144,7 +146,64 @@ def test_summarize_by_time_lambda_functions(summarize_by_time_data_test):
     
     assert result.equals(expected), \
         'Summarize by time with lambda functions is not working!'
-    
+
+
+def test_summarize_by_time_polars_dataframe(summarize_by_time_data_test):
+    pl_df = pl.from_pandas(summarize_by_time_data_test)
+
+    result = pytimetk.summarize_by_time(
+        data=pl_df,
+        date_column="date",
+        value_column="value",
+        agg_func="sum",
+        freq="M",
+        engine="polars",
+    )
+
+    expected = pd.DataFrame({
+        'date': pd.to_datetime(['2020-01-31', '2020-02-29']),
+        'value': [496, 1334]
+    })
+
+    pd.testing.assert_frame_equal(result.to_pandas(), expected)
+
+
+def test_summarize_by_time_polars_grouped_wide(summarize_by_time_data_test):
+    pl_df = pl.from_pandas(summarize_by_time_data_test)
+
+    result = pytimetk.summarize_by_time(
+        data=pl_df.group_by('groups'),
+        date_column="date",
+        value_column="value",
+        freq='MS',
+        agg_func='sum',
+        wide_format=True,
+        engine="polars",
+    )
+
+    expected = pd.DataFrame(
+        {
+            'date': pd.to_datetime(['2020-01-01', '2020-02-01']),
+            'value_Group_1': [256, 644],
+            'value_Group_2': [240, 690],
+        }
+    )
+
+    pd.testing.assert_frame_equal(result.to_pandas(), expected)
+
+
+def test_summarize_by_time_polars_disallows_callables(summarize_by_time_data_test):
+    pl_df = pl.from_pandas(summarize_by_time_data_test)
+
+    with pytest.raises(ValueError):
+        pytimetk.summarize_by_time(
+            data=pl_df,
+            date_column="date",
+            value_column="value",
+            freq="MS",
+            agg_func=['sum', ('q25', lambda x: x.quantile(0.25))],
+            engine="polars",
+        )
     
     
         
