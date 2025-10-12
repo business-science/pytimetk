@@ -1,4 +1,5 @@
 import pandas as pd
+import polars as pl
 import pytimetk as tk
 import pytest
 
@@ -21,10 +22,11 @@ def test_correct_trend_inference(freq, regular, engine, expected):
     """
 
     # Create a sample datetime series using freq parameter
-    dates = pd.date_range(start='2021-01-01', end='2024-01-01', freq = freq)
+    dates = pd.date_range(start='2021-01-01', end='2024-01-01', freq=freq)
+    dates_input = pl.Series("date", dates) if engine == 'polars' else dates
 
     # Invoke the get_trend_frequency function
-    result = tk.get_trend_frequency(dates, force_regular = regular, engine = engine)
+    result = tk.get_trend_frequency(dates_input, force_regular=regular, engine=engine)
 
     # Check inferred frequency
     assert result == expected

@@ -122,6 +122,16 @@ def augment_timeseries_signature(
             .glimpse()
     )
     ```
+
+    ```{python}
+    # Polars DataFrame using the tk accessor
+    import polars as pl
+    import pytimetk.polars_namespace
+
+    pl_df = pl.from_pandas(df)
+
+    pl_df.tk.augment_timeseries_signature(date_column='order_date')
+    ```
     """
     # Run common checks
     check_dataframe_or_groupby(data)

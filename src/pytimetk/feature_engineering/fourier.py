@@ -121,6 +121,22 @@ def augment_fourier(
     fourier_df
     ```
 
+    ``` {python}
+    # Example 4 - Polars DataFrame using the tk accessor
+    import polars as pl
+    import pytimetk.polars_namespace
+
+    pl_fourier = (
+        pl.from_pandas(df)
+          .group_by("id")
+          .tk.augment_fourier(
+              date_column='date',
+              periods=[1, 7],
+              max_order=1,
+          )
+    )
+    ```
+
     """
 
     check_dataframe_or_groupby(data)

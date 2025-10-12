@@ -1,4 +1,5 @@
 import pandas as pd
+import polars as pl
 import pytimetk as tk
 import pytest
 from pandas.testing import assert_frame_equal
@@ -24,20 +25,30 @@ def test_correct_frequency_inference(
     """
 
     # Create a sample datetime series with inferred frequency using freq parameter
-    dates = pd.date_range(start = '2021-01-01', end = '2023-12-31', freq = freq)
+    dates = pd.date_range(start='2021-01-01', end='2023-12-31', freq=freq)
 
-    # Invoke the get_frequency_summary function
-    result = tk.get_frequency_summary(dates, force_regular = regular)
-    expected_result = pd.DataFrame([{
-          'freq_inferred_unit': inferred_unit,
-          'freq_median_timedelta': median_timedelta, 
-          'freq_median_scale': median_scale,
-          'freq_median_unit': median_unit
-    }])
-    expected_result['freq_median_timedelta'] = pd.to_timedelta(expected_result['freq_median_timedelta']) 
+    for engine in ("pandas", "polars"):
+        dates_input = pl.Series("date", dates) if engine == "polars" else dates
 
-    # Check inferred frequency
-    assert_frame_equal(result, expected_result)
+        result = tk.get_frequency_summary(
+            dates_input,
+            force_regular=regular,
+            engine=engine,
+        )
+
+        expected_result = pd.DataFrame([
+            {
+                'freq_inferred_unit': inferred_unit,
+                'freq_median_timedelta': median_timedelta,
+                'freq_median_scale': median_scale,
+                'freq_median_unit': median_unit,
+            }
+        ])
+        expected_result['freq_median_timedelta'] = pd.to_timedelta(
+            expected_result['freq_median_timedelta']
+        )
+
+        assert_frame_equal(result, expected_result)
 
 # Run the tests
 if __name__ == "__main__":
