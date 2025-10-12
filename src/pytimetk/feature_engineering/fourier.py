@@ -2,6 +2,7 @@ import pandas as pd
 import polars as pl
 import numpy as np
 import pandas_flavor as pf
+import warnings
 from typing import Tuple
 from typing import Union, List
 
@@ -13,18 +14,29 @@ from pytimetk.utils.checks import (
 from pytimetk.core.ts_summary import ts_summary
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    normalize_engine,
+    restore_output_type,
+)
 
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_fourier(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     periods: Union[int, Tuple[int, int], List[int]] = 1,
     max_order: int = 1,
     reduce_memory: bool = True,
-    engine: str = "pandas",
-) -> pd.DataFrame:
+    engine: str = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Adds Fourier transforms to a Pandas DataFrame or DataFrameGroupBy object.
 
@@ -111,15 +123,20 @@ def augment_fourier(
 
     """
 
-    if not engine in ["pandas", "polars"]:
-        raise ValueError(
-            f"Supported engines are 'pandas' or 'polars'. Found {engine}. Please select an authorized engine."
-        )
-
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    engine_resolved = normalize_engine(engine, data)
+
+    conversion: FrameConversion = convert_to_engine(data, "pandas")
+    prepared_data = conversion.data
+
+    if reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
     if isinstance(periods, int):
         periods = [periods]
@@ -130,27 +147,31 @@ def augment_fourier(
             f"Invalid periods specification: type: {type(periods)}. Please use int, tuple, or list."
         )
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        data = data.obj.copy().reset_index(drop=True)
+    periods = [int(p) for p in periods]
 
-    # Reduce memory usage
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    sorted_data, _ = sort_dataframe(prepared_data, date_column, keep_grouped_df=True)
 
-    if engine == "pandas":
-        ret = _augment_fourier_pandas(data, date_column, periods, max_order)
+    if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
+        base_df = prepared_data.obj.copy()
     else:
-        ret = _augment_fourier_polars(data, date_column, periods, max_order)
+        base_df = prepared_data.copy()
 
-        # Polars Index to Match Pandas
-        ret.index = idx_unsorted
+    result = _augment_fourier_pandas(
+        base_df,
+        date_column,
+        periods,
+        max_order,
+    )
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    if reduce_memory and engine_resolved == "pandas":
+        result = reduce_memory_usage(result)
 
-    ret = ret.sort_index()
+    restored = restore_output_type(result, conversion)
 
-    return ret
+    if isinstance(restored, pd.DataFrame):
+        return restored
+
+    return restored
 
 
 def calc_fourier(x, period, type: str, K=1):
@@ -167,90 +188,58 @@ def date_to_seq_scale_factor(
 
 
 def _augment_fourier_pandas(
-    data: pd.DataFrame,
+    base_df: pd.DataFrame,
     date_column: str,
-    periods: Union[int, Tuple[int, int], List[int]],
+    periods: List[int],
     max_order: int,
 ) -> pd.DataFrame:
-    df = data.copy()
+    sorted_df = base_df.sort_values(date_column)
+    new_cols_sorted = _compute_fourier_columns(sorted_df, date_column, periods, max_order)
+    if new_cols_sorted.empty:
+        return base_df.copy()
 
-    scale_factor = date_to_seq_scale_factor(df, date_column).iloc[0].total_seconds()
+    new_cols = new_cols_sorted.reindex(base_df.index)
+    result_df = base_df.copy()
+    result_df[new_cols.columns] = new_cols
+    return result_df
+
+
+def _compute_fourier_columns(
+    frame: pd.DataFrame,
+    date_column: str,
+    periods: List[int],
+    max_order: int,
+) -> pd.DataFrame:
+    if frame.empty:
+        return pd.DataFrame(index=frame.index)
+
+    scale_factor_series = date_to_seq_scale_factor(frame, date_column)
+    if scale_factor_series.empty:
+        raise ValueError(
+            "Unable to compute a scale factor for Fourier features. Check that the input data contains more than one observation."
+        )
+
+    scale_factor = scale_factor_series.iloc[0].total_seconds()
     if scale_factor == 0:
         raise ValueError(
             "Time difference between observations is zero. Try arranging data to have a positive time difference between observations. If working with time series groups, arrange by groups first, then date."
         )
 
-    # Calculate radians for the date values
-    min_date = df[date_column].min()
-    df["radians"] = (
-        2 * np.pi * (df[date_column] - min_date).dt.total_seconds() / scale_factor
+    min_date = frame[date_column].min()
+    radians = (
+        2 * np.pi * (frame[date_column] - min_date).dt.total_seconds() / scale_factor
     )
 
-    type_vals = ["sin", "cos"]
-    K_vals = range(1, max_order + 1)
-
-    new_cols = [
-        f"{date_column}_{type_val}_{K_val}_{period_val}"
-        for type_val in type_vals
-        for K_val in K_vals
-        for period_val in periods
-    ]
-
-    df_new = (
-        np.array(
-            [
-                calc_fourier(x=df["radians"], period=period_val, type=type_val, K=K_val)
-                for type_val in type_vals
-                for K_val in K_vals
-                for period_val in periods
-            ]
-        )
-        .reshape(-1, len(df))
-        .T
-    )
-
-    df[new_cols] = df_new
-    # Drop the temporary 'radians' column
-    return df.drop(columns=["radians"])
-
-
-def _augment_fourier_polars(
-    data: pd.DataFrame,
-    date_column: str,
-    periods: Union[int, Tuple[int, int], List[int]],
-    max_order: int,
-) -> pd.DataFrame:
-    """Takes pandas objects as inputs and converts them into polars object internally."""
-
-    # Convert to polars
-    df = pl.from_pandas(data)
-    # .sort(by=[date_column], descending=False, nulls_last=True)
-
-    # Compute scale factor
-    scale_factor = date_to_seq_scale_factor(data, date_column, engine="polars")[
-        0
-    ].total_seconds()
-    if scale_factor == 0:
-        raise ValueError(
-            "Time difference between observations is zero. Try arranging data to have a positive time difference between observations. If working with time series groups, arrange by groups first, then date."
-        )
-
-    # Convert dates to numeric representation
-    min_date = df[date_column].min()
-    df = df.with_columns(
-        (
-            2 * np.pi * (df[date_column] - min_date).dt.total_seconds() / scale_factor
-        ).rename("radians")
-    )
-
-    # Compute Fourier series
+    data = {}
     for type_val in ("sin", "cos"):
         for K_val in range(1, max_order + 1):
             for period_val in periods:
-                df = df.with_columns(
-                    calc_fourier(
-                        x=df["radians"], period=period_val, type=type_val, K=K_val
-                    ).rename(f"{date_column}_{type_val}_{K_val}_{period_val}")
+                col_name = f"{date_column}_{type_val}_{K_val}_{period_val}"
+                data[col_name] = calc_fourier(
+                    x=radians,
+                    period=period_val,
+                    type=type_val,
+                    K=K_val,
                 )
 
-    return df.to_pandas().drop(columns=["radians"])
+    return pd.DataFrame(data, index=frame.index)

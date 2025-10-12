@@ -5,7 +5,7 @@ augment_timeseries_signature(
     data,
     date_column,
     reduce_memory=False,
-    engine='pandas',
+    engine='auto',
 )
 ```
 
@@ -18,16 +18,16 @@ based on the date_column.
 
 | Name          | Type         | Description                                                                                                                                                                                                                                                                                                                                 | Default    |
 |---------------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| data          | pd.DataFrame | The `data` parameter is a pandas DataFrame that contains the time series data.                                                                                                                                                                                                                                                              | _required_ |
+| data          | DataFrame    | Input time-series data. Works with pandas or polars DataFrames as well as grouped objects.                                                                                                                                                                                                             | _required_ |
 | date_column   | str          | The `date_column` parameter is a string that represents the name of the date column in the `data` DataFrame.                                                                                                                                                                                                                                | _required_ |
-| reduce_memory | bool         | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.                                     | `False`    |
-| engine        | str          | The `engine` parameter is used to specify the engine to use for augmenting datetime features. It can be either "pandas" or "polars".  - The default value is "pandas".  - When "polars", the function will internally use the `polars` library   for feature generation. This is generally faster than using "pandas"   for large datasets. | `'pandas'` |
+| reduce_memory | bool         | Specify whether to reduce memory usage by downcasting numeric columns and converting strings to categoricals. Only supported for pandas data.                                                                                                                                                         | `False`    |
+| engine        | str          | Execution engine: use `'pandas'`, `'polars'`, or `'auto'` (default) to infer from the input.                                                                                                                                                                                                             | `'auto'`   |
 
 ## Returns {.doc-section .doc-section-returns}
 
 | Name   | Type                                                                                              | Description                                               |
 |--------|---------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
-|        | pd.DataFrame                                                                                      | A Pandas DataFrame with 29 datetime features added to it. |
+|        | DataFrame                                                                                         | DataFrame with 29 datetime features added, matching the input backend. |
 |        | - _index_num: An int64 feature that captures the entire datetime as a numeric value to the second |                                                           |
 |        | - _year: The year of the datetime                                                                 |                                                           |
 |        | - _year_iso: The iso year of the datetime                                                         |                                                           |
@@ -71,16 +71,19 @@ df = tk.load_dataset('bike_sales_sample', parse_dates = ['order_date'])
 # Adds 29 new time series features as columns to the original DataFrame (pandas engine)
 (
     df
-        .augment_timeseries_signature(date_column='order_date', engine ='pandas')
+        .augment_timeseries_signature(date_column='order_date')
         .glimpse()
 )
 ```
 
 ```{python}
-# Adds 29 new time series features as columns to the original DataFrame (polars engine)
+# Adds 29 new time series features as columns to the original DataFrame (polars accessor)
+import polars as pl
+import pytimetk.polars_namespace
+
 (
-    df
-        .augment_timeseries_signature(date_column='order_date', engine ='polars')
+    pl.from_pandas(df)
+        .tk.augment_timeseries_signature(date_column='order_date')
         .glimpse()
 )
 ```

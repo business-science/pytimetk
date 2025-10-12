@@ -6,7 +6,7 @@ augment_holiday_signature(
     date_column,
     country_name='UnitedStates',
     reduce_memory=False,
-    engine='pandas',
+    engine='auto',
 )
 ```
 
@@ -20,17 +20,17 @@ Note: Requires the `holidays` package to be installed. See
 
 | Name          | Type                                                            | Description                                                                                                                                                                                                                                                                                                                   | Default          |
 |---------------|-----------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
-| data          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | The input DataFrame.                                                                                                                                                                                                                                                                                                          | _required_       |
+| data          | DataFrame or GroupBy (pandas or polars)                        | Input time-series data. Works with pandas or polars DataFrames as well as grouped objects.                                                                                                                                                                                                                                    | _required_       |
 | date_column   | str                                                             | The name of the datetime-like column in the DataFrame.                                                                                                                                                                                                                                                                        | _required_       |
 | country_name  | str                                                             | The name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code: See NOTES.                                                                                                               | `'UnitedStates'` |
-| reduce_memory | bool                                                            | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.                        | `False`          |
-| engine        | str                                                             | The `engine` parameter is used to specify the engine to use for augmenting holidays. It can be either "pandas" or "polars".  - The default value is "pandas".  - When "polars", the function will internally use the `polars` library   for augmenting holidays. This can be faster than using "pandas" for   large datasets. | `'pandas'`       |
+| reduce_memory | bool                                                            | Specify whether to reduce memory usage by downcasting numeric columns and converting strings to categoricals. Only supported for pandas data.                                                                                                                                                                                 | `False`          |
+| engine        | str                                                             | Execution engine: use `'pandas'`, `'polars'`, or `'auto'` (default) to infer from the input.                                                                                                                                                                                                                                  | `'auto'`         |
 
 ## Returns {.doc-section .doc-section-returns}
 
 | Name   | Type          | Description                                                                                                                                                                                                                                               |
 |--------|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|        | pd.DataFrame: | A pandas DataFrame with three holiday-specific features: - is_holiday: (0, 1) indicator for holiday - before_holiday: (0, 1) indicator for day before holiday - after_holiday: (0, 1) indicator for day after holiday - holiday_name: name of the holiday |
+|        | DataFrame     | DataFrame with holiday indicators and holiday names appended, matching the input backend. |
 
 ## Notes {.doc-section .doc-section-notes}
 
@@ -161,6 +161,16 @@ tk.augment_holiday_signature(df, 'date', 'France')
 ```
 
 ```{python}
-# Add holiday features for France
-tk.augment_holiday_signature(df, 'date', 'France', engine='polars')
+# Add holiday features using the polars accessor
+import polars as pl
+import pytimetk.polars_namespace
+
+holidays_pl = (
+    pl.from_pandas(df)
+        .tk.augment_holiday_signature(
+            date_column='date',
+            country_name='France'
+        )
+)
+holidays_pl
 ```

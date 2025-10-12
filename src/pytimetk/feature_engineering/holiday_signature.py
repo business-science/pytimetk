@@ -2,8 +2,8 @@
 import pandas as pd
 import numpy as np
 import polars as pl
-import math
 import pandas_flavor as pf
+import warnings
 
 try:
     import holidays
@@ -19,18 +19,28 @@ from pytimetk.utils.checks import (
     check_installed,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
-from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    normalize_engine,
+    restore_output_type,
+)
 
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_holiday_signature(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     country_name: str = "UnitedStates",
     reduce_memory: bool = False,
-    engine: str = "pandas",
-) -> pd.DataFrame:
+    engine: str = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Engineers 4 different holiday features from a single datetime for 137 countries
     and 2 financial markets.
@@ -209,52 +219,70 @@ def augment_holiday_signature(
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    engine_resolved = normalize_engine(engine, data)
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    if reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
-    if engine == "pandas":
-        ret = _augment_holiday_signature_pandas(data, date_column, country_name)
-    elif engine == "polars":
-        ret = _augment_holiday_signature_polars(data, date_column, country_name)
-        # Polars Index to Match Pandas
-        ret.index = idx_unsorted
+    conversion: FrameConversion = convert_to_engine(data, "pandas")
+    prepared_data = conversion.data
+
+    if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
+        base_df = prepared_data.obj.copy()
     else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+        base_df = prepared_data.copy()
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    result = _augment_holiday_signature_pandas(
+        base_df,
+        date_column,
+        country_name,
+    )
 
-    ret = ret.sort_index()
+    if reduce_memory and engine_resolved == "pandas":
+        result = reduce_memory_usage(result)
 
-    return ret
+    restored = restore_output_type(result, conversion)
+
+    if isinstance(restored, pd.DataFrame):
+        return restored
+
+    return restored
 
 
 def _augment_holiday_signature_pandas(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: pd.DataFrame,
     date_column: str,
     country_name: str = "UnitedStates",
 ) -> pd.DataFrame:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        data = data.obj
+    features = _compute_holiday_signature(data, date_column, country_name)
+    result = data.copy()
+    result[features.columns] = features
+    return result
 
-    # Extract start and end years directly from the Series
-    start_year = data[date_column].min().year
-    end_year = data[date_column].max().year
 
-    # Create a list of years (integers) from start year to end year
-    years = list(range(math.ceil(start_year), math.floor(end_year) + 1))
+def _compute_holiday_signature(
+    data: pd.DataFrame,
+    date_column: str,
+    country_name: str,
+) -> pd.DataFrame:
+    columns = ["is_holiday", "before_holiday", "after_holiday", "holiday_name"]
+    if data.empty:
+        empty = pd.DataFrame(index=data.index, columns=columns)
+        empty[["is_holiday", "before_holiday", "after_holiday"]] = 0
+        return empty
 
-    # Check if valid years were found
+    dates_normalized = data[date_column].dt.normalize()
+    start_date = dates_normalized.min()
+    end_date = dates_normalized.max()
+
+    years = list(range(start_date.year, end_date.year + 1))
     if not years:
         raise ValueError("No valid years found for holiday calculations.")
 
-    # Create a DataFrame of the full length of the Series
-    date_range = pd.date_range(data[date_column].min(), data[date_column].max())
-    holiday_data = pd.DataFrame({"date": date_range})
-
-    # Retrieve the corresponding country's module using regular expressions
     for key in holidays.__dict__.keys():
         if key.lower() == country_name.lower():
             country_module = holidays.__dict__[key]
@@ -262,30 +290,14 @@ def _augment_holiday_signature_pandas(
     else:
         raise ValueError(f"Country '{country_name}' not found in holidays package.")
 
-    # Create an empty list to store holidays
-    series_holidays = []
-    series_holidays_names = []
+    holiday_map = country_module(years=years)
+    holiday_dates = [pd.Timestamp(date) for date in holiday_map.keys()]
+    holiday_names = {pd.Timestamp(date): name for date, name in holiday_map.items()}
 
-    # Append holidays from the selected country to the list
-    for date in country_module(years=years).items():
-        series_holidays.append(str(date[0]))
-        series_holidays_names.append(date[1])
-
-    holidays_lookup_df = pd.DataFrame(
-        {"date": series_holidays, "holiday_name": series_holidays_names}
-    )
-
-    # Add (0, 1) indicator for holiday to the DataFrame
-    holiday_data["is_holiday"] = (
-        holiday_data["date"].dt.strftime("%Y-%m-%d").isin(series_holidays).astype(int)
-    )
-
-    holiday_data["date"] = pd.to_datetime(holiday_data["date"])
-    holidays_lookup_df["date"] = pd.to_datetime(holidays_lookup_df["date"])
-
-    holiday_data = pd.merge(holiday_data, holidays_lookup_df, on="date", how="left")
-
-    # Add (0, 1) indicators for day before and day after holiday
+    date_range = pd.date_range(start_date, end_date)
+    holiday_data = pd.DataFrame(index=date_range)
+    holiday_data["is_holiday"] = holiday_data.index.isin(holiday_dates).astype(int)
+    holiday_data["holiday_name"] = holiday_data.index.map(holiday_names.get)
     holiday_data["before_holiday"] = (
         holiday_data["is_holiday"].shift(-1).fillna(0).astype(int)
     )
@@ -293,110 +305,16 @@ def _augment_holiday_signature_pandas(
         holiday_data["is_holiday"].shift(1).fillna(0).astype(int)
     )
 
-    # Merge the two DataFrames on the 'date' column with an outer join
-    merged_data = data.merge(
-        holiday_data, left_on=date_column, right_on="date", how="outer"
-    )
-
-    # Drop the 'date' column
-    merged_data = merged_data.drop(columns=["date"])
-
-    # Fill NaN values in columns 'holiday', 'before_holiday', and 'after_holiday' with 0
-    merged_data[["is_holiday", "before_holiday", "after_holiday"]] = (
-        merged_data[["is_holiday", "before_holiday", "after_holiday"]]
-        .fillna(0)
-        .astype(int)
-    )
-
-    merged_data.index = data.index
-
-    ret = pd.concat(
-        [
-            data,
-            merged_data[
-                ["is_holiday", "before_holiday", "after_holiday", "holiday_name"]
-            ],
-        ],
-        axis=1,
-    )
-
-    return ret
-
-
-def _augment_holiday_signature_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
-    date_column: str,
-    country_name: str = "UnitedStates",
-) -> pd.DataFrame:
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        data = data.obj
-
-    # Convert to Polars DataFrame
-    df_pl = pl.DataFrame(data)
-
-    # Get Start and End Dates
-    start_date = df_pl.sort(date_column).row(0)[0]
-    end_date = df_pl.sort(date_column).row(-1)[0]
-
-    # Get List of Holidays (0/1)
-    start = pl.date(start_date.year, start_date.month, start_date.day)
-    end = pl.date(end_date.year, end_date.month, end_date.day)
-    holidays_list = list(
-        holidays.country_holidays(country_name, years=[start_date.year, end_date.year])
-    )
-
-    # Create Expression
-    expr = pl.date_range(start, end)
-
-    # Non-Holiday Expression
-    expr_non = expr.filter(~expr.is_in(holidays_list))
-    non_holidays = pl.DataFrame(pl.select(expr_non).to_series())
-    non_holidays = non_holidays.with_columns(pl.lit(0).alias("is_holiday"))
-
-    # Holiday Expression
-    expr_is = expr.filter(expr.is_in(holidays_list))
-    is_holidays = pl.DataFrame(pl.select(expr_is).to_series())
-    is_holidays = is_holidays.with_columns(pl.lit(1).alias("is_holiday"))
-
-    # Join
-    df = pl.concat((non_holidays, is_holidays), how="diagonal").sort("date")
-
-    # shift
-    df = df.with_columns(
-        pl.col("is_holiday").shift(-1).alias("before_holiday").fill_null(0),
-        pl.col("is_holiday").shift(1).alias("after_holiday").fill_null(0),
-    )
-    df = df.with_columns(
-        pl.col(["is_holiday", "before_holiday", "after_holiday"]).cast(pl.Int8)
-    )
-
-    # Add holiday name
-    dict_holidays = holidays.country_holidays(
-        country_name, years=[start_date.year, end_date.year]
-    )
-    holiday_name_list = [
-        {"date": str(key), "holiday_name": value}
-        for key, value in dict_holidays.items()
-    ]
-
-    # Create a DataFrame from the list of dictionaries
-    df_holidays = pl.DataFrame(holiday_name_list).with_columns(
-        pl.col("date").str.strptime(pl.Date),
-        pl.col("holiday_name").cast(pl.Categorical),
-    )
-
-    # join
-    df = pl.concat((df, df_holidays), how="align")
-    df = (df.filter(df["date"] <= end_date)).to_pandas().fillna(value=np.nan)
-
-    return df
+    selected = holiday_data.loc[dates_normalized.tolist()]
+    selected.index = data.index
+    return selected[columns]
 
 
 @pf.register_series_method
 def get_holiday_signature(
     idx: Union[pd.DatetimeIndex, pd.Series],
     country_name: str = "UnitedStates",
-    engine: str = "pandas",
+    engine: str = "auto",
 ) -> pd.DataFrame:
     """
     Engineers 4 different holiday features from a single datetime for 137 countries
@@ -559,58 +477,29 @@ def get_holiday_signature(
     tk.get_holiday_signature(df['date'], 'France')
     ```
     """
-    # Common checks
+    check_installed("holidays")
     check_series_or_datetime(idx)
 
-    if engine == "pandas":
-        return _get_holiday_signature_pandas(idx, country_name)
-    elif engine == "polars":
-        return _get_holiday_signature_polars(idx, country_name)
-    else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    engine_normalised = (engine or "").strip().lower()
+    if engine_normalised in ("", "auto"):
+        engine_normalised = "pandas"
 
+    if engine_normalised not in ("pandas", "polars"):
+        raise ValueError("Invalid engine. Use 'pandas', 'polars', or 'auto'.")
 
-def _get_holiday_signature_pandas(
-    idx: Union[pd.DatetimeIndex, pd.Series], country_name: str = "UnitedStates"
-) -> pd.DataFrame:
-    # This function requires the holidays package to be installed
-    try:
-        import holidays
-    except ImportError:
-        raise ImportError(
-            "The 'holidays' package is not installed. Please install it by running 'pip install holidays'."
-        )
+    if isinstance(idx, pd.DatetimeIndex):
+        idx = pd.Series(idx, name="idx")
 
-    df = pd.DataFrame(idx)
+    series_name = idx.name or "idx"
+    idx = idx.rename(series_name)
 
-    if df.columns[0] == 0:
-        df.columns = ["idx"]
+    features = _compute_holiday_signature(idx.to_frame(), series_name, country_name)
 
-    ret = df.pipe(
-        augment_holiday_signature, date_column=df.columns[0], country_name=country_name
-    )
+    result = idx.to_frame()
+    result[features.columns] = features
 
-    return ret
+    if engine_normalised == "polars":
+        return pl.from_pandas(result)
 
+    return result
 
-def _get_holiday_signature_polars(
-    idx: Union[pd.DatetimeIndex, pd.Series], country_name: str = "UnitedStates"
-) -> pd.DataFrame:
-    # This function requires the holidays package to be installed
-    try:
-        import holidays
-    except ImportError:
-        raise ImportError(
-            "The 'holidays' package is not installed. Please install it by running 'pip install holidays'."
-        )
-
-    df = pd.DataFrame(idx)
-
-    if df.columns[0] == 0:
-        df.columns = ["idx"]
-
-    ret = augment_holiday_signature(
-        df, date_column=df.columns[0], country_name=country_name, engine="polars"
-    )
-
-    return ret

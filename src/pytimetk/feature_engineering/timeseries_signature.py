@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import polars as pl
 import pandas_flavor as pf
+import warnings
 from typing import Union
 
 from pytimetk.utils.datetime_helpers import week_of_month
@@ -12,6 +13,12 @@ from pytimetk.utils.checks import (
     check_date_column,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    normalize_engine,
+    restore_output_type,
+)
 
 
 @pf.register_groupby_method
@@ -114,42 +121,47 @@ def augment_timeseries_signature(
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
 
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        data = data.obj
+    engine_resolved = normalize_engine(engine, data)
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
-
-    if engine == "pandas":
-        ret = pd.concat(
-            [
-                data,
-                data[date_column]
-                .get_timeseries_signature(engine=engine)
-                .drop(date_column, axis=1),
-            ],
-            axis=1,
+    if reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
         )
-    elif engine == "polars":
-        df_pl = pl.DataFrame(data)
 
-        df_pl = _polars_timeseries_signature(df_pl, date_column=date_column)
+    conversion: FrameConversion = convert_to_engine(data, "pandas")
+    prepared_data = conversion.data
 
-        ret = df_pl.to_pandas()
+    if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
+        base_df = prepared_data.obj.copy()
     else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+        base_df = prepared_data.copy()
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    feature_frame = _pandas_timeseries_signature(
+        base_df[[date_column]].copy(),
+        date_column=date_column,
+    ).drop(columns=[date_column])
 
-    return ret
+    result = base_df.copy()
+    result[feature_frame.columns] = feature_frame
+
+    if reduce_memory and engine_resolved == "pandas":
+        result = reduce_memory_usage(result)
+
+    restored = restore_output_type(result, conversion)
+
+    if isinstance(restored, pd.DataFrame):
+        return restored
+
+    return restored
 
 
 @pf.register_series_method
 def get_timeseries_signature(
     idx: Union[pd.Series, pd.DatetimeIndex],
     reduce_memory: bool = False,
-    engine: str = "pandas",
+    engine: str = "auto",
 ) -> pd.DataFrame:
     """
     Convert a timestamp to a set of 29 time series features.
@@ -244,59 +256,37 @@ def get_timeseries_signature(
     if not isinstance(idx, pd.Series):
         raise TypeError("idx must be a pandas Series or DatetimeIndex object")
 
-    if engine == "pandas":
-        ret = _get_timeseries_signature_pandas(idx)
-    elif engine == "polars":
-        ret = _get_timeseries_signature_polars(idx)
-    else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    engine_normalised = (engine or "").strip().lower()
+    if engine_normalised in ("", "auto"):
+        engine_normalised = "pandas"
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    if engine_normalised not in ("pandas", "polars"):
+        raise ValueError("Invalid engine. Use 'pandas', 'polars', or 'auto'.")
 
-    return ret
+    if reduce_memory and engine_normalised == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+    name = idx.name or "idx"
+    idx = idx.rename(name)
+
+    base_df = idx.to_frame()
+    feature_frame = _pandas_timeseries_signature(base_df.copy(), date_column=name)
+
+    if reduce_memory and engine_normalised == "pandas":
+        feature_frame = reduce_memory_usage(feature_frame)
+
+    if engine_normalised == "polars":
+        return pl.from_pandas(feature_frame)
+
+    return feature_frame
 
 
 # Monkey patch the method to Pandas Series objects
 pd.Series.get_timeseries_signature = get_timeseries_signature
-
-
-def _get_timeseries_signature_pandas(
-    idx: Union[pd.Series, pd.DatetimeIndex],
-) -> pd.DataFrame:
-    if isinstance(idx, pd.DatetimeIndex):
-        idx = pd.Series(idx, name="idx")
-
-    if idx.name is None:
-        idx.name = "idx"
-
-    data = idx.to_frame()
-    name = idx.name
-
-    data = _pandas_timeseries_signature(data, date_column=name)
-
-    return data
-
-
-def _get_timeseries_signature_polars(
-    idx: Union[pd.Series, pd.DatetimeIndex],
-) -> pl.DataFrame:
-    if isinstance(idx, pd.DatetimeIndex):
-        idx = pd.Series(idx, name="idx")
-
-    if idx.name is None:
-        idx.name = "idx"
-
-    data = idx.to_frame()
-    name = idx.name
-
-    # Convert to Polars DataFrame
-    df_pl = pl.DataFrame(data)
-
-    # Helper function that works with polars objects
-    df_pl = _polars_timeseries_signature(df_pl, date_column=name)
-
-    return df_pl.to_pandas()
 
 
 # UTILITIES
@@ -373,120 +363,3 @@ def _pandas_timeseries_signature(data: pd.DataFrame, date_column: str) -> pd.Dat
 
     return data
 
-
-def _polars_timeseries_signature(data: pl.DataFrame, date_column: str) -> pl.DataFrame:
-    df_pl = data
-    name = date_column
-
-    df_pl = df_pl.with_columns(
-        # Date-Time Index Feature
-        (pl.col(name).cast(pl.Int64) / 1_000_000_000).alias(f"{name}_index_num"),
-        # Yearly Features
-        pl.col(name).dt.year().alias(f"{name}_year"),
-        pl.col(name).dt.iso_year().alias(f"{name}_year_iso"),
-        (
-            pl.when((pl.col(name).dt.month() == 1) & (pl.col(name).dt.day() == 1))
-            .then(pl.lit(1))
-            .otherwise(pl.lit(0))
-            .alias(f"{name}_yearstart")
-        ),
-        (
-            pl.when((pl.col(name).dt.month() == 12) & (pl.col(name).dt.day() == 31))
-            .then(pl.lit(1))
-            .otherwise(pl.lit(0))
-            .alias(f"{name}_yearend")
-        ),
-        pl.col(name).dt.is_leap_year().cast(pl.Int8).alias(f"{name}_leapyear"),
-        # Semesterly Features
-        (
-            pl.when((pl.col(name).dt.quarter() == 1) | (pl.col(name).dt.quarter() == 2))
-            .then(1)
-            .otherwise(2)
-            .alias(f"{name}_half")
-        ),
-        # Quarterly Features
-        pl.col(name).dt.quarter().alias(f"{name}_quarter"),
-        pl.col(name).dt.strftime("%Y").alias(f"{name}_quarteryear")
-        + "Q"
-        + pl.col(name).dt.quarter().cast(pl.Utf8, strict=False),
-        pl.when(
-            (pl.col(name).dt.month().is_in([1, 4, 7, 10]))
-            & (pl.col(name).dt.day() == 1)
-        )
-        .then(pl.lit(1))
-        .otherwise(pl.lit(0))
-        .alias(f"{name}_quarterstart"),
-        pl.when(
-            (pl.col(name).dt.month().is_in([3, 12])) & (pl.col(name).dt.day() == 31)
-            | (pl.col(name).dt.month().is_in([6, 9])) & (pl.col(name).dt.day() == 30)
-        )
-        .then(pl.lit(1))
-        .otherwise(pl.lit(0))
-        .alias(f"{name}_quarterend"),
-        pl.col(name).dt.month().alias(f"{name}_month"),
-        # Monthly Features
-        pl.col(name).dt.strftime(format="%B").alias(f"{name}_month_lbl"),
-        (
-            pl.when((pl.col(name).dt.month() == 1) & (pl.col(name).dt.day() == 1))
-            .then(pl.lit(1))
-            .otherwise(pl.lit(0))
-            .alias(f"{name}_monthstart")
-        ),
-        pl.when(
-            (
-                pl.col(name).dt.month().is_in([1, 3, 5, 7, 8, 10, 12])
-                & (pl.col(name).dt.day() == 31)
-            )
-            | (
-                pl.col(name).dt.month().is_in([4, 6, 9, 11])
-                & (pl.col(name).dt.day() == 30)
-                | (pl.col(name).dt.is_leap_year().cast(pl.Int8) == 0)
-                & (pl.col(name).dt.day() == 28)
-                | (pl.col(name).dt.is_leap_year().cast(pl.Int8) == 1)
-                & (pl.col(name).dt.day() == 29)
-            )
-        )
-        .then(pl.lit(1))
-        .otherwise(pl.lit(0))
-        .alias(f"{name}_monthend"),
-        # Weekly Features
-        pl.col(name).dt.week().alias(f"{name}_yweek"),
-        ((pl.col(name).dt.day() - 1) // 7 + 1).alias(f"{name}_mweek"),
-        pl.col(name).dt.weekday().alias(f"{name}_wday"),
-        pl.col(name).dt.strftime(format="%A").alias(f"{name}_wday_lbl"),
-        # Daily Features
-        pl.col(name).dt.day().alias(f"{name}_mday"),
-        pl.when(pl.col(name).dt.quarter() == 1)
-        .then(pl.col(name).dt.ordinal_day())
-        .when(pl.col(name).dt.quarter() == 2)
-        .then(pl.col(name).dt.ordinal_day() - 90)
-        .when(pl.col(name).dt.quarter() == 3)
-        .then(pl.col(name).dt.ordinal_day() - 181)
-        .when(pl.col(name).dt.quarter() == 4)
-        .then(pl.col(name).dt.ordinal_day() - 273)
-        .alias(f"{name}_qday"),
-        pl.col(name).dt.ordinal_day().alias(f"{name}_yday"),
-        (
-            pl.when((pl.col(name).dt.weekday() <= 5))
-            .then(0)
-            .otherwise(1)
-            .alias(f"{name}_weekend")
-        ),
-        # Hourly Features
-        pl.col(name).dt.hour().alias(f"{name}_hour"),
-        # Minute Features
-        pl.col(name).dt.minute().alias(f"{name}_minute"),
-        # Second Features
-        pl.col(name).dt.second().alias(f"{name}_second"),
-        # Microsecond Features
-        pl.col(name).dt.microsecond().alias(f"{name}_msecond"),
-        # Nanosecond Features
-        pl.col(name).dt.nanosecond().alias(f"{name}_nsecond"),
-        # AM/PM
-        pl.when(pl.col(name).dt.hour() <= 12)
-        .then(pl.lit("am"))
-        .otherwise(pl.lit("pm"))
-        .alias(f"{name}_am_pm"),
-    )
-
-    return df_pl
