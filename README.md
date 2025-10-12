@@ -86,6 +86,13 @@ df \
     )
 ```
 
+
+## What's New in pytimetk 2.0.0
+
+- Added polars `.tk` accessor support for plotting helpers (`plot_timeseries`, `plot_anomalies`, `plot_anomalies_decomp`, `plot_anomalies_cleaned`, `plot_correlation_funnel`).
+- Polars users can now call these functions directly on `pl.DataFrame` objects via the `.tk` accessor; results mirror the pandas interface (Plotly `Figure` or plotnine `ggplot`).
+- See the [change log](https://business-science.github.io/pytimetk/changelog.html) for more details.
+
 # Documentation
 
 Get started with the [pytimetk documentation](https://business-science.github.io/pytimetk/)

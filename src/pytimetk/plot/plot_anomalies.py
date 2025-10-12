@@ -60,8 +60,8 @@ def plot_anomalies(
     Parameters
     ----------
     data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        The input data for the plot. It can be either a pandas DataFrame or a
-        pandas DataFrameGroupBy object.
+        The input data for the plot. It can be either a DataFrame or a grouped
+        DataFrame. Polars inputs are supported via the `.tk` accessor.
     date_column : str
         The `date_column` parameter is a string that specifies the name of the
         column in the dataframe that contains the dates for the plot.

@@ -31,7 +31,7 @@ def plot_correlation_funnel(
     Parameters
     ----------
     data : pd.DataFrame
-        The `data` parameter is a pandas DataFrame that contains the correlation values and corresponding
+        The `data` parameter is a DataFrame that contains the correlation values and corresponding
         features. It should have two columns: 'correlation' and 'feature'.
     limits : tuple
         The `limits` parameter is a tuple that specifies the lower and upper limits of the x-axis in the
@@ -68,11 +68,12 @@ def plot_correlation_funnel(
     -------
         The function `plot_correlation_funnel` returns a plotly figure object if the `engine` parameter is
         set to 'plotly', and a plotnine object if the `engine` parameter is set to 'plotnine'.
+        When called via the polars `.tk` accessor the data is converted to pandas internally before plotting.
 
     See Also
     --------
     - `binarize()`: Binarize the dataset into 1's and 0's.
-    - `correlate()`: Calculate the correlation between features in a pandas DataFrame.
+    - `correlate()`: Calculate the correlation between features in a DataFrame.
 
     Examples
     --------

@@ -39,8 +39,8 @@ def plot_anomalies_decomp(
     Parameters
     ----------
     data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
-        The input data for the plot from `anomalize`. It can be either a pandas
-        DataFrame or a pandas DataFrameGroupBy object.
+        The input data for the plot from `anomalize`. It can be either a DataFrame
+        or a grouped DataFrame. Polars inputs are supported via the `.tk` accessor.
     date_column : str
         The name of the column in the data that contains the dates.
     line_color : str, optional
@@ -259,4 +259,3 @@ def plot_anomalies_decomp(
     )
 
     return fig
-
