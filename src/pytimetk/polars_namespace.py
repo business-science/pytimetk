@@ -38,13 +38,16 @@ from pytimetk.feature_engineering import (
     augment_expanding,
     augment_expanding_apply,
     augment_ewm,
+    augment_fourier,
     augment_hilbert,
+    augment_holiday_signature,
     augment_lags,
     augment_leads,
     augment_pct_change,
     augment_rolling,
     augment_rolling_apply,
     augment_spline,
+    augment_timeseries_signature,
     augment_wavelet,
 )
 
@@ -72,13 +75,16 @@ _AUGMENT_FUNCTIONS: Dict[str, FinanceFunc] = {
     "augment_expanding": augment_expanding,
     "augment_expanding_apply": augment_expanding_apply,
     "augment_ewm": augment_ewm,
+    "augment_fourier": augment_fourier,
     "augment_hilbert": augment_hilbert,
+    "augment_holiday_signature": augment_holiday_signature,
     "augment_lags": augment_lags,
     "augment_leads": augment_leads,
     "augment_pct_change": augment_pct_change,
     "augment_rolling": augment_rolling,
     "augment_rolling_apply": augment_rolling_apply,
     "augment_spline": augment_spline,
+    "augment_timeseries_signature": augment_timeseries_signature,
     "augment_wavelet": augment_wavelet,
 }
 

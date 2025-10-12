@@ -3,7 +3,9 @@ import pandas as pd
 from datetime import datetime
 
 # Assuming the provided code is in a module named 'holidays_module'
+import polars as pl
 import pytimetk
+import pytimetk.polars_namespace
 
 
 def test_augment_holiday_signature_us():
@@ -43,6 +45,24 @@ def test_get_holiday_signature():
     # 2023-01-01 is New Year's Day in the US
     assert signature_df.loc[signature_df['idx'] == datetime(2023, 1, 1), 'is_holiday'].item() == 1
     assert signature_df.loc[signature_df['idx'] == datetime(2023, 1, 1), 'holiday_name'].item() == "New Year's Day"
+
+
+def test_augment_holiday_signature_polars_accessor():
+    df = pd.DataFrame({
+        'date': pd.date_range(start="2023-01-01", periods=5),
+        'value': range(5),
+    })
+
+    result = (
+        pl.from_pandas(df)
+        .tk.augment_holiday_signature(
+            date_column='date',
+            country_name='UnitedStates',
+        )
+    )
+
+    assert 'is_holiday' in result.columns
+    assert 'holiday_name' in result.columns
 
 
 if __name__ == "__main__":

@@ -1,5 +1,7 @@
 import pytest
 import pandas as pd
+import polars as pl
+import pytimetk.polars_namespace
 from pytimetk import get_timeseries_signature, augment_timeseries_signature  
 
 def test_get_timeseries_signature():
@@ -157,6 +159,22 @@ def test_augment_timeseries_signature_polars():
     # Test if the function raises KeyError for non-existent column
     with pytest.raises(ValueError):
         df.augment_timeseries_signature(date_column='nonexistent_column')
+
+
+def test_augment_timeseries_signature_polars_accessor():
+
+    df = pd.DataFrame({
+        'order_date': pd.date_range(start='2019-01', end='2019-01-10', freq='D'),
+        'value': range(10)
+    })
+
+    pl_result = (
+        pl.from_pandas(df)
+        .tk.augment_timeseries_signature(date_column='order_date')
+    )
+
+    assert 'order_date_index_num' in pl_result.columns
+    assert pl_result.height == len(df)
 
 if __name__ == "__main__":
     pytest.main()

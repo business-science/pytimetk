@@ -23,6 +23,7 @@ from pytimetk.utils.dataframe_ops import (
 
 
 @pf.register_groupby_method
+@pf.register_dataframe_method
 def augment_wavelet(
     data: Union[
         pd.DataFrame,
