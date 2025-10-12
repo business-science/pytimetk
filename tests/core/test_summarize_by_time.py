@@ -204,6 +204,27 @@ def test_summarize_by_time_polars_disallows_callables(summarize_by_time_data_tes
             agg_func=['sum', ('q25', lambda x: x.quantile(0.25))],
             engine="polars",
         )
+
+
+def test_summarize_by_time_polars_accessor(summarize_by_time_data_test):
+    pl_df = pl.from_pandas(summarize_by_time_data_test)
+
+    result = (
+        pl_df
+        .tk.summarize_by_time(
+            date_column="date",
+            value_column="value",
+            freq="MS",
+            agg_func="sum",
+        )
+    )
+
+    expected = pd.DataFrame({
+        'date': pd.to_datetime(['2020-01-01', '2020-02-01']),
+        'value': [496, 1334],
+    })
+
+    pd.testing.assert_frame_equal(result.to_pandas(), expected)
     
     
         

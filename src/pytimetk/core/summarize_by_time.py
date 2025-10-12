@@ -28,7 +28,12 @@ from pytimetk.utils.dataframe_ops import (
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def summarize_by_time(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     value_column: Union[str, List[str]],
     freq: str = "D",
@@ -167,6 +172,24 @@ def summarize_by_time(
                 agg_func     = 'sum',
                 wide_format  = True,
                 engine       = 'polars'
+            )
+    )
+    ```
+
+    ```{python}
+    # Example 2b - Summarize by time on a polars DataFrame using the tk accessor
+    import polars as pl
+    import pytimetk.polars_namespace
+
+    pl_df = pl.from_pandas(df)
+
+    (
+        pl_df
+            .tk.summarize_by_time(
+                date_column='order_date',
+                value_column='total_price',
+                freq='MS',
+                agg_func='sum',
             )
     )
     ```
