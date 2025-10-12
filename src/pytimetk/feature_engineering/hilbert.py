@@ -152,7 +152,7 @@ def augment_hilbert(
 
     engine_resolved = normalize_engine(engine, data)
 
-    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    conversion: FrameConversion = convert_to_engine(data, "pandas")
     prepared_data = conversion.data
 
     if reduce_memory and engine_resolved == "pandas":
@@ -164,54 +164,35 @@ def augment_hilbert(
             stacklevel=2,
         )
 
-    if engine_resolved == "pandas":
-        prepared_data, idx_unsorted = sort_dataframe(
-            prepared_data, date_column, keep_grouped_df=True
-        )
+    prepared_data, idx_unsorted = sort_dataframe(
+        prepared_data, date_column, keep_grouped_df=True
+    )
 
     value_columns: List[str] = (
         [value_column] if isinstance(value_column, str) else list(value_column)
     )
 
-    if engine_resolved == "pandas":
-        result = _augment_hilbert_pandas(
-            prepared_data, date_column, value_columns
-        )
+    result = _augment_hilbert_pandas(
+        prepared_data,
+        date_column,
+        value_columns,
+    )
 
-        if not isinstance(result, pd.DataFrame):
-            raise TypeError("Hilbert augmentation must return a pandas DataFrame.")
+    if not isinstance(result, pd.DataFrame):
+        raise TypeError("Hilbert augmentation must return a pandas DataFrame.")
 
-        result.index = idx_unsorted
+    result.index = idx_unsorted
+    result = result.sort_index()
 
-        if reduce_memory:
-            result = reduce_memory_usage(result)
+    if reduce_memory and engine_resolved == "pandas":
+        result = reduce_memory_usage(result)
 
-        result = result.sort_index()
+    restored = restore_output_type(result, conversion)
 
-        restored = restore_output_type(result, conversion)
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
 
-        if isinstance(restored, pd.DataFrame):
-            return restored.sort_index()
-
-        return restored
-
-    if engine_resolved == "polars":
-        result_polars = _augment_hilbert_polars(
-            prepared_data,
-            date_column,
-            value_columns,
-            conversion.group_columns,
-            conversion.row_id_column,
-        )
-
-        restored = restore_output_type(result_polars, conversion)
-
-        if isinstance(restored, pd.DataFrame):
-            return restored.sort_index()
-
-        return restored
-
-    raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    return restored
 def _augment_hilbert_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
@@ -314,16 +295,10 @@ def _augment_hilbert_polars(
             )
         return pl_group.with_columns(new_series)
 
-    output_schema = {
-        **sorted_frame.schema,
-        **{f"{col}_hilbert_real": pl.Float64 for col in value_columns},
-        **{f"{col}_hilbert_imag": pl.Float64 for col in value_columns},
-    }
-
     if resolved_groups:
         transformed = (
             sorted_frame.group_by(resolved_groups, maintain_order=True)
-            .map_groups(apply_hilbert, schema=output_schema)
+            .map_groups(apply_hilbert)
             .sort(sort_keys)
         )
     else:
