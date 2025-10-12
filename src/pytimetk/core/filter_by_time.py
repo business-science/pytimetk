@@ -1,5 +1,6 @@
 # Imports
 import pandas as pd
+import polars as pl
 import pandas_flavor as pf
 from typing import Union
 
@@ -8,18 +9,28 @@ from pytimetk.utils.checks import (
     check_date_column,
 )
 from pytimetk.utils.datetime_helpers import parse_end_date
+from pytimetk.utils.dataframe_ops import (
+    convert_to_engine,
+    normalize_engine,
+    restore_output_type,
+)
 
 
 # Function ----
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def filter_by_time(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     start_date: str = "start",
     end_date: str = "end",
     engine: str = "pandas",
-):
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Filters a DataFrame or GroupBy object based on a specified date range.
 
@@ -29,9 +40,9 @@ def filter_by_time(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        The data to be filtered. It can be a pandas DataFrame or a pandas
-        GroupBy object.
+    data : DataFrame or GroupBy (pandas or polars)
+        The data to be filtered. Supports both pandas and polars DataFrames / GroupBy
+        objects. Grouped inputs are processed per group before the final result is returned.
     date_column : str
         The name of the column in `data` that contains date information.
         This column is used for filtering the data based on the date range.
@@ -44,13 +55,14 @@ def filter_by_time(
         `start_date`.
         Default: 'end', which will filter until the latest date in the data.
     engine : str, default = 'pandas'
-        The engine to be used for filtering the data. Currently, only 'pandas'.
+        Computation engine. Use ``'pandas'`` or ``'polars'``. The special value ``'auto'``
+        infers the engine from the input data.
 
     Returns
     -------
-    pd.DataFrame
-        A pandas DataFrame containing the filtered data within the specified
-        date range.
+    DataFrame
+        Data containing rows within the specified date range. The concrete type matches the
+        engine used.
 
     Raises
     ------
@@ -151,6 +163,26 @@ def filter_by_time(
     ```
 
     ```{python}
+    # Example 7 - Filter using the polars engine and tk accessor
+    import polars as pl
+    import pytimetk.polars_namespace
+
+    pl_df = pl.from_pandas(m4_daily_df)
+
+    df_filtered = (
+        pl_df
+            .tk.filter_by_time(
+                date_column = 'date',
+                start_date  = '2014-07-03',
+                end_date    = '2014-07-10'
+            )
+    )
+
+    df_filtered
+
+    ```
+
+    ```{python}
     # Example 6 - Filter a GroupBy object
 
     df_filtered = (
@@ -171,11 +203,32 @@ def filter_by_time(
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
 
-    # Engine
-    if engine == "pandas":
-        return _filter_by_time_pandas(data, date_column, start_date, end_date)
+    engine_resolved = normalize_engine(engine, data)
+    conversion = convert_to_engine(data, engine_resolved)
+    prepared = conversion.data
+
+    if engine_resolved == "pandas":
+        result = _filter_by_time_pandas(
+            prepared,
+            date_column=date_column,
+            start_date=start_date,
+            end_date=end_date,
+        )
     else:
-        raise ValueError("Invalid engine. Current supported engines: 'pandas'")
+        result = _filter_by_time_polars(
+            prepared,
+            date_column=date_column,
+            start_date=start_date,
+            end_date=end_date,
+        )
+
+    if engine_resolved == "polars" and conversion.original_kind in (
+        "pandas_df",
+        "pandas_groupby",
+    ):
+        conversion.pandas_index = None
+
+    return restore_output_type(result, conversion)
 
 
 # Monkey Patch the Method to Pandas Grouby Objects
@@ -219,6 +272,40 @@ def _filter_by_time_pandas(
 
     # Return
     return filtered_df
+
+
+def _filter_by_time_polars(
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
+    date_column: str,
+    start_date: str,
+    end_date: str,
+) -> pl.DataFrame:
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+
+    if date_column not in frame.columns:
+        raise KeyError(f"{date_column} not found in DataFrame")
+
+    frame = frame.with_columns(pl.col(date_column).cast(pl.Datetime("ns")))
+
+    if start_date == "start":
+        start_value = frame.select(pl.col(date_column).min()).item()
+    else:
+        start_value = pd.to_datetime(start_date)
+
+    if end_date == "end":
+        end_value = frame.select(pl.col(date_column).max()).item()
+    else:
+        end_value = parse_end_date(end_date)
+
+    start_value = pd.Timestamp(start_value).to_pydatetime()
+    end_value = pd.Timestamp(end_value).to_pydatetime()
+
+    filtered = frame.filter(
+        (pl.col(date_column) >= pl.lit(start_value))
+        & (pl.col(date_column) <= pl.lit(end_value))
+    )
+
+    return filtered
 
 
 # Utilities ----
