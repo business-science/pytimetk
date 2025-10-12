@@ -361,6 +361,20 @@ def plot_timeseries(
     ```
 
     ```{python}
+    # Polars DataFrame using the tk accessor
+    import polars as pl
+    import pytimetk.polars_namespace
+
+    pl_df = pl.from_pandas(df[['id', 'date', 'value']])
+
+    pl_df.tk.plot_timeseries(
+        date_column='date',
+        value_column='value',
+        engine='plotly',
+    )
+    ```
+
+    ```{python}
     # Plotnine Object: Color Column
     fig = (
         df

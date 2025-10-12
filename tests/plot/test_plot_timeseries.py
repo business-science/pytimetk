@@ -1,7 +1,9 @@
 import pytest
 import pandas as pd
 import numpy as np
+import polars as pl
 import pytimetk
+import pytimetk.polars_namespace  # noqa: F401
 import plotly
 
 
@@ -63,6 +65,39 @@ def test_groupby_handling():
     group = data.groupby('id')
     fig = group.plot_timeseries(date_column="date", value_column="value", engine="plotly")
     assert isinstance(fig, plotly.graph_objs._figure.Figure), "Figure type doesn't match expected type"
+
+
+def test_plot_timeseries_polars_accessor_plotly():
+    pl_df = pl.from_pandas(data)
+    fig = pl_df.tk.plot_timeseries(
+        date_column="date",
+        value_column="value",
+        engine="plotly",
+    )
+    assert isinstance(fig, plotly.graph_objs._figure.Figure)
+
+
+def test_plot_timeseries_polars_accessor_plotnine():
+    pl_df = pl.from_pandas(data)
+    fig = pl_df.tk.plot_timeseries(
+        date_column="date",
+        value_column="value",
+        engine="plotnine",
+    )
+    assert str(type(fig)).endswith("ggplot'>")
+
+
+def test_plot_timeseries_groupby_polars_accessor():
+    pl_df = pl.from_pandas(data)
+    fig = (
+        pl_df.group_by('id')
+        .tk.plot_timeseries(
+            date_column='date',
+            value_column='value',
+            engine='plotly',
+        )
+    )
+    assert isinstance(fig, plotly.graph_objs._figure.Figure)
 
 
 

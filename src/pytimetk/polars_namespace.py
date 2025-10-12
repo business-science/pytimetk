@@ -11,7 +11,7 @@ chain finance helpers directly on polars data structures.
 from __future__ import annotations
 
 from functools import wraps
-from typing import Callable, Dict
+from typing import Callable, Dict, Any
 
 import polars as pl
 
@@ -54,6 +54,12 @@ from pytimetk.core.summarize_by_time import summarize_by_time
 from pytimetk.core.ts_summary import ts_summary
 from pytimetk.core.filter_by_time import filter_by_time
 from pytimetk.core.apply_by_time import apply_by_time
+from pytimetk.plot.plot_anomalies import plot_anomalies
+from pytimetk.plot.plot_anomalies_decomp import plot_anomalies_decomp
+from pytimetk.plot.plot_anomalies_cleaned import plot_anomalies_cleaned
+from pytimetk.plot.plot_correlation_funnel import plot_correlation_funnel
+from pytimetk.plot.plot_timeseries import plot_timeseries
+from pytimetk.utils.dataframe_ops import convert_to_engine
 from pytimetk.core.pad import pad_by_time
 from pytimetk.core.ts_features import ts_features
 from pytimetk.core.correlationfunnel import binarize, correlate
@@ -61,6 +67,7 @@ from pytimetk.core.anomalize import anomalize
 from pytimetk.core.future import future_frame
 
 FinanceFunc = Callable[..., pl.DataFrame]
+PandasReturnFunc = Callable[..., Any]
 
 
 _AUGMENT_FUNCTIONS: Dict[str, FinanceFunc] = {
@@ -107,6 +114,17 @@ _AUGMENT_FUNCTIONS: Dict[str, FinanceFunc] = {
     "future_frame": future_frame,
 }
 
+_PANDAS_RESULT_FUNCTIONS: Dict[str, PandasReturnFunc] = {
+    "plot_anomalies": plot_anomalies,
+    "plot_anomalies_decomp": plot_anomalies_decomp,
+    "plot_anomalies_cleaned": plot_anomalies_cleaned,
+    "plot_timeseries": plot_timeseries,
+}
+
+_PANDAS_DF_ONLY_FUNCTIONS: Dict[str, PandasReturnFunc] = {
+    "plot_correlation_funnel": plot_correlation_funnel,
+}
+
 
 def _make_df_method(func: FinanceFunc) -> Callable[..., pl.DataFrame]:
     @wraps(func)
@@ -122,6 +140,28 @@ def _make_groupby_method(func: FinanceFunc) -> Callable[..., pl.DataFrame]:
     def method(self, *args, **kwargs):
         kwargs["engine"] = "polars"
         return func(data=self._gb, *args, **kwargs)
+
+    return method
+
+
+def _make_df_method_pandas(func: PandasReturnFunc) -> Callable[..., Any]:
+    @wraps(func)
+    def method(self, *args, **kwargs):
+        conversion = convert_to_engine(self._df, "pandas")
+        pandas_data = conversion.data
+        if isinstance(pandas_data, pl.DataFrame):
+            pandas_data = pandas_data.to_pandas()
+        return func(pandas_data, *args, **kwargs)
+
+    return method
+
+
+def _make_groupby_method_pandas(func: PandasReturnFunc) -> Callable[..., Any]:
+    @wraps(func)
+    def method(self, *args, **kwargs):
+        conversion = convert_to_engine(self._gb, "pandas")
+        pandas_groupby = conversion.data
+        return func(pandas_groupby, *args, **kwargs)
 
     return method
 
@@ -162,6 +202,13 @@ def register_polars_namespace() -> None:
     for name, func in _AUGMENT_FUNCTIONS.items():
         setattr(TkDataFrameNamespace, name, _make_df_method(func))
         setattr(_TkGroupByNamespace, name, _make_groupby_method(func))
+
+    for name, func in _PANDAS_RESULT_FUNCTIONS.items():
+        setattr(TkDataFrameNamespace, name, _make_df_method_pandas(func))
+        setattr(_TkGroupByNamespace, name, _make_groupby_method_pandas(func))
+
+    for name, func in _PANDAS_DF_ONLY_FUNCTIONS.items():
+        setattr(TkDataFrameNamespace, name, _make_df_method_pandas(func))
 
     pl.api.register_dataframe_namespace("tk")(TkDataFrameNamespace)
 
