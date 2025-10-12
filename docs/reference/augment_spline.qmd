@@ -47,7 +47,9 @@ Add spline basis expansions for a numeric column.
 ```{python}
 # Pandas Example
 import pandas as pd
+import polars as pl
 import pytimetk as tk
+
 
 df = tk.load_dataset('m4_daily', parse_dates=['date'])
 df = df.assign(step=lambda d: d.groupby('id').cumcount())
@@ -68,20 +70,15 @@ df_spline.head()
 ```
 
 ```{python}
-import pytimetk as tk
-import polars as pl
-
-df = tk.load_dataset('m4_daily', parse_dates=['date']).query("id == 'D10'")
-df = df.assign(step=lambda d: d.groupby('id').cumcount())
-pl_df = pl.from_pandas(df)
-
-pl_spline = tk.augment_spline(
-    data=pl_df,
-    column_name='step',
-    spline_type='bs',
-    df=5,
-    degree=3,
-    prefix='step_bs'
+pl_spline = (
+    pl.from_pandas(df.query("id == 'D10'"))
+    .tk.augment_spline(
+        column_name='step',
+        spline_type='bs',
+        df=5,
+        degree=3,
+        prefix='step_bs'
+    )
 )
 
 pl_spline.head()

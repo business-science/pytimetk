@@ -16,13 +16,13 @@ https://pypi.org/project/holidays/ for more information.
 |--------------|--------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
 | idx          | Union\[pd.DatetimeIndex, pd.Series\] | The input series.                                                                                                                                                                                                                                                                                                       | _required_       |
 | country_name | str                                  | The name of the country for which to generate holiday features. Defaults to United States holidays, but the following countries are currently available and accessible by the full name or ISO code: See NOTES.                                                                                                         | `'UnitedStates'` |
-| engine       | str                                  | Execution engine: use `'pandas'`, `'polars'`, or `'auto'` (default) to infer from the input.                                                                                                                                                                                                                                  | `'auto'`         |
+| engine       | str                                  | The `engine` parameter is used to specify the engine to use for getting holidays. It can be either "pandas" or "polars".  - The default value is "pandas".  - When "polars", the function will internally use the `polars` library   for getting holidays. This can be faster than using "pandas" for   large datasets. | `'auto'`         |
 
 ## Returns {.doc-section .doc-section-returns}
 
 | Name   | Type          | Description                                                                                                                                                                                                                                               |
 |--------|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|        | DataFrame     | DataFrame with holiday indicators and holiday names appended, matching the requested backend. |
+|        | pd.DataFrame: | A pandas DataFrame with three holiday-specific features: - is_holiday: (0, 1) indicator for holiday - before_holiday: (0, 1) indicator for day before holiday - after_holiday: (0, 1) indicator for day after holiday - holiday_name: name of the holiday |
 
 ## Notes {.doc-section .doc-section-notes}
 
@@ -149,16 +149,4 @@ tk.get_holiday_signature(df['date'], 'UnitedStates')
 ```{python}
 # Add holiday features for France
 tk.get_holiday_signature(df['date'], 'France')
-```
-
-```{python}
-# Add holiday features using the polars accessor
-import polars as pl
-import pytimetk.polars_namespace
-
-holidays_pl = (
-    pl.from_pandas(df)
-        .tk.get_holiday_signature(country_name='France')
-)
-holidays_pl
 ```

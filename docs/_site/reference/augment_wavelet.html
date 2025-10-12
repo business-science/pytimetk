@@ -404,7 +404,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    sample_rate,</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    scales,</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'auto'</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Apply the Wavely transform to specified columns of a DataFrame or DataFrameGroupBy object.</p>
 <p>A wavelet transform is a mathematical tool used to decompose a signal or function into different frequency components and then study each component with a resolution matched to its scale. The wavelet transform uses wavelets, which are functions that are localized in both time and frequency.</p>
 <p>Uses:</p>
@@ -417,8 +418,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <table class="table">
 <colgroup>
 <col style="width: 1%">
-<col style="width: 4%">
-<col style="width: 93%">
+<col style="width: 3%">
+<col style="width: 94%">
 <col style="width: 0%">
 </colgroup>
 <thead>
@@ -432,8 +433,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>data</td>
-<td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
-<td>Input DataFrame or DataFrameGroupBy object with one or more columns of real-valued signals.</td>
+<td>DataFrame or GroupBy(pandas or polars)</td>
+<td>Input DataFrame or grouped object with one or more columns of real-valued signals.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
@@ -460,6 +461,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>The <code>reduce_memory</code> parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.</td>
 <td><code>False</code></td>
 </tr>
+<tr class="even">
+<td>engine</td>
+<td>(auto, pandas, polars)</td>
+<td>Specifies the backend used for the computation. When “auto” the backend is inferred from the input data. Use “pandas” or “polars” to force a specific backend.</td>
+<td><code>"auto"</code></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -467,9 +474,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 9%">
-<col style="width: 10%">
-<col style="width: 80%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 86%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -481,8 +488,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>df_wavelet</td>
-<td>pd.DataFrame</td>
-<td>DataFrame with added columns for CWT coefficients for each scale, with a real and imaginary column added.</td>
+<td>DataFrame</td>
+<td>DataFrame with added columns for CWT coefficients for each scale, with a real and imaginary column added. Matches the backend of the input data.</td>
 </tr>
 </tbody>
 </table>
@@ -673,120 +680,82 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2: Using Pandas Engine on a pandas dataframe</span></span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2: Using the polars accessor on a DataFrame</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'taylor_30_min'</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>result_df <span class="op">=</span> (</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    tk.augment_wavelet(</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        df,</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        scales <span class="op">=</span> [<span class="dv">15</span>],</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        sample_rate <span class="op">=</span><span class="dv">1000</span>,</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        method <span class="op">=</span> <span class="st">'morlet'</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>result_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk.polars_namespace</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'taylor_30_min'</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>result_df <span class="op">=</span> (</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    pl.from_pandas(df)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        .tk.augment_wavelet(</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>            value_column <span class="op">=</span><span class="st">'value'</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>            scales <span class="op">=</span> [<span class="dv">15</span>],</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>            sample_rate <span class="op">=</span><span class="dv">1000</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>            method <span class="op">=</span> <span class="st">'morlet'</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>result_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
-<div>
-
-
+<div><style>
+.dataframe > thead > tr,
+.dataframe > tbody > tr {
+  text-align: right;
+  white-space: pre-wrap;
+}
+</style>
+<small>shape: (5, 4)</small>
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
 <th data-quarto-table-cell-role="th">value</th>
 <th data-quarto-table-cell-role="th">morlet_scale_15_real</th>
 <th data-quarto-table-cell-role="th">morlet_scale_15_imag</th>
 </tr>
+<tr class="odd">
+<th>datetime[ns, UTC]</th>
+<th>i64</th>
+<th>f64</th>
+<th>f64</th>
+</tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>2000-06-05 00:00:00+00:00</td>
+<td>2000-06-05 00:00:00 UTC</td>
 <td>22262</td>
-<td>5.858392e+07</td>
-<td>1.247285e+07</td>
+<td>5.8584e7</td>
+<td>1.2473e7</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>2000-06-05 00:30:00+00:00</td>
+<td>2000-06-05 00:30:00 UTC</td>
 <td>21756</td>
-<td>5.860706e+07</td>
-<td>1.246976e+07</td>
+<td>5.8607e7</td>
+<td>1.2470e7</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2000-06-05 01:00:00+00:00</td>
+<td>2000-06-05 01:00:00 UTC</td>
 <td>22247</td>
-<td>5.862956e+07</td>
-<td>1.246639e+07</td>
+<td>5.8630e7</td>
+<td>1.2466e7</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>2000-06-05 01:30:00+00:00</td>
+<td>2000-06-05 01:30:00 UTC</td>
 <td>22759</td>
-<td>5.865217e+07</td>
-<td>1.246305e+07</td>
+<td>5.8652e7</td>
+<td>1.2463e7</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>2000-06-05 02:00:00+00:00</td>
+<td>2000-06-05 02:00:00 UTC</td>
 <td>22549</td>
-<td>5.867501e+07</td>
-<td>1.245981e+07</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4027</td>
-<td>2000-08-27 21:30:00+00:00</td>
-<td>27946</td>
-<td>5.712707e+07</td>
-<td>-1.215821e+07</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">4028</td>
-<td>2000-08-27 22:00:00+00:00</td>
-<td>27133</td>
-<td>5.709846e+07</td>
-<td>-1.215851e+07</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4029</td>
-<td>2000-08-27 22:30:00+00:00</td>
-<td>25996</td>
-<td>5.706991e+07</td>
-<td>-1.215882e+07</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">4030</td>
-<td>2000-08-27 23:00:00+00:00</td>
-<td>24610</td>
-<td>5.704229e+07</td>
-<td>-1.215955e+07</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4031</td>
-<td>2000-08-27 23:30:00+00:00</td>
-<td>23132</td>
-<td>5.701639e+07</td>
-<td>-1.216105e+07</td>
+<td>5.8675e7</td>
+<td>1.2460e7</td>
 </tr>
 </tbody>
 </table>
-
-<p>4032 rows × 4 columns</p>
 </div>
 </div>
 </div>

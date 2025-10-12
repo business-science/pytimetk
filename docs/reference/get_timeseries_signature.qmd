@@ -13,15 +13,15 @@ time based features** from a single datetime index `idx`:
 
 | Name          | Type         | Description                                                                                                                                                                                                                                                                                                                                 | Default    |
 |---------------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| idx           | pd.Series    | The `idx` parameter is a pandas Series or DatetimeIndex.                                                                                                                                                                                                                                                                                     | _required_ |
+| idx           | pd.DataFrame | The `idx` parameter is a pandas Series of DatetimeIndex.                                                                                                                                                                                                                                                                                    | _required_ |
 | reduce_memory | bool         | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.                                     | `False`    |
-| engine        | str          | Execution engine: use `'pandas'`, `'polars'`, or `'auto'` (default) to infer from the input.                                                                                                                                                                                                                                                 | `'auto'`   |
+| engine        | str          | The `engine` parameter is used to specify the engine to use for augmenting datetime features. It can be either "pandas" or "polars".  - The default value is "pandas".  - When "polars", the function will internally use the `polars` library   for feature generation. This is generally faster than using "pandas"   for large datasets. | `'auto'`   |
 
 ## Returns {.doc-section .doc-section-returns}
 
 | Name   | Type                                                                                              | Description                                               |
 |--------|---------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
-|        | DataFrame                                                                                         | DataFrame with 29 datetime features added, matching the requested backend. |
+|        | pd.DataFrame                                                                                      | A Pandas DataFrame with 29 datetime features added to it. |
 |        | - _index_num: An int64 feature that captures the entire datetime as a numeric value to the second |                                                           |
 |        | - _year: The year of the datetime                                                                 |                                                           |
 |        | - _year_iso: The iso year of the datetime                                                         |                                                           |
@@ -63,29 +63,16 @@ dates = pd.date_range(start = '2019-01', end = '2019-03', freq = 'D')
 
 ```{python}
 # Makes 29 new time series features from the dates
-tk.get_timeseries_signature(dates).glimpse()
+tk.get_timeseries_signature(dates, engine='pandas').glimpse()
 ```
 
 ```{python}
-import polars as pl
-import pytimetk.polars_namespace
-
-(
-    pl.from_pandas(pd.DataFrame({'date': dates}))
-        .select('date')
-        .tk.get_timeseries_signature()
-        .glimpse()
-)
+tk.get_timeseries_signature(dates, engine='polars').glimpse()
 ```
 ```{python}
-pd.Series(dates, name = "date").get_timeseries_signature().glimpse()
+pd.Series(dates, name = "date").get_timeseries_signature(engine='pandas').glimpse()
 ```
 
 ```{python}
-(
-    pl.Series(dates, name="date")
-        .to_frame()
-        .tk.get_timeseries_signature()
-        .glimpse()
-)
+pd.Series(dates, name = "date").get_timeseries_signature(engine='polars').glimpse()
 ```

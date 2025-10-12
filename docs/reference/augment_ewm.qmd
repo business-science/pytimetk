@@ -20,20 +20,22 @@ new columns.
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name         | Type                                                            | Description                                                                                                                                                                                                                                                                                                                                                                                                                  | Default    |
-|--------------|-----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| data         | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | The input DataFrame or GroupBy object.                                                                                                                                                                                                                                                                                                                                                                                       | _required_ |
-| date_column  | str                                                             | The name of the column containing date information in the input DataFrame or GroupBy object.                                                                                                                                                                                                                                                                                                                                 | _required_ |
-| value_column | Union\[str, list\]                                              | The `value_column` parameter is used to specify the column(s) on which the Exponential Weighted Moving (EWM) calculations will be performed. It can be either a string or a list of strings, representing the name(s) of the column(s) in the input DataFrame or GroupBy                                                                                                                                                     | _required_ |
-| window_func  | Union\[str, list\]                                              | The `window_func` parameter is used to specify the Exponential Weighted Moving (EWM) window function(s) to apply. It can be a string or a list of strings. The possible values are:  - 'mean': Calculate the exponentially weighted mean. - 'median': Calculate the exponentially weighted median. - 'std': Calculate the exponentially weighted standard deviation. - 'var': Calculate the exponentially weighted variance. | `'mean'`   |
-| alpha        | float                                                           | The `alpha` parameter is a float that represents the smoothing factor for the Exponential Weighted Moving (EWM) window function. It controls the rate at which the weights decrease exponentially as the data points move further away from the current point.                                                                                                                                                               | `None`     |
-| **kwargs     |                                                                 | Additional arguments that are directly passed to the pandas EWM method. For more details, refer to the "Notes" section below.                                                                                                                                                                                                                                                                                                | `{}`       |
+| Name          | Type                                   | Description                                                                                                                                                                                                                                                                                                                                                                                                                  | Default    |
+|---------------|----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | DataFrame or GroupBy(pandas or polars) | The input data to augment. Grouped inputs are processed per group before the EWM columns are appended.                                                                                                                                                                                                                                                                                                                       | _required_ |
+| date_column   | str                                    | The name of the column containing date information in the input DataFrame or GroupBy object.                                                                                                                                                                                                                                                                                                                                 | _required_ |
+| value_column  | Union\[str, list\]                     | The `value_column` parameter is used to specify the column(s) on which the Exponential Weighted Moving (EWM) calculations will be performed. It can be either a string or a list of strings, representing the name(s) of the column(s) in the input DataFrame or GroupBy                                                                                                                                                     | _required_ |
+| window_func   | Union\[str, list\]                     | The `window_func` parameter is used to specify the Exponential Weighted Moving (EWM) window function(s) to apply. It can be a string or a list of strings. The possible values are:  - 'mean': Calculate the exponentially weighted mean. - 'median': Calculate the exponentially weighted median. - 'std': Calculate the exponentially weighted standard deviation. - 'var': Calculate the exponentially weighted variance. | `'mean'`   |
+| alpha         | float                                  | The `alpha` parameter is a float that represents the smoothing factor for the Exponential Weighted Moving (EWM) window function. It controls the rate at which the weights decrease exponentially as the data points move further away from the current point.                                                                                                                                                               | `None`     |
+| engine        | (auto, pandas, polars)                 | Execution engine. ``"auto"`` (default) infers the backend from the input data while allowing explicit overrides.                                                                                                                                                                                                                                                                                                             | `"auto"`   |
+| reduce_memory | bool                                   | Attempt to reduce memory usage before/after computation when operating on pandas data. If a polars input is supplied a warning is emitted and no conversion occurs.                                                                                                                                                                                                                                                          | _required_ |
+| **kwargs      |                                        | Additional arguments that are directly passed to the pandas EWM method. For more details, refer to the "Notes" section below.                                                                                                                                                                                                                                                                                                | `{}`       |
 
 ## Returns {.doc-section .doc-section-returns}
 
-| Name   | Type         | Description                                                                                                                      |
-|--------|--------------|----------------------------------------------------------------------------------------------------------------------------------|
-|        | pd.DataFrame | The function `augment_ewm` returns a DataFrame augmented with the results of the Exponential Weighted Moving (EWM) calculations. |
+| Name   | Type      | Description                                                                                                                      |
+|--------|-----------|----------------------------------------------------------------------------------------------------------------------------------|
+|        | DataFrame | The function `augment_ewm` returns a DataFrame augmented with the results of the Exponential Weighted Moving (EWM) calculations. |
 
 ## Notes {.doc-section .doc-section-notes}
 
@@ -52,19 +54,14 @@ For a comprehensive list and detailed description of these parameters:
 ## Examples {.doc-section .doc-section-examples}
 
 ```{python}
-import pytimetk as tk
-from pytimetk import augment_ewm
 import pandas as pd
-import numpy as np
+import polars as pl
+import pytimetk as tk
+
 
 df = tk.load_dataset("m4_daily", parse_dates = ['date'])
-```
 
-```{python}
-# This example demonstrates the use of string-named functions on an EWM.
-# The decay parameter used in this example is 'alpha', but other methods
-#  (e.g., 'com', 'span', 'halflife') can also be utilized.
-
+# Pandas example (engine inferred)
 ewm_df = (
     df
         .groupby('id')
@@ -78,5 +75,16 @@ ewm_df = (
             alpha = 0.1,
         )
 )
-display(ewm_df)
+
+# Polars example using the tk accessor
+ewm_pl = (
+    pl.from_pandas(df)
+    .group_by('id')
+    .tk.augment_ewm(
+        date_column='date',
+        value_column='value',
+        window_func='mean',
+        alpha=0.1,
+    )
+)
 ```

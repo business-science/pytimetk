@@ -50,7 +50,7 @@ behaviour.
 import pandas as pd
 import polars as pl
 import pytimetk as tk
-import pytimetk.polars_namespace
+
 
 df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
