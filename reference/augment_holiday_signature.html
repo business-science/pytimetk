@@ -401,7 +401,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    date_column,</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    country_name<span class="op">=</span><span class="st">'UnitedStates'</span>,</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'auto'</span>,</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Engineers 4 different holiday features from a single datetime for 137 countries and 2 financial markets.</p>
 <p>Note: Requires the <code>holidays</code> package to be installed. See https://pypi.org/project/holidays/ for more information.</p>
@@ -410,9 +410,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <table class="table">
 <colgroup>
 <col style="width: 3%">
-<col style="width: 15%">
-<col style="width: 76%">
-<col style="width: 4%">
+<col style="width: 23%">
+<col style="width: 69%">
+<col style="width: 3%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -425,7 +425,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>data</td>
-<td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
+<td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy, pl.DataFrame, pl.dataframe.group_by.GroupBy]</td>
 <td>The input DataFrame.</td>
 <td><em>required</em></td>
 </tr>
@@ -451,7 +451,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>engine</td>
 <td>str</td>
 <td>The <code>engine</code> parameter is used to specify the engine to use for augmenting holidays. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for augmenting holidays. This can be faster than using “pandas” for large datasets.</td>
-<td><code>'pandas'</code></td>
+<td><code>'auto'</code></td>
 </tr>
 </tbody>
 </table>
@@ -1033,7 +1033,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>1</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
@@ -1041,7 +1041,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
@@ -1049,7 +1049,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
@@ -1057,7 +1057,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
@@ -1065,7 +1065,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">7</td>
@@ -1073,7 +1073,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">8</td>
@@ -1081,7 +1081,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9</td>
@@ -1089,7 +1089,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 </tbody>
 </table>
@@ -1130,7 +1130,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>1</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
@@ -1138,7 +1138,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
@@ -1146,7 +1146,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
@@ -1154,7 +1154,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
@@ -1162,7 +1162,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
@@ -1170,7 +1170,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">7</td>
@@ -1178,7 +1178,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">8</td>
@@ -1186,7 +1186,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9</td>
@@ -1194,7 +1194,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 </tbody>
 </table>
@@ -1235,7 +1235,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>1</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
@@ -1243,7 +1243,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
@@ -1251,7 +1251,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
@@ -1259,7 +1259,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
@@ -1267,7 +1267,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
@@ -1275,7 +1275,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">7</td>
@@ -1283,7 +1283,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">8</td>
@@ -1291,7 +1291,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9</td>
@@ -1299,7 +1299,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>NaN</td>
+<td>None</td>
 </tr>
 </tbody>
 </table>
