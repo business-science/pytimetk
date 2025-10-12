@@ -8,7 +8,7 @@ augment_rolling(
     window_func='mean',
     window=2,
     min_periods=None,
-    engine='pandas',
+    engine='auto',
     center=False,
     threads=1,
     show_progress=True,
@@ -33,7 +33,7 @@ Apply one or more Series-based rolling functions and window sizes to one or more
 | threads       | int                                                             | Number of threads to use for parallel processing. If `threads` is set to 1, parallel processing will be disabled. Set to -1 to use all available CPU cores.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `1`        |
 | show_progress | bool                                                            | If `True`, a progress bar will be displayed during parallel processing.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `True`     |
 | reduce_memory | bool                                                            | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `False`    |
-| engine        | str                                                             | Specifies the backend computation library for augmenting expanding window functions.  The options are:     - "pandas" (default): Uses the `pandas` library.     - "polars": Uses the `polars` library, which may offer performance        benefits for larger datasets.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `'pandas'` |
+| engine        | (auto, pandas, polars)                                         | Specifies the backend computation library for rolling window functions. When "auto" (default) the backend is inferred from the input data type. Use "pandas" or "polars" to force a specific backend.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | `'auto'`   |
 
 ## Returns {.doc-section .doc-section-returns}
 
@@ -117,19 +117,21 @@ display(rolled_df)
 ```{python}
 # Example 3 - Multiple groups, polars engine
 
-rolled_df = (
-    df
-        .groupby('id')
-        .augment_rolling(
-            date_column = 'date',
-            value_column = 'value',
-            window = (1,3),  # Specifying a range of window sizes
-            window_func = [
-                'mean',  # Using built-in mean function
-                'std',  # Using built-in standard deviation function
-            ],
-            engine = 'polars'  # Using polars engine
-        )
-)
-display(rolled_df)
+    import polars as pl
+    import pytimetk.polars_namespace
+
+    rolled_df = (
+        pl.from_pandas(df)
+            .group_by('id')
+            .tk.augment_rolling(
+                date_column = 'date',
+                value_column = 'value',
+                window = (1,3),  # Specifying a range of window sizes
+                window_func = [
+                    'mean',  # Using built-in mean function
+                    'std',  # Using built-in standard deviation function
+                ],
+            )
+    )
+    display(rolled_df)
 ```

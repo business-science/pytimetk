@@ -35,11 +35,17 @@ from pytimetk.finance import (
 )
 from pytimetk.feature_engineering import (
     augment_diffs,
+    augment_expanding,
+    augment_expanding_apply,
     augment_ewm,
+    augment_hilbert,
     augment_lags,
     augment_leads,
     augment_pct_change,
+    augment_rolling,
+    augment_rolling_apply,
     augment_spline,
+    augment_wavelet,
 )
 
 FinanceFunc = Callable[..., pl.DataFrame]
@@ -63,11 +69,17 @@ _AUGMENT_FUNCTIONS: Dict[str, FinanceFunc] = {
     "augment_rsi": augment_rsi,
     "augment_stochastic_oscillator": augment_stochastic_oscillator,
     "augment_diffs": augment_diffs,
+    "augment_expanding": augment_expanding,
+    "augment_expanding_apply": augment_expanding_apply,
     "augment_ewm": augment_ewm,
+    "augment_hilbert": augment_hilbert,
     "augment_lags": augment_lags,
     "augment_leads": augment_leads,
     "augment_pct_change": augment_pct_change,
+    "augment_rolling": augment_rolling,
+    "augment_rolling_apply": augment_rolling_apply,
     "augment_spline": augment_spline,
+    "augment_wavelet": augment_wavelet,
 }
 
 

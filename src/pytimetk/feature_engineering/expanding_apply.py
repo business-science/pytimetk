@@ -1,8 +1,9 @@
 import pandas as pd
+import polars as pl
 import pandas_flavor as pf
 import numpy as np
 
-from typing import Union, Optional, Callable, Tuple, List
+from typing import Callable, List, Optional, Tuple, Union
 
 from pathos.multiprocessing import ProcessingPool
 
@@ -12,19 +13,31 @@ from pytimetk.utils.checks import (
 )
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 from pytimetk.utils.memory_helpers import reduce_memory_usage
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    normalize_engine,
+    restore_output_type,
+)
 
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_expanding_apply(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     window_func: Union[Tuple[str, Callable], List[Tuple[str, Callable]]],
     min_periods: Optional[int] = None,
     threads: int = 1,
     show_progress: bool = True,
     reduce_memory: bool = False,
-) -> pd.DataFrame:
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Apply one or more DataFrame-based expanding functions to one or more columns of a DataFrame.
 
@@ -145,22 +158,28 @@ def augment_expanding_apply(
     display(regression_wide_df)
     ```
     """
-    # Checks
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
 
-    # Create a fresh copy of the data, leaving the original untouched
-    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
+    _engine_resolved = normalize_engine(engine, data)
+
+    conversion: FrameConversion = convert_to_engine(data, "pandas")
+    prepared_data = conversion.data
+
+    data_copy = (
+        prepared_data.copy()
+        if isinstance(prepared_data, pd.DataFrame)
+        else prepared_data.obj.copy()
+    )
 
     if reduce_memory:
         data_copy = reduce_memory_usage(data_copy)
 
-    # Get threads
-    threads = get_threads(threads)
+    threads_resolved = get_threads(threads)
 
     # Group data if it's a GroupBy object; otherwise, prepare it for the expanding calculations
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
+    if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
+        group_names = prepared_data.grouper.names
         grouped = data_copy.sort_values(by=[*group_names, date_column]).groupby(
             group_names
         )
@@ -172,7 +191,7 @@ def augment_expanding_apply(
     min_periods = 1 if min_periods is None else min_periods
 
     # Process each group in parallel
-    if threads == 1:
+    if threads_resolved == 1:
         result_dfs = []
         for group in conditional_tqdm(
             grouped,
@@ -184,7 +203,7 @@ def augment_expanding_apply(
             result_dfs.append(_process_single_expanding_apply_group(args))
     else:
         # Prepare to use pathos.multiprocessing
-        pool = ProcessingPool(threads)
+        pool = ProcessingPool(threads_resolved)
         args = [(group, window_func, min_periods) for group in grouped]
         result_dfs = list(
             conditional_tqdm(
@@ -201,7 +220,14 @@ def augment_expanding_apply(
     if reduce_memory:
         result_df = reduce_memory_usage(result_df)
 
-    return result_df
+    result_df = result_df.sort_index()
+
+    restored = restore_output_type(result_df, conversion)
+
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
+
+    return restored
 
 
 def _process_single_expanding_apply_group(args):

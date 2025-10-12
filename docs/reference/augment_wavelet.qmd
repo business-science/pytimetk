@@ -9,6 +9,7 @@ augment_wavelet(
     sample_rate,
     scales,
     reduce_memory=False,
+    engine='auto',
 )
 ```
 
@@ -27,17 +28,18 @@ Uses:
 
 | Name          | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Default    |
 |---------------|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| data          | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | Input DataFrame or DataFrameGroupBy object with one or more columns of real-valued signals.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | _required_ |
+| data          | DataFrame or GroupBy (pandas or polars)                  | Input DataFrame or GroupBy object with one or more columns of real-valued signals.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | _required_ |
 | value_column  | str or list                                              | List of column names in 'data' to which the Hilbert transform will be applied.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | _required_ |
 | sample_rate   | str                                                      | Sampling rate of the input data. For time-series data, the sample rate (sample_rate) typically refers to the frequency at which data points are collected.  For example, if your data has a 30-minute interval, if you think of the data in terms of "samples per hour", the sample rate would be:  sample_rate = samples / hour = 1 / 0.5 = 2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | _required_ |
 | scales        | str or list                                              | Array of scales to use in the transform. The choice of scales in wavelet analysis determines which frequencies (or periodicities) in the data you want to analyze. In other words, the scales determine the "window size" or the "look-back period" the wavelet uses to analyze the data.  Smaller scales: Correspond to analyzing high-frequency changes (short-term fluctuations) in the data.  Larger scales: Correspond to analyzing low-frequency changes (long-term fluctuations) in the data.  The specific values for scales depend on what frequencies or periodicities you expect in your data and wish to study.  For instance, if you believe there are daily, weekly, and monthly patterns in your data, you'd choose scales that correspond to these periodicities given your sampling rate.  For a daily pattern with data at 30-minute intervals: scales = 2 * 24 = 48 because there are 48 half hour intervals in a day  For a weekly pattern with data at 30-minute intervals: scales = 48 * 7 = 336 because there are 336 half hour intervals in a week  Recommendation, use a range of values to cover both short term and long term patterns, then adjust accordingly. | _required_ |
 | reduce_memory | bool                                                     | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | `False`    |
+| engine        | (auto, pandas, polars)                                   | Specifies the backend to use. When "auto" (default) the backend is inferred from the input. Use "pandas" or "polars" to force a specific backend.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `'auto'`   |
 
 ## Returns {.doc-section .doc-section-returns}
 
 | Name       | Type         | Description                                                                                               |
 |------------|--------------|-----------------------------------------------------------------------------------------------------------|
-| df_wavelet | pd.DataFrame | DataFrame with added columns for CWT coefficients for each scale, with a real and imaginary column added. |
+| df_wavelet | DataFrame    | DataFrame with added columns for CWT coefficients for each scale, with a real and imaginary column added. Matches the backend of the input data. |
 
 ## Notes {.doc-section .doc-section-notes}
 
@@ -120,22 +122,23 @@ wavelet_df.head()
 ```
 
 ```{python}
-# Example 2: Using Pandas Engine on a pandas dataframe
+# Example 2: Using the polars accessor on a DataFrame
 import pytimetk as tk
-import pandas as pd
+import polars as pl
+import pytimetk.polars_namespace
 
 df = tk.load_dataset('taylor_30_min', parse_dates = ['date'])
 
 result_df = (
-    tk.augment_wavelet(
-        df,
-        date_column = 'date',
-        value_column ='value',
-        scales = [15],
-        sample_rate =1000,
-        method = 'morlet'
-    )
+    pl.from_pandas(df)
+        .tk.augment_wavelet(
+            date_column = 'date',
+            value_column ='value',
+            scales = [15],
+            sample_rate =1000,
+            method = 'morlet'
+        )
 )
 
-result_df
+result_df.head()
 ```

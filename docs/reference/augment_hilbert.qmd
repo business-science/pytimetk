@@ -6,7 +6,7 @@ augment_hilbert(
     date_column,
     value_column,
     reduce_memory=True,
-    engine='pandas',
+    engine='auto',
 )
 ```
 
@@ -19,16 +19,16 @@ Signal Processing: The Hilbert transform is used in various signal processing te
 
 | Name          | Type                                                     | Description                                                                                                                                                                                                                                                                                                                 | Default    |
 |---------------|----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| data          | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | Input DataFrame or DataFrameGroupBy object with one or more columns of real-valued signals.                                                                                                                                                                                                                                 | _required_ |
+| data          | DataFrame or GroupBy (pandas or polars)                  | Input DataFrame or GroupBy object with one or more columns of real-valued signals.                                                                                                                                                                                                                                            | _required_ |
 | value_column  | str or list                                              | List of column names in 'data' to which the Hilbert transform will be applied.                                                                                                                                                                                                                                              | _required_ |
 | reduce_memory | bool                                                     | The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.                      | `True`     |
-| engine        | str                                                      | The `engine` parameter is used to specify the engine to use for summarizing the data. It can be either "pandas" or "polars".  - The default value is "pandas".  - When "polars", the function will internally use the `polars` library for summarizing the data. This can be faster than using "pandas" for large datasets. | `'pandas'` |
+| engine        | (auto, pandas, polars)                                   | Specifies the backend to use. When "auto" (default) the backend is inferred from the input. Use "pandas" or "polars" to force a specific backend.                                                                                                                                                                         | `'auto'`   |
 
 ## Returns {.doc-section .doc-section-returns}
 
 | Name       | Type         | Description                                                                                                                        |
 |------------|--------------|------------------------------------------------------------------------------------------------------------------------------------|
-| df_hilbert | pd.DataFrame | A new DataFrame with the 2 Hilbert-transformed columns added, 1 for the real and 1 for imaginary (original columns are preserved). |
+| df_hilbert | DataFrame    | A new DataFrame with the 2 Hilbert-transformed columns added, 1 for the real and 1 for imaginary (original columns are preserved). Matches the backend of the input data. |
 
 ## Notes {.doc-section .doc-section-notes}
 
@@ -74,18 +74,18 @@ df_hilbert.head()
 ```
 
 ```{python}
-# Example 2: Using Polars Engine on a pandas groupby object
+# Example 2: Using the polars accessor on a grouped table
 import pytimetk as tk
-import pandas as pd
+import polars as pl
+import pytimetk.polars_namespace
 
 df = tk.load_dataset('walmart_sales_weekly', parse_dates=['Date'])
 df_hilbert = (
-    df
-        .groupby('id')
-        .augment_hilbert(
+    pl.from_pandas(df)
+        .group_by('id')
+        .tk.augment_hilbert(
             date_column = 'Date',
             value_column = ['Weekly_Sales'],
-            engine = 'polars'
         )
 )
 
@@ -93,35 +93,17 @@ df_hilbert.head()
 ```
 
 ```{python}
-# Example 3: Using Polars Engine on a pandas dataframe
+# Example 3: Using the polars accessor on a DataFrame
 import pytimetk as tk
-import pandas as pd
+import polars as pl
+import pytimetk.polars_namespace
 
 df = tk.load_dataset('taylor_30_min', parse_dates=['date'])
 df_hilbert = (
-    df
-        .augment_hilbert(
+    pl.from_pandas(df)
+        .tk.augment_hilbert(
             date_column = 'date',
             value_column = ['value'],
-            engine = 'polars'
-        )
-)
-
-df_hilbert.head()
-```
-
-```{python}
-# Example 4: Using Polars Engine on a groupby object
-import pytimetk as tk
-import pandas as pd
-
-df = tk.load_dataset('taylor_30_min', parse_dates=['date'])
-df_hilbert_pd = (
-    df
-        .augment_hilbert(
-            date_column = 'date',
-            value_column = ['value'],
-            engine = 'pandas'
         )
 )
 

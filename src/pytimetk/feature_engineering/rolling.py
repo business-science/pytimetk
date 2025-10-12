@@ -4,7 +4,7 @@ import pandas_flavor as pf
 import inspect
 import warnings
 
-from typing import Union, Optional, Callable, Tuple
+from typing import Callable, List, Optional, Sequence, Tuple, Union
 
 from pathos.multiprocessing import ProcessingPool
 from functools import partial
@@ -18,24 +18,37 @@ from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 from pytimetk.utils.polars_helpers import update_dict
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    resolve_polars_group_columns,
+    restore_output_type,
+)
 
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_rolling(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
-    value_column: Union[str, list],
-    window_func: Union[str, list, Tuple[str, Callable]] = "mean",
-    window: Union[int, tuple, list] = 2,
+    value_column: Union[str, List[str]],
+    window_func: Union[str, List[Union[str, Tuple[str, Callable]]], Tuple[str, Callable]] = "mean",
+    window: Union[int, Tuple[int, int], List[int]] = 2,
     min_periods: Optional[int] = None,
-    engine: str = "pandas",
+    engine: Optional[str] = "auto",
     center: bool = False,
     threads: int = 1,
     show_progress: bool = True,
     reduce_memory: bool = False,
     **kwargs,
-) -> pd.DataFrame:
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Apply one or more Series-based rolling functions and window sizes to one or more columns of a DataFrame.
 
@@ -91,14 +104,10 @@ def augment_rolling(
         If `True`, a progress bar will be displayed during parallel processing.
     reduce_memory : bool, optional
         The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.
-    engine : str, optional, default 'pandas'
-        Specifies the backend computation library for augmenting expanding window
-        functions.
-
-        The options are:
-            - "pandas" (default): Uses the `pandas` library.
-            - "polars": Uses the `polars` library, which may offer performance
-               benefits for larger datasets.
+    engine : {"auto", "pandas", "polars"}, optional, default "auto"
+        Specifies the backend computation library for augmenting rolling window
+        functions. When "auto" the backend is inferred from the input data type.
+        Use "pandas" or "polars" to force a specific backend.
 
     Returns
     -------
@@ -182,10 +191,13 @@ def augment_rolling(
     ```{python}
     # Example 3 - Multiple groups, polars engine
 
+    import polars as pl
+    import pytimetk.polars_namespace
+
     rolled_df = (
-        df
-            .groupby('id')
-            .augment_rolling(
+        pl.from_pandas(df)
+            .group_by('id')
+            .tk.augment_rolling(
                 date_column = 'date',
                 value_column = 'value',
                 window = (1,3),  # Specifying a range of window sizes
@@ -193,89 +205,117 @@ def augment_rolling(
                     'mean',  # Using built-in mean function
                     'std',  # Using built-in standard deviation function
                 ],
-                engine = 'polars'  # Using polars engine
             )
     )
     display(rolled_df)
     ```
     """
-    # Checks
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
     check_value_column(data, value_column)
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    engine_resolved = normalize_engine(engine, data)
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
 
-    # Convert string value column to list for consistency
-    if isinstance(value_column, str):
-        value_column = [value_column]
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
-    # Validate window argument and convert it to a consistent list format
+    value_columns: List[str] = (
+        [value_column] if isinstance(value_column, str) else list(value_column)
+    )
+
     if not isinstance(window, (int, tuple, list)):
         raise TypeError("`window` must be an integer, tuple, or list.")
     if isinstance(window, int):
-        window = [window]
+        windows = [window]
     elif isinstance(window, tuple):
-        window = list(range(window[0], window[1] + 1))
-
-    # Get threads
-    threads = get_threads(threads)
-
-    # Convert single window function to list for consistent processing
-    if isinstance(window_func, (str, tuple)):
-        window_func = [window_func]
-
-    # Call the function to augment rolling window columns using the specified engine
-    if engine == "pandas":
-        ret = _augment_rolling_pandas(
-            data,
-            date_column,
-            value_column,
-            window_func,
-            window,
-            min_periods,
-            center,
-            threads,
-            show_progress,
-            **kwargs,
-        )
-    elif engine == "polars":
-        ret = _augment_rolling_polars(
-            data,
-            date_column,
-            value_column,
-            window_func,
-            window,
-            min_periods,
-            center,
-            threads,
-            show_progress,
-            **kwargs,
-        )
-
-        # Polars Index to Match Pandas
-        ret.index = idx_unsorted
-
+        windows = list(range(window[0], window[1] + 1))
     else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+        windows = [int(w) for w in window]
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    window_funcs = (
+        list(window_func) if isinstance(window_func, list) else [window_func]
+    )
 
-    ret = ret.sort_index()
+    threads_resolved = get_threads(threads)
 
-    return ret
+    if engine_resolved == "pandas":
+        if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
+            original_index = prepared_data.obj.index.copy()
+        else:
+            original_index = prepared_data.index.copy()
+
+        prepared_data, _ = sort_dataframe(
+            prepared_data, date_column, keep_grouped_df=True
+        )
+
+        result = _augment_rolling_pandas(
+            prepared_data,
+            date_column,
+            value_columns,
+            window_funcs,
+            windows,
+            min_periods,
+            center,
+            threads_resolved,
+            show_progress,
+            **kwargs,
+        )
+        if not isinstance(result, pd.DataFrame):
+            raise TypeError("Rolling augmentation must return a pandas DataFrame.")
+
+        if result.index.has_duplicates:
+            result = result.loc[~result.index.duplicated(keep="last")]
+
+        result = result.reindex(original_index)
+
+        if reduce_memory:
+            result = reduce_memory_usage(result)
+
+        restored = restore_output_type(result, conversion)
+
+        if isinstance(restored, pd.DataFrame):
+            return restored
+
+        return restored
+
+    if engine_resolved == "polars":
+        result_polars = _augment_rolling_polars(
+            prepared_data,
+            date_column,
+            value_columns,
+            window_funcs,
+            windows,
+            min_periods,
+            center,
+            conversion.group_columns,
+            conversion.row_id_column,
+        )
+
+        restored = restore_output_type(result_polars, conversion)
+
+        if isinstance(restored, pd.DataFrame):
+            return restored.sort_index()
+
+        return restored
+
+    raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
 
 
 def _augment_rolling_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
-    value_column: Union[str, list],
-    window_func: Union[str, list, Tuple[str, Callable]] = "mean",
-    window: Union[int, tuple, list] = 2,
+    value_columns: List[str],
+    window_funcs: List[Union[str, Tuple[str, Callable]]],
+    windows: List[int],
     min_periods: Optional[int] = None,
     center: bool = False,
     threads: int = 1,
@@ -294,9 +334,9 @@ def _augment_rolling_pandas(
         if threads == 1:
             func = partial(
                 _process_single_roll,
-                value_column=value_column,
-                window_func=window_func,
-                window=window,
+                value_columns=value_columns,
+                window_funcs=window_funcs,
+                windows=windows,
                 min_periods=min_periods,
                 center=center,
                 **kwargs,
@@ -319,9 +359,9 @@ def _augment_rolling_pandas(
             # Use partial to "freeze" arguments for _process_single_roll
             func = partial(
                 _process_single_roll,
-                value_column=value_column,
-                window_func=window_func,
-                window=window,
+                value_columns=value_columns,
+                window_funcs=window_funcs,
+                windows=windows,
                 min_periods=min_periods,
                 center=center,
                 **kwargs,
@@ -339,9 +379,9 @@ def _augment_rolling_pandas(
         result_dfs = [
             _process_single_roll(
                 data_copy,
-                value_column,
-                window_func,
-                window,
+                value_columns,
+                window_funcs,
+                windows,
                 min_periods,
                 center,
                 **kwargs,
@@ -353,13 +393,22 @@ def _augment_rolling_pandas(
 
 
 def _process_single_roll(
-    group_df, value_column, window_func, window, min_periods, center, **kwargs
-):
-    result_dfs = []
-    for value_col in value_column:
-        for window_size in window:
-            min_periods = window_size if min_periods is None else min_periods
-            for func in window_func:
+    group_df: pd.DataFrame,
+    value_columns: List[str],
+    window_funcs: List[Union[str, Tuple[str, Callable]]],
+    windows: List[int],
+    min_periods: Optional[int],
+    center: bool,
+    **kwargs,
+) -> pd.DataFrame:
+    result = group_df.copy()
+    for value_col in value_columns:
+        min_periods_state = min_periods
+        for window_size in windows:
+            resolved_min_periods = (
+                window_size if min_periods_state is None else min_periods_state
+            )
+            for func in window_funcs:
                 if isinstance(func, tuple):
                     # Ensure the tuple is of length 2 and begins with a string
                     if len(func) != 2:
@@ -371,27 +420,27 @@ def _process_single_roll(
                             f"Expected first element of tuple to be type 'str', but `window_func` received {type(func[0])}."
                         )
 
-                    user_func_name, func = func
+                    user_func_name, func_impl = func
                     new_column_name = (
                         f"{value_col}_rolling_{user_func_name}_win_{window_size}"
                     )
 
                     # Try handling a lambda function of the form lambda x: x
                     if (
-                        inspect.isfunction(func)
-                        and len(inspect.signature(func).parameters) == 1
+                        inspect.isfunction(func_impl)
+                        and len(inspect.signature(func_impl).parameters) == 1
                     ):
                         try:
                             # Construct rolling window column
-                            group_df[new_column_name] = (
-                                group_df[value_col]
+                            result[new_column_name] = (
+                                result[value_col]
                                 .rolling(
                                     window=window_size,
-                                    min_periods=min_periods,
+                                    min_periods=resolved_min_periods,
                                     center=center,
                                     **kwargs,
                                 )
-                                .apply(func, raw=True)
+                                .apply(func_impl, raw=True)
                             )
                         except Exception as e:
                             raise Exception(
@@ -399,10 +448,10 @@ def _process_single_roll(
                             )
 
                     # Try handling a configurable function (e.g. pd_quantile)
-                    elif isinstance(func, tuple) and func[0] == "configurable":
+                    elif isinstance(func_impl, tuple) and func_impl[0] == "configurable":
                         try:
                             # Configurable function should return 4 objects
-                            _, func_name, default_kwargs, user_kwargs = func
+                            _, func_name, default_kwargs, user_kwargs = func_impl
                         except Exception as e:
                             raise ValueError(
                                 f"Unexpected function format. Expected a tuple with format ('configurable', func_name, default_kwargs, user_kwargs). Received: {func}. Original error: {e}"
@@ -427,7 +476,7 @@ def _process_single_roll(
                             rolling_function = getattr(
                                 group_df[value_col].rolling(
                                     window=window_size,
-                                    min_periods=min_periods,
+                                    min_periods=resolved_min_periods,
                                     center=center,
                                     **kwargs,
                                 ),
@@ -442,7 +491,7 @@ def _process_single_roll(
                         if rolling_function:
                             try:
                                 # Apply rolling function to data and store in new column
-                                group_df[new_column_name] = rolling_function(
+                                result[new_column_name] = rolling_function(
                                     **default_kwargs
                                 )
                             except Exception as e:
@@ -454,18 +503,20 @@ def _process_single_roll(
                             f"Unexpected function format for `{user_func_name}`."
                         )
 
-                elif isinstance(func, str):
+                    min_periods_state = resolved_min_periods
+                    continue
+
+                if isinstance(func, str):
                     new_column_name = f"{value_col}_rolling_{func}_win_{window_size}"
-                    # Get the rolling function (like mean, sum, etc.) specified by `func` for the given column and window settings
                     if func == "quantile":
                         new_column_name = (
                             f"{value_col}_rolling_{func}_50_win_{window_size}"
                         )
-                        group_df[new_column_name] = (
-                            group_df[value_col]
+                        result[new_column_name] = (
+                            result[value_col]
                             .rolling(
                                 window=window_size,
-                                min_periods=min_periods,
+                                min_periods=resolved_min_periods,
                                 center=center,
                                 **kwargs,
                             )
@@ -478,65 +529,56 @@ def _process_single_roll(
                         )
                     else:
                         rolling_function = getattr(
-                            group_df[value_col].rolling(
+                            result[value_col].rolling(
                                 window=window_size,
-                                min_periods=min_periods,
+                                min_periods=resolved_min_periods,
                                 center=center,
                                 **kwargs,
                             ),
                             func,
                             None,
                         )
-                        # Apply rolling function to data and store in new column
                         if rolling_function:
-                            group_df[new_column_name] = rolling_function()
+                            result[new_column_name] = rolling_function()
                         else:
                             raise ValueError(f"Invalid function name: {func}")
-                else:
-                    raise TypeError(f"Invalid function type: {type(func)}")
+                    min_periods_state = resolved_min_periods
+                    continue
 
-        result_dfs.append(group_df)
-    return pd.concat(result_dfs)
+                raise TypeError(f"Invalid function type: {type(func)}")
+    return result
 
 
 def _augment_rolling_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
-    value_column: Union[str, list],
-    window_func: Union[str, list, Tuple[str, Callable]] = "mean",
-    window: Union[int, tuple, list] = 2,
-    min_periods: Optional[int] = None,
-    center: bool = False,
-    threads: int = 1,
-    show_progress: bool = True,
-    **kwargs,
-) -> pd.DataFrame:
-    # Retrieve the group column names if the input data is a GroupBy object
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
-    else:
-        group_names = None
+    value_columns: List[str],
+    window_funcs: List[Union[str, Tuple[str, Callable]]],
+    windows: List[int],
+    min_periods: Optional[int],
+    center: bool,
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> pl.DataFrame:
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
 
-    # Convert data into a Pandas DataFrame format for processing
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        pandas_df = data.obj.copy()
-    elif isinstance(data, pd.DataFrame):
-        pandas_df = data.copy()
-    else:
-        raise ValueError("Data must be a Pandas DataFrame or Pandas GroupBy object.")
+    frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
 
-    # Initialize lists to store rolling expressions and new column names
-    rolling_exprs = []
-    new_column_names = []
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    sorted_frame = frame_with_id.sort(sort_keys)
 
-    # Construct rolling expressions for each column and function combination
-    for col in value_column:
-        for window_size in window:
-            min_periods = window_size if min_periods is None else min_periods
-            for func in window_func:
-                # Handle functions passed as tuples
+    rolling_exprs: List[pl.Expr] = []
+
+    for col in value_columns:
+        min_periods_state = min_periods
+        for window_size in windows:
+            resolved_min_periods = (
+                window_size if min_periods_state is None else min_periods_state
+            )
+            for func in window_funcs:
                 if isinstance(func, tuple):
-                    # Ensure the tuple is of length 2 and begins with a string
                     if len(func) != 2:
                         raise ValueError(
                             f"Expected tuple of length 2, but `window_func` received tuple of length {len(func)}."
@@ -546,63 +588,55 @@ def _augment_rolling_polars(
                             f"Expected first element of tuple to be type 'str', but `window_func` received {type(func[0])}."
                         )
 
-                    user_func_name, func = func
+                    user_func_name, func_impl = func
                     new_column_name = (
                         f"{col}_rolling_{user_func_name}_win_{window_size}"
                     )
 
-                    # Try handling a lambda function of the form lambda x: x
                     if (
-                        inspect.isfunction(func)
-                        and len(inspect.signature(func).parameters) == 1
+                        inspect.isfunction(func_impl)
+                        and len(inspect.signature(func_impl).parameters) == 1
                     ):
                         try:
-                            # Construct rolling window expression
-                            rolling_expr = (
-                                pl.col(col)
-                                .cast(pl.Float64)
-                                .rolling_map(
-                                    function=func,
-                                    window_size=window_size,
-                                    min_periods=min_periods,
-                                )
+                            expr = pl.col(col).cast(pl.Float64).rolling_map(
+                                function=func_impl,
+                                window_size=window_size,
+                                min_samples=resolved_min_periods,
+                                center=center,
                             )
                         except Exception as e:
                             raise Exception(
                                 f"An error occurred during the operation of the `{user_func_name}` function in Polars. Error: {e}"
                             )
-
-                    # Try handling a configurable function (e.g. pl_quantile) if it is not a lambda function
-                    elif isinstance(func, tuple) and func[0] == "configurable":
+                    elif isinstance(func_impl, tuple) and func_impl[0] == "configurable":
                         try:
-                            # Configurable function should return 4 objects
-                            _, func_name, default_kwargs, user_kwargs = func
+                            _, func_name, default_kwargs, user_kwargs = func_impl
+                            user_kwargs = dict(user_kwargs)
+                            default_kwargs = dict(default_kwargs)
                         except Exception as e:
                             raise ValueError(
-                                f"Unexpected function format. Expected a tuple with format ('configurable', func_name, default_kwargs, user_kwargs). Received: {func}. Original error: {e}"
+                                f"Unexpected function format. Expected a tuple with format ('configurable', func_name, default_kwargs, user_kwargs). Received: {func_impl}. Original error: {e}"
                             )
 
                         try:
-                            # Define local values that may be required by configurable functions.
-                            # If adding a new configurable function in utils.polars_helpers that necessitates
-                            # additional local values, consider updating this dictionary accordingly.
                             local_values = {
                                 "window_size": window_size,
-                                "min_periods": min_periods,
+                                "min_samples": resolved_min_periods,
                             }
-                            # Combine local values with user-provided parameters for the configurable function
-                            user_kwargs.update(local_values)
-                            # Update the default configurable parameters (without adding new keys)
-                            default_kwargs = update_dict(default_kwargs, user_kwargs)
+                            if center:
+                                local_values["center"] = True
+                            merged_defaults = update_dict(
+                                default_kwargs,
+                                {**user_kwargs, **local_values},
+                            )
                         except Exception as e:
                             raise ValueError(
-                                "Error encountered while updating parameters for the configurable function `{func_name}` passed to `window_func`: {e}"
+                                f"Error encountered while updating parameters for the configurable function `{func_name}` passed to `window_func`: {e}"
                             )
 
                         try:
-                            # Construct rolling window expression
-                            rolling_expr = getattr(pl.col(col), f"rolling_{func_name}")(
-                                **default_kwargs
+                            expr = getattr(pl.col(col), f"rolling_{func_name}")(
+                                **merged_defaults
                             )
                         except AttributeError as e:
                             raise AttributeError(
@@ -612,35 +646,33 @@ def _augment_rolling_polars(
                             raise Exception(
                                 f"Error during the execution of `{user_func_name}` in Polars. Error: {e}"
                             )
-
                     else:
                         raise TypeError(
                             f"Unexpected function format for `{user_func_name}`."
                         )
 
-                    rolling_expr = rolling_expr.alias(new_column_name)
-
-                # Standard Functions: "mean", "std"
+                    expr = expr.alias(new_column_name)
                 elif isinstance(func, str):
                     func_name = func
                     new_column_name = f"{col}_rolling_{func_name}_win_{window_size}"
-                    if not hasattr(pl.col(col), f"{func_name}"):
+                    if not hasattr(pl.col(col), f"rolling_{func_name}"):
                         raise ValueError(
                             f"{func_name} is not a recognized function for Polars."
                         )
 
-                    # Construct rolling window expression and handle specific case of 'skew'
-                    if func_name == "skew":
-                        rolling_expr = getattr(pl.col(col), f"rolling_{func_name}")(
-                            window_size=window_size
-                        )
-                    elif func_name == "quantile":
+                    params = {
+                        "window_size": window_size,
+                        "min_samples": resolved_min_periods,
+                    }
+                    if center:
+                        params["center"] = True
+
+                    if func_name == "quantile":
                         new_column_name = f"{col}_rolling_{func}_50_win_{window_size}"
-                        rolling_expr = getattr(pl.col(col), f"rolling_{func_name}")(
+                        expr = getattr(pl.col(col), f"rolling_{func_name}")(
                             quantile=0.5,
-                            window_size=window_size,
-                            min_periods=min_periods,
                             interpolation="midpoint",
+                            **params,
                         )
                         warnings.warn(
                             "You passed 'quantile' as a string-based function, so it defaulted to a 50 percent quantile (0.5). "
@@ -648,33 +680,22 @@ def _augment_rolling_polars(
                             "For example: ('quantile_75', pl_quantile(quantile=0.75))."
                         )
                     else:
-                        rolling_expr = getattr(pl.col(col), f"rolling_{func_name}")(
-                            window_size=window_size, min_periods=min_periods
-                        )
+                        expr = getattr(pl.col(col), f"rolling_{func_name}")(**params)
 
-                    rolling_expr = rolling_expr.alias(new_column_name)
-
+                    expr = expr.alias(new_column_name)
                 else:
                     raise TypeError(f"Invalid function type: {type(func)}")
 
-                # Add constructed expressions and new column names to respective lists
-                rolling_exprs.append(rolling_expr)
-                new_column_names.append(new_column_name)
+                if resolved_groups:
+                    expr = expr.over(resolved_groups)
 
-    # Select the columns
-    selected_columns = rolling_exprs
+                rolling_exprs.append(expr)
+            min_periods_state = resolved_min_periods
 
-    df = pl.DataFrame(pandas_df)
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        out_df = df.group_by(data.grouper.names, maintain_order=True).agg(
-            selected_columns
-        )
-        out_df = out_df.explode(out_df.columns[len(data.grouper.names) :])
-        out_df = out_df.drop(data.grouper.names)
-    else:  # a dataframe
-        out_df = df.select(selected_columns)
+    augmented = sorted_frame.with_columns(rolling_exprs)
+    augmented = augmented.sort(row_col)
 
-    # Concatenate the DataFrames horizontally
-    df = pl.concat([df, out_df], how="horizontal").to_pandas()
+    if generated:
+        augmented = augmented.drop(row_col)
 
-    return df
+    return augmented

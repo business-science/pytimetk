@@ -1,8 +1,9 @@
 import pandas as pd
+import polars as pl
 import pandas_flavor as pf
 import numpy as np
 
-from typing import Union, Optional, Callable, Tuple, List
+from typing import Callable, List, Optional, Tuple, Union
 
 from pathos.multiprocessing import ProcessingPool
 
@@ -11,12 +12,23 @@ from pytimetk.utils.checks import (
     check_date_column,
 )
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    normalize_engine,
+    restore_output_type,
+)
 
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_rolling_apply(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     window_func: Union[Tuple[str, Callable], List[Tuple[str, Callable]]],
     window: Union[int, tuple, list] = 2,
@@ -24,7 +36,8 @@ def augment_rolling_apply(
     center: bool = False,
     threads: int = 1,
     show_progress: bool = True,
-) -> pd.DataFrame:
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Apply one or more DataFrame-based rolling functions and window sizes to one
     or more columns of a DataFrame.
@@ -178,12 +191,16 @@ def augment_rolling_apply(
     display(regression_wide_df)
     ```
     """
-    # Checks
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
 
+    _engine_resolved = normalize_engine(engine, data)
+
+    conversion: FrameConversion = convert_to_engine(data, "pandas")
+    prepared_data = conversion.data
+
     # Get threads
-    threads = get_threads(threads)
+    threads_resolved = get_threads(threads)
 
     # Validate window argument and convert it to a consistent list format
     if not isinstance(window, (int, tuple, list)):
@@ -198,13 +215,17 @@ def augment_rolling_apply(
         window_func = [window_func]
 
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
+    data_copy = (
+        prepared_data.copy()
+        if isinstance(prepared_data, pd.DataFrame)
+        else prepared_data.obj.copy()
+    )
 
     original_index = data_copy.index
 
     # Group data if it's a GroupBy object; otherwise, prepare it for the rolling calculations
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
+    if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
+        group_names = prepared_data.grouper.names
         grouped = data_copy.sort_values(by=[*group_names, date_column]).groupby(
             group_names
         )
@@ -212,7 +233,7 @@ def augment_rolling_apply(
         group_names = None
         grouped = [([], data_copy.sort_values(by=[date_column]))]
 
-    if threads == 1:
+    if threads_resolved == 1:
         result_dfs = []
         for group in conditional_tqdm(
             grouped,
@@ -224,7 +245,7 @@ def augment_rolling_apply(
             result_dfs.append(_process_single_rolling_apply_group(args))
     else:
         # Prepare to use pathos.multiprocessing
-        pool = ProcessingPool(threads)
+        pool = ProcessingPool(threads_resolved)
         args = [(group, window, window_func, min_periods, center) for group in grouped]
         result_dfs = list(
             conditional_tqdm(
@@ -243,8 +264,14 @@ def augment_rolling_apply(
         [data_copy.reset_index(drop=True), result_df.reset_index(drop=True)], axis=1
     )
     result_df.index = original_index
+    result_df = result_df.sort_index()
 
-    return result_df
+    restored = restore_output_type(result_df, conversion)
+
+    if isinstance(restored, pd.DataFrame):
+        return restored.sort_index()
+
+    return restored
 
 
 def _process_single_rolling_apply_group(args):

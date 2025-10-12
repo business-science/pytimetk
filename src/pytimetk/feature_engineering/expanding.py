@@ -4,7 +4,7 @@ import pandas_flavor as pf
 import inspect
 import warnings
 
-from typing import Union, Optional, Callable, Tuple
+from typing import Callable, List, Optional, Sequence, Tuple, Union
 
 from pathos.multiprocessing import ProcessingPool
 from functools import partial
@@ -18,22 +18,35 @@ from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 from pytimetk.utils.polars_helpers import update_dict
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    resolve_polars_group_columns,
+    restore_output_type,
+)
 
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_expanding(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
-    value_column: Union[str, list],
-    window_func: Union[str, list, Tuple[str, Callable]] = "mean",
+    value_column: Union[str, List[str]],
+    window_func: Union[str, List[Union[str, Tuple[str, Callable]]], Tuple[str, Callable]] = "mean",
     min_periods: Optional[int] = None,
-    engine: str = "pandas",
+    engine: Optional[str] = "auto",
     threads: int = 1,
     show_progress: bool = True,
     reduce_memory: bool = False,
     **kwargs,
-) -> pd.DataFrame:
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Apply one or more Series-based expanding functions to one or more columns of a DataFrame.
 
@@ -68,14 +81,10 @@ def augment_expanding(
         Minimum observations in the window to have a value. Defaults to the window
         size. If set, a value will be produced even if fewer observations are
         present than the window size.
-    engine : str, optional, default 'pandas'
+    engine : {"auto", "pandas", "polars"}, optional, default "auto"
         Specifies the backend computation library for augmenting expanding window
-        functions.
-
-        The options are:
-            - "pandas" (default): Uses the `pandas` library.
-            - "polars": Uses the `polars` library, which may offer performance
-               benefits for larger datasets.
+        functions. When "auto" the backend is inferred from the input data type.
+        Use "pandas" or "polars" to force a specific backend.
     threads : int, optional, default 1
         Number of threads to use for parallel processing. If `threads` is set to
         1, parallel processing will be disabled. Set to -1 to use all available CPU cores.
@@ -160,24 +169,24 @@ def augment_expanding(
     import pandas as pd
     import polars as pl
     import numpy as np
+    import pytimetk.polars_namespace
     from pytimetk.utils.polars_helpers import pl_quantile
     from pytimetk.utils.pandas_helpers import pd_quantile
 
     df = tk.load_dataset("m4_daily", parse_dates = ['date'])
 
     expanded_df = (
-        df
-            .groupby('id')
-            .augment_expanding(
+        pl.from_pandas(df)
+            .group_by('id')
+            .tk.augment_expanding(
                 date_column = 'date',
                 value_column = 'value',
                 window_func = [
                     'mean',  # Built-in mean function
                     'std',   # Built-in std function
-                    ('quantile_75', pl_quantile(quantile=0.75)),  # Configurable with all parameters found in polars.Expr.rolling_quantile
+                    ('quantile_75', pl_quantile(quantile=0.75)),
                 ],
                 min_periods = 1,
-                engine = 'polars',  # Utilize Polars for the underlying computations
             )
     )
     display(expanded_df)
@@ -212,67 +221,92 @@ def augment_expanding(
     display(expanded_df)
     ```
     """
-    # Checks
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
     check_value_column(data, value_column)
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    engine_resolved = normalize_engine(engine, data)
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
 
-    # Convert string value column to list for consistency
-    if isinstance(value_column, str):
-        value_column = [value_column]
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
-    # Convert single window function to list for consistent processing
-    if isinstance(window_func, (str, tuple)):
-        window_func = [window_func]
+    value_columns: List[str] = (
+        [value_column] if isinstance(value_column, str) else list(value_column)
+    )
 
-    # Set min_periods to 1 if not specified
-    min_periods = 1 if min_periods is None else min_periods
+    window_funcs = (
+        list(window_func) if isinstance(window_func, list) else [window_func]
+    )
 
-    # Call the function to augment expanding window columns using the specified engine
-    if engine == "pandas":
-        # Get threads
-        threads = get_threads(threads)
+    min_periods_resolved = 1 if min_periods is None else min_periods
 
-        ret = _augment_expanding_pandas(
-            data,
+    if engine_resolved == "pandas":
+        prepared_data, idx_unsorted = sort_dataframe(
+            prepared_data, date_column, keep_grouped_df=True
+        )
+        threads_resolved = get_threads(threads)
+        result = _augment_expanding_pandas(
+            prepared_data,
             date_column,
-            value_column,
-            window_func,
-            min_periods,
-            threads,
+            value_columns,
+            window_funcs,
+            min_periods_resolved,
+            threads_resolved,
             show_progress,
             **kwargs,
         )
+        if not isinstance(result, pd.DataFrame):
+            raise TypeError("Expanding augmentation must return a pandas DataFrame.")
 
-    elif engine == "polars":
-        ret = _augment_expanding_polars(
-            data, date_column, value_column, window_func, min_periods, **kwargs
+        result.index = idx_unsorted
+
+        if reduce_memory:
+            result = reduce_memory_usage(result)
+
+        result = result.sort_index()
+
+        restored = restore_output_type(result, conversion)
+
+        if isinstance(restored, pd.DataFrame):
+            return restored.sort_index()
+
+        return restored
+
+    if engine_resolved == "polars":
+        result_polars = _augment_expanding_polars(
+            prepared_data,
+            date_column,
+            value_columns,
+            window_funcs,
+            min_periods_resolved,
+            conversion.group_columns,
+            conversion.row_id_column,
         )
 
-        # Polars Index to Match Pandas
-        ret.index = idx_unsorted
+        restored = restore_output_type(result_polars, conversion)
 
-    else:
-        raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+        if isinstance(restored, pd.DataFrame):
+            return restored.sort_index()
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+        return restored
 
-    ret = ret.sort_index()
-
-    return ret
+    raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
 
 
 def _augment_expanding_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
-    value_column: Union[str, list],
-    window_func: Union[str, list, Tuple[str, Callable]] = "mean",
+    value_columns: List[str],
+    window_funcs: List[Union[str, Tuple[str, Callable]]],
     min_periods: Optional[int] = None,
     threads: int = 1,
     show_progress: bool = True,
@@ -299,8 +333,8 @@ def _augment_expanding_pandas(
     if threads == 1:
         func = partial(
             _process_expanding_window,
-            value_column=value_column,
-            window_func=window_func,
+            value_columns=value_columns,
+            window_funcs=window_funcs,
             min_periods=min_periods,
             **kwargs,
         )
@@ -322,8 +356,8 @@ def _augment_expanding_pandas(
         # Use partial to "freeze" arguments for _process_single_roll
         func = partial(
             _process_expanding_window,
-            value_column=value_column,
-            window_func=window_func,
+            value_columns=value_columns,
+            window_funcs=window_funcs,
             min_periods=min_periods,
             **kwargs,
         )
@@ -343,11 +377,16 @@ def _augment_expanding_pandas(
 
 
 def _process_expanding_window(
-    group_df, value_column, window_func, min_periods, **kwargs
+    group_df: pd.DataFrame,
+    value_columns: List[str],
+    window_funcs: List[Union[str, Tuple[str, Callable]]],
+    min_periods: Optional[int],
+    **kwargs,
 ):
     result_dfs = []
-    for col in value_column:
-        for func in window_func:
+    for col in value_columns:
+        for func in window_funcs:
+            resolved_min_periods = min_periods
             if isinstance(func, tuple):
                 # Ensure the tuple is of length 2 and begins with a string
                 if len(func) != 2:
@@ -361,6 +400,7 @@ def _process_expanding_window(
 
                 user_func_name, func = func
                 new_column_name = f"{col}_expanding_{user_func_name}"
+                resolved_min_periods = min_periods
 
                 # Try handling a lambda function of the form lambda x: x
                 if (
@@ -371,7 +411,7 @@ def _process_expanding_window(
                         # Construct expanding window column
                         group_df[new_column_name] = (
                             group_df[col]
-                            .expanding(min_periods=min_periods, **kwargs)
+                            .expanding(min_periods=resolved_min_periods, **kwargs)
                             .apply(func, raw=True)
                         )
                     except Exception as e:
@@ -405,8 +445,10 @@ def _process_expanding_window(
 
                     try:
                         # Get the expanding window function
-                        expanding_function = getattr(
-                            group_df[col].expanding(min_periods=min_periods, **kwargs),
+                            expanding_function = getattr(
+                            group_df[col].expanding(
+                                min_periods=resolved_min_periods, **kwargs
+                            ),
                             func_name,
                             None,
                         )
@@ -437,7 +479,7 @@ def _process_expanding_window(
                     new_column_name = f"{col}_expanding_{func}_50"
                     group_df[new_column_name] = (
                         group_df[col]
-                        .expanding(min_periods=min_periods, **kwargs)
+                        .expanding(min_periods=resolved_min_periods, **kwargs)
                         .quantile(q=0.5)
                     )
                     warnings.warn(
@@ -447,7 +489,9 @@ def _process_expanding_window(
                     )
                 else:
                     expanding_function = getattr(
-                        group_df[col].expanding(min_periods=min_periods, **kwargs),
+                        group_df[col].expanding(
+                            min_periods=resolved_min_periods, **kwargs
+                        ),
                         func,
                         None,
                     )
@@ -465,41 +509,30 @@ def _process_expanding_window(
 
 
 def _augment_expanding_polars(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
-    value_column: Union[str, list],
-    window_func: Union[str, list, Tuple[str, Callable]] = "mean",
-    min_periods: Optional[int] = None,
-    **kwargs,
+    value_columns: List[str],
+    window_funcs: List[Union[str, Tuple[str, Callable]]],
+    min_periods: Optional[int],
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
 ) -> pl.DataFrame:
-    """
-    Augments the given dataframe with expanding calculations using the Polars library.
-    """
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
 
-    # Retrieve the group column names if the input data is a GroupBy object
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
-    else:
-        group_names = None
+    frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
 
-    # Convert data into a Pandas DataFrame format for processing
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        pandas_df = data.obj.copy()
-    elif isinstance(data, pd.DataFrame):
-        pandas_df = data.copy()
-    else:
-        raise ValueError("Data must be a Pandas DataFrame or Pandas GroupBy object.")
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    sorted_frame = frame_with_id.sort(sort_keys)
 
-    # Initialize lists to store expanding expressions and new column names
-    expanding_exprs = []
-    new_column_names = []
+    window_size = sorted_frame.height
+    expanding_exprs: List[pl.Expr] = []
 
-    # Construct expanding expressions for each column and function combination
-    for col in value_column:
-        for func in window_func:
-            # Handle functions passed as tuples
+    for col in value_columns:
+        for func in window_funcs:
+            resolved_min_periods = min_periods
             if isinstance(func, tuple):
-                # Ensure the tuple is of length 2 and begins with a string
                 if len(func) != 2:
                     raise ValueError(
                         f"Expected tuple of length 2, but `window_func` received tuple of length {len(func)}."
@@ -509,61 +542,50 @@ def _augment_expanding_polars(
                         f"Expected first element of tuple to be type 'str', but `window_func` received {type(func[0])}."
                     )
 
-                user_func_name, func = func
+                user_func_name, func_impl = func
                 new_column_name = f"{col}_expanding_{user_func_name}"
+                resolved_min_periods = min_periods
 
-                # Try handling a lambda function of the form lambda x: x
                 if (
-                    inspect.isfunction(func)
-                    and len(inspect.signature(func).parameters) == 1
+                    inspect.isfunction(func_impl)
+                    and len(inspect.signature(func_impl).parameters) == 1
                 ):
                     try:
-                        # Construct expanding window expression
-                        expanding_expr = (
-                            pl.col(col)
-                            .cast(pl.Float64)
-                            .rolling_map(
-                                function=func,
-                                window_size=pandas_df.shape[0],
-                                min_periods=min_periods,
-                            )
+                        expr = pl.col(col).cast(pl.Float64).rolling_map(
+                            function=func_impl,
+                            window_size=window_size,
+                            min_samples=resolved_min_periods,
                         )
                     except Exception as e:
                         raise Exception(
                             f"An error occurred during the operation of the `{user_func_name}` function in Polars. Error: {e}"
                         )
-
-                # Try handling a configurable function (e.g. pl_quantile) if it is not a lambda function
-                elif isinstance(func, tuple) and func[0] == "configurable":
+                elif isinstance(func_impl, tuple) and func_impl[0] == "configurable":
                     try:
-                        # Configurable function should return 4 objects
-                        _, func_name, default_kwargs, user_kwargs = func
+                        _, func_name, default_kwargs, user_kwargs = func_impl
+                        default_kwargs = dict(default_kwargs)
+                        user_kwargs = dict(user_kwargs)
                     except Exception as e:
                         raise ValueError(
-                            f"Unexpected function format. Expected a tuple with format ('configurable', func_name, default_kwargs, user_kwargs). Received: {func}. Original error: {e}"
+                            f"Unexpected function format. Expected a tuple with format ('configurable', func_name, default_kwargs, user_kwargs). Received: {func_impl}. Original error: {e}"
                         )
 
                     try:
-                        # Define local values that may be required by configurable functions.
-                        # If adding a new configurable function in utils.polars_helpers that necessitates
-                        # additional local values, consider updating this dictionary accordingly.
                         local_values = {
-                            "window_size": pandas_df.shape[0],
-                            "min_periods": min_periods,
+                            "window_size": window_size,
+                            "min_samples": resolved_min_periods,
                         }
-                        # Combine local values with user-provided parameters for the configurable function
-                        user_kwargs.update(local_values)
-                        # Update the default configurable parameters (without adding new keys)
-                        default_kwargs = update_dict(default_kwargs, user_kwargs)
+                        merged_defaults = update_dict(
+                            default_kwargs, {**user_kwargs, **local_values}
+                        )
                     except Exception as e:
                         raise ValueError(
-                            "Error encountered while updating parameters for the configurable function `{func_name}` passed to `window_func`: {e}"
+                            f"Error encountered while updating parameters for the configurable function `{func_name}` passed to `window_func`: {e}"
                         )
 
                     try:
-                        # Construct expanding window expression
-                        expanding_expr = getattr(pl.col(col), f"rolling_{func_name}")(
-                            **default_kwargs
+                        expr = getattr(pl.col(col), f"rolling_{func_name}")(
+                            **merged_defaults
                         )
                     except AttributeError as e:
                         raise AttributeError(
@@ -573,34 +595,31 @@ def _augment_expanding_polars(
                         raise Exception(
                             f"Error during the execution of `{user_func_name}` in Polars. Error: {e}"
                         )
-
                 else:
                     raise TypeError(
                         f"Unexpected function format for `{user_func_name}`."
                     )
 
-                expanding_expr = expanding_expr.alias(new_column_name)
-
+                expr = expr.alias(new_column_name)
             elif isinstance(func, str):
                 func_name = func
                 new_column_name = f"{col}_expanding_{func_name}"
-                if not hasattr(pl.col(col), f"{func_name}"):
+                if not hasattr(pl.col(col), f"rolling_{func_name}"):
                     raise ValueError(
                         f"{func_name} is not a recognized function for Polars."
                     )
 
-                # Construct expanding window expression and handle specific case of 'skew'
-                if func_name == "skew":
-                    expanding_expr = getattr(pl.col(col), f"rolling_{func_name}")(
-                        window_size=pandas_df.shape[0]
-                    )
-                elif func_name == "quantile":
+                params = {
+                    "window_size": window_size,
+                    "min_samples": resolved_min_periods,
+                }
+
+                if func_name == "quantile":
                     new_column_name = f"{col}_expanding_{func}_50"
-                    expanding_expr = getattr(pl.col(col), f"rolling_{func_name}")(
+                    expr = getattr(pl.col(col), f"rolling_{func_name}")(
                         quantile=0.5,
-                        window_size=pandas_df.shape[0],
-                        min_periods=min_periods,
                         interpolation="midpoint",
+                        **params,
                     )
                     warnings.warn(
                         "You passed 'quantile' as a string-based function, so it defaulted to a 50 percent quantile (0.5). "
@@ -608,33 +627,21 @@ def _augment_expanding_polars(
                         "For example: ('quantile_75', pl_quantile(quantile=0.75))."
                     )
                 else:
-                    expanding_expr = getattr(pl.col(col), f"rolling_{func_name}")(
-                        window_size=pandas_df.shape[0], min_periods=min_periods
-                    )
+                    expr = getattr(pl.col(col), f"rolling_{func_name}")(**params)
 
-                expanding_expr = expanding_expr.alias(new_column_name)
-
+                expr = expr.alias(new_column_name)
             else:
                 raise TypeError(f"Invalid function type: {type(func)}")
 
-            # Add constructed expressions and new column names to respective lists
-            expanding_exprs.append(expanding_expr)
-            new_column_names.append(new_column_name)
+            if resolved_groups:
+                expr = expr.over(resolved_groups)
 
-    # Select the columns
-    selected_columns = expanding_exprs
+            expanding_exprs.append(expr)
 
-    df = pl.DataFrame(pandas_df)
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        out_df = df.group_by(data.grouper.names, maintain_order=True).agg(
-            selected_columns
-        )
-        out_df = out_df.explode(out_df.columns[len(data.grouper.names) :])
-        out_df = out_df.drop(data.grouper.names)
-    else:  # a dataframe
-        out_df = df.select(selected_columns)
+    augmented = sorted_frame.with_columns(expanding_exprs)
+    augmented = augmented.sort(row_col)
 
-    # Concatenate the DataFrames horizontally
-    df = pl.concat([df, out_df], how="horizontal").to_pandas()
+    if generated:
+        augmented = augmented.drop(row_col)
 
-    return df
+    return augmented

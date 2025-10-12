@@ -1,8 +1,10 @@
 import numpy as np
 import pandas as pd
+import polars as pl
 import pandas_flavor as pf
+import warnings
 
-from typing import Union, List
+from typing import List, Optional, Sequence, Union
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -10,18 +12,32 @@ from pytimetk.utils.checks import (
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.utils.dataframe_ops import (
+    FrameConversion,
+    convert_to_engine,
+    ensure_row_id_column,
+    normalize_engine,
+    resolve_polars_group_columns,
+    restore_output_type,
+)
 
 
 @pf.register_groupby_method
 def augment_wavelet(
-    data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
     date_column: str,
     value_column: str,
     method: str,
     sample_rate: str,
     scales: Union[str, List[str]],
     reduce_memory: bool = False,
-) -> pd.DataFrame:
+    engine: Optional[str] = "auto",
+) -> Union[pd.DataFrame, pl.DataFrame]:
     """
     Apply the Wavely transform to specified columns of a DataFrame or
     DataFrameGroupBy object.
@@ -36,8 +52,8 @@ def augment_wavelet(
 
     Parameters
     ----------
-    data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
-        Input DataFrame or DataFrameGroupBy object with one or more columns of
+    data : DataFrame or GroupBy (pandas or polars)
+        Input DataFrame or grouped object with one or more columns of
         real-valued signals.
     value_column : str or list
         List of column names in 'data' to which the Hilbert transform will be
@@ -82,13 +98,17 @@ def augment_wavelet(
         term patterns, then adjust accordingly.
     reduce_memory : bool, optional
         The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.
+    engine : {"auto", "pandas", "polars"}, optional, default "auto"
+        Specifies the backend used for the computation. When "auto" the backend
+        is inferred from the input data. Use "pandas" or "polars" to force a
+        specific backend.
 
 
     Returns
     -------
-    df_wavelet : pd.DataFrame
+    df_wavelet : DataFrame
         DataFrame with added columns for CWT coefficients for each scale, with
-        a real and imaginary column added.
+        a real and imaginary column added. Matches the backend of the input data.
 
     Notes
     -----
@@ -171,24 +191,25 @@ def augment_wavelet(
     ```
 
     ```{python}
-    # Example 2: Using Pandas Engine on a pandas dataframe
+    # Example 2: Using the polars accessor on a DataFrame
     import pytimetk as tk
-    import pandas as pd
+    import polars as pl
+    import pytimetk.polars_namespace
 
     df = tk.load_dataset('taylor_30_min', parse_dates = ['date'])
 
     result_df = (
-        tk.augment_wavelet(
-            df,
-            date_column = 'date',
-            value_column ='value',
-            scales = [15],
-            sample_rate =1000,
-            method = 'morlet'
-        )
+        pl.from_pandas(df)
+            .tk.augment_wavelet(
+                date_column = 'date',
+                value_column ='value',
+                scales = [15],
+                sample_rate =1000,
+                method = 'morlet'
+            )
     )
 
-    result_df
+    result_df.head()
     ```
     """
     # Run common checks
@@ -196,10 +217,24 @@ def augment_wavelet(
     check_value_column(data, value_column)
     check_date_column(data, date_column)
 
-    if reduce_memory:
-        data = reduce_memory_usage(data)
+    engine_resolved = normalize_engine(engine, data)
 
-    data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    prepared_data = conversion.data
+
+    if reduce_memory and engine_resolved == "pandas":
+        prepared_data = reduce_memory_usage(prepared_data)
+    elif reduce_memory and engine_resolved == "polars":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+    if engine_resolved == "pandas":
+        prepared_data, idx_unsorted = sort_dataframe(
+            prepared_data, date_column, keep_grouped_df=True
+        )
 
     wavelet_functions = {
         "morlet": morlet_wavelet,
@@ -207,54 +242,149 @@ def augment_wavelet(
         "analytic_morlet": analytic_morlet_wavelet,
     }
 
-    # Sort the DataFrame by the date column before applying the CWT
-    if isinstance(data, pd.DataFrame):
-        data = data.sort_values(by=date_column)
-
     if method not in wavelet_functions:
         raise ValueError(
             f"Invalid method '{method}'. Available methods are {list(wavelet_functions.keys())}"
         )
 
-    # Select the wavelet function
+    if isinstance(scales, (int, float, str)):
+        scales_list = [scales]
+    else:
+        scales_list = list(scales)
+
     wavelet_function = wavelet_functions[method]
+    sample_rate_value = float(sample_rate)
 
-    # Compute the CWT
-    def compute_cwt(signal, wavelet_function, scales, sampling_rate):
+    def compute_cwt(signal, wavelet_func, scale_values, sampling_rate):
         coefficients = []
-
-        for scale in scales:
-            # Adjust the wavelet time vector based on the sample rate
-            wavelet_data = wavelet_function(
-                np.arange(-len(signal) // 2, len(signal) // 2) / sampling_rate / scale
+        for scale in scale_values:
+            wavelet_data = wavelet_func(
+                np.arange(-len(signal) // 2, len(signal) // 2) / sampling_rate / float(scale)
             )
             convolution = np.convolve(signal, np.conj(wavelet_data), mode="same")
             coefficients.append(convolution)
         return np.array(coefficients)
 
-    # Define helper function
-    def _apply_cwt(df):
-        values = df[value_column].values
-        coeffs = compute_cwt(values, wavelet_function, scales, sample_rate)
+    if engine_resolved == "pandas":
+        def _apply_cwt(df: pd.DataFrame) -> pd.DataFrame:
+            values = df[value_column].values
+            coeffs = compute_cwt(values, wavelet_function, scales_list, sample_rate_value)
+            for idx, scale in enumerate(scales_list):
+                df[f"{method}_scale_{scale}_real"] = coeffs[idx].real
+                df[f"{method}_scale_{scale}_imag"] = coeffs[idx].imag
+            return df
+
+        if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
+            ret = pd.concat([_apply_cwt(group) for _, group in prepared_data]).reset_index(
+                drop=True
+            )
+        else:
+            ret = _apply_cwt(prepared_data)
+
+        ret.index = idx_unsorted
+
+        if reduce_memory:
+            ret = reduce_memory_usage(ret)
+
+        ret = ret.sort_index()
+
+        restored = restore_output_type(ret, conversion)
+
+        if isinstance(restored, pd.DataFrame):
+            return restored.sort_index()
+
+        return restored
+
+    if engine_resolved == "polars":
+        result_polars = _augment_wavelet_polars(
+            prepared_data,
+            date_column,
+            value_column,
+            wavelet_function,
+            scales_list,
+            sample_rate_value,
+            method,
+            conversion.group_columns,
+            conversion.row_id_column,
+        )
+
+        restored = restore_output_type(result_polars, conversion)
+
+        if isinstance(restored, pd.DataFrame):
+            return restored.sort_index()
+
+        return restored
+
+    raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+
+
+def _augment_wavelet_polars(
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
+    date_column: str,
+    value_column: str,
+    wavelet_function,
+    scales: List[Union[int, float, str]],
+    sample_rate: float,
+    method: str,
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> pl.DataFrame:
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+
+    frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
+
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    sorted_frame = frame_with_id.sort(sort_keys)
+
+    def compute_coefficients(signal: np.ndarray) -> List[np.ndarray]:
+        coeffs: List[np.ndarray] = []
+        for scale in scales:
+            scale_float = float(scale)
+            wavelet_data = wavelet_function(
+                np.arange(-len(signal) // 2, len(signal) // 2)
+                / sample_rate
+                / scale_float
+            )
+            convolution = np.convolve(signal, np.conj(wavelet_data), mode="same")
+            coeffs.append(convolution)
+        return coeffs
+
+    def apply_wavelet(pl_group: pl.DataFrame) -> pl.DataFrame:
+        signal = pl_group[value_column].to_numpy()
+        coeffs = compute_coefficients(signal)
+        new_series = []
         for idx, scale in enumerate(scales):
-            df[f"{method}_scale_{scale}_real"] = coeffs[idx].real
-            df[f"{method}_scale_{scale}_imag"] = coeffs[idx].imag
-        return df
+            new_series.extend(
+                [
+                    pl.Series(f"{method}_scale_{scale}_real", np.real(coeffs[idx])),
+                    pl.Series(f"{method}_scale_{scale}_imag", np.imag(coeffs[idx])),
+                ]
+            )
+        return pl_group.with_columns(new_series)
 
-    # Check if data is a groupby object
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        ret = pd.concat(
-            [_apply_cwt(group.sort_values(by=date_column)) for _, group in data]
-        ).reset_index(drop=True)
+    output_schema = {
+        **sorted_frame.schema,
+        **{f"{method}_scale_{scale}_real": pl.Float64 for scale in scales},
+        **{f"{method}_scale_{scale}_imag": pl.Float64 for scale in scales},
+    }
+
+    if resolved_groups:
+        transformed = (
+            sorted_frame.group_by(resolved_groups, maintain_order=True)
+            .map_groups(apply_wavelet, schema=output_schema)
+            .sort(sort_keys)
+        )
     else:
-        ret = _apply_cwt(data)
+        transformed = apply_wavelet(sorted_frame)
 
-    if reduce_memory:
-        ret = reduce_memory_usage(ret)
+    transformed = transformed.sort(row_col)
 
-    ret = ret.sort_index()
+    if generated:
+        transformed = transformed.drop(row_col)
 
-    return ret
+    return transformed
 def morlet_wavelet(t, fc=1.0):
     """Compute the Complex Morlet wavelet"""
     return np.exp(1j * np.pi * fc * t) * np.exp(-(t**2) / 2)
