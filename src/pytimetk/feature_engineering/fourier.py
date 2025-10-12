@@ -124,7 +124,7 @@ def augment_fourier(
     ``` {python}
     # Example 4 - Polars DataFrame using the tk accessor
     import polars as pl
-    import pytimetk.polars_namespace
+
 
     pl_fourier = (
         pl.from_pandas(df)
@@ -210,7 +210,9 @@ def _augment_fourier_pandas(
     max_order: int,
 ) -> pd.DataFrame:
     sorted_df = base_df.sort_values(date_column)
-    new_cols_sorted = _compute_fourier_columns(sorted_df, date_column, periods, max_order)
+    new_cols_sorted = _compute_fourier_columns(
+        sorted_df, date_column, periods, max_order
+    )
     if new_cols_sorted.empty:
         return base_df.copy()
 

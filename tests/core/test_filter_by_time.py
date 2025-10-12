@@ -1,7 +1,7 @@
 import pandas as pd
 import polars as pl
 import pytimetk as tk
-import pytimetk.polars_namespace  # noqa: F401
+# noqa: F401
 
 
 def _sample_df():
@@ -32,7 +32,9 @@ def test_filter_by_time_pandas_dataframe():
         engine="pandas",
     )
     expected = df[(df["date"] >= "2023-01-02") & (df["date"] <= "2023-01-07")]
-    pd.testing.assert_frame_equal(result.reset_index(drop=True), expected.reset_index(drop=True))
+    pd.testing.assert_frame_equal(
+        result.reset_index(drop=True), expected.reset_index(drop=True)
+    )
 
 
 def test_filter_by_time_pandas_groupby():
@@ -48,7 +50,9 @@ def test_filter_by_time_pandas_groupby():
     expected = grouped.obj[
         (grouped.obj["date"] >= "2023-01-02") & (grouped.obj["date"] <= "2023-01-07")
     ]
-    pd.testing.assert_frame_equal(result.reset_index(drop=True), expected.reset_index(drop=True))
+    pd.testing.assert_frame_equal(
+        result.reset_index(drop=True), expected.reset_index(drop=True)
+    )
 
 
 def test_filter_by_time_polars_dataframe():
@@ -62,29 +66,30 @@ def test_filter_by_time_polars_dataframe():
         engine="polars",
     )
     expected = df[(df["date"] >= "2023-01-02") & (df["date"] <= "2023-01-07")]
-    pd.testing.assert_frame_equal(result.to_pandas().reset_index(drop=True), expected.reset_index(drop=True))
+    pd.testing.assert_frame_equal(
+        result.to_pandas().reset_index(drop=True), expected.reset_index(drop=True)
+    )
 
 
 def test_filter_by_time_polars_accessor_grouped():
     df = _sample_df()
     pl_df = pl.from_pandas(df)
 
-    result = (
-        pl_df
-        .group_by("id")
-        .tk.filter_by_time(
-            date_column="date",
-            start_date="2023-01-02",
-            end_date="2023-01-07",
-        )
+    result = pl_df.group_by("id").tk.filter_by_time(
+        date_column="date",
+        start_date="2023-01-02",
+        end_date="2023-01-07",
     )
 
     expected = df[(df["date"] >= "2023-01-02") & (df["date"] <= "2023-01-07")]
-    pd.testing.assert_frame_equal(result.to_pandas().reset_index(drop=True), expected.reset_index(drop=True))
+    pd.testing.assert_frame_equal(
+        result.to_pandas().reset_index(drop=True), expected.reset_index(drop=True)
+    )
 
 
 def test_filter_by_time_defaults():
     df = _sample_df()
     result = tk.filter_by_time(data=df, date_column="date", engine="pandas")
-    pd.testing.assert_frame_equal(result.reset_index(drop=True), df.reset_index(drop=True))
-
+    pd.testing.assert_frame_equal(
+        result.reset_index(drop=True), df.reset_index(drop=True)
+    )

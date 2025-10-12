@@ -39,7 +39,9 @@ def augment_expanding(
     ],
     date_column: str,
     value_column: Union[str, List[str]],
-    window_func: Union[str, List[Union[str, Tuple[str, Callable]]], Tuple[str, Callable]] = "mean",
+    window_func: Union[
+        str, List[Union[str, Tuple[str, Callable]]], Tuple[str, Callable]
+    ] = "mean",
     min_periods: Optional[int] = None,
     engine: Optional[str] = "auto",
     threads: int = 1,
@@ -169,7 +171,7 @@ def augment_expanding(
     import pandas as pd
     import polars as pl
     import numpy as np
-    import pytimetk.polars_namespace
+
     from pytimetk.utils.polars_helpers import pl_quantile
     from pytimetk.utils.pandas_helpers import pd_quantile
 
@@ -243,9 +245,7 @@ def augment_expanding(
         [value_column] if isinstance(value_column, str) else list(value_column)
     )
 
-    window_funcs = (
-        list(window_func) if isinstance(window_func, list) else [window_func]
-    )
+    window_funcs = list(window_func) if isinstance(window_func, list) else [window_func]
 
     min_periods_resolved = 1 if min_periods is None else min_periods
 
@@ -445,7 +445,7 @@ def _process_expanding_window(
 
                     try:
                         # Get the expanding window function
-                            expanding_function = getattr(
+                        expanding_function = getattr(
                             group_df[col].expanding(
                                 min_periods=resolved_min_periods, **kwargs
                             ),
@@ -551,10 +551,14 @@ def _augment_expanding_polars(
                     and len(inspect.signature(func_impl).parameters) == 1
                 ):
                     try:
-                        expr = pl.col(col).cast(pl.Float64).rolling_map(
-                            function=func_impl,
-                            window_size=window_size,
-                            min_samples=resolved_min_periods,
+                        expr = (
+                            pl.col(col)
+                            .cast(pl.Float64)
+                            .rolling_map(
+                                function=func_impl,
+                                window_size=window_size,
+                                min_samples=resolved_min_periods,
+                            )
                         )
                     except Exception as e:
                         raise Exception(

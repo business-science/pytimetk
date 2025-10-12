@@ -39,7 +39,9 @@ def augment_rolling(
     ],
     date_column: str,
     value_column: Union[str, List[str]],
-    window_func: Union[str, List[Union[str, Tuple[str, Callable]]], Tuple[str, Callable]] = "mean",
+    window_func: Union[
+        str, List[Union[str, Tuple[str, Callable]]], Tuple[str, Callable]
+    ] = "mean",
     window: Union[int, Tuple[int, int], List[int]] = 2,
     min_periods: Optional[int] = None,
     engine: Optional[str] = "auto",
@@ -192,7 +194,7 @@ def augment_rolling(
     # Example 3 - Multiple groups, polars engine
 
     import polars as pl
-    import pytimetk.polars_namespace
+
 
     rolled_df = (
         pl.from_pandas(df)
@@ -241,9 +243,7 @@ def augment_rolling(
     else:
         windows = [int(w) for w in window]
 
-    window_funcs = (
-        list(window_func) if isinstance(window_func, list) else [window_func]
-    )
+    window_funcs = list(window_func) if isinstance(window_func, list) else [window_func]
 
     threads_resolved = get_threads(threads)
 
@@ -448,7 +448,9 @@ def _process_single_roll(
                             )
 
                     # Try handling a configurable function (e.g. pd_quantile)
-                    elif isinstance(func_impl, tuple) and func_impl[0] == "configurable":
+                    elif (
+                        isinstance(func_impl, tuple) and func_impl[0] == "configurable"
+                    ):
                         try:
                             # Configurable function should return 4 objects
                             _, func_name, default_kwargs, user_kwargs = func_impl
@@ -598,17 +600,23 @@ def _augment_rolling_polars(
                         and len(inspect.signature(func_impl).parameters) == 1
                     ):
                         try:
-                            expr = pl.col(col).cast(pl.Float64).rolling_map(
-                                function=func_impl,
-                                window_size=window_size,
-                                min_samples=resolved_min_periods,
-                                center=center,
+                            expr = (
+                                pl.col(col)
+                                .cast(pl.Float64)
+                                .rolling_map(
+                                    function=func_impl,
+                                    window_size=window_size,
+                                    min_samples=resolved_min_periods,
+                                    center=center,
+                                )
                             )
                         except Exception as e:
                             raise Exception(
                                 f"An error occurred during the operation of the `{user_func_name}` function in Polars. Error: {e}"
                             )
-                    elif isinstance(func_impl, tuple) and func_impl[0] == "configurable":
+                    elif (
+                        isinstance(func_impl, tuple) and func_impl[0] == "configurable"
+                    ):
                         try:
                             _, func_name, default_kwargs, user_kwargs = func_impl
                             user_kwargs = dict(user_kwargs)

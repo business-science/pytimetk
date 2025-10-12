@@ -126,7 +126,7 @@ def augment_timeseries_signature(
     ```{python}
     # Polars DataFrame using the tk accessor
     import polars as pl
-    import pytimetk.polars_namespace
+
 
     pl_df = pl.from_pandas(df)
 

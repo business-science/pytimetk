@@ -179,7 +179,7 @@ def summarize_by_time(
     ```{python}
     # Example 2b - Summarize by time on a polars DataFrame using the tk accessor
     import polars as pl
-    import pytimetk.polars_namespace
+
 
     pl_df = pl.from_pandas(df)
 
@@ -376,9 +376,9 @@ def _summarize_by_time_polars(
     pandas_frame = frame.to_pandas()
 
     if conversion.group_columns:
-        pandas_data: Union[
-            pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy
-        ] = pandas_frame.groupby(conversion.group_columns, sort=False)
+        pandas_data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy] = (
+            pandas_frame.groupby(conversion.group_columns, sort=False)
+        )
     else:
         pandas_data = pandas_frame
 

@@ -310,7 +310,7 @@ def anomalize(
     # Polars DataFrame using the tk accessor
     import pandas as pd
     import polars as pl
-    import pytimetk.polars_namespace
+
 
     sample = pd.DataFrame(
         {

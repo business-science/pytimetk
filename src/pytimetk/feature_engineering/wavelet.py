@@ -195,7 +195,7 @@ def augment_wavelet(
     # Example 2: Using the polars accessor on a DataFrame
     import pytimetk as tk
     import polars as pl
-    import pytimetk.polars_namespace
+
 
     df = tk.load_dataset('taylor_30_min', parse_dates = ['date'])
 
@@ -260,25 +260,30 @@ def augment_wavelet(
         coefficients = []
         for scale in scale_values:
             wavelet_data = wavelet_func(
-                np.arange(-len(signal) // 2, len(signal) // 2) / sampling_rate / float(scale)
+                np.arange(-len(signal) // 2, len(signal) // 2)
+                / sampling_rate
+                / float(scale)
             )
             convolution = np.convolve(signal, np.conj(wavelet_data), mode="same")
             coefficients.append(convolution)
         return np.array(coefficients)
 
     if engine_resolved == "pandas":
+
         def _apply_cwt(df: pd.DataFrame) -> pd.DataFrame:
             values = df[value_column].values
-            coeffs = compute_cwt(values, wavelet_function, scales_list, sample_rate_value)
+            coeffs = compute_cwt(
+                values, wavelet_function, scales_list, sample_rate_value
+            )
             for idx, scale in enumerate(scales_list):
                 df[f"{method}_scale_{scale}_real"] = coeffs[idx].real
                 df[f"{method}_scale_{scale}_imag"] = coeffs[idx].imag
             return df
 
         if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
-            ret = pd.concat([_apply_cwt(group) for _, group in prepared_data]).reset_index(
-                drop=True
-            )
+            ret = pd.concat(
+                [_apply_cwt(group) for _, group in prepared_data]
+            ).reset_index(drop=True)
         else:
             ret = _apply_cwt(prepared_data)
 
@@ -386,6 +391,8 @@ def _augment_wavelet_polars(
         transformed = transformed.drop(row_col)
 
     return transformed
+
+
 def morlet_wavelet(t, fc=1.0):
     """Compute the Complex Morlet wavelet"""
     return np.exp(1j * np.pi * fc * t) * np.exp(-(t**2) / 2)

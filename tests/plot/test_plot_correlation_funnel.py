@@ -1,6 +1,7 @@
 import pandas as pd
 import polars as pl
-import pytimetk.polars_namespace  # noqa: F401
+
+# noqa: F401
 import plotly.graph_objects as go
 from plotnine import ggplot
 

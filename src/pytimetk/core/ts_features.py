@@ -197,7 +197,7 @@ def ts_features(
     # Polars DataFrame using the tk accessor
     import pandas as pd
     import polars as pl
-    import pytimetk.polars_namespace
+
     from tsfeatures import acf_features, hurst
 
     sample = pd.DataFrame(

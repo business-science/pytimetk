@@ -115,7 +115,7 @@ def augment_expanding_apply(
     ```{python}
     # Example (polars engine via tk accessor)
     import polars as pl
-    import pytimetk.polars_namespace
+
 
     df = generate_sample_data_1()
     (

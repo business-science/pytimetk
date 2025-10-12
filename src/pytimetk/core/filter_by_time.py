@@ -165,7 +165,7 @@ def filter_by_time(
     ```{python}
     # Example 7 - Filter using the polars engine and tk accessor
     import polars as pl
-    import pytimetk.polars_namespace
+
 
     pl_df = pl.from_pandas(m4_daily_df)
 

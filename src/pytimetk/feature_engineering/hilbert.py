@@ -112,7 +112,7 @@ def augment_hilbert(
     # Example 2: Using the polars accessor on a grouped table
     import pytimetk as tk
     import polars as pl
-    import pytimetk.polars_namespace
+
 
     df = tk.load_dataset('walmart_sales_weekly', parse_dates=['Date'])
     df_hilbert = (
@@ -131,7 +131,7 @@ def augment_hilbert(
     # Example 3: Using the polars accessor on a DataFrame
     import pytimetk as tk
     import polars as pl
-    import pytimetk.polars_namespace
+
 
     df = tk.load_dataset('taylor_30_min', parse_dates=['date'])
     df_hilbert = (
@@ -193,6 +193,8 @@ def augment_hilbert(
         return restored.sort_index()
 
     return restored
+
+
 def _augment_hilbert_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,

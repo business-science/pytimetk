@@ -4,7 +4,7 @@ import polars as pl
 import pytest
 import multiprocess as mp  # Use multiprocess instead of multiprocessing
 from itertools import product
-import pytimetk.polars_namespace  # noqa: F401
+# noqa: F401
 
 # Set spawn start method before tests
 mp.set_start_method("spawn", force=True)

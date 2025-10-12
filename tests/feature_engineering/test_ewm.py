@@ -1,13 +1,10 @@
 import pandas as pd
 import polars as pl
 import pytimetk as tk
-import pytimetk.polars_namespace
 
 
 def _sample_data():
-    df = tk.load_dataset("m4_daily", parse_dates=["date"]) \
-        .query("id == 'D10'") \
-        .head(10)
+    df = tk.load_dataset("m4_daily", parse_dates=["date"]).query("id == 'D10'").head(10)
     return df.copy()
 
 
@@ -39,21 +36,21 @@ def test_augment_ewm_polars_accessor():
     )
 
     assert isinstance(result, pl.DataFrame)
-    assert 'value_ewm_mean_alpha_0.3' in result.columns
+    assert "value_ewm_mean_alpha_0.3" in result.columns
 
 
 def test_augment_ewm_polars_groupby_accessor():
-    df = tk.load_dataset('m4_daily', parse_dates=['date']).head(200)
+    df = tk.load_dataset("m4_daily", parse_dates=["date"]).head(200)
 
     result = (
         pl.from_pandas(df)
-        .group_by('id')
+        .group_by("id")
         .tk.augment_ewm(
-            date_column='date',
-            value_column='value',
-            window_func='mean',
+            date_column="date",
+            value_column="value",
+            window_func="mean",
             alpha=0.2,
         )
     )
 
-    assert 'value_ewm_mean_alpha_0.2' in result.columns
+    assert "value_ewm_mean_alpha_0.2" in result.columns

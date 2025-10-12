@@ -1,7 +1,7 @@
 import pandas as pd
 import polars as pl
 import pytimetk as tk
-import pytimetk.polars_namespace  # noqa: F401
+# noqa: F401
 
 
 def _sample_df():
@@ -68,15 +68,10 @@ def test_apply_by_time_polars_dataframe():
 def test_apply_by_time_polars_accessor():
     df = _sample_df()
     pl_df = pl.from_pandas(df)
-    result = (
-        pl_df
-        .group_by("group")
-        .tk.apply_by_time(
-            date_column="date",
-            freq="D",
-            total=lambda frame: frame["value"].sum(),
-        )
+    result = pl_df.group_by("group").tk.apply_by_time(
+        date_column="date",
+        freq="D",
+        total=lambda frame: frame["value"].sum(),
     )
     assert isinstance(result, pl.DataFrame)
     assert {"group", "total"}.issubset(result.columns)
-

@@ -1,7 +1,7 @@
 import pandas as pd
 import polars as pl
 
-import pytimetk.polars_namespace  # noqa: F401
+# noqa: F401
 
 
 def _sample_dataframe() -> pd.DataFrame:

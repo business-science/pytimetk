@@ -1,6 +1,7 @@
 import polars as pl
 import pytimetk as tk
-import pytimetk.polars_namespace  # noqa: F401
+
+# noqa: F401
 import plotly.graph_objects as go
 from plotnine import ggplot
 
@@ -68,12 +69,12 @@ def test_plot_anomalies_groupby_polars_accessor():
     data["group"] = "grp1"
     pl_df = pl.from_pandas(data)
 
-    fig_plotly = (
-        pl_df.group_by("group").tk.plot_anomalies(date_column="Date", engine="plotly")
+    fig_plotly = pl_df.group_by("group").tk.plot_anomalies(
+        date_column="Date", engine="plotly"
     )
     assert isinstance(fig_plotly, go.Figure)
 
-    fig_plotnine = (
-        pl_df.group_by("group").tk.plot_anomalies(date_column="Date", engine="plotnine")
+    fig_plotnine = pl_df.group_by("group").tk.plot_anomalies(
+        date_column="Date", engine="plotnine"
     )
     assert isinstance(fig_plotnine, ggplot)
