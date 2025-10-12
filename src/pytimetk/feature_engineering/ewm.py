@@ -32,6 +32,8 @@ def augment_ewm(
     value_column: Union[str, list],
     window_func: Union[str, list] = "mean",
     alpha: float = None,
+    reduce_memory: bool = False,
+    engine: Optional[str] = "auto",
     **kwargs,
 ) -> Union[pd.DataFrame, pl.DataFrame]:
     """
@@ -145,7 +147,9 @@ def augment_ewm(
 
     engine_resolved = normalize_engine(engine, data)
 
-    if reduce_memory and engine_resolved == "polars":
+    if reduce_memory and not isinstance(
+        data, (pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy)
+    ):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
             RuntimeWarning,
