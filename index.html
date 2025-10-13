@@ -248,7 +248,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./guides/07_feature_store.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Feature Store &amp; Caching</span></a>
+ <span class="menu-text">Feature Store &amp; Caching (Beta)</span></a>
   </div>
 </li>
       </ul>
@@ -389,7 +389,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#quickstart" id="toc-quickstart" class="nav-link" data-scroll-target="#quickstart"><span class="header-section-number">3</span> Quickstart:</a>
   <ul class="collapse">
   <li><a href="#whats-new-in-pytimetk-2.0.0" id="toc-whats-new-in-pytimetk-2.0.0" class="nav-link" data-scroll-target="#whats-new-in-pytimetk-2.0.0"><span class="header-section-number">3.1</span> What’s New in pytimetk 2.0.0</a></li>
-  <li><a href="#feature-store-caching-new" id="toc-feature-store-caching-new" class="nav-link" data-scroll-target="#feature-store-caching-new"><span class="header-section-number">3.2</span> Feature Store &amp; Caching (New)</a></li>
+  <li><a href="#feature-store-caching-beta" id="toc-feature-store-caching-beta" class="nav-link" data-scroll-target="#feature-store-caching-beta"><span class="header-section-number">3.2</span> Feature Store &amp; Caching (Beta)</a></li>
   </ul></li>
   <li><a href="#documentation" id="toc-documentation" class="nav-link" data-scroll-target="#documentation"><span class="header-section-number">4</span> Documentation</a></li>
   <li><a href="#more-coming-soon" id="toc-more-coming-soon" class="nav-link" data-scroll-target="#more-coming-soon"><span class="header-section-number">5</span> 🏆 More Coming Soon…</a></li>
@@ -538,8 +538,21 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <li>See the <a href="https://business-science.github.io/pytimetk/changelog.html">change log</a> for more details.</li>
 </ul>
 </section>
-<section id="feature-store-caching-new" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="feature-store-caching-new"><span class="header-section-number">3.2</span> Feature Store &amp; Caching (New)</h2>
+<section id="feature-store-caching-beta" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="feature-store-caching-beta"><span class="header-section-number">3.2</span> Feature Store &amp; Caching (Beta)</h2>
+<div class="callout callout-style-default callout-warning callout-titled" title="Beta">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Beta
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The Feature Store is currently released as a <strong>Beta</strong> capability. APIs, configuration options, and storage formats may change in upcoming releases. Please <a href="https://github.com/business-science/pytimetk/issues">share feedback or issues</a> so we can stabilize it quickly.</p>
+</div>
+</div>
 <p>Persist expensive feature engineering steps once and reuse them everywhere. Register a transform, build it on a dataset, and reload it in any notebook or job with automatic versioning, metadata, and cache hits.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
