@@ -116,25 +116,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <!-- SUMO -->
 <script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
-<script type="text/javascript">
-window.PlotlyConfig = {MathJaxConfig: 'local'};
-if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
-if (typeof require !== 'undefined') {
-require.undef("plotly");
-requirejs.config({
-    paths: {
-        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
-    }
-});
-require(['plotly'], function(Plotly) {
-    window._Plotly = Plotly;
-});
-}
-</script>
-
 
 
 <meta property="og:title" content="">
@@ -404,17 +385,15 @@ require(['plotly'], function(Plotly) {
    
   <ul>
   <li><a href="#introducing-pytimetk-simplifying-time-series-analysis-for-everyone" id="toc-introducing-pytimetk-simplifying-time-series-analysis-for-everyone" class="nav-link active" data-scroll-target="#introducing-pytimetk-simplifying-time-series-analysis-for-everyone"><span class="header-section-number">1</span> Introducing pytimetk: Simplifying Time Series Analysis for Everyone</a></li>
-  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation"><span class="header-section-number">2</span> 🚀 Installation</a></li>
-  <li><a href="#quick-start-a-monthly-sales-analysis" id="toc-quick-start-a-monthly-sales-analysis" class="nav-link" data-scroll-target="#quick-start-a-monthly-sales-analysis"><span class="header-section-number">3</span> 🏁 Quick Start: A Monthly Sales Analysis</a>
+  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation"><span class="header-section-number">2</span> Installation</a></li>
+  <li><a href="#quickstart" id="toc-quickstart" class="nav-link" data-scroll-target="#quickstart"><span class="header-section-number">3</span> Quickstart:</a>
   <ul class="collapse">
-  <li><a href="#import-libraries-data" id="toc-import-libraries-data" class="nav-link" data-scroll-target="#import-libraries-data">Import Libraries &amp; Data</a></li>
-  <li><a href="#using-summarize_by_time-for-a-sales-analysis" id="toc-using-summarize_by_time-for-a-sales-analysis" class="nav-link" data-scroll-target="#using-summarize_by_time-for-a-sales-analysis">Using <code>summarize_by_time()</code> for a Sales Analysis</a></li>
-  <li><a href="#visualizing-sales-patterns" id="toc-visualizing-sales-patterns" class="nav-link" data-scroll-target="#visualizing-sales-patterns">Visualizing Sales Patterns</a></li>
+  <li><a href="#whats-new-in-pytimetk-2.0.0" id="toc-whats-new-in-pytimetk-2.0.0" class="nav-link" data-scroll-target="#whats-new-in-pytimetk-2.0.0"><span class="header-section-number">3.1</span> What’s New in pytimetk 2.0.0</a></li>
+  <li><a href="#feature-store-caching-new" id="toc-feature-store-caching-new" class="nav-link" data-scroll-target="#feature-store-caching-new"><span class="header-section-number">3.2</span> Feature Store &amp; Caching (New)</a></li>
   </ul></li>
-  <li><a href="#documentation" id="toc-documentation" class="nav-link" data-scroll-target="#documentation"><span class="header-section-number">4</span> 📚 Documentation</a></li>
-  <li><a href="#contributing" id="toc-contributing" class="nav-link" data-scroll-target="#contributing"><span class="header-section-number">5</span> 🍻 Contributing</a></li>
-  <li><a href="#more-coming-soon" id="toc-more-coming-soon" class="nav-link" data-scroll-target="#more-coming-soon"><span class="header-section-number">6</span> 🏆 More Coming Soon…</a></li>
-  <li><a href="#star-history" id="toc-star-history" class="nav-link" data-scroll-target="#star-history"><span class="header-section-number">7</span> ⭐️ Star History</a></li>
+  <li><a href="#documentation" id="toc-documentation" class="nav-link" data-scroll-target="#documentation"><span class="header-section-number">4</span> Documentation</a></li>
+  <li><a href="#more-coming-soon" id="toc-more-coming-soon" class="nav-link" data-scroll-target="#more-coming-soon"><span class="header-section-number">5</span> 🏆 More Coming Soon…</a></li>
+  <li><a href="#star-history" id="toc-star-history" class="nav-link" data-scroll-target="#star-history"><span class="header-section-number">6</span> ⭐️ Star History</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/index.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -444,7 +423,6 @@ require(['plotly'], function(Plotly) {
 <blockquote class="blockquote">
 <p>Time series easier, faster, more fun. Pytimetk.</p>
 </blockquote>
-<p><strong>PyTimetk’s Mission:</strong> To make time series analysis easier, faster, and more enjoyable in Python.</p>
 <p><a href="https://github.com/business-science/pytimetk"><strong>Please ⭐ us on GitHub (it takes 2-seconds and means a lot).</strong></a></p>
 <section id="introducing-pytimetk-simplifying-time-series-analysis-for-everyone" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Introducing pytimetk: Simplifying Time Series Analysis for Everyone</h1>
@@ -466,7 +444,7 @@ require(['plotly'], function(Plotly) {
 <tbody>
 <tr class="odd">
 <td><strong>Speed</strong></td>
-<td>🚀 3X to 500X Faster</td>
+<td>🚀 3X to 3500X Faster</td>
 <td>🐢 Standard</td>
 </tr>
 <tr class="even">
@@ -497,12 +475,27 @@ require(['plotly'], function(Plotly) {
 <tr class="odd">
 <td><code>augment_timeseries_signature()</code></td>
 <td>📅 1 line, all calendar features</td>
-<td>🕐 30 lines of <code>dt</code> extractors</td>
+<td>🕐 29 lines of <code>dt</code> extractors</td>
 </tr>
 <tr class="even">
 <td><code>augment_rolling()</code></td>
 <td>🏎️ 10X to 3500X faster</td>
 <td>🐢 Slow Rolling Operations</td>
+</tr>
+<tr class="odd">
+<td>polars <code>.tk</code> plotting</td>
+<td>✅ Plot directly on <code>pl.DataFrame</code> (<code>plot_timeseries</code>, <code>plot_anomalies</code>, <code>plot_correlation_funnel</code>, …)</td>
+<td>❌ pandas-only accessor</td>
+</tr>
+<tr class="even">
+<td>polars <code>.tk</code> accessor</td>
+<td>✅ Core, feature, and plotting helpers available via <code>.tk</code> on pandas/polars</td>
+<td>❌ N/A</td>
+</tr>
+<tr class="odd">
+<td>Feature store &amp; caching</td>
+<td>🗃️ Persist, version, and reuse feature sets (with optional MLflow logging)</td>
+<td>❌ Manual recompute, no metadata lineage</td>
 </tr>
 </tbody>
 </table>
@@ -513,359 +506,80 @@ require(['plotly'], function(Plotly) {
 <p>Explore more at our <a href="https://business-science.github.io/pytimetk/">pytimetk homepage</a>.</p>
 </section>
 <section id="installation" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> 🚀 Installation</h1>
-<p>Install the Latest Stable Version:</p>
+<h1 data-number="2"><span class="header-section-number">2</span> Installation</h1>
+<p>Install the latest stable version of <code>pytimetk</code> using <code>pip</code>:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install pytimetk</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Alternatively, install the Development GitHub Version:</p>
+<p>Alternatively you can install the development version:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">--upgrade</span> <span class="at">--force-reinstall</span> git+https://github.com/business-science/pytimetk.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="quick-start-a-monthly-sales-analysis" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> 🏁 Quick Start: A Monthly Sales Analysis</h1>
-<p>This is a simple exercise to showcase the power of <a href="./reference/summarize_by_time.html"><code>summarize_by_time()</code></a>:</p>
-<section id="import-libraries-data" class="level3">
-<h3 class="anchored" data-anchor-id="import-libraries-data">Import Libraries &amp; Data</h3>
-<p>First, <code>import pytimetk as tk</code>. This gets you access to the most important functions. Use <code>tk.load_dataset()</code> to load the “bike_sales_sample” dataset.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-About the Bike Sales Sample Dataset
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
-<div class="callout-body-container callout-body">
-<p>This dataset contains “orderlines” for orders recieved. The <code>order_date</code> column contains timestamps. We can use this column to peform sales aggregations (e.g.&nbsp;total revenue).</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<section id="quickstart" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Quickstart:</h1>
+<p>This is a simple code to test the function <code>summarize_by_time</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'bike_sales_sample'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.datasets.load_dataset(<span class="st">'bike_sales_sample'</span>)</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'order_date'</span>] <span class="op">=</span> pd.to_datetime(df[<span class="st">'order_date'</span>])</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>df   </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">order_id</th>
-<th data-quarto-table-cell-role="th">order_line</th>
-<th data-quarto-table-cell-role="th">order_date</th>
-<th data-quarto-table-cell-role="th">quantity</th>
-<th data-quarto-table-cell-role="th">price</th>
-<th data-quarto-table-cell-role="th">total_price</th>
-<th data-quarto-table-cell-role="th">model</th>
-<th data-quarto-table-cell-role="th">category_1</th>
-<th data-quarto-table-cell-role="th">category_2</th>
-<th data-quarto-table-cell-role="th">frame_material</th>
-<th data-quarto-table-cell-role="th">bikeshop_name</th>
-<th data-quarto-table-cell-role="th">city</th>
-<th data-quarto-table-cell-role="th">state</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>1</td>
-<td>1</td>
-<td>2011-01-07</td>
-<td>1</td>
-<td>6070</td>
-<td>6070</td>
-<td>Jekyll Carbon 2</td>
-<td>Mountain</td>
-<td>Over Mountain</td>
-<td>Carbon</td>
-<td>Ithaca Mountain Climbers</td>
-<td>Ithaca</td>
-<td>NY</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>1</td>
-<td>2</td>
-<td>2011-01-07</td>
-<td>1</td>
-<td>5970</td>
-<td>5970</td>
-<td>Trigger Carbon 2</td>
-<td>Mountain</td>
-<td>Over Mountain</td>
-<td>Carbon</td>
-<td>Ithaca Mountain Climbers</td>
-<td>Ithaca</td>
-<td>NY</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2</td>
-<td>1</td>
-<td>2011-01-10</td>
-<td>1</td>
-<td>2770</td>
-<td>2770</td>
-<td>Beast of the East 1</td>
-<td>Mountain</td>
-<td>Trail</td>
-<td>Aluminum</td>
-<td>Kansas City 29ers</td>
-<td>Kansas City</td>
-<td>KS</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>2</td>
-<td>2</td>
-<td>2011-01-10</td>
-<td>1</td>
-<td>5970</td>
-<td>5970</td>
-<td>Trigger Carbon 2</td>
-<td>Mountain</td>
-<td>Over Mountain</td>
-<td>Carbon</td>
-<td>Kansas City 29ers</td>
-<td>Kansas City</td>
-<td>KS</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>3</td>
-<td>1</td>
-<td>2011-01-10</td>
-<td>1</td>
-<td>10660</td>
-<td>10660</td>
-<td>Supersix Evo Hi-Mod Team</td>
-<td>Road</td>
-<td>Elite Road</td>
-<td>Carbon</td>
-<td>Louisville Race Equipment</td>
-<td>Louisville</td>
-<td>KY</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2461</td>
-<td>321</td>
-<td>3</td>
-<td>2011-12-22</td>
-<td>1</td>
-<td>1410</td>
-<td>1410</td>
-<td>CAAD8 105</td>
-<td>Road</td>
-<td>Elite Road</td>
-<td>Aluminum</td>
-<td>Miami Race Equipment</td>
-<td>Miami</td>
-<td>FL</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">2462</td>
-<td>322</td>
-<td>1</td>
-<td>2011-12-28</td>
-<td>1</td>
-<td>1250</td>
-<td>1250</td>
-<td>Synapse Disc Tiagra</td>
-<td>Road</td>
-<td>Endurance Road</td>
-<td>Aluminum</td>
-<td>Phoenix Bi-peds</td>
-<td>Phoenix</td>
-<td>AZ</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2463</td>
-<td>322</td>
-<td>2</td>
-<td>2011-12-28</td>
-<td>1</td>
-<td>2660</td>
-<td>2660</td>
-<td>Bad Habit 2</td>
-<td>Mountain</td>
-<td>Trail</td>
-<td>Aluminum</td>
-<td>Phoenix Bi-peds</td>
-<td>Phoenix</td>
-<td>AZ</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">2464</td>
-<td>322</td>
-<td>3</td>
-<td>2011-12-28</td>
-<td>1</td>
-<td>2340</td>
-<td>2340</td>
-<td>F-Si 1</td>
-<td>Mountain</td>
-<td>Cross Country Race</td>
-<td>Aluminum</td>
-<td>Phoenix Bi-peds</td>
-<td>Phoenix</td>
-<td>AZ</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2465</td>
-<td>322</td>
-<td>4</td>
-<td>2011-12-28</td>
-<td>1</td>
-<td>5860</td>
-<td>5860</td>
-<td>Synapse Hi-Mod Dura Ace</td>
-<td>Road</td>
-<td>Endurance Road</td>
-<td>Carbon</td>
-<td>Phoenix Bi-peds</td>
-<td>Phoenix</td>
-<td>AZ</td>
-</tr>
-</tbody>
-</table>
-
-<p>2466 rows × 13 columns</p>
-</div>
-</div>
-</div>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">\</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"category_2"</span>) <span class="op">\</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    .summarize_by_time(</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'order_date'</span>, </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        value_column<span class="op">=</span> <span class="st">'total_price'</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        freq <span class="op">=</span> <span class="st">"MS"</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        agg_func <span class="op">=</span> [<span class="st">'mean'</span>, <span class="st">'sum'</span>],</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        engine <span class="op">=</span> <span class="st">"polars"</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="whats-new-in-pytimetk-2.0.0" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="whats-new-in-pytimetk-2.0.0"><span class="header-section-number">3.1</span> What’s New in pytimetk 2.0.0</h2>
+<ul>
+<li>Added polars <code>.tk</code> accessor support for plotting helpers (<code>plot_timeseries</code>, <code>plot_anomalies</code>, <code>plot_anomalies_decomp</code>, <code>plot_anomalies_cleaned</code>, <code>plot_correlation_funnel</code>).</li>
+<li>Polars users can now call these functions directly on <code>pl.DataFrame</code> objects via the <code>.tk</code> accessor; results mirror the pandas interface (Plotly <code>Figure</code> or plotnine <code>ggplot</code>).</li>
+<li>See the <a href="https://business-science.github.io/pytimetk/changelog.html">change log</a> for more details.</li>
+</ul>
 </section>
-<section id="using-summarize_by_time-for-a-sales-analysis" class="level3">
-<h3 class="anchored" data-anchor-id="using-summarize_by_time-for-a-sales-analysis">Using <code>summarize_by_time()</code> for a Sales Analysis</h3>
-<p>Your company might be interested in sales patterns for various categories of bicycles. We can obtain a grouped monthly sales aggregation by <code>category_1</code> in two lines of code:</p>
-<ol type="1">
-<li>First use pandas’s <code>groupby()</code> method to group the DataFrame on <code>category_1</code></li>
-<li>Next, use timetk’s <code>summarize_by_time()</code> method to apply the sum function my month start (“MS”) and use <code>wide_format = 'False'</code> to return the dataframe in a long format (Note long format is the default). The default engine is <code>"pandas"</code>. Selecting <code>engine = "polars"</code> allows us to improve the speed of the function.</li>
-</ol>
-<p>The result is the total revenue for Mountain and Road bikes by month.</p>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>summary_category_1_df <span class="op">=</span> df <span class="op">\</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"category_1"</span>) <span class="op">\</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    .summarize_by_time(</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        date_column  <span class="op">=</span> <span class="st">'order_date'</span>, </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span> <span class="st">'total_price'</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        freq         <span class="op">=</span> <span class="st">"MS"</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        agg_func     <span class="op">=</span> <span class="st">'sum'</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        wide_format  <span class="op">=</span> <span class="va">False</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        engine       <span class="op">=</span> <span class="st">"polars"</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Quickly examine each column</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>summary_category_1_df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 24 rows of 3 columns
-category_1:       object            ['Mountain', 'Mountain', 'Mountain', ...
-order_date:       datetime64[ns]    [Timestamp('2011-01-01 00:00:00'), T ...
-total_price_sum:  int64             [221490, 660555, 358855, 1075975, 45 ...</code></pre>
-</div>
-</div>
-</section>
-<section id="visualizing-sales-patterns" class="level3">
-<h3 class="anchored" data-anchor-id="visualizing-sales-patterns">Visualizing Sales Patterns</h3>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="true" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Now available: <code>plot_timeseries()</code>.
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse show">
-<div class="callout-body-container callout-body">
-<p>Plot time series is a quick and easy way to visualize time series and make professional time series plots.</p>
-</div>
-</div>
-</div>
-<p>With the data summarized by time, we can visualize with <code>plot_timeseries()</code>. <code>pytimetk</code> functions are <code>groupby()</code> aware meaning they understand if your data is grouped to do things by group. This is useful in time series where we often deal with 100s of time series groups.</p>
-<p>The default engine in “plotnine” for static plotting. Setting the <code>engine = "plotly"</code> returns an interactive plot.</p>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>summary_category_1_df <span class="op">\</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">'category_1'</span>) <span class="op">\</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    .plot_timeseries(</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        date_column  <span class="op">=</span> <span class="st">'order_date'</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        value_column <span class="op">=</span> <span class="st">'total_price_sum'</span>,</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        smooth_frac  <span class="op">=</span> <span class="fl">0.8</span>,</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        engine       <span class="op">=</span> <span class="st">"plotly"</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-
-<div>                            <div id="5286c4c9-7bdb-4789-a1ab-801b2ae52b20" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("5286c4c9-7bdb-4789-a1ab-801b2ae52b20")) {                    Plotly.newPlot(                        "5286c4c9-7bdb-4789-a1ab-801b2ae52b20",                        [{"line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"total_price_sum","showlegend":false,"x":["2011-01-01T00:00:00","2011-02-01T00:00:00","2011-03-01T00:00:00","2011-04-01T00:00:00","2011-05-01T00:00:00","2011-06-01T00:00:00","2011-07-01T00:00:00","2011-08-01T00:00:00","2011-09-01T00:00:00","2011-10-01T00:00:00","2011-11-01T00:00:00","2011-12-01T00:00:00"],"y":[221490,660555,358855,1075975,450440,723040,767740,361255,401125,377335,549345,276055],"type":"scatter","xaxis":"x","yaxis":"y","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(51, 102, 255, 1.0)","width":1.0},"mode":"lines","name":"Smoother","showlegend":false,"x":["2011-01-01T00:00:00","2011-02-01T00:00:00","2011-03-01T00:00:00","2011-04-01T00:00:00","2011-05-01T00:00:00","2011-06-01T00:00:00","2011-07-01T00:00:00","2011-08-01T00:00:00","2011-09-01T00:00:00","2011-10-01T00:00:00","2011-11-01T00:00:00","2011-12-01T00:00:00"],"y":[376663.48471446673,446959.7697079851,514137.49573183706,578457.7215888742,632509.2683400059,623273.9092840238,567085.2279904813,518132.00117887,476077.90927500685,424535.8213673224,376054.5442319171,332727.54536695353],"type":"scatter","xaxis":"x","yaxis":"y","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(44, 62, 80, 1.0)","width":0.65},"mode":"lines","name":"total_price_sum","showlegend":false,"x":["2011-01-01T00:00:00","2011-02-01T00:00:00","2011-03-01T00:00:00","2011-04-01T00:00:00","2011-05-01T00:00:00","2011-06-01T00:00:00","2011-07-01T00:00:00","2011-08-01T00:00:00","2011-09-01T00:00:00","2011-10-01T00:00:00","2011-11-01T00:00:00","2011-12-01T00:00:00"],"y":[261525,501520,301120,751165,393730,690405,426690,318535,413595,357585,456740,197065],"type":"scatter","xaxis":"x2","yaxis":"y2","hoverlabel":{"font":{"size":8.8}}},{"line":{"color":"rgba(51, 102, 255, 1.0)","width":1.0},"mode":"lines","name":"Smoother","showlegend":false,"x":["2011-01-01T00:00:00","2011-02-01T00:00:00","2011-03-01T00:00:00","2011-04-01T00:00:00","2011-05-01T00:00:00","2011-06-01T00:00:00","2011-07-01T00:00:00","2011-08-01T00:00:00","2011-09-01T00:00:00","2011-10-01T00:00:00","2011-11-01T00:00:00","2011-12-01T00:00:00"],"y":[341897.3419373227,387431.8498741961,429715.83646044944,467711.8953893882,499284.8981599913,487833.7842666665,455338.0897487429,424449.63156829413,394616.8316989604,357201.8222017318,322146.1198387504,288715.53457746323],"type":"scatter","xaxis":"x2","yaxis":"y2","hoverlabel":{"font":{"size":8.8}}}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"showticklabels":true,"title":{"text":""},"tickformat":"%b %Y","visible":true,"tickfont":{"size":8.8}},"yaxis":{"anchor":"x","domain":[0.625,1.0],"title":{"text":""},"tickfont":{"size":8.8}},"xaxis2":{"anchor":"y2","domain":[0.0,1.0],"showticklabels":true,"visible":true,"tickfont":{"size":8.8}},"yaxis2":{"anchor":"x2","domain":[0.0,0.375],"tickfont":{"size":8.8}},"annotations":[{"font":{"size":8.8},"showarrow":false,"text":"Mountain","x":0.5,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":8.8},"showarrow":false,"text":"Road","x":0.5,"xanchor":"center","xref":"paper","y":0.375,"yanchor":"bottom","yref":"paper"}],"legend":{"title":{"text":"Legend","font":{"size":8.8}},"font":{"size":8.8}},"title":{"text":"Time Series Plot","font":{"size":13.2}},"margin":{"l":10,"r":10,"t":40,"b":40},"font":{"size":11},"autosize":true},                        {"responsive": true}                    ).then(function(){
-                            
-var gd = document.getElementById('5286c4c9-7bdb-4789-a1ab-801b2ae52b20');
-var x = new MutationObserver(function (mutations, observer) {{
-        var display = window.getComputedStyle(gd).display;
-        if (!display || display === 'none') {{
-            console.log([gd, 'removed!']);
-            Plotly.purge(gd);
-            observer.disconnect();
-        }}
-}});
-
-// Listen for the removal of the full notebook cells
-var notebookContainer = gd.closest('#notebook-container');
-if (notebookContainer) {{
-    x.observe(notebookContainer, {childList: true});
-}}
-
-// Listen for the clearing of the current output cell
-var outputEl = gd.closest('.output');
-if (outputEl) {{
-    x.observe(outputEl, {childList: true});
-}}
-
-                        })                };                });            </script>        </div>
-</div>
-</div>
+<section id="feature-store-caching-new" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="feature-store-caching-new"><span class="header-section-number">3.2</span> Feature Store &amp; Caching (New)</h2>
+<p>Persist expensive feature engineering steps once and reuse them everywhere. Register a transform, build it on a dataset, and reload it in any notebook or job with automatic versioning, metadata, and cache hits.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"bike_sales_sample"</span>, parse_dates<span class="op">=</span>[<span class="st">"order_date"</span>])</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>store <span class="op">=</span> tk.FeatureStore()</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>store.register(</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sales_signature"</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> data: tk.augment_timeseries_signature(</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        data,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"order_date"</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">"pandas"</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    default_key_columns<span class="op">=</span>(<span class="st">"order_id"</span>,),</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    description<span class="op">=</span><span class="st">"Calendar signatures for sales orders."</span>,</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> store.build(<span class="st">"sales_signature"</span>, df)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(result.from_cache)  <span class="co"># False first run, True on subsequent builds</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Supports local disk or any <code>pyarrow</code> filesystem (e.g., <code>s3://</code>, <code>gs://</code>) via the <code>artifact_uri</code> parameter, plus optional file-based locking for concurrent jobs.</li>
+<li>Optional MLflow helpers capture feature versions and artifacts with your experiments for reproducible pipelines.</li>
+</ul>
 </section>
 </section>
 <section id="documentation" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> 📚 Documentation</h1>
-<p>Next step? Learn more with the <a href="https://business-science.github.io/pytimetk/">pytimetk documentation</a></p>
+<h1 data-number="4"><span class="header-section-number">4</span> Documentation</h1>
+<p>Get started with the <a href="https://business-science.github.io/pytimetk/">pytimetk documentation</a></p>
 <ul>
 <li><a href="https://business-science.github.io/pytimetk/">📈 Overview</a></li>
 <li><a href="https://business-science.github.io/pytimetk/getting-started/02_quick_start.html">🏁 Getting Started</a></li>
 <li><a href="https://business-science.github.io/pytimetk/guides/01_visualization.html">🗺️ Beginner Guides</a></li>
 <li><a href="https://business-science.github.io/pytimetk/tutorials/01_sales_crm.html">📘Applied Data Science Tutorials</a></li>
-<li><a href="https://business-science.github.io/pytimetk/performance/01_speed_comparisons.html">🏎️Speed Comparisons</a></li>
 <li><a href="https://business-science.github.io/pytimetk/reference/">📄 API Reference</a></li>
 </ul>
 </section>
-<section id="contributing" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> 🍻 Contributing</h1>
-<p>Interested in helping us make this the best Python package for time series analysis? We’d love your help.</p>
-<p><a href="./contributing.html">Follow these instructions to Contribute.</a></p>
-</section>
-<section id="more-coming-soon" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> 🏆 More Coming Soon…</h1>
+<section id="more-coming-soon" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> 🏆 More Coming Soon…</h1>
 <p>We are in the early stages of development. But it’s obvious the potential for <code>pytimetk</code> now in Python. 🐍</p>
 <ul>
 <li>Please <a href="https://github.com/business-science/pytimetk">⭐ us on GitHub</a> (it takes 2-seconds and means a lot).</li>
@@ -873,8 +587,8 @@ if (outputEl) {{
 <li>Want to contribute? <a href="./contributing.html">See our contributing guide here.</a></li>
 </ul>
 </section>
-<section id="star-history" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> ⭐️ Star History</h1>
+<section id="star-history" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> ⭐️ Star History</h1>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="https://star-history.com/#business-science/pytimetk&amp;Date"><img src="https://api.star-history.com/svg?repos=business-science/pytimetk&amp;type=Date.png" class="img-fluid figure-img"></a></p>
