@@ -224,6 +224,7 @@ else:
         store,
         "sales_signature",
         run_id=train_run.info.run_id,
+        params_prefix="train",
         return_engine="pandas",
     )
     reloaded.metadata.version

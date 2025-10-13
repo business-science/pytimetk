@@ -392,7 +392,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#remote-artifact-storage" id="toc-remote-artifact-storage" class="nav-link" data-scroll-target="#remote-artifact-storage"><span class="header-section-number">7</span> Remote Artifact Storage</a></li>
   <li><a href="#coordinated-writes-with-locks" id="toc-coordinated-writes-with-locks" class="nav-link" data-scroll-target="#coordinated-writes-with-locks"><span class="header-section-number">8</span> Coordinated Writes with Locks</a></li>
   <li><a href="#assemble-multiple-feature-sets" id="toc-assemble-multiple-feature-sets" class="nav-link" data-scroll-target="#assemble-multiple-feature-sets"><span class="header-section-number">9</span> Assemble Multiple Feature Sets</a></li>
-  <li><a href="#cleaning-up" id="toc-cleaning-up" class="nav-link" data-scroll-target="#cleaning-up"><span class="header-section-number">10</span> Cleaning Up</a></li>
+  <li><a href="#mlflow-integration" id="toc-mlflow-integration" class="nav-link" data-scroll-target="#mlflow-integration"><span class="header-section-number">10</span> MLflow Integration</a></li>
+  <li><a href="#cleaning-up" id="toc-cleaning-up" class="nav-link" data-scroll-target="#cleaning-up"><span class="header-section-number">11</span> Cleaning Up</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/guides/07_feature_store.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -438,24 +439,26 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>sales <span class="op">=</span> tk.load_dataset(<span class="st">"bike_sales_sample"</span>, parse_dates<span class="op">=</span>[<span class="st">"order_date"</span>])</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>store <span class="op">=</span> tk.FeatureStore()</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>store.register(</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sales_signature"</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> df: tk.augment_timeseries_signature(</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        df,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"order_date"</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">"pandas"</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    default_key_columns<span class="op">=</span>(<span class="st">"order_id"</span>,),</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    description<span class="op">=</span><span class="st">"Calendar features for order history."</span>,</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>signature <span class="op">=</span> store.build(<span class="st">"sales_signature"</span>, sales, return_engine<span class="op">=</span><span class="st">"pandas"</span>)</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>signature.from_cache, signature.metadata.row_count, signature.metadata.column_count</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>sales <span class="op">=</span> tk.load_dataset(<span class="st">"bike_sales_sample"</span>, parse_dates<span class="op">=</span>[<span class="st">"order_date"</span>])</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>feature_store_root <span class="op">=</span> Path(<span class="st">"feature-store-demo"</span>).resolve()</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>store <span class="op">=</span> tk.FeatureStore(root_path<span class="op">=</span>feature_store_root)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>store.register(</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sales_signature"</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> df: tk.augment_timeseries_signature(</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        df,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"order_date"</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">"pandas"</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    default_key_columns<span class="op">=</span>(<span class="st">"order_id"</span>,),</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    description<span class="op">=</span><span class="st">"Calendar features for order history."</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>signature <span class="op">=</span> store.build(<span class="st">"sales_signature"</span>, sales, return_engine<span class="op">=</span><span class="st">"pandas"</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>signature.from_cache, signature.metadata.row_count, signature.metadata.column_count</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>(True, 2466, 42)</code></pre>
@@ -485,7 +488,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </details>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>('1b8b4a5044cb',
- '/Users/mdancho/.pytimetk/feature_store/sales_signature/1b8b4a5044cb/features.parquet')</code></pre>
+ '/Users/mdancho/Desktop/software/pytimetk/docs/guides/feature-store-demo/sales_signature/1b8b4a5044cb/features.parquet')</code></pre>
 </div>
 </div>
 </section>
@@ -529,15 +532,15 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
+<td data-quarto-table-cell-role="th">1</td>
 <td>daily_signature</td>
 <td>b5737af06b34</td>
 <td>b5737af06b34b585fd87b7ce19621ad77269a1a112d3c5...</td>
-<td>/Users/mdancho/.pytimetk/feature_store/daily_s...</td>
+<td>/Users/mdancho/Desktop/software/pytimetk/docs/...</td>
 <td>parquet</td>
 <td>local</td>
-<td>/Users/mdancho/.pytimetk/feature_store</td>
-<td>2025-10-12T19:04:48.458163+00:00</td>
+<td>/Users/mdancho/Desktop/software/pytimetk/docs/...</td>
+<td>2025-10-13T00:50:11.564352+00:00</td>
 <td>58f3182c6e1e814ebb65cdddeed4f694e087fcb429fb86...</td>
 <td>232245564d3e5f4368f45e100ad3cf910c2c5f2435bd3f...</td>
 <td>...</td>
@@ -553,39 +556,15 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>{}</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>sales_centered</td>
-<td>03999f2ca238</td>
-<td>03999f2ca238305c4c83b4144d4ef9cea9358e306d4706...</td>
-<td>/Users/mdancho/.pytimetk/feature_store/sales_c...</td>
-<td>parquet</td>
-<td>local</td>
-<td>/Users/mdancho/.pytimetk/feature_store</td>
-<td>2025-10-13T00:24:14.115168+00:00</td>
-<td>58f3182c6e1e814ebb65cdddeed4f694e087fcb429fb86...</td>
-<td>0f01340d2c5063e767b73b9eda4bdaaac36547c9e1e020...</td>
-<td>...</td>
-<td>centered</td>
-<td>{}</td>
-<td>1.2.5.9000</td>
-<td>{'pandas': '2.2.3', 'polars': '1.32.3'}</td>
-<td>()</td>
-<td>None</td>
-<td>(order_id,)</td>
-<td>2466</td>
-<td>14</td>
-<td>{}</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
+<td data-quarto-table-cell-role="th">0</td>
 <td>sales_signature</td>
 <td>1b8b4a5044cb</td>
 <td>1b8b4a5044cb0c642be6f3711fecff93dad660c789a338...</td>
-<td>/Users/mdancho/.pytimetk/feature_store/sales_s...</td>
+<td>/Users/mdancho/Desktop/software/pytimetk/docs/...</td>
 <td>parquet</td>
 <td>local</td>
-<td>/Users/mdancho/.pytimetk/feature_store</td>
-<td>2025-10-13T00:24:14.052637+00:00</td>
+<td>/Users/mdancho/Desktop/software/pytimetk/docs/...</td>
+<td>2025-10-13T00:50:11.497343+00:00</td>
 <td>58f3182c6e1e814ebb65cdddeed4f694e087fcb429fb86...</td>
 <td>072694e4aac0e5fb6f354672b1a1125da9bf127a623db0...</td>
 <td>...</td>
@@ -600,16 +579,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>42</td>
 <td>{}</td>
 </tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
 <td>seasonal_fourier</td>
 <td>09c5058b609f</td>
 <td>09c5058b609f7e3ba7ba85c1e70d4247041e732f7256e6...</td>
-<td>/Users/mdancho/.pytimetk/feature_store/seasona...</td>
+<td>/Users/mdancho/Desktop/software/pytimetk/docs/...</td>
 <td>parquet</td>
 <td>local</td>
-<td>/Users/mdancho/.pytimetk/feature_store</td>
-<td>2025-10-12T19:04:48.465857+00:00</td>
+<td>/Users/mdancho/Desktop/software/pytimetk/docs/...</td>
+<td>2025-10-13T00:50:11.571455+00:00</td>
 <td>58f3182c6e1e814ebb65cdddeed4f694e087fcb429fb86...</td>
 <td>40d3ecfa320a4c7e379ea7adafd989c91533bdaafa6a98...</td>
 <td>...</td>
@@ -627,7 +606,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tbody>
 </table>
 
-<p>4 rows × 21 columns</p>
+<p>3 rows × 21 columns</p>
 </div>
 </div>
 </div>
@@ -637,7 +616,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>store.describe(<span class="st">"sales_signature"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>FeatureSetMetadata(name='sales_signature', version='1b8b4a5044cb', cache_key='1b8b4a5044cb0c642be6f3711fecff93dad660c789a3382cbf74c089e5e3be49', storage_path='/Users/mdancho/.pytimetk/feature_store/sales_signature/1b8b4a5044cb/features.parquet', storage_format='parquet', storage_backend='local', artifact_uri='/Users/mdancho/.pytimetk/feature_store', created_at='2025-10-13T00:24:14.052637+00:00', data_fingerprint='58f3182c6e1e814ebb65cdddeed4f694e087fcb429fb86c8ad3cc634d3355f23', transform_fingerprint='072694e4aac0e5fb6f354672b1a1125da9bf127a623db084a6a8c9c7f39cb202', transform_module='__main__', transform_name='&lt;lambda&gt;', transform_kwargs={}, pytimetk_version='1.2.5.9000', package_versions={'pandas': '2.2.3', 'polars': '1.32.3'}, tags=(), description='Calendar features for order history.', key_columns=('order_id',), row_count=2466, column_count=42, extra_metadata={})</code></pre>
+<pre><code>FeatureSetMetadata(name='sales_signature', version='1b8b4a5044cb', cache_key='1b8b4a5044cb0c642be6f3711fecff93dad660c789a3382cbf74c089e5e3be49', storage_path='/Users/mdancho/Desktop/software/pytimetk/docs/guides/feature-store-demo/sales_signature/1b8b4a5044cb/features.parquet', storage_format='parquet', storage_backend='local', artifact_uri='/Users/mdancho/Desktop/software/pytimetk/docs/guides/feature-store-demo', created_at='2025-10-13T00:50:11.497343+00:00', data_fingerprint='58f3182c6e1e814ebb65cdddeed4f694e087fcb429fb86c8ad3cc634d3355f23', transform_fingerprint='072694e4aac0e5fb6f354672b1a1125da9bf127a623db084a6a8c9c7f39cb202', transform_module='__main__', transform_name='&lt;lambda&gt;', transform_kwargs={}, pytimetk_version='1.2.5.9000', package_versions={'pandas': '2.2.3', 'polars': '1.32.3'}, tags=(), description='Calendar features for order history.', key_columns=('order_id',), row_count=2466, column_count=42, extra_metadata={})</code></pre>
 </div>
 </div>
 </section>
@@ -650,7 +629,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>pl_sales <span class="op">=</span> pl.from_pandas(sales)</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>accessor <span class="op">=</span> pl_sales.tk.feature_store(root_path<span class="op">=</span>store.root_path)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>accessor <span class="op">=</span> pl_sales.tk.feature_store(root_path<span class="op">=</span>feature_store_root)</span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> centered(data: pl.DataFrame) <span class="op">-&gt;</span> pl.DataFrame:</span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> data.with_columns(</span>
@@ -663,7 +642,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>centered_features.from_cache, centered_features.metadata.storage_backend</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="6">
-<pre><code>(True, 'local')</code></pre>
+<pre><code>(False, 'local')</code></pre>
 </div>
 </div>
 </section>
@@ -673,31 +652,29 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="cell" data-execution_count="7">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>artifact_uri <span class="op">=</span> Path(<span class="st">"remote-artifacts"</span>).resolve().as_uri()</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>artifact_uri <span class="op">=</span> Path(<span class="st">"remote-artifacts"</span>).resolve().as_uri()</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>s3_store <span class="op">=</span> tk.FeatureStore(</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    root_path<span class="op">=</span><span class="st">"feature-catalog"</span>,          <span class="co"># metadata &amp; locks (local or network drive)</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    artifact_uri<span class="op">=</span>artifact_uri,            <span class="co"># where feature files live</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    lock_timeout<span class="op">=</span><span class="fl">60.0</span>,                    <span class="co"># optional: adjust lock timing</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>s3_store.register(</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sales_rolling"</span>,</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> df: tk.augment_rolling(</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>        df,</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"order_date"</span>,</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>        value_column<span class="op">=</span><span class="st">"total_price"</span>,</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span><span class="dv">7</span>,</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>        window_func<span class="op">=</span>[<span class="st">"mean"</span>, <span class="st">"max"</span>],</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">"pandas"</span>,</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    default_key_columns<span class="op">=</span>(<span class="st">"order_id"</span>,),</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>rolling <span class="op">=</span> s3_store.build(<span class="st">"sales_rolling"</span>, sales, return_engine<span class="op">=</span><span class="st">"pandas"</span>)</span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>rolling.metadata.storage_backend, rolling.metadata.storage_path</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>s3_store <span class="op">=</span> tk.FeatureStore(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    root_path<span class="op">=</span>feature_store_root <span class="op">/</span> <span class="st">"remote-catalog"</span>,  <span class="co"># metadata &amp; locks</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    artifact_uri<span class="op">=</span>artifact_uri,            <span class="co"># where feature files live</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    lock_timeout<span class="op">=</span><span class="fl">60.0</span>,                    <span class="co"># optional: adjust lock timing</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>s3_store.register(</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sales_rolling"</span>,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> df: tk.augment_rolling(</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>        df,</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"order_date"</span>,</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>        value_column<span class="op">=</span><span class="st">"total_price"</span>,</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span><span class="dv">7</span>,</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>        window_func<span class="op">=</span>[<span class="st">"mean"</span>, <span class="st">"max"</span>],</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">"pandas"</span>,</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    default_key_columns<span class="op">=</span>(<span class="st">"order_id"</span>,),</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>rolling <span class="op">=</span> s3_store.build(<span class="st">"sales_rolling"</span>, sales, return_engine<span class="op">=</span><span class="st">"pandas"</span>)</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>rolling.metadata.storage_backend, rolling.metadata.storage_path</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <pre><code>('pyarrow',
@@ -715,7 +692,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>store.enable_locking, (store.root_path <span class="op">/</span> <span class="st">".locks"</span>).iterdir()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="8">
-<pre><code>(True, &lt;generator object Path.iterdir at 0x109a29e50&gt;)</code></pre>
+<pre><code>(True, &lt;generator object Path.iterdir at 0x106482dc0&gt;)</code></pre>
 </div>
 </div>
 <p>Disable locking if your workflow guarantees exclusive writers:</p>
@@ -777,16 +754,56 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 <p>The assembled result is in-memory only (no artifact written), but includes metadata so you can track how it was produced.</p>
 </section>
-<section id="cleaning-up" class="level1" data-number="10">
-<h1 data-number="10"><span class="header-section-number">10</span> Cleaning Up</h1>
-<p>Remove a feature set (optionally keeping the cached artifact):</p>
+<section id="mlflow-integration" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> MLflow Integration</h1>
+<p>Record feature versions alongside your models with MLflow so every run knows exactly which cached artifact it depended on.</p>
 <div class="cell" data-execution_count="11">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the Polars feature set via its accessor store.</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>accessor.store.drop(<span class="st">"sales_centered"</span>)        <span class="co"># deletes metadata and artifact</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop a pandas feature set but keep the cached artifact for reuse.</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>store.drop(<span class="st">"sales_signature"</span>, delete_artifact<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> mlflow</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> pytimetk.feature_store <span class="im">import</span> (</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>        build_features_with_mlflow,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>        load_features_from_mlflow,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Skipping MLflow example:"</span>, exc)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    mlflow_tracking <span class="op">=</span> Path(<span class="st">"mlruns"</span>).resolve().as_uri()</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    mlflow.set_tracking_uri(mlflow_tracking)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> mlflow.start_run() <span class="im">as</span> train_run:</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>        signature_mlflow <span class="op">=</span> build_features_with_mlflow(</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>            store,</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>            <span class="st">"sales_signature"</span>,</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>            sales,</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>            params_prefix<span class="op">=</span><span class="st">"train"</span>,</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>            return_engine<span class="op">=</span><span class="st">"pandas"</span>,</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>        signature_mlflow.metadata.version</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    reloaded <span class="op">=</span> load_features_from_mlflow(</span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>        store,</span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>        <span class="st">"sales_signature"</span>,</span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>        run_id<span class="op">=</span>train_run.info.run_id,</span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>        params_prefix<span class="op">=</span><span class="st">"train"</span>,</span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>        return_engine<span class="op">=</span><span class="st">"pandas"</span>,</span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>    reloaded.metadata.version</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="cleaning-up" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> Cleaning Up</h1>
+<p>Remove a feature set (optionally keeping the cached artifact):</p>
+<div class="cell" data-execution_count="12">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the Polars feature set via its accessor store.</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>accessor.store.drop(<span class="st">"sales_centered"</span>)        <span class="co"># deletes metadata and artifact</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop a pandas feature set but keep the cached artifact for reuse.</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>store.drop(<span class="st">"sales_signature"</span>, delete_artifact<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>For remote backends the catalog metadata remains local, while the artifacts are removed from the remote filesystem via <code>pyarrow.fs</code>.</p>
