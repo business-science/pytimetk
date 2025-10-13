@@ -15,6 +15,12 @@ Persist expensive feature engineering once, reuse it everywhere. The feature sto
 
 # Why Use the Feature Store?
 
+Teams building time-series models (forecasting, anomaly detection, policy simulation) often compute the same feature sets—calendar signatures, lag stacks, rolling stats—across notebooks, pipelines, and model retrains.
+
+The feature store lets them register those transforms once, materialize them to disk or a shared URI, and reload them instantly later. That avoids re-running expensive calculations, keeps metadata/versioning consistent, and makes it easy to assemble feature matrices across multiple transforms for downstream modeling.
+
+# Benefits
+
 - **Avoid repeated work** – cache signatures, lag stacks, rolling stats, and any custom transform.
 - **Share across teams** – store artifacts on a shared file system or S3/GCS/Azure using `pyarrow.fs`.
 - **Track metadata automatically** – every build records parameters, row counts, hashes, timestamps, and version info.
@@ -191,8 +197,10 @@ The assembled result is in-memory only (no artifact written), but includes metad
 Remove a feature set (optionally keeping the cached artifact):
 
 ```{python}
-store.drop("sales_centered")                # deletes metadata and artifact
-store.drop("sales_signature", delete_artifact=False)  # metadata only
+# Remove the Polars feature set via its accessor store.
+accessor.store.drop("sales_centered")        # deletes metadata and artifact
+# Drop a pandas feature set but keep the cached artifact for reuse.
+store.drop("sales_signature", delete_artifact=False)
 ```
 
 For remote backends the catalog metadata remains local, while the artifacts are removed from the remote filesystem via `pyarrow.fs`.

@@ -384,14 +384,15 @@ gtag('config', '330861489', { 'anonymize_ip': true});
    
   <ul>
   <li><a href="#why-use-the-feature-store" id="toc-why-use-the-feature-store" class="nav-link active" data-scroll-target="#why-use-the-feature-store"><span class="header-section-number">1</span> Why Use the Feature Store?</a></li>
-  <li><a href="#quickstart-pandas" id="toc-quickstart-pandas" class="nav-link" data-scroll-target="#quickstart-pandas"><span class="header-section-number">2</span> Quickstart (Pandas)</a></li>
-  <li><a href="#reusing-features-later" id="toc-reusing-features-later" class="nav-link" data-scroll-target="#reusing-features-later"><span class="header-section-number">3</span> Reusing Features Later</a></li>
-  <li><a href="#inspecting-the-catalog" id="toc-inspecting-the-catalog" class="nav-link" data-scroll-target="#inspecting-the-catalog"><span class="header-section-number">4</span> Inspecting the Catalog</a></li>
-  <li><a href="#using-the-.tk-accessor-polars" id="toc-using-the-.tk-accessor-polars" class="nav-link" data-scroll-target="#using-the-.tk-accessor-polars"><span class="header-section-number">5</span> Using the <code>.tk</code> Accessor (Polars)</a></li>
-  <li><a href="#remote-artifact-storage" id="toc-remote-artifact-storage" class="nav-link" data-scroll-target="#remote-artifact-storage"><span class="header-section-number">6</span> Remote Artifact Storage</a></li>
-  <li><a href="#coordinated-writes-with-locks" id="toc-coordinated-writes-with-locks" class="nav-link" data-scroll-target="#coordinated-writes-with-locks"><span class="header-section-number">7</span> Coordinated Writes with Locks</a></li>
-  <li><a href="#assemble-multiple-feature-sets" id="toc-assemble-multiple-feature-sets" class="nav-link" data-scroll-target="#assemble-multiple-feature-sets"><span class="header-section-number">8</span> Assemble Multiple Feature Sets</a></li>
-  <li><a href="#cleaning-up" id="toc-cleaning-up" class="nav-link" data-scroll-target="#cleaning-up"><span class="header-section-number">9</span> Cleaning Up</a></li>
+  <li><a href="#benefits" id="toc-benefits" class="nav-link" data-scroll-target="#benefits"><span class="header-section-number">2</span> Benefits</a></li>
+  <li><a href="#quickstart-pandas" id="toc-quickstart-pandas" class="nav-link" data-scroll-target="#quickstart-pandas"><span class="header-section-number">3</span> Quickstart (Pandas)</a></li>
+  <li><a href="#reusing-features-later" id="toc-reusing-features-later" class="nav-link" data-scroll-target="#reusing-features-later"><span class="header-section-number">4</span> Reusing Features Later</a></li>
+  <li><a href="#inspecting-the-catalog" id="toc-inspecting-the-catalog" class="nav-link" data-scroll-target="#inspecting-the-catalog"><span class="header-section-number">5</span> Inspecting the Catalog</a></li>
+  <li><a href="#using-the-.tk-accessor-polars" id="toc-using-the-.tk-accessor-polars" class="nav-link" data-scroll-target="#using-the-.tk-accessor-polars"><span class="header-section-number">6</span> Using the <code>.tk</code> Accessor (Polars)</a></li>
+  <li><a href="#remote-artifact-storage" id="toc-remote-artifact-storage" class="nav-link" data-scroll-target="#remote-artifact-storage"><span class="header-section-number">7</span> Remote Artifact Storage</a></li>
+  <li><a href="#coordinated-writes-with-locks" id="toc-coordinated-writes-with-locks" class="nav-link" data-scroll-target="#coordinated-writes-with-locks"><span class="header-section-number">8</span> Coordinated Writes with Locks</a></li>
+  <li><a href="#assemble-multiple-feature-sets" id="toc-assemble-multiple-feature-sets" class="nav-link" data-scroll-target="#assemble-multiple-feature-sets"><span class="header-section-number">9</span> Assemble Multiple Feature Sets</a></li>
+  <li><a href="#cleaning-up" id="toc-cleaning-up" class="nav-link" data-scroll-target="#cleaning-up"><span class="header-section-number">10</span> Cleaning Up</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/guides/07_feature_store.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -418,6 +419,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <p>Persist expensive feature engineering once, reuse it everywhere. The feature store bundled with <strong>pytimetk ≥ 2.0</strong> lets you register reusable transforms, materialise results to disk (or any <code>pyarrow</code>-compatible object store), and reload them in downstream notebooks, jobs, or ML pipelines.</p>
 <section id="why-use-the-feature-store" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Why Use the Feature Store?</h1>
+<p>Teams building time-series models (forecasting, anomaly detection, policy simulation) often compute the same feature sets—calendar signatures, lag stacks, rolling stats—across notebooks, pipelines, and model retrains.</p>
+<p>The feature store lets them register those transforms once, materialize them to disk or a shared URI, and reload them instantly later. That avoids re-running expensive calculations, keeps metadata/versioning consistent, and makes it easy to assemble feature matrices across multiple transforms for downstream modeling.</p>
+</section>
+<section id="benefits" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Benefits</h1>
 <ul>
 <li><strong>Avoid repeated work</strong> – cache signatures, lag stacks, rolling stats, and any custom transform.</li>
 <li><strong>Share across teams</strong> – store artifacts on a shared file system or S3/GCS/Azure using <code>pyarrow.fs</code>.</li>
@@ -425,8 +431,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <li><strong>Coordinate writers</strong> – optional file locks prevent conflicting writes when multiple jobs run the same pipeline.</li>
 </ul>
 </section>
-<section id="quickstart-pandas" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Quickstart (Pandas)</h1>
+<section id="quickstart-pandas" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Quickstart (Pandas)</h1>
 <div class="cell" data-execution_count="1">
 <details open="">
 <summary>Code</summary>
@@ -467,8 +473,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 </section>
-<section id="reusing-features-later" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Reusing Features Later</h1>
+<section id="reusing-features-later" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Reusing Features Later</h1>
 <p>Copied metadata and artifacts can be loaded in another process by pointing to the same catalog folder:</p>
 <div class="cell" data-execution_count="3">
 <details open="">
@@ -483,8 +489,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 </section>
-<section id="inspecting-the-catalog" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Inspecting the Catalog</h1>
+<section id="inspecting-the-catalog" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Inspecting the Catalog</h1>
 <div class="cell" data-execution_count="4">
 <details open="">
 <summary>Code</summary>
@@ -523,7 +529,31 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1</td>
+<td data-quarto-table-cell-role="th">0</td>
+<td>daily_signature</td>
+<td>b5737af06b34</td>
+<td>b5737af06b34b585fd87b7ce19621ad77269a1a112d3c5...</td>
+<td>/Users/mdancho/.pytimetk/feature_store/daily_s...</td>
+<td>parquet</td>
+<td>local</td>
+<td>/Users/mdancho/.pytimetk/feature_store</td>
+<td>2025-10-12T19:04:48.458163+00:00</td>
+<td>58f3182c6e1e814ebb65cdddeed4f694e087fcb429fb86...</td>
+<td>232245564d3e5f4368f45e100ad3cf910c2c5f2435bd3f...</td>
+<td>...</td>
+<td>&lt;lambda&gt;</td>
+<td>{}</td>
+<td>1.2.5.9000</td>
+<td>{'pandas': '2.2.3', 'polars': '1.32.3'}</td>
+<td>()</td>
+<td>Calendar signatures on daily revenue.</td>
+<td>(order_date,)</td>
+<td>177</td>
+<td>31</td>
+<td>{}</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
 <td>sales_centered</td>
 <td>03999f2ca238</td>
 <td>03999f2ca238305c4c83b4144d4ef9cea9358e306d4706...</td>
@@ -531,7 +561,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>parquet</td>
 <td>local</td>
 <td>/Users/mdancho/.pytimetk/feature_store</td>
-<td>2025-10-12T18:58:10.302195+00:00</td>
+<td>2025-10-13T00:24:14.115168+00:00</td>
 <td>58f3182c6e1e814ebb65cdddeed4f694e087fcb429fb86...</td>
 <td>0f01340d2c5063e767b73b9eda4bdaaac36547c9e1e020...</td>
 <td>...</td>
@@ -546,8 +576,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>14</td>
 <td>{}</td>
 </tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">0</td>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
 <td>sales_signature</td>
 <td>1b8b4a5044cb</td>
 <td>1b8b4a5044cb0c642be6f3711fecff93dad660c789a338...</td>
@@ -555,7 +585,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>parquet</td>
 <td>local</td>
 <td>/Users/mdancho/.pytimetk/feature_store</td>
-<td>2025-10-12T18:32:13.674252+00:00</td>
+<td>2025-10-13T00:24:14.052637+00:00</td>
 <td>58f3182c6e1e814ebb65cdddeed4f694e087fcb429fb86...</td>
 <td>072694e4aac0e5fb6f354672b1a1125da9bf127a623db0...</td>
 <td>...</td>
@@ -570,10 +600,34 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>42</td>
 <td>{}</td>
 </tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>seasonal_fourier</td>
+<td>09c5058b609f</td>
+<td>09c5058b609f7e3ba7ba85c1e70d4247041e732f7256e6...</td>
+<td>/Users/mdancho/.pytimetk/feature_store/seasona...</td>
+<td>parquet</td>
+<td>local</td>
+<td>/Users/mdancho/.pytimetk/feature_store</td>
+<td>2025-10-12T19:04:48.465857+00:00</td>
+<td>58f3182c6e1e814ebb65cdddeed4f694e087fcb429fb86...</td>
+<td>40d3ecfa320a4c7e379ea7adafd989c91533bdaafa6a98...</td>
+<td>...</td>
+<td>&lt;lambda&gt;</td>
+<td>{}</td>
+<td>1.2.5.9000</td>
+<td>{'pandas': '2.2.3', 'polars': '1.32.3'}</td>
+<td>()</td>
+<td>None</td>
+<td>(order_date,)</td>
+<td>177</td>
+<td>8</td>
+<td>{}</td>
+</tr>
 </tbody>
 </table>
 
-<p>2 rows × 21 columns</p>
+<p>4 rows × 21 columns</p>
 </div>
 </div>
 </div>
@@ -583,12 +637,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>store.describe(<span class="st">"sales_signature"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>FeatureSetMetadata(name='sales_signature', version='1b8b4a5044cb', cache_key='1b8b4a5044cb0c642be6f3711fecff93dad660c789a3382cbf74c089e5e3be49', storage_path='/Users/mdancho/.pytimetk/feature_store/sales_signature/1b8b4a5044cb/features.parquet', storage_format='parquet', storage_backend='local', artifact_uri='/Users/mdancho/.pytimetk/feature_store', created_at='2025-10-12T18:32:13.674252+00:00', data_fingerprint='58f3182c6e1e814ebb65cdddeed4f694e087fcb429fb86c8ad3cc634d3355f23', transform_fingerprint='072694e4aac0e5fb6f354672b1a1125da9bf127a623db084a6a8c9c7f39cb202', transform_module='__main__', transform_name='&lt;lambda&gt;', transform_kwargs={}, pytimetk_version='1.2.5.9000', package_versions={'pandas': '2.2.3', 'polars': '1.32.3'}, tags=(), description='Calendar features for order history.', key_columns=('order_id',), row_count=2466, column_count=42, extra_metadata={})</code></pre>
+<pre><code>FeatureSetMetadata(name='sales_signature', version='1b8b4a5044cb', cache_key='1b8b4a5044cb0c642be6f3711fecff93dad660c789a3382cbf74c089e5e3be49', storage_path='/Users/mdancho/.pytimetk/feature_store/sales_signature/1b8b4a5044cb/features.parquet', storage_format='parquet', storage_backend='local', artifact_uri='/Users/mdancho/.pytimetk/feature_store', created_at='2025-10-13T00:24:14.052637+00:00', data_fingerprint='58f3182c6e1e814ebb65cdddeed4f694e087fcb429fb86c8ad3cc634d3355f23', transform_fingerprint='072694e4aac0e5fb6f354672b1a1125da9bf127a623db084a6a8c9c7f39cb202', transform_module='__main__', transform_name='&lt;lambda&gt;', transform_kwargs={}, pytimetk_version='1.2.5.9000', package_versions={'pandas': '2.2.3', 'polars': '1.32.3'}, tags=(), description='Calendar features for order history.', key_columns=('order_id',), row_count=2466, column_count=42, extra_metadata={})</code></pre>
 </div>
 </div>
 </section>
-<section id="using-the-.tk-accessor-polars" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Using the <code>.tk</code> Accessor (Polars)</h1>
+<section id="using-the-.tk-accessor-polars" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Using the <code>.tk</code> Accessor (Polars)</h1>
 <div class="cell" data-execution_count="6">
 <details open="">
 <summary>Code</summary>
@@ -613,8 +667,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 </section>
-<section id="remote-artifact-storage" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Remote Artifact Storage</h1>
+<section id="remote-artifact-storage" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Remote Artifact Storage</h1>
 <p>Artifacts can live in any <code>pyarrow</code> filesystem. Point <code>artifact_uri</code> at your bucket, folder, or lakehouse and the catalog will continue to live locally.</p>
 <div class="cell" data-execution_count="7">
 <details open="">
@@ -652,8 +706,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 <p>If the URI uses the <code>file://</code> scheme the same mechanism works for network file shares or mounted blob storage.</p>
 </section>
-<section id="coordinated-writes-with-locks" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> Coordinated Writes with Locks</h1>
+<section id="coordinated-writes-with-locks" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Coordinated Writes with Locks</h1>
 <p>By default, <code>FeatureStore</code> writes lock files under <code>&lt;root_path&gt;/.locks</code> so parallel jobs do not trample each other. Locks are scoped per feature name:</p>
 <div class="cell" data-execution_count="8">
 <details open="">
@@ -661,7 +715,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>store.enable_locking, (store.root_path <span class="op">/</span> <span class="st">".locks"</span>).iterdir()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="8">
-<pre><code>(True, &lt;generator object Path.iterdir at 0x106729ff0&gt;)</code></pre>
+<pre><code>(True, &lt;generator object Path.iterdir at 0x109a29e50&gt;)</code></pre>
 </div>
 </div>
 <p>Disable locking if your workflow guarantees exclusive writers:</p>
@@ -672,8 +726,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </details>
 </div>
 </section>
-<section id="assemble-multiple-feature-sets" class="level1" data-number="8">
-<h1 data-number="8"><span class="header-section-number">8</span> Assemble Multiple Feature Sets</h1>
+<section id="assemble-multiple-feature-sets" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Assemble Multiple Feature Sets</h1>
 <div class="cell" data-execution_count="10">
 <details open="">
 <summary>Code</summary>
@@ -723,14 +777,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 <p>The assembled result is in-memory only (no artifact written), but includes metadata so you can track how it was produced.</p>
 </section>
-<section id="cleaning-up" class="level1" data-number="9">
-<h1 data-number="9"><span class="header-section-number">9</span> Cleaning Up</h1>
+<section id="cleaning-up" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Cleaning Up</h1>
 <p>Remove a feature set (optionally keeping the cached artifact):</p>
 <div class="cell" data-execution_count="11">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>store.drop(<span class="st">"sales_centered"</span>)                <span class="co"># deletes metadata and artifact</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>store.drop(<span class="st">"sales_signature"</span>, delete_artifact<span class="op">=</span><span class="va">False</span>)  <span class="co"># metadata only</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the Polars feature set via its accessor store.</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>accessor.store.drop(<span class="st">"sales_centered"</span>)        <span class="co"># deletes metadata and artifact</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop a pandas feature set but keep the cached artifact for reuse.</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>store.drop(<span class="st">"sales_signature"</span>, delete_artifact<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>For remote backends the catalog metadata remains local, while the artifacts are removed from the remote filesystem via <code>pyarrow.fs</code>.</p>

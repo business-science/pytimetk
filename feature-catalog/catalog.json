@@ -1,0 +1,32 @@
+{
+  "feature_sets": [
+    {
+      "name": "sales_rolling",
+      "version": "644b3b483234",
+      "cache_key": "644b3b483234d5fc1e1bb93f496bfccdde772ea7ff6ec50326ef3cf8800fd356",
+      "storage_path": "file:///Users/mdancho/Desktop/software/pytimetk/remote-artifacts/sales_rolling/644b3b483234/features.parquet",
+      "storage_format": "parquet",
+      "storage_backend": "pyarrow",
+      "artifact_uri": "file:///Users/mdancho/Desktop/software/pytimetk/remote-artifacts",
+      "created_at": "2025-10-13T00:18:07.158117+00:00",
+      "data_fingerprint": "58f3182c6e1e814ebb65cdddeed4f694e087fcb429fb86c8ad3cc634d3355f23",
+      "transform_fingerprint": "22b14707ba77456ecf6325b3222151beeffdd674d3771beef307231908592e95",
+      "transform_module": "__main__",
+      "transform_name": "<lambda>",
+      "transform_kwargs": {},
+      "pytimetk_version": "1.2.5.9000",
+      "package_versions": {
+        "pandas": "2.2.3",
+        "polars": "1.32.3"
+      },
+      "tags": [],
+      "description": null,
+      "key_columns": [
+        "order_id"
+      ],
+      "row_count": 2466,
+      "column_count": 15,
+      "extra_metadata": {}
+    }
+  ]
+}
