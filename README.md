@@ -96,7 +96,9 @@ df \
 - Polars users can now call these functions directly on `pl.DataFrame` objects via the `.tk` accessor; results mirror the pandas interface (Plotly `Figure` or plotnine `ggplot`).
 - See the [change log](https://business-science.github.io/pytimetk/changelog.html) for more details.
 
-## Feature Store & Caching (New)
+## Feature Store & Caching (Beta)
+
+> ⚠️ **Beta:** The Feature Store APIs and on-disk format may change before general availability. We’d love [feedback and bug reports](https://github.com/business-science/pytimetk/issues).
 
 Persist expensive feature engineering steps once and reuse them everywhere. Register a transform, build it on a dataset, and reload it in any notebook or job with automatic versioning, metadata, and cache hits.
 

@@ -63,9 +63,11 @@ Adding Features to Time Series DataFrames (Augmenting)
 | [augment_wavelet](augment_wavelet.qmd#pytimetk.augment_wavelet) | Apply the Wavely transform to specified columns of a DataFrame or |
 | [augment_spline](augment_spline.qmd#pytimetk.augment_spline) | Add spline basis expansions for a numeric column. |
 
-## 🗃️ Feature Store & Caching
+## 🗃️ Feature Store & Caching (Beta)
 
-Persist and reuse feature engineering artifacts with caching and metadata.
+::: {.callout-warning collapse="false" title="Beta"}
+This module is currently in **Beta**. APIs, configuration options, and catalog formats may change without notice while we gather feedback. If you rely on it, please [follow the issue tracker](https://github.com/business-science/pytimetk/issues) for updates.
+:::
 
 | | |
 | --- | --- |

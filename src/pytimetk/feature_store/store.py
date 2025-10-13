@@ -10,6 +10,7 @@ from hashlib import sha256
 import posixpath
 from pathlib import Path
 import time
+import warnings
 from typing import (
     Any,
     Callable,
@@ -31,6 +32,14 @@ import polars as pl
 import pyarrow.fs as pa_fs
 
 from pytimetk.utils.dataframe_ops import identify_frame_kind
+
+_FEATURE_STORE_BETA_MESSAGE = (
+    "Feature Store & Caching is currently in beta. APIs and storage formats may change before general availability."
+)
+
+
+def _warn_feature_store_beta() -> None:
+    warnings.warn(_FEATURE_STORE_BETA_MESSAGE, UserWarning, stacklevel=2)
 
 Jsonable = Union[str, int, float, bool, None, Mapping[str, Any], Sequence[Any]]
 TransformCallable = Callable[[Any], Any]
@@ -286,6 +295,7 @@ class FeatureStore:
         lock_timeout: float = 30.0,
         lock_poll_interval: float = 0.2,
     ) -> None:
+        _warn_feature_store_beta()
         self.root_path = _resolve_root_path(root_path)
         self.root_path.mkdir(parents=True, exist_ok=True)
         self.catalog_path = self.root_path / catalog_filename

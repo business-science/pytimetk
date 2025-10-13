@@ -6,6 +6,12 @@ toc-depth: 3
 number-sections: false
 ---
 
+# pytimetk 2.0.0
+
+## Highlights
+
+- Introduced **Feature Store & Caching (Beta)** to persist expensive feature engineering steps and reload them on demand. The API and on-disk format may evolve before general availability—please share feedback so we can stabilize it quickly.
+
 # pytimetk 1.2.3.9000
 
 ## Improvements

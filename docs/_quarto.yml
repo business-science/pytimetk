@@ -157,8 +157,8 @@ quartodoc:
         - augment_hilbert
         - augment_wavelet
         - augment_spline
-    - title: 🗃️ Feature Store & Caching
-      desc: Persist and reuse feature engineering artifacts with caching and metadata.
+    - title: 🗃️ Feature Store & Caching (Beta)
+      desc: Beta: persist and reuse feature engineering artifacts with caching and metadata.
       package: pytimetk
       contents:
         - feature_store

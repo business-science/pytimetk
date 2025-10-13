@@ -1,5 +1,4 @@
----
-title: "Feature Store & Caching"
+title: "Feature Store & Caching (Beta)"
 jupyter: python3
 toc: true
 toc-depth: 3
@@ -12,6 +11,10 @@ code-tools:
 ---
 
 Persist expensive feature engineering once, reuse it everywhere. The feature store bundled with **pytimetk ≥ 2.0** lets you register reusable transforms, materialise results to disk (or any `pyarrow`-compatible object store), and reload them in downstream notebooks, jobs, or ML pipelines.
+
+::: {.callout-warning title="Beta"}
+The Feature Store is currently in **Beta**. Interfaces, configuration parameters, and the underlying storage format may evolve before general availability. Please [open an issue](https://github.com/business-science/pytimetk/issues) with feedback or bugs so we can tighten up the experience.
+:::
 
 # Why Use the Feature Store?
 

@@ -46,7 +46,7 @@ website:
       - reference/FeatureStoreAccessor.qmd
       - reference/FeatureSetMetadata.qmd
       - reference/FeatureSetResult.qmd
-      section: "\U0001F5C3\uFE0F Feature Store & Caching"
+      section: "\U0001F5C3\uFE0F Feature Store & Caching (Beta)"
     - contents:
       - reference/ts_features.qmd
       - reference/ts_summary.qmd
