@@ -9,6 +9,7 @@ from typing import Callable, List, Optional, Sequence, Tuple, Union
 from pathos.multiprocessing import ProcessingPool
 from functools import partial
 
+from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -599,15 +600,21 @@ def _augment_rolling_polars(
                         inspect.isfunction(func_impl)
                         and len(inspect.signature(func_impl).parameters) == 1
                     ):
+                        rolling_kwargs = {
+                            "window_size": window_size,
+                            "min_samples": resolved_min_periods,
+                        }
+                        if center:
+                            rolling_kwargs["center"] = True
+                        rolling_kwargs = ensure_polars_rolling_kwargs(rolling_kwargs)
+
                         try:
                             expr = (
                                 pl.col(col)
                                 .cast(pl.Float64)
                                 .rolling_map(
                                     function=func_impl,
-                                    window_size=window_size,
-                                    min_samples=resolved_min_periods,
-                                    center=center,
+                                    **rolling_kwargs,
                                 )
                             )
                         except Exception as e:
@@ -642,6 +649,8 @@ def _augment_rolling_polars(
                                 f"Error encountered while updating parameters for the configurable function `{func_name}` passed to `window_func`: {e}"
                             )
 
+                        merged_defaults = ensure_polars_rolling_kwargs(merged_defaults)
+
                         try:
                             expr = getattr(pl.col(col), f"rolling_{func_name}")(
                                 **merged_defaults
@@ -674,6 +683,7 @@ def _augment_rolling_polars(
                     }
                     if center:
                         params["center"] = True
+                    params = ensure_polars_rolling_kwargs(params)
 
                     if func_name == "quantile":
                         new_column_name = f"{col}_rolling_{func}_50_win_{window_size}"

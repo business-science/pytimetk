@@ -5,6 +5,7 @@ import pandas_flavor as pf
 import warnings
 from typing import List, Optional, Sequence, Tuple, Union
 
+from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -279,7 +280,10 @@ def _augment_atr_polars(
         df = frame.with_columns(tr_expr.alias("_atr_tr"))
 
         for period in periods:
-            atr_expr = pl.col("_atr_tr").rolling_mean(window_size=period, min_samples=1)
+            rolling_kwargs = ensure_polars_rolling_kwargs(
+                {"window_size": period, "min_samples": 1}
+            )
+            atr_expr = pl.col("_atr_tr").rolling_mean(**rolling_kwargs)
             if normalize:
                 atr_expr = (
                     pl.when(pl.col(close_column) == 0)

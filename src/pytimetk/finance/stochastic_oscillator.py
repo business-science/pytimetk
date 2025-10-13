@@ -5,6 +5,7 @@ import pandas_flavor as pf
 import warnings
 from typing import List, Optional, Sequence, Tuple, Union
 
+from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -245,8 +246,11 @@ def _augment_stochastic_polars(
     def compute(frame: pl.DataFrame) -> pl.DataFrame:
         lf = frame.lazy()
         for k in k_periods:
-            lowest_low = pl.col(low_column).rolling_min(window_size=k, min_samples=1)
-            highest_high = pl.col(high_column).rolling_max(window_size=k, min_samples=1)
+            band_kwargs = ensure_polars_rolling_kwargs(
+                {"window_size": k, "min_samples": 1}
+            )
+            lowest_low = pl.col(low_column).rolling_min(**band_kwargs)
+            highest_high = pl.col(high_column).rolling_max(**band_kwargs.copy())
             denom = highest_high - lowest_low
 
             k_alias = f"{close_column}_stoch_k_{k}"
@@ -257,9 +261,12 @@ def _augment_stochastic_polars(
 
             for d in d_periods:
                 d_alias = f"{close_column}_stoch_d_{k}_{d}"
+                avg_kwargs = ensure_polars_rolling_kwargs(
+                    {"window_size": d, "min_samples": 1}
+                )
                 lf = lf.with_columns(
                     pl.col(k_alias)
-                    .rolling_mean(window_size=d, min_samples=1)
+                    .rolling_mean(**avg_kwargs)
                     .alias(d_alias)
                 )
 

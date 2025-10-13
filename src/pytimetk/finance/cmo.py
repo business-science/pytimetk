@@ -5,6 +5,7 @@ import pandas_flavor as pf
 import warnings
 from typing import List, Optional, Sequence, Tuple, Union
 
+from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -226,12 +227,11 @@ def _augment_cmo_polars(
         )
 
         for period in periods:
-            gain_sum = pl.col("_cmo_gain").rolling_sum(
-                window_size=period, min_samples=period
+            rolling_kwargs = ensure_polars_rolling_kwargs(
+                {"window_size": period, "min_samples": period}
             )
-            loss_sum = pl.col("_cmo_loss").rolling_sum(
-                window_size=period, min_samples=period
-            )
+            gain_sum = pl.col("_cmo_gain").rolling_sum(**rolling_kwargs)
+            loss_sum = pl.col("_cmo_loss").rolling_sum(**rolling_kwargs.copy())
             denom = gain_sum + loss_sum
             cmo_expr = (
                 pl.when(denom == 0)
