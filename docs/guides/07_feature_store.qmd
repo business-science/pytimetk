@@ -31,10 +31,12 @@ The feature store lets them register those transforms once, materialize them to 
 ```{python}
 import pandas as pd
 import pytimetk as tk
+from pathlib import Path
 
 sales = tk.load_dataset("bike_sales_sample", parse_dates=["order_date"])
 
-store = tk.FeatureStore()
+feature_store_root = Path("feature-store-demo").resolve()
+store = tk.FeatureStore(root_path=feature_store_root)
 
 store.register(
     "sales_signature",
@@ -85,7 +87,7 @@ import polars as pl
 
 pl_sales = pl.from_pandas(sales)
 
-accessor = pl_sales.tk.feature_store(root_path=store.root_path)
+accessor = pl_sales.tk.feature_store(root_path=feature_store_root)
 
 def centered(data: pl.DataFrame) -> pl.DataFrame:
     return data.with_columns(
@@ -103,12 +105,10 @@ centered_features.from_cache, centered_features.metadata.storage_backend
 Artifacts can live in any `pyarrow` filesystem. Point `artifact_uri` at your bucket, folder, or lakehouse and the catalog will continue to live locally.
 
 ```{python}
-from pathlib import Path
-
 artifact_uri = Path("remote-artifacts").resolve().as_uri()
 
 s3_store = tk.FeatureStore(
-    root_path="feature-catalog",          # metadata & locks (local or network drive)
+    root_path=feature_store_root / "remote-catalog",  # metadata & locks
     artifact_uri=artifact_uri,            # where feature files live
     lock_timeout=60.0,                    # optional: adjust lock timing
 )
@@ -191,6 +191,43 @@ assembled.metadata.row_count, assembled.metadata.column_count
 ```
 
 The assembled result is in-memory only (no artifact written), but includes metadata so you can track how it was produced.
+
+# MLflow Integration
+
+Record feature versions alongside your models with MLflow so every run knows exactly which cached artifact it depended on.
+
+```{python}
+try:
+    import mlflow
+
+    from pytimetk.feature_store import (
+        build_features_with_mlflow,
+        load_features_from_mlflow,
+    )
+except Exception as exc:
+    print("Skipping MLflow example:", exc)
+else:
+    mlflow_tracking = Path("mlruns").resolve().as_uri()
+    mlflow.set_tracking_uri(mlflow_tracking)
+
+    with mlflow.start_run() as train_run:
+        signature_mlflow = build_features_with_mlflow(
+            store,
+            "sales_signature",
+            sales,
+            params_prefix="train",
+            return_engine="pandas",
+        )
+        signature_mlflow.metadata.version
+
+    reloaded = load_features_from_mlflow(
+        store,
+        "sales_signature",
+        run_id=train_run.info.run_id,
+        return_engine="pandas",
+    )
+    reloaded.metadata.version
+```
 
 # Cleaning Up
 

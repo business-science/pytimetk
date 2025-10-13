@@ -13,6 +13,11 @@ from .store import (
     FeatureSetResult,
     feature_store,
 )
+from .mlflow_integration import (
+    build_features_with_mlflow,
+    log_feature_metadata_to_mlflow,
+    load_features_from_mlflow,
+)
 
 __all__ = [
     "FeatureStore",
@@ -20,4 +25,7 @@ __all__ = [
     "FeatureSetMetadata",
     "FeatureSetResult",
     "feature_store",
+    "build_features_with_mlflow",
+    "log_feature_metadata_to_mlflow",
+    "load_features_from_mlflow",
 ]

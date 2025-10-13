@@ -123,6 +123,7 @@ print(result.from_cache)  # False first run, True on subsequent builds
 ```
 
 - Supports local disk or any `pyarrow` filesystem (e.g., `s3://`, `gs://`) via the `artifact_uri` parameter, plus optional file-based locking for concurrent jobs.
+- Optional MLflow helpers capture feature versions and artifacts with your experiments for reproducible pipelines.
 
 # Documentation
 
