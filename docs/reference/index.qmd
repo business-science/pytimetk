@@ -65,9 +65,7 @@ Adding Features to Time Series DataFrames (Augmenting)
 
 ## 🗃️ Feature Store & Caching (Beta)
 
-::: {.callout-warning collapse="false" title="Beta"}
-This module is currently in **Beta**. APIs, configuration options, and catalog formats may change without notice while we gather feedback. If you rely on it, please [follow the issue tracker](https://github.com/business-science/pytimetk/issues) for updates.
-:::
+Beta: persist and reuse feature engineering artifacts with caching and metadata.
 
 | | |
 | --- | --- |

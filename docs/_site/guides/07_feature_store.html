@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>pytimetk - Feature Store &amp; Caching</title>
+<title>pytimetk - Feature Store &amp; Caching (Beta)</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -123,10 +123,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
-<meta property="og:title" content="pytimetk - Feature Store &amp; Caching">
+<meta property="og:title" content="pytimetk - Feature Store &amp; Caching (Beta)">
 <meta property="og:description" content="">
 <meta property="og:site-name" content="pytimetk">
-<meta name="twitter:title" content="pytimetk - Feature Store &amp; Caching">
+<meta name="twitter:title" content="pytimetk - Feature Store &amp; Caching (Beta)">
 <meta name="twitter:description" content="">
 <meta name="twitter:card" content="summary">
 </head>
@@ -157,7 +157,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../guides/01_visualization.html">🗺️ Beginner Guides:</a></li><li class="breadcrumb-item"><a href="../guides/07_feature_store.html">Feature Store &amp; Caching</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../guides/01_visualization.html">🗺️ Beginner Guides:</a></li><li class="breadcrumb-item"><a href="../guides/07_feature_store.html">Feature Store &amp; Caching (Beta)</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -247,7 +247,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../guides/07_feature_store.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Feature Store &amp; Caching</span></a>
+ <span class="menu-text">Feature Store &amp; Caching (Beta)</span></a>
   </div>
 </li>
       </ul>
@@ -402,7 +402,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Feature Store &amp; Caching</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li></ul></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Feature Store &amp; Caching (Beta)</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li></ul></div></div>
 </div>
 
 
@@ -418,6 +418,19 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </header>
 
 <p>Persist expensive feature engineering once, reuse it everywhere. The feature store bundled with <strong>pytimetk ≥ 2.0</strong> lets you register reusable transforms, materialise results to disk (or any <code>pyarrow</code>-compatible object store), and reload them in downstream notebooks, jobs, or ML pipelines.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Beta">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Beta
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The Feature Store is currently in <strong>Beta</strong>. Interfaces, configuration parameters, and the underlying storage format may evolve before general availability. Please <a href="https://github.com/business-science/pytimetk/issues">open an issue</a> with feedback or bugs so we can tighten up the experience.</p>
+</div>
+</div>
 <section id="why-use-the-feature-store" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Why Use the Feature Store?</h1>
 <p>Teams building time-series models (forecasting, anomaly detection, policy simulation) often compute the same feature sets—calendar signatures, lag stacks, rolling stats—across notebooks, pipelines, and model retrains.</p>
@@ -461,7 +474,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>signature.from_cache, signature.metadata.row_count, signature.metadata.column_count</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>(True, 2466, 42)</code></pre>
+<pre><code>(False, 2466, 42)</code></pre>
 </div>
 </div>
 <p>Run the notebook a second time and the store will detect the same data + parameters and serve a cached artifact:</p>
@@ -532,7 +545,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1</td>
+<td data-quarto-table-cell-role="th">0</td>
 <td>daily_signature</td>
 <td>b5737af06b34</td>
 <td>b5737af06b34b585fd87b7ce19621ad77269a1a112d3c5...</td>
@@ -556,7 +569,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>{}</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">0</td>
+<td data-quarto-table-cell-role="th">2</td>
 <td>sales_signature</td>
 <td>1b8b4a5044cb</td>
 <td>1b8b4a5044cb0c642be6f3711fecff93dad660c789a338...</td>
@@ -564,7 +577,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>parquet</td>
 <td>local</td>
 <td>/Users/mdancho/Desktop/software/pytimetk/docs/...</td>
-<td>2025-10-13T00:50:11.497343+00:00</td>
+<td>2025-10-13T18:08:14.504310+00:00</td>
 <td>58f3182c6e1e814ebb65cdddeed4f694e087fcb429fb86...</td>
 <td>072694e4aac0e5fb6f354672b1a1125da9bf127a623db0...</td>
 <td>...</td>
@@ -580,7 +593,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>{}</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
+<td data-quarto-table-cell-role="th">1</td>
 <td>seasonal_fourier</td>
 <td>09c5058b609f</td>
 <td>09c5058b609f7e3ba7ba85c1e70d4247041e732f7256e6...</td>
@@ -616,7 +629,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>store.describe(<span class="st">"sales_signature"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>FeatureSetMetadata(name='sales_signature', version='1b8b4a5044cb', cache_key='1b8b4a5044cb0c642be6f3711fecff93dad660c789a3382cbf74c089e5e3be49', storage_path='/Users/mdancho/Desktop/software/pytimetk/docs/guides/feature-store-demo/sales_signature/1b8b4a5044cb/features.parquet', storage_format='parquet', storage_backend='local', artifact_uri='/Users/mdancho/Desktop/software/pytimetk/docs/guides/feature-store-demo', created_at='2025-10-13T00:50:11.497343+00:00', data_fingerprint='58f3182c6e1e814ebb65cdddeed4f694e087fcb429fb86c8ad3cc634d3355f23', transform_fingerprint='072694e4aac0e5fb6f354672b1a1125da9bf127a623db084a6a8c9c7f39cb202', transform_module='__main__', transform_name='&lt;lambda&gt;', transform_kwargs={}, pytimetk_version='1.2.5.9000', package_versions={'pandas': '2.2.3', 'polars': '1.32.3'}, tags=(), description='Calendar features for order history.', key_columns=('order_id',), row_count=2466, column_count=42, extra_metadata={})</code></pre>
+<pre><code>FeatureSetMetadata(name='sales_signature', version='1b8b4a5044cb', cache_key='1b8b4a5044cb0c642be6f3711fecff93dad660c789a3382cbf74c089e5e3be49', storage_path='/Users/mdancho/Desktop/software/pytimetk/docs/guides/feature-store-demo/sales_signature/1b8b4a5044cb/features.parquet', storage_format='parquet', storage_backend='local', artifact_uri='/Users/mdancho/Desktop/software/pytimetk/docs/guides/feature-store-demo', created_at='2025-10-13T18:08:14.504310+00:00', data_fingerprint='58f3182c6e1e814ebb65cdddeed4f694e087fcb429fb86c8ad3cc634d3355f23', transform_fingerprint='072694e4aac0e5fb6f354672b1a1125da9bf127a623db084a6a8c9c7f39cb202', transform_module='__main__', transform_name='&lt;lambda&gt;', transform_kwargs={}, pytimetk_version='1.2.5.9000', package_versions={'pandas': '2.2.3', 'polars': '1.32.3'}, tags=(), description='Calendar features for order history.', key_columns=('order_id',), row_count=2466, column_count=42, extra_metadata={})</code></pre>
 </div>
 </div>
 </section>
@@ -692,7 +705,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>store.enable_locking, (store.root_path <span class="op">/</span> <span class="st">".locks"</span>).iterdir()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="8">
-<pre><code>(True, &lt;generator object Path.iterdir at 0x106482dc0&gt;)</code></pre>
+<pre><code>(True, &lt;generator object Path.iterdir at 0x11032eb50&gt;)</code></pre>
 </div>
 </div>
 <p>Disable locking if your workflow guarantees exclusive writers:</p>
