@@ -8,6 +8,7 @@ __pycache__/
 zzz_local/
 feature-catalog/
 remote-artifacts/
+README_files/libs/
 tmp-store/
 mlruns/
 docs/**/*.ipynb
