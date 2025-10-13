@@ -414,18 +414,19 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>augment_spline(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    column_name,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    spline_type<span class="op">=</span><span class="st">'bs'</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    df<span class="op">=</span><span class="dv">5</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    degree<span class="op">=</span><span class="dv">3</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    knots<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    include_intercept<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    lower_bound<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    upper_bound<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    prefix<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'auto'</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    date_column,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    value_column,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    spline_type<span class="op">=</span><span class="st">'bs'</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    df<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    degree<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    knots<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    include_intercept<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    lower_bound<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    upper_bound<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    prefix<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'auto'</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Add spline basis expansions for a numeric column.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
@@ -452,66 +453,72 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td>column_name</td>
+<td>date_column</td>
+<td>str</td>
+<td>Name of the datetime column used to order observations prior to building the spline basis.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>value_column</td>
 <td>str</td>
 <td>Name of the numeric column to transform into spline basis features.</td>
 <td><em>required</em></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>spline_type</td>
 <td>str</td>
 <td>Spline family. Supported values are “bs” (B-spline), “natural”/“cr” (natural cubic spline) and “cyclic”/“cc” (cyclic spline). Defaults to “bs”.</td>
 <td><code>'bs'</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>df</td>
 <td>int</td>
 <td>Degrees of freedom passed to the spline constructor. Required unless <code>knots</code> are supplied. Defaults to 5.</td>
 <td><code>5</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>degree</td>
 <td>int</td>
 <td>Degree of the polynomial pieces (B-spline only). Defaults to 3.</td>
 <td><code>3</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>knots</td>
 <td>Sequence[float]</td>
 <td>Internal knot positions to use when constructing the spline basis.</td>
 <td><code>None</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>include_intercept</td>
 <td>bool</td>
 <td>Whether to include the intercept column (B-spline only). Defaults to False.</td>
 <td><code>False</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>lower_bound</td>
 <td>float</td>
-<td>Lower boundary for the spline. When omitted the minimum value of <code>column_name</code> is used.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="odd">
-<td>upper_bound</td>
-<td>float</td>
-<td>Upper boundary for the spline. When omitted the maximum value of <code>column_name</code> is used.</td>
+<td>Lower boundary for the spline. When omitted the minimum value of <code>value_column</code> is used.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td>prefix</td>
-<td>str</td>
-<td>Custom prefix for the generated column names. When omitted a name is derived from <code>column_name</code> and <code>spline_type</code>.</td>
+<td>upper_bound</td>
+<td>float</td>
+<td>Upper boundary for the spline. When omitted the maximum value of <code>value_column</code> is used.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
+<td>prefix</td>
+<td>str</td>
+<td>Custom prefix for the generated column names. When omitted a name is derived from <code>value_column</code> and <code>spline_type</code>.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
 <td>reduce_memory</td>
 <td>bool</td>
 <td>If True, attempt to downcast numeric columns to reduce memory usage.</td>
 <td><code>False</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>engine</td>
 <td>(auto, pandas, polars)</td>
 <td>Execution engine. When set to “auto” (default) the backend is inferred from the input data type. Use “pandas” or “polars” to force a specific backend regardless of input type.</td>
@@ -554,17 +561,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'m4_daily'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.assign(step<span class="op">=</span><span class="kw">lambda</span> d: d.groupby(<span class="st">'id'</span>).cumcount())</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>df_spline <span class="op">=</span> (</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">"id == 'D10'"</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        .augment_spline(</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>            column_name<span class="op">=</span><span class="st">'step'</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>df_spline <span class="op">=</span> (</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">"id == 'D10'"</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        .augment_spline(</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>            spline_type<span class="op">=</span><span class="st">'bs'</span>,</span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>            df<span class="op">=</span><span class="dv">5</span>,</span>
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>            degree<span class="op">=</span><span class="dv">3</span>,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>            prefix<span class="op">=</span><span class="st">'step_bs'</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>            prefix<span class="op">=</span><span class="st">'value_bs'</span></span>
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
@@ -580,12 +587,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <th data-quarto-table-cell-role="th">id</th>
 <th data-quarto-table-cell-role="th">date</th>
 <th data-quarto-table-cell-role="th">value</th>
-<th data-quarto-table-cell-role="th">step</th>
-<th data-quarto-table-cell-role="th">step_bs_1</th>
-<th data-quarto-table-cell-role="th">step_bs_2</th>
-<th data-quarto-table-cell-role="th">step_bs_3</th>
-<th data-quarto-table-cell-role="th">step_bs_4</th>
-<th data-quarto-table-cell-role="th">step_bs_5</th>
+<th data-quarto-table-cell-role="th">value_bs_1</th>
+<th data-quarto-table-cell-role="th">value_bs_2</th>
+<th data-quarto-table-cell-role="th">value_bs_3</th>
+<th data-quarto-table-cell-role="th">value_bs_4</th>
+<th data-quarto-table-cell-role="th">value_bs_5</th>
 </tr>
 </thead>
 <tbody>
@@ -594,10 +600,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>D10</td>
 <td>2014-07-03</td>
 <td>2076.2</td>
-<td>0</td>
-<td>0.000000</td>
-<td>0.000000</td>
-<td>0.000000e+00</td>
+<td>0.341593</td>
+<td>0.495854</td>
+<td>0.111560</td>
 <td>0.0</td>
 <td>0.0</td>
 </tr>
@@ -606,10 +611,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>D10</td>
 <td>2014-07-04</td>
 <td>2073.4</td>
-<td>1</td>
-<td>0.013284</td>
-<td>0.000030</td>
-<td>1.476275e-08</td>
+<td>0.347049</td>
+<td>0.491041</td>
+<td>0.108410</td>
 <td>0.0</td>
 <td>0.0</td>
 </tr>
@@ -618,10 +622,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>D10</td>
 <td>2014-07-05</td>
 <td>2048.7</td>
-<td>2</td>
-<td>0.026389</td>
-<td>0.000119</td>
-<td>1.181020e-07</td>
+<td>0.392400</td>
+<td>0.445193</td>
+<td>0.083145</td>
 <td>0.0</td>
 <td>0.0</td>
 </tr>
@@ -630,10 +633,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>D10</td>
 <td>2014-07-06</td>
 <td>2048.9</td>
-<td>3</td>
-<td>0.039318</td>
-<td>0.000266</td>
-<td>3.985943e-07</td>
+<td>0.392056</td>
+<td>0.445586</td>
+<td>0.083331</td>
 <td>0.0</td>
 <td>0.0</td>
 </tr>
@@ -642,10 +644,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>D10</td>
 <td>2014-07-07</td>
 <td>2006.4</td>
-<td>4</td>
-<td>0.052071</td>
-<td>0.000472</td>
-<td>9.448161e-07</td>
+<td>0.453599</td>
+<td>0.356309</td>
+<td>0.049568</td>
 <td>0.0</td>
 <td>0.0</td>
 </tr>
@@ -659,15 +660,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pl_spline <span class="op">=</span> (</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    pl.from_pandas(df.query(<span class="st">"id == 'D10'"</span>))</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    .tk.augment_spline(</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        column_name<span class="op">=</span><span class="st">'step'</span>,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        spline_type<span class="op">=</span><span class="st">'bs'</span>,</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        df<span class="op">=</span><span class="dv">5</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        degree<span class="op">=</span><span class="dv">3</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        prefix<span class="op">=</span><span class="st">'step_bs'</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>pl_spline.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        value_column<span class="op">=</span><span class="st">'value'</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        spline_type<span class="op">=</span><span class="st">'bs'</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        df<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        degree<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        prefix<span class="op">=</span><span class="st">'value_bs'</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>pl_spline.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div><style>
 .dataframe > thead > tr,
@@ -676,25 +678,23 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   white-space: pre-wrap;
 }
 </style>
-<small>shape: (5, 9)</small>
+<small>shape: (5, 8)</small>
 <table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th">id</th>
 <th data-quarto-table-cell-role="th">date</th>
 <th data-quarto-table-cell-role="th">value</th>
-<th data-quarto-table-cell-role="th">step</th>
-<th data-quarto-table-cell-role="th">step_bs_1</th>
-<th data-quarto-table-cell-role="th">step_bs_2</th>
-<th data-quarto-table-cell-role="th">step_bs_3</th>
-<th data-quarto-table-cell-role="th">step_bs_4</th>
-<th data-quarto-table-cell-role="th">step_bs_5</th>
+<th data-quarto-table-cell-role="th">value_bs_1</th>
+<th data-quarto-table-cell-role="th">value_bs_2</th>
+<th data-quarto-table-cell-role="th">value_bs_3</th>
+<th data-quarto-table-cell-role="th">value_bs_4</th>
+<th data-quarto-table-cell-role="th">value_bs_5</th>
 </tr>
 <tr class="odd">
 <th>str</th>
 <th>datetime[ns]</th>
 <th>f64</th>
-<th>i64</th>
 <th>f64</th>
 <th>f64</th>
 <th>f64</th>
@@ -707,10 +707,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>"D10"</td>
 <td>2014-07-03 00:00:00</td>
 <td>2076.2</td>
-<td>0</td>
-<td>0.0</td>
-<td>0.0</td>
-<td>0.0</td>
+<td>0.341593</td>
+<td>0.495854</td>
+<td>0.11156</td>
 <td>0.0</td>
 <td>0.0</td>
 </tr>
@@ -718,10 +717,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>"D10"</td>
 <td>2014-07-04 00:00:00</td>
 <td>2073.4</td>
-<td>1</td>
-<td>0.013284</td>
-<td>0.00003</td>
-<td>1.4763e-8</td>
+<td>0.347049</td>
+<td>0.491041</td>
+<td>0.10841</td>
 <td>0.0</td>
 <td>0.0</td>
 </tr>
@@ -729,10 +727,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>"D10"</td>
 <td>2014-07-05 00:00:00</td>
 <td>2048.7</td>
-<td>2</td>
-<td>0.026389</td>
-<td>0.000119</td>
-<td>1.1810e-7</td>
+<td>0.3924</td>
+<td>0.445193</td>
+<td>0.083145</td>
 <td>0.0</td>
 <td>0.0</td>
 </tr>
@@ -740,10 +737,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>"D10"</td>
 <td>2014-07-06 00:00:00</td>
 <td>2048.9</td>
-<td>3</td>
-<td>0.039318</td>
-<td>0.000266</td>
-<td>3.9859e-7</td>
+<td>0.392056</td>
+<td>0.445586</td>
+<td>0.083331</td>
 <td>0.0</td>
 <td>0.0</td>
 </tr>
@@ -751,10 +747,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>"D10"</td>
 <td>2014-07-07 00:00:00</td>
 <td>2006.4</td>
-<td>4</td>
-<td>0.052071</td>
-<td>0.000472</td>
-<td>9.4482e-7</td>
+<td>0.453599</td>
+<td>0.356309</td>
+<td>0.049568</td>
 <td>0.0</td>
 <td>0.0</td>
 </tr>

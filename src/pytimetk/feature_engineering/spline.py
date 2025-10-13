@@ -6,7 +6,11 @@ from patsy import bs, cr, cc
 from typing import Literal, Optional, Sequence, Union
 import warnings
 
-from pytimetk.utils.checks import check_dataframe_or_groupby, check_value_column
+from pytimetk.utils.checks import (
+    check_dataframe_or_groupby,
+    check_date_column,
+    check_value_column,
+)
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
@@ -58,7 +62,8 @@ def augment_spline(
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
     ],
-    column_name: str,
+    date_column: str,
+    value_column: str,
     spline_type: SplineTypeInput = "bs",
     df: Optional[int] = 5,
     degree: int = 3,
@@ -77,7 +82,10 @@ def augment_spline(
     ----------
     data : DataFrame or GroupBy (pandas or polars)
         Input tabular data or grouped data.
-    column_name : str
+    date_column : str
+        Name of the datetime column used to order observations prior to building
+        the spline basis.
+    value_column : str
         Name of the numeric column to transform into spline basis features.
     spline_type : str, optional
         Spline family. Supported values are "bs" (B-spline), "natural"/"cr"
@@ -95,13 +103,13 @@ def augment_spline(
         False.
     lower_bound : float, optional
         Lower boundary for the spline. When omitted the minimum value of
-        `column_name` is used.
+        `value_column` is used.
     upper_bound : float, optional
         Upper boundary for the spline. When omitted the maximum value of
-        `column_name` is used.
+        `value_column` is used.
     prefix : str, optional
         Custom prefix for the generated column names. When omitted a name is
-        derived from `column_name` and `spline_type`.
+        derived from `value_column` and `spline_type`.
     reduce_memory : bool, optional
         If True, attempt to downcast numeric columns to reduce memory usage.
     engine : {"auto", "pandas", "polars"}, optional
@@ -126,17 +134,17 @@ def augment_spline(
 
 
     df = tk.load_dataset('m4_daily', parse_dates=['date'])
-    df = df.assign(step=lambda d: d.groupby('id').cumcount())
 
     df_spline = (
         df
             .query("id == 'D10'")
             .augment_spline(
-                column_name='step',
+                date_column='date',
+                value_column='value',
                 spline_type='bs',
                 df=5,
                 degree=3,
-                prefix='step_bs'
+                prefix='value_bs'
             )
     )
 
@@ -147,11 +155,12 @@ def augment_spline(
     pl_spline = (
         pl.from_pandas(df.query("id == 'D10'"))
         .tk.augment_spline(
-            column_name='step',
+            date_column='date',
+            value_column='value',
             spline_type='bs',
             df=5,
             degree=3,
-            prefix='step_bs'
+            prefix='value_bs'
         )
     )
 
@@ -172,7 +181,8 @@ def augment_spline(
         raise ValueError("`df` must be a positive integer.")
 
     check_dataframe_or_groupby(data)
-    check_value_column(data, column_name, require_numeric_dtype=True)
+    check_date_column(data, date_column)
+    check_value_column(data, value_column, require_numeric_dtype=True)
 
     conversion: FrameConversion = convert_to_engine(data, engine_resolved)
     prepared_data = conversion.data
@@ -189,7 +199,8 @@ def augment_spline(
     if engine_resolved == "pandas":
         result = _augment_spline_pandas(
             data=prepared_data,
-            column_name=column_name,
+            date_column=date_column,
+            value_column=value_column,
             spline_key=spline_key,
             df=df,
             degree=degree,
@@ -205,7 +216,8 @@ def augment_spline(
     elif engine_resolved == "polars":
         result = _augment_spline_polars(
             data=prepared_data,
-            column_name=column_name,
+            date_column=date_column,
+            value_column=value_column,
             spline_key=spline_key,
             df=df,
             degree=degree,
@@ -230,7 +242,8 @@ def augment_spline(
 
 def _augment_spline_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
-    column_name: str,
+    date_column: str,
+    value_column: str,
     spline_key: str,
     df: Optional[int],
     degree: int,
@@ -247,7 +260,8 @@ def _augment_spline_pandas(
         augmented = [
             _augment_spline_frame(
                 frame=group,
-                column_name=column_name,
+                date_column=date_column,
+                value_column=value_column,
                 spline_key=spline_key,
                 df=df,
                 degree=degree,
@@ -259,7 +273,8 @@ def _augment_spline_pandas(
             )
             for _, group in grouped
         ]
-        return pd.concat(augmented).sort_index()
+        combined = pd.concat(augmented)
+        return combined.sort_index()
 
     if not isinstance(data, pd.DataFrame):
         raise TypeError(
@@ -268,7 +283,8 @@ def _augment_spline_pandas(
 
     return _augment_spline_frame(
         frame=data.copy(),
-        column_name=column_name,
+        date_column=date_column,
+        value_column=value_column,
         spline_key=spline_key,
         df=df,
         degree=degree,
@@ -282,7 +298,8 @@ def _augment_spline_pandas(
 
 def _augment_spline_frame(
     frame: pd.DataFrame,
-    column_name: str,
+    date_column: str,
+    value_column: str,
     spline_key: str,
     df: Optional[int],
     degree: int,
@@ -292,9 +309,11 @@ def _augment_spline_frame(
     upper_bound: Optional[float],
     prefix: Optional[str],
 ) -> pd.DataFrame:
+    sorted_frame = frame.sort_values(date_column)
+
     basis = _build_spline_basis_matrix(
-        values=frame[column_name].to_numpy(copy=False),
-        column_name=column_name,
+        values=sorted_frame[value_column].to_numpy(copy=False),
+        value_column=value_column,
         spline_key=spline_key,
         df=df,
         degree=degree,
@@ -304,16 +323,20 @@ def _augment_spline_frame(
         upper_bound=upper_bound,
     )
 
-    prefix_value = prefix or _default_prefix(column_name, spline_key, degree)
+    prefix_value = prefix or _default_prefix(value_column, spline_key, degree)
     column_names = [f"{prefix_value}_{i + 1}" for i in range(basis.shape[1])]
-    basis_df = pd.DataFrame(basis, index=frame.index, columns=column_names)
+    basis_df = pd.DataFrame(basis, index=sorted_frame.index, columns=column_names)
 
-    return pd.concat([frame, basis_df], axis=1)
+    result = frame.copy()
+    basis_aligned = basis_df.reindex(result.index)
+    result[basis_aligned.columns] = basis_aligned
+    return result
 
 
 def _augment_spline_polars(
     data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
-    column_name: str,
+    date_column: str,
+    value_column: str,
     spline_key: str,
     df: Optional[int],
     degree: int,
@@ -336,7 +359,8 @@ def _augment_spline_polars(
             .map_groups(
                 lambda group: _augment_spline_polars_frame(
                     frame=group,
-                    column_name=column_name,
+                    date_column=date_column,
+                    value_column=value_column,
                     spline_key=spline_key,
                     df=df,
                     degree=degree,
@@ -359,7 +383,8 @@ def _augment_spline_polars(
         frame_with_id, row_col, generated = ensure_row_id_column(data, row_id_column)
         augmented = _augment_spline_polars_frame(
             frame=frame_with_id,
-            column_name=column_name,
+            date_column=date_column,
+            value_column=value_column,
             spline_key=spline_key,
             df=df,
             degree=degree,
@@ -369,6 +394,7 @@ def _augment_spline_polars(
             upper_bound=upper_bound,
             prefix=prefix,
         )
+        augmented = augmented.sort(row_col)
         if generated:
             augmented = augmented.drop(row_col)
         return augmented
@@ -394,7 +420,8 @@ def _resolve_polars_group_columns(
 
 def _augment_spline_polars_frame(
     frame: pl.DataFrame,
-    column_name: str,
+    date_column: str,
+    value_column: str,
     spline_key: str,
     df: Optional[int],
     degree: int,
@@ -404,9 +431,11 @@ def _augment_spline_polars_frame(
     upper_bound: Optional[float],
     prefix: Optional[str],
 ) -> pl.DataFrame:
+    sorted_frame = frame.sort(date_column)
+
     basis = _build_spline_basis_matrix(
-        values=frame[column_name].to_numpy(),
-        column_name=column_name,
+        values=sorted_frame[value_column].to_numpy(),
+        value_column=value_column,
         spline_key=spline_key,
         df=df,
         degree=degree,
@@ -416,17 +445,17 @@ def _augment_spline_polars_frame(
         upper_bound=upper_bound,
     )
 
-    prefix_value = prefix or _default_prefix(column_name, spline_key, degree)
+    prefix_value = prefix or _default_prefix(value_column, spline_key, degree)
     new_columns = [
         pl.Series(f"{prefix_value}_{i + 1}", basis[:, i]) for i in range(basis.shape[1])
     ]
 
-    return frame.with_columns(new_columns)
+    return sorted_frame.with_columns(new_columns)
 
 
 def _build_spline_basis_matrix(
     values: Union[Sequence[float], np.ndarray],
-    column_name: str,
+    value_column: str,
     spline_key: str,
     df: Optional[int],
     degree: int,
@@ -440,7 +469,7 @@ def _build_spline_basis_matrix(
 
     if not mask.any():
         raise ValueError(
-            f"`column_name` ({column_name}) contains only missing values. Cannot construct spline basis."
+            f"`value_column` ({value_column}) contains only missing values. Cannot construct spline basis."
         )
 
     x = array[mask]
@@ -482,11 +511,11 @@ def _normalise_spline_type(spline_type: SplineTypeInput) -> str:
     return VALID_SPLINE_TYPES[key]
 
 
-def _default_prefix(column_name: str, spline_key: str, degree: int) -> str:
+def _default_prefix(value_column: str, spline_key: str, degree: int) -> str:
     label = SPLINE_NAME_MAP.get(spline_key, "spline")
     if spline_key == "bs":
-        return f"{column_name}_{label}_degree_{degree}"
-    return f"{column_name}_{label}"
+        return f"{value_column}_{label}_degree_{degree}"
+    return f"{value_column}_{label}"
 
 
 def _prepare_knots(knots: Optional[Sequence[float]]) -> Optional[Sequence[float]]:

@@ -521,22 +521,23 @@ def test_docstring_get_timeseries_signature_examples():
 
 def test_docstring_augment_spline_examples():
     df = tk.load_dataset("m4_daily", parse_dates=["date"])
-    df = df.assign(step=lambda d: d.groupby("id").cumcount())
 
     pandas_result = df.query("id == 'D10'").augment_spline(
-        column_name="step",
+        date_column="date",
+        value_column="value",
         spline_type="bs",
         df=5,
         degree=3,
-        prefix="step_bs",
+        prefix="value_bs",
     )
-    assert {f"step_bs_{i}" for i in range(1, 6)}.issubset(pandas_result.columns)
+    assert {f"value_bs_{i}" for i in range(1, 6)}.issubset(pandas_result.columns)
 
     polars_result = pl.from_pandas(df.query("id == 'D10'")).tk.augment_spline(
-        column_name="step",
+        date_column="date",
+        value_column="value",
         spline_type="bs",
         df=5,
         degree=3,
-        prefix="step_bs",
+        prefix="value_bs",
     )
-    assert {f"step_bs_{i}" for i in range(1, 6)}.issubset(polars_result.columns)
+    assert {f"value_bs_{i}" for i in range(1, 6)}.issubset(polars_result.columns)
