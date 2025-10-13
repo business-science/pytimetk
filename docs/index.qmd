@@ -23,8 +23,6 @@ number-depth: 2
 
 > Time series easier, faster, more fun. Pytimetk.
 
-**PyTimetk's Mission:** To make time series analysis easier, faster, and more enjoyable in Python.
-
 [**Please ⭐ us on GitHub (it takes 2-seconds and means a lot).**](https://github.com/business-science/pytimetk)
 
 # Introducing pytimetk: Simplifying Time Series Analysis for Everyone
@@ -33,17 +31,19 @@ Time series analysis is fundamental in many fields, from business forecasting to
 
 Enter **pytimetk**. Crafted with a blend of ease-of-use and computational efficiency, `pytimetk` significantly simplifies the process of time series manipulation and visualization. By leveraging the `polars` backend, you can experience speed improvements ranging from 3X to a whopping 3500X. Let's dive into a comparative analysis.
 
-
 | Features/Properties | **pytimetk**                  | **pandas (+matplotlib)**               |
 |---------------------|-------------------------------|---------------------------------------|
-| **Speed**           | 🚀 3X to 500X Faster          | 🐢 Standard                           |
+| **Speed**           | 🚀 3X to 3500X Faster          | 🐢 Standard                           |
 | **Code Simplicity** | 🎉 Concise, readable syntax    | 📜 Often verbose                      |
 | `plot_timeseries()` | 🎨 2 lines, no customization  | 🎨 16 lines, customization needed    |
 | `summarize_by_time()` | 🕐 2 lines, 13.4X faster     | 🕐 6 lines, 2 for-loops               |
 | `pad_by_time()`     | ⛳ 2 lines, fills gaps in timeseries        | ❌ No equivalent    |
 | `anomalize()`       | 📈 2 lines, detects and corrects anomalies  | ❌ No equivalent    |
-| `augment_timeseries_signature()` | 📅 1 line, all calendar features    | 🕐 30 lines of `dt` extractors |
+| `augment_timeseries_signature()` | 📅 1 line, all calendar features    | 🕐 29 lines of `dt` extractors |
 | `augment_rolling()` | 🏎️ 10X to 3500X faster     | 🐢 Slow Rolling Operations |
+| polars `.tk` plotting | ✅ Plot directly on `pl.DataFrame` (`plot_timeseries`, `plot_anomalies`, `plot_correlation_funnel`, …) | ❌ pandas-only accessor |
+| polars `.tk` accessor | ✅ Core, feature, and plotting helpers available via `.tk` on pandas/polars | ❌ N/A |
+| Feature store & caching | 🗃️ Persist, version, and reuse feature sets (with optional MLflow logging) | ❌ Manual recompute, no metadata lineage |
 
 As evident from the table, **pytimetk** is not just about speed; it also simplifies your codebase. For example, `summarize_by_time()`, converts a 6-line, double for-loop routine in `pandas` into a concise 2-line operation. And with the `polars` engine, get results 13.4X faster than `pandas`!
   
@@ -55,110 +55,88 @@ Join the revolution in time series analysis. Reduce your code complexity, increa
 
 Explore more at our [pytimetk homepage](https://business-science.github.io/pytimetk/).
 
-# 🚀 Installation
+# Installation
 
-Install the Latest Stable Version:
+Install the latest stable version of `pytimetk` using `pip`:
 
-``` bash
+```bash
 pip install pytimetk
 ```
 
-Alternatively, install the Development GitHub Version:
+Alternatively you can install the development version:
 
 ```bash
 pip install --upgrade --force-reinstall git+https://github.com/business-science/pytimetk.git
 ```
 
-# 🏁 Quick Start: A Monthly Sales Analysis
+# Quickstart:
 
-This is a simple exercise to showcase the power of [`summarize_by_time()`](/reference/summarize_by_time.html):
+This is a simple code to test the function `summarize_by_time`:
 
-### Import Libraries & Data
-
-First, `import pytimetk as tk`. This gets you access to the most important functions. Use `tk.load_dataset()` to load the "bike_sales_sample" dataset.
-
-::: {.callout-note collapse="false"}
-## About the Bike Sales Sample Dataset
-
-This dataset contains "orderlines" for orders recieved. The `order_date` column contains timestamps. We can use this column to peform sales aggregations (e.g. total revenue).
-:::
-
-```{python}
+```python
 import pytimetk as tk
 import pandas as pd
 
-df = tk.load_dataset('bike_sales_sample')
+df = tk.datasets.load_dataset('bike_sales_sample')
 df['order_date'] = pd.to_datetime(df['order_date'])
 
-df   
-```
-
-### Using `summarize_by_time()` for a Sales Analysis
-
-Your company might be interested in sales patterns for various categories of bicycles. We can obtain a grouped monthly sales aggregation by `category_1` in two lines of code:
-
-1. First use pandas's `groupby()` method to group the DataFrame on `category_1`
-2. Next, use timetk's `summarize_by_time()` method to apply the sum function my month start ("MS") and use `wide_format = 'False'` to return the dataframe in a long format (Note long format is the default). The default engine is `"pandas"`. Selecting `engine = "polars"` allows us to improve the speed of the function. 
-
-The result is the total revenue for Mountain and Road bikes by month. 
-
-```{python}
-summary_category_1_df = df \
-    .groupby("category_1") \
+df \
+    .groupby("category_2") \
     .summarize_by_time(
-        date_column  = 'order_date', 
-        value_column = 'total_price',
-        freq         = "MS",
-        agg_func     = 'sum',
-        wide_format  = False,
-        engine       = "polars"
-    )
-
-# Quickly examine each column
-summary_category_1_df.glimpse()
-```
-
-
-
-### Visualizing Sales Patterns
-
-::: {.callout-note collapse="false"}
-## Now available: `plot_timeseries()`.
-
-Plot time series is a quick and easy way to visualize time series and make professional time series plots. 
-:::
-
-With the data summarized by time, we can visualize with `plot_timeseries()`. `pytimetk` functions are `groupby()` aware meaning they understand if your data is grouped to do things by group. This is useful in time series where we often deal with 100s of time series groups. 
-
-The default engine in "plotnine" for static plotting. Setting the `engine = "plotly"` returns an interactive plot. 
-
-```{python}
-summary_category_1_df \
-    .groupby('category_1') \
-    .plot_timeseries(
-        date_column  = 'order_date',
-        value_column = 'total_price_sum',
-        smooth_frac  = 0.8,
-        engine       = "plotly"
+        date_column='order_date', 
+        value_column= 'total_price',
+        freq = "MS",
+        agg_func = ['mean', 'sum'],
+        engine = "polars"
     )
 ```
 
-# 📚 Documentation
 
-Next step? Learn more with the [pytimetk documentation](https://business-science.github.io/pytimetk/)
+## What's New in pytimetk 2.0.0
+
+- Added polars `.tk` accessor support for plotting helpers (`plot_timeseries`, `plot_anomalies`, `plot_anomalies_decomp`, `plot_anomalies_cleaned`, `plot_correlation_funnel`).
+- Polars users can now call these functions directly on `pl.DataFrame` objects via the `.tk` accessor; results mirror the pandas interface (Plotly `Figure` or plotnine `ggplot`).
+- See the [change log](https://business-science.github.io/pytimetk/changelog.html) for more details.
+
+## Feature Store & Caching (New)
+
+Persist expensive feature engineering steps once and reuse them everywhere. Register a transform, build it on a dataset, and reload it in any notebook or job with automatic versioning, metadata, and cache hits.
+
+```python
+import pandas as pd
+import pytimetk as tk
+
+df = tk.load_dataset("bike_sales_sample", parse_dates=["order_date"])
+
+store = tk.FeatureStore()
+
+store.register(
+    "sales_signature",
+    lambda data: tk.augment_timeseries_signature(
+        data,
+        date_column="order_date",
+        engine="pandas",
+    ),
+    default_key_columns=("order_id",),
+    description="Calendar signatures for sales orders.",
+)
+
+result = store.build("sales_signature", df)
+print(result.from_cache)  # False first run, True on subsequent builds
+```
+
+- Supports local disk or any `pyarrow` filesystem (e.g., `s3://`, `gs://`) via the `artifact_uri` parameter, plus optional file-based locking for concurrent jobs.
+- Optional MLflow helpers capture feature versions and artifacts with your experiments for reproducible pipelines.
+
+# Documentation
+
+Get started with the [pytimetk documentation](https://business-science.github.io/pytimetk/)
 
 - [📈 Overview](https://business-science.github.io/pytimetk/)
 - [🏁 Getting Started](https://business-science.github.io/pytimetk/getting-started/02_quick_start.html)
 - [🗺️ Beginner Guides](https://business-science.github.io/pytimetk/guides/01_visualization.html)
 - [📘Applied Data Science Tutorials](https://business-science.github.io/pytimetk/tutorials/01_sales_crm.html)
-- [🏎️Speed Comparisons](https://business-science.github.io/pytimetk/performance/01_speed_comparisons.html)
 - [📄 API Reference](https://business-science.github.io/pytimetk/reference/)
-
-# 🍻 Contributing
-
-Interested in helping us make this the best Python package for time series analysis? We'd love your help. 
-
-[Follow these instructions to Contribute.](/contributing.html)
 
 # 🏆 More Coming Soon...
 
@@ -166,7 +144,7 @@ We are in the early stages of development. But it's obvious the potential for `p
 
 - Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). 
 - To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 
-- Want to contribute? [See our contributing guide here.](/contributing.html) 
+- Want to contribute? [See our contributing guide here.](/contributing.html)
 
 # ⭐️ Star History
 
