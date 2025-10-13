@@ -12,9 +12,9 @@ README_files/libs/
 tmp-store/
 mlruns/
 docs/**/*.ipynb
-docs/guides/07_feature_store_files/
-docs/guides/feature-store-demo/
-docs/guides/feature-catalog/
-docs/guides/remote-artifacts/
-docs/guides/tmp-store/
-docs/guides/mlruns/
+docs/production/07_feature_store_files/
+docs/production/feature-store-demo/
+docs/production/feature-catalog/
+docs/production/remote-artifacts/
+docs/production/tmp-store/
+docs/production/mlruns/

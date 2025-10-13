@@ -57,10 +57,12 @@ website:
       - text: "---"
       - section: "🏁 Getting Started:"
         contents: getting-started/*
-      - section: "🗺️ Beginner Guides:"
+      - section: "🗺️ Guides:"
         contents: guides/*
       - section: "📘 Applied Tutorials:"
         contents: tutorials/*
+      - section: "🛠️ Production:"
+        contents: production/*
       - section: "🏎️ Performance:"
         contents: performance/*
       - text: "---"

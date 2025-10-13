@@ -1,5 +1,5 @@
 ---
-title: "Clustering"
+title: "Clustering Stocks"
 jupyter: python3
 toc: true
 toc-depth: 3

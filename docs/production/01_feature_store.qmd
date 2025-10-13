@@ -35,11 +35,12 @@ The feature store lets them register those transforms once, materialize them to 
 ```{python}
 import pandas as pd
 import pytimetk as tk
+import tempfile
 from pathlib import Path
 
 sales = tk.load_dataset("bike_sales_sample", parse_dates=["order_date"])
 
-feature_store_root = Path("feature-store-demo").resolve()
+feature_store_root = Path(tempfile.mkdtemp(prefix="pytimetk-feature-store-"))
 store = tk.FeatureStore(root_path=feature_store_root)
 
 store.register(
@@ -109,7 +110,8 @@ centered_features.from_cache, centered_features.metadata.storage_backend
 Artifacts can live in any `pyarrow` filesystem. Point `artifact_uri` at your bucket, folder, or lakehouse and the catalog will continue to live locally.
 
 ```{python}
-artifact_uri = Path("remote-artifacts").resolve().as_uri()
+artifact_root = Path(tempfile.mkdtemp(prefix="pytimetk-remote-artifacts-"))
+artifact_uri = artifact_root.as_uri()
 
 s3_store = tk.FeatureStore(
     root_path=feature_store_root / "remote-catalog",  # metadata & locks
@@ -130,7 +132,12 @@ s3_store.register(
     default_key_columns=("order_id",),
 )
 
-rolling = s3_store.build("sales_rolling", sales, return_engine="pandas")
+rolling = s3_store.build(
+    "sales_rolling",
+    sales,
+    return_engine="pandas",
+    refresh=True,
+)
 rolling.metadata.storage_backend, rolling.metadata.storage_path
 ```
 
@@ -183,8 +190,8 @@ store.register(
     default_key_columns=("order_date",),
 )
 
-store.build("daily_signature", sales, return_engine="pandas")
-store.build("seasonal_fourier", sales, return_engine="pandas")
+store.build("daily_signature", sales, return_engine="pandas", refresh=True)
+store.build("seasonal_fourier", sales, return_engine="pandas", refresh=True)
 
 assembled = store.assemble(
     ["daily_signature", "seasonal_fourier"],
