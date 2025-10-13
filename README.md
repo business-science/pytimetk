@@ -95,6 +95,35 @@ df \
 - Polars users can now call these functions directly on `pl.DataFrame` objects via the `.tk` accessor; results mirror the pandas interface (Plotly `Figure` or plotnine `ggplot`).
 - See the [change log](https://business-science.github.io/pytimetk/changelog.html) for more details.
 
+## Feature Store & Caching (New)
+
+Persist expensive feature engineering steps once and reuse them everywhere. Register a transform, build it on a dataset, and reload it in any notebook or job with automatic versioning, metadata, and cache hits.
+
+```python
+import pandas as pd
+import pytimetk as tk
+
+df = tk.load_dataset("bike_sales_sample", parse_dates=["order_date"])
+
+store = tk.FeatureStore()
+
+store.register(
+    "sales_signature",
+    lambda data: tk.augment_timeseries_signature(
+        data,
+        date_column="order_date",
+        engine="pandas",
+    ),
+    default_key_columns=("order_id",),
+    description="Calendar signatures for sales orders.",
+)
+
+result = store.build("sales_signature", df)
+print(result.from_cache)  # False first run, True on subsequent builds
+```
+
+- Supports local disk or any `pyarrow` filesystem (e.g., `s3://`, `gs://`) via the `artifact_uri` parameter, plus optional file-based locking for concurrent jobs.
+
 # Documentation
 
 Get started with the [pytimetk documentation](https://business-science.github.io/pytimetk/)

@@ -65,6 +65,7 @@ from pytimetk.core.ts_features import ts_features
 from pytimetk.core.correlationfunnel import binarize, correlate
 from pytimetk.core.anomalize import anomalize
 from pytimetk.core.future import future_frame
+from pytimetk.feature_store import FeatureStoreAccessor
 
 FinanceFunc = Callable[..., pl.DataFrame]
 PandasReturnFunc = Callable[..., Any]
@@ -174,6 +175,12 @@ class TkDataFrameNamespace:
 
     def __init__(self, df: pl.DataFrame):
         self._df = df
+
+    def feature_store(self, store=None, **store_kwargs):
+        """
+        Return a feature store accessor bound to this DataFrame.
+        """
+        return FeatureStoreAccessor(frame=self._df, store=store, store_kwargs=store_kwargs)
 
 
 class _TkGroupByNamespace:

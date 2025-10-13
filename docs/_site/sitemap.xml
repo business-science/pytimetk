@@ -286,7 +286,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2025-10-12T17:46:09.615Z</lastmod>
+    <lastmod>2025-10-12T19:04:50.914Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/drop_zero_variance.html</loc>
@@ -387,5 +387,29 @@
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/anomalize.html</loc>
     <lastmod>2025-10-12T17:47:40.188Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/FeatureSetMetadata.html</loc>
+    <lastmod>2025-10-12T19:04:51.724Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/FeatureStoreAccessor.html</loc>
+    <lastmod>2025-10-12T19:04:51.189Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/FeatureSetResult.html</loc>
+    <lastmod>2025-10-12T19:04:50.323Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/guides/07_feature_store.html</loc>
+    <lastmod>2025-10-12T19:04:49.750Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/FeatureStore.html</loc>
+    <lastmod>2025-10-12T19:04:50.045Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/feature_store.html</loc>
+    <lastmod>2025-10-12T19:04:51.452Z</lastmod>
   </url>
 </urlset>

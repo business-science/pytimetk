@@ -1,0 +1,198 @@
+---
+title: "Feature Store & Caching"
+jupyter: python3
+toc: true
+toc-depth: 3
+number-sections: true
+number-depth: 2
+code-fold: show
+code-tools:
+    source: false
+    toggle: true
+---
+
+Persist expensive feature engineering once, reuse it everywhere. The feature store bundled with **pytimetk ≥ 2.0** lets you register reusable transforms, materialise results to disk (or any `pyarrow`-compatible object store), and reload them in downstream notebooks, jobs, or ML pipelines.
+
+# Why Use the Feature Store?
+
+- **Avoid repeated work** – cache signatures, lag stacks, rolling stats, and any custom transform.
+- **Share across teams** – store artifacts on a shared file system or S3/GCS/Azure using `pyarrow.fs`.
+- **Track metadata automatically** – every build records parameters, row counts, hashes, timestamps, and version info.
+- **Coordinate writers** – optional file locks prevent conflicting writes when multiple jobs run the same pipeline.
+
+# Quickstart (Pandas)
+
+```{python}
+import pandas as pd
+import pytimetk as tk
+
+sales = tk.load_dataset("bike_sales_sample", parse_dates=["order_date"])
+
+store = tk.FeatureStore()
+
+store.register(
+    "sales_signature",
+    lambda df: tk.augment_timeseries_signature(
+        df,
+        date_column="order_date",
+        engine="pandas",
+    ),
+    default_key_columns=("order_id",),
+    description="Calendar features for order history.",
+)
+
+signature = store.build("sales_signature", sales, return_engine="pandas")
+signature.from_cache, signature.metadata.row_count, signature.metadata.column_count
+```
+
+Run the notebook a second time and the store will detect the same data + parameters and serve a cached artifact:
+
+```{python}
+signature_cached = store.build("sales_signature", sales, return_engine="pandas")
+signature_cached.from_cache
+```
+
+# Reusing Features Later
+
+Copied metadata and artifacts can be loaded in another process by pointing to the same catalog folder:
+
+```{python}
+fresh_store = tk.FeatureStore(root_path=store.root_path)
+reloaded = fresh_store.load("sales_signature", return_engine="pandas")
+reloaded.metadata.version, reloaded.metadata.storage_path
+```
+
+# Inspecting the Catalog
+
+```{python}
+store.list_feature_sets()
+```
+
+```{python}
+store.describe("sales_signature")
+```
+
+# Using the `.tk` Accessor (Polars)
+
+```{python}
+import polars as pl
+
+pl_sales = pl.from_pandas(sales)
+
+accessor = pl_sales.tk.feature_store(root_path=store.root_path)
+
+def centered(data: pl.DataFrame) -> pl.DataFrame:
+    return data.with_columns(
+        (pl.col("total_price") - pl.col("total_price").mean()).alias("total_price_centered"),
+    )
+
+accessor.register("sales_centered", centered, default_key_columns=("order_id",))
+
+centered_features = accessor.build("sales_centered")
+centered_features.from_cache, centered_features.metadata.storage_backend
+```
+
+# Remote Artifact Storage
+
+Artifacts can live in any `pyarrow` filesystem. Point `artifact_uri` at your bucket, folder, or lakehouse and the catalog will continue to live locally.
+
+```{python}
+from pathlib import Path
+
+artifact_uri = Path("remote-artifacts").resolve().as_uri()
+
+s3_store = tk.FeatureStore(
+    root_path="feature-catalog",          # metadata & locks (local or network drive)
+    artifact_uri=artifact_uri,            # where feature files live
+    lock_timeout=60.0,                    # optional: adjust lock timing
+)
+
+s3_store.register(
+    "sales_rolling",
+    lambda df: tk.augment_rolling(
+        df,
+        date_column="order_date",
+        value_column="total_price",
+        window=7,
+        window_func=["mean", "max"],
+        engine="pandas",
+    ),
+    default_key_columns=("order_id",),
+)
+
+rolling = s3_store.build("sales_rolling", sales, return_engine="pandas")
+rolling.metadata.storage_backend, rolling.metadata.storage_path
+```
+
+If the URI uses the `file://` scheme the same mechanism works for network file shares or mounted blob storage.
+
+# Coordinated Writes with Locks
+
+By default, `FeatureStore` writes lock files under `<root_path>/.locks` so parallel jobs do not trample each other. Locks are scoped per feature name:
+
+```{python}
+store.enable_locking, (store.root_path / ".locks").iterdir()
+```
+
+Disable locking if your workflow guarantees exclusive writers:
+
+```{python}
+no_lock_store = tk.FeatureStore(root_path="tmp-store", enable_locking=False)
+```
+
+# Assemble Multiple Feature Sets
+
+```{python}
+# Aggregate to a daily view so Fourier terms see a regular cadence.
+store.register(
+    "daily_signature",
+    lambda df: (
+        df.groupby("order_date", as_index=False)
+        .agg({"total_price": "sum"})
+        .augment_timeseries_signature(
+            date_column="order_date",
+            engine="pandas",
+        )
+    ),
+    default_key_columns=("order_date",),
+    description="Calendar signatures on daily revenue.",
+)
+
+store.register(
+    "seasonal_fourier",
+    lambda df: (
+        df.groupby("order_date", as_index=False)
+        .agg({"total_price": "sum"})
+        .augment_fourier(
+            date_column="order_date",
+            periods=7,
+            max_order=3,
+            engine="pandas",
+        )
+    ),
+    default_key_columns=("order_date",),
+)
+
+store.build("daily_signature", sales, return_engine="pandas")
+store.build("seasonal_fourier", sales, return_engine="pandas")
+
+assembled = store.assemble(
+    ["daily_signature", "seasonal_fourier"],
+    join_keys=("order_date",),
+    return_engine="pandas",
+)
+assembled.metadata.row_count, assembled.metadata.column_count
+```
+
+The assembled result is in-memory only (no artifact written), but includes metadata so you can track how it was produced.
+
+# Cleaning Up
+
+Remove a feature set (optionally keeping the cached artifact):
+
+```{python}
+store.drop("sales_centered")                # deletes metadata and artifact
+store.drop("sales_signature", delete_artifact=False)  # metadata only
+```
+
+For remote backends the catalog metadata remains local, while the artifacts are removed from the remote filesystem via `pyarrow.fs`.

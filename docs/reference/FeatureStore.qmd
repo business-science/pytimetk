@@ -1,0 +1,16 @@
+# FeatureStore { #pytimetk.FeatureStore }
+
+```python
+FeatureStore(
+    root_path=None,
+    catalog_filename='catalog.json',
+    default_storage_format='parquet',
+    artifact_uri=None,
+    artifact_backend=None,
+    enable_locking=True,
+    lock_timeout=30.0,
+    lock_poll_interval=0.2,
+)
+```
+
+Lightweight on-disk feature store with metadata cataloguing.

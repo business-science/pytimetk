@@ -1,0 +1,7 @@
+# FeatureStoreAccessor { #pytimetk.FeatureStoreAccessor }
+
+```python
+FeatureStoreAccessor(frame, *, store=None, store_kwargs=None)
+```
+
+Polars `.tk` accessor helper that operates against a feature store instance.

@@ -1,0 +1,29 @@
+# FeatureSetMetadata { #pytimetk.FeatureSetMetadata }
+
+```python
+FeatureSetMetadata(
+    name,
+    version,
+    cache_key,
+    storage_path,
+    storage_format,
+    storage_backend,
+    artifact_uri,
+    created_at,
+    data_fingerprint,
+    transform_fingerprint,
+    transform_module,
+    transform_name,
+    transform_kwargs,
+    pytimetk_version,
+    package_versions,
+    tags=tuple(),
+    description=None,
+    key_columns=None,
+    row_count=None,
+    column_count=None,
+    extra_metadata=dict(),
+)
+```
+
+Immutable metadata describing a single materialised feature set.

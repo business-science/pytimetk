@@ -91,6 +91,13 @@ from .utils import (
     progress_apply,
     parse_freq_str,
 )
+from .feature_store import (
+    FeatureStore,
+    FeatureStoreAccessor,
+    FeatureSetMetadata,
+    FeatureSetResult,
+    feature_store,
+)
 from . import polars_namespace  # noqa: F401
 
 from importlib.metadata import version

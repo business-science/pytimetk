@@ -1,0 +1,7 @@
+# FeatureSetResult { #pytimetk.FeatureSetResult }
+
+```python
+FeatureSetResult(data, metadata, from_cache)
+```
+
+Wrapper returned by the feature store for build/load operations.
