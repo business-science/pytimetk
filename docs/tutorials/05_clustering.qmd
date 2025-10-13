@@ -5,14 +5,244 @@ toc: true
 toc-depth: 3
 number-sections: true
 number-depth: 2
+code-fold: show
+code-tools: 
+    source: false
+    toggle: true
 ---
 
-Coming soon...
+> Segment a portfolio of time series with a feature-based clustering workflow.
 
-# More Coming Soon...
+# This applied tutorial covers the use of:
 
-We are in the early stages of development. But it's obvious the potential for `pytimetk` now in Python. 🐍
+- `tk.ts_summary()` to validate that each series is ready for modeling.
+- `tk.ts_features()` to engineer clustering-ready signatures.
+- `tk.plot_timeseries()` to review the resulting groups.
+- `sklearn.cluster.KMeans` to segment similar time series.
 
-- Please [⭐ us on GitHub](https://github.com/business-science/pytimetk) (it takes 2-seconds and means a lot). 
-- To make requests, please see our [Project Roadmap GH Issue #2](https://github.com/business-science/pytimetk/issues/2). You can make requests there. 
-- Want to contribute? [See our contributing guide here.](/contributing.html) 
+::: {.callout-note collapse="false"}
+## How to navigate this guide
+
+1. Get to a working clustering pipeline in five minutes.
+2. Engineer richer features and run K-Means.
+3. Inspect and communicate the clusters.
+:::
+
+# Five Minutes to Cluster
+
+## Load packages
+
+```{python}
+import pytimetk as tk
+import pandas as pd
+import numpy as np
+
+from tsfeatures import acf_features, lumpiness, entropy
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
+
+import plotly.express as px
+```
+
+## Load and glimpse the stock history
+
+We'll use the built-in `stocks_daily` dataset (six large-cap tech tickers) so the entire workflow runs locally without extra data wrangling.
+
+```{python}
+stocks = tk.load_dataset("stocks_daily", parse_dates=["date"])
+stocks.glimpse()
+```
+
+::: {.callout-note collapse="false"}
+## 3 core properties of time series data
+
+- **Time index:** `date`
+- **Value column:** `adjusted`
+- **Group column:** `symbol`
+:::
+
+## Understand the time structure with `ts_summary`
+
+Before engineering features, confirm that every series shares a common frequency and coverage. `ts_summary()` handles this in one line.
+
+```{python}
+ts_profile = (
+    stocks
+        .groupby("symbol", sort=False)
+        .ts_summary(date_column="date")
+        .loc[:, ["symbol", "date_start", "date_end", "date_n", "diff_median_seconds", "diff_max_seconds"]]
+        .assign(
+            trading_years=lambda df_: (pd.to_datetime(df_["date_end"]) - pd.to_datetime(df_["date_start"])).dt.days / 365.25
+        )
+)
+
+ts_profile
+```
+
+The `stocks_daily` dataset gives us over a decade of trading history per ticker with a consistent daily cadence—perfect for clustering.
+
+# Engineer clustering features
+
+We'll create two complementary feature sets: performance metrics derived from returns and higher-order time-series signatures from `ts_features()`. Combining both gives K-Means enough separation power.
+
+## Create performance signatures with pandas
+
+```{python}
+stocks = (
+    stocks
+        .sort_values(["symbol", "date"])
+        .assign(
+            daily_return=lambda df_: df_.groupby("symbol")["adjusted"].pct_change()
+        )
+)
+
+performance = (
+    stocks
+        .groupby("symbol", sort=False)
+        .agg(
+            avg_daily_return=("daily_return", "mean"),
+            volatility=("daily_return", "std"),
+            avg_volume=("volume", "mean"),
+            total_return=("adjusted", lambda s: s.iloc[-1] / s.iloc[0] - 1),
+        )
+        .reset_index()
+)
+
+performance["volatility"] = performance["volatility"] * np.sqrt(252)
+
+performance
+```
+
+`volatility` is annualized, `total_return` measures the entire sample's growth, and `avg_volume` helps distinguish high-activity tickers (e.g., NVDA) from lower-volume names.
+
+## Add automated time-series features with `ts_features`
+
+```{python}
+ts_feature_matrix = (
+    stocks
+        .groupby("symbol", sort=False)
+        .ts_features(
+            date_column="date",
+            value_column="adjusted",
+            features=[acf_features, lumpiness, entropy],
+            freq=5,                 # one trading week seasonality hint
+            threads=1,
+            show_progress=False,
+        )
+)
+
+ts_feature_matrix
+```
+
+The selected feature trio captures short-term autocorrelation (`acf_features`), regime shifts (`lumpiness`), and complexity (`entropy`) without overwhelming our small sample.
+
+## Combine the feature blocks
+
+```{python}
+feature_table = (
+    performance
+        .merge(ts_feature_matrix, on="symbol")
+        .merge(
+            ts_profile.loc[:, ["symbol", "trading_years"]],
+            on="symbol"
+        )
+)
+
+feature_table
+```
+
+All features are numeric except for `symbol`, so they're ready for scaling and clustering.
+
+# Fit K-Means and visualize clusters
+
+## Scale, cluster, and project
+
+```{python}
+numeric_cols = feature_table.select_dtypes(include="number").columns
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(feature_table[numeric_cols])
+
+kmeans = KMeans(n_clusters=3, n_init="auto", random_state=123)
+feature_table["cluster"] = kmeans.fit_predict(X_scaled)
+
+pca = PCA(n_components=2, random_state=123)
+embedding = pca.fit_transform(X_scaled)
+
+feature_table[["pc1", "pc2"]] = embedding
+
+feature_table
+```
+
+This small universe ends up with three distinct segments:
+
+- **Cluster 0:** Momentum-heavy names with higher entropy (META, NFLX).
+- **Cluster 1:** Steady stalwarts (AAPL, AMZN, GOOG).
+- **Cluster 2:** High-volatility outlier (NVDA).
+
+## Explore the embedding with Plotly
+
+```{python}
+scatter_fig = px.scatter(
+    feature_table,
+    x="pc1",
+    y="pc2",
+    color=feature_table["cluster"].astype(str),
+    text="symbol",
+    size="volatility",
+    hover_data={
+        "avg_daily_return":":.4f",
+        "volatility":":.2f",
+        "total_return":":.1%",
+        "cluster": False,
+        "pc1": False,
+        "pc2": False,
+    },
+    title="Stock clusters powered by pytimetk features",
+    width=800,
+    height=500,
+)
+
+scatter_fig.update_traces(textposition="top center")
+scatter_fig
+```
+
+The hover tooltips make it easy to validate how volatility and long-run growth drive the separation.
+
+## Inspect the original series by cluster
+
+Bring the cluster assignments back to the raw data and lean on `plot_timeseries()` for an interactive review.
+
+```{python}
+clustered_history = stocks.merge(feature_table[["symbol", "cluster"]], on="symbol")
+
+cluster_fig = (
+    clustered_history
+        .groupby("cluster")
+        .plot_timeseries(
+            date_column="date",
+            value_column="adjusted",
+            color_column="symbol",
+            facet_ncol=1,
+            facet_scales="free_y",
+            smooth=False,
+            plotly_dropdown=True,
+            width=900,
+            height=600,
+            engine="plotly",
+            title="Clustered price history (toggle clusters with the dropdown)",
+        )
+)
+
+cluster_fig
+```
+
+Use the Plotly dropdown to focus on a single segment and drill down by ticker.
+
+# Where to go next
+
+- Swap in additional `ts_features` (e.g., `hurst`, `stability`) or engineered ratios to refine the segmentation.
+- Run `KMeans` across a range of `k` values and compare inertia or silhouette scores for a data-driven cluster count.
+- Schedule the workflow: persist `feature_table`, then monitor how new data shifts cluster memberships over time.
