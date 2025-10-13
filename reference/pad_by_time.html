@@ -236,6 +236,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
  <span class="menu-text">Anomaly Detection</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/07_feature_store.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Feature Store &amp; Caching</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -397,7 +403,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pad_by_time(data, date_column, freq<span class="op">=</span><span class="st">'D'</span>, start_date<span class="op">=</span><span class="va">None</span>, end_date<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pad_by_time(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    date_column,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    freq<span class="op">=</span><span class="st">'D'</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    start_date<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    end_date<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Make irregular time series regular by padding with missing dates.</p>
 <p>The <code>pad_by_time</code> function inserts missing dates into a Pandas DataFrame or DataFrameGroupBy object, through the process making an irregularly spaced time series regularly spaced.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
@@ -405,9 +418,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <table class="table">
 <colgroup>
 <col style="width: 2%">
-<col style="width: 9%">
-<col style="width: 86%">
-<col style="width: 1%">
+<col style="width: 6%">
+<col style="width: 89%">
+<col style="width: 2%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -420,8 +433,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>data</td>
-<td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
-<td>The <code>data</code> parameter can be either a Pandas DataFrame or a Pandas DataFrameGroupBy object. It represents the data that you want to pad with missing dates.</td>
+<td>DataFrame or GroupBy(pandas or polars)</td>
+<td>The <code>data</code> parameter can be either a pandas/polars DataFrame or a grouped object. It represents the data that you want to pad with missing dates.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
@@ -444,9 +457,15 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="odd">
 <td>end_date</td>
-<td>str</td>
+<td>Optional[str]</td>
 <td>Specifies the end of the padded series. If NULL, it will use the highest value of the input variable. In the case of groups, it will use the highest value by group.</td>
 <td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>engine</td>
+<td>(pandas, polars, auto)</td>
+<td>Execution engine. <code>"pandas"</code> (default) performs the computation using pandas. <code>"polars"</code> converts the result to a polars DataFrame on return. <code>"auto"</code> infers the engine from the input data.</td>
+<td><code>"pandas"</code></td>
 </tr>
 </tbody>
 </table>
@@ -455,9 +474,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
+<col style="width: 4%">
 <col style="width: 6%">
-<col style="width: 11%">
-<col style="width: 81%">
+<col style="width: 88%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -469,8 +488,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td></td>
-<td>pd.DataFrame</td>
-<td>The function <code>pad_by_time</code> returns a Pandas DataFrame that has been extended with future dates.</td>
+<td>DataFrame</td>
+<td>The function <code>pad_by_time</code> returns a DataFrame extended with the padded dates. The concrete type matches the engine used to process the data.</td>
 </tr>
 </tbody>
 </table>
@@ -1115,6 +1134,63 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </table>
 
 <p>3917 rows × 8 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Polars DataFrame using the tk accessor</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>sample <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"date"</span>: pd.date_range(<span class="st">"2022-01-01"</span>, periods<span class="op">=</span><span class="dv">3</span>, freq<span class="op">=</span><span class="st">"D"</span>),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"value"</span>: [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>pl_df <span class="op">=</span> pl.from_pandas(sample)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>pl_df.tk.pad_by_time(</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    date_column<span class="op">=</span><span class="st">'date'</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    freq<span class="op">=</span><span class="st">'D'</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div><style>
+.dataframe > thead > tr,
+.dataframe > tbody > tr {
+  text-align: right;
+  white-space: pre-wrap;
+}
+</style>
+<small>shape: (3, 2)</small>
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+<tr class="odd">
+<th>datetime[ns]</th>
+<th>i64</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2022-01-01 00:00:00</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>2022-01-02 00:00:00</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>2022-01-03 00:00:00</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>

@@ -236,6 +236,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
  <span class="menu-text">Anomaly Detection</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/07_feature_store.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Feature Store &amp; Caching</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -402,16 +408,17 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    wide_format<span class="op">=</span><span class="va">False</span>,</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    fillna<span class="op">=</span><span class="dv">0</span>,</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>named_funcs,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>named_funcs,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Apply for time series.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
 <col style="width: 2%">
-<col style="width: 9%">
-<col style="width: 86%">
+<col style="width: 6%">
+<col style="width: 89%">
 <col style="width: 1%">
 </colgroup>
 <thead>
@@ -425,8 +432,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>data</td>
-<td>Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]</td>
-<td>The <code>data</code> parameter can be either a pandas DataFrame or a pandas DataFrameGroupBy object. It represents the data on which the apply operation will be performed.</td>
+<td>DataFrame or GroupBy(pandas or polars)</td>
+<td>Tabular data on which the operation is performed. Supports both pandas and polars DataFrames / GroupBy objects.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
@@ -460,6 +467,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
+<td>engine</td>
+<td>(pandas, polars, auto)</td>
+<td>Execution engine. <code>"pandas"</code> (default) performs the computation using pandas. When “polars” the data is converted to pandas for evaluation and converted back to polars on return. <code>"auto"</code> infers the engine from the input data.</td>
+<td><code>"pandas"</code></td>
+</tr>
+<tr class="even">
 <td>**named_funcs</td>
 <td></td>
 <td>The <code>**named_funcs</code> parameter is used to specify one or more custom aggregation functions to apply to the data. It accepts named functions in the format: <code>python     name = lambda df: df['column1'].corr(df['column2']])</code> Where <code>name</code> is the name of the function and <code>df</code> is the DataFrame that will be passed to the function. The function must return a single value.</td>
@@ -472,9 +485,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 9%">
-<col style="width: 16%">
-<col style="width: 74%">
+<col style="width: 6%">
+<col style="width: 8%">
+<col style="width: 85%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -486,8 +499,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td></td>
-<td>pd.DataFrame</td>
-<td>The function <code>apply_by_time</code> returns a pandas DataFrame object.</td>
+<td>DataFrame</td>
+<td>The resulting data after applying the functions. The concrete type matches the engine used to process the data.</td>
 </tr>
 </tbody>
 </table>
@@ -937,6 +950,91 @@ state:           object            ['NY', 'NY', 'KS', 'KS', 'KY', 'KY',  ...</co
 </tbody>
 </table>
 
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Polars DataFrame using the tk accessor</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>pl_df <span class="op">=</span> pl.from_pandas(df[[<span class="st">'order_date'</span>, <span class="st">'price'</span>, <span class="st">'quantity'</span>]])</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    pl_df</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        .tk.apply_by_time(</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'order_date'</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>            freq<span class="op">=</span><span class="st">'MS'</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>            total <span class="op">=</span> <span class="kw">lambda</span> frame: (frame[<span class="st">'price'</span>] <span class="op">*</span> frame[<span class="st">'quantity'</span>]).<span class="bu">sum</span>(),</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div><style>
+.dataframe > thead > tr,
+.dataframe > tbody > tr {
+  text-align: right;
+  white-space: pre-wrap;
+}
+</style>
+<small>shape: (12, 2)</small>
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">order_date</th>
+<th data-quarto-table-cell-role="th">total</th>
+</tr>
+<tr class="odd">
+<th>datetime[ns]</th>
+<th>i64</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2011-01-01 00:00:00</td>
+<td>483015</td>
+</tr>
+<tr class="even">
+<td>2011-02-01 00:00:00</td>
+<td>1162075</td>
+</tr>
+<tr class="odd">
+<td>2011-03-01 00:00:00</td>
+<td>659975</td>
+</tr>
+<tr class="even">
+<td>2011-04-01 00:00:00</td>
+<td>1827140</td>
+</tr>
+<tr class="odd">
+<td>2011-05-01 00:00:00</td>
+<td>844170</td>
+</tr>
+<tr class="even">
+<td>…</td>
+<td>…</td>
+</tr>
+<tr class="odd">
+<td>2011-08-01 00:00:00</td>
+<td>679790</td>
+</tr>
+<tr class="even">
+<td>2011-09-01 00:00:00</td>
+<td>814720</td>
+</tr>
+<tr class="odd">
+<td>2011-10-01 00:00:00</td>
+<td>734920</td>
+</tr>
+<tr class="even">
+<td>2011-11-01 00:00:00</td>
+<td>1006085</td>
+</tr>
+<tr class="odd">
+<td>2011-12-01 00:00:00</td>
+<td>473120</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>

@@ -236,6 +236,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
  <span class="menu-text">Anomaly Detection</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/07_feature_store.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Feature Store &amp; Caching</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -411,8 +417,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <table class="table">
 <colgroup>
 <col style="width: 4%">
-<col style="width: 18%">
-<col style="width: 72%">
+<col style="width: 13%">
+<col style="width: 77%">
 <col style="width: 4%">
 </colgroup>
 <thead>
@@ -426,8 +432,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td>data</td>
-<td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
-<td>The data to be filtered. It can be a pandas DataFrame or a pandas GroupBy object.</td>
+<td>DataFrame or GroupBy(pandas or polars)</td>
+<td>The data to be filtered. Supports both pandas and polars DataFrames / GroupBy objects. Grouped inputs are processed per group before the final result is returned.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
@@ -451,7 +457,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td>engine</td>
 <td>str</td>
-<td>The engine to be used for filtering the data. Currently, only ‘pandas’.</td>
+<td>Computation engine. Use <code>'pandas'</code> or <code>'polars'</code>. The special value <code>'auto'</code> infers the engine from the input data.</td>
 <td><code>= 'pandas'</code></td>
 </tr>
 </tbody>
@@ -461,9 +467,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
 <table class="table">
 <colgroup>
-<col style="width: 7%">
-<col style="width: 13%">
-<col style="width: 78%">
+<col style="width: 6%">
+<col style="width: 9%">
+<col style="width: 83%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -475,8 +481,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tbody>
 <tr class="odd">
 <td></td>
-<td>pd.DataFrame</td>
-<td>A pandas DataFrame containing the filtered data within the specified date range.</td>
+<td>DataFrame</td>
+<td>Data containing rows within the specified date range. The concrete type matches the engine used.</td>
 </tr>
 </tbody>
 </table>
@@ -1039,20 +1045,105 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </div>
 </div>
 <div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 6 - Filter a GroupBy object</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>df_filtered <span class="op">=</span> (</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    m4_hourly_df</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        .filter_by_time(</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">"date"</span>,</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>            start_date  <span class="op">=</span> <span class="st">'2015-07-01 12:00:00'</span>,</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>            end_date    <span class="op">=</span> <span class="st">'2015-07-01 20:00:00'</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>df_filtered</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 7 - Filter using the polars engine and tk accessor</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>pl_df <span class="op">=</span> pl.from_pandas(m4_daily_df)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>df_filtered <span class="op">=</span> (</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    pl_df</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        .tk.filter_by_time(</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>            start_date  <span class="op">=</span> <span class="st">'2014-07-03'</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>            end_date    <span class="op">=</span> <span class="st">'2014-07-10'</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>df_filtered</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
+<div><style>
+.dataframe > thead > tr,
+.dataframe > tbody > tr {
+  text-align: right;
+  white-space: pre-wrap;
+}
+</style>
+<small>shape: (8, 3)</small>
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">id</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+<tr class="odd">
+<th>str</th>
+<th>datetime[ns]</th>
+<th>f64</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>"D10"</td>
+<td>2014-07-03 00:00:00</td>
+<td>2076.2</td>
+</tr>
+<tr class="even">
+<td>"D10"</td>
+<td>2014-07-04 00:00:00</td>
+<td>2073.4</td>
+</tr>
+<tr class="odd">
+<td>"D10"</td>
+<td>2014-07-05 00:00:00</td>
+<td>2048.7</td>
+</tr>
+<tr class="even">
+<td>"D10"</td>
+<td>2014-07-06 00:00:00</td>
+<td>2048.9</td>
+</tr>
+<tr class="odd">
+<td>"D10"</td>
+<td>2014-07-07 00:00:00</td>
+<td>2006.4</td>
+</tr>
+<tr class="even">
+<td>"D10"</td>
+<td>2014-07-08 00:00:00</td>
+<td>2017.6</td>
+</tr>
+<tr class="odd">
+<td>"D10"</td>
+<td>2014-07-09 00:00:00</td>
+<td>2019.1</td>
+</tr>
+<tr class="even">
+<td>"D10"</td>
+<td>2014-07-10 00:00:00</td>
+<td>2007.4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 6 - Filter a GroupBy object</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>df_filtered <span class="op">=</span> (</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    m4_hourly_df</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        .filter_by_time(</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> <span class="st">"date"</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>            start_date  <span class="op">=</span> <span class="st">'2015-07-01 12:00:00'</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>            end_date    <span class="op">=</span> <span class="st">'2015-07-01 20:00:00'</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>df_filtered</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
 
