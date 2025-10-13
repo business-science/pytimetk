@@ -1859,7 +1859,70 @@
     "href": "tutorials/05_clustering.html",
     "title": "Clustering",
     "section": "",
-    "text": "Coming soon…\n\n1 More Coming Soon…\nWe are in the early stages of development. But it’s obvious the potential for pytimetk now in Python. 🐍\n\nPlease ⭐ us on GitHub (it takes 2-seconds and means a lot).\nTo make requests, please see our Project Roadmap GH Issue #2. You can make requests there.\nWant to contribute? See our contributing guide here."
+    "text": "Segment a portfolio of time series with a feature-based clustering workflow."
+  },
+  {
+    "objectID": "tutorials/05_clustering.html#load-packages",
+    "href": "tutorials/05_clustering.html#load-packages",
+    "title": "Clustering",
+    "section": "2.1 Load packages",
+    "text": "2.1 Load packages\n\n\nCode\nimport pytimetk as tk\nimport pandas as pd\nimport numpy as np\n\nfrom tsfeatures import acf_features, lumpiness, entropy\n\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.decomposition import PCA\nfrom sklearn.cluster import KMeans\n\nimport plotly.express as px"
+  },
+  {
+    "objectID": "tutorials/05_clustering.html#load-and-glimpse-the-stock-history",
+    "href": "tutorials/05_clustering.html#load-and-glimpse-the-stock-history",
+    "title": "Clustering",
+    "section": "2.2 Load and glimpse the stock history",
+    "text": "2.2 Load and glimpse the stock history\nWe’ll use the built-in stocks_daily dataset (six large-cap tech tickers) so the entire workflow runs locally without extra data wrangling.\n\n\nCode\nstocks = tk.load_dataset(\"stocks_daily\", parse_dates=[\"date\"])\nstocks.glimpse()\n\n\n&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 8 columns\nsymbol:    object            ['META', 'META', 'META', 'META', 'META', 'M ...\ndate:      datetime64[ns]    [Timestamp('2013-01-02 00:00:00'), Timestam ...\nopen:      float64           [27.440000534057617, 27.8799991607666, 28.0 ...\nhigh:      float64           [28.18000030517578, 28.469999313354492, 28. ...\nlow:       float64           [27.420000076293945, 27.59000015258789, 27. ...\nclose:     float64           [28.0, 27.770000457763672, 28.7600002288818 ...\nvolume:    int64             [69846400, 63140600, 72715400, 83781800, 45 ...\nadjusted:  float64           [28.0, 27.770000457763672, 28.7600002288818 ...\n\n\n\n\n\n\n\n\n3 core properties of time series data\n\n\n\n\n\n\nTime index: date\nValue column: adjusted\nGroup column: symbol"
+  },
+  {
+    "objectID": "tutorials/05_clustering.html#understand-the-time-structure-with-ts_summary",
+    "href": "tutorials/05_clustering.html#understand-the-time-structure-with-ts_summary",
+    "title": "Clustering",
+    "section": "2.3 Understand the time structure with ts_summary",
+    "text": "2.3 Understand the time structure with ts_summary\nBefore engineering features, confirm that every series shares a common frequency and coverage. ts_summary() handles this in one line.\n\n\nCode\nts_profile = (\n    stocks\n        .groupby(\"symbol\", sort=False)\n        .ts_summary(date_column=\"date\")\n        .loc[:, [\"symbol\", \"date_start\", \"date_end\", \"date_n\", \"diff_median_seconds\", \"diff_max_seconds\"]]\n        .assign(\n            trading_years=lambda df_: (pd.to_datetime(df_[\"date_end\"]) - pd.to_datetime(df_[\"date_start\"])).dt.days / 365.25\n        )\n)\n\nts_profile\n\n\n\n\n\n\n\n\n\n\n\n\nsymbol\ndate_start\ndate_end\ndate_n\ndiff_median_seconds\ndiff_max_seconds\ntrading_years\n\n\n\n\n0\nMETA\n2013-01-02\n2023-09-21\n2699\n86400.0\n345600.0\n10.715948\n\n\n0\nAMZN\n2013-01-02\n2023-09-21\n2699\n86400.0\n345600.0\n10.715948\n\n\n0\nAAPL\n2013-01-02\n2023-09-21\n2699\n86400.0\n345600.0\n10.715948\n\n\n0\nNFLX\n2013-01-02\n2023-09-21\n2699\n86400.0\n345600.0\n10.715948\n\n\n0\nNVDA\n2013-01-02\n2023-09-21\n2699\n86400.0\n345600.0\n10.715948\n\n\n0\nGOOG\n2013-01-02\n2023-09-21\n2699\n86400.0\n345600.0\n10.715948\n\n\n\n\n\n\n\nThe stocks_daily dataset gives us over a decade of trading history per ticker with a consistent daily cadence—perfect for clustering."
+  },
+  {
+    "objectID": "tutorials/05_clustering.html#create-performance-signatures-with-pandas",
+    "href": "tutorials/05_clustering.html#create-performance-signatures-with-pandas",
+    "title": "Clustering",
+    "section": "3.1 Create performance signatures with pandas",
+    "text": "3.1 Create performance signatures with pandas\n\n\nCode\nstocks = (\n    stocks\n        .sort_values([\"symbol\", \"date\"])\n        .assign(\n            daily_return=lambda df_: df_.groupby(\"symbol\")[\"adjusted\"].pct_change()\n        )\n)\n\nperformance = (\n    stocks\n        .groupby(\"symbol\", sort=False)\n        .agg(\n            avg_daily_return=(\"daily_return\", \"mean\"),\n            volatility=(\"daily_return\", \"std\"),\n            avg_volume=(\"volume\", \"mean\"),\n            total_return=(\"adjusted\", lambda s: s.iloc[-1] / s.iloc[0] - 1),\n        )\n        .reset_index()\n)\n\nperformance[\"volatility\"] = performance[\"volatility\"] * np.sqrt(252)\n\nperformance\n\n\n\n\n\n\n\n\n\nsymbol\navg_daily_return\nvolatility\navg_volume\ntotal_return\n\n\n\n\n0\nAAPL\n0.001030\n0.286314\n1.639852e+08\n9.358414\n\n\n1\nAMZN\n0.001068\n0.327350\n7.901033e+07\n9.052466\n\n\n2\nGOOG\n0.000885\n0.274113\n3.875715e+07\n6.292216\n\n\n3\nMETA\n0.001170\n0.385613\n2.951687e+07\n9.561786\n\n\n4\nNFLX\n0.001689\n0.471206\n1.221723e+07\n28.225626\n\n\n5\nNVDA\n0.002229\n0.449569\n4.494016e+07\n138.692436\n\n\n\n\n\n\n\nvolatility is annualized, total_return measures the entire sample’s growth, and avg_volume helps distinguish high-activity tickers (e.g., NVDA) from lower-volume names."
+  },
+  {
+    "objectID": "tutorials/05_clustering.html#add-automated-time-series-features-with-ts_features",
+    "href": "tutorials/05_clustering.html#add-automated-time-series-features-with-ts_features",
+    "title": "Clustering",
+    "section": "3.2 Add automated time-series features with ts_features",
+    "text": "3.2 Add automated time-series features with ts_features\n\n\nCode\nts_feature_matrix = (\n    stocks\n        .groupby(\"symbol\", sort=False)\n        .ts_features(\n            date_column=\"date\",\n            value_column=\"adjusted\",\n            features=[acf_features, lumpiness, entropy],\n            freq=5,                 # one trading week seasonality hint\n            threads=1,\n            show_progress=False,\n        )\n)\n\nts_feature_matrix\n\n\n\n\n\n\n\n\n\nsymbol\nentropy\nlumpiness\nx_acf1\nx_acf10\ndiff1_acf1\ndiff1_acf10\ndiff2_acf1\ndiff2_acf10\nseas_acf1\n\n\n\n\n0\nAAPL\n0.207972\n0.000005\n0.998696\n9.858531\n-0.037978\n0.013670\n-0.505131\n0.292853\n0.993551\n\n\n1\nAMZN\n0.145684\n0.000011\n0.998821\n9.868549\n-0.023167\n0.009015\n-0.518806\n0.293242\n0.994014\n\n\n2\nGOOG\n0.210518\n0.000009\n0.998404\n9.826556\n-0.035739\n0.011965\n-0.513201\n0.279758\n0.991927\n\n\n3\nMETA\n0.255702\n0.000082\n0.997744\n9.770694\n-0.037784\n0.012685\n-0.526608\n0.299610\n0.989219\n\n\n4\nNFLX\n0.182489\n0.000037\n0.998426\n9.829973\n-0.026235\n0.007010\n-0.521142\n0.281312\n0.992120\n\n\n5\nNVDA\n0.317476\n0.000103\n0.997048\n9.650296\n-0.016769\n0.016031\n-0.498054\n0.280397\n0.984443\n\n\n\n\n\n\n\nThe selected feature trio captures short-term autocorrelation (acf_features), regime shifts (lumpiness), and complexity (entropy) without overwhelming our small sample."
+  },
+  {
+    "objectID": "tutorials/05_clustering.html#combine-the-feature-blocks",
+    "href": "tutorials/05_clustering.html#combine-the-feature-blocks",
+    "title": "Clustering",
+    "section": "3.3 Combine the feature blocks",
+    "text": "3.3 Combine the feature blocks\n\n\nCode\nfeature_table = (\n    performance\n        .merge(ts_feature_matrix, on=\"symbol\")\n        .merge(\n            ts_profile.loc[:, [\"symbol\", \"trading_years\"]],\n            on=\"symbol\"\n        )\n)\n\nfeature_table\n\n\n\n\n\n\n\n\n\nsymbol\navg_daily_return\nvolatility\navg_volume\ntotal_return\nentropy\nlumpiness\nx_acf1\nx_acf10\ndiff1_acf1\ndiff1_acf10\ndiff2_acf1\ndiff2_acf10\nseas_acf1\ntrading_years\n\n\n\n\n0\nAAPL\n0.001030\n0.286314\n1.639852e+08\n9.358414\n0.207972\n0.000005\n0.998696\n9.858531\n-0.037978\n0.013670\n-0.505131\n0.292853\n0.993551\n10.715948\n\n\n1\nAMZN\n0.001068\n0.327350\n7.901033e+07\n9.052466\n0.145684\n0.000011\n0.998821\n9.868549\n-0.023167\n0.009015\n-0.518806\n0.293242\n0.994014\n10.715948\n\n\n2\nGOOG\n0.000885\n0.274113\n3.875715e+07\n6.292216\n0.210518\n0.000009\n0.998404\n9.826556\n-0.035739\n0.011965\n-0.513201\n0.279758\n0.991927\n10.715948\n\n\n3\nMETA\n0.001170\n0.385613\n2.951687e+07\n9.561786\n0.255702\n0.000082\n0.997744\n9.770694\n-0.037784\n0.012685\n-0.526608\n0.299610\n0.989219\n10.715948\n\n\n4\nNFLX\n0.001689\n0.471206\n1.221723e+07\n28.225626\n0.182489\n0.000037\n0.998426\n9.829973\n-0.026235\n0.007010\n-0.521142\n0.281312\n0.992120\n10.715948\n\n\n5\nNVDA\n0.002229\n0.449569\n4.494016e+07\n138.692436\n0.317476\n0.000103\n0.997048\n9.650296\n-0.016769\n0.016031\n-0.498054\n0.280397\n0.984443\n10.715948\n\n\n\n\n\n\n\nAll features are numeric except for symbol, so they’re ready for scaling and clustering."
+  },
+  {
+    "objectID": "tutorials/05_clustering.html#scale-cluster-and-project",
+    "href": "tutorials/05_clustering.html#scale-cluster-and-project",
+    "title": "Clustering",
+    "section": "4.1 Scale, cluster, and project",
+    "text": "4.1 Scale, cluster, and project\n\n\nCode\nnumeric_cols = feature_table.select_dtypes(include=\"number\").columns\n\nscaler = StandardScaler()\nX_scaled = scaler.fit_transform(feature_table[numeric_cols])\n\nkmeans = KMeans(n_clusters=3, n_init=\"auto\", random_state=123)\nfeature_table[\"cluster\"] = kmeans.fit_predict(X_scaled)\n\npca = PCA(n_components=2, random_state=123)\nembedding = pca.fit_transform(X_scaled)\n\nfeature_table[[\"pc1\", \"pc2\"]] = embedding\n\nfeature_table\n\n\n\n\n\n\n\n\n\nsymbol\navg_daily_return\nvolatility\navg_volume\ntotal_return\nentropy\nlumpiness\nx_acf1\nx_acf10\ndiff1_acf1\ndiff1_acf10\ndiff2_acf1\ndiff2_acf10\nseas_acf1\ntrading_years\ncluster\npc1\npc2\n\n\n\n\n0\nAAPL\n0.001030\n0.286314\n1.639852e+08\n9.358414\n0.207972\n0.000005\n0.998696\n9.858531\n-0.037978\n0.013670\n-0.505131\n0.292853\n0.993551\n10.715948\n1\n2.160118\n2.444434\n\n\n1\nAMZN\n0.001068\n0.327350\n7.901033e+07\n9.052466\n0.145684\n0.000011\n0.998821\n9.868549\n-0.023167\n0.009015\n-0.518806\n0.293242\n0.994014\n10.715948\n1\n2.426564\n-0.709014\n\n\n2\nGOOG\n0.000885\n0.274113\n3.875715e+07\n6.292216\n0.210518\n0.000009\n0.998404\n9.826556\n-0.035739\n0.011965\n-0.513201\n0.279758\n0.991927\n10.715948\n1\n1.408552\n0.472603\n\n\n3\nMETA\n0.001170\n0.385613\n2.951687e+07\n9.561786\n0.255702\n0.000082\n0.997744\n9.770694\n-0.037784\n0.012685\n-0.526608\n0.299610\n0.989219\n10.715948\n0\n-0.377876\n-0.104335\n\n\n4\nNFLX\n0.001689\n0.471206\n1.221723e+07\n28.225626\n0.182489\n0.000037\n0.998426\n9.829973\n-0.026235\n0.007010\n-0.521142\n0.281312\n0.992120\n10.715948\n0\n0.233911\n-2.723692\n\n\n5\nNVDA\n0.002229\n0.449569\n4.494016e+07\n138.692436\n0.317476\n0.000103\n0.997048\n9.650296\n-0.016769\n0.016031\n-0.498054\n0.280397\n0.984443\n10.715948\n2\n-5.851268\n0.620004\n\n\n\n\n\n\n\nThis small universe ends up with three distinct segments:\n\nCluster 0: Momentum-heavy names with higher entropy (META, NFLX).\nCluster 1: Steady stalwarts (AAPL, AMZN, GOOG).\nCluster 2: High-volatility outlier (NVDA)."
+  },
+  {
+    "objectID": "tutorials/05_clustering.html#explore-the-embedding-with-plotly",
+    "href": "tutorials/05_clustering.html#explore-the-embedding-with-plotly",
+    "title": "Clustering",
+    "section": "4.2 Explore the embedding with Plotly",
+    "text": "4.2 Explore the embedding with Plotly\n\n\nCode\nscatter_fig = px.scatter(\n    feature_table,\n    x=\"pc1\",\n    y=\"pc2\",\n    color=feature_table[\"cluster\"].astype(str),\n    text=\"symbol\",\n    size=\"volatility\",\n    hover_data={\n        \"avg_daily_return\":\":.4f\",\n        \"volatility\":\":.2f\",\n        \"total_return\":\":.1%\",\n        \"cluster\": False,\n        \"pc1\": False,\n        \"pc2\": False,\n    },\n    title=\"Stock clusters powered by pytimetk features\",\n    width=800,\n    height=500,\n)\n\nscatter_fig.update_traces(textposition=\"top center\")\nscatter_fig\n\n\n\n                                                \n\n\nThe hover tooltips make it easy to validate how volatility and long-run growth drive the separation."
+  },
+  {
+    "objectID": "tutorials/05_clustering.html#inspect-the-original-series-by-cluster",
+    "href": "tutorials/05_clustering.html#inspect-the-original-series-by-cluster",
+    "title": "Clustering",
+    "section": "4.3 Inspect the original series by cluster",
+    "text": "4.3 Inspect the original series by cluster\nBring the cluster assignments back to the raw data and lean on plot_timeseries() for an interactive review.\n\n\nCode\nclustered_history = stocks.merge(feature_table[[\"symbol\", \"cluster\"]], on=\"symbol\")\n\ncluster_fig = (\n    clustered_history\n        .groupby(\"cluster\")\n        .plot_timeseries(\n            date_column=\"date\",\n            value_column=\"adjusted\",\n            color_column=\"symbol\",\n            facet_ncol=1,\n            facet_scales=\"free_y\",\n            smooth=False,\n            plotly_dropdown=True,\n            width=900,\n            height=600,\n            engine=\"plotly\",\n            title=\"Clustered price history (toggle clusters with the dropdown)\",\n        )\n)\n\ncluster_fig\n\n\n\n                                                \n\n\nUse the Plotly dropdown to focus on a single segment and drill down by ticker."
   },
   {
     "objectID": "tutorials/01_sales_crm.html",
