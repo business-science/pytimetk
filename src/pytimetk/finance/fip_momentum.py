@@ -25,6 +25,7 @@ from pytimetk.utils.dataframe_ops import (
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.utils.polars_helpers import collect_lazyframe
 
 
 @pf.register_groupby_method
@@ -452,7 +453,7 @@ def _augment_fip_momentum_polars(
 
     lazy_frame = lazy_frame.drop(temp_columns)
 
-    result = lazy_frame.collect().sort(row_col)
+    result = collect_lazyframe(lazy_frame).sort(row_col)
 
     if generated:
         result = result.drop(row_col)

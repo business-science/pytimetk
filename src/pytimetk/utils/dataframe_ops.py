@@ -12,6 +12,8 @@ except ImportError:  # pragma: no cover - GPU support optional
     cudf = None  # type: ignore
     CudfDataFrameGroupBy = None  # type: ignore
 
+from pytimetk.utils.polars_helpers import collect_lazyframe
+
 
 PandasLike = Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
 PolarsLike = Union[pl.DataFrame, pl.dataframe.group_by.GroupBy]
@@ -100,7 +102,7 @@ def convert_to_engine(
                 group_columns=group_cols,
             )
         if original_kind == "polars_lazy":
-            collected = data.collect()
+            collected = collect_lazyframe(data)
             pandas_df = collected.to_pandas()
             return FrameConversion(
                 data=pandas_df,
@@ -148,7 +150,7 @@ def convert_to_engine(
                 pandas_index=pandas_index,
             )
         if original_kind == "polars_lazy":
-            collected = data.collect()
+            collected = collect_lazyframe(data)
             return FrameConversion(
                 data=collected,
                 original_kind=original_kind,
@@ -282,7 +284,7 @@ def convert_to_engine(
                 group_columns=group_names,
             )
         if original_kind == "polars_lazy":
-            collected = data.collect()
+            collected = collect_lazyframe(data)
             pandas_df = collected.to_pandas()
             row_id_col = _make_temp_column(pandas_df.columns)
             pandas_index = pandas_df.index.copy()
