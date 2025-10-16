@@ -6,6 +6,11 @@ import warnings
 
 from typing import Callable, List, Optional, Sequence, Tuple, Union
 
+try:  # Optional cudf dependency for GPU acceleration
+    import cudf  # type: ignore
+except ImportError:  # pragma: no cover - cudf optional
+    cudf = None  # type: ignore
+
 from pathos.multiprocessing import ProcessingPool
 from functools import partial
 
@@ -26,6 +31,7 @@ from pytimetk.utils.dataframe_ops import (
     normalize_engine,
     resolve_polars_group_columns,
     restore_output_type,
+    conversion_to_pandas,
 )
 
 
@@ -37,6 +43,8 @@ def augment_expanding(
         pd.core.groupby.generic.DataFrameGroupBy,
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
+        "cudf.DataFrame",
+        "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
     date_column: str,
     value_column: Union[str, List[str]],
@@ -84,7 +92,7 @@ def augment_expanding(
         Minimum observations in the window to have a value. Defaults to the window
         size. If set, a value will be produced even if fewer observations are
         present than the window size.
-    engine : {"auto", "pandas", "polars"}, optional, default "auto"
+    engine : {"auto", "pandas", "polars", "cudf"}, optional, default "auto"
         Specifies the backend computation library for augmenting expanding window
         functions. When "auto" the backend is inferred from the input data type.
         Use "pandas" or "polars" to force a specific backend.
@@ -230,12 +238,18 @@ def augment_expanding(
 
     engine_resolved = normalize_engine(engine, data)
 
-    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError(
+            "cudf is required for engine='cudf', but it is not installed."
+        )
+
+    conversion_engine = engine_resolved
+    conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
-    if reduce_memory and engine_resolved == "pandas":
+    if reduce_memory and conversion_engine == "pandas":
         prepared_data = reduce_memory_usage(prepared_data)
-    elif reduce_memory and engine_resolved == "polars":
+    elif reduce_memory and conversion_engine in ("polars", "cudf"):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
             RuntimeWarning,
@@ -249,12 +263,12 @@ def augment_expanding(
     window_funcs = list(window_func) if isinstance(window_func, list) else [window_func]
 
     min_periods_resolved = 1 if min_periods is None else min_periods
+    threads_resolved = get_threads(threads)
 
     if engine_resolved == "pandas":
         prepared_data, idx_unsorted = sort_dataframe(
             prepared_data, date_column, keep_grouped_df=True
         )
-        threads_resolved = get_threads(threads)
         result = _augment_expanding_pandas(
             prepared_data,
             date_column,
@@ -282,6 +296,72 @@ def augment_expanding(
 
         return restored
 
+    if engine_resolved == "cudf":
+        fallback_reason: Optional[str] = None
+        supported_funcs = {
+            "mean",
+            "sum",
+            "min",
+            "max",
+            "std",
+            "var",
+            "count",
+            "median",
+        }
+
+        cudf_df = prepared_data.obj if hasattr(prepared_data, "obj") else prepared_data
+
+        if not isinstance(cudf_df, cudf.DataFrame):
+            fallback_reason = (
+                "Unsupported cudf object type encountered during conversion."
+            )
+        elif kwargs:
+            fallback_reason = (
+                "additional expanding keyword arguments are not supported for cudf yet"
+            )
+        elif any(
+            not isinstance(func, str) or func not in supported_funcs
+            for func in window_funcs
+        ):
+            fallback_reason = (
+                "custom expanding functions are not supported for cudf yet"
+            )
+
+        if fallback_reason is not None:
+            warnings.warn(
+                f"augment_expanding cudf path: {fallback_reason}. Falling back to pandas.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            pandas_input = conversion_to_pandas(conversion)
+            result = _augment_expanding_pandas(
+                pandas_input,
+                date_column,
+                value_columns,
+                window_funcs,
+                min_periods_resolved,
+                threads_resolved,
+                show_progress,
+                **kwargs,
+            )
+        else:
+            result = _augment_expanding_cudf_dataframe(
+                cudf_df,
+                date_column=date_column,
+                value_columns=value_columns,
+                window_funcs=[func for func in window_funcs if isinstance(func, str)],
+                min_periods=min_periods_resolved,
+                group_columns=conversion.group_columns,
+                row_id_column=conversion.row_id_column,
+            )
+
+        restored = restore_output_type(result, conversion)
+
+        if isinstance(restored, pd.DataFrame):
+            return restored.sort_index()
+
+        return restored
+
     if engine_resolved == "polars":
         result_polars = _augment_expanding_polars(
             prepared_data,
@@ -300,7 +380,61 @@ def augment_expanding(
 
         return restored
 
-    raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    raise ValueError("Invalid engine. Use 'pandas', 'polars', or 'cudf'.")
+
+
+def _augment_expanding_cudf_dataframe(
+    frame: "cudf.DataFrame",
+    *,
+    date_column: str,
+    value_columns: List[str],
+    window_funcs: List[str],
+    min_periods: Optional[int],
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> "cudf.DataFrame":
+    if cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError("cudf is required to execute the cudf expanding backend.")
+
+    sort_columns: List[str] = [date_column]
+    if group_columns:
+        sort_columns = list(group_columns) + sort_columns
+
+    df_sorted = frame.sort_values(sort_columns)
+    resolved_min = 1 if min_periods is None else min_periods
+
+    for col in value_columns:
+        if not cudf.api.types.is_numeric_dtype(df_sorted[col]):
+            df_sorted[col] = df_sorted[col].astype("float64")
+
+        if group_columns:
+            expanding_obj = (
+                df_sorted.groupby(list(group_columns), sort=False)[col]
+                .expanding(min_periods=resolved_min)
+            )
+            for func in window_funcs:
+                if func == "quantile":
+                    result_series = expanding_obj.quantile(0.5).reset_index(drop=True)
+                    new_column_name = f"{col}_expanding_quantile_50"
+                else:
+                    result_series = getattr(expanding_obj, func)().reset_index(drop=True)
+                    new_column_name = f"{col}_expanding_{func}"
+                df_sorted[new_column_name] = result_series
+        else:
+            expanding_obj = df_sorted[col].expanding(min_periods=resolved_min)
+            for func in window_funcs:
+                new_column_name = f"{col}_expanding_{func}"
+                if func == "quantile":
+                    result_series = expanding_obj.quantile(0.5)
+                    new_column_name = f"{col}_expanding_quantile_50"
+                else:
+                    result_series = getattr(expanding_obj, func)()
+                df_sorted[new_column_name] = result_series
+
+    if row_id_column and row_id_column in df_sorted.columns:
+        df_sorted = df_sorted.sort_values(row_id_column)
+
+    return df_sorted
 
 
 def _augment_expanding_pandas(

@@ -6,6 +6,13 @@ import warnings
 
 from typing import Callable, List, Optional, Sequence, Tuple, Union
 
+try:  # Optional cudf dependency for GPU acceleration
+    import cudf  # type: ignore
+    from cudf.core.groupby.groupby import DataFrameGroupBy as CudfDataFrameGroupBy
+except ImportError:  # pragma: no cover - cudf optional
+    cudf = None  # type: ignore
+    CudfDataFrameGroupBy = None  # type: ignore
+
 from pathos.multiprocessing import ProcessingPool
 from functools import partial
 
@@ -26,6 +33,7 @@ from pytimetk.utils.dataframe_ops import (
     normalize_engine,
     resolve_polars_group_columns,
     restore_output_type,
+    conversion_to_pandas,
 )
 
 
@@ -37,6 +45,8 @@ def augment_rolling(
         pd.core.groupby.generic.DataFrameGroupBy,
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
+        "cudf.DataFrame",
+        "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
     date_column: str,
     value_column: Union[str, List[str]],
@@ -107,7 +117,7 @@ def augment_rolling(
         If `True`, a progress bar will be displayed during parallel processing.
     reduce_memory : bool, optional
         The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is False.
-    engine : {"auto", "pandas", "polars"}, optional, default "auto"
+    engine : {"auto", "pandas", "polars", "cudf"}, optional, default "auto"
         Specifies the backend computation library for augmenting rolling window
         functions. When "auto" the backend is inferred from the input data type.
         Use "pandas" or "polars" to force a specific backend.
@@ -219,12 +229,18 @@ def augment_rolling(
 
     engine_resolved = normalize_engine(engine, data)
 
-    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError(
+            "cudf is required for engine='cudf', but it is not installed."
+        )
+
+    conversion_engine = engine_resolved
+    conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
-    if reduce_memory and engine_resolved == "pandas":
+    if reduce_memory and conversion_engine == "pandas":
         prepared_data = reduce_memory_usage(prepared_data)
-    elif reduce_memory and engine_resolved == "polars":
+    elif reduce_memory and conversion_engine in ("polars", "cudf"):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
             RuntimeWarning,
@@ -288,6 +304,89 @@ def augment_rolling(
 
         return restored
 
+    if engine_resolved == "cudf":
+        fallback_reason: Optional[str] = None
+        supported_funcs = {
+            "mean",
+            "sum",
+            "min",
+            "max",
+            "std",
+            "var",
+            "count",
+            "median",
+        }
+
+        allowed_cudf_kwargs = {"min_periods"}
+        unsupported_kwargs = set(kwargs) - allowed_cudf_kwargs
+        min_periods_override: Optional[int] = kwargs.get("min_periods")
+
+        cudf_df: Optional["cudf.DataFrame"] = None
+        if isinstance(prepared_data, cudf.DataFrame):
+            cudf_df = prepared_data
+        elif (
+            CudfDataFrameGroupBy is not None
+            and isinstance(prepared_data, CudfDataFrameGroupBy)
+        ):
+            cudf_df = prepared_data.obj.copy(deep=True)
+        if isinstance(prepared_data, tuple) and len(prepared_data) == 2:
+            # Defensive: convert_to_engine never returns tuple, but keep for safety
+            fallback_reason = "Unsupported cudf object returned by engine conversion."
+        elif cudf_df is None:
+            fallback_reason = "Unsupported cudf object type for augment_rolling."
+        elif unsupported_kwargs:
+            fallback_reason = (
+                "Unsupported cudf rolling kwargs: "
+                + ", ".join(sorted(unsupported_kwargs))
+            )
+        elif any(
+            not isinstance(func, str) or func not in supported_funcs
+            for func in window_funcs
+        ):
+            fallback_reason = (
+                "custom rolling functions are not supported for cudf yet"
+            )
+
+        if fallback_reason is not None:
+            warnings.warn(
+                f"augment_rolling cudf path: {fallback_reason}. Falling back to pandas.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            pandas_input = conversion_to_pandas(conversion)
+            result = _augment_rolling_pandas(
+                pandas_input,
+                date_column,
+                value_columns,
+                window_funcs,
+                windows,
+                min_periods,
+                center,
+                threads_resolved,
+                show_progress,
+                **kwargs,
+            )
+        else:
+            result = _augment_rolling_cudf_dataframe(
+                cudf_df,
+                date_column=date_column,
+                value_columns=value_columns,
+                window_funcs=[func for func in window_funcs if isinstance(func, str)],
+                windows=windows,
+                min_periods=min_periods,
+                min_periods_override=min_periods_override,
+                center=center,
+                group_columns=conversion.group_columns,
+                row_id_column=conversion.row_id_column,
+            )
+
+        restored = restore_output_type(result, conversion)
+
+        if isinstance(restored, pd.DataFrame):
+            return restored.sort_index()
+
+        return restored
+
     if engine_resolved == "polars":
         result_polars = _augment_rolling_polars(
             prepared_data,
@@ -308,7 +407,70 @@ def augment_rolling(
 
         return restored
 
-    raise ValueError("Invalid engine. Use 'pandas' or 'polars'.")
+    raise ValueError("Invalid engine. Use 'pandas', 'polars', or 'cudf'.")
+
+
+def _augment_rolling_cudf_dataframe(
+    frame: "cudf.DataFrame",
+    *,
+    date_column: str,
+    value_columns: List[str],
+    window_funcs: List[str],
+    windows: List[int],
+    min_periods: Optional[int],
+    min_periods_override: Optional[int],
+    center: bool,
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> "cudf.DataFrame":
+    if cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError("cudf is required to execute the cudf rolling backend.")
+
+    sort_columns: List[str] = [date_column]
+    if group_columns:
+        sort_columns = list(group_columns) + sort_columns
+
+    df_sorted = frame.sort_values(sort_columns)
+
+    for col in value_columns:
+        if not cudf.api.types.is_numeric_dtype(df_sorted[col]):
+            df_sorted[col] = df_sorted[col].astype("float64")
+
+        for window_size in windows:
+            resolved_min = (
+                min_periods_override
+                if min_periods_override is not None
+                else (min_periods if min_periods is not None else window_size)
+            )
+
+            if group_columns:
+                rolling_obj = (
+                    df_sorted.groupby(list(group_columns), sort=False)[col]
+                    .rolling(
+                        window=window_size,
+                        min_periods=resolved_min,
+                        center=center,
+                    )
+                )
+                for func in window_funcs:
+                    new_column_name = f"{col}_rolling_{func}_win_{window_size}"
+                    result_series = getattr(rolling_obj, func)().reset_index(drop=True)
+                    df_sorted[new_column_name] = result_series
+            else:
+                rolling_obj = df_sorted[col].rolling(
+                    window=window_size,
+                    min_periods=resolved_min,
+                    center=center,
+                )
+                for func in window_funcs:
+                    new_column_name = f"{col}_rolling_{func}_win_{window_size}"
+                    result_series = getattr(rolling_obj, func)()
+                    df_sorted[new_column_name] = result_series
+
+    if row_id_column and row_id_column in df_sorted.columns:
+        df_sorted = df_sorted.sort_values(row_id_column)
+
+    return df_sorted
 
 
 def _augment_rolling_pandas(

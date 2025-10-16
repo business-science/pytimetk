@@ -23,6 +23,7 @@ from pytimetk.utils.dataframe_ops import (
     normalize_engine,
     resolve_polars_group_columns,
     restore_output_type,
+    conversion_to_pandas,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -141,9 +142,12 @@ def augment_adx(
     periods_list = _normalize_periods(periods)
 
     engine_resolved = normalize_engine(engine, data)
-    fallback_to_pandas = engine_resolved == "cudf"
+    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError(
+            "cudf is required for engine='cudf', but it is not installed."
+        )
 
-    conversion_engine = "pandas" if fallback_to_pandas else engine_resolved
+    conversion_engine = engine_resolved
     conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
@@ -152,13 +156,6 @@ def augment_adx(
     elif reduce_memory and conversion_engine in ("polars", "cudf"):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
-            RuntimeWarning,
-            stacklevel=2,
-        )
-
-    if fallback_to_pandas:
-        warnings.warn(
-            "augment_adx currently falls back to the pandas implementation when used with cudf data.",
             RuntimeWarning,
             stacklevel=2,
         )
@@ -176,6 +173,33 @@ def augment_adx(
         )
         if reduce_memory:
             result = reduce_memory_usage(result)
+    elif conversion_engine == "cudf":
+        cudf_df = prepared_data.obj if hasattr(prepared_data, "obj") else prepared_data
+        if not isinstance(cudf_df, cudf.DataFrame):
+            warnings.warn(
+                "Unsupported cudf object encountered for augment_adx. Falling back to pandas.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            pandas_input = conversion_to_pandas(conversion)
+            result = _augment_adx_pandas(
+                data=pandas_input,
+                high_column=high_column,
+                low_column=low_column,
+                close_column=close_column,
+                periods=periods_list,
+            )
+        else:
+            result = _augment_adx_cudf_dataframe(
+                cudf_df,
+                date_column=date_column,
+                high_column=high_column,
+                low_column=low_column,
+                close_column=close_column,
+                periods=periods_list,
+                group_columns=conversion.group_columns,
+                row_id_column=conversion.row_id_column,
+            )
     else:
         result = _augment_adx_polars(
             data=prepared_data,
@@ -267,6 +291,120 @@ def _augment_adx_pandas(
 
     df.drop(columns=["tr", "plus_dm", "minus_dm"], inplace=True)
     return df
+
+
+def _augment_adx_cudf_dataframe(
+    frame: "cudf.DataFrame",
+    *,
+    date_column: str,
+    high_column: str,
+    low_column: str,
+    close_column: str,
+    periods: List[int],
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> "cudf.DataFrame":
+    if cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError("cudf is required to execute the cudf adx backend.")
+
+    sort_columns: List[str] = [date_column]
+    if group_columns:
+        sort_columns = list(group_columns) + sort_columns
+
+    df_sorted = frame.sort_values(sort_columns)
+    df_sorted[high_column] = df_sorted[high_column].astype("float64")
+    df_sorted[low_column] = df_sorted[low_column].astype("float64")
+    df_sorted[close_column] = df_sorted[close_column].astype("float64")
+
+    if group_columns:
+        group_list = list(group_columns)
+        prev_close = df_sorted.groupby(group_list, sort=False)[close_column].shift(1)
+        prev_high = df_sorted.groupby(group_list, sort=False)[high_column].shift(1)
+        prev_low = df_sorted.groupby(group_list, sort=False)[low_column].shift(1)
+    else:
+        group_list = None
+        prev_close = df_sorted[close_column].shift(1)
+        prev_high = df_sorted[high_column].shift(1)
+        prev_low = df_sorted[low_column].shift(1)
+
+    tr_candidates = cudf.DataFrame(
+        {
+            "a": df_sorted[high_column] - df_sorted[low_column],
+            "b": (df_sorted[high_column] - prev_close).abs(),
+            "c": (df_sorted[low_column] - prev_close).abs(),
+        }
+    )
+    df_sorted["__adx_tr"] = tr_candidates.max(axis=1)
+
+    up_move = (df_sorted[high_column] - prev_high).fillna(0)
+    down_move = (prev_low - df_sorted[low_column]).fillna(0)
+
+    df_sorted["__adx_plus_dm"] = up_move.where(
+        (up_move > down_move) & (up_move > 0), 0.0
+    )
+    df_sorted["__adx_minus_dm"] = down_move.where(
+        (down_move > up_move) & (down_move > 0), 0.0
+    )
+
+    for period in periods:
+        alpha = 1.0 / float(period)
+
+        tr_smooth = cudf.Series(np.nan, index=df_sorted.index, dtype="float64")
+        plus_dm_smooth = cudf.Series(np.nan, index=df_sorted.index, dtype="float64")
+        minus_dm_smooth = cudf.Series(np.nan, index=df_sorted.index, dtype="float64")
+
+        if group_list:
+            for _, group_df in df_sorted.groupby(group_list, sort=False):
+                idx = group_df.index
+                tr_smooth.loc[idx] = group_df["__adx_tr"].ewm(
+                    alpha=alpha,
+                    adjust=False,
+                ).mean()
+                plus_dm_smooth.loc[idx] = group_df["__adx_plus_dm"].ewm(
+                    alpha=alpha,
+                    adjust=False,
+                ).mean()
+                minus_dm_smooth.loc[idx] = group_df["__adx_minus_dm"].ewm(
+                    alpha=alpha,
+                    adjust=False,
+                ).mean()
+        else:
+            tr_smooth = df_sorted["__adx_tr"].ewm(alpha=alpha, adjust=False).mean()
+            plus_dm_smooth = df_sorted["__adx_plus_dm"].ewm(
+                alpha=alpha, adjust=False
+            ).mean()
+            minus_dm_smooth = df_sorted["__adx_minus_dm"].ewm(
+                alpha=alpha, adjust=False
+            ).mean()
+
+        plus_di = (plus_dm_smooth / tr_smooth) * 100
+        minus_di = (minus_dm_smooth / tr_smooth) * 100
+
+        denom = plus_di + minus_di
+        dx = ((plus_di - minus_di).abs() / denom) * 100
+        dx = dx.where(denom != 0)
+
+        if group_list:
+            adx_series = cudf.Series(np.nan, index=df_sorted.index, dtype="float64")
+            for _, group_df in df_sorted.groupby(group_list, sort=False):
+                idx = group_df.index
+                adx_series.loc[idx] = dx.loc[idx].ewm(
+                    alpha=alpha,
+                    adjust=False,
+                ).mean()
+        else:
+            adx_series = dx.ewm(alpha=alpha, adjust=False).mean()
+
+        df_sorted[f"{close_column}_plus_di_{period}"] = plus_di
+        df_sorted[f"{close_column}_minus_di_{period}"] = minus_di
+        df_sorted[f"{close_column}_adx_{period}"] = adx_series
+
+    df_sorted = df_sorted.drop(columns=["__adx_tr", "__adx_plus_dm", "__adx_minus_dm"])
+
+    if row_id_column and row_id_column in df_sorted.columns:
+        df_sorted = df_sorted.sort_values(row_id_column)
+
+    return df_sorted
 
 
 def _augment_adx_polars(

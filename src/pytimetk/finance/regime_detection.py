@@ -29,6 +29,7 @@ from pytimetk.utils.dataframe_ops import (
     normalize_engine,
     resolve_polars_group_columns,
     restore_output_type,
+    conversion_to_pandas,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -190,9 +191,16 @@ def augment_regime_detection(
     windows = _normalize_windows(window)
 
     engine_resolved = normalize_engine(engine, data)
-    fallback_to_pandas = engine_resolved == "cudf"
 
-    conversion_engine = "pandas" if fallback_to_pandas else engine_resolved
+    if engine_resolved == "cudf":
+        warnings.warn(
+            "augment_regime_detection does not yet offer a native cudf implementation. Falling back to pandas.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        conversion_engine = "pandas"
+    else:
+        conversion_engine = engine_resolved
     conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
@@ -201,13 +209,6 @@ def augment_regime_detection(
     elif reduce_memory and conversion_engine in ("polars", "cudf"):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
-            RuntimeWarning,
-            stacklevel=2,
-        )
-
-    if fallback_to_pandas:
-        warnings.warn(
-            "augment_regime_detection currently falls back to the pandas implementation when used with cudf data.",
             RuntimeWarning,
             stacklevel=2,
         )

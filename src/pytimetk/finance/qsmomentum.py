@@ -22,6 +22,7 @@ from pytimetk.utils.dataframe_ops import (
     normalize_engine,
     resolve_polars_group_columns,
     restore_output_type,
+    conversion_to_pandas,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -69,7 +70,7 @@ def augment_qsmomentum(
     reduce_memory : bool, optional
         Attempt to reduce memory usage when operating on pandas data. If a
         polars input is supplied a warning is emitted and no conversion occurs.
-    engine : {"auto", "pandas", "polars"}, optional
+    engine : {"auto", "pandas", "polars", "cudf"}, optional
         Execution engine. ``"auto"`` (default) infers the backend from the
         input data while allowing explicit overrides.
 
@@ -160,9 +161,13 @@ def augment_qsmomentum(
         )
 
     engine_resolved = normalize_engine(engine, data)
-    fallback_to_pandas = engine_resolved == "cudf"
 
-    conversion_engine = "pandas" if fallback_to_pandas else engine_resolved
+    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError(
+            "cudf is required for engine='cudf', but it is not installed."
+        )
+
+    conversion_engine = engine_resolved
     conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
@@ -175,14 +180,7 @@ def augment_qsmomentum(
             stacklevel=2,
         )
 
-    if fallback_to_pandas:
-        warnings.warn(
-            "augment_qsmomentum currently falls back to the pandas implementation when used with cudf data.",
-            RuntimeWarning,
-            stacklevel=2,
-        )
-
-    if conversion_engine == "pandas":
+    if engine_resolved == "pandas":
         sorted_data, _ = sort_dataframe(
             prepared_data, date_column, keep_grouped_df=True
         )
@@ -193,6 +191,29 @@ def augment_qsmomentum(
         )
         if reduce_memory:
             result = reduce_memory_usage(result)
+    elif engine_resolved == "cudf":
+        cudf_df = prepared_data.obj if hasattr(prepared_data, "obj") else prepared_data
+        if not isinstance(cudf_df, cudf.DataFrame):
+            warnings.warn(
+                "Unsupported cudf object encountered for augment_qsmomentum. Falling back to pandas.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            pandas_input = conversion_to_pandas(conversion)
+            result = _augment_qsmomentum_pandas(
+                data=pandas_input,
+                close_column=close_column,
+                combos=valid_combos,
+            )
+        else:
+            result = _augment_qsmomentum_cudf_dataframe(
+                cudf_df,
+                date_column=date_column,
+                close_column=close_column,
+                combos=valid_combos,
+                group_columns=conversion.group_columns,
+                row_id_column=conversion.row_id_column,
+            )
     else:
         result = _augment_qsmomentum_polars(
             data=prepared_data,
@@ -337,6 +358,79 @@ def _augment_qsmomentum_polars(
         result = result.drop(row_col)
 
     return result
+
+
+def _augment_qsmomentum_cudf_dataframe(
+    frame: "cudf.DataFrame",
+    *,
+    date_column: str,
+    close_column: str,
+    combos: Sequence[Tuple[int, int, int]],
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> "cudf.DataFrame":
+    if cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError("cudf is required to execute the cudf qsmomentum backend.")
+
+    sort_columns: List[str] = [date_column]
+    if group_columns:
+        sort_columns = list(group_columns) + sort_columns
+
+    df_sorted = frame.sort_values(sort_columns)
+    df_sorted[close_column] = df_sorted[close_column].astype("float64")
+
+    if group_columns:
+        group_list = list(group_columns)
+        df_sorted["__returns"] = (
+            df_sorted.groupby(group_list, sort=False)[close_column]
+            .pct_change()
+        )
+    else:
+        df_sorted["__returns"] = df_sorted[close_column].pct_change()
+
+    for fp, sp, rp in combos:
+        if group_columns:
+            fast_shift = (
+                df_sorted.groupby(group_list, sort=False)[close_column]
+                .shift(fp)
+            )
+            slow_shift = (
+                df_sorted.groupby(group_list, sort=False)[close_column]
+                .shift(sp)
+            )
+        else:
+            fast_shift = df_sorted[close_column].shift(fp)
+            slow_shift = df_sorted[close_column].shift(sp)
+
+        roc_fast = (df_sorted[close_column] - fast_shift) / (fast_shift + 1e-10)
+        roc_slow = (fast_shift - slow_shift) / (slow_shift + 1e-10)
+
+        if group_columns:
+            std_returns = (
+                df_sorted.groupby(group_list, sort=False)["__returns"]
+                .rolling(window=rp, min_periods=rp)
+                .std()
+                .reset_index(drop=True)
+            )
+        else:
+            std_returns = (
+                df_sorted["__returns"].rolling(window=rp, min_periods=rp).std()
+            )
+
+        diff = roc_slow - roc_fast
+        momentum = diff / std_returns
+        momentum = momentum.where(std_returns.abs() >= 1e-10, np.nan)
+
+        column_name = f"{close_column}_qsmom_{fp}_{sp}_{rp}"
+        df_sorted[column_name] = momentum
+
+    if "__returns" in df_sorted.columns:
+        df_sorted = df_sorted.drop(columns=["__returns"])
+
+    if row_id_column and row_id_column in df_sorted.columns:
+        df_sorted = df_sorted.sort_values(row_id_column)
+
+    return df_sorted
 
 
 def _normalize_periods(

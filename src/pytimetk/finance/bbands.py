@@ -22,6 +22,7 @@ from pytimetk.utils.dataframe_ops import (
     normalize_engine,
     resolve_polars_group_columns,
     restore_output_type,
+    conversion_to_pandas,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -125,9 +126,12 @@ def augment_bbands(
     std_list = _normalize_std_dev(std_dev)
 
     engine_resolved = normalize_engine(engine, data)
-    fallback_to_pandas = engine_resolved == "cudf"
+    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError(
+            "cudf is required for engine='cudf', but it is not installed."
+        )
 
-    conversion_engine = "pandas" if fallback_to_pandas else engine_resolved
+    conversion_engine = engine_resolved
     conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
@@ -136,13 +140,6 @@ def augment_bbands(
     elif reduce_memory and conversion_engine in ("polars", "cudf"):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
-            RuntimeWarning,
-            stacklevel=2,
-        )
-
-    if fallback_to_pandas:
-        warnings.warn(
-            "augment_bbands currently falls back to the pandas implementation when used with cudf data.",
             RuntimeWarning,
             stacklevel=2,
         )
@@ -159,6 +156,31 @@ def augment_bbands(
         )
         if reduce_memory:
             result = reduce_memory_usage(result)
+    elif conversion_engine == "cudf":
+        cudf_df = prepared_data.obj if hasattr(prepared_data, "obj") else prepared_data
+        if not isinstance(cudf_df, cudf.DataFrame):
+            warnings.warn(
+                "Unsupported cudf object encountered for augment_bbands. Falling back to pandas.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            pandas_input = conversion_to_pandas(conversion)
+            result = _augment_bbands_pandas(
+                data=pandas_input,
+                close_column=close_column,
+                periods=period_list,
+                std_dev=std_list,
+            )
+        else:
+            result = _augment_bbands_cudf_dataframe(
+                cudf_df,
+                date_column=date_column,
+                close_column=close_column,
+                periods=period_list,
+                std_dev=std_list,
+                group_columns=conversion.group_columns,
+                row_id_column=conversion.row_id_column,
+            )
     else:
         result = _augment_bbands_polars(
             data=prepared_data,
@@ -176,6 +198,53 @@ def augment_bbands(
         return restored.sort_index()
 
     return restored
+
+
+def _augment_bbands_cudf_dataframe(
+    frame: "cudf.DataFrame",
+    *,
+    date_column: str,
+    close_column: str,
+    periods: List[int],
+    std_dev: List[float],
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> "cudf.DataFrame":
+    if cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError("cudf is required to execute the cudf bbands backend.")
+
+    sort_columns: List[str] = [date_column]
+    if group_columns:
+        sort_columns = list(group_columns) + sort_columns
+
+    df_sorted = frame.sort_values(sort_columns)
+    df_sorted[close_column] = df_sorted[close_column].astype("float64")
+
+    group_list = list(group_columns) if group_columns else None
+
+    for period in periods:
+        if group_list:
+            rolling_obj = (
+                df_sorted.groupby(group_list, sort=False)[close_column]
+                .rolling(window=period, min_periods=period)
+            )
+            ma_series = rolling_obj.mean().reset_index(drop=True)
+            std_series = rolling_obj.std().reset_index(drop=True)
+        else:
+            ma_series = df_sorted[close_column].rolling(window=period, min_periods=period).mean()
+            std_series = df_sorted[close_column].rolling(window=period, min_periods=period).std()
+
+        for sd in std_dev:
+            fmt = _format_sd(sd)
+            offset = std_series * float(sd)
+            df_sorted[f"{close_column}_bband_middle_{period}_{fmt}"] = ma_series
+            df_sorted[f"{close_column}_bband_upper_{period}_{fmt}"] = ma_series + offset
+            df_sorted[f"{close_column}_bband_lower_{period}_{fmt}"] = ma_series - offset
+
+    if row_id_column and row_id_column in df_sorted.columns:
+        df_sorted = df_sorted.sort_values(row_id_column)
+
+    return df_sorted
 
 
 def _augment_bbands_pandas(
