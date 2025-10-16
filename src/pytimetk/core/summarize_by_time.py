@@ -4,6 +4,7 @@ import polars as pl
 
 from typing import Union, Callable, Tuple, List
 import re
+import warnings
 from itertools import cycle
 
 from pytimetk.utils.pandas_helpers import flatten_multiindex_column_names
@@ -21,6 +22,10 @@ from pytimetk.utils.dataframe_ops import (
     restore_output_type,
 )
 
+try:  # Optional cudf dependency
+    import cudf  # type: ignore
+except ImportError:  # pragma: no cover - optional dependency
+    cudf = None  # type: ignore
 
 # FUNCTIONS -------------------------------------------------------------------
 
@@ -122,7 +127,7 @@ def summarize_by_time(
         NaN, you can use `np.nan` as the value for `fillna`.
     engine : str, optional
         The `engine` parameter is used to specify the engine to use for
-        summarizing the data. It can be either "pandas" or "polars".
+        summarizing the data. It can be "pandas", "polars", or "cudf".
 
         - The default value is "pandas".
 
@@ -237,11 +242,32 @@ def summarize_by_time(
     check_value_column(data, value_column)
     check_date_column(data, date_column)
 
+    agg_has_custom = _agg_contains_custom(agg_func)
+    agg_string_funcs: List[str] = []
+    if not agg_has_custom:
+        try:
+            agg_string_funcs = _agg_collect_strings(agg_func)
+        except TypeError:
+            agg_has_custom = True
+
     engine_resolved = normalize_engine(engine, data)
-    conversion = convert_to_engine(data, engine_resolved)
+
+    conversion_engine = engine_resolved
+    if engine_resolved == "cudf":
+        if agg_has_custom or wide_format:
+            warnings.warn(
+                "summarize_by_time cudf path: custom aggregations or wide_format=True "
+                "are currently unsupported. Falling back to the pandas implementation.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            conversion_engine = "pandas"
+        elif cudf is None:  # pragma: no cover - optional dependency
+            raise ImportError("cudf is required for engine='cudf', but it is not installed.")
+    conversion = convert_to_engine(data, conversion_engine)
     prepared = conversion.data
 
-    if engine_resolved == "pandas":
+    if conversion_engine == "pandas":
         result = _summarize_by_time_pandas(
             prepared,
             date_column=date_column,
@@ -251,7 +277,7 @@ def summarize_by_time(
             wide_format=wide_format,
             fillna=fillna,
         )
-    elif engine_resolved == "polars":
+    elif conversion_engine == "polars":
         result = _summarize_by_time_polars(
             prepared,
             date_column=date_column,
@@ -259,6 +285,16 @@ def summarize_by_time(
             freq=freq,
             agg_func=agg_func,
             wide_format=wide_format,
+            fillna=fillna,
+            conversion=conversion,
+        )
+    elif conversion_engine == "cudf":
+        result = _summarize_by_time_cudf(
+            prepared,
+            date_column=date_column,
+            value_column=value_column,
+            freq=freq,
+            agg_funcs=agg_string_funcs,
             fillna=fillna,
             conversion=conversion,
         )
@@ -346,6 +382,84 @@ def _summarize_by_time_pandas(
         data.columns = new_columns
 
     return data
+ 
+
+def _summarize_by_time_cudf(
+    prepared: Union["cudf.DataFrame", "cudf.core.groupby.groupby.DataFrameGroupBy"],
+    date_column: str,
+    value_column: Union[str, List[str]],
+    freq: str,
+    agg_funcs: List[str],
+    fillna: int,
+    conversion: FrameConversion,
+) -> "cudf.DataFrame":
+    if cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError("cudf is required to execute the cudf summarize_by_time backend.")
+
+    if hasattr(prepared, "obj"):
+        df = prepared.obj.copy(deep=True)
+    else:
+        df = prepared.copy(deep=True)
+
+    value_cols = [value_column] if isinstance(value_column, str) else list(value_column)
+    agg_dict = {col: agg_funcs for col in value_cols}
+
+    group_cols = conversion.group_columns or []
+    sort_cols: List[str] = list(group_cols)
+    sort_cols.append(date_column)
+    df_sorted = df.sort_values(sort_cols)
+
+    if date_column not in df_sorted.columns:
+        raise KeyError(f"{date_column} not found in DataFrame")
+
+    df_sorted[date_column] = cudf.to_datetime(df_sorted[date_column])
+
+    def _flatten_columns(frame: "cudf.DataFrame") -> "cudf.DataFrame":
+        rename_map = {}
+        for col in frame.columns:
+            if isinstance(col, tuple) and len(col) == 2:
+                rename_map[col] = f"{col[0]}_{col[1]}"
+        if rename_map:
+            frame = frame.rename(columns=rename_map)
+        return frame
+
+    if group_cols:
+        frames: List["cudf.DataFrame"] = []
+        grouped = df_sorted.groupby(group_cols, sort=False)
+        for keys, group_df in grouped:
+            if not isinstance(keys, tuple):
+                keys = (keys,)
+            group_resampled = (
+                group_df.set_index(date_column)
+                .resample(freq)
+                .agg(agg_dict)
+                .reset_index()
+            )
+            for col_name, key_value in zip(group_cols, keys):
+                group_resampled[col_name] = key_value
+            frames.append(_flatten_columns(group_resampled))
+        if not frames:
+            result = cudf.DataFrame(columns=[date_column, *group_cols])
+        else:
+            result = cudf.concat(frames, ignore_index=True)
+        ordered_cols = [date_column] + list(group_cols)
+        for col in result.columns:
+            if col not in ordered_cols:
+                ordered_cols.append(col)
+        result = result[ordered_cols]
+    else:
+        result = (
+            df_sorted.set_index(date_column)
+            .resample(freq)
+            .agg(agg_dict)
+            .reset_index()
+        )
+        result = _flatten_columns(result)
+
+    if fillna is not None:
+        result = result.fillna(fillna)
+
+    return result
 
 
 def _summarize_by_time_polars(
@@ -393,3 +507,29 @@ def _summarize_by_time_polars(
     )
 
     return pl.from_pandas(pandas_result)
+
+
+def _agg_contains_custom(agg_spec: Union[str, List, Tuple]) -> bool:
+    if isinstance(agg_spec, tuple):
+        return True
+    if isinstance(agg_spec, list):
+        return any(_agg_contains_custom(item) for item in agg_spec)
+    return False
+
+
+def _agg_collect_strings(agg_spec: Union[str, List]) -> List[str]:
+    if isinstance(agg_spec, str):
+        return [agg_spec]
+    if isinstance(agg_spec, list):
+        collected: List[str] = []
+        for item in agg_spec:
+            if isinstance(item, str):
+                collected.append(item)
+            elif isinstance(item, list):
+                collected.extend(_agg_collect_strings(item))
+            else:
+                raise TypeError(
+                    "Only string aggregations are supported for the cudf backend."
+                )
+        return collected
+    raise TypeError("Only string aggregations are supported for the cudf backend.")

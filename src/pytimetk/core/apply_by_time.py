@@ -1,6 +1,8 @@
 import pandas as pd
 import polars as pl
 import pandas_flavor as pf
+import warnings
+
 from typing import Callable, Dict, Union
 
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column
@@ -71,10 +73,11 @@ def apply_by_time(
         fill missing values in the resulting DataFrame. By default, it is set to 0.
     reduce_memory : bool, optional
         The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
-    engine : {"pandas", "polars", "auto"}, optional
+    engine : {"pandas", "polars", "cudf", "auto"}, optional
         Execution engine. ``"pandas"`` (default) performs the computation using pandas.
         When "polars" the data is converted to pandas for evaluation and converted
-        back to polars on return. ``"auto"`` infers the engine from the input data.
+        back to polars on return. ``"cudf"`` inputs currently reuse the pandas
+        implementation. ``"auto"`` infers the engine from the input data.
     **named_funcs
         The `**named_funcs` parameter is used to specify one or more custom
         aggregation functions to apply to the data. It accepts named functions
@@ -184,6 +187,14 @@ def apply_by_time(
     check_date_column(data, date_column)
 
     engine_resolved = normalize_engine(engine, data)
+
+    if engine_resolved == "cudf":
+        warnings.warn(
+            "apply_by_time currently falls back to the pandas implementation when used with cudf data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        engine_resolved = "pandas"
 
     if engine_resolved == "pandas":
         conversion = convert_to_engine(data, "pandas")

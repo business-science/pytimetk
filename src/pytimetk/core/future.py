@@ -20,6 +20,11 @@ from pytimetk.utils.dataframe_ops import (
     conversion_to_pandas,
 )
 
+try:  # Optional cudf dependency
+    import cudf  # type: ignore
+except ImportError:  # pragma: no cover - cudf optional
+    cudf = None  # type: ignore
+
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
@@ -85,7 +90,7 @@ def future_frame(
         will not be displayed.
     reduce_memory : bool, optional
         The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
-    engine : {"pandas", "polars", "auto"}, optional
+    engine : {"pandas", "polars", "cudf", "auto"}, optional
         The `engine` parameter specifies the engine to use for computation.
         ``"pandas"`` (default) performs the computation using pandas. ``"polars"``
         converts the result to a polars DataFrame on return. ``"auto"`` infers the
@@ -250,20 +255,44 @@ def future_frame(
         )
         return restore_output_type(result, conversion)
 
-    conversion = convert_to_engine(data, "polars")
-    pandas_prepared = conversion_to_pandas(conversion)
-    result_pd = _future_frame_pandas(
-        data=pandas_prepared,
-        date_column=date_column,
-        length_out=length_out,
-        freq=freq,
-        force_regular=force_regular,
-        bind_data=bind_data,
-        threads=threads,
-        show_progress=show_progress,
-        reduce_memory=reduce_memory,
-    )
-    return pl.from_pandas(result_pd)
+    if engine_resolved == "polars":
+        conversion = convert_to_engine(data, "polars")
+        pandas_prepared = conversion_to_pandas(conversion)
+        result_pd = _future_frame_pandas(
+            data=pandas_prepared,
+            date_column=date_column,
+            length_out=length_out,
+            freq=freq,
+            force_regular=force_regular,
+            bind_data=bind_data,
+            threads=threads,
+            show_progress=show_progress,
+            reduce_memory=reduce_memory,
+        )
+        return pl.from_pandas(result_pd)
+
+    if engine_resolved == "cudf":
+        if cudf is None:  # pragma: no cover - optional dependency
+            raise ImportError(
+                "cudf is required for engine='cudf', but it is not installed."
+            )
+        conversion = convert_to_engine(data, "cudf")
+        pandas_prepared = conversion_to_pandas(conversion)
+        result_pd = _future_frame_pandas(
+            data=pandas_prepared,
+            date_column=date_column,
+            length_out=length_out,
+            freq=freq,
+            force_regular=force_regular,
+            bind_data=bind_data,
+            threads=threads,
+            show_progress=show_progress,
+            reduce_memory=reduce_memory,
+        )
+        result_cudf = cudf.from_pandas(result_pd)
+        return restore_output_type(result_cudf, conversion)
+
+    raise ValueError("Invalid engine. Use 'pandas', 'polars', or 'cudf'.")
 
 
 def _future_frame_pandas(

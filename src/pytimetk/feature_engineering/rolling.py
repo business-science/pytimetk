@@ -321,6 +321,27 @@ def augment_rolling(
         unsupported_kwargs = set(kwargs) - allowed_cudf_kwargs
         min_periods_override: Optional[int] = kwargs.get("min_periods")
 
+        builtin_funcs: List[str] = []
+        custom_window_funcs: List[Tuple[str, Callable]] = []
+        for func in window_funcs:
+            if isinstance(func, str):
+                if func not in supported_funcs:
+                    fallback_reason = (
+                        f"cudf rolling does not support '{func}' aggregation."
+                    )
+                    break
+                builtin_funcs.append(func)
+            elif (
+                isinstance(func, tuple)
+                and len(func) == 2
+                and isinstance(func[0], str)
+                and callable(func[1])
+            ):
+                custom_window_funcs.append(func)
+            else:
+                fallback_reason = "Unsupported rolling function specification for cudf."
+                break
+
         cudf_df: Optional["cudf.DataFrame"] = None
         if isinstance(prepared_data, cudf.DataFrame):
             cudf_df = prepared_data
@@ -338,13 +359,6 @@ def augment_rolling(
             fallback_reason = (
                 "Unsupported cudf rolling kwargs: "
                 + ", ".join(sorted(unsupported_kwargs))
-            )
-        elif any(
-            not isinstance(func, str) or func not in supported_funcs
-            for func in window_funcs
-        ):
-            fallback_reason = (
-                "custom rolling functions are not supported for cudf yet"
             )
 
         if fallback_reason is not None:
@@ -371,7 +385,7 @@ def augment_rolling(
                 cudf_df,
                 date_column=date_column,
                 value_columns=value_columns,
-                window_funcs=[func for func in window_funcs if isinstance(func, str)],
+                window_funcs=builtin_funcs,
                 windows=windows,
                 min_periods=min_periods,
                 min_periods_override=min_periods_override,
@@ -379,6 +393,36 @@ def augment_rolling(
                 group_columns=conversion.group_columns,
                 row_id_column=conversion.row_id_column,
             )
+
+            if custom_window_funcs:
+                # Use pandas implementation to compute custom functions and merge back
+                pandas_view = result.to_pandas()
+                pandas_sorted, _ = sort_dataframe(
+                    pandas_view, date_column, keep_grouped_df=True
+                )
+                pandas_augmented = _augment_rolling_pandas(
+                    pandas_sorted,
+                    date_column,
+                    value_columns,
+                    custom_window_funcs,
+                    windows,
+                    min_periods,
+                    center,
+                    threads_resolved,
+                    show_progress,
+                    **kwargs,
+                )
+                pandas_augmented = pandas_augmented.reindex(pandas_view.index)
+                custom_column_names: List[str] = []
+                for col in value_columns:
+                    for name, _ in custom_window_funcs:
+                        for window_size in windows:
+                            custom_column_names.append(
+                                f"{col}_rolling_{name}_win_{window_size}"
+                            )
+                for column_name in custom_column_names:
+                    if column_name in pandas_augmented.columns:
+                        result[column_name] = cudf.Series(pandas_augmented[column_name])
 
         restored = restore_output_type(result, conversion)
 

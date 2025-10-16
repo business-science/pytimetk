@@ -1,7 +1,7 @@
 import pandas as pd
 import polars as pl
 import pandas_flavor as pf
-from typing import Optional, Union
+from typing import Optional, Union, Sequence
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
@@ -14,6 +14,10 @@ from pytimetk.utils.dataframe_ops import (
     conversion_to_pandas,
 )
 
+try:  # Optional cudf dependency
+    import cudf  # type: ignore
+except ImportError:  # pragma: no cover - cudf optional
+    cudf = None  # type: ignore
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
@@ -74,7 +78,7 @@ def pad_by_time(
         Specifies the end of the padded series.  If NULL, it will use the highest
         value of the input variable.  In the case of groups, it will use the
         highest value by group.
-    engine : {"pandas", "polars", "auto"}, optional
+    engine : {"pandas", "polars", "cudf", "auto"}, optional
         Execution engine. ``"pandas"`` (default) performs the computation using pandas.
         ``"polars"`` converts the result to a polars DataFrame on return. ``"auto"``
         infers the engine from the input data.
@@ -199,16 +203,34 @@ def pad_by_time(
         )
         return restore_output_type(result, conversion)
 
-    conversion = convert_to_engine(data, "polars")
-    pandas_prepared = conversion_to_pandas(conversion)
-    result_pd = _pad_by_time_pandas(
-        pandas_prepared,
-        date_column=date_column,
-        freq=freq,
-        start_date=start_ts,
-        end_date=end_ts,
-    )
-    return pl.from_pandas(result_pd)
+    if engine_resolved == "polars":
+        conversion = convert_to_engine(data, "polars")
+        pandas_prepared = conversion_to_pandas(conversion)
+        result_pd = _pad_by_time_pandas(
+            pandas_prepared,
+            date_column=date_column,
+            freq=freq,
+            start_date=start_ts,
+            end_date=end_ts,
+        )
+        return pl.from_pandas(result_pd)
+
+    if engine_resolved == "cudf":
+        if cudf is None:  # pragma: no cover - optional dependency
+            raise ImportError("cudf is required for engine='cudf', but it is not installed.")
+        conversion = convert_to_engine(data, "cudf")
+        prepared = conversion.data
+        result = _pad_by_time_cudf_dataframe(
+            prepared,
+            date_column=date_column,
+            freq=freq,
+            start_date=start_ts,
+            end_date=end_ts,
+            group_columns=conversion.group_columns,
+        )
+        return restore_output_type(result, conversion)
+
+    raise ValueError("Invalid engine. Use 'pandas', 'polars', or 'cudf'.")
 
 
 def _pad_by_time_pandas(
@@ -290,3 +312,82 @@ def _pad_by_time_vectorized(
     )
 
     return padded_data
+
+
+def _pad_by_time_cudf_dataframe(
+    data: Union["cudf.DataFrame", "cudf.core.groupby.groupby.DataFrameGroupBy"],
+    *,
+    date_column: str,
+    freq: str,
+    start_date: Optional[pd.Timestamp],
+    end_date: Optional[pd.Timestamp],
+    group_columns: Optional[Sequence[str]],
+) -> "cudf.DataFrame":
+    if cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError("cudf is required to execute the cudf pad_by_time backend.")
+
+    if hasattr(data, "obj"):
+        df = data.obj.copy(deep=True)
+    else:
+        df = data.copy(deep=True)
+
+    if date_column not in df.columns:
+        raise KeyError(f"{date_column} not found in DataFrame")
+
+    df[date_column] = cudf.to_datetime(df[date_column])
+    group_cols = list(group_columns) if group_columns else []
+
+    frames: List["cudf.DataFrame"] = []
+
+    if group_cols:
+        grouped = df.groupby(group_cols, sort=False)
+        for keys, group_df in grouped:
+            if not isinstance(keys, tuple):
+                keys = (keys,)
+            min_date_value = start_date if start_date is not None else group_df[date_column].min()
+            max_date_value = end_date if end_date is not None else group_df[date_column].max()
+            start_val = _convert_to_datetime(min_date_value)
+            end_val = _convert_to_datetime(max_date_value)
+            date_range = cudf.Series(cudf.date_range(start=start_val, end=end_val, freq=freq))
+            padded = cudf.DataFrame({date_column: date_range})
+            for col_name, key_value in zip(group_cols, keys):
+                padded[col_name] = key_value
+            merged = padded.merge(
+                group_df,
+                on=group_cols + [date_column],
+                how="left",
+                sort=False,
+            )
+            merged = merged.sort_values(by=group_cols + [date_column])
+            for col in merged.columns:
+                if col not in group_cols + [date_column]:
+                    merged[col] = merged[col].fillna(method="ffill")
+            frames.append(merged)
+
+        result = cudf.concat(frames, ignore_index=True) if frames else cudf.DataFrame(columns=group_cols + [date_column])
+        ordered_cols = group_cols + [date_column]
+        other_cols = [col for col in result.columns if col not in ordered_cols]
+        return result[ordered_cols + other_cols]
+
+    min_date_value = start_date if start_date is not None else df[date_column].min()
+    max_date_value = end_date if end_date is not None else df[date_column].max()
+    start_val = _convert_to_datetime(min_date_value)
+    end_val = _convert_to_datetime(max_date_value)
+    date_range = cudf.Series(cudf.date_range(start=start_val, end=end_val, freq=freq))
+    padded = cudf.DataFrame({date_column: date_range})
+    merged = padded.merge(df, on=[date_column], how="left", sort=False)
+    merged = merged.sort_values(by=[date_column])
+    const_cols = [col for col in merged.columns if col != date_column and merged[col].nunique() == 1]
+    for col in const_cols:
+        merged[col] = merged[col].fillna(method="ffill")
+    return merged
+
+
+def _convert_to_datetime(value: Union[pd.Timestamp, "cudf.Scalar", None]) -> pd.Timestamp:
+    if value is None:
+        raise ValueError("Unable to determine start or end date for padding.")
+    if isinstance(value, pd.Timestamp):
+        return value
+    if hasattr(value, "to_pandas"):
+        return value.to_pandas()
+    return pd.to_datetime(value)
