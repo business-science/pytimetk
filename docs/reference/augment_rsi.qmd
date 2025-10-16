@@ -22,7 +22,7 @@ Calculate the Relative Strength Index (RSI) for pandas or polars data.
 | close_column  | str or list\[str\]                     | Column name(s) containing the closing prices used to compute RSI. When a list is supplied an RSI is generated for each column.               | _required_ |
 | periods       | int, tuple, or list                    | Lookback window(s) used when computing RSI. Accepts an integer, an inclusive tuple range, or a list of explicit periods. Defaults to ``14``. | `14`       |
 | reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data. If a polars input is supplied a warning is emitted and no conversion occurs.   | `False`    |
-| engine        | (auto, pandas, polars)                 | Execution engine. ``"auto"`` (default) infers the backend from the input data while allowing explicit overrides.                             | `"auto"`   |
+| engine        | (auto, pandas, polars, cudf)           | Execution engine. ``"auto"`` (default) infers the backend from the input data while allowing explicit overrides.                             | `"auto"`   |
 
 ## Returns {.doc-section .doc-section-returns}
 

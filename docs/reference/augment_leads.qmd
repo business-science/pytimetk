@@ -22,7 +22,7 @@ Adds lead columns to a pandas or polars DataFrame (or grouped DataFrame).
 | value_column  | str or list                            | One or more column names whose lead values will be appended.                                                                                   | _required_ |
 | leads         | int or tuple or list                   | Lead specification. Accepts:  - int: single lead value - tuple(start, end): inclusive range of leads - list[int]: explicit list of lead values | `1`        |
 | reduce_memory | bool                                   | If True, attempts to reduce memory usage (pandas only).                                                                                        | `False`    |
-| engine        | (auto, pandas, polars)                 | Execution engine. When "auto" (default) the backend is inferred from the input data type.                                                      | `"auto"`   |
+| engine        | (auto, pandas, polars, cudf)           | Execution engine. When "auto" (default) the backend is inferred from the input data type.                                                      | `"auto"`   |
 
 ## Returns {.doc-section .doc-section-returns}
 

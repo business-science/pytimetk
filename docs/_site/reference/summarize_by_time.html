@@ -306,6 +306,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
  <span class="menu-text">Feature Store &amp; Caching (Beta)</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../production/02_gpu_acceleration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GPU Acceleration</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -487,7 +493,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="even">
 <td>engine</td>
 <td>str</td>
-<td>The <code>engine</code> parameter is used to specify the engine to use for summarizing the data. It can be either “pandas” or “polars”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for summarizing the data. This can be faster than using “pandas” for large datasets.</td>
+<td>The <code>engine</code> parameter is used to specify the engine to use for summarizing the data. It can be “pandas”, “polars”, or “cudf”. - The default value is “pandas”. - When “polars”, the function will internally use the <code>polars</code> library for summarizing the data. This can be faster than using “pandas” for large datasets.</td>
 <td><code>'pandas'</code></td>
 </tr>
 </tbody>
