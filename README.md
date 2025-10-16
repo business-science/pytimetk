@@ -41,7 +41,8 @@ Enter **pytimetk**. Crafted with a blend of ease-of-use and computational effici
 | `augment_rolling()` | 🏎️ 10X to 3500X faster     | 🐢 Slow Rolling Operations |
 | polars `.tk` plotting | ✅ Plot directly on `pl.DataFrame` (`plot_timeseries`, `plot_anomalies`, `plot_correlation_funnel`, …) | ❌ pandas-only accessor |
 | polars `.tk` accessor | ✅ Core, feature, and plotting helpers available via `.tk` on pandas/polars | ❌ N/A |
-| Feature store & caching | 🗃️ Persist, version, and reuse feature sets (with optional MLflow logging) | ❌ Manual recompute, no metadata lineage |
+| Feature store & caching (beta) | 🗃️ Persist, version, and reuse feature sets (with optional MLflow logging) | ❌ Manual recompute, no metadata lineage |
+| GPU acceleration (beta) | ⚡ Optional RAPIDS-powered pipelines with automatic CPU fallback | ❌ CPU only |
 
 As evident from the table, **pytimetk** is not just about speed; it also simplifies your codebase. For example, `summarize_by_time()`, converts a 6-line, double for-loop routine in `pandas` into a concise 2-line operation. And with the `polars` engine, get results 13.4X faster than `pandas`!
   
@@ -88,6 +89,22 @@ df \
         engine = "polars"
     )
 ```
+
+## What's New in pytimetk 2.1.0
+
+- **GPU acceleration (Beta)** unlocks optional NVIDIA RAPIDS support for feature engineering (lags, diffs, leads, rolling/expanding statistics, finance indicators, etc.) and Polars lazy pipelines with automatic CPU fallback.
+- Works with `polars.LazyFrame.collect(engine="gpu")`; set `PYTIMETK_POLARS_GPU=0` if you need to force CPU execution.
+- `pytimetk.utils.gpu_support` exposes helpers such as `is_cudf_available()` and `is_polars_gpu_available()` so you can assert runtime readiness.
+- CPU-only environments run unchanged because GPU acceleration remains fully opt-in.
+
+### Enable GPU support
+
+```bash
+pip install pytimetk[gpu] --extra-index-url=https://pypi.nvidia.com
+pip install "polars[gpu]" --extra-index-url=https://pypi.nvidia.com
+```
+
+See the [GPU acceleration guide](https://business-science.github.io/pytimetk/production/02_gpu_acceleration.html) for environment validation commands, supported APIs, and current limitations.
 
 
 ## What's New in pytimetk 2.0.0
