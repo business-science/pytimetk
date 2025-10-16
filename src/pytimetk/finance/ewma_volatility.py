@@ -6,6 +6,11 @@ import pandas_flavor as pf
 import warnings
 from typing import List, Optional, Sequence, Tuple, Union
 
+try:  # Optional cudf dependency
+    import cudf  # type: ignore
+except ImportError:  # pragma: no cover - cudf optional
+    cudf = None  # type: ignore
+
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -57,7 +62,7 @@ def augment_ewma_volatility(
         You may provide a single integer or multiple values (via tuple or list). Default is 20.
     reduce_memory : bool, optional
         If True, reduces memory usage before calculation. Default is False.
-    engine : {"auto", "pandas", "polars"}, optional
+    engine : {"auto", "pandas", "polars", "cudf"}, optional
         Execution engine. ``"auto"`` (default) infers the backend from the
         input data while allowing explicit overrides.
 
@@ -142,19 +147,29 @@ def augment_ewma_volatility(
     window_list = _normalize_windows(window)
 
     engine_resolved = normalize_engine(engine, data)
-    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    fallback_to_pandas = engine_resolved == "cudf"
+
+    conversion_engine = "pandas" if fallback_to_pandas else engine_resolved
+    conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
-    if reduce_memory and engine_resolved == "pandas":
+    if reduce_memory and conversion_engine == "pandas":
         prepared_data = reduce_memory_usage(prepared_data)
-    elif reduce_memory and engine_resolved == "polars":
+    elif reduce_memory and conversion_engine in ("polars", "cudf"):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
             RuntimeWarning,
             stacklevel=2,
         )
 
-    if engine_resolved == "pandas":
+    if fallback_to_pandas:
+        warnings.warn(
+            "augment_ewma_volatility currently falls back to the pandas implementation when used with cudf data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+    if conversion_engine == "pandas":
         sorted_data, _ = sort_dataframe(
             prepared_data, date_column, keep_grouped_df=True
         )
@@ -253,41 +268,58 @@ def _augment_ewma_volatility_polars(
     sort_keys.append(date_column)
     sorted_frame = frame_with_id.sort(sort_keys)
 
-    def compute(frame: pl.DataFrame) -> pl.DataFrame:
-        df = frame.with_columns(
-            (
-                pl.col(close_column).log()
-                - pl.col(close_column).shift(1).log()
-            ).alias("_log_return")
-        )
-        df = df.with_columns(
-            pl.when(pl.col("_log_return").is_finite())
-            .then(pl.col("_log_return"))
-            .otherwise(None)
-            .alias("_log_return")
-        )
-        df = df.with_columns((pl.col("_log_return") ** 2).alias("_sq_return"))
+    def _maybe_over(expr: pl.Expr) -> pl.Expr:
+        if resolved_groups:
+            return expr.over(resolved_groups)
+        return expr
 
-        for win in windows:
-            vol_expr = (
-                pl.col("_sq_return")
-                .ewm_mean(alpha=1 - decay_factor, adjust=False, min_periods=win)
-                .sqrt()
-                .alias(f"{close_column}_ewma_vol_{win}_{decay_factor:.2f}")
-            )
-            df = df.with_columns(vol_expr)
+    lazy_frame = sorted_frame.lazy()
+    temp_columns = [
+        "__ewma_log_price",
+        "__ewma_prev_log_price",
+        "__ewma_log_return",
+        "__ewma_sq_return",
+    ]
 
-        return df.drop(["_log_return", "_sq_return"])
+    lazy_frame = lazy_frame.with_columns(
+        pl.col(close_column).log().alias("__ewma_log_price")
+    )
 
-    if resolved_groups:
-        group_key = resolved_groups if len(resolved_groups) > 1 else resolved_groups[0]
-        result = (
-            sorted_frame.group_by(group_key, maintain_order=True)
-            .map_groups(compute)
-            .sort(row_col)
+    lazy_frame = lazy_frame.with_columns(
+        _maybe_over(pl.col("__ewma_log_price").shift(1)).alias(
+            "__ewma_prev_log_price"
         )
-    else:
-        result = compute(sorted_frame).sort(row_col)
+    )
+
+    lazy_frame = lazy_frame.with_columns(
+        (
+            pl.col("__ewma_log_price") - pl.col("__ewma_prev_log_price")
+        ).alias("__ewma_log_return")
+    )
+
+    lazy_frame = lazy_frame.with_columns(
+        pl.when(pl.col("__ewma_log_return").is_finite())
+        .then(pl.col("__ewma_log_return"))
+        .otherwise(None)
+        .alias("__ewma_log_return")
+    )
+
+    lazy_frame = lazy_frame.with_columns(
+        (pl.col("__ewma_log_return") ** 2).alias("__ewma_sq_return")
+    )
+
+    for win in windows:
+        vol_expr = _maybe_over(
+            pl.col("__ewma_sq_return")
+            .ewm_mean(alpha=1 - decay_factor, adjust=False, min_periods=win)
+        ).sqrt()
+        lazy_frame = lazy_frame.with_columns(
+            vol_expr.alias(f"{close_column}_ewma_vol_{win}_{decay_factor:.2f}")
+        )
+
+    lazy_frame = lazy_frame.drop(temp_columns)
+
+    result = lazy_frame.collect().sort(row_col)
 
     if generated:
         result = result.drop(row_col)

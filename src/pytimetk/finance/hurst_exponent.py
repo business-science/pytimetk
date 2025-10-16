@@ -6,6 +6,11 @@ import pandas_flavor as pf
 import warnings
 from typing import List, Optional, Sequence, Tuple, Union
 
+try:  # Optional cudf dependency
+    import cudf  # type: ignore
+except ImportError:  # pragma: no cover - cudf optional
+    cudf = None  # type: ignore
+
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -144,19 +149,29 @@ def augment_hurst_exponent(
     windows = _normalize_windows(window)
 
     engine_resolved = normalize_engine(engine, data)
-    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    fallback_to_pandas = engine_resolved == "cudf"
+
+    conversion_engine = "pandas" if fallback_to_pandas else engine_resolved
+    conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
-    if reduce_memory and engine_resolved == "pandas":
+    if reduce_memory and conversion_engine == "pandas":
         prepared_data = reduce_memory_usage(prepared_data)
-    elif reduce_memory and engine_resolved == "polars":
+    elif reduce_memory and conversion_engine in ("polars", "cudf"):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
             RuntimeWarning,
             stacklevel=2,
         )
 
-    if engine_resolved == "pandas":
+    if fallback_to_pandas:
+        warnings.warn(
+            "augment_hurst_exponent currently falls back to the pandas implementation when used with cudf data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+    if conversion_engine == "pandas":
         sorted_data, _ = sort_dataframe(
             prepared_data, date_column, keep_grouped_df=True
         )
@@ -286,25 +301,24 @@ def _augment_hurst_exponent_polars(
         h = np.log(rs) / np.log(n)
         return h if 0 <= h <= 1 else np.nan
 
-    def compute(frame: pl.DataFrame) -> pl.DataFrame:
-        df = frame
-        for window in windows:
-            df = df.with_columns(
-                pl.col(col)
-                .rolling_map(hurst_udf, window_size=window, min_periods=window)
-                .alias(f"{col}_hurst_{window}")
-            )
-        return df
+    def _maybe_over(expr: pl.Expr) -> pl.Expr:
+        if resolved_groups:
+            return expr.over(resolved_groups)
+        return expr
 
-    if resolved_groups:
-        group_key = resolved_groups if len(resolved_groups) > 1 else resolved_groups[0]
-        result = (
-            sorted_frame.group_by(group_key, maintain_order=True)
-            .map_groups(compute)
-            .sort(row_col)
-        )
-    else:
-        result = compute(sorted_frame).sort(row_col)
+    lazy_frame = sorted_frame.lazy()
+
+    for window in windows:
+        expr = _maybe_over(
+            pl.col(col).rolling_map(
+                hurst_udf,
+                window_size=window,
+                min_periods=window,
+            )
+        ).alias(f"{col}_hurst_{window}")
+        lazy_frame = lazy_frame.with_columns(expr)
+
+    result = lazy_frame.collect().sort(row_col)
 
     if generated:
         result = result.drop(row_col)

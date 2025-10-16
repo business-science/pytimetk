@@ -5,6 +5,11 @@ import pandas_flavor as pf
 import warnings
 from typing import List, Optional, Sequence, Tuple, Union
 
+try:  # Optional cudf dependency
+    import cudf  # type: ignore
+except ImportError:  # pragma: no cover - cudf optional
+    cudf = None  # type: ignore
+
 from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
@@ -31,6 +36,8 @@ def augment_stochastic_oscillator(
         pd.core.groupby.generic.DataFrameGroupBy,
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
+        "cudf.DataFrame",
+        "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
     date_column: str,
     high_column: str,
@@ -40,7 +47,7 @@ def augment_stochastic_oscillator(
     d_periods: Union[int, List[int]] = 3,
     reduce_memory: bool = False,
     engine: Optional[str] = "auto",
-) -> Union[pd.DataFrame, pl.DataFrame]:
+) -> Union[pd.DataFrame, pl.DataFrame, "cudf.DataFrame"]:
     """
     Calculate Stochastic Oscillator (%K and %D) using pandas or polars backends.
 
@@ -127,19 +134,29 @@ def augment_stochastic_oscillator(
     d_values = _normalize_d_periods(d_periods)
 
     engine_resolved = normalize_engine(engine, data)
-    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    fallback_to_pandas = engine_resolved == "cudf"
+
+    conversion_engine = "pandas" if fallback_to_pandas else engine_resolved
+    conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
-    if reduce_memory and engine_resolved == "pandas":
+    if reduce_memory and conversion_engine == "pandas":
         prepared_data = reduce_memory_usage(prepared_data)
-    elif reduce_memory and engine_resolved == "polars":
+    elif reduce_memory and conversion_engine in ("polars", "cudf"):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
             RuntimeWarning,
             stacklevel=2,
         )
 
-    if engine_resolved == "pandas":
+    if fallback_to_pandas:
+        warnings.warn(
+            "augment_stochastic_oscillator currently falls back to the pandas implementation when used with cudf data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+    if conversion_engine == "pandas":
         sorted_data, _ = sort_dataframe(
             prepared_data, date_column, keep_grouped_df=True
         )
@@ -243,44 +260,49 @@ def _augment_stochastic_polars(
     sort_keys.append(date_column)
     sorted_frame = frame_with_id.sort(sort_keys)
 
-    def compute(frame: pl.DataFrame) -> pl.DataFrame:
-        lf = frame.lazy()
-        for k in k_periods:
-            band_kwargs = ensure_polars_rolling_kwargs(
-                {"window_size": k, "min_samples": 1}
-            )
-            lowest_low = pl.col(low_column).rolling_min(**band_kwargs)
-            highest_high = pl.col(high_column).rolling_max(**band_kwargs.copy())
-            denom = highest_high - lowest_low
+    def _maybe_over(expr: pl.Expr) -> pl.Expr:
+        if resolved_groups:
+            return expr.over(resolved_groups)
+        return expr
 
-            k_alias = f"{close_column}_stoch_k_{k}"
-            k_expr = (100 * (pl.col(close_column) - lowest_low) / denom).where(
-                denom != 0
-            )
-            lf = lf.with_columns(k_expr.alias(k_alias))
+    lazy_frame = sorted_frame.lazy()
 
-            for d in d_periods:
-                d_alias = f"{close_column}_stoch_d_{k}_{d}"
-                avg_kwargs = ensure_polars_rolling_kwargs(
-                    {"window_size": d, "min_samples": 1}
-                )
-                lf = lf.with_columns(
-                    pl.col(k_alias)
-                    .rolling_mean(**avg_kwargs)
-                    .alias(d_alias)
-                )
-
-        return lf.collect()
-
-    if resolved_groups:
-        group_key = resolved_groups if len(resolved_groups) > 1 else resolved_groups[0]
-        result = (
-            sorted_frame.group_by(group_key, maintain_order=True)
-            .map_groups(compute)
-            .sort(row_col)
+    for k in k_periods:
+        band_kwargs = ensure_polars_rolling_kwargs(
+            {"window_size": k, "min_samples": 1}
         )
-    else:
-        result = compute(sorted_frame).sort(row_col)
+        lowest_low_expr = _maybe_over(
+            pl.col(low_column).rolling_min(**band_kwargs)
+        )
+        highest_high_expr = _maybe_over(
+            pl.col(high_column).rolling_max(**band_kwargs)
+        )
+        denom_expr = highest_high_expr - lowest_low_expr
+
+        k_alias = f"{close_column}_stoch_k_{k}"
+        lazy_frame = lazy_frame.with_columns(
+            pl.when(denom_expr == 0)
+            .then(None)
+            .otherwise(
+                100
+                * (pl.col(close_column) - lowest_low_expr)
+                / denom_expr
+            )
+            .alias(k_alias)
+        )
+
+        for d in d_periods:
+            d_alias = f"{close_column}_stoch_d_{k}_{d}"
+            avg_kwargs = ensure_polars_rolling_kwargs(
+                {"window_size": d, "min_samples": 1}
+            )
+            lazy_frame = lazy_frame.with_columns(
+                _maybe_over(
+                    pl.col(k_alias).rolling_mean(**avg_kwargs)
+                ).alias(d_alias)
+            )
+
+    result = lazy_frame.collect().sort(row_col)
 
     if generated:
         result = result.drop(row_col)

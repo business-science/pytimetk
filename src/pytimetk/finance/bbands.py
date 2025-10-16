@@ -5,6 +5,11 @@ import pandas_flavor as pf
 import warnings
 from typing import List, Optional, Sequence, Tuple, Union
 
+try:  # Optional cudf dependency
+    import cudf  # type: ignore
+except ImportError:  # pragma: no cover - cudf optional
+    cudf = None  # type: ignore
+
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -30,6 +35,8 @@ def augment_bbands(
         pd.core.groupby.generic.DataFrameGroupBy,
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
+        "cudf.DataFrame",
+        "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
     date_column: str,
     close_column: str,
@@ -37,7 +44,7 @@ def augment_bbands(
     std_dev: Union[int, float, List[float]] = 2,
     reduce_memory: bool = False,
     engine: Optional[str] = "auto",
-) -> Union[pd.DataFrame, pl.DataFrame]:
+) -> Union[pd.DataFrame, pl.DataFrame, "cudf.DataFrame"]:
     """
     Calculate Bollinger Bands for pandas or polars data.
 
@@ -118,19 +125,29 @@ def augment_bbands(
     std_list = _normalize_std_dev(std_dev)
 
     engine_resolved = normalize_engine(engine, data)
-    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    fallback_to_pandas = engine_resolved == "cudf"
+
+    conversion_engine = "pandas" if fallback_to_pandas else engine_resolved
+    conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
-    if reduce_memory and engine_resolved == "pandas":
+    if reduce_memory and conversion_engine == "pandas":
         prepared_data = reduce_memory_usage(prepared_data)
-    elif reduce_memory and engine_resolved == "polars":
+    elif reduce_memory and conversion_engine in ("polars", "cudf"):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
             RuntimeWarning,
             stacklevel=2,
         )
 
-    if engine_resolved == "pandas":
+    if fallback_to_pandas:
+        warnings.warn(
+            "augment_bbands currently falls back to the pandas implementation when used with cudf data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+    if conversion_engine == "pandas":
         sorted_data, _ = sort_dataframe(
             prepared_data, date_column, keep_grouped_df=True
         )

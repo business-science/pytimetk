@@ -5,6 +5,11 @@ import warnings
 
 from typing import Optional, Union, List
 
+try:  # Optional dependency for GPU acceleration
+    import cudf  # type: ignore
+except ImportError:  # pragma: no cover - cudf optional
+    cudf = None  # type: ignore
+
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -27,6 +32,8 @@ def augment_ewm(
         pd.core.groupby.generic.DataFrameGroupBy,
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
+        "cudf.DataFrame",
+        "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
     date_column: str,
     value_column: Union[str, list],
@@ -35,7 +42,7 @@ def augment_ewm(
     reduce_memory: bool = False,
     engine: Optional[str] = "auto",
     **kwargs,
-) -> Union[pd.DataFrame, pl.DataFrame]:
+) -> Union[pd.DataFrame, pl.DataFrame, "cudf.DataFrame"]:
     """
     Add Exponential Weighted Moving (EWM) window functions to a DataFrame or
     GroupBy object.
@@ -72,9 +79,10 @@ def augment_ewm(
         for the Exponential Weighted Moving (EWM) window function. It controls
         the rate at which the weights decrease exponentially as the data points
         move further away from the current point.
-    engine : {"auto", "pandas", "polars"}, optional
+    engine : {"auto", "pandas", "polars", "cudf"}, optional
         Execution engine. ``"auto"`` (default) infers the backend from the input
-        data while allowing explicit overrides.
+        data while allowing explicit overrides. Polars and cudf inputs currently
+        execute through a pandas fallback.
     reduce_memory : bool, optional
         Attempt to reduce memory usage before/after computation when operating
         on pandas data. If a polars input is supplied a warning is emitted and
@@ -152,6 +160,14 @@ def augment_ewm(
     ):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+    if engine_resolved in ("polars", "cudf"):
+        backend_label = "Polars" if engine_resolved == "polars" else "cuDF"
+        warnings.warn(
+            f"augment_ewm currently falls back to the pandas implementation when using {backend_label}.",
             RuntimeWarning,
             stacklevel=2,
         )

@@ -6,6 +6,11 @@ import pandas_flavor as pf
 import warnings
 from typing import List, Optional, Sequence, Tuple, Union
 
+try:  # Optional cudf dependency
+    import cudf  # type: ignore
+except ImportError:  # pragma: no cover - cudf optional
+    cudf = None  # type: ignore
+
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -31,6 +36,8 @@ def augment_adx(
         pd.core.groupby.generic.DataFrameGroupBy,
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
+        "cudf.DataFrame",
+        "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
     date_column: str,
     high_column: str,
@@ -39,7 +46,7 @@ def augment_adx(
     periods: Union[int, Tuple[int, int], List[int]] = 14,
     reduce_memory: bool = False,
     engine: Optional[str] = "auto",
-) -> Union[pd.DataFrame, pl.DataFrame]:
+) -> Union[pd.DataFrame, pl.DataFrame, "cudf.DataFrame"]:
     """
     Calculate Average Directional Index (ADX), +DI, and -DI using pandas or polars backends.
 
@@ -134,19 +141,29 @@ def augment_adx(
     periods_list = _normalize_periods(periods)
 
     engine_resolved = normalize_engine(engine, data)
-    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    fallback_to_pandas = engine_resolved == "cudf"
+
+    conversion_engine = "pandas" if fallback_to_pandas else engine_resolved
+    conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
-    if reduce_memory and engine_resolved == "pandas":
+    if reduce_memory and conversion_engine == "pandas":
         prepared_data = reduce_memory_usage(prepared_data)
-    elif reduce_memory and engine_resolved == "polars":
+    elif reduce_memory and conversion_engine in ("polars", "cudf"):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
             RuntimeWarning,
             stacklevel=2,
         )
 
-    if engine_resolved == "pandas":
+    if fallback_to_pandas:
+        warnings.warn(
+            "augment_adx currently falls back to the pandas implementation when used with cudf data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+    if conversion_engine == "pandas":
         sorted_data, _ = sort_dataframe(
             prepared_data, date_column, keep_grouped_df=True
         )
@@ -270,83 +287,121 @@ def _augment_adx_polars(
     sort_keys.append(date_column)
     sorted_frame = frame_with_id.sort(sort_keys)
 
-    delta_high = pl.col(high_column) - pl.col(high_column).shift(1)
-    delta_low = pl.col(low_column).shift(1) - pl.col(low_column)
+    def _maybe_over(expr: pl.Expr) -> pl.Expr:
+        if resolved_groups:
+            return expr.over(resolved_groups)
+        return expr
 
-    tr_expr = pl.max_horizontal(
-        pl.col(high_column) - pl.col(low_column),
-        (pl.col(high_column) - pl.col(close_column).shift(1)).abs(),
-        (pl.col(low_column) - pl.col(close_column).shift(1)).abs(),
+    lazy_frame = sorted_frame.lazy()
+    temp_columns: List[str] = []
+
+    # Previous values per group
+    prev_high_alias = "__adx_prev_high"
+    prev_low_alias = "__adx_prev_low"
+    prev_close_alias = "__adx_prev_close"
+    temp_columns.extend([prev_high_alias, prev_low_alias, prev_close_alias])
+
+    lazy_frame = lazy_frame.with_columns(
+        _maybe_over(pl.col(high_column).shift(1)).alias(prev_high_alias),
+        _maybe_over(pl.col(low_column).shift(1)).alias(prev_low_alias),
+        _maybe_over(pl.col(close_column).shift(1)).alias(prev_close_alias),
     )
 
-    zero = pl.lit(0.0)
+    delta_high_expr = pl.col(high_column) - pl.col(prev_high_alias)
+    delta_low_expr = pl.col(prev_low_alias) - pl.col(low_column)
 
-    plus_dm_expr = (
-        pl.when(delta_high > delta_low)
-        .then(pl.max_horizontal(delta_high, zero))
+    tr_alias = "__adx_tr"
+    plus_dm_alias = "__adx_plus_dm"
+    minus_dm_alias = "__adx_minus_dm"
+    temp_columns.extend([tr_alias, plus_dm_alias, minus_dm_alias])
+
+    lazy_frame = lazy_frame.with_columns(
+        pl.max_horizontal(
+            pl.col(high_column) - pl.col(low_column),
+            (pl.col(high_column) - pl.col(prev_close_alias)).abs(),
+            (pl.col(low_column) - pl.col(prev_close_alias)).abs(),
+        ).alias(tr_alias),
+        pl.when(delta_high_expr > delta_low_expr)
+        .then(
+            pl.max_horizontal(delta_high_expr, pl.lit(0.0))
+        )
         .otherwise(0.0)
-    )
-    minus_dm_expr = (
-        pl.when(delta_low > delta_high)
-        .then(pl.max_horizontal(delta_low, zero))
+        .alias(plus_dm_alias),
+        pl.when(delta_low_expr > delta_high_expr)
+        .then(
+            pl.max_horizontal(delta_low_expr, pl.lit(0.0))
+        )
         .otherwise(0.0)
+        .alias(minus_dm_alias),
     )
 
-    def compute(frame: pl.DataFrame) -> pl.DataFrame:
-        df = frame.with_columns(
-            [
-                tr_expr.alias("tr"),
-                plus_dm_expr.alias("plus_dm"),
-                minus_dm_expr.alias("minus_dm"),
-            ]
+    dx_aliases: List[str] = []
+
+    for period in periods:
+        alpha = 1.0 / period
+        plus_sm_alias = f"__adx_plus_sm_{period}"
+        minus_sm_alias = f"__adx_minus_sm_{period}"
+        tr_sm_alias = f"__adx_tr_sm_{period}"
+        dx_alias = f"__adx_dx_{period}"
+        plus_alias = f"{close_column}_plus_di_{period}"
+        minus_alias = f"{close_column}_minus_di_{period}"
+        adx_alias = f"{close_column}_adx_{period}"
+
+        temp_columns.extend(
+            [plus_sm_alias, minus_sm_alias, tr_sm_alias, dx_alias]
         )
 
-        for period in periods:
-            alpha = 1 / period
-            plus_alias = f"{close_column}_plus_di_{period}"
-            minus_alias = f"{close_column}_minus_di_{period}"
-            adx_alias = f"{close_column}_adx_{period}"
-
-            df = df.with_columns(
-                [
-                    (
-                        100
-                        * (
-                            pl.col("plus_dm").ewm_mean(alpha=alpha, adjust=False)
-                            / pl.col("tr").ewm_mean(alpha=alpha, adjust=False)
-                        )
-                    ).alias(plus_alias),
-                    (
-                        100
-                        * (
-                            pl.col("minus_dm").ewm_mean(alpha=alpha, adjust=False)
-                            / pl.col("tr").ewm_mean(alpha=alpha, adjust=False)
-                        )
-                    ).alias(minus_alias),
-                ]
-            )
-
-            df = df.with_columns(
-                (
-                    100
-                    * (pl.col(plus_alias) - pl.col(minus_alias)).abs()
-                    / (pl.col(plus_alias) + pl.col(minus_alias))
+        lazy_frame = lazy_frame.with_columns(
+            _maybe_over(
+                pl.col(plus_dm_alias).ewm_mean(
+                    alpha=alpha, adjust=False, min_periods=period
                 )
-                .ewm_mean(alpha=alpha, adjust=False)
-                .alias(adx_alias)
-            )
-
-        return df.drop(["tr", "plus_dm", "minus_dm"])
-
-    if resolved_groups:
-        group_key = resolved_groups if len(resolved_groups) > 1 else resolved_groups[0]
-        result = (
-            sorted_frame.group_by(group_key, maintain_order=True)
-            .map_groups(compute)
-            .sort(row_col)
+            ).alias(plus_sm_alias),
+            _maybe_over(
+                pl.col(minus_dm_alias).ewm_mean(
+                    alpha=alpha, adjust=False, min_periods=period
+                )
+            ).alias(minus_sm_alias),
+            _maybe_over(
+                pl.col(tr_alias).ewm_mean(
+                    alpha=alpha, adjust=False, min_periods=period
+                )
+            ).alias(tr_sm_alias),
         )
-    else:
-        result = compute(sorted_frame).sort(row_col)
+
+        lazy_frame = lazy_frame.with_columns(
+            (
+                100 * (pl.col(plus_sm_alias) / pl.col(tr_sm_alias))
+            ).alias(plus_alias),
+            (
+                100 * (pl.col(minus_sm_alias) / pl.col(tr_sm_alias))
+            ).alias(minus_alias),
+        )
+
+        lazy_frame = lazy_frame.with_columns(
+            (
+                100
+                * (pl.col(plus_alias) - pl.col(minus_alias)).abs()
+                / (pl.col(plus_alias) + pl.col(minus_alias))
+            ).alias(dx_alias)
+        )
+
+        lazy_frame = lazy_frame.with_columns(
+            _maybe_over(
+                pl.col(dx_alias).ewm_mean(
+                    alpha=alpha, adjust=False, min_periods=period
+                )
+            ).alias(adx_alias)
+        )
+
+        dx_aliases.append(dx_alias)
+
+    temp_columns.extend(dx_aliases)
+
+    if temp_columns:
+        lazy_frame = lazy_frame.drop(temp_columns)
+
+    result = lazy_frame.collect().sort(row_col)
 
     if generated:
         result = result.drop(row_col)

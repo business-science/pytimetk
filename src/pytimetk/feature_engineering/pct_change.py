@@ -14,13 +14,15 @@ def augment_pct_change(
         pd.core.groupby.generic.DataFrameGroupBy,
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
+        "cudf.DataFrame",
+        "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
     date_column: str,
     value_column: Union[str, List[str]],
     periods: Union[int, Tuple[int, int], List[int]] = 1,
     reduce_memory: bool = False,
     engine: Optional[str] = "auto",
-) -> Union[pd.DataFrame, pl.DataFrame]:
+) -> Union[pd.DataFrame, pl.DataFrame, "cudf.DataFrame"]:
     """
     Adds percentage difference (percentage change) columns to pandas or polars data.
 
@@ -49,9 +51,9 @@ def augment_pct_change(
         - If it is a list, it will generate percentage differences based on the values in the list.
     reduce_memory : bool, optional
         The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
-    engine : {"auto", "pandas", "polars"}, optional
+    engine : {"auto", "pandas", "polars", "cudf"}, optional
         Execution engine. When "auto" (default) the backend is inferred from the
-        input data type. Use "pandas" or "polars" to force a specific backend.
+        input data type. Use "pandas", "polars", or "cudf" to force a specific backend.
 
     Returns
     -------

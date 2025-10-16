@@ -5,6 +5,13 @@ import warnings
 
 from typing import List, Optional, Sequence, Tuple, Union
 
+try:  # Optional dependency for GPU acceleration
+    import cudf  # type: ignore
+    from cudf.core.groupby.groupby import DataFrameGroupBy as CudfDataFrameGroupBy
+except ImportError:  # pragma: no cover - cudf optional
+    cudf = None  # type: ignore
+    CudfDataFrameGroupBy = None  # type: ignore
+
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -30,6 +37,8 @@ def augment_diffs(
         pd.core.groupby.generic.DataFrameGroupBy,
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
+        "cudf.DataFrame",
+        "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
     date_column: str,
     value_column: Union[str, List[str]],
@@ -37,7 +46,7 @@ def augment_diffs(
     normalize: bool = False,
     reduce_memory: bool = False,
     engine: Optional[str] = "auto",
-) -> Union[pd.DataFrame, pl.DataFrame]:
+) -> Union[pd.DataFrame, pl.DataFrame, "cudf.DataFrame"]:
     """
     Adds differences and percentage difference (percentage change) to a Pandas DataFrame or DataFrameGroupBy object.
 
@@ -73,9 +82,9 @@ def augment_diffs(
         differenced values as a percentage difference. Default is False.
     reduce_memory : bool, optional
         The `reduce_memory` parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.
-    engine : {"auto", "pandas", "polars"}, optional
+    engine : {"auto", "pandas", "polars", "cudf"}, optional
         Execution engine. When "auto" (default) the backend is inferred from the
-        input data type. Use "pandas" or "polars" to force a specific backend.
+        input data type. Use "pandas", "polars", or "cudf" to force a specific backend.
 
     Returns
     -------
@@ -146,7 +155,7 @@ def augment_diffs(
 
     if reduce_memory and engine_resolved == "pandas":
         prepared_data = reduce_memory_usage(prepared_data)
-    elif reduce_memory and engine_resolved == "polars":
+    elif reduce_memory and engine_resolved in ("polars", "cudf"):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
             RuntimeWarning,
@@ -165,7 +174,7 @@ def augment_diffs(
         )
         if reduce_memory:
             result = reduce_memory_usage(result)
-    else:
+    elif engine_resolved == "polars":
         result = _augment_diffs_polars(
             data=prepared_data,
             date_column=date_column,
@@ -175,6 +184,18 @@ def augment_diffs(
             group_columns=conversion.group_columns,
             row_id_column=conversion.row_id_column,
         )
+    elif engine_resolved == "cudf":
+        result = _augment_diffs_cudf(
+            data=prepared_data,
+            date_column=date_column,
+            value_column=value_column,
+            periods=periods,
+            normalize=normalize,
+            group_columns=conversion.group_columns,
+            row_id_column=conversion.row_id_column,
+        )
+    else:  # pragma: no cover - defensive branch
+        raise RuntimeError(f"Unhandled engine: {engine_resolved}")
 
     restored = restore_output_type(result, conversion)
 
@@ -274,6 +295,74 @@ def _augment_diffs_polars(
         augmented = augmented.drop(row_col)
 
     return augmented
+
+
+def _augment_diffs_cudf(
+    data: Union["cudf.DataFrame", "cudf.core.groupby.groupby.DataFrameGroupBy"],
+    date_column: str,
+    value_column: Union[str, List[str]],
+    periods: Union[int, Tuple[int, int], List[int]],
+    normalize: bool,
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+):
+    if cudf is None:
+        raise ImportError(
+            "cudf is required for GPU execution but is not installed. "
+            "Install pytimetk with the 'gpu' extra."
+        )
+
+    if isinstance(value_column, str):
+        value_column = [value_column]
+
+    periods = _normalize_shift_values(periods, label="periods")
+
+    if CudfDataFrameGroupBy is not None and isinstance(data, CudfDataFrameGroupBy):
+        frame = data.obj.copy(deep=True)
+        resolved_groups: Sequence[str] = list(group_columns) if group_columns else []
+    else:
+        frame = data.copy(deep=True)  # type: ignore[assignment]
+        resolved_groups = list(group_columns) if group_columns else []
+
+    temp_row_col = row_id_column
+    generated_row_id = False
+    if temp_row_col is None or temp_row_col not in frame.columns:
+        temp_base = "__pytimetk_row_id__"
+        temp_row_col = temp_base
+        suffix = 0
+        while temp_row_col in frame.columns:
+            suffix += 1
+            temp_row_col = f"{temp_base}_{suffix}"
+        frame[temp_row_col] = cudf.Series(range(len(frame)), dtype="int64")
+        generated_row_id = True
+
+    sort_keys = list(resolved_groups)
+    sort_keys.append(date_column)
+    frame = frame.sort_values(sort_keys)
+
+    grouped = frame.groupby(resolved_groups, sort=False) if resolved_groups else None
+
+    for col in value_column:
+        for period in periods:
+            target_col = f"{col}_{'pctdiff' if normalize else 'diff'}_{period}"
+            if normalize:
+                if grouped is not None:
+                    series = grouped[col].pct_change(periods=period)
+                else:
+                    series = frame[col].pct_change(periods=period)
+            else:
+                if grouped is not None:
+                    series = grouped[col].diff(periods=period)
+                else:
+                    series = frame[col].diff(periods=period)
+            frame[target_col] = series
+
+    frame = frame.sort_values(temp_row_col)
+
+    if generated_row_id:
+        frame = frame.drop(columns=[temp_row_col])
+
+    return frame
 
 
 def _normalize_shift_values(

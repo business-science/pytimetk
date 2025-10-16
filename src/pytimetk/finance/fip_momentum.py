@@ -4,6 +4,11 @@ import numpy as np
 import pandas_flavor as pf
 import warnings
 from typing import List, Optional, Sequence, Union
+
+try:  # Optional cudf dependency
+    import cudf  # type: ignore
+except ImportError:  # pragma: no cover - cudf optional
+    cudf = None  # type: ignore
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -29,6 +34,8 @@ def augment_fip_momentum(
         pd.core.groupby.generic.DataFrameGroupBy,
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
+        "cudf.DataFrame",
+        "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
     date_column: str,
     close_column: str,
@@ -37,7 +44,7 @@ def augment_fip_momentum(
     engine: Optional[str] = "auto",
     fip_method: str = "original",
     skip_window: int = 0,  # new parameter to skip the first n periods
-) -> Union[pd.DataFrame, pl.DataFrame]:
+) -> Union[pd.DataFrame, pl.DataFrame, "cudf.DataFrame"]:
     """
     Calculate the "Frog In The Pan" (FIP) momentum metric over one or more rolling windows
     using either the pandas or polars engine, augmenting the DataFrame with FIP columns.
@@ -140,19 +147,29 @@ def augment_fip_momentum(
     check_date_column(data, date_column)
 
     engine_resolved = normalize_engine(engine, data)
-    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    fallback_to_pandas = engine_resolved == "cudf"
+
+    conversion_engine = "pandas" if fallback_to_pandas else engine_resolved
+    conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
-    if reduce_memory and engine_resolved == "pandas":
+    if reduce_memory and conversion_engine == "pandas":
         prepared_data = reduce_memory_usage(prepared_data)
-    elif reduce_memory and engine_resolved == "polars":
+    elif reduce_memory and conversion_engine in ("polars", "cudf"):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
             RuntimeWarning,
             stacklevel=2,
         )
 
-    if engine_resolved == "pandas":
+    if fallback_to_pandas:
+        warnings.warn(
+            "augment_fip_momentum currently falls back to the pandas implementation when used with cudf data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+    if conversion_engine == "pandas":
         sorted_data, _ = sort_dataframe(
             prepared_data, date_column, keep_grouped_df=True
         )
@@ -277,48 +294,47 @@ def _augment_fip_momentum_polars(
     sort_keys.append(date_column)
     sorted_frame = frame_with_id.sort(sort_keys)
 
-    def compute(frame: pl.DataFrame) -> pl.DataFrame:
-        df = frame.with_columns(
-            (pl.col(close_column) / pl.col(close_column).shift(1) - 1).alias(
-                "__fip_returns"
+    def _maybe_over(expr: pl.Expr) -> pl.Expr:
+        if resolved_groups:
+            return expr.over(resolved_groups)
+        return expr
+
+    lazy_frame = sorted_frame.lazy()
+    temp_columns = ["__fip_returns"]
+    if skip_window > 0:
+        temp_columns.append("__fip_row")
+
+    lazy_frame = lazy_frame.with_columns(
+        (
+            pl.col(close_column) / pl.col(close_column).shift(1) - 1
+        ).alias("__fip_returns")
+    )
+
+    if skip_window > 0:
+        lazy_frame = lazy_frame.with_row_count("__fip_row")
+
+    for w in windows:
+        fip_expr = _maybe_over(
+            pl.col("__fip_returns").rolling_map(
+                lambda x: fip_calc(np.array(x), w, fip_method),
+                window_size=w,
+                min_periods=max(1, w // 2),
             )
         )
+        lazy_frame = lazy_frame.with_columns(
+            fip_expr.alias(f"{close_column}_fip_momentum_{w}")
+        )
         if skip_window > 0:
-            df = df.with_row_count("__fip_row")
-
-        for w in windows:
-            fip_expr = (
-                pl.col("__fip_returns")
-                .rolling_map(
-                    lambda x: fip_calc(np.array(x), w, fip_method),
-                    window_size=w,
-                    min_periods=max(1, w // 2),
-                )
+            lazy_frame = lazy_frame.with_columns(
+                pl.when(pl.col("__fip_row") < skip_window)
+                .then(None)
+                .otherwise(pl.col(f"{close_column}_fip_momentum_{w}"))
                 .alias(f"{close_column}_fip_momentum_{w}")
             )
-            df = df.with_columns(fip_expr)
-            if skip_window > 0:
-                df = df.with_columns(
-                    pl.when(pl.col("__fip_row") < skip_window)
-                    .then(None)
-                    .otherwise(pl.col(f"{close_column}_fip_momentum_{w}"))
-                    .alias(f"{close_column}_fip_momentum_{w}")
-                )
 
-        drop_cols = ["__fip_returns"]
-        if skip_window > 0:
-            drop_cols.append("__fip_row")
-        return df.drop(drop_cols)
+    lazy_frame = lazy_frame.drop(temp_columns)
 
-    if resolved_groups:
-        group_key = resolved_groups if len(resolved_groups) > 1 else resolved_groups[0]
-        result = (
-            sorted_frame.group_by(group_key, maintain_order=True)
-            .map_groups(compute)
-            .sort(row_col)
-        )
-    else:
-        result = compute(sorted_frame).sort(row_col)
+    result = lazy_frame.collect().sort(row_col)
 
     if generated:
         result = result.drop(row_col)

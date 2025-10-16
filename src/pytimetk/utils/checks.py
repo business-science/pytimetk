@@ -6,6 +6,13 @@ from importlib.metadata import distribution, PackageNotFoundError
 
 from typing import Union, List, Iterable
 
+try:  # Optional dependency for GPU acceleration
+    import cudf  # type: ignore
+    from cudf.core.groupby.groupby import DataFrameGroupBy as CudfDataFrameGroupBy
+except ImportError:  # pragma: no cover - cudf optional
+    cudf = None  # type: ignore
+    CudfDataFrameGroupBy = None  # type: ignore
+
 
 def check_anomalize_data(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
@@ -48,6 +55,8 @@ def check_dataframe_or_groupby(
         pd.core.groupby.generic.DataFrameGroupBy,
         "pl.DataFrame",
         "pl.dataframe.group_by.GroupBy",
+        "cudf.DataFrame",
+        "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
 ) -> None:
     authorized: Iterable[type] = [
@@ -59,6 +68,10 @@ def check_dataframe_or_groupby(
         authorized += [pl.DataFrame, pl.dataframe.group_by.GroupBy]  # type: ignore[attr-defined]
     except AttributeError:
         pass
+    if cudf is not None:
+        authorized += [cudf.DataFrame]  # type: ignore[attr-defined]
+        if CudfDataFrameGroupBy is not None:
+            authorized += [CudfDataFrameGroupBy]
 
     check_data_type(
         data,
@@ -91,6 +104,8 @@ def check_date_column(
         pd.core.groupby.generic.DataFrameGroupBy,
         "pl.DataFrame",
         "pl.dataframe.group_by.GroupBy",
+        "cudf.DataFrame",
+        "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
     date_column: str,
 ) -> None:
@@ -141,8 +156,31 @@ def check_date_column(
             )
         return None
 
+    if cudf is not None and CudfDataFrameGroupBy is not None and isinstance(data, CudfDataFrameGroupBy):
+        frame = data.obj
+        if date_column not in frame.columns:
+            raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
+        dtype = frame[date_column].dtype
+        if not np.issubdtype(dtype, np.datetime64):
+            raise TypeError(
+                f"`date_column` ({date_column}) is not a datetime64 dtype. "
+                f"Dtype Found: {dtype}"
+            )
+        return None
+
+    if cudf is not None and isinstance(data, cudf.DataFrame):
+        if date_column not in data.columns:
+            raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
+        dtype = data[date_column].dtype
+        if not np.issubdtype(dtype, np.datetime64):
+            raise TypeError(
+                f"`date_column` ({date_column}) is not a datetime64 dtype. "
+                f"Dtype Found: {dtype}"
+            )
+        return None
+
     raise TypeError(
-        "`data` is not a Pandas/Polars DataFrame or GroupBy object."
+        "`data` is not a pandas/polars/cudf DataFrame or GroupBy object."
     )
 
 
@@ -152,6 +190,8 @@ def check_value_column(
         pd.core.groupby.generic.DataFrameGroupBy,
         "pl.DataFrame",
         "pl.dataframe.group_by.GroupBy",
+        "cudf.DataFrame",
+        "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
     value_column: Union[str, List[str]],
     require_numeric_dtype: bool = True,
@@ -177,8 +217,17 @@ def check_value_column(
         _check_columns_polars(data, value_column, require_numeric_dtype)
         return None
 
+    if cudf is not None and CudfDataFrameGroupBy is not None and isinstance(data, CudfDataFrameGroupBy):
+        frame = data.obj
+        _check_columns_cudf(frame, value_column, require_numeric_dtype)
+        return None
+
+    if cudf is not None and isinstance(data, cudf.DataFrame):
+        _check_columns_cudf(data, value_column, require_numeric_dtype)
+        return None
+
     raise TypeError(
-        "`data` is not a Pandas/Polars DataFrame or GroupBy object."
+        "`data` is not a pandas/polars/cudf DataFrame or GroupBy object."
     )
 
 
@@ -204,6 +253,19 @@ def _check_columns_polars(
         if column not in schema:
             raise ValueError(f"`value_column` ({column}) not found in `data`.")
         if require_numeric_dtype and not schema[column].is_numeric():
+            raise TypeError(f"`value_column` ({column}) is not a numeric dtype.")
+
+
+def _check_columns_cudf(
+    frame: "cudf.DataFrame",
+    columns: List[str],
+    require_numeric_dtype: bool,
+) -> None:
+    for column in columns:
+        if column not in frame.columns:
+            raise ValueError(f"`value_column` ({column}) not found in `data`.")
+        dtype = frame[column].dtype
+        if require_numeric_dtype and not np.issubdtype(dtype, np.number):
             raise TypeError(f"`value_column` ({column}) is not a numeric dtype.")
 
 

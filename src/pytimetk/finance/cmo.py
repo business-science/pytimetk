@@ -5,6 +5,11 @@ import pandas_flavor as pf
 import warnings
 from typing import List, Optional, Sequence, Tuple, Union
 
+try:  # Optional cudf dependency
+    import cudf  # type: ignore
+except ImportError:  # pragma: no cover - cudf optional
+    cudf = None  # type: ignore
+
 from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
@@ -31,13 +36,15 @@ def augment_cmo(
         pd.core.groupby.generic.DataFrameGroupBy,
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
+        "cudf.DataFrame",
+        "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
     date_column: str,
     close_column: str,
     periods: Union[int, Tuple[int, int], List[int]] = 14,
     reduce_memory: bool = False,
     engine: Optional[str] = "auto",
-) -> Union[pd.DataFrame, pl.DataFrame]:
+) -> Union[pd.DataFrame, pl.DataFrame, "cudf.DataFrame"]:
     """
     Calculate the Chande Momentum Oscillator (CMO) using pandas or polars backends.
 
@@ -110,19 +117,29 @@ def augment_cmo(
     periods_list = _normalize_periods(periods)
 
     engine_resolved = normalize_engine(engine, data)
-    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    fallback_to_pandas = engine_resolved == "cudf"
+
+    conversion_engine = "pandas" if fallback_to_pandas else engine_resolved
+    conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
-    if reduce_memory and engine_resolved == "pandas":
+    if reduce_memory and conversion_engine == "pandas":
         prepared_data = reduce_memory_usage(prepared_data)
-    elif reduce_memory and engine_resolved == "polars":
+    elif reduce_memory and conversion_engine in ("polars", "cudf"):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
             RuntimeWarning,
             stacklevel=2,
         )
 
-    if engine_resolved == "pandas":
+    if fallback_to_pandas:
+        warnings.warn(
+            "augment_cmo currently falls back to the pandas implementation when used with cudf data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+    if conversion_engine == "pandas":
         sorted_data, _ = sort_dataframe(
             prepared_data, date_column, keep_grouped_df=True
         )
@@ -209,48 +226,50 @@ def _augment_cmo_polars(
     sort_keys.append(date_column)
     sorted_frame = frame_with_id.sort(sort_keys)
 
-    def compute(frame: pl.DataFrame) -> pl.DataFrame:
-        df = frame.with_columns(
-            (pl.col(close_column) - pl.col(close_column).shift(1)).alias("_cmo_delta")
+    def _maybe_over(expr: pl.Expr) -> pl.Expr:
+        if resolved_groups:
+            return expr.over(resolved_groups)
+        return expr
+
+    lazy_frame = sorted_frame.lazy()
+    temp_columns = ["__cmo_delta", "__cmo_gain", "__cmo_loss"]
+
+    lazy_frame = lazy_frame.with_columns(
+        _maybe_over(pl.col(close_column).diff()).alias("__cmo_delta")
+    )
+
+    lazy_frame = lazy_frame.with_columns(
+        pl.when(pl.col("__cmo_delta") > 0)
+        .then(pl.col("__cmo_delta"))
+        .otherwise(0.0)
+        .alias("__cmo_gain"),
+        pl.when(pl.col("__cmo_delta") < 0)
+        .then(-pl.col("__cmo_delta"))
+        .otherwise(0.0)
+        .alias("__cmo_loss"),
+    )
+
+    for period in periods:
+        rolling_kwargs = ensure_polars_rolling_kwargs(
+            {"window_size": period, "min_samples": period}
         )
-        df = df.with_columns(
-            [
-                pl.when(pl.col("_cmo_delta") > 0)
-                .then(pl.col("_cmo_delta"))
-                .otherwise(0.0)
-                .alias("_cmo_gain"),
-                pl.when(pl.col("_cmo_delta") < 0)
-                .then(-pl.col("_cmo_delta"))
-                .otherwise(0.0)
-                .alias("_cmo_loss"),
-            ]
+        gain_sum_expr = _maybe_over(
+            pl.col("__cmo_gain").rolling_sum(**rolling_kwargs)
+        )
+        loss_sum_expr = _maybe_over(
+            pl.col("__cmo_loss").rolling_sum(**rolling_kwargs)
+        )
+        denom_expr = gain_sum_expr + loss_sum_expr
+        cmo_expr = pl.when(denom_expr == 0).then(None).otherwise(
+            100 * (gain_sum_expr - loss_sum_expr) / denom_expr
+        )
+        lazy_frame = lazy_frame.with_columns(
+            cmo_expr.alias(f"{close_column}_cmo_{period}")
         )
 
-        for period in periods:
-            rolling_kwargs = ensure_polars_rolling_kwargs(
-                {"window_size": period, "min_samples": period}
-            )
-            gain_sum = pl.col("_cmo_gain").rolling_sum(**rolling_kwargs)
-            loss_sum = pl.col("_cmo_loss").rolling_sum(**rolling_kwargs.copy())
-            denom = gain_sum + loss_sum
-            cmo_expr = (
-                pl.when(denom == 0)
-                .then(None)
-                .otherwise(100 * (gain_sum - loss_sum) / denom)
-            )
-            df = df.with_columns(cmo_expr.alias(f"{close_column}_cmo_{period}"))
+    lazy_frame = lazy_frame.drop(temp_columns)
 
-        return df.drop(["_cmo_delta", "_cmo_gain", "_cmo_loss"])
-
-    if resolved_groups:
-        group_key = resolved_groups if len(resolved_groups) > 1 else resolved_groups[0]
-        result = (
-            sorted_frame.group_by(group_key, maintain_order=True)
-            .map_groups(compute)
-            .sort(row_col)
-        )
-    else:
-        result = compute(sorted_frame).sort(row_col)
+    result = lazy_frame.collect().sort(row_col)
 
     if generated:
         result = result.drop(row_col)

@@ -5,6 +5,11 @@ import pandas_flavor as pf
 import warnings
 from typing import List, Optional, Sequence, Tuple, Union
 
+try:  # Optional cudf dependency
+    import cudf  # type: ignore
+except ImportError:  # pragma: no cover - cudf optional
+    cudf = None  # type: ignore
+
 from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
@@ -31,6 +36,8 @@ def augment_atr(
         pd.core.groupby.generic.DataFrameGroupBy,
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
+        "cudf.DataFrame",
+        "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
     date_column: str,
     high_column: str,
@@ -40,7 +47,7 @@ def augment_atr(
     normalize: bool = False,
     reduce_memory: bool = False,
     engine: Optional[str] = "auto",
-) -> Union[pd.DataFrame, pl.DataFrame]:
+) -> Union[pd.DataFrame, pl.DataFrame, "cudf.DataFrame"]:
     """
     Calculate Average True Range (ATR) or Normalised ATR for pandas or polars data.
 
@@ -130,19 +137,29 @@ def augment_atr(
     period_list = _normalize_periods(periods)
 
     engine_resolved = normalize_engine(engine, data)
-    conversion: FrameConversion = convert_to_engine(data, engine_resolved)
+    fallback_to_pandas = engine_resolved == "cudf"
+
+    conversion_engine = "pandas" if fallback_to_pandas else engine_resolved
+    conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
-    if reduce_memory and engine_resolved == "pandas":
+    if reduce_memory and conversion_engine == "pandas":
         prepared_data = reduce_memory_usage(prepared_data)
-    elif reduce_memory and engine_resolved == "polars":
+    elif reduce_memory and conversion_engine in ("polars", "cudf"):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
             RuntimeWarning,
             stacklevel=2,
         )
 
-    if engine_resolved == "pandas":
+    if fallback_to_pandas:
+        warnings.warn(
+            "augment_atr currently falls back to the pandas implementation when used with cudf data.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+    if conversion_engine == "pandas":
         sorted_data, _ = sort_dataframe(
             prepared_data, date_column, keep_grouped_df=True
         )
@@ -268,41 +285,49 @@ def _augment_atr_polars(
     sort_keys.append(date_column)
     sorted_frame = frame_with_id.sort(sort_keys)
 
-    tr_expr = pl.max_horizontal(
-        [
-            pl.col(high_column) - pl.col(low_column),
-            (pl.col(high_column) - pl.col(close_column).shift(1)).abs(),
-            (pl.col(low_column) - pl.col(close_column).shift(1)).abs(),
-        ]
+    def _maybe_over(expr: pl.Expr) -> pl.Expr:
+        if resolved_groups:
+            return expr.over(resolved_groups)
+        return expr
+
+    lazy_frame = sorted_frame.lazy()
+    temp_columns: List[str] = []
+
+    prev_close_alias = "__atr_prev_close"
+    tr_alias = "__atr_tr"
+    temp_columns.extend([prev_close_alias, tr_alias])
+
+    lazy_frame = lazy_frame.with_columns(
+        _maybe_over(pl.col(close_column).shift(1)).alias(prev_close_alias)
     )
 
-    def compute(frame: pl.DataFrame) -> pl.DataFrame:
-        df = frame.with_columns(tr_expr.alias("_atr_tr"))
+    lazy_frame = lazy_frame.with_columns(
+        pl.max_horizontal(
+            pl.col(high_column) - pl.col(low_column),
+            (pl.col(high_column) - pl.col(prev_close_alias)).abs(),
+            (pl.col(low_column) - pl.col(prev_close_alias)).abs(),
+        ).alias(tr_alias)
+    )
 
-        for period in periods:
-            rolling_kwargs = ensure_polars_rolling_kwargs(
-                {"window_size": period, "min_samples": 1}
-            )
-            atr_expr = pl.col("_atr_tr").rolling_mean(**rolling_kwargs)
-            if normalize:
-                atr_expr = (
-                    pl.when(pl.col(close_column) == 0)
-                    .then(None)
-                    .otherwise(atr_expr / pl.col(close_column) * 100)
-                )
-            df = df.with_columns(atr_expr.alias(f"{close_column}_{type_str}_{period}"))
-
-        return df.drop(["_atr_tr"])
-
-    if resolved_groups:
-        group_key = resolved_groups if len(resolved_groups) > 1 else resolved_groups[0]
-        result = (
-            sorted_frame.group_by(group_key, maintain_order=True)
-            .map_groups(compute)
-            .sort(row_col)
+    for period in periods:
+        rolling_kwargs = ensure_polars_rolling_kwargs(
+            {"window_size": period, "min_samples": 1}
         )
-    else:
-        result = compute(sorted_frame).sort(row_col)
+        atr_expr = _maybe_over(
+            pl.col(tr_alias).rolling_mean(**rolling_kwargs)
+        )
+        if normalize:
+            atr_expr = pl.when(pl.col(close_column) == 0).then(None).otherwise(
+                atr_expr / pl.col(close_column) * 100
+            )
+        lazy_frame = lazy_frame.with_columns(
+            atr_expr.alias(f"{close_column}_{type_str}_{period}")
+        )
+
+    if temp_columns:
+        lazy_frame = lazy_frame.drop(temp_columns)
+
+    result = lazy_frame.collect().sort(row_col)
 
     if generated:
         result = result.drop(row_col)
