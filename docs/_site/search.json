@@ -3512,5 +3512,12 @@
     "title": "GPU Acceleration",
     "section": "3. Enable cudf.pandas (optional)",
     "text": "3. Enable cudf.pandas (optional)\nTo accelerate compatible pandas workloads, install RAPIDS and opt-in to cudf.pandas before importing pandas:\nimport cudf.pandas\ncudf.pandas.install()\n\nimport pandas as pd\nIn notebooks you can use the magic %load_ext cudf.pandas instead. pandas APIs that are unsupported on the GPU automatically fall back to the CPU implementation, so existing scripts continue to run."
+  },
+  {
+    "objectID": "production/02_gpu_acceleration.html#example-pandas-cudf.pandas-no-code-changes-required",
+    "href": "production/02_gpu_acceleration.html#example-pandas-cudf.pandas-no-code-changes-required",
+    "title": "GPU Acceleration",
+    "section": "Example: pandas + cudf.pandas (no code changes required)",
+    "text": "Example: pandas + cudf.pandas (no code changes required)\nimport cudf.pandas\ncudf.pandas.install()\n\nimport pandas as pd\nimport pytimetk as tk\n\ndf = tk.load_dataset(\"stocks_daily\", parse_dates=[\"date\"])\n\nresult = (\n    df.groupby(\"symbol\")\n    .augment_rolling(\n        date_column=\"date\",\n        value_column=\"close\",\n        window=[10, 20],\n        window_func=[\"mean\", \"std\"],\n        threads=1,\n    )\n)\n\n# `result` is a pandas DataFrame, but operations run on the GPU whenever\n# rapids-cuDF supports the requested rolling functions."
   }
 ]

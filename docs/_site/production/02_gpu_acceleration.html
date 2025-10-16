@@ -405,6 +405,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#install-polars-with-the-gpu-engine" id="toc-install-polars-with-the-gpu-engine" class="nav-link" data-scroll-target="#install-polars-with-the-gpu-engine">2. Install Polars with the GPU engine</a></li>
   <li><a href="#example-accelerating-augment_rsi" id="toc-example-accelerating-augment_rsi" class="nav-link" data-scroll-target="#example-accelerating-augment_rsi">Example: accelerating <code>augment_rsi</code></a></li>
   <li><a href="#example-accelerating-a-polars-expression-pipeline" id="toc-example-accelerating-a-polars-expression-pipeline" class="nav-link" data-scroll-target="#example-accelerating-a-polars-expression-pipeline">Example: accelerating a Polars expression pipeline</a></li>
+  <li><a href="#example-pandas-cudf.pandas-no-code-changes-required" id="toc-example-pandas-cudf.pandas-no-code-changes-required" class="nav-link" data-scroll-target="#example-pandas-cudf.pandas-no-code-changes-required">Example: pandas + <code>cudf.pandas</code> (no code changes required)</a></li>
   <li><a href="#enable-cudf.pandas-optional" id="toc-enable-cudf.pandas-optional" class="nav-link" data-scroll-target="#enable-cudf.pandas-optional">3. Enable <code>cudf.pandas</code> (optional)</a></li>
   </ul></li>
   <li><a href="#verifying-the-environment" id="toc-verifying-the-environment" class="nav-link" data-scroll-target="#verifying-the-environment">Verifying the environment</a></li>
@@ -508,26 +509,50 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> pipe.collect(engine<span class="op">=</span><span class="st">"gpu"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="enable-cudf.pandas-optional" class="level2">
-<h2 class="anchored" data-anchor-id="enable-cudf.pandas-optional">3. Enable <code>cudf.pandas</code> (optional)</h2>
-<p>To accelerate compatible pandas workloads, install RAPIDS and opt-in to <code>cudf.pandas</code> before importing pandas:</p>
+<section id="example-pandas-cudf.pandas-no-code-changes-required" class="level2">
+<h2 class="anchored" data-anchor-id="example-pandas-cudf.pandas-no-code-changes-required">Example: pandas + <code>cudf.pandas</code> (no code changes required)</h2>
 <div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cudf.pandas</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>cudf.pandas.install()</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"stocks_daily"</span>, parse_dates<span class="op">=</span>[<span class="st">"date"</span>])</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> (</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">"symbol"</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    .augment_rolling(</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"date"</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        value_column<span class="op">=</span><span class="st">"close"</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span>[<span class="dv">10</span>, <span class="dv">20</span>],</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        window_func<span class="op">=</span>[<span class="st">"mean"</span>, <span class="st">"std"</span>],</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        threads<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co"># `result` is a pandas DataFrame, but operations run on the GPU whenever</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co"># rapids-cuDF supports the requested rolling functions.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="enable-cudf.pandas-optional" class="level2">
+<h2 class="anchored" data-anchor-id="enable-cudf.pandas-optional">3. Enable <code>cudf.pandas</code> (optional)</h2>
+<p>To accelerate compatible pandas workloads, install RAPIDS and opt-in to <code>cudf.pandas</code> before importing pandas:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cudf.pandas</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>cudf.pandas.install()</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>In notebooks you can use the magic <code>%load_ext cudf.pandas</code> instead. pandas APIs that are unsupported on the GPU automatically fall back to the CPU implementation, so existing scripts continue to run.</p>
 </section>
 </section>
 <section id="verifying-the-environment" class="level1">
 <h1>Verifying the environment</h1>
 <p><code>pytimetk</code> exposes lightweight helpers in <code>pytimetk.utils.gpu_support</code> to interrogate the runtime:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pytimetk.utils <span class="im">import</span> gpu_support</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> gpu_support.is_cudf_available():</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"cuDF detected:"</span>, gpu_support.cudf_version())</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> gpu_support.is_polars_gpu_available():</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Polars GPU engine is ready"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pytimetk.utils <span class="im">import</span> gpu_support</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> gpu_support.is_cudf_available():</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"cuDF detected:"</span>, gpu_support.cudf_version())</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> gpu_support.is_polars_gpu_available():</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Polars GPU engine is ready"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Return values default to <code>False</code> when optional dependencies are missing. This ensures CPU-only deployments run without modification.</p>
 </section>
 <section id="current-limitations" class="level1">

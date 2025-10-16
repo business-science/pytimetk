@@ -94,6 +94,32 @@ pipe = (
 result = pipe.collect(engine="gpu")
 ```
 
+## Example: pandas + `cudf.pandas` (no code changes required)
+
+```python
+import cudf.pandas
+cudf.pandas.install()
+
+import pandas as pd
+import pytimetk as tk
+
+df = tk.load_dataset("stocks_daily", parse_dates=["date"])
+
+result = (
+    df.groupby("symbol")
+    .augment_rolling(
+        date_column="date",
+        value_column="close",
+        window=[10, 20],
+        window_func=["mean", "std"],
+        threads=1,
+    )
+)
+
+# `result` is a pandas DataFrame, but operations run on the GPU whenever
+# rapids-cuDF supports the requested rolling functions.
+```
+
 ## 3. Enable `cudf.pandas` (optional)
 
 To accelerate compatible pandas workloads, install RAPIDS and opt-in to
