@@ -23,6 +23,7 @@ from pytimetk.utils.dataframe_ops import (
     normalize_engine,
     resolve_polars_group_columns,
     restore_output_type,
+    conversion_to_pandas,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -147,9 +148,12 @@ def augment_ewma_volatility(
     window_list = _normalize_windows(window)
 
     engine_resolved = normalize_engine(engine, data)
-    fallback_to_pandas = engine_resolved == "cudf"
+    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError(
+            "cudf is required for engine='cudf', but it is not installed."
+        )
 
-    conversion_engine = "pandas" if fallback_to_pandas else engine_resolved
+    conversion_engine = engine_resolved
     conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
@@ -158,13 +162,6 @@ def augment_ewma_volatility(
     elif reduce_memory and conversion_engine in ("polars", "cudf"):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
-            RuntimeWarning,
-            stacklevel=2,
-        )
-
-    if fallback_to_pandas:
-        warnings.warn(
-            "augment_ewma_volatility currently falls back to the pandas implementation when used with cudf data.",
             RuntimeWarning,
             stacklevel=2,
         )
@@ -181,6 +178,31 @@ def augment_ewma_volatility(
         )
         if reduce_memory:
             result = reduce_memory_usage(result)
+    elif conversion_engine == "cudf":
+        cudf_df = prepared_data.obj if hasattr(prepared_data, "obj") else prepared_data
+        if not isinstance(cudf_df, cudf.DataFrame):
+            warnings.warn(
+                "Unsupported cudf object encountered for augment_ewma_volatility. Falling back to pandas.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            pandas_input = conversion_to_pandas(conversion)
+            result = _augment_ewma_volatility_pandas(
+                data=pandas_input,
+                close_column=close_column,
+                decay_factor=decay_factor,
+                windows=window_list,
+            )
+        else:
+            result = _augment_ewma_volatility_cudf_dataframe(
+                cudf_df,
+                date_column=date_column,
+                close_column=close_column,
+                decay_factor=decay_factor,
+                windows=window_list,
+                group_columns=conversion.group_columns,
+                row_id_column=conversion.row_id_column,
+            )
     else:
         result = _augment_ewma_volatility_polars(
             data=prepared_data,
@@ -247,6 +269,72 @@ def _augment_ewma_volatility_pandas(
         return df.drop(columns=["log_returns", "squared_returns"])
 
     raise TypeError("Unsupported data type passed to _augment_ewma_volatility_pandas.")
+
+
+def _augment_ewma_volatility_cudf_dataframe(
+    frame: "cudf.DataFrame",
+    *,
+    date_column: str,
+    close_column: str,
+    decay_factor: float,
+    windows: List[int],
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> "cudf.DataFrame":
+    if cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError(
+            "cudf is required to execute the cudf ewma volatility backend."
+        )
+
+    sort_columns: List[str] = [date_column]
+    if group_columns:
+        sort_columns = list(group_columns) + sort_columns
+
+    df_sorted = frame.sort_values(sort_columns)
+    df_sorted[close_column] = df_sorted[close_column].astype("float64")
+
+    if group_columns:
+        group_list = list(group_columns)
+        prev_close = df_sorted.groupby(group_list, sort=False)[close_column].shift(1)
+    else:
+        group_list = None
+        prev_close = df_sorted[close_column].shift(1)
+
+    ratio = df_sorted[close_column] / prev_close
+    ratio = ratio.where(prev_close != 0)
+    log_returns = cudf.Series(np.log(ratio))
+    df_sorted["__ewma_log_returns"] = log_returns
+    df_sorted["__ewma_squared_returns"] = log_returns ** 2
+
+    alpha = 1 - decay_factor
+
+    for win in windows:
+        col_name = f"{close_column}_ewma_vol_{win}_{decay_factor:.2f}"
+        if group_list:
+            result_series = cudf.Series(np.nan, index=df_sorted.index, dtype="float64")
+            for _, group_df in df_sorted.groupby(group_list, sort=False):
+                idx = group_df.index
+                variance = group_df["__ewma_squared_returns"].ewm(
+                    alpha=alpha,
+                    adjust=False,
+                    min_periods=win,
+                ).mean()
+                result_series.loc[idx] = variance.sqrt()
+            df_sorted[col_name] = result_series
+        else:
+            variance = df_sorted["__ewma_squared_returns"].ewm(
+                alpha=alpha,
+                adjust=False,
+                min_periods=win,
+            ).mean()
+            df_sorted[col_name] = variance.sqrt()
+
+    df_sorted = df_sorted.drop(columns=["__ewma_log_returns", "__ewma_squared_returns"])
+
+    if row_id_column and row_id_column in df_sorted.columns:
+        df_sorted = df_sorted.sort_values(row_id_column)
+
+    return df_sorted
 
 
 def _augment_ewma_volatility_polars(

@@ -3,7 +3,9 @@ import polars as pl
 import pandas_flavor as pf
 import warnings
 
-from typing import Optional, Union, List
+from typing import Optional, Union, List, Sequence, Tuple
+
+import numpy as np
 
 try:  # Optional dependency for GPU acceleration
     import cudf  # type: ignore
@@ -20,6 +22,7 @@ from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
     normalize_engine,
     restore_output_type,
+    conversion_to_pandas,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 
@@ -164,26 +167,74 @@ def augment_ewm(
             stacklevel=2,
         )
 
-    if engine_resolved in ("polars", "cudf"):
-        backend_label = "Polars" if engine_resolved == "polars" else "cuDF"
+    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError(
+            "cudf is required for engine='cudf', but it is not installed."
+        )
+
+    if engine_resolved == "polars":
         warnings.warn(
-            f"augment_ewm currently falls back to the pandas implementation when using {backend_label}.",
+            "augment_ewm currently falls back to the pandas implementation when using Polars.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        target_engine = "pandas"
+    else:
+        target_engine = engine_resolved
+
+    conversion: FrameConversion = convert_to_engine(data, target_engine)
+    prepared_data = conversion.data
+
+    if reduce_memory and target_engine == "cudf":
+        warnings.warn(
+            "`reduce_memory=True` is only supported for pandas data.",
             RuntimeWarning,
             stacklevel=2,
         )
 
-    conversion: FrameConversion = convert_to_engine(data, "pandas")
-    prepared_data = conversion.data
-
-    result = _augment_ewm_pandas(
-        data=prepared_data,
-        date_column=date_column,
-        value_column=value_column,
-        window_func=window_func,
-        alpha=alpha,
-        reduce_memory=reduce_memory,
-        **kwargs,
-    )
+    if target_engine == "pandas":
+        result = _augment_ewm_pandas(
+            data=prepared_data,
+            date_column=date_column,
+            value_column=value_column,
+            window_func=window_func,
+            alpha=alpha,
+            reduce_memory=reduce_memory,
+            **kwargs,
+        )
+    elif target_engine == "cudf":
+        cudf_df = prepared_data.obj if hasattr(prepared_data, "obj") else prepared_data
+        if not isinstance(cudf_df, cudf.DataFrame):
+            warnings.warn(
+                "Unsupported cudf object encountered for augment_ewm. Falling back to pandas.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            pandas_input = conversion_to_pandas(conversion)
+            result = _augment_ewm_pandas(
+                data=pandas_input,
+                date_column=date_column,
+                value_column=value_column,
+                window_func=window_func,
+                alpha=alpha,
+                reduce_memory=reduce_memory,
+                **kwargs,
+            )
+        else:
+            result = _augment_ewm_cudf_dataframe(
+                cudf_df,
+                date_column=date_column,
+                value_columns=(
+                    [value_column] if isinstance(value_column, str) else list(value_column)
+                ),
+                window_funcs=[window_func] if isinstance(window_func, str) else list(window_func),
+                alpha=alpha,
+                group_columns=conversion.group_columns,
+                row_id_column=conversion.row_id_column,
+                **kwargs,
+            )
+    else:
+        raise ValueError(f"Unhandled engine for augment_ewm: {target_engine}")
 
     restored = restore_output_type(result, conversion)
 
@@ -262,3 +313,80 @@ def _apply_ewm_function(ewm_obj, func: Union[str, callable]) -> pd.Series:
             raise ValueError(f"Invalid function name: {func}")
         return method()
     raise TypeError(f"Invalid function type: {type(func)}")
+
+
+def _augment_ewm_cudf_dataframe(
+    frame: "cudf.DataFrame",
+    *,
+    date_column: str,
+    value_columns: List[str],
+    window_funcs: List[str],
+    alpha: Optional[float],
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+    **kwargs,
+) -> "cudf.DataFrame":
+    if cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError("cudf is required to execute the cudf ewm backend.")
+
+    supported_funcs = {"mean", "std", "var"}
+    invalid = [func for func in window_funcs if func not in supported_funcs]
+    if invalid:
+        raise ValueError(
+            f"Unsupported cudf EWM function(s): {invalid}. "
+            "Supported functions are {'mean', 'std', 'var'}."
+        )
+
+    sort_columns: List[str] = [date_column]
+    if group_columns:
+        sort_columns = list(group_columns) + sort_columns
+
+    df_sorted = frame.sort_values(sort_columns)
+
+    for col in value_columns:
+        if not cudf.api.types.is_numeric_dtype(df_sorted[col]):
+            df_sorted[col] = df_sorted[col].astype("float64")
+
+    def _determine_decay(alpha_value: Optional[float], params: dict) -> Tuple[str, Union[float, int]]:
+        if alpha_value is not None:
+            return "alpha", alpha_value
+        for param in ("com", "span", "halflife"):
+            if param in params:
+                return param, params[param]
+        raise ValueError(
+            "No valid decay parameter provided. Specify 'alpha' through function arguments, "
+            "or one of 'com', 'span', or 'halflife' through **kwargs."
+        )
+
+    decay_label, decay_value = _determine_decay(alpha, kwargs)
+
+    group_list: Optional[List[str]]
+    if group_columns:
+        group_list = list(group_columns)
+    else:
+        group_list = None
+
+    for col in value_columns:
+        if group_list is None:
+            ewm_obj = df_sorted[col].ewm(alpha=alpha, **kwargs)
+            for func in window_funcs:
+                result_name = f"{col}_ewm_{func}_{decay_label}_{decay_value}"
+                df_sorted[result_name] = getattr(ewm_obj, func)()
+        else:
+            # Allocate storage for the result column and fill group-by-group.
+            for func in window_funcs:
+                result_name = f"{col}_ewm_{func}_{decay_label}_{decay_value}"
+                result_holder = cudf.Series(
+                    np.nan, index=df_sorted.index, dtype="float64"
+                )
+                for _, group_df in df_sorted.groupby(group_list, sort=False):
+                    group_indices = group_df.index
+                    group_series = group_df[col]
+                    ewm_obj = group_series.ewm(alpha=alpha, **kwargs)
+                    result_holder.loc[group_indices] = getattr(ewm_obj, func)()
+                df_sorted[result_name] = result_holder
+
+    if row_id_column and row_id_column in df_sorted.columns:
+        df_sorted = df_sorted.sort_values(row_id_column)
+
+    return df_sorted

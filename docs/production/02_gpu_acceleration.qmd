@@ -88,15 +88,20 @@ ensures CPU-only deployments run without modification.
   These patterns execute on the CPU today, even with `cudf.pandas` enabled.
 - Polars GPU execution requires lazy, expression-only queries. Routines that
   use `map_groups` or Python callbacks currently materialise on the CPU.
+- Rolling risk metrics on GPU now support Sharpe, Sortino, Treynor, Information, Omega,
+  volatility, skewness, and kurtosis; unsupported custom metrics still fall back to the
+  pandas path with a warning so results stay consistent.
 
 # Runtime status by component
 
 | Component | GPU behaviour |
 | --- | --- |
-| Feature engineering (lags, diffs, pct_change, leads) | Native cuDF + Polars expression pipelines |
-| Feature engineering (ewm) | Falls back to pandas; cuDF support planned |
-| Finance indicators (RSI, MACD, Bollinger Bands, ATR/NATR, ADX, CMO, PPO, ROC, rolling risk metrics, stochastic oscillator, FIP momentum, QS momentum, EWMA volatility, drawdown, regime detection, Hurst) | Accept cuDF inputs but currently run through the pandas path with a warning |
+| Feature engineering (lags, diffs, pct_change, leads, rolling, expanding) | Native cuDF (strings-only) + Polars expression pipelines; custom Python callables still fall back |
+| Feature engineering (ewm) | cuDF backend supported for numeric columns; polars inputs fallback to pandas |
+| Finance indicators (RSI, MACD, Bollinger Bands, ATR/NATR, ADX, CMO, PPO, ROC, rolling risk metrics*, stochastic oscillator, FIP momentum, QS momentum, EWMA volatility, drawdown, regime detection, Hurst) | cuDF implementations cover the common price-based calculations; rolling risk metrics accelerate Sharpe, Sortino, Treynor, Information, Omega, volatility, skewness, and kurtosis while unsupported custom metrics still fall back with a warning |
 | Polars pipelines | Expression-only; `.collect(engine="gpu")` works when RAPIDS Polars is installed |
+
+*Rolling risk metrics GPU support today covers Sharpe, Sortino, Treynor, Information, Omega, volatility, skewness, and kurtosis.
 
 Future releases will incrementally replace these bottlenecks with
 GPU-compatible implementations. Until then, GPU components remain entirely

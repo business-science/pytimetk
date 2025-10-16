@@ -21,6 +21,7 @@ from pytimetk.utils.dataframe_ops import (
     normalize_engine,
     resolve_polars_group_columns,
     restore_output_type,
+    conversion_to_pandas,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -147,9 +148,12 @@ def augment_fip_momentum(
     check_date_column(data, date_column)
 
     engine_resolved = normalize_engine(engine, data)
-    fallback_to_pandas = engine_resolved == "cudf"
+    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError(
+            "cudf is required for engine='cudf', but it is not installed."
+        )
 
-    conversion_engine = "pandas" if fallback_to_pandas else engine_resolved
+    conversion_engine = engine_resolved
     conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
@@ -158,13 +162,6 @@ def augment_fip_momentum(
     elif reduce_memory and conversion_engine in ("polars", "cudf"):
         warnings.warn(
             "`reduce_memory=True` is only supported for pandas data.",
-            RuntimeWarning,
-            stacklevel=2,
-        )
-
-    if fallback_to_pandas:
-        warnings.warn(
-            "augment_fip_momentum currently falls back to the pandas implementation when used with cudf data.",
             RuntimeWarning,
             stacklevel=2,
         )
@@ -182,6 +179,35 @@ def augment_fip_momentum(
         )
         if reduce_memory:
             result = reduce_memory_usage(result)
+        if reduce_memory:
+            result = reduce_memory_usage(result)
+    elif conversion_engine == "cudf":
+        cudf_df = prepared_data.obj if hasattr(prepared_data, "obj") else prepared_data
+        if not isinstance(cudf_df, cudf.DataFrame):
+            warnings.warn(
+                "Unsupported cudf object encountered for augment_fip_momentum. Falling back to pandas.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            pandas_input = conversion_to_pandas(conversion)
+            result = _augment_fip_momentum_pandas(
+                data=pandas_input,
+                close_column=close_column,
+                windows=windows,
+                fip_method=fip_method,
+                skip_window=skip_window,
+            )
+        else:
+            result = _augment_fip_momentum_cudf_dataframe(
+                cudf_df,
+                date_column=date_column,
+                close_column=close_column,
+                windows=windows,
+                fip_method=fip_method,
+                skip_window=skip_window,
+                group_columns=conversion.group_columns,
+                row_id_column=conversion.row_id_column,
+            )
     else:
         result = _augment_fip_momentum_polars(
             data=prepared_data,
@@ -263,6 +289,98 @@ def _augment_fip_momentum_pandas(
 
     df.drop(columns=[f"{col}_returns"], inplace=True)
     return df
+
+
+def _augment_fip_momentum_cudf_dataframe(
+    frame: "cudf.DataFrame",
+    *,
+    date_column: str,
+    close_column: str,
+    windows: List[int],
+    fip_method: str,
+    skip_window: int,
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> "cudf.DataFrame":
+    if cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError(
+            "cudf is required to execute the cudf FIP momentum backend."
+        )
+
+    sort_columns: List[str] = [date_column]
+    if group_columns:
+        sort_columns = list(group_columns) + sort_columns
+
+    df_sorted = frame.sort_values(sort_columns)
+    df_sorted[close_column] = df_sorted[close_column].astype("float64")
+
+    if group_columns:
+        group_list = list(group_columns)
+        prev_close = df_sorted.groupby(group_list, sort=False)[close_column].shift(1)
+    else:
+        group_list = None
+        prev_close = df_sorted[close_column].shift(1)
+
+    returns = df_sorted[close_column] / prev_close - 1
+    df_sorted["__fip_returns"] = returns
+
+    for window in windows:
+        result_series = cudf.Series(np.nan, index=df_sorted.index, dtype="float64")
+        if group_list:
+            for _, group_df in df_sorted.groupby(group_list, sort=False):
+                idx = group_df.index
+                fip_values = _compute_fip_series(
+                    group_df["__fip_returns"].to_numpy(),
+                    window,
+                    fip_method,
+                    skip_window,
+                )
+                result_series.loc[idx] = fip_values
+        else:
+            fip_values = _compute_fip_series(
+                df_sorted["__fip_returns"].to_numpy(),
+                window,
+                fip_method,
+                skip_window,
+            )
+            result_series = cudf.Series(fip_values, index=df_sorted.index)
+
+        df_sorted[f"{close_column}_fip_momentum_{window}"] = result_series
+
+    df_sorted = df_sorted.drop(columns=["__fip_returns"])
+
+    if row_id_column and row_id_column in df_sorted.columns:
+        df_sorted = df_sorted.sort_values(row_id_column)
+
+    return df_sorted
+
+
+def _compute_fip_series(
+    returns: np.ndarray,
+    window: int,
+    fip_method: str,
+    skip_window: int,
+) -> np.ndarray:
+    if returns.size == 0:
+        return np.full(returns.shape, np.nan)
+    fip_values = np.full(len(returns), np.nan, dtype="float64")
+    for idx in range(window - 1, len(returns)):
+        window_slice = returns[idx - window + 1 : idx + 1]
+        if skip_window > 0:
+            window_slice = window_slice[skip_window:]
+        window_slice = window_slice[~np.isnan(window_slice)]
+        if window_slice.size < max(1, window // 2):
+            continue
+        total_return = np.prod(1 + window_slice) - 1
+        pct_positive = np.mean(window_slice > 0)
+        pct_negative = np.mean(window_slice < 0)
+        if fip_method == "original":
+            fip_values[idx] = total_return * (pct_negative - pct_positive)
+        else:
+            fip_values[idx] = np.sign(total_return) * (pct_positive - pct_negative)
+    if skip_window > 0:
+        fip_values[:skip_window] = np.nan
+    return fip_values
 
 
 def _augment_fip_momentum_polars(

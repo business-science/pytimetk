@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import polars as pl
 
@@ -22,6 +23,7 @@ from pytimetk.utils.dataframe_ops import (
     normalize_engine,
     resolve_polars_group_columns,
     restore_output_type,
+    conversion_to_pandas,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -63,7 +65,7 @@ def augment_rsi(
     reduce_memory : bool, optional
         Attempt to reduce memory usage when operating on pandas data. If a
         polars input is supplied a warning is emitted and no conversion occurs.
-    engine : {"auto", "pandas", "polars"}, optional
+    engine : {"auto", "pandas", "polars", "cudf"}, optional
         Execution engine. ``"auto"`` (default) infers the backend from the
         input data while allowing explicit overrides.
 
@@ -118,9 +120,13 @@ def augment_rsi(
     check_date_column(data, date_column)
 
     engine_resolved = normalize_engine(engine, data)
-    fallback_to_pandas = engine_resolved == "cudf"
 
-    conversion_engine = "pandas" if fallback_to_pandas else engine_resolved
+    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError(
+            "cudf is required for engine='cudf', but it is not installed."
+        )
+
+    conversion_engine = engine_resolved
     conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
 
@@ -133,19 +139,12 @@ def augment_rsi(
             stacklevel=2,
         )
 
-    if fallback_to_pandas:
-        warnings.warn(
-            "augment_rsi currently falls back to the pandas implementation when used with cudf data.",
-            RuntimeWarning,
-            stacklevel=2,
-        )
-
     close_columns = (
         [close_column] if isinstance(close_column, str) else list(close_column)
     )
     periods_list = _normalize_periods(periods)
 
-    if conversion_engine == "pandas":
+    if engine_resolved == "pandas":
         sorted_data, _ = sort_dataframe(
             prepared_data, date_column, keep_grouped_df=True
         )
@@ -156,6 +155,29 @@ def augment_rsi(
         )
         if reduce_memory:
             result = reduce_memory_usage(result)
+    elif engine_resolved == "cudf":
+        cudf_df = prepared_data.obj if hasattr(prepared_data, "obj") else prepared_data
+        if not isinstance(cudf_df, cudf.DataFrame):
+            warnings.warn(
+                "Unsupported cudf object encountered for augment_rsi. Falling back to pandas.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            pandas_input = conversion_to_pandas(conversion)
+            result = _augment_rsi_pandas(
+                data=pandas_input,
+                close_columns=close_columns,
+                periods=periods_list,
+            )
+        else:
+            result = _augment_rsi_cudf_dataframe(
+                cudf_df,
+                date_column=date_column,
+                close_columns=close_columns,
+                periods=periods_list,
+                group_columns=conversion.group_columns,
+                row_id_column=conversion.row_id_column,
+            )
     else:
         result = _augment_rsi_polars(
             data=prepared_data,
@@ -287,6 +309,57 @@ def _augment_rsi_polars(
         augmented = augmented.drop(row_col)
 
     return augmented
+
+
+def _augment_rsi_cudf_dataframe(
+    frame: "cudf.DataFrame",
+    *,
+    date_column: str,
+    close_columns: List[str],
+    periods: List[int],
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> "cudf.DataFrame":
+    if cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError("cudf is required to execute the cudf rsi backend.")
+
+    sort_cols: List[str] = [date_column]
+    if group_columns:
+        sort_cols = list(group_columns) + sort_cols
+
+    df_sorted = frame.sort_values(sort_cols)
+
+    for col in close_columns:
+        df_sorted[col] = df_sorted[col].astype("float64")
+        for period in periods:
+            df_sorted[f"{col}_rsi_{period}"] = np.nan
+
+    if group_columns:
+        group_iter = df_sorted.groupby(list(group_columns), sort=False)
+    else:
+        group_iter = [(None, df_sorted)]
+
+    for _, subdf in group_iter:
+        idx = subdf.index
+        for col in close_columns:
+            delta = subdf[col].diff()
+            gains = delta.where(delta > 0, 0.0)
+            losses = (-delta).where(delta < 0, 0.0)
+
+            for period in periods:
+                avg_gain = gains.rolling(window=period, min_periods=period).mean()
+                avg_loss = losses.rolling(window=period, min_periods=period).mean()
+
+                rs = avg_gain / avg_loss
+                rsi = 100 - (100 / (1 + rs))
+                rsi = rsi.where(avg_loss != 0, np.nan)
+
+                df_sorted.loc[idx, f"{col}_rsi_{period}"] = rsi
+
+    if row_id_column and row_id_column in df_sorted.columns:
+        df_sorted = df_sorted.sort_values(row_id_column)
+
+    return df_sorted
 
 
 def _calculate_rsi_pandas(series: pd.Series, period=14):
