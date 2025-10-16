@@ -99,7 +99,7 @@ ensures CPU-only deployments run without modification.
 | Feature engineering (lags, diffs, pct_change, leads, rolling, expanding) | Native cuDF (strings-only) + Polars expression pipelines; custom Python callables still fall back |
 | Feature engineering (ewm) | cuDF backend supported for numeric columns; polars inputs fallback to pandas |
 | Finance indicators (RSI, MACD, Bollinger Bands, ATR/NATR, ADX, CMO, PPO, ROC, rolling risk metrics*, stochastic oscillator, FIP momentum, QS momentum, EWMA volatility, drawdown, regime detection, Hurst) | cuDF implementations cover the common price-based calculations; rolling risk metrics accelerate Sharpe, Sortino, Treynor, Information, Omega, volatility, skewness, and kurtosis while unsupported custom metrics still fall back with a warning |
-| Polars pipelines | Expression-only; `.collect(engine="gpu")` works when RAPIDS Polars is installed |
+| Polars pipelines | Expression-only; pytimetk automatically attempts `.collect(engine="gpu")` when RAPIDS Polars is installed (set `PYTIMETK_POLARS_GPU=0` to disable) |
 
 *Rolling risk metrics GPU support today covers Sharpe, Sortino, Treynor, Information, Omega, volatility, skewness, and kurtosis.
 

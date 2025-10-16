@@ -27,6 +27,7 @@ from pytimetk.utils.dataframe_ops import (
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.utils.polars_helpers import collect_lazyframe
 
 
 @pf.register_groupby_method
@@ -303,7 +304,7 @@ def _augment_rsi_polars(
     if temp_columns:
         lazy_frame = lazy_frame.drop(temp_columns)
 
-    augmented = lazy_frame.collect().sort(row_col)
+    augmented = collect_lazyframe(lazy_frame).sort(row_col)
 
     if generated:
         augmented = augmented.drop(row_col)

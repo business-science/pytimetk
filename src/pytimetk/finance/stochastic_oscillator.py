@@ -11,6 +11,7 @@ except ImportError:  # pragma: no cover - cudf optional
     cudf = None  # type: ignore
 
 from pytimetk._polars_compat import ensure_polars_rolling_kwargs
+from pytimetk.utils.polars_helpers import collect_lazyframe
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -399,7 +400,7 @@ def _augment_stochastic_polars(
                 ).alias(d_alias)
             )
 
-    result = lazy_frame.collect().sort(row_col)
+    result = collect_lazyframe(lazy_frame).sort(row_col)
 
     if generated:
         result = result.drop(row_col)
