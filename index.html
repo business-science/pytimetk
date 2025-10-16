@@ -315,6 +315,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
  <span class="menu-text">Feature Store &amp; Caching (Beta)</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./production/02_gpu_acceleration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GPU Acceleration</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -399,8 +405,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation"><span class="header-section-number">2</span> Installation</a></li>
   <li><a href="#quickstart" id="toc-quickstart" class="nav-link" data-scroll-target="#quickstart"><span class="header-section-number">3</span> Quickstart:</a>
   <ul class="collapse">
-  <li><a href="#whats-new-in-pytimetk-2.0.0" id="toc-whats-new-in-pytimetk-2.0.0" class="nav-link" data-scroll-target="#whats-new-in-pytimetk-2.0.0"><span class="header-section-number">3.1</span> What’s New in pytimetk 2.0.0</a></li>
-  <li><a href="#feature-store-caching-beta" id="toc-feature-store-caching-beta" class="nav-link" data-scroll-target="#feature-store-caching-beta"><span class="header-section-number">3.2</span> Feature Store &amp; Caching (Beta)</a></li>
+  <li><a href="#whats-new-in-pytimetk-2.1.0" id="toc-whats-new-in-pytimetk-2.1.0" class="nav-link" data-scroll-target="#whats-new-in-pytimetk-2.1.0"><span class="header-section-number">3.1</span> What’s New in pytimetk 2.1.0</a>
+  <ul class="collapse">
+  <li><a href="#enable-gpu-support" id="toc-enable-gpu-support" class="nav-link" data-scroll-target="#enable-gpu-support">Enable GPU support</a></li>
+  </ul></li>
+  <li><a href="#whats-new-in-pytimetk-2.0.0" id="toc-whats-new-in-pytimetk-2.0.0" class="nav-link" data-scroll-target="#whats-new-in-pytimetk-2.0.0"><span class="header-section-number">3.2</span> What’s New in pytimetk 2.0.0</a></li>
+  <li><a href="#feature-store-caching-beta" id="toc-feature-store-caching-beta" class="nav-link" data-scroll-target="#feature-store-caching-beta"><span class="header-section-number">3.3</span> Feature Store &amp; Caching (Beta)</a></li>
   </ul></li>
   <li><a href="#documentation" id="toc-documentation" class="nav-link" data-scroll-target="#documentation"><span class="header-section-number">4</span> Documentation</a></li>
   <li><a href="#more-coming-soon" id="toc-more-coming-soon" class="nav-link" data-scroll-target="#more-coming-soon"><span class="header-section-number">5</span> 🏆 More Coming Soon…</a></li>
@@ -508,6 +518,11 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td>🗃️ Persist, version, and reuse feature sets (with optional MLflow logging)</td>
 <td>❌ Manual recompute, no metadata lineage</td>
 </tr>
+<tr class="even">
+<td>GPU acceleration (beta)</td>
+<td>⚡ Optional RAPIDS-powered pipelines with automatic CPU fallback</td>
+<td>❌ CPU only</td>
+</tr>
 </tbody>
 </table>
 <p>As evident from the table, <strong>pytimetk</strong> is not just about speed; it also simplifies your codebase. For example, <code>summarize_by_time()</code>, converts a 6-line, double for-loop routine in <code>pandas</code> into a concise 2-line operation. And with the <code>polars</code> engine, get results 13.4X faster than <code>pandas</code>!</p>
@@ -541,16 +556,31 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        agg_func <span class="op">=</span> [<span class="st">'mean'</span>, <span class="st">'sum'</span>],</span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        engine <span class="op">=</span> <span class="st">"polars"</span></span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<section id="whats-new-in-pytimetk-2.0.0" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="whats-new-in-pytimetk-2.0.0"><span class="header-section-number">3.1</span> What’s New in pytimetk 2.0.0</h2>
+<section id="whats-new-in-pytimetk-2.1.0" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="whats-new-in-pytimetk-2.1.0"><span class="header-section-number">3.1</span> What’s New in pytimetk 2.1.0</h2>
+<ul>
+<li><strong>GPU acceleration (Beta)</strong> unlocks optional NVIDIA RAPIDS support for feature engineering (lags, diffs, leads, rolling/expanding statistics, finance indicators, etc.) and Polars lazy pipelines with automatic CPU fallback.</li>
+<li>Works with <code>polars.LazyFrame.collect(engine="gpu")</code>; set <code>PYTIMETK_POLARS_GPU=0</code> if you need to force CPU execution.</li>
+<li><code>pytimetk.utils.gpu_support</code> exposes helpers such as <code>is_cudf_available()</code> and <code>is_polars_gpu_available()</code> so you can assert runtime readiness.</li>
+<li>CPU-only environments run unchanged because GPU acceleration remains fully opt-in.</li>
+</ul>
+<section id="enable-gpu-support" class="level3">
+<h3 class="anchored" data-anchor-id="enable-gpu-support">Enable GPU support</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install pytimetk<span class="pp">[</span><span class="ss">gpu</span><span class="pp">]</span> <span class="at">--extra-index-url</span><span class="op">=</span>https://pypi.nvidia.com</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="st">"polars[gpu]"</span> <span class="at">--extra-index-url</span><span class="op">=</span>https://pypi.nvidia.com</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>See the <a href="https://business-science.github.io/pytimetk/production/02_gpu_acceleration.html">GPU acceleration guide</a> for environment validation commands, supported APIs, and current limitations.</p>
+</section>
+</section>
+<section id="whats-new-in-pytimetk-2.0.0" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="whats-new-in-pytimetk-2.0.0"><span class="header-section-number">3.2</span> What’s New in pytimetk 2.0.0</h2>
 <ul>
 <li>Added polars <code>.tk</code> accessor support for plotting helpers (<code>plot_timeseries</code>, <code>plot_anomalies</code>, <code>plot_anomalies_decomp</code>, <code>plot_anomalies_cleaned</code>, <code>plot_correlation_funnel</code>).</li>
 <li>Polars users can now call these functions directly on <code>pl.DataFrame</code> objects via the <code>.tk</code> accessor; results mirror the pandas interface (Plotly <code>Figure</code> or plotnine <code>ggplot</code>).</li>
 <li>See the <a href="https://business-science.github.io/pytimetk/changelog.html">change log</a> for more details.</li>
 </ul>
 </section>
-<section id="feature-store-caching-beta" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="feature-store-caching-beta"><span class="header-section-number">3.2</span> Feature Store &amp; Caching (Beta)</h2>
+<section id="feature-store-caching-beta" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="feature-store-caching-beta"><span class="header-section-number">3.3</span> Feature Store &amp; Caching (Beta)</h2>
 <div class="callout callout-style-default callout-warning callout-titled" title="Beta">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -565,26 +595,26 @@ Beta
 </div>
 </div>
 <p>Persist expensive feature engineering steps once and reuse them everywhere. Register a transform, build it on a dataset, and reload it in any notebook or job with automatic versioning, metadata, and cache hits.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"bike_sales_sample"</span>, parse_dates<span class="op">=</span>[<span class="st">"order_date"</span>])</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>store <span class="op">=</span> tk.FeatureStore()</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>store.register(</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sales_signature"</span>,</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> data: tk.augment_timeseries_signature(</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        data,</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"order_date"</span>,</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">"pandas"</span>,</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    default_key_columns<span class="op">=</span>(<span class="st">"order_id"</span>,),</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    description<span class="op">=</span><span class="st">"Calendar signatures for sales orders."</span>,</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> store.build(<span class="st">"sales_signature"</span>, df)</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(result.from_cache)  <span class="co"># False first run, True on subsequent builds</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"bike_sales_sample"</span>, parse_dates<span class="op">=</span>[<span class="st">"order_date"</span>])</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>store <span class="op">=</span> tk.FeatureStore()</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>store.register(</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sales_signature"</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> data: tk.augment_timeseries_signature(</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        data,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"order_date"</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">"pandas"</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    default_key_columns<span class="op">=</span>(<span class="st">"order_id"</span>,),</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    description<span class="op">=</span><span class="st">"Calendar signatures for sales orders."</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> store.build(<span class="st">"sales_signature"</span>, df)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(result.from_cache)  <span class="co"># False first run, True on subsequent builds</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ul>
 <li>Supports local disk or any <code>pyarrow</code> filesystem (e.g., <code>s3://</code>, <code>gs://</code>) via the <code>artifact_uri</code> parameter, plus optional file-based locking for concurrent jobs.</li>
 <li>Optional MLflow helpers capture feature versions and artifacts with your experiments for reproducible pipelines.</li>

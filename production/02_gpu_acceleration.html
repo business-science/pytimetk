@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="Install and verify optional NVIDIA RAPIDS support for pytimetk.">
 
-<title>pytimetk – ts_features</title>
+<title>pytimetk - GPU Acceleration</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -63,6 +64,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../performance/01_speed_comparisons.html" rel="next">
+<link href="../production/01_feature_store.html" rel="prev">
 <link href="../favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -116,12 +119,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <!-- SUMO -->
 <script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
-<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
 
 
+<meta property="og:title" content="pytimetk - GPU Acceleration">
+<meta property="og:description" content="Install and verify optional NVIDIA RAPIDS support for pytimetk.">
+<meta property="og:site-name" content="pytimetk">
+<meta name="twitter:title" content="pytimetk - GPU Acceleration">
+<meta name="twitter:description" content="Install and verify optional NVIDIA RAPIDS support for pytimetk.">
+<meta name="twitter:card" content="summary">
 </head>
 
 <body class="nav-sidebar floating nav-fixed">
@@ -150,7 +155,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">ts_features</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../production/01_feature_store.html">🛠️ Production:</a></li><li class="breadcrumb-item"><a href="../production/02_gpu_acceleration.html">GPU Acceleration</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -294,13 +299,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
  <span class="menu-text">🛠️ Production:</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../production/01_feature_store.html" class="sidebar-item-text sidebar-link">
@@ -309,7 +314,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../production/02_gpu_acceleration.html" class="sidebar-item-text sidebar-link">
+  <a href="../production/02_gpu_acceleration.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">GPU Acceleration</span></a>
   </div>
 </li>
@@ -393,22 +398,35 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
-  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
-  <li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes">Notes</a></li>
-  <li><a href="#performance" id="toc-performance" class="nav-link" data-scroll-target="#performance">Performance</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a>
+  <ul class="collapse">
+  <li><a href="#enable-the-rapids-extra-optional" id="toc-enable-the-rapids-extra-optional" class="nav-link" data-scroll-target="#enable-the-rapids-extra-optional">1. Enable the RAPIDS extra (optional)</a></li>
+  <li><a href="#install-polars-with-the-gpu-engine" id="toc-install-polars-with-the-gpu-engine" class="nav-link" data-scroll-target="#install-polars-with-the-gpu-engine">2. Install Polars with the GPU engine</a></li>
+  <li><a href="#example-accelerating-augment_rsi" id="toc-example-accelerating-augment_rsi" class="nav-link" data-scroll-target="#example-accelerating-augment_rsi">Example: accelerating <code>augment_rsi</code></a></li>
+  <li><a href="#example-accelerating-a-polars-expression-pipeline" id="toc-example-accelerating-a-polars-expression-pipeline" class="nav-link" data-scroll-target="#example-accelerating-a-polars-expression-pipeline">Example: accelerating a Polars expression pipeline</a></li>
+  <li><a href="#example-pandas-cudf.pandas-no-code-changes-required" id="toc-example-pandas-cudf.pandas-no-code-changes-required" class="nav-link" data-scroll-target="#example-pandas-cudf.pandas-no-code-changes-required">Example: pandas + <code>cudf.pandas</code> (no code changes required)</a></li>
+  <li><a href="#enable-cudf.pandas-optional" id="toc-enable-cudf.pandas-optional" class="nav-link" data-scroll-target="#enable-cudf.pandas-optional">3. Enable <code>cudf.pandas</code> (optional)</a></li>
+  </ul></li>
+  <li><a href="#verifying-the-environment" id="toc-verifying-the-environment" class="nav-link" data-scroll-target="#verifying-the-environment">Verifying the environment</a></li>
+  <li><a href="#current-limitations" id="toc-current-limitations" class="nav-link" data-scroll-target="#current-limitations">Current limitations</a></li>
+  <li><a href="#runtime-status-by-component" id="toc-runtime-status-by-component" class="nav-link" data-scroll-target="#runtime-status-by-component">Runtime status by component</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/ts_features.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/production/02_gpu_acceleration.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">ts_features</h1>
+<h1 class="title">GPU Acceleration</h1>
 </div>
 
+<div>
+  <div class="description">
+    Install and verify optional NVIDIA RAPIDS support for pytimetk.
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -421,314 +439,169 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>ts_features(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    date_column,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    value_column,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    features<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    freq<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    scale<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    threads<span class="op">=</span><span class="dv">1</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    show_progress<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Extracts aggregated time series features from a DataFrame or DataFrameGroupBy object using the <code>tsfeatures</code> package.</p>
-<p>Note: Requires the <code>tsfeatures</code> package to be installed.</p>
-<section id="parameters" class="level2 doc-section doc-section-parameters">
-<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
+<section id="overview" class="level1">
+<h1>Overview</h1>
+<p><code>pytimetk</code> works out-of-the-box on CPU. GPU acceleration is optional and only activates when the relevant RAPIDS components are installed. The steps below show how to opt-in while keeping full backwards compatibility for existing workflows.</p>
+<blockquote class="blockquote">
+<p><strong>Warning</strong> RAPIDS packages are built for specific CUDA and Python versions. Verify that your NVIDIA driver and CUDA runtime match the wheels you plan to install.</p>
+</blockquote>
+</section>
+<section id="installation" class="level1">
+<h1>Installation</h1>
+<section id="enable-the-rapids-extra-optional" class="level2">
+<h2 class="anchored" data-anchor-id="enable-the-rapids-extra-optional">1. Enable the RAPIDS extra (optional)</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># poetry</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">poetry</span> install <span class="at">-E</span> gpu</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># pip</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install pytimetk<span class="pp">[</span><span class="ss">gpu</span><span class="pp">]</span> <span class="dt">\</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--extra-index-url</span><span class="op">=</span>https://pypi.nvidia.com</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The <code>gpu</code> extra only declares <code>cudf</code> as an optional dependency. You still need NVIDIA’s PyPI index (or a local RAPIDS wheelhouse) for the actual download.</p>
+</section>
+<section id="install-polars-with-the-gpu-engine" class="level2">
+<h2 class="anchored" data-anchor-id="install-polars-with-the-gpu-engine">2. Install Polars with the GPU engine</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="st">"polars[gpu]"</span> <span class="at">--extra-index-url</span><span class="op">=</span>https://pypi.nvidia.com</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>When loaded, you can materialise lazy pipelines on the GPU using:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> (</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    pl.LazyFrame({<span class="st">"value"</span>: [<span class="fl">1.2</span>, <span class="fl">3.4</span>]})</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    .select(pl.col(<span class="st">"value"</span>).rolling_mean(<span class="dv">2</span>))</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    .collect(engine<span class="op">=</span><span class="st">"gpu"</span>)  <span class="co"># or engine=pl.GPUEngine(raise_on_fail=True)</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The examples below illustrate how to use GPU acceleration in practice. They are provided as reference snippets and are not executed as part of the documentation build (notice the <code>eval=FALSE</code> flag).</p>
+</section>
+<section id="example-accelerating-augment_rsi" class="level2">
+<h2 class="anchored" data-anchor-id="example-accelerating-augment_rsi">Example: accelerating <code>augment_rsi</code></h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"stocks_daily"</span>, parse_dates<span class="op">=</span>[<span class="st">"date"</span>])</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> (</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    pl.from_pandas(df.query(<span class="st">"symbol == 'AAPL'"</span>))</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    .lazy()</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    .tk.augment_rsi(</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"date"</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">"close"</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        periods<span class="op">=</span>[<span class="dv">14</span>, <span class="dv">28</span>],</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    .collect(engine<span class="op">=</span><span class="st">"gpu"</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="example-accelerating-a-polars-expression-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="example-accelerating-a-polars-expression-pipeline">Example: accelerating a Polars expression pipeline</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"stocks_daily"</span>, parse_dates<span class="op">=</span>[<span class="st">"date"</span>])</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> (</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    pl.from_pandas(df)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    .lazy()</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">filter</span>(pl.col(<span class="st">"symbol"</span>) <span class="op">==</span> <span class="st">"AAPL"</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    .group_by(<span class="st">"symbol"</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    .agg(</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        pl.col(<span class="st">"close"</span>).sort_by(<span class="st">"date"</span>).alias(<span class="st">"close"</span>),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        pl.col(<span class="st">"date"</span>).sort().alias(<span class="st">"date"</span>),</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> pipe.collect(engine<span class="op">=</span><span class="st">"gpu"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="example-pandas-cudf.pandas-no-code-changes-required" class="level2">
+<h2 class="anchored" data-anchor-id="example-pandas-cudf.pandas-no-code-changes-required">Example: pandas + <code>cudf.pandas</code> (no code changes required)</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cudf.pandas</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>cudf.pandas.install()</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"stocks_daily"</span>, parse_dates<span class="op">=</span>[<span class="st">"date"</span>])</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> (</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    df.groupby(<span class="st">"symbol"</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    .augment_rolling(</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"date"</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        value_column<span class="op">=</span><span class="st">"close"</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span>[<span class="dv">10</span>, <span class="dv">20</span>],</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        window_func<span class="op">=</span>[<span class="st">"mean"</span>, <span class="st">"std"</span>],</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        threads<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co"># `result` is a pandas DataFrame, but operations run on the GPU whenever</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co"># rapids-cuDF supports the requested rolling functions.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="enable-cudf.pandas-optional" class="level2">
+<h2 class="anchored" data-anchor-id="enable-cudf.pandas-optional">3. Enable <code>cudf.pandas</code> (optional)</h2>
+<p>To accelerate compatible pandas workloads, install RAPIDS and opt-in to <code>cudf.pandas</code> before importing pandas:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cudf.pandas</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>cudf.pandas.install()</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In notebooks you can use the magic <code>%load_ext cudf.pandas</code> instead. pandas APIs that are unsupported on the GPU automatically fall back to the CPU implementation, so existing scripts continue to run.</p>
+</section>
+</section>
+<section id="verifying-the-environment" class="level1">
+<h1>Verifying the environment</h1>
+<p><code>pytimetk</code> exposes lightweight helpers in <code>pytimetk.utils.gpu_support</code> to interrogate the runtime:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pytimetk.utils <span class="im">import</span> gpu_support</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> gpu_support.is_cudf_available():</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"cuDF detected:"</span>, gpu_support.cudf_version())</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> gpu_support.is_polars_gpu_available():</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Polars GPU engine is ready"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Return values default to <code>False</code> when optional dependencies are missing. This ensures CPU-only deployments run without modification.</p>
+</section>
+<section id="current-limitations" class="level1">
+<h1>Current limitations</h1>
+<ul>
+<li>Many pandas workflows still rely on <code>.groupby().apply(...)</code> or Python UDFs. These patterns execute on the CPU today, even with <code>cudf.pandas</code> enabled.</li>
+<li>Polars GPU execution requires lazy, expression-only queries. Routines that use <code>map_groups</code> or Python callbacks currently materialise on the CPU.</li>
+<li>Rolling risk metrics on GPU now support Sharpe, Sortino, Treynor, Information, Omega, volatility, skewness, and kurtosis; unsupported custom metrics still fall back to the pandas path with a warning so results stay consistent.</li>
+</ul>
+</section>
+<section id="runtime-status-by-component" class="level1">
+<h1>Runtime status by component</h1>
 <table class="table">
 <colgroup>
-<col style="width: 2%">
-<col style="width: 7%">
-<col style="width: 87%">
-<col style="width: 2%">
+<col style="width: 50%">
+<col style="width: 50%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
+<th>Component</th>
+<th>GPU behaviour</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>data</td>
-<td>DataFrame or GroupBy(pandas or polars)</td>
-<td>The <code>data</code> parameter is the input data that can be either a pandas/polars DataFrame or a grouped DataFrame. It contains the time series data that you want to extract features from.</td>
-<td><em>required</em></td>
+<td>Feature engineering (lags, diffs, pct_change, leads, rolling, expanding)</td>
+<td>Native cuDF (strings-only) + Polars expression pipelines; custom Python callables still fall back</td>
 </tr>
 <tr class="even">
-<td>date_column</td>
-<td>str</td>
-<td>The <code>date_column</code> parameter is the name of the column in the input data that contains the dates or timestamps of the time series data.</td>
-<td><em>required</em></td>
+<td>Feature engineering (ewm)</td>
+<td>cuDF backend supported for numeric columns; polars inputs fallback to pandas</td>
 </tr>
 <tr class="odd">
-<td>value_column</td>
-<td>str</td>
-<td>The <code>value_column</code> parameter is the name of the column in the DataFrame that contains the time series values.</td>
-<td><em>required</em></td>
+<td>Finance indicators (RSI, MACD, Bollinger Bands, ATR/NATR, ADX, CMO, PPO, ROC, rolling risk metrics*, stochastic oscillator, FIP momentum, QS momentum, EWMA volatility, drawdown, regime detection, Hurst)</td>
+<td>cuDF implementations cover the common price-based calculations; rolling risk metrics accelerate Sharpe, Sortino, Treynor, Information, Omega, volatility, skewness, and kurtosis while unsupported custom metrics still fall back with a warning</td>
 </tr>
 <tr class="even">
-<td>features</td>
-<td>list</td>
-<td>The <code>features</code> parameter is a list of functions that represent the time series features to be extracted. Each function should take a time series as input and return a scalar value as output. When <code>None</code>, uses the default list of features: - acf_features - arch_stat - crossing_points - entropy - flat_spots - heterogeneity - holt_parameters - lumpiness - nonlinearity - pacf_features - stl_features - stability - hw_parameters - unitroot_kpss - unitroot_pp - series_length - hurst</td>
-<td><code>None</code></td>
-</tr>
-<tr class="odd">
-<td>freq</td>
-<td>str</td>
-<td>The <code>freq</code> parameter specifies the frequency of the time series data. It is used to calculate features that are dependent on the frequency, such as seasonal features. - The frequency can be specified as a string, such as ‘D’ for daily, ‘W’ for weekly, ‘M’ for monthly. - The frequency can be a numeric value representing the number of observations per year, such as 365 for daily, 52 for weekly, 12 for monthly.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="even">
-<td>scale</td>
-<td>bool</td>
-<td>The <code>scale</code> parameter in the <code>ts_features</code> function determines whether or not to scale the extracted features. - If <code>scale</code> is set to <code>True</code>, the features will be scaled using z-score normalization. - If <code>scale</code> is set to <code>False</code>, the features will not be scaled.</td>
-<td><code>True</code></td>
-</tr>
-<tr class="odd">
-<td>threads</td>
-<td>Optional[int]</td>
-<td>The <code>threads</code> parameter is an optional parameter that specifies the number of threads to use for parallel processing. - If is <code>None</code>, tthe function will use all available threads on the system. - If is -1, the function will use all available threads on the system.</td>
-<td><code>1</code></td>
-</tr>
-<tr class="even">
-<td>show_progress</td>
-<td>bool</td>
-<td>The <code>show_progress</code> parameter is a boolean parameter that determines whether or not to show a progress bar when extracting features.</td>
-<td><code>True</code></td>
-</tr>
-<tr class="odd">
-<td>engine</td>
-<td>(pandas, polars, auto)</td>
-<td>Execution engine. <code>"pandas"</code> (default) performs the computation using pandas. <code>"polars"</code> converts the result to a polars DataFrame on return. <code>"auto"</code> infers the engine from the input data.</td>
-<td><code>"pandas"</code></td>
+<td>Polars pipelines</td>
+<td>Expression-only; pytimetk automatically attempts <code>.collect(engine="gpu")</code> when RAPIDS Polars is installed (set <code>PYTIMETK_POLARS_GPU=0</code> to disable)</td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="returns" class="level2 doc-section doc-section-returns">
-<h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
-<table class="table">
-<colgroup>
-<col style="width: 3%">
-<col style="width: 4%">
-<col style="width: 91%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td>DataFrame</td>
-<td>A DataFrame containing the extracted time series features. If grouped data is provided, the DataFrame will contain the grouping columns as well. The concrete type matches the engine used to process the data.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="notes" class="level2 doc-section doc-section-notes">
-<h2 class="doc-section doc-section-notes anchored" data-anchor-id="notes">Notes</h2>
-</section>
-<section id="performance" class="level2">
-<h2 class="anchored" data-anchor-id="performance">Performance</h2>
-<p>This function uses parallel processing to speed up computation for large datasets with many time series groups:</p>
-<p>Parallel processing has overhead and may not be faster on small datasets.</p>
-<p>To use parallel processing, set <code>threads = -1</code> to use all available processors.</p>
-</section>
-<section id="examples" class="level2 doc-section doc-section-examples">
-<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># tsfeatures comes with these features:</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tsfeatures <span class="im">import</span> (</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    acf_features, arch_stat, crossing_points,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    entropy, flat_spots, heterogeneity,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    holt_parameters, lumpiness, nonlinearity,</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    pacf_features, stl_features, stability,</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    hw_parameters, unitroot_kpss, unitroot_pp,</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    series_length, hurst</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'m4_daily'</span>, parse_dates <span class="op">=</span> [<span class="st">'date'</span>])</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Grouped DataFrame</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Feature Extraction</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>feature_df <span class="op">=</span> (</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'id'</span>)</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        .ts_features(</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>            date_column   <span class="op">=</span> <span class="st">'date'</span>,</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>            value_column  <span class="op">=</span> <span class="st">'value'</span>,</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>            features      <span class="op">=</span> [acf_features, hurst],</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>            freq          <span class="op">=</span> <span class="dv">7</span>,</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>            threads       <span class="op">=</span> <span class="dv">1</span>,</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>            show_progress <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>feature_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"1b3f0896ca3a401696e84f9174ea6894","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">id</th>
-<th data-quarto-table-cell-role="th">hurst</th>
-<th data-quarto-table-cell-role="th">x_acf1</th>
-<th data-quarto-table-cell-role="th">x_acf10</th>
-<th data-quarto-table-cell-role="th">diff1_acf1</th>
-<th data-quarto-table-cell-role="th">diff1_acf10</th>
-<th data-quarto-table-cell-role="th">diff2_acf1</th>
-<th data-quarto-table-cell-role="th">diff2_acf10</th>
-<th data-quarto-table-cell-role="th">seas_acf1</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>D10</td>
-<td>0.966295</td>
-<td>0.984991</td>
-<td>8.366800</td>
-<td>0.002487</td>
-<td>0.020569</td>
-<td>-0.517569</td>
-<td>0.293474</td>
-<td>0.889696</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>D160</td>
-<td>NaN</td>
-<td>0.999208</td>
-<td>9.913240</td>
-<td>0.025369</td>
-<td>0.012643</td>
-<td>-0.473298</td>
-<td>0.246242</td>
-<td>0.994513</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>D410</td>
-<td>1.005350</td>
-<td>0.993756</td>
-<td>9.314835</td>
-<td>0.102720</td>
-<td>0.032648</td>
-<td>-0.437454</td>
-<td>0.256661</td>
-<td>0.956028</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>D500</td>
-<td>0.926306</td>
-<td>0.998401</td>
-<td>9.839732</td>
-<td>0.004199</td>
-<td>0.005579</td>
-<td>-0.488000</td>
-<td>0.241043</td>
-<td>0.989937</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Polars DataFrame using the tk accessor</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tsfeatures <span class="im">import</span> acf_features, hurst</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>sample <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"date"</span>: pd.date_range(start<span class="op">=</span><span class="st">"2020-01-01"</span>, periods<span class="op">=</span><span class="dv">10</span>, freq<span class="op">=</span><span class="st">"D"</span>),</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"value"</span>: <span class="bu">range</span>(<span class="dv">10</span>),</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>pl_df <span class="op">=</span> pl.from_pandas(sample)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>pl_df.tk.ts_features(</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    value_column<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    features<span class="op">=</span>[acf_features, hurst],</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    show_progress<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<div><style>
-.dataframe > thead > tr,
-.dataframe > tbody > tr {
-  text-align: right;
-  white-space: pre-wrap;
-}
-</style>
-<small>shape: (1, 7)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th">hurst</th>
-<th data-quarto-table-cell-role="th">x_acf1</th>
-<th data-quarto-table-cell-role="th">x_acf10</th>
-<th data-quarto-table-cell-role="th">diff1_acf1</th>
-<th data-quarto-table-cell-role="th">diff1_acf10</th>
-<th data-quarto-table-cell-role="th">diff2_acf1</th>
-<th data-quarto-table-cell-role="th">diff2_acf10</th>
-</tr>
-<tr class="odd">
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-<th>f64</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>0.9506</td>
-<td>0.7</td>
-<td>null</td>
-<td>null</td>
-<td>null</td>
-<td>null</td>
-<td>null</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
+<p>*Rolling risk metrics GPU support today covers Sharpe, Sortino, Treynor, Information, Omega, volatility, skewness, and kurtosis.</p>
+<p>Future releases will incrementally replace these bottlenecks with GPU-compatible implementations. Until then, GPU components remain entirely optional and safe to omit.</p>
 
 
 </section>
 
 </main> <!-- /main -->
-<script type="application/vnd.jupyter.widget-state+json">
-{"state":{"1b3f0896ca3a401696e84f9174ea6894":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HBoxModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HBoxModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HBoxView","box_style":"","children":["IPY_MODEL_49d6fabf62dd4aeb860f417c966f3f02","IPY_MODEL_690e720fdf294d6d9b92cc91d6c14cd0","IPY_MODEL_8526148addbc42f98ea63c9f4bf87d2d"],"layout":"IPY_MODEL_641af6c034124882ba72846f764cd471","tabbable":null,"tooltip":null}},"444cf499a2794b86b6dce145b493d81e":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"49d6fabf62dd4aeb860f417c966f3f02":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_cfc253049bc646079f97fecef33bd2e6","placeholder":"​","style":"IPY_MODEL_cab9f418ff7f49529b3f70e80b5ba2b5","tabbable":null,"tooltip":null,"value":"TS Featurizing...: 100%"}},"4c7424f7fe5e448baf946f0a54de4fd3":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":null,"description_width":""}},"6227dcd6e1fc4088b309667ae9332e23":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"641af6c034124882ba72846f764cd471":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"690e720fdf294d6d9b92cc91d6c14cd0":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"success","description":"","description_allow_html":false,"layout":"IPY_MODEL_af8a7fba992f40f59ef6ce9d1b97a085","max":4,"min":0,"orientation":"horizontal","style":"IPY_MODEL_4c7424f7fe5e448baf946f0a54de4fd3","tabbable":null,"tooltip":null,"value":4}},"8526148addbc42f98ea63c9f4bf87d2d":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_6227dcd6e1fc4088b309667ae9332e23","placeholder":"​","style":"IPY_MODEL_444cf499a2794b86b6dce145b493d81e","tabbable":null,"tooltip":null,"value":" 4/4 [00:00&lt;00:00, 42.46it/s]"}},"af8a7fba992f40f59ef6ce9d1b97a085":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"cab9f418ff7f49529b3f70e80b5ba2b5":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"cfc253049bc646079f97fecef33bd2e6":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}}},"version_major":2,"version_minor":0}
-</script>
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -1077,6 +950,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../production/01_feature_store.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Feature Store &amp; Caching (Beta)</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../performance/01_speed_comparisons.html" class="pagination-link">
+        <span class="nav-page-text">Speed Comparisons</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
 
 
