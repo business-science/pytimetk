@@ -15,6 +15,11 @@ from pytimetk.utils.dataframe_ops import (
     restore_output_type,
 )
 
+try:  # Optional cudf dependency
+    import cudf  # type: ignore
+except ImportError:  # pragma: no cover - cudf optional
+    cudf = None  # type: ignore
+
 
 # Function ----
 @pf.register_groupby_method
@@ -55,7 +60,7 @@ def filter_by_time(
         `start_date`.
         Default: 'end', which will filter until the latest date in the data.
     engine : str, default = 'pandas'
-        Computation engine. Use ``'pandas'`` or ``'polars'``. The special value ``'auto'``
+        Computation engine. Use ``'pandas'``, ``'polars'``, or ``'cudf'``. The special value ``'auto'``
         infers the engine from the input data.
 
     Returns
@@ -204,6 +209,12 @@ def filter_by_time(
     check_date_column(data, date_column)
 
     engine_resolved = normalize_engine(engine, data)
+
+    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError(
+            "cudf is required for engine='cudf', but it is not installed."
+        )
+
     conversion = convert_to_engine(data, engine_resolved)
     prepared = conversion.data
 
@@ -214,13 +225,22 @@ def filter_by_time(
             start_date=start_date,
             end_date=end_date,
         )
-    else:
+    elif engine_resolved == "polars":
         result = _filter_by_time_polars(
             prepared,
             date_column=date_column,
             start_date=start_date,
             end_date=end_date,
         )
+    elif engine_resolved == "cudf":
+        result = _filter_by_time_cudf(
+            prepared,
+            date_column=date_column,
+            start_date=start_date,
+            end_date=end_date,
+        )
+    else:
+        raise ValueError("Invalid engine. Use 'pandas', 'polars', or 'cudf'.")
 
     if engine_resolved == "polars" and conversion.original_kind in (
         "pandas_df",
@@ -306,6 +326,45 @@ def _filter_by_time_polars(
     )
 
     return filtered
+
+
+def _filter_by_time_cudf(
+    data: Union["cudf.DataFrame", "cudf.core.groupby.groupby.DataFrameGroupBy"],
+    date_column: str,
+    start_date: str,
+    end_date: str,
+) -> "cudf.DataFrame":
+    if cudf is None:  # pragma: no cover - optional dependency
+        raise ImportError("cudf is required to execute the cudf filter_by_time backend.")
+
+    if hasattr(data, "obj"):
+        df = data.obj.copy(deep=True)
+    else:
+        df = data.copy(deep=True)
+
+    if date_column not in df.columns:
+        raise KeyError(f"{date_column} not found in DataFrame")
+
+    df[date_column] = cudf.to_datetime(df[date_column])
+
+    if start_date == "start":
+        start_value = df[date_column].min()
+        start_value = start_value.to_pandas() if hasattr(start_value, "to_pandas") else start_value
+    else:
+        start_value = pd.to_datetime(start_date)
+
+    if end_date == "end":
+        end_value = df[date_column].max()
+        end_value = end_value.to_pandas() if hasattr(end_value, "to_pandas") else end_value
+    else:
+        end_value = parse_end_date(end_date)
+
+    mask = (df[date_column] >= pd.to_datetime(start_value)) & (
+        df[date_column] <= pd.to_datetime(end_value)
+    )
+    filtered_df = df.loc[mask]
+
+    return filtered_df
 
 
 # Utilities ----
