@@ -24,7 +24,7 @@ DataFrame and GroupBy objects.
 | date_column | str                                    | The name of the column in `data` that contains date information. This column is used for filtering the data based on the date range.                                                                                             | _required_   |
 | start_date  | str                                    | The start date of the filtering range. The format of the date can be YYYY, YYYY-MM, YYYY-MM-DD, YYYY-MM-DD HH, YYYY-MM-DD HH:SS, or YYYY-MM-DD HH:MM:SS. Default: 'start', which will filter from the earliest date in the data. | `'start'`    |
 | end_date    | str                                    | The end date of the filtering range. It supports the same formats as `start_date`. Default: 'end', which will filter until the latest date in the data.                                                                          | `'end'`      |
-| engine      | str                                    | Computation engine. Use ``'pandas'`` or ``'polars'``. The special value ``'auto'`` infers the engine from the input data.                                                                                                        | `= 'pandas'` |
+| engine      | str                                    | Computation engine. Use ``'pandas'``, ``'polars'``, or ``'cudf'``. The special value ``'auto'`` infers the engine from the input data.                                                                                           | `= 'pandas'` |
 
 ## Returns {.doc-section .doc-section-returns}
 

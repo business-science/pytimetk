@@ -26,7 +26,7 @@ Calculate MACD for a given financial instrument using either pandas or polars en
 | slow_period   | int                                    | Number of periods for the slow EMA in MACD calculation.                       | `26`       |
 | signal_period | int                                    | Number of periods for the signal line EMA in MACD calculation.                | `9`        |
 | reduce_memory | bool                                   | Whether to reduce memory usage of the data before performing the calculation. | `False`    |
-| engine        | (auto, pandas, polars)                 | Computation engine to use. Defaults to infer from the input data type.        | `"auto"`   |
+| engine        | (auto, pandas, polars, cudf)           | Computation engine to use. Defaults to infer from the input data type.        | `"auto"`   |
 
 ## Returns {.doc-section .doc-section-returns}
 

@@ -48,6 +48,52 @@ result = (
 )
 ```
 
+The examples below illustrate how to use GPU acceleration in practice. They are
+provided as reference snippets and are not executed as part of the documentation
+build (notice the ``eval=FALSE`` flag).
+
+## Example: accelerating `augment_rsi`
+
+```python
+import polars as pl
+import pytimetk as tk
+
+df = tk.load_dataset("stocks_daily", parse_dates=["date"])
+
+result = (
+    pl.from_pandas(df.query("symbol == 'AAPL'"))
+    .lazy()
+    .tk.augment_rsi(
+        date_column="date",
+        close_column="close",
+        periods=[14, 28],
+    )
+    .collect(engine="gpu")
+)
+```
+
+## Example: accelerating a Polars expression pipeline
+
+```python
+import polars as pl
+import pytimetk as tk
+
+df = tk.load_dataset("stocks_daily", parse_dates=["date"])
+
+pipe = (
+    pl.from_pandas(df)
+    .lazy()
+    .filter(pl.col("symbol") == "AAPL")
+    .group_by("symbol")
+    .agg(
+        pl.col("close").sort_by("date").alias("close"),
+        pl.col("date").sort().alias("date"),
+    )
+)
+
+result = pipe.collect(engine="gpu")
+```
+
 ## 3. Enable `cudf.pandas` (optional)
 
 To accelerate compatible pandas workloads, install RAPIDS and opt-in to

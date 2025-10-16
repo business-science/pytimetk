@@ -306,6 +306,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
  <span class="menu-text">Feature Store &amp; Caching (Beta)</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../production/02_gpu_acceleration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GPU Acceleration</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -474,7 +480,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="even">
 <td>engine</td>
-<td>(pandas, polars, auto)</td>
+<td>(pandas, polars, cudf, auto)</td>
 <td>Execution engine. <code>"pandas"</code> (default) performs the computation using pandas. <code>"polars"</code> converts the result to a polars DataFrame on return. <code>"auto"</code> infers the engine from the input data.</td>
 <td><code>"pandas"</code></td>
 </tr>

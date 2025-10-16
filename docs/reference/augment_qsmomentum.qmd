@@ -26,7 +26,7 @@ Calculate Quant Science Momentum (QSM) for pandas or polars inputs.
 | roc_slow_period | int, tuple, or list                    | Lookback window(s) for the slow ROC component.                                                                                             | `252`      |
 | returns_period  | int, tuple, or list                    | Lookback window(s) used when calculating the rolling standard deviation of returns.                                                        | `126`      |
 | reduce_memory   | bool                                   | Attempt to reduce memory usage when operating on pandas data. If a polars input is supplied a warning is emitted and no conversion occurs. | `False`    |
-| engine          | (auto, pandas, polars)                 | Execution engine. ``"auto"`` (default) infers the backend from the input data while allowing explicit overrides.                           | `"auto"`   |
+| engine          | (auto, pandas, polars, cudf)           | Execution engine. ``"auto"`` (default) infers the backend from the input data while allowing explicit overrides.                           | `"auto"`   |
 
 ## Returns {.doc-section .doc-section-returns}
 

@@ -306,6 +306,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
  <span class="menu-text">Feature Store &amp; Caching (Beta)</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../production/02_gpu_acceleration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GPU Acceleration</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -479,8 +485,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="odd">
 <td>engine</td>
-<td>(auto, pandas, polars)</td>
-<td>Execution engine. When “auto” (default) the backend is inferred from the input data type. Use “pandas” or “polars” to force a specific backend.</td>
+<td>(auto, pandas, polars, cudf)</td>
+<td>Execution engine. When “auto” (default) the backend is inferred from the input data type. Use “pandas”, “polars”, or “cudf” to force a specific backend.</td>
 <td><code>"auto"</code></td>
 </tr>
 </tbody>
