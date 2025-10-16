@@ -6,17 +6,96 @@ toc-depth: 3
 number-sections: false
 ---
 
+# pytimetk 2.1.0
+
+## Release Summary
+
+pytimetk 2.1.0 introduces **GPU acceleration (Beta)** powered by NVIDIA RAPIDS. Feature engineering helpers and Polars lazy pipelines now tap the GPU when `cudf` and `polars[gpu]` are installed, while remaining fully backward compatible with CPU-only environments.
+
+### GPU Acceleration (Beta)
+
+- Optional install via `pip install pytimetk[gpu] --extra-index-url=https://pypi.nvidia.com` plus `pip install "polars[gpu]" --extra-index-url=https://pypi.nvidia.com`.
+- Automatic CPU fallback whenever the GPU engine is unavailable or a plan is not supported, so existing notebooks keep running.
+- Runtime helpers in `pytimetk.utils.gpu_support` (`is_cudf_available()`, `is_polars_gpu_available()`) make it easy to validate the environment.
+
+### Documentation & Examples
+
+- New GPU Acceleration guide (`production/02_gpu_acceleration.html`) walks through setup, verification, and sample pipelines.
+- Fresh examples show GPU-accelerated workflows for `augment_rolling`, financial indicators (RSI/MACD), and Polars lazy frames.
+- Polars lazy execution improvements reduce overhead when collecting on the GPU.
+
+### Performance Highlights
+
+- Rolling window statistics receive 10–100× speed-ups on large datasets with the Polars GPU engine.
+- Financial indicators such as RSI and MACD benchmark 5–50× faster on compatible hardware.
+
+### Compatibility & Known Issues
+
+- GPU support is opt-in and retains CPU fallbacks for unsupported functions (e.g., custom Python callbacks, expression-incompatible pipelines).
+- Multi-GPU deployments remain experimental and will be documented in future iterations.
+
+**Full Changelog:** <https://github.com/business-science/pytimetk/compare/v2.0.1...v2.1.0>
+
+# pytimetk 2.0.1
+
+## Improvements
+
+- `augment_spline()` now validates both `date_column` and `value_column`, sorts data by date before generating spline bases, and restores the original row order once features are added for both pandas and Polars engines.
+
+**Full Changelog:** <https://github.com/business-science/pytimetk/compare/v2.0.0...v2.0.1>
+
 # pytimetk 2.0.0
 
 ## Highlights
 
-- Introduced **Feature Store & Caching (Beta)** to persist expensive feature engineering steps and reload them on demand. The API and on-disk format may evolve before general availability—please share feedback so we can stabilize it quickly.
+- First-class Polars support via a `.tk` accessor spanning core helpers, feature engineering, and plotting routines.
+- Introduced **Feature Store & Caching (Beta)** to persist expensive feature engineering steps and reload them on demand. Optional MLflow integration keeps feature lineage tied to experiments.
+- Added `augment_spline()` for spline basis expansions alongside broader financial indicator coverage.
+- Major documentation refresh, including Polars-first examples and a new clustering tutorial.
 
-# pytimetk 1.2.3.9000
+## New Features
+
+### Polars `.tk` Accessor
+- Access pytimetk helpers directly on `pl.DataFrame` objects (`df.tk.plot_timeseries(...)`, `df.tk.augment_timeseries_signature(...)`) with performance parity to pandas paths.
+- Financial indicators (ADX, ATR, BBands, CMO, MACD, PPO, ROC, RSI, stochastic oscillator, etc.) now ship with Polars implementations.
+
+### Feature Store & Caching (Beta)
+- Register transforms once and rebuild feature sets on-demand with automatic versioning and metadata.
+- Supports local paths or any `pyarrow.fs` (e.g., S3), plus optional MLflow artifact logging.
+
+### Spline Basis Expansions
+- `augment_spline()` creates spline features for modeling non-linear trends (B-splines, natural splines) across pandas and Polars engines.
 
 ## Improvements
 
-- Documentation: Ruff formatting
+- Upgraded `pandas_flavor`, refactored tests, and resolved deprecations across anomalize and Hilbert pipelines.
+- Enhanced Polars compatibility for diffs, pct change, lags/leads, risk metrics, and plotting helpers.
+- Documentation updates covering Feature Store, spline usage, and new tutorials.
+
+## Bug Fixes
+
+- Resolved Plotly x-axis date labeling and multiple Polars interoperability gaps (sequence helpers, summarize/filter utilities, EWM args).
+- Stabilized GitHub Actions with refreshed dependency matrix.
+
+**Full Changelog:** <https://github.com/business-science/pytimetk/compare/v1.2.5...v2.0.0>
+
+# pytimetk 1.2.5
+
+## Bug Fixes
+
+- Polars backends now supply both `partition_by` and `order_by` when building window expressions with `.over()`, resolving runtime errors on recent Polars releases.
+
+**Full Changelog:** <https://github.com/business-science/pytimetk/compare/v1.2.4...v1.2.5>
+
+# pytimetk 1.2.4
+
+## Improvements
+
+- Fixed a regression in QS Momentum calculations when using the 21-126-126 configuration.
+- Added a `point_color` argument to `plot_correlation_funnel()` for finer-grained styling.
+
+**Full Changelog:** <https://github.com/business-science/pytimetk/compare/v1.2.3...v1.2.4>
+
 
 # pytimetk 1.2.3
 
