@@ -19,6 +19,7 @@ from pytimetk.utils.checks import (
     check_date_column,
     check_value_column,
 )
+from pytimetk.utils.dataframe_ops import resolve_pandas_groupby_frame
 
 
 @pf.register_groupby_method
@@ -479,7 +480,7 @@ def plot_timeseries(
     # Handle DataFrames and GroupBy objects
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        data = data.obj.copy()
+        data = resolve_pandas_groupby_frame(data).copy()
     elif isinstance(data, pd.DataFrame):
         data = data.copy()
     else:

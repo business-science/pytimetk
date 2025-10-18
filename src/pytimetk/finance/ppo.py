@@ -22,6 +22,7 @@ from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
     ensure_row_id_column,
     normalize_engine,
+    resolve_pandas_groupby_frame,
     resolve_polars_group_columns,
     restore_output_type,
     conversion_to_pandas,
@@ -263,7 +264,7 @@ def _augment_ppo_pandas(
 ) -> pd.DataFrame:
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        base_df = data.obj.copy()
+        base_df = resolve_pandas_groupby_frame(data).copy()
 
         base_df = base_df.groupby(group_names, group_keys=False).apply(
             lambda x: _calculate_ppo_pandas(x, close_column, fast_period, slow_period)

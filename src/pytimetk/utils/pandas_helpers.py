@@ -4,6 +4,7 @@ import polars as pl
 import re
 
 from pytimetk.utils.checks import check_dataframe_or_groupby
+from pytimetk.utils.dataframe_ops import resolve_pandas_groupby_frame
 
 from typing import Union, List, Callable
 
@@ -177,7 +178,7 @@ def sort_dataframe(
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        df = data.obj.copy()
+        df = resolve_pandas_groupby_frame(data).copy()
         df.sort_values(by=[*group_names, date_column], inplace=True)
         index_after_sort = df.index
         if keep_grouped_df:
@@ -210,7 +211,7 @@ def drop_zero_variance(
     check_dataframe_or_groupby(data)
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        data = data.obj
+        data = resolve_pandas_groupby_frame(data)
 
     df = data.copy()
 
@@ -258,7 +259,7 @@ def transform_columns(
     check_dataframe_or_groupby(data)
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        data = data.obj
+        data = resolve_pandas_groupby_frame(data)
 
     df = data.copy()
 

@@ -12,6 +12,7 @@ from pytimetk.utils.dataframe_ops import (
     normalize_engine,
     restore_output_type,
     conversion_to_pandas,
+    resolve_pandas_groupby_frame,
 )
 
 try:  # Optional cudf dependency
@@ -265,7 +266,7 @@ def _pad_by_time_pandas(
         return padded_df
 
     group_names = data.grouper.names
-    df = data.obj.copy()
+    df = resolve_pandas_groupby_frame(data).copy()
 
     df[date_column] = pd.to_datetime(df[date_column])
     df.sort_values(by=[*group_names, date_column], inplace=True)
@@ -327,7 +328,7 @@ def _pad_by_time_cudf_dataframe(
         raise ImportError("cudf is required to execute the cudf pad_by_time backend.")
 
     if hasattr(data, "obj"):
-        df = data.obj.copy(deep=True)
+        df = resolve_pandas_groupby_frame(data).copy(deep=True)
     else:
         df = data.copy(deep=True)
 

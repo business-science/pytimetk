@@ -22,6 +22,7 @@ from pytimetk.utils.dataframe_ops import (
     normalize_engine,
     restore_output_type,
     conversion_to_pandas,
+    resolve_pandas_groupby_frame,
 )
 
 try:
@@ -270,7 +271,7 @@ def _ts_features_pandas(
         group_names = ["unique_id"]
     elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = list(data.grouper.names)
-        df = data.obj.copy()
+        df = resolve_pandas_groupby_frame(data).copy()
         df.sort_values(by=[*group_names, date_column], inplace=True)
         df = df[[*group_names, date_column, value_column]]
     else:

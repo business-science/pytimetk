@@ -22,6 +22,7 @@ from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
     ensure_row_id_column,
     normalize_engine,
+    resolve_pandas_groupby_frame,
     resolve_polars_group_columns,
     restore_output_type,
 )
@@ -221,7 +222,7 @@ def _augment_lags_pandas(
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         # Get the group names and original ungrouped data
         group_names = data.grouper.names
-        data = data.obj
+        data = resolve_pandas_groupby_frame(data)
 
         df = data.copy()
 
@@ -288,7 +289,7 @@ def _augment_lags_cudf(
     lags = _normalize_shift_values(lags, label="lags")
 
     if CudfDataFrameGroupBy is not None and isinstance(data, CudfDataFrameGroupBy):
-        frame = data.obj.copy(deep=True)
+        frame = resolve_pandas_groupby_frame(data).copy(deep=True)
         resolved_groups: Sequence[str] = list(group_columns) if group_columns else []
     else:
         frame = data.copy(deep=True)  # type: ignore[assignment]

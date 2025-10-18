@@ -31,7 +31,7 @@ import polars as pl
 
 import pyarrow.fs as pa_fs
 
-from pytimetk.utils.dataframe_ops import identify_frame_kind
+from pytimetk.utils.dataframe_ops import identify_frame_kind, resolve_pandas_groupby_frame
 
 _FEATURE_STORE_BETA_MESSAGE = (
     "Feature Store & Caching is currently in beta. APIs and storage formats may change before general availability."
@@ -723,7 +723,7 @@ def _package_versions() -> Dict[str, str]:
 
 def _dataframe_fingerprint(data: Union[pd.DataFrame, pl.DataFrame]) -> str:
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        pandas_df = data.obj
+        pandas_df = resolve_pandas_groupby_frame(data)
     elif isinstance(data, pd.DataFrame):
         pandas_df = data
     elif isinstance(data, pl.dataframe.group_by.GroupBy):

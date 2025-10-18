@@ -13,6 +13,7 @@ from pytimetk.utils.dataframe_ops import (
     normalize_engine,
     restore_output_type,
     FrameConversion,
+    resolve_pandas_groupby_frame,
 )
 
 
@@ -244,7 +245,7 @@ def _apply_by_time_pandas(
         if isinstance(data, pd.DataFrame):
             data = reduce_memory_usage(data)
         else:
-            data = data.obj.copy()
+            data = resolve_pandas_groupby_frame(data).copy()
             data = reduce_memory_usage(data)
             data = data.groupby(prepared.grouper.names)
 
@@ -254,7 +255,7 @@ def _apply_by_time_pandas(
     else:
         group_names = list(data.grouper.names)
         if date_column not in group_names:
-            data = data.obj.set_index(date_column).groupby(group_names)
+            data = resolve_pandas_groupby_frame(data).set_index(date_column).groupby(group_names)
 
     grouped = data.resample(rule=freq, kind="timestamp")
 

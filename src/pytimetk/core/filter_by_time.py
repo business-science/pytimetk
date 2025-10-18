@@ -13,6 +13,7 @@ from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
     normalize_engine,
     restore_output_type,
+    resolve_pandas_groupby_frame,
 )
 
 try:  # Optional cudf dependency
@@ -259,7 +260,7 @@ def _filter_by_time_pandas(
     end_date: str,
 ):
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        data = data.obj
+        data = resolve_pandas_groupby_frame(data)
 
     df = data.copy()
     df[date_column] = pd.to_datetime(df[date_column])

@@ -31,6 +31,7 @@ from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
     ensure_row_id_column,
     normalize_engine,
+    resolve_pandas_groupby_frame,
     resolve_polars_group_columns,
     restore_output_type,
     conversion_to_pandas,
@@ -266,7 +267,7 @@ def augment_rolling(
 
     if engine_resolved == "pandas":
         if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
-            original_index = prepared_data.obj.index.copy()
+            original_index = resolve_pandas_groupby_frame(prepared_data).index.copy()
         else:
             original_index = prepared_data.index.copy()
 
@@ -530,7 +531,11 @@ def _augment_rolling_pandas(
     **kwargs,
 ) -> pd.DataFrame:
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
+    data_copy = (
+        data.copy()
+        if isinstance(data, pd.DataFrame)
+        else resolve_pandas_groupby_frame(data).copy()
+    )
 
     # Group data if it's a GroupBy object; otherwise, prepare it for the rolling calculations
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):

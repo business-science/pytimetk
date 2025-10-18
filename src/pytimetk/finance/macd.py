@@ -21,6 +21,7 @@ from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
     ensure_row_id_column,
     normalize_engine,
+    resolve_pandas_groupby_frame,
     resolve_polars_group_columns,
     restore_output_type,
     conversion_to_pandas,
@@ -251,7 +252,7 @@ def _augment_macd_pandas(
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         # If data is a GroupBy object, apply MACD calculation for each group
         group_names = data.grouper.names
-        data = data.obj
+        data = resolve_pandas_groupby_frame(data)
 
         df = data.copy()
 

@@ -20,6 +20,7 @@ from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
     normalize_engine,
     restore_output_type,
+    resolve_pandas_groupby_frame,
 )
 
 try:  # Optional cudf dependency
@@ -324,7 +325,7 @@ def _summarize_by_time_pandas(
     group_names = None
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        data = data.obj.set_index(date_column).groupby(group_names)
+        data = resolve_pandas_groupby_frame(data).set_index(date_column).groupby(group_names)
 
     # Group data by the groups columns if groups is not None
     # if groups is not None:
@@ -397,7 +398,7 @@ def _summarize_by_time_cudf(
         raise ImportError("cudf is required to execute the cudf summarize_by_time backend.")
 
     if hasattr(prepared, "obj"):
-        df = prepared.obj.copy(deep=True)
+        df = resolve_pandas_groupby_frame(prepared).copy(deep=True)
     else:
         df = prepared.copy(deep=True)
 

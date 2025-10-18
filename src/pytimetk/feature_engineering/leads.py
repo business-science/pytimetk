@@ -22,6 +22,7 @@ from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
     ensure_row_id_column,
     normalize_engine,
+    resolve_pandas_groupby_frame,
     resolve_polars_group_columns,
     restore_output_type,
 )
@@ -153,7 +154,7 @@ def _augment_leads_pandas(
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        base_df = data.obj.copy()
+        base_df = resolve_pandas_groupby_frame(data).copy()
         for col in value_column:
             for lead in leads:
                 base_df[f"{col}_lead_{lead}"] = base_df.groupby(group_names)[col].shift(
@@ -220,7 +221,7 @@ def _augment_leads_cudf(
     leads = _normalize_shift_values(leads, label="leads")
 
     if CudfDataFrameGroupBy is not None and isinstance(data, CudfDataFrameGroupBy):
-        frame = data.obj.copy(deep=True)
+        frame = resolve_pandas_groupby_frame(data).copy(deep=True)
         resolved_groups: Sequence[str] = list(group_columns) if group_columns else []
     else:
         frame = data.copy(deep=True)  # type: ignore[assignment]

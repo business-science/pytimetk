@@ -18,6 +18,7 @@ from pytimetk.utils.dataframe_ops import (
     normalize_engine,
     restore_output_type,
     conversion_to_pandas,
+    resolve_pandas_groupby_frame,
 )
 
 try:  # Optional cudf dependency
@@ -401,7 +402,8 @@ def _future_frame_pandas(
         future_dates_df = pd.concat(future_dates_list, axis=0).reset_index(drop=True)
 
         if bind_data:
-            extended_df = pd.concat([grouped.obj, future_dates_df], axis=0).reset_index(
+            grouped_df = resolve_pandas_groupby_frame(grouped)
+            extended_df = pd.concat([grouped_df, future_dates_df], axis=0).reset_index(
                 drop=True
             )
         else:

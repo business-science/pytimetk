@@ -10,6 +10,7 @@ from pytimetk.utils.dataframe_ops import (
     normalize_engine,
     restore_output_type,
     conversion_to_pandas,
+    resolve_pandas_groupby_frame,
 )
 
 
@@ -178,7 +179,7 @@ def _binarize_pandas(
     one_hot: bool,
 ) -> pd.DataFrame:
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        frame = data.obj.copy()
+        frame = resolve_pandas_groupby_frame(data).copy()
     elif isinstance(data, pd.DataFrame):
         frame = data.copy()
     else:
@@ -387,7 +388,7 @@ def _correlate_pandas(
     method: str,
 ) -> pd.DataFrame:
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        frame = data.obj.copy()
+        frame = resolve_pandas_groupby_frame(data).copy()
     elif isinstance(data, pd.DataFrame):
         frame = data.copy()
     else:

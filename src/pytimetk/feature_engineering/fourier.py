@@ -18,6 +18,7 @@ from pytimetk.utils.dataframe_ops import (
     FrameConversion,
     convert_to_engine,
     normalize_engine,
+    resolve_pandas_groupby_frame,
     restore_output_type,
 )
 
@@ -168,7 +169,7 @@ def augment_fourier(
     sorted_data, _ = sort_dataframe(prepared_data, date_column, keep_grouped_df=True)
 
     if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
-        base_df = prepared_data.obj.copy()
+        base_df = resolve_pandas_groupby_frame(prepared_data).copy()
     else:
         base_df = prepared_data.copy()
 

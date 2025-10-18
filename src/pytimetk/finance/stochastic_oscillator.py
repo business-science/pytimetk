@@ -22,6 +22,7 @@ from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
     ensure_row_id_column,
     normalize_engine,
+    resolve_pandas_groupby_frame,
     resolve_polars_group_columns,
     restore_output_type,
     conversion_to_pandas,
@@ -302,7 +303,7 @@ def _augment_stochastic_pandas(
         grouped = None
     elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         grouped = data.grouper.names
-        df = data.obj.copy()
+        df = resolve_pandas_groupby_frame(data).copy()
     else:
         raise TypeError("Unsupported data type passed to _augment_stochastic_pandas.")
 

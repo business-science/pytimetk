@@ -21,6 +21,7 @@ from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
     ensure_row_id_column,
     normalize_engine,
+    resolve_pandas_groupby_frame,
     resolve_polars_group_columns,
     restore_output_type,
     conversion_to_pandas,
@@ -213,7 +214,7 @@ def _augment_rsi_pandas(
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        base_df = data.obj.copy()
+        base_df = resolve_pandas_groupby_frame(data).copy()
 
         for col in close_columns:
             for period in periods:

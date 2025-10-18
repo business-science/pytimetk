@@ -19,6 +19,7 @@ from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
     ensure_row_id_column,
     normalize_engine,
+    resolve_pandas_groupby_frame,
     resolve_polars_group_columns,
     restore_output_type,
     conversion_to_pandas,
@@ -301,7 +302,7 @@ def _augment_rolling_risk_metrics_pandas(
         group_names = None
     elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        df = data.obj.copy()
+        df = resolve_pandas_groupby_frame(data).copy()
 
     col = close_column
     # Calculate log returns only if needed by selected metrics

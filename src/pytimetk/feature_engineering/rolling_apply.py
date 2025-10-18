@@ -16,6 +16,7 @@ from pytimetk.utils.dataframe_ops import (
     FrameConversion,
     convert_to_engine,
     normalize_engine,
+    resolve_pandas_groupby_frame,
     restore_output_type,
 )
 
@@ -218,7 +219,7 @@ def augment_rolling_apply(
     data_copy = (
         prepared_data.copy()
         if isinstance(prepared_data, pd.DataFrame)
-        else prepared_data.obj.copy()
+        else resolve_pandas_groupby_frame(prepared_data).copy()
     )
 
     original_index = data_copy.index

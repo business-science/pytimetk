@@ -17,6 +17,7 @@ from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
     ensure_row_id_column,
     normalize_engine,
+    resolve_pandas_groupby_frame,
     restore_output_type,
 )
 
@@ -255,7 +256,7 @@ def _augment_spline_pandas(
 ) -> pd.DataFrame:
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = list(data.grouper.names)
-        base_df = data.obj.copy()
+        base_df = resolve_pandas_groupby_frame(data).copy()
         grouped = base_df.groupby(group_names, sort=False)
         augmented = [
             _augment_spline_frame(

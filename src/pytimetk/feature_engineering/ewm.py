@@ -21,6 +21,7 @@ from pytimetk.utils.dataframe_ops import (
     FrameConversion,
     convert_to_engine,
     normalize_engine,
+    resolve_pandas_groupby_frame,
     restore_output_type,
     conversion_to_pandas,
 )
@@ -258,7 +259,7 @@ def _augment_ewm_pandas(
     )
     window_funcs = [window_func] if isinstance(window_func, str) else list(window_func)
 
-    data_copy = data.copy() if isinstance(data, pd.DataFrame) else data.obj.copy()
+    data_copy = data.copy() if isinstance(data, pd.DataFrame) else resolve_pandas_groupby_frame(data).copy()
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names

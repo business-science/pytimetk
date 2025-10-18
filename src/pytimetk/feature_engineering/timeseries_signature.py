@@ -150,7 +150,7 @@ def augment_timeseries_signature(
     prepared_data = conversion.data
 
     if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
-        base_df = prepared_data.obj.copy()
+        base_df = resolve_pandas_groupby_frame(prepared_data).copy()
     else:
         base_df = prepared_data.copy()
 

@@ -1,7 +1,7 @@
-import pandas as pd
 import numpy as np
 import polars as pl
 
+import pandas as pd
 from importlib.metadata import distribution, PackageNotFoundError
 
 from typing import Union, List, Iterable
@@ -13,12 +13,14 @@ except ImportError:  # pragma: no cover - cudf optional
     cudf = None  # type: ignore
     CudfDataFrameGroupBy = None  # type: ignore
 
+from pytimetk.utils.dataframe_ops import resolve_pandas_groupby_frame
+
 
 def check_anomalize_data(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
 ) -> None:
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        data = data.obj
+        data = resolve_pandas_groupby_frame(data)
 
     expected_colnames = [
         "observed",
@@ -81,7 +83,7 @@ def check_dataframe_or_groupby(
     check_data_type(
         data,
         authorized_dtypes=list(authorized),
-        error_str="`data` is not a pandas/polars/cudf DataFrame, GroupBy, or LazyFrame.",
+        error_str="`data` is not a Pandas DataFrame or GroupBy object.",
     )
 
 
@@ -116,7 +118,7 @@ def check_date_column(
     date_column: str,
 ) -> None:
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        frame = data.obj
+        frame = resolve_pandas_groupby_frame(data)
         dtype = frame[date_column].dtype if date_column in frame.columns else None
         if dtype is None:
             raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
@@ -175,7 +177,7 @@ def check_date_column(
         return None
 
     if cudf is not None and CudfDataFrameGroupBy is not None and isinstance(data, CudfDataFrameGroupBy):
-        frame = data.obj
+        frame = resolve_pandas_groupby_frame(data)
         if date_column not in frame.columns:
             raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
         dtype = frame[date_column].dtype
@@ -218,7 +220,7 @@ def check_value_column(
         value_column = [value_column]
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        frame = data.obj
+        frame = resolve_pandas_groupby_frame(data)
         _check_columns_pandas(frame, value_column, require_numeric_dtype)
         return None
 
@@ -240,7 +242,7 @@ def check_value_column(
         return None
 
     if cudf is not None and CudfDataFrameGroupBy is not None and isinstance(data, CudfDataFrameGroupBy):
-        frame = data.obj
+        frame = resolve_pandas_groupby_frame(data)
         _check_columns_cudf(frame, value_column, require_numeric_dtype)
         return None
 

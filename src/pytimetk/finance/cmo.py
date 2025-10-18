@@ -21,6 +21,7 @@ from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
     ensure_row_id_column,
     normalize_engine,
+    resolve_pandas_groupby_frame,
     resolve_polars_group_columns,
     restore_output_type,
     conversion_to_pandas,
@@ -264,7 +265,7 @@ def _augment_cmo_pandas(
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = list(data.grouper.names)
-        base_df = data.obj.copy()
+        base_df = resolve_pandas_groupby_frame(data).copy()
         for period in periods:
             base_df[f"{close_column}_cmo_{period}"] = base_df.groupby(
                 group_names, group_keys=False

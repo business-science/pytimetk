@@ -8,6 +8,7 @@ from pytimetk.utils.checks import (
     check_date_column,
     check_anomalize_data,
 )
+from pytimetk.utils.dataframe_ops import resolve_pandas_groupby_frame
 
 
 @pf.register_groupby_method
@@ -215,7 +216,7 @@ def plot_anomalies_decomp(
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        data = data.obj.copy()
+        data = resolve_pandas_groupby_frame(data).copy()
         data = data[
             [*group_names, date_column, "observed", "seasonal", "trend", "remainder"]
         ]

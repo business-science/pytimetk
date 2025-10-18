@@ -15,6 +15,104 @@ except ImportError:  # pragma: no cover - GPU support optional
 from pytimetk.utils.polars_helpers import collect_lazyframe
 
 
+def resolve_pandas_groupby_frame(
+    groupby: pd.core.groupby.generic.DataFrameGroupBy,
+) -> pd.DataFrame:
+    """
+    Retrieve the underlying pandas DataFrame backing a GroupBy object.
+
+    The pandas-accelerated cudf proxy does not guarantee the public ``obj``
+    attribute, so we look through a handful of internal hooks and gracefully
+    degrade when only cudf frames are available by converting back to pandas.
+    """
+    search_order = ("obj", "_obj_with_exclusions", "_selected_obj")
+    for attr in search_order:
+        candidate = None
+        if hasattr(groupby, "__dict__") and attr in groupby.__dict__:
+            candidate = groupby.__dict__[attr]
+        else:
+            try:
+                candidate = object.__getattribute__(groupby, attr)
+            except AttributeError:
+                continue
+            except RecursionError:
+                continue
+            except Exception:
+                continue
+
+        if candidate is None:
+            continue
+
+        if not isinstance(candidate, pd.DataFrame) and hasattr(candidate, "to_pandas"):
+            try:
+                candidate = candidate.to_pandas()
+            except Exception:
+                continue
+
+        if isinstance(candidate, pd.DataFrame):
+            return candidate
+
+    raise AttributeError(
+        "Unable to access the underlying DataFrame for the supplied GroupBy object."
+    )
+
+
+def _patch_groupby_obj_access() -> None:
+    """
+    Ensure pandas-style GroupBy objects expose an ``obj`` attribute even when
+    accelerated backends (e.g., cudf.pandas) replace the implementation.
+    """
+    groupby_cls = pd.core.groupby.generic.DataFrameGroupBy
+    if getattr(groupby_cls, "_pytimetk_obj_patched", False):
+        return
+
+    try:
+        sample = pd.DataFrame({"__tmp": [0]}).groupby("__tmp").obj
+        if isinstance(sample, pd.DataFrame):
+            groupby_cls._pytimetk_obj_patched = True
+            return
+    except AttributeError:
+        pass
+
+    def _getter(self):
+        if hasattr(self, "__dict__") and "obj" in self.__dict__:
+            candidate = self.__dict__["obj"]
+            if hasattr(candidate, "to_pandas") and not isinstance(candidate, pd.DataFrame):
+                try:
+                    candidate = candidate.to_pandas()
+                except Exception:
+                    candidate = None
+            if isinstance(candidate, pd.DataFrame):
+                return candidate
+        try:
+            candidate = object.__getattribute__(self, "_obj_with_exclusions")
+        except Exception:
+            candidate = None
+        if candidate is not None and hasattr(candidate, "to_pandas") and not isinstance(candidate, pd.DataFrame):
+            try:
+                candidate = candidate.to_pandas()
+            except Exception:
+                candidate = None
+        if isinstance(candidate, pd.DataFrame):
+            return candidate
+        raise AttributeError("Unable to access groupby obj on this proxy object.")
+
+    def _setter(self, value):
+        if hasattr(self, "__dict__"):
+            self.__dict__["obj"] = value
+        for attr in ("_selected_obj", "_obj_with_exclusions"):
+            try:
+                object.__setattr__(self, attr, value)
+            except Exception:
+                continue
+
+    groupby_cls.obj = property(_getter, _setter)  # type: ignore[attr-defined]
+    groupby_cls._pytimetk_obj_patched = True
+
+
+_patch_groupby_obj_access()
+
+
 PandasLike = Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
 PolarsLike = Union[pl.DataFrame, pl.dataframe.group_by.GroupBy]
 CudfLike = Union["cudf.DataFrame", "cudf.core.groupby.groupby.DataFrameGroupBy"]
@@ -168,7 +266,7 @@ def convert_to_engine(
                 pandas_index=pandas_index,
             )
         if original_kind == "pandas_groupby":
-            pandas_df = data.obj.copy()
+            pandas_df = resolve_pandas_groupby_frame(data).copy()
             row_id_col = _make_temp_column(pandas_df.columns)
             pandas_index = pandas_df.index.copy()
             pandas_df[row_id_col] = np.arange(len(pandas_df))
@@ -242,7 +340,7 @@ def convert_to_engine(
                 pandas_index=pandas_index,
             )
         if original_kind == "pandas_groupby":
-            pandas_df = data.obj.copy()
+            pandas_df = resolve_pandas_groupby_frame(data).copy()
             group_names = [str(col) for col in data.grouper.names]
             row_id_col = _make_temp_column(pandas_df.columns)
             pandas_index = pandas_df.index.copy()

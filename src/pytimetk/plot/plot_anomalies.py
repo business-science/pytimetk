@@ -14,6 +14,7 @@ from pytimetk.utils.checks import (
     check_anomalize_data,
 )
 from pytimetk.plot.theme import theme_timetk
+from pytimetk.utils.dataframe_ops import resolve_pandas_groupby_frame
 
 
 @pf.register_groupby_method
@@ -508,7 +509,7 @@ def _plot_anomalies_plotly(
     is_grouped = False
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        data = data.obj.copy()
+        data = resolve_pandas_groupby_frame(data).copy()
         is_grouped = True
     else:
         data = data.copy()
@@ -865,7 +866,7 @@ def _plot_anomalies_plotnine(
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
 
-        data = data.obj.copy()
+        data = resolve_pandas_groupby_frame(data).copy()
 
         if not isinstance(group_names, list):
             group_names = [group_names]

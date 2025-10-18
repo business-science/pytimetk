@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import pandas_flavor as pf
+from pytimetk.utils.dataframe_ops import resolve_pandas_groupby_frame
 
 from typing import Union
 
@@ -26,23 +27,27 @@ def reduce_memory_usage(
     """
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        frame = resolve_pandas_groupby_frame(data)
         try:
-            data.obj = _reduce_memory(data.obj, convert_string_to_categorical=True)
-        except:
+            reduced = _reduce_memory(frame, convert_string_to_categorical=True)
+        except Exception:
+            reduced = _reduce_memory(frame, convert_string_to_categorical=False)
+
+        if hasattr(data, "obj"):
             try:
-                data.obj = _reduce_memory(data.obj, convert_string_to_categorical=False)
-            except:
-                data = data
+                data.obj = reduced  # type: ignore[attr-defined]
+            except AttributeError:
+                if hasattr(data, "__dict__"):
+                    data.__dict__["obj"] = reduced  # type: ignore[index]
         return data
-    else:
+
+    if isinstance(data, pd.DataFrame):
         try:
-            data = _reduce_memory(data, convert_string_to_categorical=True)
-        except:
-            try:
-                data.obj = _reduce_memory(data.obj, convert_string_to_categorical=False)
-            except:
-                data = data
-        return data
+            return _reduce_memory(data, convert_string_to_categorical=True)
+        except Exception:
+            return _reduce_memory(data, convert_string_to_categorical=False)
+
+    raise TypeError("Unsupported data type for reduce_memory_usage")
 
 
 def _reduce_memory(
@@ -56,6 +61,9 @@ def _reduce_memory(
     for col in data.columns:
         # Get the current column dtype
         col_type = data[col].dtype
+
+        if pd.api.types.is_categorical_dtype(col_type):
+            continue
 
         # Check if column is boolean
         if col_type == bool:
@@ -101,10 +109,8 @@ def _reduce_memory(
             # - Some object columns could be lists
             # - Some object columns could be dates
             # - Some users may expect string data returned
-            if convert_string_to_categorical:
-                if pd.api.types.is_string_dtype(data[col]):
-                    # if data[col].nunique() <= categorical_threshold:
-                    data[col] = data[col].astype("category")
+            if convert_string_to_categorical and pd.api.types.is_string_dtype(data[col]):
+                data[col] = data[col].astype("category")
 
     return data
 
