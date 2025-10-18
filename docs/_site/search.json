@@ -1547,18 +1547,18 @@
     "text": "2. Install Polars with the GPU engine\npip install \"polars[gpu]\" --extra-index-url=https://pypi.nvidia.com\nWhen loaded, you can materialise lazy pipelines on the GPU using:\nimport polars as pl\n\nresult = (\n    pl.LazyFrame({\"value\": [1.2, 3.4]})\n    .select(pl.col(\"value\").rolling_mean(2))\n    .collect(engine=\"gpu\")  # or engine=pl.GPUEngine(raise_on_fail=True)\n)\nThe examples below illustrate how to use GPU acceleration in practice. They are provided as reference snippets and are not executed as part of the documentation build (notice the eval=FALSE flag)."
   },
   {
-    "objectID": "production/02_gpu_acceleration.html#example-accelerating-augment_rsi",
-    "href": "production/02_gpu_acceleration.html#example-accelerating-augment_rsi",
+    "objectID": "production/02_gpu_acceleration.html#example-accelerating-augment_rolling",
+    "href": "production/02_gpu_acceleration.html#example-accelerating-augment_rolling",
     "title": "GPU Acceleration",
-    "section": "Example: accelerating augment_rsi",
-    "text": "Example: accelerating augment_rsi\nimport polars as pl\nimport pytimetk as tk\n\ndf = tk.load_dataset(\"stocks_daily\", parse_dates=[\"date\"])\n\nresult = (\n    pl.from_pandas(df.query(\"symbol == 'AAPL'\"))\n    .lazy()\n    .tk.augment_rsi(\n        date_column=\"date\",\n        close_column=\"close\",\n        periods=[14, 28],\n    )\n    .collect(engine=\"gpu\")\n)"
+    "section": "Example: accelerating augment_rolling",
+    "text": "Example: accelerating augment_rolling\nimport polars as pl\nimport pytimetk as tk\n\ndf = tk.load_dataset(\"stocks_daily\", parse_dates=[\"date\"])\n\nresult = (\n    pl.from_pandas(df)\n    .lazy()\n    .tk.augment_rolling(\n        date_column=\"date\",\n        value_column=\"close\",\n        window=[10, 20, 30, 40],\n        window_func=[\"mean\", \"std\"],\n    )\n    .collect(engine=\"gpu\")\n)"
   },
   {
     "objectID": "production/02_gpu_acceleration.html#example-pandas-cudf.pandas-no-code-changes-required",
     "href": "production/02_gpu_acceleration.html#example-pandas-cudf.pandas-no-code-changes-required",
     "title": "GPU Acceleration",
     "section": "Example: pandas + cudf.pandas (no code changes required)",
-    "text": "Example: pandas + cudf.pandas (no code changes required)\nimport cudf.pandas\ncudf.pandas.install()\n\nimport pandas as pd\nimport pytimetk as tk\n\ndf = tk.load_dataset(\"stocks_daily\", parse_dates=[\"date\"])\n\nresult = (\n    df.groupby(\"symbol\")\n    .augment_rolling(\n        date_column=\"date\",\n        value_column=\"close\",\n        window=[10, 20],\n        window_func=[\"mean\", \"std\"],\n        threads=1,\n    )\n)\n\n# `result` is a pandas DataFrame, but operations run on the GPU whenever\n# rapids-cuDF supports the requested rolling functions."
+    "text": "Example: pandas + cudf.pandas (no code changes required)\nimport cudf.pandas\ncudf.pandas.install()\n\nimport pandas as pd\nimport pytimetk as tk\n\ndf = tk.load_dataset(\"stocks_daily\", parse_dates=[\"date\"])\n\nresult = (\n    df.groupby(\"symbol\")\n    .augment_rolling(\n        date_column=\"date\",\n        value_column=\"close\",\n        window=[10, 20, 30, 40],\n        window_func=[\"mean\", \"std\"],\n        threads=1,\n    )\n)\n\n# `result` is a pandas DataFrame, but operations run on the GPU whenever\n# rapids-cuDF supports the requested rolling functions."
   },
   {
     "objectID": "production/02_gpu_acceleration.html#enable-cudf.pandas-optional",

@@ -403,7 +403,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <ul class="collapse">
   <li><a href="#enable-the-rapids-extra-optional" id="toc-enable-the-rapids-extra-optional" class="nav-link" data-scroll-target="#enable-the-rapids-extra-optional">1. Enable the RAPIDS extra (optional)</a></li>
   <li><a href="#install-polars-with-the-gpu-engine" id="toc-install-polars-with-the-gpu-engine" class="nav-link" data-scroll-target="#install-polars-with-the-gpu-engine">2. Install Polars with the GPU engine</a></li>
-  <li><a href="#example-accelerating-augment_rsi" id="toc-example-accelerating-augment_rsi" class="nav-link" data-scroll-target="#example-accelerating-augment_rsi">Example: accelerating <code>augment_rsi</code></a></li>
+  <li><a href="#example-accelerating-augment_rolling" id="toc-example-accelerating-augment_rolling" class="nav-link" data-scroll-target="#example-accelerating-augment_rolling">Example: accelerating <code>augment_rolling</code></a></li>
   <li><a href="#example-pandas-cudf.pandas-no-code-changes-required" id="toc-example-pandas-cudf.pandas-no-code-changes-required" class="nav-link" data-scroll-target="#example-pandas-cudf.pandas-no-code-changes-required">Example: pandas + <code>cudf.pandas</code> (no code changes required)</a></li>
   <li><a href="#enable-cudf.pandas-optional" id="toc-enable-cudf.pandas-optional" class="nav-link" data-scroll-target="#enable-cudf.pandas-optional">3. Enable <code>cudf.pandas</code> (optional)</a></li>
   </ul></li>
@@ -470,23 +470,24 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The examples below illustrate how to use GPU acceleration in practice. They are provided as reference snippets and are not executed as part of the documentation build (notice the <code>eval=FALSE</code> flag).</p>
 </section>
-<section id="example-accelerating-augment_rsi" class="level2">
-<h2 class="anchored" data-anchor-id="example-accelerating-augment_rsi">Example: accelerating <code>augment_rsi</code></h2>
+<section id="example-accelerating-augment_rolling" class="level2">
+<h2 class="anchored" data-anchor-id="example-accelerating-augment_rolling">Example: accelerating <code>augment_rolling</code></h2>
 <div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"stocks_daily"</span>, parse_dates<span class="op">=</span>[<span class="st">"date"</span>])</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> (</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    pl.from_pandas(df.query(<span class="st">"symbol == 'AAPL'"</span>))</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    pl.from_pandas(df)</span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    .lazy()</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    .tk.augment_rsi(</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    .tk.augment_rolling(</span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"date"</span>,</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">"close"</span>,</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        periods<span class="op">=</span>[<span class="dv">14</span>, <span class="dv">28</span>],</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    .collect(engine<span class="op">=</span><span class="st">"gpu"</span>)</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        value_column<span class="op">=</span><span class="st">"close"</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span>[<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">40</span>],</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        window_func<span class="op">=</span>[<span class="st">"mean"</span>, <span class="st">"std"</span>],</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    .collect(engine<span class="op">=</span><span class="st">"gpu"</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="example-pandas-cudf.pandas-no-code-changes-required" class="level2">
 <h2 class="anchored" data-anchor-id="example-pandas-cudf.pandas-no-code-changes-required">Example: pandas + <code>cudf.pandas</code> (no code changes required)</h2>
@@ -503,7 +504,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    .augment_rolling(</span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"date"</span>,</span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        value_column<span class="op">=</span><span class="st">"close"</span>,</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span>[<span class="dv">10</span>, <span class="dv">20</span>],</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        window<span class="op">=</span>[<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">40</span>],</span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        window_func<span class="op">=</span>[<span class="st">"mean"</span>, <span class="st">"std"</span>],</span>
 <span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        threads<span class="op">=</span><span class="dv">1</span>,</span>
 <span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    )</span>

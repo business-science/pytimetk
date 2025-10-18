@@ -52,7 +52,7 @@ The examples below illustrate how to use GPU acceleration in practice. They are
 provided as reference snippets and are not executed as part of the documentation
 build (notice the ``eval=FALSE`` flag).
 
-## Example: accelerating `augment_rsi`
+## Example: accelerating `augment_rolling`
 
 ```python
 import polars as pl
@@ -61,12 +61,13 @@ import pytimetk as tk
 df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
 result = (
-    pl.from_pandas(df.query("symbol == 'AAPL'"))
+    pl.from_pandas(df)
     .lazy()
-    .tk.augment_rsi(
+    .tk.augment_rolling(
         date_column="date",
-        close_column="close",
-        periods=[14, 28],
+        value_column="close",
+        window=[10, 20, 30, 40],
+        window_func=["mean", "std"],
     )
     .collect(engine="gpu")
 )
@@ -88,7 +89,7 @@ result = (
     .augment_rolling(
         date_column="date",
         value_column="close",
-        window=[10, 20],
+        window=[10, 20, 30, 40],
         window_func=["mean", "std"],
         threads=1,
     )
