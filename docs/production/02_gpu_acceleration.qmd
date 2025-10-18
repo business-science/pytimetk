@@ -72,28 +72,6 @@ result = (
 )
 ```
 
-## Example: accelerating a Polars expression pipeline
-
-```python
-import polars as pl
-import pytimetk as tk
-
-df = tk.load_dataset("stocks_daily", parse_dates=["date"])
-
-pipe = (
-    pl.from_pandas(df)
-    .lazy()
-    .filter(pl.col("symbol") == "AAPL")
-    .group_by("symbol")
-    .agg(
-        pl.col("close").sort_by("date").alias("close"),
-        pl.col("date").sort().alias("date"),
-    )
-)
-
-result = pipe.collect(engine="gpu")
-```
-
 ## Example: pandas + `cudf.pandas` (no code changes required)
 
 ```python

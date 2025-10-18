@@ -11,7 +11,7 @@ chain finance helpers directly on polars data structures.
 from __future__ import annotations
 
 from functools import wraps
-from typing import Callable, Dict, Any
+from typing import Callable, Dict, Any, TYPE_CHECKING
 
 import polars as pl
 
@@ -254,3 +254,18 @@ def register_polars_namespace() -> None:
 
 # Execute registration on import.
 register_polars_namespace()
+
+
+if TYPE_CHECKING:
+    class _DataFrameWithTk(pl.DataFrame):
+        @property
+        def tk(self) -> TkDataFrameNamespace:
+            ...
+
+    class _LazyFrameWithTk(pl.LazyFrame):
+        @property
+        def tk(self) -> TkLazyFrameNamespace:
+            ...
+
+    pl.DataFrame = _DataFrameWithTk  # type: ignore[assignment]
+    pl.LazyFrame = _LazyFrameWithTk  # type: ignore[assignment]
