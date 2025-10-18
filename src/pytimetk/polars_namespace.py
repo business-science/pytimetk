@@ -136,6 +136,15 @@ def _make_df_method(func: FinanceFunc) -> Callable[..., pl.DataFrame]:
     return method
 
 
+def _make_lazy_method(func: FinanceFunc) -> Callable[..., pl.LazyFrame]:
+    @wraps(func)
+    def method(self, *args, **kwargs):
+        kwargs["engine"] = "polars"
+        return func(data=self._lf, *args, **kwargs)
+
+    return method
+
+
 def _make_groupby_method(func: FinanceFunc) -> Callable[..., pl.DataFrame]:
     @wraps(func)
     def method(self, *args, **kwargs):
@@ -183,6 +192,15 @@ class TkDataFrameNamespace:
         return FeatureStoreAccessor(frame=self._df, store=store, store_kwargs=store_kwargs)
 
 
+class TkLazyFrameNamespace:
+    """
+    Namespace attached to :class:`polars.LazyFrame` mirroring DataFrame helpers.
+    """
+
+    def __init__(self, lf: pl.LazyFrame):
+        self._lf = lf
+
+
 class _TkGroupByNamespace:
     """
     Lightweight wrapper used for ``df.group_by(...).tk`` chains.
@@ -208,21 +226,29 @@ def register_polars_namespace() -> None:
     """
     for name, func in _AUGMENT_FUNCTIONS.items():
         setattr(TkDataFrameNamespace, name, _make_df_method(func))
+        setattr(TkLazyFrameNamespace, name, _make_lazy_method(func))
         setattr(_TkGroupByNamespace, name, _make_groupby_method(func))
 
     for name, func in _PANDAS_RESULT_FUNCTIONS.items():
         setattr(TkDataFrameNamespace, name, _make_df_method_pandas(func))
+        setattr(TkLazyFrameNamespace, name, _make_lazy_method(func))
         setattr(_TkGroupByNamespace, name, _make_groupby_method_pandas(func))
 
     for name, func in _PANDAS_DF_ONLY_FUNCTIONS.items():
         setattr(TkDataFrameNamespace, name, _make_df_method_pandas(func))
+        setattr(TkLazyFrameNamespace, name, _make_lazy_method(func))
 
     pl.api.register_dataframe_namespace("tk")(TkDataFrameNamespace)
+    pl.api.register_lazyframe_namespace("tk")(TkLazyFrameNamespace)
 
     def _df_tk(self):
         return TkDataFrameNamespace(self)
 
+    def _lf_tk(self):
+        return TkLazyFrameNamespace(self)
+
     setattr(pl.DataFrame, "tk", property(_df_tk))
+    setattr(pl.LazyFrame, "tk", property(_lf_tk))
     _register_groupby_namespace()
 
 

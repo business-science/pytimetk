@@ -55,6 +55,7 @@ def check_dataframe_or_groupby(
         pd.core.groupby.generic.DataFrameGroupBy,
         "pl.DataFrame",
         "pl.dataframe.group_by.GroupBy",
+        "pl.LazyFrame",
         "cudf.DataFrame",
         "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
@@ -65,7 +66,11 @@ def check_dataframe_or_groupby(
     ]
 
     try:
-        authorized += [pl.DataFrame, pl.dataframe.group_by.GroupBy]  # type: ignore[attr-defined]
+        authorized += [
+            pl.DataFrame,
+            pl.dataframe.group_by.GroupBy,
+            pl.LazyFrame,
+        ]  # type: ignore[attr-defined]
     except AttributeError:
         pass
     if cudf is not None:
@@ -76,7 +81,7 @@ def check_dataframe_or_groupby(
     check_data_type(
         data,
         authorized_dtypes=list(authorized),
-        error_str="`data` is not a Pandas DataFrame or GroupBy object.",
+        error_str="`data` is not a pandas/polars/cudf DataFrame, GroupBy, or LazyFrame.",
     )
 
 
@@ -104,6 +109,7 @@ def check_date_column(
         pd.core.groupby.generic.DataFrameGroupBy,
         "pl.DataFrame",
         "pl.dataframe.group_by.GroupBy",
+        "pl.LazyFrame",
         "cudf.DataFrame",
         "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
@@ -156,6 +162,18 @@ def check_date_column(
             )
         return None
 
+    if isinstance(data, pl.LazyFrame):
+        schema = data.schema
+        if date_column not in schema:
+            raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
+        dtype = schema[date_column]
+        if not dtype.is_temporal():
+            raise TypeError(
+                f"`date_column` ({date_column}) is not a temporal dtype. "
+                f"Dtype Found: {dtype}"
+            )
+        return None
+
     if cudf is not None and CudfDataFrameGroupBy is not None and isinstance(data, CudfDataFrameGroupBy):
         frame = data.obj
         if date_column not in frame.columns:
@@ -180,7 +198,7 @@ def check_date_column(
         return None
 
     raise TypeError(
-        "`data` is not a pandas/polars/cudf DataFrame or GroupBy object."
+        "`data` is not a pandas/polars/cudf DataFrame, GroupBy, or LazyFrame."
     )
 
 
@@ -217,6 +235,10 @@ def check_value_column(
         _check_columns_polars(data, value_column, require_numeric_dtype)
         return None
 
+    if isinstance(data, pl.LazyFrame):
+        _check_columns_polars(data, value_column, require_numeric_dtype)
+        return None
+
     if cudf is not None and CudfDataFrameGroupBy is not None and isinstance(data, CudfDataFrameGroupBy):
         frame = data.obj
         _check_columns_cudf(frame, value_column, require_numeric_dtype)
@@ -227,7 +249,7 @@ def check_value_column(
         return None
 
     raise TypeError(
-        "`data` is not a pandas/polars/cudf DataFrame or GroupBy object."
+        "`data` is not a pandas/polars/cudf DataFrame, GroupBy, or LazyFrame."
     )
 
 
@@ -244,7 +266,7 @@ def _check_columns_pandas(
 
 
 def _check_columns_polars(
-    frame: pl.DataFrame,
+    frame: Union[pl.DataFrame, pl.LazyFrame],
     columns: List[str],
     require_numeric_dtype: bool,
 ) -> None:
