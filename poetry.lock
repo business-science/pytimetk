@@ -166,6 +166,19 @@ test-tox = ["equinox ; sys_platform == \"linux\"", "jax[cpu] ; sys_platform == \
 test-tox-coverage = ["coverage (>=5.5)"]
 
 [[package]]
+name = "cachetools"
+version = "6.2.1"
+description = "Extensible memoizing collections and decorators"
+optional = true
+python-versions = ">=3.9"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "cachetools-6.2.1-py3-none-any.whl", hash = "sha256:09868944b6dde876dfd44e1d47e18484541eaf12f26f29b7af91b26cc892d701"},
+    {file = "cachetools-6.2.1.tar.gz", hash = "sha256:3f391e4bd8f8bf0931169baf7456cc822705f4e2a31f840d218f445b9a854201"},
+]
+
+[[package]]
 name = "certifi"
 version = "2025.1.31"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -492,16 +505,233 @@ test = ["Pillow", "contourpy[test-no-images]", "matplotlib"]
 test-no-images = ["pytest", "pytest-cov", "pytest-rerunfailures", "pytest-xdist", "wurlitzer"]
 
 [[package]]
-name = "cudf"
-version = "0.6.1.post1"
-description = ""
+name = "cuda-bindings"
+version = "12.9.3"
+description = "Python bindings for CUDA"
 optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "extra == \"gpu\""
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
 files = [
-    {file = "cudf-0.6.1.post1.tar.gz", hash = "sha256:62d58b923a9a28732780630d8dec5295e565e0b58500c1f6db286eaf4fba0e66"},
+    {file = "cuda_bindings-12.9.3-cp310-cp310-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:467f7b2330b4fdf78b281661e7d06f487a2dfd61b61f74eda478af3189df16bf"},
+    {file = "cuda_bindings-12.9.3-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:4b44e89e38f0a4fd9ce35f54a61a7da11d0b940c825be988c7402ecd3c128491"},
+    {file = "cuda_bindings-12.9.3-cp310-cp310-win_amd64.whl", hash = "sha256:df8fb20d50520be38bec1fced2fa986394a77902886ff70e0d2f8b450ba40c18"},
+    {file = "cuda_bindings-12.9.3-cp311-cp311-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:09e40f82a88907d6a1d82085e93ff4006466d2fbc272aaa0023bbc6fd3727f50"},
+    {file = "cuda_bindings-12.9.3-cp311-cp311-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:09ccd2610b6ac4b0034fc64a7c5e271f3ded6eaa30c3882099751b311ed69e95"},
+    {file = "cuda_bindings-12.9.3-cp311-cp311-win_amd64.whl", hash = "sha256:72b729d108940c8f37ea0bdfb1c2cf5bbd7d4da2e2e6ce238d23a86561acc36a"},
+    {file = "cuda_bindings-12.9.3-cp312-cp312-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:a6a4ff1079474b7672dab7b621c85bc366c4b44a2d4cf91265826d91db649ec4"},
+    {file = "cuda_bindings-12.9.3-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:9e6130aa3a2246c3ec157da5b7b101da7f5a11b4c2b71582264493b58fee7690"},
+    {file = "cuda_bindings-12.9.3-cp312-cp312-win_amd64.whl", hash = "sha256:6b83c4e752448ef3c75b0ebe191ac02ff88e3ea086c38ec85760ab681f147c86"},
+    {file = "cuda_bindings-12.9.3-cp313-cp313-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:e22a041fcfee25ba0300f15039ceac3e878e80aa8f4017063a90681a9b486927"},
+    {file = "cuda_bindings-12.9.3-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:0db238294b672c79f27539b3c8941e76fca43d5273d7816126f43eb72eab6967"},
+    {file = "cuda_bindings-12.9.3-cp313-cp313-win_amd64.whl", hash = "sha256:4d15eff75702e0ed292a88bbe3af039362102081ef22b95f91285c178d57c32c"},
+    {file = "cuda_bindings-12.9.3-cp313-cp313t-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:09bf5f2bce25efead51031dd3df6d49f19ab52c42ee1b24bbf2c57e6020c6066"},
+    {file = "cuda_bindings-12.9.3-cp313-cp313t-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:cfb9112c8177118f0335532354a9b764958f417c5a85685090f0083e5cc37310"},
+    {file = "cuda_bindings-12.9.3-cp313-cp313t-win_amd64.whl", hash = "sha256:414e934e6e793e9311c367d21747df0b1c367c193ef41fd9516a0c7b9615731e"},
+    {file = "cuda_bindings-12.9.3-cp314-cp314-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:5001e3b22d6c607dd5c683a8f8cbcb956607ec69c81d559483a281f937da30e7"},
+    {file = "cuda_bindings-12.9.3-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:95e2132d17430c46d2e462b97b7afc6e780b04c281490f17d857cb3c333eb714"},
+    {file = "cuda_bindings-12.9.3-cp314-cp314-win_amd64.whl", hash = "sha256:f87af83049c23ae5828d8eaaef4efdbe70799c83988b714691d13f85f9008d2c"},
+    {file = "cuda_bindings-12.9.3-cp314-cp314t-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:182f3f2e19265771d63956550f2a590419c825f7bcb414da559f230cd741610a"},
+    {file = "cuda_bindings-12.9.3-cp314-cp314t-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:3fc7033bd23f4df7fa20b0657dcd1341fbfd64d44e3d2906c1df1968d76bf4ad"},
+    {file = "cuda_bindings-12.9.3-cp314-cp314t-win_amd64.whl", hash = "sha256:72b855a5cbe487eb9b629e7335de5fbb9ae1004f34af670a8495fca32ec425a6"},
+    {file = "cuda_bindings-12.9.3-cp39-cp39-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:94bc2ccba7faf1cae13533073186871d3b64e4a7ce17697a8438670a6e74db8a"},
+    {file = "cuda_bindings-12.9.3-cp39-cp39-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:ce8202891b3006ecda61aa8ead6ae60b93ca7aa6a3f21632ed7abd9979146760"},
+    {file = "cuda_bindings-12.9.3-cp39-cp39-win_amd64.whl", hash = "sha256:d9768907d5425359447cf6b239ad0d7b143e5d5b0d3bd6ef5c93216d2c3a45c4"},
 ]
+
+[package.dependencies]
+cuda-pathfinder = ">=1.1,<2.0"
+
+[package.extras]
+all = ["nvidia-cuda-nvcc-cu12", "nvidia-cuda-nvrtc-cu12", "nvidia-cufile-cu12 ; sys_platform == \"linux\"", "nvidia-nvjitlink-cu12 (>=12.3)"]
+test = ["cython (>=3.1,<3.2)", "numpy (>=1.21.1)", "pytest (>=6.2.4)", "pytest-benchmark (>=3.4.1)", "setuptools (>=77.0.0)"]
+
+[[package]]
+name = "cuda-core"
+version = "0.3.2"
+description = "cuda.core: (experimental) pythonic CUDA module"
+optional = true
+python-versions = ">=3.9"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "cuda_core-0.3.2-cp310-cp310-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:7a2a1f7e96e68c0bbc710592e78ca09c951afc10238c739482e265da1e6ea102"},
+    {file = "cuda_core-0.3.2-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:1058402b41320516d5022a1cdfc7063909bf620e91126f851d859302b77d02d1"},
+    {file = "cuda_core-0.3.2-cp310-cp310-win_amd64.whl", hash = "sha256:e843a3058fc74640e5d629e87d864ad3f7e763bc89d6c2b83b55a829603ee5a3"},
+    {file = "cuda_core-0.3.2-cp311-cp311-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:ffd99410f648d3bcd26f464da70d2b5ef9b5eaab79b744960d3dd66780dd1ac1"},
+    {file = "cuda_core-0.3.2-cp311-cp311-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:9d339c874905e00ddc36556d56cf7eaa9dae62d4bc4f2db774f15a9b41ca634a"},
+    {file = "cuda_core-0.3.2-cp311-cp311-win_amd64.whl", hash = "sha256:c8c438b2e3c08ba0f3f36a9067e2092f5dfb8e40084206fc2722a7a26745fa70"},
+    {file = "cuda_core-0.3.2-cp312-cp312-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:d5e635d60209478d7fcb26d96e9182e6f7407c983147f488b98130c1ba31df12"},
+    {file = "cuda_core-0.3.2-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:1338ab324d29b3afcde623c4a12571cd6e74e76fa0d5533db1e36df978899e4e"},
+    {file = "cuda_core-0.3.2-cp312-cp312-win_amd64.whl", hash = "sha256:b4afafbc3809244dfe764898c8a49abaccb1cc4cd41bbb9a61e89c31dd1f2a18"},
+    {file = "cuda_core-0.3.2-cp313-cp313-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:89017fa01d65f355155e85e40362f10a16224650743a929bc447090236733e5c"},
+    {file = "cuda_core-0.3.2-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:5c048a9d788028d2a268101001d40210812d6dcf178e6869f49e855606ed2605"},
+    {file = "cuda_core-0.3.2-cp313-cp313-win_amd64.whl", hash = "sha256:2fcd38ceb9934e58b830b9aa4c30db7a22d65d328155454f5801eda45ac10f42"},
+    {file = "cuda_core-0.3.2-cp39-cp39-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:ad4e8a3b05525e877e0b3e5d626bdbc05b68c0b5d7da843d8c0366ab2bc3421f"},
+    {file = "cuda_core-0.3.2-cp39-cp39-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:9e6ba1ff9721825992a03191a50140a89468763fe0a7055397b731622dca4a50"},
+    {file = "cuda_core-0.3.2-cp39-cp39-win_amd64.whl", hash = "sha256:6106c159bfebce4c05ad4b1dbb6006e52ceea1c60f642df270e559e714a19962"},
+]
+
+[package.dependencies]
+numpy = "*"
+
+[package.extras]
+cu11 = ["cuda-bindings[all] (==11.8.*)"]
+cu12 = ["cuda-bindings[all] (==12.*)"]
+cu13 = ["cuda-bindings[all] (==13.*)"]
+test = ["cython (>=3.0)", "pytest (>=6.2.4)", "setuptools"]
+test-cu11 = ["cuda-core[test]", "cupy-cuda11x", "nvidia-cuda-runtime-cu11"]
+test-cu12 = ["cuda-core[test]", "cupy-cuda12x", "nvidia-cuda-runtime-cu12"]
+
+[[package]]
+name = "cuda-pathfinder"
+version = "1.3.1"
+description = "Pathfinder for CUDA components"
+optional = true
+python-versions = ">=3.9"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "cuda_pathfinder-1.3.1-py3-none-any.whl", hash = "sha256:0f04527f647e16ee26055447d3e4479bd608acce60f6506b14043f51d71736e7"},
+]
+
+[[package]]
+name = "cuda-python"
+version = "12.9.3"
+description = "CUDA Python: Performance meets Productivity"
+optional = true
+python-versions = "*"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "cuda_python-12.9.3-py3-none-any.whl", hash = "sha256:0282f3777ec16d8502cff74fcfcdfc96886ffd4a175a2fb03c2544357c2149a0"},
+]
+
+[package.dependencies]
+cuda-bindings = ">=12.9.3,<12.10.0"
+
+[package.extras]
+all = ["cuda-bindings[all] (>=12.9.3,<12.10.0)"]
+
+[[package]]
+name = "cuda-toolkit"
+version = "12.9.1"
+description = "CUDA Toolkit meta-package"
+optional = true
+python-versions = "*"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "cuda_toolkit-12.9.1-py2.py3-none-any.whl", hash = "sha256:0c8636dfacbecfe9867a949a211864f080a805bc54023ce4a361aa4e1fd8738b"},
+]
+
+[package.dependencies]
+nvidia-cuda-nvcc-cu12 = {version = "==12.9.86.*", optional = true, markers = "(sys_platform == \"win32\" or sys_platform == \"linux\") and extra == \"nvcc\""}
+nvidia-cuda-nvrtc-cu12 = {version = "==12.9.86.*", optional = true, markers = "(sys_platform == \"win32\" or sys_platform == \"linux\") and extra == \"nvrtc\""}
+
+[package.extras]
+all = ["nvidia-cublas-cu12 (==12.9.1.4.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-cuda-cccl-cu12 (==12.9.27.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-cuda-cupti-cu12 (==12.9.79.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-cuda-cuxxfilt-cu12 (==12.9.82.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-cuda-nvcc-cu12 (==12.9.86.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-cuda-nvrtc-cu12 (==12.9.86.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-cuda-opencl-cu12 (==12.9.19.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-cuda-profiler-api-cu12 (==12.9.79.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-cuda-runtime-cu12 (==12.9.79.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-cuda-sanitizer-api-cu12 (==12.9.79.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-cufft-cu12 (==11.4.1.4.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-cufile-cu12 (==1.14.1.1.*) ; sys_platform == \"linux\"", "nvidia-curand-cu12 (==10.3.10.19.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-cusolver-cu12 (==11.7.5.82.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-cusparse-cu12 (==12.5.10.65.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-npp-cu12 (==12.4.1.87.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-nvfatbin-cu12 (==12.9.82.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-nvjitlink-cu12 (==12.9.86.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-nvjpeg-cu12 (==12.4.0.76.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-nvml-dev-cu12 (==12.9.79.*) ; sys_platform == \"win32\" or sys_platform == \"linux\"", "nvidia-nvtx-cu12 (==12.9.79.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+cccl = ["nvidia-cuda-cccl-cu12 (==12.9.27.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+cublas = ["nvidia-cublas-cu12 (==12.9.1.4.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+cudart = ["nvidia-cuda-runtime-cu12 (==12.9.79.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+cufft = ["nvidia-cufft-cu12 (==11.4.1.4.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+cufile = ["nvidia-cufile-cu12 (==1.14.1.1.*) ; sys_platform == \"linux\""]
+cupti = ["nvidia-cuda-cupti-cu12 (==12.9.79.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+curand = ["nvidia-curand-cu12 (==10.3.10.19.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+cusolver = ["nvidia-cusolver-cu12 (==11.7.5.82.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+cusparse = ["nvidia-cusparse-cu12 (==12.5.10.65.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+cuxxfilt = ["nvidia-cuda-cuxxfilt-cu12 (==12.9.82.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+npp = ["nvidia-npp-cu12 (==12.4.1.87.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+nvcc = ["nvidia-cuda-nvcc-cu12 (==12.9.86.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+nvfatbin = ["nvidia-nvfatbin-cu12 (==12.9.82.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+nvjitlink = ["nvidia-nvjitlink-cu12 (==12.9.86.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+nvjpeg = ["nvidia-nvjpeg-cu12 (==12.4.0.76.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+nvml = ["nvidia-nvml-dev-cu12 (==12.9.79.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+nvrtc = ["nvidia-cuda-nvrtc-cu12 (==12.9.86.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+nvtx = ["nvidia-nvtx-cu12 (==12.9.79.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+opencl = ["nvidia-cuda-opencl-cu12 (==12.9.19.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+profiler = ["nvidia-cuda-profiler-api-cu12 (==12.9.79.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+sanitizer = ["nvidia-cuda-sanitizer-api-cu12 (==12.9.79.*) ; sys_platform == \"win32\" or sys_platform == \"linux\""]
+
+[[package]]
+name = "cudf-cu12"
+version = "25.10.0"
+description = "cuDF - GPU Dataframe"
+optional = true
+python-versions = ">=3.10"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "cudf_cu12-25.10.0-cp310-cp310-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:72cb209847adb4299a82b143bb2420ab2da90f5c9aca127ca3e01c78b0efe570"},
+    {file = "cudf_cu12-25.10.0-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:130ef1f0d90cae33356454ae92a51540dcd7074779b5e1d95b1a2f979d14cdfa"},
+    {file = "cudf_cu12-25.10.0-cp311-cp311-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:50d4ea5d09e7751a5676f517cf62eb8823adca7c51270de4cd82a7ab1a070d0c"},
+    {file = "cudf_cu12-25.10.0-cp311-cp311-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:20e4fed7db9ea6387e066d87073eff8da71e3fd45db8c98acbced88e87fe2c65"},
+    {file = "cudf_cu12-25.10.0-cp312-cp312-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:edd34017b6f82cc971bd0f0a7647df6752204a9c461ff03ee6284d8b218851be"},
+    {file = "cudf_cu12-25.10.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:33fb682431b9cd812c980bad8d6e6abc07182e8ed8c665a6faad92ba9ad9f3dc"},
+    {file = "cudf_cu12-25.10.0-cp313-cp313-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:030811e6b2c1bcb88a706439440319ee67c9816c3b6e30c4fd83b8d1a25f8430"},
+    {file = "cudf_cu12-25.10.0-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:4e4726440f7dcde6874302fe559bd13909fc060c1a54265f77689d98ba00f599"},
+]
+
+[package.dependencies]
+cachetools = "*"
+cuda-python = ">=12.9.2,<13.0a0"
+cuda-toolkit = {version = "==12.*", extras = ["nvcc", "nvrtc"]}
+cupy-cuda12x = ">=13.6.0"
+fsspec = ">=0.6.0"
+libcudf-cu12 = "==25.10.*"
+numba = ">=0.60.0,<0.62.0a0"
+numba-cuda = {version = ">=0.19.1,<0.20.0a0", extras = ["cu12"]}
+numpy = ">=1.23,<3.0a0"
+nvtx = ">=0.2.1"
+packaging = "*"
+pandas = ">=2.0,<2.4.0dev0"
+pyarrow = [
+    {version = ">=15.0.0,<17.0.0 || >17.0.0", markers = "platform_machine == \"aarch64\""},
+    {version = ">=15.0.0", markers = "platform_machine == \"x86_64\""},
+]
+pylibcudf-cu12 = "==25.10.*"
+rich = "*"
+rmm-cu12 = "==25.10.*"
+typing_extensions = ">=4.0.0"
+
+[package.extras]
+cudf-pandas-tests = ["certifi", "ipython", "jupyter_client", "nbconvert", "nbformat", "openpyxl", "pytest-rerunfailures (!=16.0.0)"]
+pandas-tests = ["hypothesis (>=6.131.7)", "ipython", "pandas[clipboard,compression,computation,excel,feather,fss,hdf5,html,output-formatting,parquet,performance,plot,pyarrow,spss,test,xml]", "pytest-reportlog"]
+test = ["cramjam", "fastavro (>=0.22.9)", "hypothesis (>=6.131.7)", "msgpack", "pytest", "pytest-benchmark", "pytest-cases (>=3.8.2)", "pytest-cov", "pytest-xdist", "scipy", "tzdata", "zstandard"]
+
+[[package]]
+name = "cupy-cuda12x"
+version = "13.6.0"
+description = "CuPy: NumPy & SciPy for GPU"
+optional = true
+python-versions = ">=3.9"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "cupy_cuda12x-13.6.0-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:9e37f60f27ff9625dfdccc4688a09852707ec613e32ea9404f425dd22a386d14"},
+    {file = "cupy_cuda12x-13.6.0-cp310-cp310-manylinux2014_x86_64.whl", hash = "sha256:e78409ea72f5ac7d6b6f3d33d99426a94005254fa57e10617f430f9fd7c3a0a1"},
+    {file = "cupy_cuda12x-13.6.0-cp310-cp310-win_amd64.whl", hash = "sha256:f33c9c975782ef7a42c79b6b4fb3d5b043498f9b947126d792592372b432d393"},
+    {file = "cupy_cuda12x-13.6.0-cp311-cp311-manylinux2014_aarch64.whl", hash = "sha256:c790d012fd4d86872b9c89af9f5f15d91c30b8e3a4aa4dd04c2610f45f06ac44"},
+    {file = "cupy_cuda12x-13.6.0-cp311-cp311-manylinux2014_x86_64.whl", hash = "sha256:77ba6745a130d880c962e687e4e146ebbb9014f290b0a80dbc4e4634eb5c3b48"},
+    {file = "cupy_cuda12x-13.6.0-cp311-cp311-win_amd64.whl", hash = "sha256:a20b7acdc583643a623c8d8e3efbe0db616fbcf5916e9c99eedf73859b6133af"},
+    {file = "cupy_cuda12x-13.6.0-cp312-cp312-manylinux2014_aarch64.whl", hash = "sha256:a6970ceefe40f9acbede41d7fe17416bd277b1bd2093adcde457b23b578c5a59"},
+    {file = "cupy_cuda12x-13.6.0-cp312-cp312-manylinux2014_x86_64.whl", hash = "sha256:79b0cacb5e8b190ef409f9e03f06ac8de1b021b0c0dda47674d446f5557e0eb1"},
+    {file = "cupy_cuda12x-13.6.0-cp312-cp312-win_amd64.whl", hash = "sha256:ca06fede7b8b83ca9ad80062544ef2e5bb8d4762d1c4fc3ac8349376de9c8a5e"},
+    {file = "cupy_cuda12x-13.6.0-cp313-cp313-manylinux2014_aarch64.whl", hash = "sha256:e5426ae3b1b9cf59927481e457a89e3f0b50a35b114a8034ec9110e7a833434c"},
+    {file = "cupy_cuda12x-13.6.0-cp313-cp313-manylinux2014_x86_64.whl", hash = "sha256:52d9e7f83d920da7d81ec2e791c2c2c747fdaa1d7b811971b34865ce6371e98a"},
+    {file = "cupy_cuda12x-13.6.0-cp313-cp313-win_amd64.whl", hash = "sha256:297b4268f839de67ef7865c2202d3f5a0fb8d20bd43360bc51b6e60cb4406447"},
+    {file = "cupy_cuda12x-13.6.0-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:6ccd2fc75b0e0e24493531b8f8d8f978efecddb45f8479a48890c40d3805eb87"},
+    {file = "cupy_cuda12x-13.6.0-cp39-cp39-manylinux2014_x86_64.whl", hash = "sha256:771f3135861b68199c18b49345210180d4fcdce4681b51c28224db389c4aac5d"},
+    {file = "cupy_cuda12x-13.6.0-cp39-cp39-win_amd64.whl", hash = "sha256:4d2dfd9bb4705d446f542739a3616b4c9eea98d674fce247402cc9bcec89a1e4"},
+]
+
+[package.dependencies]
+fastrlock = ">=0.5"
+numpy = ">=1.22,<2.6"
+
+[package.extras]
+all = ["Cython (>=3)", "optuna (>=2.0)", "scipy (>=1.7,<1.17)"]
+test = ["hypothesis (>=6.37.2,<6.55.0)", "mpmath", "packaging", "pytest (>=7.2)"]
 
 [[package]]
 name = "cycler"
@@ -630,6 +860,86 @@ files = [
 devel = ["colorama", "json-spec", "jsonschema", "pylint", "pytest", "pytest-benchmark", "pytest-cache", "validictory"]
 
 [[package]]
+name = "fastrlock"
+version = "0.8.3"
+description = "Fast, re-entrant optimistic lock implemented in Cython"
+optional = true
+python-versions = "*"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "fastrlock-0.8.3-cp27-cp27m-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:bbbe31cb60ec32672969651bf68333680dacaebe1a1ec7952b8f5e6e23a70aa5"},
+    {file = "fastrlock-0.8.3-cp27-cp27m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:45055702fe9bff719cdc62caa849aa7dbe9e3968306025f639ec62ef03c65e88"},
+    {file = "fastrlock-0.8.3-cp27-cp27mu-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:ac4fcc9b43160f7f64b49bd7ecfd129faf0793c1c8c6f0f56788c3bacae7f54a"},
+    {file = "fastrlock-0.8.3-cp27-cp27mu-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:d3ebb29de71bf9e330c2769c34a6b5e69d560126f02994e6c09635a2784f6de3"},
+    {file = "fastrlock-0.8.3-cp310-cp310-macosx_11_0_universal2.whl", hash = "sha256:cc5fa9166e05409f64a804d5b6d01af670979cdb12cd2594f555cb33cdc155bd"},
+    {file = "fastrlock-0.8.3-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_24_aarch64.whl", hash = "sha256:7a77ebb0a24535ef4f167da2c5ee35d9be1e96ae192137e9dc3ff75b8dfc08a5"},
+    {file = "fastrlock-0.8.3-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_24_i686.whl", hash = "sha256:d51f7fb0db8dab341b7f03a39a3031678cf4a98b18533b176c533c122bfce47d"},
+    {file = "fastrlock-0.8.3-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:767ec79b7f6ed9b9a00eb9ff62f2a51f56fdb221c5092ab2dadec34a9ccbfc6e"},
+    {file = "fastrlock-0.8.3-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:0d6a77b3f396f7d41094ef09606f65ae57feeb713f4285e8e417f4021617ca62"},
+    {file = "fastrlock-0.8.3-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:92577ff82ef4a94c5667d6d2841f017820932bc59f31ffd83e4a2c56c1738f90"},
+    {file = "fastrlock-0.8.3-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:3df8514086e16bb7c66169156a8066dc152f3be892c7817e85bf09a27fa2ada2"},
+    {file = "fastrlock-0.8.3-cp310-cp310-win_amd64.whl", hash = "sha256:001fd86bcac78c79658bac496e8a17472d64d558cd2227fdc768aa77f877fe40"},
+    {file = "fastrlock-0.8.3-cp311-cp311-macosx_11_0_universal2.whl", hash = "sha256:f68c551cf8a34b6460a3a0eba44bd7897ebfc820854e19970c52a76bf064a59f"},
+    {file = "fastrlock-0.8.3-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_24_aarch64.whl", hash = "sha256:55d42f6286b9d867370af4c27bc70d04ce2d342fe450c4a4fcce14440514e695"},
+    {file = "fastrlock-0.8.3-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_24_i686.whl", hash = "sha256:bbc3bf96dcbd68392366c477f78c9d5c47e5d9290cb115feea19f20a43ef6d05"},
+    {file = "fastrlock-0.8.3-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:77ab8a98417a1f467dafcd2226718f7ca0cf18d4b64732f838b8c2b3e4b55cb5"},
+    {file = "fastrlock-0.8.3-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:04bb5eef8f460d13b8c0084ea5a9d3aab2c0573991c880c0a34a56bb14951d30"},
+    {file = "fastrlock-0.8.3-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:8c9d459ce344c21ff03268212a1845aa37feab634d242131bc16c2a2355d5f65"},
+    {file = "fastrlock-0.8.3-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:33e6fa4af4f3af3e9c747ec72d1eadc0b7ba2035456c2afb51c24d9e8a56f8fd"},
+    {file = "fastrlock-0.8.3-cp311-cp311-win_amd64.whl", hash = "sha256:5e5f1665d8e70f4c5b4a67f2db202f354abc80a321ce5a26ac1493f055e3ae2c"},
+    {file = "fastrlock-0.8.3-cp312-cp312-macosx_11_0_universal2.whl", hash = "sha256:8cb2cf04352ea8575d496f31b3b88c42c7976e8e58cdd7d1550dfba80ca039da"},
+    {file = "fastrlock-0.8.3-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:85a49a1f1e020097d087e1963e42cea6f307897d5ebe2cb6daf4af47ffdd3eed"},
+    {file = "fastrlock-0.8.3-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:5f13ec08f1adb1aa916c384b05ecb7dbebb8df9ea81abd045f60941c6283a670"},
+    {file = "fastrlock-0.8.3-cp312-cp312-musllinux_1_1_aarch64.whl", hash = "sha256:0ea4e53a04980d646def0f5e4b5e8bd8c7884288464acab0b37ca0c65c482bfe"},
+    {file = "fastrlock-0.8.3-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:38340f6635bd4ee2a4fb02a3a725759fe921f2ca846cb9ca44531ba739cc17b4"},
+    {file = "fastrlock-0.8.3-cp312-cp312-win_amd64.whl", hash = "sha256:da06d43e1625e2ffddd303edcd6d2cd068e1c486f5fd0102b3f079c44eb13e2c"},
+    {file = "fastrlock-0.8.3-cp313-cp313-macosx_11_0_universal2.whl", hash = "sha256:5264088185ca8e6bc83181dff521eee94d078c269c7d557cc8d9ed5952b7be45"},
+    {file = "fastrlock-0.8.3-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:4a98ba46b3e14927550c4baa36b752d0d2f7387b8534864a8767f83cce75c160"},
+    {file = "fastrlock-0.8.3-cp313-cp313-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:dbdea6deeccea1917c6017d353987231c4e46c93d5338ca3e66d6cd88fbce259"},
+    {file = "fastrlock-0.8.3-cp313-cp313-musllinux_1_1_aarch64.whl", hash = "sha256:c6e5bfecbc0d72ff07e43fed81671747914d6794e0926700677ed26d894d4f4f"},
+    {file = "fastrlock-0.8.3-cp313-cp313-musllinux_1_1_x86_64.whl", hash = "sha256:2a83d558470c520ed21462d304e77a12639859b205759221c8144dd2896b958a"},
+    {file = "fastrlock-0.8.3-cp313-cp313-win_amd64.whl", hash = "sha256:8d1d6a28291b4ace2a66bd7b49a9ed9c762467617febdd9ab356b867ed901af8"},
+    {file = "fastrlock-0.8.3-cp35-cp35m-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:a0eadc772353cfa464b34c814b2a97c4f3c0ba0ed7b8e1c2e0ad3ebba84bf8e0"},
+    {file = "fastrlock-0.8.3-cp35-cp35m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:350f517a7d22d383f8ef76652b0609dc79de6693880a99bafc8a05c100e8c5e7"},
+    {file = "fastrlock-0.8.3-cp36-cp36m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_24_i686.whl", hash = "sha256:924abbf21eba69c1b35c04278f3ca081e8de1ef5933355756e86e05499123238"},
+    {file = "fastrlock-0.8.3-cp36-cp36m-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:a8fd6727c1e0952ba93fdc5975753781039772be6c1a3911a3afc87b53460dc0"},
+    {file = "fastrlock-0.8.3-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:9c2c24856d2adc60ab398780f7b7cd8a091e4bd0c0e3bb3e67f12bef2800f377"},
+    {file = "fastrlock-0.8.3-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:f2b84b2fe858e64946e54e0e918b8a0e77fc7b09ca960ae1e50a130e8fbc9af8"},
+    {file = "fastrlock-0.8.3-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:963123bafc41c9fba72e57145917a3f23086b5d631b6cda9cf858c428a606ff9"},
+    {file = "fastrlock-0.8.3-cp36-cp36m-musllinux_1_1_x86_64.whl", hash = "sha256:314e787532ce555a7362d3c438f0a680cd88a82c69b655e7181a4dd5e67712f5"},
+    {file = "fastrlock-0.8.3-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_24_aarch64.whl", hash = "sha256:494fc374afd0b6c7281c87f2ded9607c2731fc0057ec63bd3ba4451e7b7cb642"},
+    {file = "fastrlock-0.8.3-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_24_i686.whl", hash = "sha256:da53350b90a67d5431df726816b041f1f96fd558ad6e2fc64948e13be3c7c29a"},
+    {file = "fastrlock-0.8.3-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:cdee8c02c20a0b17dbc52f54c48ede3bd421985e5d9cef5cd2136b14da967996"},
+    {file = "fastrlock-0.8.3-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:558b538221e9c5502bb8725a1f51157ec38467a20498212838e385807e4d1b89"},
+    {file = "fastrlock-0.8.3-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:b6ac082d670e195ad53ec8d0c5d2e87648f8838b0d48f7d44a6e696b8a9528e2"},
+    {file = "fastrlock-0.8.3-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:d7edaf0071a6a98340fc2ec45b0ba37b7a16ed7761479aab577e41e09b3565e1"},
+    {file = "fastrlock-0.8.3-cp37-cp37m-musllinux_1_1_aarch64.whl", hash = "sha256:9c4068f21fddc47393a3526ce95b180a2f4e1ac286db8d9e59e56771da50c815"},
+    {file = "fastrlock-0.8.3-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:d7f359bb989c01a5875e8dbde9acab37b9da0943b60ef97ba9887c4598eb3009"},
+    {file = "fastrlock-0.8.3-cp38-cp38-macosx_11_0_universal2.whl", hash = "sha256:239e85cbebda16f14be92468ce648d0bc25e2442a3d11818deca59a7c43a4416"},
+    {file = "fastrlock-0.8.3-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_24_aarch64.whl", hash = "sha256:5eef1d32d7614e0ceb6db198cf53df2a5830685cccbcf141a3e116faca967384"},
+    {file = "fastrlock-0.8.3-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_24_i686.whl", hash = "sha256:80876d9e04e8e35abbdb3e1a81a56558f4d5cf90c8592e428d4d12efce048347"},
+    {file = "fastrlock-0.8.3-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:24522689f4b5311afad0c8f998daec84a3dbe3a70cf821a615a763f843903030"},
+    {file = "fastrlock-0.8.3-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:de8c90c1a23fbe929d8a9628a6c1f0f1d8af6019e786354a682a26fa22ea21be"},
+    {file = "fastrlock-0.8.3-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:e0ceefadde046a5f6a261bfeaf25de9e0eba3ee790a9795b1fa9634111d3220e"},
+    {file = "fastrlock-0.8.3-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:1dd7f1520f7424793c812e1a4090570f8ff312725dbaf10a925b688aef7425f1"},
+    {file = "fastrlock-0.8.3-cp38-cp38-musllinux_1_1_aarch64.whl", hash = "sha256:15e13a8b01a3bbf25f1615a6ac1d6ed40ad3bcb8db134ee5ffa7360214a8bc5c"},
+    {file = "fastrlock-0.8.3-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:fcb50e195ec981c92d0211a201704aecbd9e4f9451aea3a6f71ac5b1ec2c98cf"},
+    {file = "fastrlock-0.8.3-cp38-cp38-win_amd64.whl", hash = "sha256:3e77a3d0ca5b29695d86b7d03ea88029c0ed8905cfee658eb36052df3861855a"},
+    {file = "fastrlock-0.8.3-cp39-cp39-macosx_11_0_universal2.whl", hash = "sha256:668fad1c8322badbc8543673892f80ee563f3da9113e60e256ae9ddd5b23daa4"},
+    {file = "fastrlock-0.8.3-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.manylinux_2_24_aarch64.whl", hash = "sha256:40b328369005a0b32de14b699192aed32f549c2d2b27a5e1f614fb7ac4cec4e9"},
+    {file = "fastrlock-0.8.3-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_24_i686.whl", hash = "sha256:6cbfb6f7731b5a280851c93883624424068fa5b22c2f546d8ae6f1fd9311e36d"},
+    {file = "fastrlock-0.8.3-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:1fced4cb0b3f1616be68092b70a56e9173713a4a943d02e90eb9c7897a7b5e07"},
+    {file = "fastrlock-0.8.3-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:387b2ac642938a20170a50f528817026c561882ea33306c5cbe750ae10d0a7c2"},
+    {file = "fastrlock-0.8.3-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:5a0d31840a28d66573047d2df410eb971135a2461fb952894bf51c9533cbfea5"},
+    {file = "fastrlock-0.8.3-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:0a9dc6fa73174f974dfb22778d05a44445b611a41d5d3776b0d5daa9e50225c6"},
+    {file = "fastrlock-0.8.3-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:9842b7722e4923fe76b08d8c58a9415a9a50d4c29b80673cffeae4874ea6626a"},
+    {file = "fastrlock-0.8.3-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:05029d7080c0c61a81d5fee78e842c9a1bf22552cd56129451a252655290dcef"},
+    {file = "fastrlock-0.8.3-cp39-cp39-win_amd64.whl", hash = "sha256:accd897ab2799024bb87b489c0f087d6000b89af1f184a66e996d3d96a025a3b"},
+    {file = "fastrlock-0.8.3.tar.gz", hash = "sha256:4af6734d92eaa3ab4373e6c9a1dd0d5ad1304e172b1521733c6c3b3d73c8fa5d"},
+]
+
+[[package]]
 name = "fonttools"
 version = "4.55.8"
 description = "Tools to manipulate font files"
@@ -702,6 +1012,47 @@ type1 = ["xattr ; sys_platform == \"darwin\""]
 ufo = ["fs (>=2.2.0,<3)"]
 unicode = ["unicodedata2 (>=15.1.0) ; python_version <= \"3.12\""]
 woff = ["brotli (>=1.0.1) ; platform_python_implementation == \"CPython\"", "brotlicffi (>=0.8.0) ; platform_python_implementation != \"CPython\"", "zopfli (>=0.1.4)"]
+
+[[package]]
+name = "fsspec"
+version = "2025.9.0"
+description = "File-system specification"
+optional = true
+python-versions = ">=3.9"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "fsspec-2025.9.0-py3-none-any.whl", hash = "sha256:530dc2a2af60a414a832059574df4a6e10cce927f6f4a78209390fe38955cfb7"},
+    {file = "fsspec-2025.9.0.tar.gz", hash = "sha256:19fd429483d25d28b65ec68f9f4adc16c17ea2c7c7bf54ec61360d478fb19c19"},
+]
+
+[package.extras]
+abfs = ["adlfs"]
+adl = ["adlfs"]
+arrow = ["pyarrow (>=1)"]
+dask = ["dask", "distributed"]
+dev = ["pre-commit", "ruff (>=0.5)"]
+doc = ["numpydoc", "sphinx", "sphinx-design", "sphinx-rtd-theme", "yarl"]
+dropbox = ["dropbox", "dropboxdrivefs", "requests"]
+full = ["adlfs", "aiohttp (!=4.0.0a0,!=4.0.0a1)", "dask", "distributed", "dropbox", "dropboxdrivefs", "fusepy", "gcsfs", "libarchive-c", "ocifs", "panel", "paramiko", "pyarrow (>=1)", "pygit2", "requests", "s3fs", "smbprotocol", "tqdm"]
+fuse = ["fusepy"]
+gcs = ["gcsfs"]
+git = ["pygit2"]
+github = ["requests"]
+gs = ["gcsfs"]
+gui = ["panel"]
+hdfs = ["pyarrow (>=1)"]
+http = ["aiohttp (!=4.0.0a0,!=4.0.0a1)"]
+libarchive = ["libarchive-c"]
+oci = ["ocifs"]
+s3 = ["s3fs"]
+sftp = ["paramiko"]
+smb = ["smbprotocol"]
+ssh = ["paramiko"]
+test = ["aiohttp (!=4.0.0a0,!=4.0.0a1)", "numpy", "pytest", "pytest-asyncio (!=0.22.0)", "pytest-benchmark", "pytest-cov", "pytest-mock", "pytest-recording", "pytest-rerunfailures", "requests"]
+test-downstream = ["aiobotocore (>=2.5.4,<3.0.0)", "dask[dataframe,test]", "moto[server] (>4,<5)", "pytest-timeout", "xarray"]
+test-full = ["adlfs", "aiohttp (!=4.0.0a0,!=4.0.0a1)", "cloudpickle", "dask", "distributed", "dropbox", "dropboxdrivefs", "fastparquet", "fusepy", "gcsfs", "jinja2", "kerchunk", "libarchive-c", "lz4", "notebook", "numpy", "ocifs", "pandas", "panel", "paramiko", "pyarrow", "pyarrow (>=1)", "pyftpdlib", "pygit2", "pytest", "pytest-asyncio (!=0.22.0)", "pytest-benchmark", "pytest-cov", "pytest-mock", "pytest-recording", "pytest-rerunfailures", "python-snappy", "requests", "smbprotocol", "tqdm", "urllib3", "zarr", "zstandard ; python_version < \"3.14\""]
+tqdm = ["tqdm"]
 
 [[package]]
 name = "griffe"
@@ -1120,6 +1471,53 @@ files = [
 ]
 
 [[package]]
+name = "libcudf-cu12"
+version = "25.10.0"
+description = "cuDF - GPU Dataframe (C++)"
+optional = true
+python-versions = ">=3.10"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "libcudf_cu12-25.10.0-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:162d00e389fb841d4dc1c45c4cbca1f6ebb84b895f366e8b4c758a6c9aeb4bbd"},
+    {file = "libcudf_cu12-25.10.0-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:fc7de43fd01ff4f567c40497be6935e22664b49cfb98b31a783493e7b9b0fc8e"},
+]
+
+[package.dependencies]
+libkvikio-cu12 = "==25.10.*"
+librmm-cu12 = "==25.10.*"
+rapids-logger = "==0.1.*"
+
+[[package]]
+name = "libkvikio-cu12"
+version = "25.10.0"
+description = "KvikIO - GPUDirect Storage (C++)"
+optional = true
+python-versions = "*"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "libkvikio_cu12-25.10.0-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:902fc326a7d5a1f3ca612016712ca518f9115a0fcb8331a9bdce19f71d810cdf"},
+    {file = "libkvikio_cu12-25.10.0-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:5ca9fdc6e87f2616c14cf574d838d9ac3521f0c7685469f1911f645dd78b1ba8"},
+]
+
+[[package]]
+name = "librmm-cu12"
+version = "25.10.0"
+description = "rmm - RAPIDS Memory Manager"
+optional = true
+python-versions = "*"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "librmm_cu12-25.10.0-py3-none-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:33a5d506209ba23d7b9b5637033f9542df846cdd6b5c1e57b4d611431f119165"},
+    {file = "librmm_cu12-25.10.0-py3-none-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:e12e97008002562f6b61d1168f4d842677a580256006669a6f66d870dab4b764"},
+]
+
+[package.dependencies]
+rapids-logger = "==0.1.*"
+
+[[package]]
 name = "llvmlite"
 version = "0.43.0"
 description = "lightweight wrapper around basic LLVM functionality"
@@ -1156,12 +1554,12 @@ version = "3.0.0"
 description = "Python port of markdown-it. Markdown parsing, done right!"
 optional = false
 python-versions = ">=3.8"
-groups = ["docs"]
-markers = "python_version >= \"3.10\""
+groups = ["main", "docs"]
 files = [
     {file = "markdown-it-py-3.0.0.tar.gz", hash = "sha256:e3f60a94fa066dc52ec76661e37c851cb232d92f9886b15cb560aaada2df8feb"},
     {file = "markdown_it_py-3.0.0-py3-none-any.whl", hash = "sha256:355216845c60bd96232cd8d8c40e8f9765cc86f46880e43a8fd22dc1a1a8cab1"},
 ]
+markers = {main = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")", docs = "python_version >= \"3.10\""}
 
 [package.dependencies]
 mdurl = ">=0.1,<1.0"
@@ -1263,12 +1661,12 @@ version = "0.1.2"
 description = "Markdown URL utilities"
 optional = false
 python-versions = ">=3.7"
-groups = ["docs"]
-markers = "python_version >= \"3.10\""
+groups = ["main", "docs"]
 files = [
     {file = "mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8"},
     {file = "mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba"},
 ]
+markers = {main = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")", docs = "python_version >= \"3.10\""}
 
 [[package]]
 name = "mizani"
@@ -1446,6 +1844,37 @@ llvmlite = "==0.43.*"
 numpy = ">=1.22,<2.1"
 
 [[package]]
+name = "numba-cuda"
+version = "0.19.1"
+description = "CUDA target for Numba"
+optional = true
+python-versions = ">=3.9"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "numba_cuda-0.19.1-py3-none-any.whl", hash = "sha256:2a0a144506993538615f697a888dd04de47eff9f521603cfa92a159161ab3941"},
+    {file = "numba_cuda-0.19.1.tar.gz", hash = "sha256:181600ca8cbdc5984c3b4198880f71029b116dfde0397bceef666ff830a72c90"},
+]
+
+[package.dependencies]
+cuda-bindings = {version = ">=12.9.1,<13.0.0", optional = true, markers = "extra == \"cu12\""}
+cuda-core = {version = "==0.3.*", optional = true, markers = "extra == \"cu12\""}
+cuda-python = {version = "==12.9.*", optional = true, markers = "extra == \"cu12\""}
+numba = ">=0.60.0"
+nvidia-cuda-cccl-cu12 = {version = "*", optional = true, markers = "extra == \"cu12\""}
+nvidia-cuda-nvcc-cu12 = {version = "*", optional = true, markers = "extra == \"cu12\""}
+nvidia-cuda-nvrtc-cu12 = {version = "*", optional = true, markers = "extra == \"cu12\""}
+nvidia-cuda-runtime-cu12 = {version = "*", optional = true, markers = "extra == \"cu12\""}
+nvidia-nvjitlink-cu12 = {version = "*", optional = true, markers = "extra == \"cu12\""}
+
+[package.extras]
+cu12 = ["cuda-bindings (>=12.9.1,<13.0.0)", "cuda-core (==0.3.*)", "cuda-python (==12.9.*)", "nvidia-cuda-cccl-cu12", "nvidia-cuda-nvcc-cu12", "nvidia-cuda-nvrtc-cu12", "nvidia-cuda-runtime-cu12", "nvidia-nvjitlink-cu12"]
+cu13 = ["cuda-bindings (==13.*)", "cuda-core (==0.3.2)", "cuda-python (==13.*)", "nvidia-cuda-cccl (==13.*)", "nvidia-cuda-nvrtc (==13.*)", "nvidia-cuda-runtime (==13.*)", "nvidia-nvjitlink (==13.*)", "nvidia-nvvm (==13.*)"]
+test = ["cffi", "filecheck", "pre-commit", "psutil", "pytest", "pytest-xdist"]
+test-cu12 = ["numba-cuda[cu12]", "numba-cuda[test]", "nvidia-curand-cu12"]
+test-cu13 = ["numba-cuda[cu13]", "numba-cuda[test]", "nvidia-curand (==10.4.*)"]
+
+[[package]]
 name = "numpy"
 version = "2.0.2"
 description = "Fundamental package for array computing in Python"
@@ -1499,6 +1928,110 @@ files = [
     {file = "numpy-2.0.2-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:a46288ec55ebbd58947d31d72be2c63cbf839f0a63b49cb755022310792a3385"},
     {file = "numpy-2.0.2.tar.gz", hash = "sha256:883c987dee1880e2a864ab0dc9892292582510604156762362d9326444636e78"},
 ]
+
+[[package]]
+name = "nvidia-cuda-cccl-cu12"
+version = "12.9.27"
+description = "CUDA CCCL"
+optional = true
+python-versions = ">=3"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "nvidia_cuda_cccl_cu12-12.9.27-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:d7898b38aa68beaa234d48f0868273702342a196d6e2e9d0ef058dca2390ebea"},
+    {file = "nvidia_cuda_cccl_cu12-12.9.27-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:37869e17ce2e1ecec6eddf1927cca0f8c34e64fd848d40453df559091e2d7117"},
+    {file = "nvidia_cuda_cccl_cu12-12.9.27-py3-none-win_amd64.whl", hash = "sha256:72106f95a9bb3be18472806b4f663ebf0f9248a86d14b4ae3305725b855d9d92"},
+]
+
+[[package]]
+name = "nvidia-cuda-nvcc-cu12"
+version = "12.9.86"
+description = "CUDA nvcc"
+optional = true
+python-versions = ">=3"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "nvidia_cuda_nvcc_cu12-12.9.86-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl", hash = "sha256:5d6a0d32fdc7ea39917c20065614ae93add6f577d840233237ff08e9a38f58f0"},
+    {file = "nvidia_cuda_nvcc_cu12-12.9.86-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:44e1eca4d08926193a558d2434b1bf83d57b4d5743e0c431c0c83d51da1df62b"},
+    {file = "nvidia_cuda_nvcc_cu12-12.9.86-py3-none-win_amd64.whl", hash = "sha256:8ed7f0b17dea662755395be029376db3b94fed5cbb17c2d35cc866c5b1b84099"},
+]
+
+[[package]]
+name = "nvidia-cuda-nvrtc-cu12"
+version = "12.9.86"
+description = "NVRTC native runtime libraries"
+optional = true
+python-versions = ">=3"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "nvidia_cuda_nvrtc_cu12-12.9.86-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl", hash = "sha256:210cf05005a447e29214e9ce50851e83fc5f4358df8b453155d5e1918094dcb4"},
+    {file = "nvidia_cuda_nvrtc_cu12-12.9.86-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:096d4de6bda726415dfaf3198d4f5c522b8e70139c97feef5cd2ca6d4cd9cead"},
+    {file = "nvidia_cuda_nvrtc_cu12-12.9.86-py3-none-win_amd64.whl", hash = "sha256:72972ebdcf504d69462d3bcd67e7b81edd25d0fb85a2c46d3ea3517666636349"},
+]
+
+[[package]]
+name = "nvidia-cuda-runtime-cu12"
+version = "12.9.79"
+description = "CUDA Runtime native Libraries"
+optional = true
+python-versions = ">=3"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "nvidia_cuda_runtime_cu12-12.9.79-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:83469a846206f2a733db0c42e223589ab62fd2fabac4432d2f8802de4bded0a4"},
+    {file = "nvidia_cuda_runtime_cu12-12.9.79-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:25bba2dfb01d48a9b59ca474a1ac43c6ebf7011f1b0b8cc44f54eb6ac48a96c3"},
+    {file = "nvidia_cuda_runtime_cu12-12.9.79-py3-none-win_amd64.whl", hash = "sha256:8e018af8fa02363876860388bd10ccb89eb9ab8fb0aa749aaf58430a9f7c4891"},
+]
+
+[[package]]
+name = "nvidia-nvjitlink-cu12"
+version = "12.9.86"
+description = "Nvidia JIT LTO Library"
+optional = true
+python-versions = ">=3"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "nvidia_nvjitlink_cu12-12.9.86-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl", hash = "sha256:e3f1171dbdc83c5932a45f0f4c99180a70de9bd2718c1ab77d14104f6d7147f9"},
+    {file = "nvidia_nvjitlink_cu12-12.9.86-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:994a05ef08ef4b0b299829cde613a424382aff7efb08a7172c1fa616cc3af2ca"},
+    {file = "nvidia_nvjitlink_cu12-12.9.86-py3-none-win_amd64.whl", hash = "sha256:cc6fcec260ca843c10e34c936921a1c426b351753587fdd638e8cff7b16bb9db"},
+]
+
+[[package]]
+name = "nvtx"
+version = "0.2.13"
+description = "Python NVTX - Python code annotation library"
+optional = true
+python-versions = "*"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "nvtx-0.2.13-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:462bdcc65a12b53bfa3e7df564ddfb72092a030a923dccd1cf88c4b771ecae3f"},
+    {file = "nvtx-0.2.13-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7874534af889ab7c2c63554c73119d193d2beb7671b551b7f43de5b97ceb5971"},
+    {file = "nvtx-0.2.13-cp310-cp310-win_amd64.whl", hash = "sha256:4f26d04b5ea5b96096941cb9a7115a73454e9e9d5c247bfcd34ec584559cf9dd"},
+    {file = "nvtx-0.2.13-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1ad794a0c046ef268b2fb3b6812a35bb3bce5cd19207d164689943f0031ac45f"},
+    {file = "nvtx-0.2.13-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5640ca4b8be2c19a8fc4ca8403d3c2598165ea27541940b4897138a7b0a717fe"},
+    {file = "nvtx-0.2.13-cp311-cp311-win_amd64.whl", hash = "sha256:be6d53143cb2bd44e04aecdb7f3b34b48ded96f3673ae41362239d9f54bcfe27"},
+    {file = "nvtx-0.2.13-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3435cbbffa132f6aaba3abdb01e71a1b961a20858b4cb791883895a25b9305d6"},
+    {file = "nvtx-0.2.13-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:453d838dd1424a04303281ee57a73e2b8dca0e03039bc609a945861b8fe7d7d9"},
+    {file = "nvtx-0.2.13-cp312-cp312-win_amd64.whl", hash = "sha256:0722d743e0e41e1fb866ebe6446e0cd0d268ca8671313f8da4f8c969956b74d3"},
+    {file = "nvtx-0.2.13-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a1561d2111c698b1b1075899ff9c3fa7ba83603fc27c2e8ef567de6bbbe85ce1"},
+    {file = "nvtx-0.2.13-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:edd7b729ed0211350258a21dd13422f59bc521de2b2fd21feb6c177af492f4e1"},
+    {file = "nvtx-0.2.13-cp313-cp313-win_amd64.whl", hash = "sha256:f0524bb71443d5a1f19a6409a9a81405fc437e53c5edfc4c44b6f4504ccf46e3"},
+    {file = "nvtx-0.2.13-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:88286e7f1bb098704b8fd58a08a1b0c0fd41843275bf23badb5e32f59e0b38b9"},
+    {file = "nvtx-0.2.13-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3ae27d5a2049f72b53bf6c061c3c8badeb8c33758b3eb31a888cca7afbbe3114"},
+    {file = "nvtx-0.2.13-cp38-cp38-win_amd64.whl", hash = "sha256:e759bf6d97ff7a134cf290b251c4d55154a707d80131a00c043942e22caab089"},
+    {file = "nvtx-0.2.13-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:18634cffbcebd535c8e7c2cbac86a3e3313bd23975d7c3e811e063fbc0b6cb88"},
+    {file = "nvtx-0.2.13-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9ffa37591353296c1a81130d8231c6550ba5faf2f8e2fc87b851f69446a836cf"},
+    {file = "nvtx-0.2.13-cp39-cp39-win_amd64.whl", hash = "sha256:65ba8e3d81bf34cb363042787b8e2189cda6af38749374997a36262e2219105e"},
+    {file = "nvtx-0.2.13.tar.gz", hash = "sha256:9db7ba135168e14e1f038866100bf8ed42d3e00b404e9bc7b6280ee3af828b92"},
+]
+
+[package.extras]
+docs = ["nvidia_sphinx_theme", "sphinx"]
+test = ["Cython (==3.0.11)", "pytest", "setuptools"]
 
 [[package]]
 name = "packaging"
@@ -2232,14 +2765,47 @@ version = "2.19.1"
 description = "Pygments is a syntax highlighting package written in Python."
 optional = false
 python-versions = ">=3.8"
-groups = ["dev", "docs"]
+groups = ["main", "dev", "docs"]
 files = [
     {file = "pygments-2.19.1-py3-none-any.whl", hash = "sha256:9ea1544ad55cecf4b8242fab6dd35a93bbce657034b0611ee383099054ab6d8c"},
     {file = "pygments-2.19.1.tar.gz", hash = "sha256:61c16d2a8576dc0649d9f39e089b5f02bcd27fba10d8fb4dcc28173f7a45151f"},
 ]
+markers = {main = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"}
 
 [package.extras]
 windows-terminal = ["colorama (>=0.4.6)"]
+
+[[package]]
+name = "pylibcudf-cu12"
+version = "25.10.0"
+description = "pylibcudf - Python bindings for libcudf"
+optional = true
+python-versions = ">=3.10"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "pylibcudf_cu12-25.10.0-cp310-cp310-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:75217bbdcf0d6fe0eff487a49646b4b0694e65e05c28a1a462a6119767bddc9c"},
+    {file = "pylibcudf_cu12-25.10.0-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:609daf953bf1f5be1b07421ef164a015fc4cccba83a09a1dbe05a0bd83d1b4cd"},
+    {file = "pylibcudf_cu12-25.10.0-cp311-cp311-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:be29b4f266c1c8f0453d11682b61c463312a0650006fec3f95c2cbafa2c706d4"},
+    {file = "pylibcudf_cu12-25.10.0-cp311-cp311-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:327f1955240a82716af486642d235bf0512eda3d60611c2c2e53b2b48b27e2a4"},
+    {file = "pylibcudf_cu12-25.10.0-cp312-cp312-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:52ba749056b0cc56f3ce1aa4dd09b9defa3e24df851dfb87317fe98fc73d720e"},
+    {file = "pylibcudf_cu12-25.10.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:589aa4769c9190a3872b34170fb6c26d0f67828140f88d20048dcf67e731cd47"},
+    {file = "pylibcudf_cu12-25.10.0-cp313-cp313-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:aa305e23a1d1206d419ae309906a1c786b77bcd0f40a64dc255f546af9d538f7"},
+    {file = "pylibcudf_cu12-25.10.0-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:c128f09062eb1d3ccfaa559ad5e8609f623fa9b08831ebde45ed90e54d902670"},
+]
+
+[package.dependencies]
+cuda-python = ">=12.9.2,<13.0a0"
+libcudf-cu12 = "==25.10.*"
+nvtx = ">=0.2.1"
+packaging = "*"
+rmm-cu12 = "==25.10.*"
+typing_extensions = ">=4.0.0"
+
+[package.extras]
+numpy = ["numpy (>=1.23,<3.0a0)"]
+pyarrow = ["pyarrow (>=15.0.0) ; platform_machine == \"x86_64\"", "pyarrow (>=15.0.0,!=17.0.0) ; platform_machine == \"aarch64\""]
+test = ["cupy-cuda12x (>=13.6.0)", "fastavro (>=0.22.9)", "hypothesis (>=6.131.7)", "mmh3", "nanoarrow", "numba (>=0.60.0,<0.62.0a0)", "numba-cuda[cu12] (>=0.19.1,<0.20.0a0)", "pandas", "pyarrow (>=15.0.0) ; platform_machine == \"x86_64\"", "pyarrow (>=15.0.0,!=17.0.0) ; platform_machine == \"aarch64\"", "pytest", "pytest-cov", "pytest-xdist", "xxhash"]
 
 [[package]]
 name = "pyparsing"
@@ -2572,6 +3138,19 @@ watchdog = ">=3.0.0"
 dev = ["jupyterlab", "jupytext", "pre-commit", "pytest (<8.0.0)", "pytest-cov", "syrupy"]
 
 [[package]]
+name = "rapids-logger"
+version = "0.1.19"
+description = "Logging framework for RAPIDS built around spdlog"
+optional = true
+python-versions = ">=3.10"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "rapids_logger-0.1.19-py3-none-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:27be79b29d4545aef9b7f4608c258b5acfe984081a8bdf72381948c0dfccf14f"},
+    {file = "rapids_logger-0.1.19-py3-none-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:6797beb4a0d6874658944ddc38a1245059cd30ac6304f1e1f2b7d8c23db7dd18"},
+]
+
+[[package]]
 name = "referencing"
 version = "0.36.2"
 description = "JSON Referencing + Python"
@@ -2616,12 +3195,12 @@ version = "13.9.4"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 optional = false
 python-versions = ">=3.8.0"
-groups = ["docs"]
-markers = "python_version >= \"3.10\""
+groups = ["main", "docs"]
 files = [
     {file = "rich-13.9.4-py3-none-any.whl", hash = "sha256:6049d5e6ec054bf2779ab3358186963bac2ea89175919d699e378b99738c2a90"},
     {file = "rich-13.9.4.tar.gz", hash = "sha256:439594978a49a09530cff7ebc4b5c7103ef57baf48d5ea3184f21d9a2befa098"},
 ]
+markers = {main = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")", docs = "python_version >= \"3.10\""}
 
 [package.dependencies]
 markdown-it-py = ">=2.2.0"
@@ -2630,6 +3209,33 @@ typing-extensions = {version = ">=4.0.0,<5.0", markers = "python_version < \"3.1
 
 [package.extras]
 jupyter = ["ipywidgets (>=7.5.1,<9)"]
+
+[[package]]
+name = "rmm-cu12"
+version = "25.10.0"
+description = "rmm - RAPIDS Memory Manager"
+optional = true
+python-versions = ">=3.10"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "rmm_cu12-25.10.0-cp310-cp310-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:350d1ce023cd6f1da7b22b0e201e9443cc967162b87a2e1b5b5cd4c44e8a2b14"},
+    {file = "rmm_cu12-25.10.0-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:78883b94f5878f12c020a323517f8f6fb598ecbda9c63821e36bc34859ab2f42"},
+    {file = "rmm_cu12-25.10.0-cp311-cp311-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:7dd45e32ce89f7f994ef1f43a045c75c0c2e3f445161d892a76b2e8eea9e5487"},
+    {file = "rmm_cu12-25.10.0-cp311-cp311-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:b236761e1a9793096f80feda21cdd1c21e83984ef19a4c070445ca84bf2b0220"},
+    {file = "rmm_cu12-25.10.0-cp312-cp312-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:c31b1822934a4075b06155486460ba1723f342a348c66c7e186f494d5d674d64"},
+    {file = "rmm_cu12-25.10.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:00d2732aab9a998dafdab9503064c8fec6aef8bca8e645637477e574aab1e82f"},
+    {file = "rmm_cu12-25.10.0-cp313-cp313-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:6a9a185c81f8fa987511ee03ae2e2f3736f7616c19d3c436cacea70637923e69"},
+    {file = "rmm_cu12-25.10.0-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:dd56c86fbb4eeeb67c197996f79ee852932c398a873d4c021df07c11e1fc51f8"},
+]
+
+[package.dependencies]
+cuda-python = ">=12.9.2,<13.0a0"
+librmm-cu12 = "==25.10.*"
+numpy = ">=1.23,<3.0a0"
+
+[package.extras]
+test = ["numba (>=0.60.0,<0.62.0a0)", "numba-cuda[cu12] (>=0.19.1,<0.20.0a0)", "pytest", "pytest-cov"]
 
 [[package]]
 name = "rpds-py"
@@ -3157,7 +3763,7 @@ files = [
     {file = "typing_extensions-4.12.2-py3-none-any.whl", hash = "sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d"},
     {file = "typing_extensions-4.12.2.tar.gz", hash = "sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8"},
 ]
-markers = {main = "python_version < \"3.11\"", dev = "python_version == \"3.9\""}
+markers = {main = "python_version < \"3.11\" or (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")", dev = "python_version == \"3.9\""}
 
 [[package]]
 name = "tzdata"
@@ -3291,9 +3897,10 @@ test = ["big-O", "importlib-resources ; python_version < \"3.9\"", "jaraco.funct
 type = ["pytest-mypy"]
 
 [extras]
-gpu = ["cudf"]
+gpu = ["cudf-cu12"]
+gpu-cu12 = ["cudf-cu12"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9"
-content-hash = "105711296f3545f333f91148b4d07d8e10198102f17b0270be4d3aa304c8d064"
+content-hash = "615f9ccbf284a8534091e4ecdc5af7a5c2bf60d750fc3be6e29337382bbb56d4"
