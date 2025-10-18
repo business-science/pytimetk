@@ -1554,13 +1554,6 @@
     "text": "Example: accelerating augment_rsi\nimport polars as pl\nimport pytimetk as tk\n\ndf = tk.load_dataset(\"stocks_daily\", parse_dates=[\"date\"])\n\nresult = (\n    pl.from_pandas(df.query(\"symbol == 'AAPL'\"))\n    .lazy()\n    .tk.augment_rsi(\n        date_column=\"date\",\n        close_column=\"close\",\n        periods=[14, 28],\n    )\n    .collect(engine=\"gpu\")\n)"
   },
   {
-    "objectID": "production/02_gpu_acceleration.html#example-accelerating-a-polars-expression-pipeline",
-    "href": "production/02_gpu_acceleration.html#example-accelerating-a-polars-expression-pipeline",
-    "title": "GPU Acceleration",
-    "section": "Example: accelerating a Polars expression pipeline",
-    "text": "Example: accelerating a Polars expression pipeline\nimport polars as pl\nimport pytimetk as tk\n\ndf = tk.load_dataset(\"stocks_daily\", parse_dates=[\"date\"])\n\npipe = (\n    pl.from_pandas(df)\n    .lazy()\n    .filter(pl.col(\"symbol\") == \"AAPL\")\n    .group_by(\"symbol\")\n    .agg(\n        pl.col(\"close\").sort_by(\"date\").alias(\"close\"),\n        pl.col(\"date\").sort().alias(\"date\"),\n    )\n)\n\nresult = pipe.collect(engine=\"gpu\")"
-  },
-  {
     "objectID": "production/02_gpu_acceleration.html#example-pandas-cudf.pandas-no-code-changes-required",
     "href": "production/02_gpu_acceleration.html#example-pandas-cudf.pandas-no-code-changes-required",
     "title": "GPU Acceleration",
