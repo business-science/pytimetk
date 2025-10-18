@@ -25,7 +25,7 @@ def resolve_pandas_groupby_frame(
     attribute, so we look through a handful of internal hooks and gracefully
     degrade when only cudf frames are available by converting back to pandas.
     """
-    search_order = ("obj", "_obj_with_exclusions", "_selected_obj")
+    search_order = ("_selected_obj", "obj", "_obj_with_exclusions")
     for attr in search_order:
         candidate = None
         if hasattr(groupby, "__dict__") and attr in groupby.__dict__:
