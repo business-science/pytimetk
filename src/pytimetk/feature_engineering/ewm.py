@@ -3,7 +3,7 @@ import polars as pl
 import pandas_flavor as pf
 import warnings
 
-from typing import Optional, Union, List, Sequence, Tuple
+from typing import Optional, Union, List, Sequence, Any, Tuple
 
 import numpy as np
 
@@ -78,11 +78,14 @@ def augment_ewm(
         - 'std': Calculate the exponentially weighted standard deviation.
         - 'var': Calculate the exponentially weighted variance.
 
-    alpha : float
-        The `alpha` parameter is a float that represents the smoothing factor
-        for the Exponential Weighted Moving (EWM) window function. It controls
-        the rate at which the weights decrease exponentially as the data points
-        move further away from the current point.
+    alpha : float or sequence of floats, optional
+        The `alpha` parameter represents the smoothing factor for the Exponential
+        Weighted Moving (EWM) window function. It controls the rate at which the
+        weights decrease exponentially as the data points move further away from
+        the current point. Pass a single value to compute one EWM or a sequence
+        of values to generate multiple EWM columns in a single call. This option
+        is mutually exclusive with specifying decay parameters such as `com`,
+        `span`, or `halflife` through ``**kwargs``.
     engine : {"auto", "pandas", "polars", "cudf"}, optional
         Execution engine. ``"auto"`` (default) infers the backend from the input
         data while allowing explicit overrides. Polars and cudf inputs currently
@@ -245,12 +248,78 @@ def augment_ewm(
     return restored
 
 
+def _ensure_list_like(values: Union[Any, Sequence[Any]]) -> List[Any]:
+    if isinstance(values, (list, tuple, set)):
+        return list(values)
+    if isinstance(values, range):
+        return list(values)
+    if isinstance(values, np.ndarray):
+        return values.tolist()
+    if isinstance(values, pd.Series):
+        return values.tolist()
+    if isinstance(values, pd.Index):
+        return values.tolist()
+    polars_series = getattr(pl, "Series", None)
+    if polars_series is not None and isinstance(values, polars_series):
+        return values.to_list()
+    if isinstance(values, Sequence) and not isinstance(values, (str, bytes)):
+        return list(values)
+    return [values]
+
+
+def _prepare_decay_configs(
+    alpha: Optional[Union[float, Sequence[float]]],
+    kwargs: dict,
+) -> List[Tuple[str, Any, dict]]:
+    decay_param_keys = ("com", "span", "halflife")
+    non_decay_kwargs = {k: v for k, v in kwargs.items() if k not in decay_param_keys}
+    provided_decay_params = [key for key in decay_param_keys if key in kwargs]
+
+    if "alpha" in kwargs:
+        raise ValueError(
+            "Do not supply 'alpha' through **kwargs. Use the 'alpha' argument instead."
+        )
+
+    if alpha is not None:
+        if provided_decay_params:
+            raise ValueError(
+                "Specify either 'alpha' or one of 'com', 'span', or 'halflife', but not both."
+            )
+        alpha_values = _ensure_list_like(alpha)
+        if not alpha_values:
+            raise ValueError("'alpha' must contain at least one value.")
+        return [
+            ("alpha", alpha_value, {**non_decay_kwargs, "alpha": alpha_value})
+            for alpha_value in alpha_values
+        ]
+
+    if not provided_decay_params:
+        raise ValueError(
+            "No valid decay parameter provided. Specify 'alpha' through function arguments, or one of 'com', 'span', or 'halflife' through **kwargs."
+        )
+
+    if len(provided_decay_params) > 1:
+        raise ValueError(
+            "Multiple decay parameters provided. Specify only one of 'com', 'span', or 'halflife'."
+        )
+
+    decay_key = provided_decay_params[0]
+    decay_values = _ensure_list_like(kwargs[decay_key])
+    if not decay_values:
+        raise ValueError(f"Parameter '{decay_key}' must contain at least one value.")
+
+    return [
+        (decay_key, decay_value, {**non_decay_kwargs, decay_key: decay_value})
+        for decay_value in decay_values
+    ]
+
+
 def _augment_ewm_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
     window_func: Union[str, List[str]],
-    alpha: float,
+    alpha: Optional[Union[float, Sequence[float]]],
     reduce_memory: bool,
     **kwargs,
 ) -> pd.DataFrame:
@@ -270,29 +339,17 @@ def _augment_ewm_pandas(
         group_names = None
         grouped = [([], data_copy.sort_values(by=[date_column]))]
 
-    def determine_decay_parameter(alpha, **kwargs):
-        if alpha is not None:
-            return "alpha", alpha
-        for param in ["com", "span", "halflife"]:
-            if param in kwargs:
-                return param, kwargs[param]
-        return None, None
-
-    decay_param, value = determine_decay_parameter(alpha, **kwargs)
-
-    if decay_param is None:
-        raise ValueError(
-            "No valid decay parameter provided. Specify 'alpha' through function arguments, or one of 'com', 'span', or 'halflife' through **kwargs."
-        )
+    decay_configs = _prepare_decay_configs(alpha, kwargs)
 
     result_dfs = []
     for _, group_df in grouped:
         for col in value_columns:
-            for func in window_funcs:
-                result_col_name = f"{col}_ewm_{func}_{decay_param}_{value}"
-                ewm_obj = group_df[col].ewm(alpha=alpha, **kwargs)
-                result_series = _apply_ewm_function(ewm_obj, func)
-                group_df[result_col_name] = result_series
+            for decay_label, decay_value, ewm_params in decay_configs:
+                ewm_obj = group_df[col].ewm(**ewm_params)
+                for func in window_funcs:
+                    result_col_name = f"{col}_ewm_{func}_{decay_label}_{decay_value}"
+                    result_series = _apply_ewm_function(ewm_obj, func)
+                    group_df[result_col_name] = result_series
         result_dfs.append(group_df)
 
     result = pd.concat(result_dfs)
@@ -322,7 +379,7 @@ def _augment_ewm_cudf_dataframe(
     date_column: str,
     value_columns: List[str],
     window_funcs: List[str],
-    alpha: Optional[float],
+    alpha: Optional[Union[float, Sequence[float]]],
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
     **kwargs,
@@ -348,18 +405,7 @@ def _augment_ewm_cudf_dataframe(
         if not cudf.api.types.is_numeric_dtype(df_sorted[col]):
             df_sorted[col] = df_sorted[col].astype("float64")
 
-    def _determine_decay(alpha_value: Optional[float], params: dict) -> Tuple[str, Union[float, int]]:
-        if alpha_value is not None:
-            return "alpha", alpha_value
-        for param in ("com", "span", "halflife"):
-            if param in params:
-                return param, params[param]
-        raise ValueError(
-            "No valid decay parameter provided. Specify 'alpha' through function arguments, "
-            "or one of 'com', 'span', or 'halflife' through **kwargs."
-        )
-
-    decay_label, decay_value = _determine_decay(alpha, kwargs)
+    decay_configs = _prepare_decay_configs(alpha, kwargs)
 
     group_list: Optional[List[str]]
     if group_columns:
@@ -369,23 +415,25 @@ def _augment_ewm_cudf_dataframe(
 
     for col in value_columns:
         if group_list is None:
-            ewm_obj = df_sorted[col].ewm(alpha=alpha, **kwargs)
-            for func in window_funcs:
-                result_name = f"{col}_ewm_{func}_{decay_label}_{decay_value}"
-                df_sorted[result_name] = getattr(ewm_obj, func)()
+            for decay_label, decay_value, ewm_params in decay_configs:
+                ewm_obj = df_sorted[col].ewm(**ewm_params)
+                for func in window_funcs:
+                    result_name = f"{col}_ewm_{func}_{decay_label}_{decay_value}"
+                    df_sorted[result_name] = getattr(ewm_obj, func)()
         else:
             # Allocate storage for the result column and fill group-by-group.
-            for func in window_funcs:
-                result_name = f"{col}_ewm_{func}_{decay_label}_{decay_value}"
-                result_holder = cudf.Series(
-                    np.nan, index=df_sorted.index, dtype="float64"
-                )
-                for _, group_df in df_sorted.groupby(group_list, sort=False):
-                    group_indices = group_df.index
-                    group_series = group_df[col]
-                    ewm_obj = group_series.ewm(alpha=alpha, **kwargs)
-                    result_holder.loc[group_indices] = getattr(ewm_obj, func)()
-                df_sorted[result_name] = result_holder
+            for decay_label, decay_value, ewm_params in decay_configs:
+                for func in window_funcs:
+                    result_name = f"{col}_ewm_{func}_{decay_label}_{decay_value}"
+                    result_holder = cudf.Series(
+                        np.nan, index=df_sorted.index, dtype="float64"
+                    )
+                    for _, group_df in df_sorted.groupby(group_list, sort=False):
+                        group_indices = group_df.index
+                        group_series = group_df[col]
+                        ewm_obj = group_series.ewm(**ewm_params)
+                        result_holder.loc[group_indices] = getattr(ewm_obj, func)()
+                    df_sorted[result_name] = result_holder
 
     if row_id_column and row_id_column in df_sorted.columns:
         df_sorted = df_sorted.sort_values(row_id_column)

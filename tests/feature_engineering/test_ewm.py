@@ -23,6 +23,25 @@ def test_augment_ewm_reduce_memory_pandas():
     assert expected_cols.issubset(result.columns)
 
 
+def test_augment_ewm_multiple_alpha_pandas():
+    df = _sample_data()
+
+    result = df.augment_ewm(
+        date_column="date",
+        value_column="value",
+        window_func=["mean", "std"],
+        alpha=[0.1, 0.3],
+    )
+
+    expected_cols = {
+        "value_ewm_mean_alpha_0.1",
+        "value_ewm_std_alpha_0.1",
+        "value_ewm_mean_alpha_0.3",
+        "value_ewm_std_alpha_0.3",
+    }
+    assert expected_cols.issubset(result.columns)
+
+
 def test_augment_ewm_polars_accessor():
     df = _sample_data()
     pl_df = pl.from_pandas(df)
