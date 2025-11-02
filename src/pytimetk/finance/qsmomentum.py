@@ -237,7 +237,10 @@ def augment_qsmomentum(
 def _calculate_qsmomentum_pandas(
     close, roc_fast_period, roc_slow_period, returns_period
 ):
-    close = pd.Series(close)
+    close = pd.Series(close).dropna()
+    required = max(roc_slow_period, returns_period, roc_fast_period)
+    if len(close) < required:
+        return np.nan
     returns = close.pct_change().iloc[-returns_period:]
     std_returns = np.std(returns)
 
@@ -260,7 +263,12 @@ def _calculate_qsmomentum_pandas(
 def _calculate_qsmomentum_polars(
     close, roc_fast_period, roc_slow_period, returns_period
 ):
-    close = pl.Series(close)
+    close = pl.Series(close).drop_nulls()
+    if close.dtype in (pl.Float32, pl.Float64):
+        close = close.drop_nans()
+    required = max(roc_slow_period, returns_period, roc_fast_period)
+    if close.len() < required:
+        return np.nan
     returns = close.pct_change()
     returns_last_returns_period = returns.slice(-returns_period, returns_period)
     std_returns = returns_last_returns_period.std()
