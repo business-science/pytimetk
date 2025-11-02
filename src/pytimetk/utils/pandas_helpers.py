@@ -61,18 +61,21 @@ def _glimpse_pandas(data: pd.DataFrame, max_width: int = 76) -> None:
     df = data.copy()
 
     # find the max string lengths of the column names and dtypes for formatting
-    _max_len = len(max(df.columns, key=len))
+    column_labels = [str(col) for col in df.columns]
+    _max_len = len(max(column_labels, key=len)) if column_labels else 0
     _max_dtype_label_len = 15
 
     # print the dimensions of the dataframe
     print(f"{type(df)}: {df.shape[0]} rows of {df.shape[1]} columns")
 
     # print the name, dtype and first few values of each column
-    for _column in df:
-        _col_vals = df[_column].head(max_width).to_list()
-        _col_type = str(df[_column].dtype)
+    for idx, column_label in enumerate(df.columns):
+        column_series = df.iloc[:, idx]
+        _col_vals = column_series.head(max_width).tolist()
+        _col_type = str(column_series.dtype)
 
-        output_col = f"{_column}:".ljust(_max_len + 1, " ")
+        column_name = column_labels[idx]
+        output_col = f"{column_name}:".ljust(_max_len + 1, " ")
         output_dtype = f" {_col_type}".ljust(_max_dtype_label_len + 3, " ")
 
         output_combined = f"{output_col} {output_dtype} {_col_vals}"
