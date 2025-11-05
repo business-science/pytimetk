@@ -21,6 +21,8 @@
 ## 🔴 Close Polars fallbacks
 
 - ✅ `src/pytimetk/feature_engineering/ewm.py:189` now keeps Polars inputs on a native code path. `_augment_ewm_polars` applies `ewm_mean/std/var` directly, only falling back to pandas for unsupported decay parameters/functions. Benchmark (`zzz_local/benchmarks/ewm_polars_profile.py`) on 200k rows shows pandas mean ≈ 0.030 s vs Polars ≈ 0.004 s (~7× faster) thanks to eliminating the conversion churn. Use `PYTHONPATH=src python zzz_local/benchmarks/ewm_polars_profile.py --rows 200000 --groups 25 --repeats 5` to reproduce.
+- ✅ `src/pytimetk/feature_engineering/rolling_apply.py` and `src/pytimetk/feature_engineering/expanding_apply.py` now keep Polars data in Arrow buffers, only converting each group/window to pandas when a user-supplied callable executes. `src/pytimetk/core/apply_by_time.py` does the same for the scalar-returning case; the `wide_format=True` branch still falls back to pandas so we can preserve MultiIndex behaviour (documented for users).
+- ✅ Conversion plumbing tightened: `convert_to_engine` now builds row identifiers inside Polars/cuDF instead of mutating pandas frames, relying on shallow copies (`copy(deep=False`) only when absolutely necessary and reusing cached pandas views when falling back.
 - `src/pytimetk/core/pad.py:207` and `src/pytimetk/core/apply_by_time.py:214` both down-convert to pandas. Polars exposes `DataFrame.upsample` and resampling via `group_by_dynamic`; wiring those in would avoid serialisation and let large frames stay in Arrow buffers.
 - Where we still need pandas fallbacks, call `prepared.clone()` before mutating inside the Polars branch so the original frame can stay cached without triggering copy-on-write churn. The clone cost is lower than repeated pandas conversions when users chain multiple helpers.
 
@@ -38,3 +40,10 @@
 
 - Add microbenchmarks (e.g. `zzz_local/benchmarks/augment_ewm_bench.py`) to measure time and peak RSS for common helper combinations under pandas vs Polars vs cudf. Guard PRs by comparing benchmark deltas in CI.
 - Surface optional debug logging (env flag) to warn when a Polars input is forced through pandas; this gives end users actionable visibility and validates future native implementations.
+
+## ✅ Completed
+
+- Polars-native paths implemented for `pad_by_time`, `future_frame`, EWM, `augment_rolling_apply`, `augment_expanding_apply`, and the scalar branch of `apply_by_time`. Remaining todo items include:
+  - Providing a Polars-native wide-format implementation for `apply_by_time` (current pandas fallback is documented).
+  - Extending Polars performance work across any finance indicators that still bounce through pandas.
+  - Tightening the conversion layer (row-id handling, cached pandas reuse) to finish removing redundant copies.

@@ -251,7 +251,7 @@ def convert_to_engine(
             pandas_index = data.index.copy()
             polars_df = pl.from_pandas(data)
             row_id_col = _make_temp_column(polars_df.columns)
-            polars_df = polars_df.with_row_count(row_id_col)
+            polars_df = polars_df.with_row_index(name=row_id_col, offset=0)
             return FrameConversion(
                 data=polars_df,
                 original_kind=original_kind,
@@ -280,9 +280,9 @@ def convert_to_engine(
         if original_kind == "pandas_groupby":
             pandas_df = resolve_pandas_groupby_frame(data)
             pandas_index = pandas_df.index.copy()
-            row_id_col = _make_temp_column(pandas_df.columns)
             polars_df = pl.from_pandas(pandas_df)
-            polars_df = polars_df.with_row_count(row_id_col)
+            row_id_col = _make_temp_column(polars_df.columns)
+            polars_df = polars_df.with_row_index(name=row_id_col, offset=0)
             group_names = [str(col) for col in data.grouper.names]
             group_key = group_names if len(group_names) > 1 else group_names[0]
             polars_groupby = polars_df.group_by(group_key, maintain_order=True)
@@ -341,11 +341,12 @@ def convert_to_engine(
                 group_columns=group_cols,
             )
         if original_kind == "pandas_df":
-            pandas_df = data.copy()
-            row_id_col = _make_temp_column(pandas_df.columns)
-            pandas_index = pandas_df.index.copy()
-            pandas_df[row_id_col] = np.arange(len(pandas_df))
-            cudf_df = cudf.from_pandas(pandas_df)
+            pandas_index = data.index.copy()
+            cudf_df = cudf.from_pandas(data)
+            row_id_col = _make_temp_column(cudf_df.columns)
+            cudf_df[row_id_col] = cudf.Series.arange(
+                start=0, stop=len(cudf_df), dtype="int64"
+            )
             return FrameConversion(
                 data=cudf_df,
                 original_kind=original_kind,
@@ -353,12 +354,14 @@ def convert_to_engine(
                 pandas_index=pandas_index,
             )
         if original_kind == "pandas_groupby":
-            pandas_df = resolve_pandas_groupby_frame(data).copy()
+            pandas_df = resolve_pandas_groupby_frame(data)
             group_names = [str(col) for col in data.grouper.names]
-            row_id_col = _make_temp_column(pandas_df.columns)
             pandas_index = pandas_df.index.copy()
-            pandas_df[row_id_col] = np.arange(len(pandas_df))
             cudf_df = cudf.from_pandas(pandas_df)
+            row_id_col = _make_temp_column(cudf_df.columns)
+            cudf_df[row_id_col] = cudf.Series.arange(
+                start=0, stop=len(cudf_df), dtype="int64"
+            )
             cudf_groupby = cudf_df.groupby(group_names, sort=False)
             return FrameConversion(
                 data=cudf_groupby,

@@ -358,6 +358,15 @@ def _apply_by_time_polars(
             reduce_memory=reduce_memory,
             named_funcs=named_funcs,
         )
+        if resolved_groups:
+            for col in resolved_groups:
+                key_value = part.select(pl.col(col).first()).item()
+                pandas_result[col] = key_value
+            # move group columns before date for consistency
+            ordered_cols = list(resolved_groups) + [
+                col for col in pandas_result.columns if col not in resolved_groups
+            ]
+            pandas_result = pandas_result[ordered_cols]
         results.append(pl.from_pandas(pandas_result))
 
     combined = (
