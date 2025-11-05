@@ -328,16 +328,20 @@ def _augment_ewm_pandas(
     )
     window_funcs = [window_func] if isinstance(window_func, str) else list(window_func)
 
-    data_copy = data.copy() if isinstance(data, pd.DataFrame) else resolve_pandas_groupby_frame(data).copy()
+    base_frame = (
+        data
+        if isinstance(data, pd.DataFrame)
+        else resolve_pandas_groupby_frame(data)
+    )
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        grouped = data_copy.sort_values(by=[*group_names, date_column]).groupby(
-            group_names
-        )
+        sorted_frame = base_frame.sort_values(by=[*group_names, date_column])
+        grouped = sorted_frame.groupby(group_names)
     else:
         group_names = None
-        grouped = [([], data_copy.sort_values(by=[date_column]))]
+        sorted_frame = base_frame.sort_values(by=[date_column])
+        grouped = [([], sorted_frame)]
 
     decay_configs = _prepare_decay_configs(alpha, kwargs)
 
@@ -352,7 +356,7 @@ def _augment_ewm_pandas(
                     group_df[result_col_name] = result_series
         result_dfs.append(group_df)
 
-    result = pd.concat(result_dfs)
+    result = pd.concat(result_dfs, copy=False)
     if group_names is not None:
         result = result.sort_index(level=group_names)
     else:

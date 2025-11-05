@@ -173,27 +173,24 @@ def sort_dataframe(
 
     """
 
-    group_names = None
     if isinstance(data, pd.DataFrame):
-        df = data.copy()
-        df = df.sort_values(by=[date_column])
-        index_after_sort = df.index
+        sorted_df = data.sort_values(by=[date_column])
+        return sorted_df, sorted_df.index
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        df = resolve_pandas_groupby_frame(data)
-        if not isinstance(df, pd.DataFrame) and hasattr(df, "to_pandas"):
-            df = df.to_pandas()
-        df = df.copy()
-        missing_group_cols = [name for name in group_names if name not in df.columns]
-        if date_column not in df.columns or missing_group_cols:
-            df = df.reset_index()
-        df = df.sort_values(by=[*group_names, date_column])
-        index_after_sort = df.index
+        frame = resolve_pandas_groupby_frame(data)
+        if not isinstance(frame, pd.DataFrame) and hasattr(frame, "to_pandas"):
+            frame = frame.to_pandas()
+        missing_group_cols = [name for name in group_names if name not in frame.columns]
+        if date_column not in frame.columns or missing_group_cols:
+            frame = frame.reset_index()
+        sorted_df = frame.sort_values(by=[*group_names, date_column])
         if keep_grouped_df:
-            df = df.groupby(group_names)
+            return sorted_df.groupby(group_names), sorted_df.index
+        return sorted_df, sorted_df.index
 
-    return df, index_after_sort
+    raise TypeError("Unsupported data type for sort_dataframe")
 
 
 @pf.register_dataframe_method

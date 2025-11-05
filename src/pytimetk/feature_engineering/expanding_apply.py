@@ -190,26 +190,25 @@ def augment_expanding_apply(
     conversion: FrameConversion = convert_to_engine(data, "pandas")
     prepared_data = conversion.data
 
-    data_copy = (
-        prepared_data.copy()
+    base_frame = (
+        prepared_data
         if isinstance(prepared_data, pd.DataFrame)
-        else resolve_pandas_groupby_frame(prepared_data).copy()
+        else resolve_pandas_groupby_frame(prepared_data)
     )
 
-    if reduce_memory:
-        data_copy = reduce_memory_usage(data_copy)
+    working_frame = reduce_memory_usage(base_frame) if reduce_memory else base_frame
 
     threads_resolved = get_threads(threads)
 
     # Group data if it's a GroupBy object; otherwise, prepare it for the expanding calculations
     if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = prepared_data.grouper.names
-        grouped = data_copy.sort_values(by=[*group_names, date_column]).groupby(
-            group_names
-        )
+        grouped_frame = working_frame.sort_values(by=[*group_names, date_column])
+        grouped = grouped_frame.groupby(group_names)
     else:
         group_names = None
-        grouped = [([], data_copy.sort_values(by=[date_column]))]
+        grouped_frame = working_frame.sort_values(by=[date_column])
+        grouped = [([], grouped_frame)]
 
     # Set min_periods to 1 if not specified
     min_periods = 1 if min_periods is None else min_periods

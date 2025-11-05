@@ -169,9 +169,9 @@ def augment_fourier(
     sorted_data, _ = sort_dataframe(prepared_data, date_column, keep_grouped_df=True)
 
     if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
-        base_df = resolve_pandas_groupby_frame(prepared_data).copy()
+        base_df = resolve_pandas_groupby_frame(prepared_data)
     else:
-        base_df = prepared_data.copy()
+        base_df = prepared_data
 
     result = _augment_fourier_pandas(
         base_df,

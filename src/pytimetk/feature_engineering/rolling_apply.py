@@ -216,23 +216,23 @@ def augment_rolling_apply(
         window_func = [window_func]
 
     # Create a fresh copy of the data, leaving the original untouched
-    data_copy = (
-        prepared_data.copy()
+    base_frame = (
+        prepared_data
         if isinstance(prepared_data, pd.DataFrame)
-        else resolve_pandas_groupby_frame(prepared_data).copy()
+        else resolve_pandas_groupby_frame(prepared_data)
     )
 
-    original_index = data_copy.index
+    original_index = base_frame.index
 
     # Group data if it's a GroupBy object; otherwise, prepare it for the rolling calculations
     if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = prepared_data.grouper.names
-        grouped = data_copy.sort_values(by=[*group_names, date_column]).groupby(
-            group_names
-        )
+        grouped_frame = base_frame.sort_values(by=[*group_names, date_column])
+        grouped = grouped_frame.groupby(group_names)
     else:
         group_names = None
-        grouped = [([], data_copy.sort_values(by=[date_column]))]
+        grouped_frame = base_frame.sort_values(by=[date_column])
+        grouped = [([], grouped_frame)]
 
     if threads_resolved == 1:
         result_dfs = []
@@ -258,11 +258,13 @@ def augment_rolling_apply(
         )
 
     # Combine processed dataframes and sort by index
-    result_df = pd.concat(result_dfs).sort_index()
+    result_df = pd.concat(result_dfs, copy=False).sort_index()
 
-    # result_df = pd.concat([data_copy, result_df], axis=1)
+    # result_df = pd.concat([base_frame, result_df], axis=1)
     result_df = pd.concat(
-        [data_copy.reset_index(drop=True), result_df.reset_index(drop=True)], axis=1
+        [base_frame.reset_index(drop=True), result_df.reset_index(drop=True)],
+        axis=1,
+        copy=False,
     )
     result_df.index = original_index
     result_df = result_df.sort_index()
