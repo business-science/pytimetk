@@ -265,11 +265,11 @@ def _augment_regime_detection_pandas(
     """Pandas implementation of regime detection using HMM."""
 
     if isinstance(data, pd.DataFrame):
-        df = data.copy()
+        df = data.copy(deep=False)
         group_names = None
     elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        df = resolve_pandas_groupby_frame(data).copy()
+        df = resolve_pandas_groupby_frame(data).copy(deep=False)
 
     col = close_column
 

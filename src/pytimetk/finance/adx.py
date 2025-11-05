@@ -230,11 +230,11 @@ def _augment_adx_pandas(
     periods: List[int],
 ) -> pd.DataFrame:
     if isinstance(data, pd.DataFrame):
-        df = data.copy()
+        df = data.copy(deep=False)
         grouped = None
     elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         grouped = data.grouper.names
-        df = resolve_pandas_groupby_frame(data).copy()
+        df = resolve_pandas_groupby_frame(data).copy(deep=False)
     else:
         raise TypeError("Unsupported data type passed to _augment_adx_pandas.")
 

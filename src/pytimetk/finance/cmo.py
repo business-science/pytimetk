@@ -256,7 +256,7 @@ def _augment_cmo_pandas(
     periods: List[int],
 ) -> pd.DataFrame:
     if isinstance(data, pd.DataFrame):
-        df = data.copy()
+        df = data.copy(deep=False)
         for period in periods:
             df[f"{close_column}_cmo_{period}"] = _calculate_cmo_pandas(
                 df[close_column], period=period
@@ -265,7 +265,7 @@ def _augment_cmo_pandas(
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = list(data.grouper.names)
-        base_df = resolve_pandas_groupby_frame(data).copy()
+        base_df = resolve_pandas_groupby_frame(data).copy(deep=False)
         for period in periods:
             base_df[f"{close_column}_cmo_{period}"] = base_df.groupby(
                 group_names, group_keys=False

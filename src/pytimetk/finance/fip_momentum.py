@@ -238,11 +238,11 @@ def _augment_fip_momentum_pandas(
     skip_window: int,
 ) -> pd.DataFrame:
     if isinstance(data, pd.DataFrame):
-        df = data.copy()
+        df = data.copy(deep=False)
         group_names = None
     elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        df = resolve_pandas_groupby_frame(data).copy()
+        df = resolve_pandas_groupby_frame(data).copy(deep=False)
     else:
         raise TypeError(
             "Unsupported data type passed to _augment_fip_momentum_pandas."

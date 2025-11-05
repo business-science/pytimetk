@@ -298,11 +298,11 @@ def _augment_rolling_risk_metrics_pandas(
 ) -> pd.DataFrame:
     """Pandas implementation of rolling risk metrics calculation with selective metrics."""
     if isinstance(data, pd.DataFrame):
-        df = data.copy()
+        df = data.copy(deep=False)
         group_names = None
     elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        df = resolve_pandas_groupby_frame(data).copy()
+        df = resolve_pandas_groupby_frame(data).copy(deep=False)
 
     col = close_column
     # Calculate log returns only if needed by selected metrics

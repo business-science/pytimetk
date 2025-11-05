@@ -266,7 +266,7 @@ def _augment_roc_pandas(
     start_index: int,
 ) -> pd.DataFrame:
     if isinstance(data, pd.DataFrame):
-        df = data.copy()
+        df = data.copy(deep=False)
         for col in close_columns:
             for period in periods:
                 df[_roc_column(col, start_index, period)] = _roc_pandas_series(
@@ -276,7 +276,7 @@ def _augment_roc_pandas(
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        base_df = resolve_pandas_groupby_frame(data).copy()
+        base_df = resolve_pandas_groupby_frame(data).copy(deep=False)
         grouped = base_df.groupby(group_names)
 
         for col in close_columns:

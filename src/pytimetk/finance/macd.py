@@ -254,7 +254,7 @@ def _augment_macd_pandas(
         group_names = data.grouper.names
         data = resolve_pandas_groupby_frame(data)
 
-        df = data.copy()
+        df = data.copy(deep=False)
 
         df = df.groupby(group_names, group_keys=False).apply(
             lambda x: _calculate_macd_pandas(
@@ -263,7 +263,7 @@ def _augment_macd_pandas(
         )
     elif isinstance(data, pd.DataFrame):
         # If data is a DataFrame, apply MACD calculation directly
-        df = data.copy()
+        df = data.copy(deep=False)
         df = _calculate_macd_pandas(
             df, close_column, fast_period, slow_period, signal_period
         )

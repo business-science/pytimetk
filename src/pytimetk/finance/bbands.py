@@ -255,7 +255,7 @@ def _augment_bbands_pandas(
     std_dev: List[float],
 ) -> pd.DataFrame:
     if isinstance(data, pd.DataFrame):
-        df = data.copy()
+        df = data.copy(deep=False)
         for period in periods:
             ma = df[close_column].rolling(period).mean()
             std = df[close_column].rolling(period).std()
@@ -268,7 +268,7 @@ def _augment_bbands_pandas(
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        base_df = resolve_pandas_groupby_frame(data).copy()
+        base_df = resolve_pandas_groupby_frame(data).copy(deep=False)
 
         for period in periods:
             rolling = (

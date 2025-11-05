@@ -223,7 +223,7 @@ def _augment_drawdown_pandas(
     """Pandas implementation of drawdown calculation."""
 
     if isinstance(data, pd.DataFrame):
-        df = data.copy()
+        df = data.copy(deep=False)
         col = close_column
 
         # Calculate running peak, drawdown, and drawdown percentage
@@ -235,7 +235,7 @@ def _augment_drawdown_pandas(
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = list(data.grouper.names)
-        df = resolve_pandas_groupby_frame(data).copy()
+        df = resolve_pandas_groupby_frame(data).copy(deep=False)
         col = close_column
 
         df[f"{col}_peak"] = df.groupby(group_names)[col].cummax()

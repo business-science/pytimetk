@@ -204,7 +204,7 @@ def _augment_rsi_pandas(
     periods: List[int],
 ) -> pd.DataFrame:
     if isinstance(data, pd.DataFrame):
-        df = data.copy()
+        df = data.copy(deep=False)
 
         for col in close_columns:
             for period in periods:
@@ -214,7 +214,7 @@ def _augment_rsi_pandas(
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        base_df = resolve_pandas_groupby_frame(data).copy()
+        base_df = resolve_pandas_groupby_frame(data).copy(deep=False)
 
         for col in close_columns:
             for period in periods:

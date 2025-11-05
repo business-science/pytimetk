@@ -236,7 +236,7 @@ def _augment_atr_pandas(
     type_str = "natr" if normalize else "atr"
 
     if isinstance(data, pd.DataFrame):
-        df = data.copy()
+        df = data.copy(deep=False)
         # True Range calculation as a column
         df["tr"] = pd.concat(
             [
@@ -261,7 +261,7 @@ def _augment_atr_pandas(
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = list(data.grouper.names)
-        df = resolve_pandas_groupby_frame(data).copy()
+        df = resolve_pandas_groupby_frame(data).copy(deep=False)
         # True Range calculation with group-aware shift
         prev_close = df.groupby(group_names)[close_column].shift(1)
         df["tr"] = pd.concat(
