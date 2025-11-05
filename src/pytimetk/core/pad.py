@@ -1,7 +1,7 @@
 import pandas as pd
 import polars as pl
 import pandas_flavor as pf
-from typing import Optional, Union, Sequence
+from typing import Optional, Union, Sequence, List
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
@@ -13,7 +13,9 @@ from pytimetk.utils.dataframe_ops import (
     restore_output_type,
     conversion_to_pandas,
     resolve_pandas_groupby_frame,
+    resolve_polars_group_columns,
 )
+from pytimetk.utils.polars_helpers import pandas_to_polars_frequency
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -206,15 +208,17 @@ def pad_by_time(
 
     if engine_resolved == "polars":
         conversion = convert_to_engine(data, "polars")
-        pandas_prepared = conversion_to_pandas(conversion)
-        result_pd = _pad_by_time_pandas(
-            pandas_prepared,
+        prepared = conversion.data
+        result = _pad_by_time_polars(
+            prepared,
             date_column=date_column,
             freq=freq,
             start_date=start_ts,
             end_date=end_ts,
+            group_columns=conversion.group_columns,
+            row_id_column=conversion.row_id_column,
         )
-        return pl.from_pandas(result_pd)
+        return restore_output_type(result, conversion)
 
     if engine_resolved == "cudf":
         if cudf is None:  # pragma: no cover - optional dependency
@@ -313,6 +317,89 @@ def _pad_by_time_vectorized(
     )
 
     return padded_data
+
+
+def _pad_by_time_polars(
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
+    *,
+    date_column: str,
+    freq: str,
+    start_date: Optional[pd.Timestamp],
+    end_date: Optional[pd.Timestamp],
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+) -> pl.DataFrame:
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+
+    if date_column not in frame.columns:
+        raise KeyError(f"{date_column} not found in DataFrame")
+
+    freq_polars = pandas_to_polars_frequency(freq)
+    dtype_date = frame.schema[date_column]
+
+    # Determine padding bounds
+    if start_date is None:
+        start_value = frame.select(pl.col(date_column).min()).to_series().item()
+    else:
+        start_value = start_date.to_pydatetime()
+
+    if end_date is None:
+        end_value = frame.select(pl.col(date_column).max()).to_series().item()
+    else:
+        end_value = end_date.to_pydatetime()
+
+    if start_value is None or end_value is None:
+        raise ValueError("Unable to determine start or end date for padding.")
+
+    date_range = pl.date_range(
+        start=start_value,
+        end=end_value,
+        interval=freq_polars,
+        eager=True,
+    )
+    if dtype_date == pl.Date:
+        date_range = date_range.cast(pl.Date)
+    elif isinstance(dtype_date, pl.datatypes.Datetime):
+        date_range = date_range.cast(
+            pl.Datetime(time_unit=dtype_date.time_unit, time_zone=dtype_date.time_zone)
+        )
+
+    date_df = pl.DataFrame({date_column: date_range})
+
+    if resolved_groups:
+        groups_df = frame.select(resolved_groups).unique()
+        cartesian = groups_df.join(date_df, how="cross")
+        join_keys = list(resolved_groups) + [date_column]
+    else:
+        cartesian = date_df
+        join_keys = [date_column]
+
+    padded = cartesian.join(frame, on=join_keys, how="left")
+
+    # Forward fill constant columns for non-grouped data
+    if not resolved_groups:
+        constant_cols: List[str] = []
+        for col_name in frame.columns:
+            if col_name in join_keys:
+                continue
+            unique_count = frame.select(pl.col(col_name).n_unique()).to_series().item()
+            if unique_count == 1:
+                constant_cols.append(col_name)
+        if constant_cols:
+            padded = padded.with_columns(
+                [pl.col(col).forward_fill() for col in constant_cols]
+            )
+
+    padded = padded.sort(join_keys)
+    ordered_cols = join_keys + [col for col in frame.columns if col not in join_keys]
+    padded = padded.select(ordered_cols)
+
+    # Drop row id column if it exists to avoid leaking conversion internals.
+    if row_id_column and row_id_column in padded.columns:
+        padded = padded.drop(row_id_column)
+
+    return padded
 
 
 def _pad_by_time_cudf_dataframe(

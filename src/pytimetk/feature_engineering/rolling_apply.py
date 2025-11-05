@@ -3,7 +3,7 @@ import polars as pl
 import pandas_flavor as pf
 import numpy as np
 
-from typing import Callable, List, Optional, Tuple, Union
+from typing import Callable, List, Optional, Sequence, Tuple, Union
 
 from pathos.multiprocessing import ProcessingPool
 
@@ -17,6 +17,7 @@ from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
     normalize_engine,
     resolve_pandas_groupby_frame,
+    resolve_polars_group_columns,
     restore_output_type,
 )
 
@@ -195,13 +196,7 @@ def augment_rolling_apply(
     check_dataframe_or_groupby(data)
     check_date_column(data, date_column)
 
-    _engine_resolved = normalize_engine(engine, data)
-
-    conversion: FrameConversion = convert_to_engine(data, "pandas")
-    prepared_data = conversion.data
-
-    # Get threads
-    threads_resolved = get_threads(threads)
+    engine_resolved = normalize_engine(engine, data)
 
     # Validate window argument and convert it to a consistent list format
     if not isinstance(window, (int, tuple, list)):
@@ -215,6 +210,67 @@ def augment_rolling_apply(
     if isinstance(window_func, (str, tuple)):
         window_func = [window_func]
 
+    threads_resolved = get_threads(threads)
+
+    if engine_resolved == "pandas":
+        conversion: FrameConversion = convert_to_engine(data, "pandas")
+        prepared_data = conversion.data
+        result_pd = _augment_rolling_apply_pandas(
+            prepared_data,
+            date_column=date_column,
+            window_funcs=window_func,
+            windows=window,
+            min_periods=min_periods,
+            center=center,
+            threads_resolved=threads_resolved,
+            show_progress=show_progress,
+        )
+        return restore_output_type(result_pd, conversion)
+
+    if engine_resolved == "polars":
+        conversion = convert_to_engine(data, "polars")
+        prepared_data = conversion.data
+        result_polars = _augment_rolling_apply_polars(
+            prepared_data,
+            date_column=date_column,
+            window_funcs=window_func,
+            windows=window,
+            min_periods=min_periods,
+            center=center,
+            threads_resolved=threads_resolved,
+            show_progress=show_progress,
+            row_id_column=conversion.row_id_column,
+            group_columns=conversion.group_columns,
+        )
+        return restore_output_type(result_polars, conversion)
+
+    # Fallback: reuse pandas path for unsupported engines
+    conversion = convert_to_engine(data, "pandas")
+    prepared_data = conversion.data
+    result_pd = _augment_rolling_apply_pandas(
+        prepared_data,
+        date_column=date_column,
+        window_funcs=window_func,
+        windows=window,
+        min_periods=min_periods,
+        center=center,
+        threads_resolved=threads_resolved,
+        show_progress=show_progress,
+    )
+    return restore_output_type(result_pd, conversion)
+
+
+def _augment_rolling_apply_pandas(
+    prepared_data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    *,
+    date_column: str,
+    window_funcs: List[Tuple[str, Callable]],
+    windows: List[int],
+    min_periods: Optional[int],
+    center: bool,
+    threads_resolved: int,
+    show_progress: bool,
+) -> pd.DataFrame:
     # Create a fresh copy of the data, leaving the original untouched
     base_frame = (
         prepared_data
@@ -242,12 +298,12 @@ def augment_rolling_apply(
             desc="Processing rolling apply...",
             display=show_progress,
         ):
-            args = group, window, window_func, min_periods, center
+            args = group, windows, window_funcs, min_periods, center
             result_dfs.append(_process_single_rolling_apply_group(args))
     else:
         # Prepare to use pathos.multiprocessing
         pool = ProcessingPool(threads_resolved)
-        args = [(group, window, window_func, min_periods, center) for group in grouped]
+        args = [(group, windows, window_funcs, min_periods, center) for group in grouped]
         result_dfs = list(
             conditional_tqdm(
                 pool.map(_process_single_rolling_apply_group, args),
@@ -267,29 +323,82 @@ def augment_rolling_apply(
         copy=False,
     )
     result_df.index = original_index
-    result_df = result_df.sort_index()
+    return result_df.sort_index()
 
-    restored = restore_output_type(result_df, conversion)
 
-    if isinstance(restored, pd.DataFrame):
-        return restored.sort_index()
+def _augment_rolling_apply_polars(
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
+    *,
+    date_column: str,
+    window_funcs: List[Tuple[str, Callable]],
+    windows: List[int],
+    min_periods: Optional[int],
+    center: bool,
+    threads_resolved: int,
+    show_progress: bool,
+    row_id_column: Optional[str],
+    group_columns: Optional[Sequence[str]],
+) -> pl.DataFrame:
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
 
-    return restored
+    sort_keys = list(resolved_groups) + [date_column] if resolved_groups else [date_column]
+    frame_sorted = frame.sort(sort_keys)
+
+    partitions = (
+        frame_sorted.partition_by(resolved_groups, maintain_order=True)
+        if resolved_groups
+        else [frame_sorted]
+    )
+
+    results: List[pl.DataFrame] = []
+    iterator = conditional_tqdm(
+        partitions,
+        total=len(partitions),
+        display=show_progress,
+        desc="Processing rolling apply...",
+    )
+    for part in iterator:
+        pandas_part = part.to_pandas()
+        if resolved_groups:
+            pandas_input = pandas_part.groupby(resolved_groups, sort=False)
+        else:
+            pandas_input = pandas_part
+
+        pandas_result = _augment_rolling_apply_pandas(
+            pandas_input,
+            date_column=date_column,
+            window_funcs=window_funcs,
+            windows=windows,
+            min_periods=min_periods,
+            center=center,
+            threads_resolved=threads_resolved,
+            show_progress=False,
+        )
+        results.append(pl.from_pandas(pandas_result))
+
+    combined = pl.concat(results, how="vertical_relaxed") if len(results) > 1 else results[0]
+    combined = combined.sort(sort_keys)
+    return combined
 
 
 def _process_single_rolling_apply_group(args):
-    group, window, window_func, min_periods, center = args
+    group, windows, window_funcs, min_periods, center = args
 
     name, group_df = group
     results = {}
-    for window_size in window:
-        min_periods = window_size if min_periods is None else min_periods
-        for func in window_func:
-            if isinstance(func, tuple):
-                func_name, func = func
+    for window_size in windows:
+        resolved_min = window_size if min_periods is None else min_periods
+        for func_spec in window_funcs:
+            if isinstance(func_spec, tuple):
+                func_name, func_callable = func_spec
                 new_column_name = f"rolling_{func_name}_win_{window_size}"
                 results[new_column_name] = _rolling_apply(
-                    func, group_df, window_size, min_periods=min_periods, center=center
+                    func_callable,
+                    group_df,
+                    window_size,
+                    min_periods=resolved_min,
+                    center=center,
                 )["result"]
             else:
                 raise TypeError(

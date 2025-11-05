@@ -3,7 +3,7 @@ import polars as pl
 import pandas_flavor as pf
 import numpy as np
 
-from typing import Callable, List, Optional, Tuple, Union
+from typing import Callable, List, Optional, Sequence, Tuple, Union
 
 from pathos.multiprocessing import ProcessingPool
 
@@ -18,6 +18,7 @@ from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
     normalize_engine,
     resolve_pandas_groupby_frame,
+    resolve_polars_group_columns,
     restore_output_type,
 )
 
@@ -187,9 +188,67 @@ def augment_expanding_apply(
 
     _engine_resolved = normalize_engine(engine, data)
 
-    conversion: FrameConversion = convert_to_engine(data, "pandas")
-    prepared_data = conversion.data
+    threads_resolved = get_threads(threads)
 
+    if isinstance(window_func, tuple):
+        window_funcs = [window_func]
+    else:
+        window_funcs = list(window_func)
+
+    if _engine_resolved == "pandas":
+        conversion: FrameConversion = convert_to_engine(data, "pandas")
+        prepared_data = conversion.data
+        result_pd = _augment_expanding_apply_pandas(
+            prepared_data,
+            date_column=date_column,
+            window_funcs=window_funcs,
+            min_periods=min_periods,
+            reduce_memory=reduce_memory,
+            threads_resolved=threads_resolved,
+            show_progress=show_progress,
+        )
+        return restore_output_type(result_pd, conversion)
+
+    if _engine_resolved == "polars":
+        conversion = convert_to_engine(data, "polars")
+        prepared_data = conversion.data
+        result_polars = _augment_expanding_apply_polars(
+            prepared_data,
+            date_column=date_column,
+            window_funcs=window_funcs,
+            min_periods=min_periods,
+            reduce_memory=reduce_memory,
+            threads_resolved=threads_resolved,
+            show_progress=show_progress,
+            row_id_column=conversion.row_id_column,
+            group_columns=conversion.group_columns,
+        )
+        return restore_output_type(result_polars, conversion)
+
+    conversion = convert_to_engine(data, "pandas")
+    prepared_data = conversion.data
+    result_pd = _augment_expanding_apply_pandas(
+        prepared_data,
+        date_column=date_column,
+        window_funcs=window_funcs,
+        min_periods=min_periods,
+        reduce_memory=reduce_memory,
+        threads_resolved=threads_resolved,
+        show_progress=show_progress,
+    )
+    return restore_output_type(result_pd, conversion)
+
+
+def _augment_expanding_apply_pandas(
+    prepared_data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    *,
+    date_column: str,
+    window_funcs: List[Tuple[str, Callable]],
+    min_periods: Optional[int],
+    reduce_memory: bool,
+    threads_resolved: int,
+    show_progress: bool,
+) -> pd.DataFrame:
     base_frame = (
         prepared_data
         if isinstance(prepared_data, pd.DataFrame)
@@ -197,60 +256,109 @@ def augment_expanding_apply(
     )
 
     working_frame = reduce_memory_usage(base_frame) if reduce_memory else base_frame
+    original_index = working_frame.index
 
-    threads_resolved = get_threads(threads)
-
-    # Group data if it's a GroupBy object; otherwise, prepare it for the expanding calculations
     if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = prepared_data.grouper.names
         grouped_frame = working_frame.sort_values(by=[*group_names, date_column])
         grouped = grouped_frame.groupby(group_names)
     else:
-        group_names = None
         grouped_frame = working_frame.sort_values(by=[date_column])
         grouped = [([], grouped_frame)]
 
-    # Set min_periods to 1 if not specified
-    min_periods = 1 if min_periods is None else min_periods
+    min_periods_resolved = 1 if min_periods is None else min_periods
 
-    # Process each group in parallel
     if threads_resolved == 1:
-        result_dfs = []
+        result_dfs: List[pd.DataFrame] = []
         for group in conditional_tqdm(
             grouped,
             total=len(grouped),
-            desc="Processing rolling apply...",
+            desc="Processing expanding apply...",
             display=show_progress,
         ):
-            args = group, window_func, min_periods
+            args = group, window_funcs, min_periods_resolved
             result_dfs.append(_process_single_expanding_apply_group(args))
     else:
-        # Prepare to use pathos.multiprocessing
         pool = ProcessingPool(threads_resolved)
-        args = [(group, window_func, min_periods) for group in grouped]
+        args = [(group, window_funcs, min_periods_resolved) for group in grouped]
         result_dfs = list(
             conditional_tqdm(
                 pool.map(_process_single_expanding_apply_group, args),
                 total=len(grouped),
-                desc="Processing rolling apply...",
+                desc="Processing expanding apply...",
                 display=show_progress,
             )
         )
 
-    # Combine processed dataframes and sort by index
-    result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
+    result_df = pd.concat(result_dfs).sort_index()
+    result_df.index = original_index
+    return result_df.sort_index()
 
-    if reduce_memory:
-        result_df = reduce_memory_usage(result_df)
 
-    result_df = result_df.sort_index()
+def _augment_expanding_apply_polars(
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
+    *,
+    date_column: str,
+    window_funcs: List[Tuple[str, Callable]],
+    min_periods: Optional[int],
+    reduce_memory: bool,
+    threads_resolved: int,
+    show_progress: bool,
+    row_id_column: Optional[str],
+    group_columns: Optional[Sequence[str]],
+) -> pl.DataFrame:
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
 
-    restored = restore_output_type(result_df, conversion)
+    sort_keys = list(resolved_groups) + [date_column] if resolved_groups else [date_column]
+    frame_sorted = frame.sort(sort_keys)
 
-    if isinstance(restored, pd.DataFrame):
-        return restored.sort_index()
+    partitions = (
+        frame_sorted.partition_by(resolved_groups, maintain_order=True)
+        if resolved_groups
+        else [frame_sorted]
+    )
 
-    return restored
+    if not partitions:
+        return frame_sorted
+
+    results: List[pl.DataFrame] = []
+    iterator = conditional_tqdm(
+        partitions,
+        total=len(partitions),
+        display=show_progress,
+        desc="Processing expanding apply...",
+    )
+    for part in iterator:
+        pandas_part = part.to_pandas()
+        if resolved_groups:
+            pandas_input = pandas_part.groupby(resolved_groups, sort=False)
+        else:
+            pandas_input = pandas_part
+
+        pandas_result = _augment_expanding_apply_pandas(
+            pandas_input,
+            date_column=date_column,
+            window_funcs=window_funcs,
+            min_periods=min_periods,
+            reduce_memory=reduce_memory,
+            threads_resolved=threads_resolved,
+            show_progress=False,
+        )
+        results.append(pl.from_pandas(pandas_result))
+
+    combined = (
+        pl.concat(results, how="vertical_relaxed") if len(results) > 1 else results[0]
+    )
+
+    sort_cols: List[str] = []
+    if row_id_column and row_id_column in combined.columns:
+        sort_cols.append(row_id_column)
+    sort_cols.extend(resolved_groups)
+    sort_cols.append(date_column)
+
+    combined = combined.sort(sort_cols)
+    return combined
 
 
 def _process_single_expanding_apply_group(args):

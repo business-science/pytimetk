@@ -1,7 +1,7 @@
 import pandas as pd
 import polars as pl
 import pandas_flavor as pf
-from typing import Union, Optional
+from typing import Union, Optional, Sequence, List
 
 from pytimetk.core.frequency import get_frequency
 from pytimetk.core.make_future_timeseries import make_future_timeseries
@@ -19,6 +19,7 @@ from pytimetk.utils.dataframe_ops import (
     restore_output_type,
     conversion_to_pandas,
     resolve_pandas_groupby_frame,
+    resolve_polars_group_columns,
 )
 
 try:  # Optional cudf dependency
@@ -258,9 +259,9 @@ def future_frame(
 
     if engine_resolved == "polars":
         conversion = convert_to_engine(data, "polars")
-        pandas_prepared = conversion_to_pandas(conversion)
-        result_pd = _future_frame_pandas(
-            data=pandas_prepared,
+        prepared = conversion.data
+        result_polars = _future_frame_polars(
+            prepared,
             date_column=date_column,
             length_out=length_out,
             freq=freq,
@@ -268,9 +269,10 @@ def future_frame(
             bind_data=bind_data,
             threads=threads,
             show_progress=show_progress,
-            reduce_memory=reduce_memory,
+            row_id_column=conversion.row_id_column,
+            group_columns=conversion.group_columns,
         )
-        return pl.from_pandas(result_pd)
+        return restore_output_type(result_polars, conversion)
 
     if engine_resolved == "cudf":
         if cudf is None:  # pragma: no cover - optional dependency
@@ -415,6 +417,185 @@ def _future_frame_pandas(
 
     if reduce_memory:
         result = reduce_memory_usage(result)
+
+    return result
+
+
+# --------------------------------------------------------------------------- #
+# Polars helper                                                               #
+# --------------------------------------------------------------------------- #
+
+
+def _future_frame_polars(
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
+    date_column: str,
+    length_out: int,
+    freq: Optional[str],
+    force_regular: bool,
+    bind_data: bool,
+    threads: int,
+    show_progress: bool,
+    row_id_column: Optional[str],
+    group_columns: Optional[Sequence[str]],
+) -> pl.DataFrame:
+    if length_out < 0:
+        raise ValueError("`length_out` must be non-negative.")
+
+    resolved_groups = resolve_polars_group_columns(data, group_columns)
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+
+    if date_column not in frame.columns:
+        raise KeyError(f"{date_column} not found in DataFrame")
+
+    dtype_date = frame.schema[date_column]
+    other_columns = [
+        col
+        for col in frame.columns
+        if col != date_column and (row_id_column is None or col != row_id_column)
+    ]
+
+    # Prepare row id counter when the conversion inserted synthetic identifiers
+    row_id_counter: Optional[int] = None
+    if row_id_column and row_id_column in frame.columns:
+        try:
+            max_row_id = frame.select(pl.col(row_id_column).max()).item()
+            row_id_counter = 0 if max_row_id is None else int(max_row_id) + 1
+        except Exception:
+            row_id_counter = None
+
+    def _future_dates(series: pl.Series, inferred_freq: Optional[str]) -> pl.Series:
+        pandas_series = series.to_pandas()
+        generated = make_future_timeseries(
+            idx=pandas_series,
+            length_out=length_out,
+            freq=inferred_freq,
+            force_regular=force_regular,
+        )
+        if len(generated) == 0:
+            return pl.Series(dtype=dtype_date, values=[])
+        future_series = pl.Series(generated).cast(dtype_date)
+        # Casting above ensures timezone/unit consistency
+        return future_series
+
+    if resolved_groups:
+        partitions = frame.partition_by(resolved_groups, maintain_order=True)
+        if not partitions:
+            return frame
+
+        freq_local = freq
+        if freq_local is None:
+            sample_dates = (
+                partitions[0]
+                .select(pl.col(date_column))
+                .to_series()
+                .to_pandas()
+                .sort_values()
+            )
+            freq_local = get_frequency(sample_dates, force_regular=force_regular)
+
+        results: List[pl.DataFrame] = []
+        iterator = conditional_tqdm(
+            partitions,
+            total=len(partitions),
+            display=show_progress,
+            desc="Future framing...",
+        )
+        for part in iterator:
+            part_sorted = part.sort(date_column)
+            future_series = _future_dates(
+                part_sorted[date_column], freq_local
+            )
+
+            if len(future_series) == 0:
+                result_part = part_sorted if bind_data else part_sorted.head(0)
+                results.append(result_part)
+                continue
+
+            new_rows_dict = {date_column: future_series}
+            for col in resolved_groups:
+                key_value = part_sorted.select(pl.col(col).first()).item()
+                new_rows_dict[col] = pl.Series(
+                    name=col,
+                    values=[key_value] * len(future_series),
+                    dtype=part_sorted.schema[col],
+                )
+            for col in other_columns:
+                if col in resolved_groups:
+                    continue
+                new_rows_dict[col] = pl.Series(
+                    name=col,
+                    values=[None] * len(future_series),
+                    dtype=part_sorted.schema[col],
+                )
+            if row_id_column and row_id_column in part_sorted.columns:
+                new_rows_dict[row_id_column] = pl.Series(
+                    name=row_id_column,
+                    values=range(
+                        row_id_counter or 0,
+                        (row_id_counter or 0) + len(future_series),
+                    ),
+                    dtype=part_sorted.schema.get(row_id_column, pl.Int64),
+                )
+                if row_id_counter is not None:
+                    row_id_counter += len(future_series)
+
+            new_rows = pl.DataFrame(new_rows_dict)
+
+            if bind_data:
+                combined = pl.concat(
+                    [part_sorted, new_rows],
+                    how="vertical_relaxed",
+                ).sort(resolved_groups + [date_column])
+                results.append(combined)
+            else:
+                results.append(new_rows.sort(resolved_groups + [date_column]))
+
+        result = pl.concat(results, how="vertical_relaxed")
+    else:
+        frame_sorted = frame.sort(date_column)
+        future_series = _future_dates(frame_sorted[date_column], freq)
+
+        if len(future_series) == 0:
+            result = frame_sorted if bind_data else frame_sorted.head(0)
+        else:
+            new_rows_dict = {date_column: future_series}
+            for col in other_columns:
+                new_rows_dict[col] = pl.Series(
+                    name=col,
+                    values=[None] * len(future_series),
+                    dtype=frame_sorted.schema[col],
+                )
+            if row_id_column and row_id_column in frame_sorted.columns:
+                new_rows_dict[row_id_column] = pl.Series(
+                    name=row_id_column,
+                    values=range(
+                        row_id_counter or 0,
+                        (row_id_counter or 0) + len(future_series),
+                    ),
+                    dtype=frame_sorted.schema.get(row_id_column, pl.Int64),
+                )
+                if row_id_counter is not None:
+                    row_id_counter += len(future_series)
+
+            new_rows = pl.DataFrame(new_rows_dict)
+            if bind_data:
+                result = pl.concat(
+                    [frame_sorted, new_rows],
+                    how="vertical_relaxed",
+                ).sort(date_column)
+            else:
+                result = new_rows.sort(date_column)
+
+            if bind_data:
+                constant_cols: List[str] = []
+                for col in other_columns:
+                    unique = frame_sorted.select(pl.col(col).n_unique()).to_series().item()
+                    if unique == 1:
+                        constant_cols.append(col)
+                if constant_cols:
+                    result = result.with_columns(
+                        [pl.col(col).forward_fill() for col in constant_cols]
+                    )
 
     return result
 
