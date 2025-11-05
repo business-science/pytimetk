@@ -177,12 +177,7 @@ def augment_ewm(
         )
 
     if engine_resolved == "polars":
-        warnings.warn(
-            "augment_ewm currently falls back to the pandas implementation when using Polars.",
-            RuntimeWarning,
-            stacklevel=2,
-        )
-        target_engine = "pandas"
+        target_engine = "polars"
     else:
         target_engine = engine_resolved
 
@@ -206,6 +201,34 @@ def augment_ewm(
             reduce_memory=reduce_memory,
             **kwargs,
         )
+    elif target_engine == "polars":
+        try:
+            result = _augment_ewm_polars(
+                data=prepared_data,
+                date_column=date_column,
+                value_column=value_column,
+                window_func=window_func,
+                alpha=alpha,
+                group_columns=conversion.group_columns,
+                row_id_column=conversion.row_id_column,
+                **kwargs,
+            )
+        except NotImplementedError as exc:
+            warnings.warn(
+                f"{exc} Falling back to pandas.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            pandas_input = conversion_to_pandas(conversion)
+            result = _augment_ewm_pandas(
+                data=pandas_input,
+                date_column=date_column,
+                value_column=value_column,
+                window_func=window_func,
+                alpha=alpha,
+                reduce_memory=reduce_memory,
+                **kwargs,
+            )
     elif target_engine == "cudf":
         cudf_df = prepared_data.obj if hasattr(prepared_data, "obj") else prepared_data
         if not isinstance(cudf_df, cudf.DataFrame):
@@ -364,6 +387,73 @@ def _augment_ewm_pandas(
 
     if reduce_memory:
         result = reduce_memory_usage(result)
+
+    return result
+def _augment_ewm_polars(
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
+    *,
+    date_column: str,
+    value_column: Union[str, List[str]],
+    window_func: Union[str, List[str]],
+    alpha: Optional[Union[float, Sequence[float]]],
+    group_columns: Optional[Sequence[str]],
+    row_id_column: Optional[str],
+    **kwargs,
+) -> pl.DataFrame:
+    value_columns = (
+        [value_column] if isinstance(value_column, str) else list(value_column)
+    )
+    window_funcs = [window_func] if isinstance(window_func, str) else list(window_func)
+
+    supported_funcs = {"mean", "std", "var"}
+    unsupported_funcs = [func for func in window_funcs if func not in supported_funcs]
+    if unsupported_funcs:
+        raise NotImplementedError(
+            "Polars EWM backend currently supports functions: {'mean', 'std', 'var'}."
+        )
+
+    allowed_params = {"alpha", "com", "span", "halflife", "adjust", "min_periods"}
+    decay_configs = _prepare_decay_configs(alpha, kwargs)
+    for _, _, params in decay_configs:
+        extra = set(params.keys()) - allowed_params
+        if extra:
+            raise NotImplementedError(
+                f"Polars EWM does not support parameters: {sorted(extra)}."
+            )
+
+    resolved_groups = list(group_columns) if group_columns else []
+    frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
+    sort_columns = resolved_groups + [date_column]
+    frame_sorted = frame.sort(sort_columns)
+    lf = frame_sorted.lazy()
+
+    def _maybe_over(expr: pl.Expr) -> pl.Expr:
+        return expr.over(resolved_groups) if resolved_groups else expr
+
+    exprs: List[pl.Expr] = []
+    for col in value_columns:
+        for decay_label, decay_value, params in decay_configs:
+            filtered_params = {k: params[k] for k in params if k in allowed_params}
+            for func in window_funcs:
+                if func == "mean":
+                    expr = pl.col(col).ewm_mean(**filtered_params)
+                elif func == "std":
+                    expr = pl.col(col).ewm_std(**filtered_params)
+                elif func == "var":
+                    expr = pl.col(col).ewm_var(**filtered_params)
+                else:
+                    continue
+
+                alias = f"{col}_ewm_{func}_{decay_label}_{decay_value}"
+                exprs.append(_maybe_over(expr).alias(alias))
+
+    if exprs:
+        result = lf.with_columns(exprs).collect()
+    else:
+        result = frame_sorted
+
+    if row_id_column and row_id_column in result.columns:
+        result = result.sort(row_id_column)
 
     return result
 
