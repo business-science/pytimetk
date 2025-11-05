@@ -6,6 +6,41 @@ toc-depth: 3
 number-sections: false
 ---
 
+# pytimetk 2.3.0 
+
+We're excited to announce the release of pytimetk 2.3.0! This update focuses on significant performance and memory optimizations, particularly for users leveraging the Polars engine. We've introduced native Polars implementations for several key functions, reducing reliance on pandas fallbacks and unlocking faster, more efficient operations on large datasets. Benchmarks show impressive gains, including up to ~7X speedups in EWM (Exponential Weighted Moving) calculations.
+
+## Key Improvements
+
+- **Polars-Native Optimizations**: 
+  - Added dedicated Polars paths for `pad_by_time`, `future_frame`, `augment_ewm`, `augment_rolling_apply`, `augment_expanding_apply`, and the scalar branch of `apply_by_time`. This eliminates unnecessary conversions to pandas, keeping data in Arrow buffers for zero-copy chaining and reduced memory overhead.
+  - For EWM operations (`augment_ewm`), Polars users now benefit from direct `ewm_mean/std/var` applications, avoiding round-trips to pandas. Benchmark results on 200k rows demonstrate ~7X faster execution (0.004s vs. 0.030s in pandas).
+  - Tightened conversion plumbing to use shallow copies (`copy(deep=False)`) only when necessary, reusing cached pandas views during fallbacks to minimize copy-on-write churn.
+
+- **Memory Efficiency**:
+  - Implemented shallow pandas copies in various modules to avoid deep-copy overhead.
+  - Polars fallbacks now clone prepared frames before mutations, preserving originals for reuse and further reducing memory spikes.
+  - Enhanced row identifier handling inside Polars/cuDF, eliminating mutations on pandas frames.
+
+- **cuDF Support**:
+  - Added cuDF dataframe operations, extending GPU-accelerated capabilities for compatible environments.
+
+- **Benchmarking and Documentation**:
+  - New benchmarks (e.g., `ewm_polars_profile.py`) to quantify improvements—reproducible with commands like `PYTHONPATH=src python zzz_local/benchmarks/ewm_polars_profile.py --rows 200000 --groups 25 --repeats 5`.
+  - Updated roadmap (`performance_memory_review.md`) with completed items and remaining todos, including Polars-native wide-format for `apply_by_time` and extending optimizations to finance indicators.
+
+## Breaking Changes
+
+- None in this release. Existing pandas-based workflows remain fully compatible, with Polars enhancements opt-in via the `engine="polars"` parameter.
+
+# pytimetk 2.1.1
+
+## Key Updates
+- **augment_ewm Enhancements**: Now supports passing a sequence of `alpha` values to compute multiple EWM columns in one call. Improved Polars integration and documentation.
+- **augment_qsmomentum Fixes**: Resolved issues with grouped Polars DataFrames, including proper handling of nulls and ensuring sufficient data length (at least `max(roc_slow_period, returns_period)`). Fixed `AttributeError: 'DataFrame' object has no attribute 'to_list'`.
+- **GPU Acceleration Docs**: Updated examples to demonstrate `augment_rolling` on Polars with GPU engine, including multi-symbol grouping.
+
+
 # pytimetk 2.1.0
 
 ## Release Summary
