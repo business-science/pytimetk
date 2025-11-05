@@ -361,7 +361,16 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#pytimetk-2.1.0" id="toc-pytimetk-2.1.0" class="nav-link active" data-scroll-target="#pytimetk-2.1.0">pytimetk 2.1.0</a>
+  <li><a href="#pytimetk-2.3.0" id="toc-pytimetk-2.3.0" class="nav-link active" data-scroll-target="#pytimetk-2.3.0">pytimetk 2.3.0</a>
+  <ul class="collapse">
+  <li><a href="#key-improvements" id="toc-key-improvements" class="nav-link" data-scroll-target="#key-improvements">Key Improvements</a></li>
+  <li><a href="#breaking-changes" id="toc-breaking-changes" class="nav-link" data-scroll-target="#breaking-changes">Breaking Changes</a></li>
+  </ul></li>
+  <li><a href="#pytimetk-2.1.1" id="toc-pytimetk-2.1.1" class="nav-link" data-scroll-target="#pytimetk-2.1.1">pytimetk 2.1.1</a>
+  <ul class="collapse">
+  <li><a href="#key-updates" id="toc-key-updates" class="nav-link" data-scroll-target="#key-updates">Key Updates</a></li>
+  </ul></li>
+  <li><a href="#pytimetk-2.1.0" id="toc-pytimetk-2.1.0" class="nav-link" data-scroll-target="#pytimetk-2.1.0">pytimetk 2.1.0</a>
   <ul class="collapse">
   <li><a href="#release-summary" id="toc-release-summary" class="nav-link" data-scroll-target="#release-summary">Release Summary</a>
   <ul class="collapse">
@@ -493,6 +502,53 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
+<section id="pytimetk-2.3.0" class="level1">
+<h1>pytimetk 2.3.0</h1>
+<p>We’re excited to announce the release of pytimetk 2.3.0! This update focuses on significant performance and memory optimizations, particularly for users leveraging the Polars engine. We’ve introduced native Polars implementations for several key functions, reducing reliance on pandas fallbacks and unlocking faster, more efficient operations on large datasets. Benchmarks show impressive gains, including up to ~7X speedups in EWM (Exponential Weighted Moving) calculations.</p>
+<section id="key-improvements" class="level2">
+<h2 class="anchored" data-anchor-id="key-improvements">Key Improvements</h2>
+<ul>
+<li><strong>Polars-Native Optimizations</strong>:
+<ul>
+<li>Added dedicated Polars paths for <code>pad_by_time</code>, <code>future_frame</code>, <code>augment_ewm</code>, <code>augment_rolling_apply</code>, <code>augment_expanding_apply</code>, and the scalar branch of <code>apply_by_time</code>. This eliminates unnecessary conversions to pandas, keeping data in Arrow buffers for zero-copy chaining and reduced memory overhead.</li>
+<li>For EWM operations (<code>augment_ewm</code>), Polars users now benefit from direct <code>ewm_mean/std/var</code> applications, avoiding round-trips to pandas. Benchmark results on 200k rows demonstrate ~7X faster execution (0.004s vs.&nbsp;0.030s in pandas).</li>
+<li>Tightened conversion plumbing to use shallow copies (<code>copy(deep=False)</code>) only when necessary, reusing cached pandas views during fallbacks to minimize copy-on-write churn.</li>
+</ul></li>
+<li><strong>Memory Efficiency</strong>:
+<ul>
+<li>Implemented shallow pandas copies in various modules to avoid deep-copy overhead.</li>
+<li>Polars fallbacks now clone prepared frames before mutations, preserving originals for reuse and further reducing memory spikes.</li>
+<li>Enhanced row identifier handling inside Polars/cuDF, eliminating mutations on pandas frames.</li>
+</ul></li>
+<li><strong>cuDF Support</strong>:
+<ul>
+<li>Added cuDF dataframe operations, extending GPU-accelerated capabilities for compatible environments.</li>
+</ul></li>
+<li><strong>Benchmarking and Documentation</strong>:
+<ul>
+<li>New benchmarks (e.g., <code>ewm_polars_profile.py</code>) to quantify improvements—reproducible with commands like <code>PYTHONPATH=src python zzz_local/benchmarks/ewm_polars_profile.py --rows 200000 --groups 25 --repeats 5</code>.</li>
+<li>Updated roadmap (<code>performance_memory_review.md</code>) with completed items and remaining todos, including Polars-native wide-format for <code>apply_by_time</code> and extending optimizations to finance indicators.</li>
+</ul></li>
+</ul>
+</section>
+<section id="breaking-changes" class="level2">
+<h2 class="anchored" data-anchor-id="breaking-changes">Breaking Changes</h2>
+<ul>
+<li>None in this release. Existing pandas-based workflows remain fully compatible, with Polars enhancements opt-in via the <code>engine="polars"</code> parameter.</li>
+</ul>
+</section>
+</section>
+<section id="pytimetk-2.1.1" class="level1">
+<h1>pytimetk 2.1.1</h1>
+<section id="key-updates" class="level2">
+<h2 class="anchored" data-anchor-id="key-updates">Key Updates</h2>
+<ul>
+<li><strong>augment_ewm Enhancements</strong>: Now supports passing a sequence of <code>alpha</code> values to compute multiple EWM columns in one call. Improved Polars integration and documentation.</li>
+<li><strong>augment_qsmomentum Fixes</strong>: Resolved issues with grouped Polars DataFrames, including proper handling of nulls and ensuring sufficient data length (at least <code>max(roc_slow_period, returns_period)</code>). Fixed <code>AttributeError: 'DataFrame' object has no attribute 'to_list'</code>.</li>
+<li><strong>GPU Acceleration Docs</strong>: Updated examples to demonstrate <code>augment_rolling</code> on Polars with GPU engine, including multi-symbol grouping.</li>
+</ul>
+</section>
+</section>
 <section id="pytimetk-2.1.0" class="level1">
 <h1>pytimetk 2.1.0</h1>
 <section id="release-summary" class="level2">
