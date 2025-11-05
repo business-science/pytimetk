@@ -264,7 +264,7 @@ def _augment_ppo_pandas(
 ) -> pd.DataFrame:
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        base_df = resolve_pandas_groupby_frame(data).copy()
+        base_df = resolve_pandas_groupby_frame(data).copy(deep=False)
 
         base_df = base_df.groupby(group_names, group_keys=False).apply(
             lambda x: _calculate_ppo_pandas(x, close_column, fast_period, slow_period)
@@ -272,7 +272,7 @@ def _augment_ppo_pandas(
         return base_df
 
     if isinstance(data, pd.DataFrame):
-        df = data.copy()
+        df = data.copy(deep=False)
         return _calculate_ppo_pandas(df, close_column, fast_period, slow_period)
 
     raise TypeError("Unsupported data type passed to _augment_ppo_pandas.")

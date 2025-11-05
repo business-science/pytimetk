@@ -292,11 +292,11 @@ def _augment_qsmomentum_pandas(
     combos: Sequence[Tuple[int, int, int]],
 ) -> pd.DataFrame:
     if isinstance(data, pd.DataFrame):
-        df = data.copy()
+        df = data.copy(deep=False)
         group_names: Optional[List[str]] = None
     elif isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = list(data.grouper.names)
-        df = resolve_pandas_groupby_frame(data).copy()
+        df = resolve_pandas_groupby_frame(data).copy(deep=False)
     else:
         raise TypeError("Unsupported data type passed to _augment_qsmomentum_pandas.")
 

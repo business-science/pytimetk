@@ -138,6 +138,7 @@ class FrameConversion:
     row_id_column: Optional[str] = None
     pandas_index: Optional[pd.Index] = None
     group_columns: Optional[Sequence[str]] = None
+    pandas_cache: Optional[pd.DataFrame] = None
 
 
 def identify_frame_kind(data: AnyFrame) -> FrameKind:
@@ -198,6 +199,7 @@ def convert_to_engine(
                 data=data,
                 original_kind=original_kind,
                 group_columns=group_cols,
+                pandas_cache=data if isinstance(data, pd.DataFrame) else None,
             )
         if original_kind == "polars_lazy":
             collected = collect_lazyframe(data)
@@ -205,12 +207,15 @@ def convert_to_engine(
             return FrameConversion(
                 data=pandas_df,
                 original_kind=original_kind,
+                pandas_cache=pandas_df,
             )
         if cudf is not None:
             if original_kind == "cudf_df":
+                pandas_df = data.to_pandas()
                 return FrameConversion(
-                    data=data.to_pandas(),
+                    data=pandas_df,
                     original_kind=original_kind,
+                    pandas_cache=pandas_df,
                 )
             if CudfDataFrameGroupBy is not None and original_kind == "cudf_groupby":
                 cudf_df = data.obj
@@ -221,9 +226,15 @@ def convert_to_engine(
                     data=pandas_groupby,
                     original_kind=original_kind,
                     group_columns=group_names,
+                    pandas_cache=pandas_df,
                 )
         if original_kind == "polars_df":
-            return FrameConversion(data=data.to_pandas(), original_kind=original_kind)
+            pandas_df = data.to_pandas()
+            return FrameConversion(
+                data=pandas_df,
+                original_kind=original_kind,
+                pandas_cache=pandas_df,
+            )
         if original_kind == "polars_groupby":
             pandas_df = data.df.to_pandas()
             group_names = [str(col) for col in data.by]
@@ -232,20 +243,21 @@ def convert_to_engine(
                 data=pandas_groupby,
                 original_kind=original_kind,
                 group_columns=group_names,
+                pandas_cache=pandas_df,
             )
 
     if engine == "polars":
         if original_kind == "pandas_df":
-            pandas_df = data.copy()
-            row_id_col = _make_temp_column(pandas_df.columns)
-            pandas_index = pandas_df.index.copy()
-            pandas_df[row_id_col] = np.arange(len(pandas_df))
-            polars_df = pl.from_pandas(pandas_df)
+            pandas_index = data.index.copy()
+            polars_df = pl.from_pandas(data)
+            row_id_col = _make_temp_column(polars_df.columns)
+            polars_df = polars_df.with_row_count(row_id_col)
             return FrameConversion(
                 data=polars_df,
                 original_kind=original_kind,
                 row_id_column=row_id_col,
                 pandas_index=pandas_index,
+                pandas_cache=data,
             )
         if original_kind == "polars_lazy":
             collected = collect_lazyframe(data)
@@ -266,12 +278,12 @@ def convert_to_engine(
                 pandas_index=pandas_index,
             )
         if original_kind == "pandas_groupby":
-            pandas_df = resolve_pandas_groupby_frame(data).copy()
-            row_id_col = _make_temp_column(pandas_df.columns)
+            pandas_df = resolve_pandas_groupby_frame(data)
             pandas_index = pandas_df.index.copy()
-            pandas_df[row_id_col] = np.arange(len(pandas_df))
-            group_names = [str(col) for col in data.grouper.names]
+            row_id_col = _make_temp_column(pandas_df.columns)
             polars_df = pl.from_pandas(pandas_df)
+            polars_df = polars_df.with_row_count(row_id_col)
+            group_names = [str(col) for col in data.grouper.names]
             group_key = group_names if len(group_names) > 1 else group_names[0]
             polars_groupby = polars_df.group_by(group_key, maintain_order=True)
             return FrameConversion(
@@ -280,6 +292,7 @@ def convert_to_engine(
                 row_id_column=row_id_col,
                 pandas_index=pandas_index,
                 group_columns=group_names,
+                pandas_cache=pandas_df,
             )
         if cudf is not None and original_kind == "cudf_groupby":
             cudf_df = data.obj.copy()
@@ -478,6 +491,14 @@ def conversion_to_pandas(
     -> polars transformation a temporary row identifier may exist; this helper
     strips that column before returning the pandas frame.
     """
+    if conversion.pandas_cache is not None:
+        cached = conversion.pandas_cache
+        if isinstance(cached, pd.core.groupby.generic.DataFrameGroupBy):
+            return cached
+        if conversion.group_columns:
+            return cached.groupby(list(conversion.group_columns), sort=False)
+        return cached
+
     data = conversion.data
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -489,6 +510,7 @@ def conversion_to_pandas(
         row_id = conversion.row_id_column
         if row_id and row_id in pandas_df.columns:
             pandas_df = pandas_df.drop(columns=[row_id])
+        conversion.pandas_cache = pandas_df
         return pandas_df
     if isinstance(data, pl.dataframe.group_by.GroupBy):
         pandas_df = data.df.to_pandas()
@@ -501,13 +523,16 @@ def conversion_to_pandas(
         )
         if not group_cols:
             raise ValueError("Unable to resolve group columns from polars GroupBy object.")
-        return pandas_df.groupby(group_cols, sort=False)
+        pandas_groupby = pandas_df.groupby(group_cols, sort=False)
+        conversion.pandas_cache = pandas_df
+        return pandas_groupby
     if cudf is not None:
         if isinstance(data, cudf.DataFrame):
             pandas_df = data.to_pandas()
             row_id = conversion.row_id_column
             if row_id and row_id in pandas_df.columns:
                 pandas_df = pandas_df.drop(columns=[row_id])
+            conversion.pandas_cache = pandas_df
             return pandas_df
         if CudfDataFrameGroupBy is not None and isinstance(data, CudfDataFrameGroupBy):
             cudf_df = data.obj
@@ -516,7 +541,9 @@ def conversion_to_pandas(
             if row_id and row_id in pandas_df.columns:
                 pandas_df = pandas_df.drop(columns=[row_id])
             group_cols = list(_extract_cudf_group_columns(data))
-            return pandas_df.groupby(group_cols, sort=False)
+            pandas_groupby = pandas_df.groupby(group_cols, sort=False)
+            conversion.pandas_cache = pandas_df
+            return pandas_groupby
 
     raise TypeError("Unsupported frame data type during pandas conversion.")
 

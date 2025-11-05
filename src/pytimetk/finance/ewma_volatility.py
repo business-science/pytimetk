@@ -233,7 +233,7 @@ def _augment_ewma_volatility_pandas(
     """Pandas implementation of EWMA volatility calculation with varying minimum periods."""
 
     if isinstance(data, pd.DataFrame):
-        df = data.copy()
+        df = data.copy(deep=False)
         ratio = df[close_column] / df[close_column].shift(1)
         ratio = ratio.replace([0, np.inf, -np.inf], np.nan)
         df["log_returns"] = np.log(ratio)
@@ -250,7 +250,7 @@ def _augment_ewma_volatility_pandas(
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = list(data.grouper.names)
-        df = resolve_pandas_groupby_frame(data).copy()
+        df = resolve_pandas_groupby_frame(data).copy(deep=False)
         shifted = df.groupby(group_names)[close_column].shift(1)
         ratio = df[close_column] / shifted
         ratio = ratio.replace([0, np.inf, -np.inf], np.nan)
