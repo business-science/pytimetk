@@ -130,7 +130,9 @@ def augment_qsmomentum(
     check_value_column(data, close_column)
     check_date_column(data, date_column)
 
-    if not isinstance(data, (pl.DataFrame, pl.dataframe.group_by.GroupBy)):
+    if isinstance(
+        data, (pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy)
+    ):
         data, _ = sort_dataframe(data, date_column, keep_grouped_df=True)
 
     # Normalize params to lists
