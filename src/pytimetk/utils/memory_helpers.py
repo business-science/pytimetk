@@ -10,6 +10,9 @@ from typing import Union
 @pf.register_dataframe_method
 def reduce_memory_usage(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
+    *,
+    convert_string_to_categorical: bool = True,
+    inplace: bool = False,
 ):
     """
     Iterate through all columns of a Pandas DataFrame and modify the dtypes to reduce memory usage.
@@ -18,6 +21,10 @@ def reduce_memory_usage(
     -----------
     data: pd.DataFrame
         Input dataframe to reduce memory usage.
+    convert_string_to_categorical: bool, default True
+        Convert string/object columns to categoricals when safe. Set to False to keep string dtype.
+    inplace: bool, default False
+        When True, mutate the supplied DataFrame (or backing GroupBy frame) in place instead of creating a copy.
 
     Returns:
     --------
@@ -29,9 +36,19 @@ def reduce_memory_usage(
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         frame = resolve_pandas_groupby_frame(data)
         try:
-            reduced = _reduce_memory(frame, convert_string_to_categorical=True)
+            reduced = _reduce_memory(
+                frame,
+                convert_string_to_categorical=convert_string_to_categorical,
+                inplace=inplace,
+            )
         except Exception:
-            reduced = _reduce_memory(frame, convert_string_to_categorical=False)
+            if not convert_string_to_categorical:
+                raise
+            reduced = _reduce_memory(
+                frame,
+                convert_string_to_categorical=False,
+                inplace=inplace,
+            )
 
         if hasattr(data, "obj"):
             try:
@@ -43,24 +60,36 @@ def reduce_memory_usage(
 
     if isinstance(data, pd.DataFrame):
         try:
-            return _reduce_memory(data, convert_string_to_categorical=True)
+            return _reduce_memory(
+                data,
+                convert_string_to_categorical=convert_string_to_categorical,
+                inplace=inplace,
+            )
         except Exception:
-            return _reduce_memory(data, convert_string_to_categorical=False)
+            if not convert_string_to_categorical:
+                raise
+            return _reduce_memory(
+                data,
+                convert_string_to_categorical=False,
+                inplace=inplace,
+            )
 
     raise TypeError("Unsupported data type for reduce_memory_usage")
 
 
 def _reduce_memory(
     data: pd.DataFrame,
+    *,
     convert_string_to_categorical: bool = True,
+    inplace: bool = False,
     # categorical_threshold: int = 100
 ):
-    data = data.copy()
+    frame = data if inplace else data.copy()
 
     # Iterate over each column in the dataframe
-    for col in data.columns:
+    for col in frame.columns:
         # Get the current column dtype
-        col_type = data[col].dtype
+        col_type = frame[col].dtype
 
         if pd.api.types.is_categorical_dtype(col_type):
             continue
@@ -68,13 +97,13 @@ def _reduce_memory(
         # Check if column is boolean
         if col_type == bool:
             # If the column is boolean, convert it to int8 to save memory
-            data = _convert_boolean_to_int8(data, col)
+            frame = _convert_boolean_to_int8(frame, col)
 
         # Check if the column is not an object (i.e., it's not a numeric column)
         elif col_type != object:
             # Get the minimum and maximum values of the current column
-            c_min = data[col].min()
-            c_max = data[col].max()
+            c_min = frame[col].min()
+            c_max = frame[col].max()
 
             # Check if the column is an integer type
             if str(col_type)[:3] == "int":
@@ -90,7 +119,7 @@ def _reduce_memory(
                     np.uint64,
                 ]:
                     if c_min > np.iinfo(dtype).min and c_max < np.iinfo(dtype).max:
-                        data[col] = data[col].astype(dtype)
+                        frame[col] = frame[col].astype(dtype)
                         break
 
             # Check if the column is a float type
@@ -100,7 +129,7 @@ def _reduce_memory(
                 # ISSUE #274 - Precision Effects Rounding
                 for dtype in [np.float32, np.float64]:
                     if c_min > np.finfo(dtype).min and c_max < np.finfo(dtype).max:
-                        data[col] = data[col].astype(dtype)
+                        frame[col] = frame[col].astype(dtype)
                         break
 
         # If the column is an object type, convert it to categorical type to save memory
@@ -109,10 +138,10 @@ def _reduce_memory(
             # - Some object columns could be lists
             # - Some object columns could be dates
             # - Some users may expect string data returned
-            if convert_string_to_categorical and pd.api.types.is_string_dtype(data[col]):
-                data[col] = data[col].astype("category")
+            if convert_string_to_categorical and pd.api.types.is_string_dtype(frame[col]):
+                frame[col] = frame[col].astype("category")
 
-    return data
+    return frame
 
 
 def _convert_boolean_to_int8(data, col):
