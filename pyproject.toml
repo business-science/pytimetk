@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytimetk"
-version = "2.2.0.9001"
+version = "2.2.1"
 description = "The time series toolkit for Python."
 authors = [
     "Business Science <info@business-science.io>",
