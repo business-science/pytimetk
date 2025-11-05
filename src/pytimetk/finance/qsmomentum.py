@@ -112,7 +112,8 @@ def augment_qsmomentum(
 
     # Compute QSM on a polars DataFrame via the tk accessor
     qsm_pl = (
-        pl.from_pandas(df.query("symbol == 'AAPL'"))
+        pl.from_pandas(df)
+        .group_by("symbol")
         .tk.augment_qsmomentum(
             date_column="date",
             close_column="close",
@@ -129,11 +130,8 @@ def augment_qsmomentum(
     check_value_column(data, close_column)
     check_date_column(data, date_column)
 
-    if isinstance(data, pl.DataFrame):
-        prepared_polars = data.sort(date_column)
-        idx_unsorted = None
-    else:
-        data, idx_unsorted = sort_dataframe(data, date_column, keep_grouped_df=True)
+    if not isinstance(data, (pl.DataFrame, pl.dataframe.group_by.GroupBy)):
+        data, _ = sort_dataframe(data, date_column, keep_grouped_df=True)
 
     # Normalize params to lists
     if isinstance(roc_fast_period, int):

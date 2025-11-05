@@ -432,9 +432,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 3%">
-<col style="width: 8%">
-<col style="width: 86%">
+<col style="width: 2%">
+<col style="width: 7%">
+<col style="width: 87%">
 <col style="width: 2%">
 </colgroup>
 <thead>
@@ -472,8 +472,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="odd">
 <td>alpha</td>
-<td>float</td>
-<td>The <code>alpha</code> parameter is a float that represents the smoothing factor for the Exponential Weighted Moving (EWM) window function. It controls the rate at which the weights decrease exponentially as the data points move further away from the current point.</td>
+<td>float or sequence of floats</td>
+<td>The <code>alpha</code> parameter represents the smoothing factor for the Exponential Weighted Moving (EWM) window function. It controls the rate at which the weights decrease exponentially as the data points move further away from the current point. Pass a single value to compute one EWM or a sequence of values to generate multiple EWM columns in a single call. This option is mutually exclusive with specifying decay parameters such as <code>com</code>, <code>span</code>, or <code>halflife</code> through <code>**kwargs</code>.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">

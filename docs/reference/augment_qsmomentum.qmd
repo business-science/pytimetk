@@ -63,7 +63,8 @@ qsm_pd = (
 
 # Compute QSM on a polars DataFrame via the tk accessor
 qsm_pl = (
-    pl.from_pandas(df.query("symbol == 'AAPL'"))
+    pl.from_pandas(df)
+    .group_by("symbol")
     .tk.augment_qsmomentum(
         date_column="date",
         close_column="close",
