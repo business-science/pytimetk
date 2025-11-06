@@ -67,7 +67,7 @@ This note catalogs the R implementations that pytimetk needs to port. Each secti
 
 ## Helper Gaps to Close
 - **Diagnostics data prep**
-  - ✅ Prototype `acf_diagnostics` helper with Plotly visual (`plot_acf_diagnostics`) now supports grouped faceting, configurable styling, and an optional dropdown UX for switching groups.
+  - ✅ Prototype `acf_diagnostics` helper with Plotly visual (`plot_acf_diagnostics`) now supports grouped faceting, configurable styling, tidy selectors for column arguments, and an optional dropdown UX for switching groups.
   - ✅ Implemented `seasonal_diagnostics` helper using `augment_timeseries_signature` with auto feature selection heuristics.
   - ✅ Implemented `stl_diagnostics` helper leveraging statsmodels STL with auto/override frequency & trend parsing.
   - Build `time_series_cv_plan` helper that normalizes inputs from `TimeSeriesCV`, raw resample DataFrames, or iterables of splits into a tidy plotting frame.
