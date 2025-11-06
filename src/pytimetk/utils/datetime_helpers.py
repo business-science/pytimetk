@@ -3,13 +3,234 @@ import numpy as np
 import polars as pl
 import pandas_flavor as pf
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil import parser
-from typing import Union, List
+from typing import Iterable, List, Sequence, Union
+import re
 
 from pytimetk.utils.checks import check_series_or_datetime
 from pytimetk.utils.polars_helpers import pandas_to_polars_frequency
 from pytimetk.utils.string_helpers import parse_freq_str
+
+_HUMAN_DURATION_PATTERN = re.compile(
+    r"^\s*(?P<value>[-+]?\d*\.?\d+)?\s*(?P<unit>[a-zA-Z]+)\s*$"
+)
+
+_HUMAN_DURATION_UNITS = {
+    # Timedelta-compatible units
+    "s": "seconds",
+    "sec": "seconds",
+    "secs": "seconds",
+    "second": "seconds",
+    "seconds": "seconds",
+    "ms": "milliseconds",
+    "millisecond": "milliseconds",
+    "milliseconds": "milliseconds",
+    "us": "microseconds",
+    "microsecond": "microseconds",
+    "microseconds": "microseconds",
+    "ns": "nanoseconds",
+    "nanosecond": "nanoseconds",
+    "nanoseconds": "nanoseconds",
+    "m": "minutes",
+    "min": "minutes",
+    "mins": "minutes",
+    "minute": "minutes",
+    "minutes": "minutes",
+    "h": "hours",
+    "hr": "hours",
+    "hrs": "hours",
+    "hour": "hours",
+    "hours": "hours",
+    "d": "days",
+    "day": "days",
+    "days": "days",
+    "w": "weeks",
+    "wk": "weeks",
+    "wks": "weeks",
+    "week": "weeks",
+    "weeks": "weeks",
+    # DateOffset-based units
+    "month": "months",
+    "months": "months",
+    "mon": "months",
+    "mons": "months",
+    "mo": "months",
+    "q": "quarters",
+    "quarter": "quarters",
+    "quarters": "quarters",
+    "y": "years",
+    "yr": "years",
+    "yrs": "years",
+    "year": "years",
+    "years": "years",
+}
+
+
+def parse_human_duration(
+    value: Union[str, int, float, pd.Timedelta, np.timedelta64, timedelta, pd.DateOffset],
+) -> Union[pd.Timedelta, pd.DateOffset]:
+    """
+    Convert human-friendly duration input into a pandas Timedelta or DateOffset.
+
+    Parameters
+    ----------
+    value : str or numeric or timedelta-like
+        Supported examples include: ``"30 minutes"``, ``"2 hours"``, ``"3 months"``,
+        ``"1 year"``, ``pd.Timedelta("7D")``, ``datetime.timedelta(days=2)``.
+
+    Returns
+    -------
+    Union[pd.Timedelta, pd.DateOffset]
+        Returns a Timedelta for fixed-width units (seconds through weeks) and a
+        DateOffset for calendar-aware units (months, quarters, years).
+
+    Raises
+    ------
+    ValueError
+        If the input cannot be parsed or represents an unsupported unit.
+    """
+    if isinstance(value, pd.DateOffset):
+        return value
+
+    if isinstance(value, (pd.Timedelta, np.timedelta64, timedelta)):
+        return pd.to_timedelta(value)
+
+    if isinstance(value, (int, float)):
+        # Interpret bare numerics as seconds to avoid silent mistakes.
+        return pd.to_timedelta(value, unit="seconds")
+
+    if not isinstance(value, str):
+        raise ValueError(f"Unsupported duration type: {type(value)}")
+
+    text = value.strip()
+    if not text:
+        raise ValueError("Duration string is empty.")
+
+    match = _HUMAN_DURATION_PATTERN.match(text.lower())
+    if not match:
+        raise ValueError(
+            f"Could not parse duration string '{value}'. Expected formats like '3 days' or '15 minutes'."
+        )
+
+    quantity_str = match.group("value")
+    unit_key = match.group("unit")
+
+    if unit_key not in _HUMAN_DURATION_UNITS:
+        raise ValueError(
+            f"Unit '{unit_key}' is not supported. Supported units include seconds, minutes, hours, "
+            "days, weeks, months, quarters, and years."
+        )
+
+    canonical_unit = _HUMAN_DURATION_UNITS[unit_key]
+    quantity = float(quantity_str) if quantity_str is not None else 1.0
+
+    if canonical_unit in {"months", "quarters", "years"}:
+        if not float(quantity).is_integer():
+            raise ValueError(
+                f"Duration '{value}' requires an integer quantity for calendar units."
+            )
+        quantity_int = int(quantity)
+        if canonical_unit == "months":
+            return pd.DateOffset(months=quantity_int)
+        if canonical_unit == "quarters":
+            return pd.DateOffset(months=quantity_int * 3)
+        return pd.DateOffset(years=quantity_int)
+
+    # Timedelta-based units
+    return pd.to_timedelta(quantity, unit=canonical_unit)
+
+
+def resolve_lag_sequence(
+    lags: Union[str, int, Sequence[int], np.ndarray, range, slice],
+    index: Union[pd.Series, pd.DatetimeIndex, Sequence],
+    clamp: bool = True,
+) -> np.ndarray:
+    """
+    Normalise lag specifications into a sorted numpy array of non-negative integers.
+
+    Parameters
+    ----------
+    lags : str, int, Sequence[int], range, slice
+        - String durations (e.g. ``"30 days"``, ``"3 months"``) are converted to the
+          number of observation lags implied by ``index``.
+        - Integers produce a ``range(0, lags)`` style sequence (inclusive).
+        - Sequences/ranges/slices are materialised and sorted.
+    index : array-like
+        A date/time index used to translate duration strings into row counts. The
+        index is sorted internally.
+    clamp : bool, optional
+        If ``True`` (default), lags greater than ``len(index) - 1`` are clipped.
+
+    Returns
+    -------
+    np.ndarray
+        Sorted array of lag integers starting at zero.
+
+    Raises
+    ------
+    ValueError
+        When the input cannot be interpreted or the index is empty.
+    """
+    if index is None:
+        raise ValueError("`index` must be provided to resolve lag sequences.")
+
+    if isinstance(index, pd.Series):
+        idx = pd.to_datetime(index.to_numpy(copy=False))
+    elif isinstance(index, pd.DatetimeIndex):
+        idx = pd.to_datetime(index)
+    else:
+        idx = pd.to_datetime(np.asarray(index))
+
+    if idx.size == 0:
+        raise ValueError("Cannot resolve lags from an empty index.")
+
+    idx = np.sort(idx)
+    max_possible_lag = max(idx.size - 1, 0)
+
+    def _clamp(sequence: Iterable[int]) -> np.ndarray:
+        arr = np.array([int(x) for x in sequence if int(x) >= 0], dtype=int)
+        if arr.size == 0:
+            return np.array([0], dtype=int)
+        if clamp:
+            arr = arr[arr <= max_possible_lag]
+        return np.unique(arr)
+
+    if isinstance(lags, str):
+        duration = parse_human_duration(lags)
+        start = idx[0]
+        if isinstance(duration, pd.Timedelta):
+            end = start + duration
+        else:
+            end = (pd.Timestamp(start) + duration).to_pydatetime()
+        # Include rows up to the computed end point
+        mask = idx <= np.datetime64(end)
+        reach = int(mask.sum()) - 1
+        reach = max(reach, 0)
+        return _clamp(range(0, reach + 1))
+
+    if isinstance(lags, slice):
+        start = lags.start or 0
+        stop = lags.stop if lags.stop is not None else max_possible_lag
+        step = lags.step or 1
+        return _clamp(range(int(start), int(stop) + 1, int(step)))
+
+    if isinstance(lags, range):
+        return _clamp(lags)
+
+    if isinstance(lags, np.ndarray):
+        return _clamp(lags.tolist())
+
+    if isinstance(lags, Sequence) and not isinstance(lags, (str, bytes)):
+        return _clamp(lags)
+
+    if isinstance(lags, (int, np.integer)):
+        upper = int(lags)
+        if upper < 0:
+            raise ValueError("`lags` must be non-negative.")
+        return _clamp(range(0, upper + 1))
+
+    raise ValueError(f"Unsupported lag specification: {lags!r}")
 
 
 @pf.register_series_method

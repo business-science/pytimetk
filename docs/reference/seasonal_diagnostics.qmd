@@ -1,0 +1,47 @@
+# seasonal_diagnostics { #pytimetk.seasonal_diagnostics }
+
+```python
+seasonal_diagnostics(data, date_column, value_column, feature_set='auto')
+```
+
+Prepare seasonal feature diagnostics akin to ``tk_seasonal_diagnostics``.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+| Name         | Type                                                     | Description                                                                                                                                                                                          | Default    |
+|--------------|----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data         | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | Time series data (long format) or grouped data.                                                                                                                                                      | _required_ |
+| date_column  | str                                                      | Name of the datetime column.                                                                                                                                                                         | _required_ |
+| value_column | str                                                      | Numeric measure to analyse.                                                                                                                                                                          | _required_ |
+| feature_set  | str or sequence                                          | One or more of ``["second", "minute", "hour", "wday.lbl", "week", "month.lbl", "quarter", "year"]``. The special value ``"auto"`` selects features based on the timestamp scale and overall history. | `'auto'`   |
+
+## Returns {.doc-section .doc-section-returns}
+
+| Name   | Type         | Description                                                                                                                                                                                                                                       |
+|--------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|        | pd.DataFrame | Tidy data with:  - grouping columns (when present) - ``date`` (or the supplied ``date_column``) - the original ``value_column`` - ``seasonal_feature`` (e.g. ``"hour"``) - ``seasonal_value`` (the actual categorical value for that observation) |
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import numpy as np
+import pandas as pd
+import pytimetk as tk
+
+rng = pd.date_range("2020-01-01", periods=48, freq="H")
+df = pd.DataFrame(
+    {
+        "id": ["A"] * 24 + ["B"] * 24,
+        "date": list(rng[:24]) + list(rng[:24]),
+        "value": np.random.default_rng(123).normal(size=48),
+    }
+)
+
+diagnostics = tk.seasonal_diagnostics(
+    data=df.groupby("id"),
+    date_column="date",
+    value_column="value",
+    feature_set=["hour", "wday.lbl"],
+)
+diagnostics.head()
+```

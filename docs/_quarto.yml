@@ -116,6 +116,14 @@ quartodoc:
       package: pytimetk
       contents:
       - plot_timeseries
+    - title: 🚀 Plotting Correlation, Seasonality, and Trends
+      desc: Visualize correlation, seasonality, and trends with one line of code.
+      package: pytimetk
+      contents:
+      - plot_acf_diagnostics
+      - acf_diagnostics
+      - seasonal_diagnostics
+      - stl_diagnostics
     - title: 🔥 Wrangling Pandas Time Series DataFrames
       desc: Bend time series data to your will.
       package: pytimetk

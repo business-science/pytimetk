@@ -1,0 +1,52 @@
+# stl_diagnostics { #pytimetk.stl_diagnostics }
+
+```python
+stl_diagnostics(
+    data,
+    date_column,
+    value_column,
+    frequency='auto',
+    trend='auto',
+    robust=True,
+)
+```
+
+Generate STL decomposition diagnostics (observed, season, trend, remainder, seasadj).
+
+## Parameters {.doc-section .doc-section-parameters}
+
+| Name         | Type                                                     | Description                                                                                                                                                               | Default    |
+|--------------|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data         | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | Time series data, optionally grouped.                                                                                                                                     | _required_ |
+| date_column  | str                                                      | Name of the datetime column.                                                                                                                                              | _required_ |
+| value_column | str                                                      | Numeric measure to decompose.                                                                                                                                             | _required_ |
+| frequency    | (str, int, float, pd.Timedelta, pd.DateOffset)           | Seasonal period specification. ``"auto"`` (default) infers a period via :func:`pytimetk.get_seasonal_frequency`. Strings such as ``"7D"`` or ``"30 days"`` are supported. | `'auto'`   |
+| trend        | (str, int, float, pd.Timedelta, pd.DateOffset)           | Trend window specification. ``"auto"`` (default) infers a window via :func:`pytimetk.get_trend_frequency`.                                                                | `'auto'`   |
+| robust       | bool                                                     | Apply a robust STL fit (down-weights outliers). Defaults to ``True``.                                                                                                     | `True`     |
+
+## Returns {.doc-section .doc-section-returns}
+
+| Name   | Type         | Description                                                                                                                              |
+|--------|--------------|------------------------------------------------------------------------------------------------------------------------------------------|
+|        | pd.DataFrame | Decomposition with columns:  - grouping columns (if present) - ``date``, ``observed``, ``season``, ``trend``, ``remainder``, ``seasadj`` |
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import numpy as np
+import pandas as pd
+import pytimetk as tk
+
+rng = pd.date_range("2020-01-01", periods=180, freq="D")
+values = np.sin(np.linspace(0, 8 * np.pi, len(rng))) + np.random.default_rng(123).normal(scale=0.1, size=len(rng))
+df = pd.DataFrame({"date": rng, "value": values})
+
+decomposition = tk.stl_diagnostics(
+    data=df,
+    date_column="date",
+    value_column="value",
+    frequency="7D",
+    trend="30 days",
+)
+decomposition.head()
+```

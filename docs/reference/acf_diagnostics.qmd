@@ -1,0 +1,51 @@
+# acf_diagnostics { #pytimetk.acf_diagnostics }
+
+```python
+acf_diagnostics(data, date_column, value_column, ccf_columns=None, lags=1000)
+```
+
+Compute tidy autocorrelation, partial autocorrelation, and optional
+cross-correlation diagnostics for one or more time series.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+| Name         | Type                                                     | Description                                                                                                                                                                                                       | Default    |
+|--------------|----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data         | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | Long-form time series data (optionally grouped via ``groupby``).                                                                                                                                                  | _required_ |
+| date_column  | str                                                      | Name of the datetime column.                                                                                                                                                                                      | _required_ |
+| value_column | str                                                      | Numeric column used to compute ACF/PACF diagnostics.                                                                                                                                                              | _required_ |
+| ccf_columns  | str or sequence                                          | Additional numeric columns to run cross-correlation against ``value_column``. Accepts literal column names or tidy selectors created with :mod:`pytimetk.utils.selection` (e.g. ``contains("driver")``).          | `None`     |
+| lags         | int, sequence, slice, or str                             | Lag specification. Integers mirror ``range(0, lags)``, sequences/slices are used verbatim, and strings such as ``"30 days"`` or ``"3 months"`` are resolved relative to the supplied index. Defaults to ``1000``. | `1000`     |
+
+## Returns {.doc-section .doc-section-returns}
+
+| Name   | Type         | Description                                                                                                                                                                                                                                      |
+|--------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|        | pd.DataFrame | Diagnostics with columns:  - grouping columns (when present) - ``metric`` (``"ACF"``, ``"PACF"``, or ``"CCF_<column>"``) - ``lag`` (non-negative integer) - ``value`` (correlation) - ``white_noise_upper`` / ``white_noise_lower`` (95% bounds) |
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import numpy as np
+import pandas as pd
+import pytimetk as tk
+
+rng = pd.date_range("2020-01-01", periods=40, freq="D")
+df = pd.DataFrame(
+    {
+        "id": ["A"] * 20 + ["B"] * 20,
+        "date": list(rng[:20]) + list(rng[:20]),
+        "value": np.sin(np.linspace(0, 4 * np.pi, 40)),
+        "driver": np.cos(np.linspace(0, 4 * np.pi, 40)),
+    }
+)
+
+diagnostics = tk.acf_diagnostics(
+    data=df.groupby("id"),
+    date_column="date",
+    value_column="value",
+    ccf_columns="driver",
+    lags="30 days",
+)
+diagnostics.head()
+```

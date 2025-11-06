@@ -6,6 +6,7 @@ from .plot import (
     plot_anomalies_decomp,
     plot_anomalies_cleaned,
     plot_correlation_funnel,
+    plot_acf_diagnostics,
 )
 from .plot.theme import (
     theme_timetk,
@@ -23,6 +24,9 @@ from .core import (
     pad_by_time,
     ts_features,
     ts_summary,
+    acf_diagnostics,
+    seasonal_diagnostics,
+    stl_diagnostics,
     get_diff_summary,
     get_date_summary,
     get_frequency_summary,

@@ -110,7 +110,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2025-11-05T22:31:39.799Z</lastmod>
+    <lastmod>2025-11-06T14:35:50.598Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_pandas_frequency.html</loc>
@@ -415,5 +415,21 @@
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/anomalize.html</loc>
     <lastmod>2025-11-05T22:32:05.875Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/acf_diagnostics.html</loc>
+    <lastmod>2025-11-06T14:35:55.072Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/seasonal_diagnostics.html</loc>
+    <lastmod>2025-11-06T14:35:50.045Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/plot_acf_diagnostics.html</loc>
+    <lastmod>2025-11-06T14:36:19.173Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/stl_diagnostics.html</loc>
+    <lastmod>2025-11-06T14:35:45.198Z</lastmod>
   </url>
 </urlset>

@@ -67,13 +67,13 @@ This note catalogs the R implementations that pytimetk needs to port. Each secti
 
 ## Helper Gaps to Close
 - **Diagnostics data prep**
-  - Implement `acf_diagnostics` helper (ACF/PACF/CCF + white-noise bounds, lag parsing, group-aware outputs).
-  - Add `seasonal_diagnostics` helper that wraps `augment_timeseries_signature` and replicates `get_seasonal_auto_features` logic (needs time-span summary + feature filtering).
-  - Add `stl_diagnostics` helper that wraps statsmodels STL with automatic frequency/trend selection (using existing frequency utilities).
+  - ✅ Prototype `acf_diagnostics` helper with Plotly visual (`plot_acf_diagnostics`) now supports grouped faceting and configurable styling options.
+  - ✅ Implemented `seasonal_diagnostics` helper using `augment_timeseries_signature` with auto feature selection heuristics.
+  - ✅ Implemented `stl_diagnostics` helper leveraging statsmodels STL with auto/override frequency & trend parsing.
   - Build `time_series_cv_plan` helper that normalizes inputs from `TimeSeriesCV`, raw resample DataFrames, or iterables of splits into a tidy plotting frame.
 - **Parsing & selection**
-  - Extend duration parsing beyond the current `"3M"` style (support `"3 months"`, `"7 days"`, etc.) for `.period`, `.lags`, `.frequency`, `.trend`.
-  - Provide ergonomic column selectors (e.g., string, list, callable) to mimic tidyselect-driven `.facet_vars` / `.color_var` behaviour.
+  - ✅ Human-friendly duration parsing (`parse_human_duration`, `resolve_lag_sequence`) now supports specs like `"30 days"` or `"3 months"`.
+  - ✅ Flexible column selectors (`utils.selection`) add helpers such as `contains()`, `starts_with()`, and `resolve_column_selection()` to mimic tidyselect ergonomics.
 - **Plot assembly**
   - Create reusable Plotly subplot/facet utility to arrange traces (boxplots, line diagnostics, violin/box combos) across groups consistently.
   - Decide on smoother abstraction (`auto_smooth`) so boxplot/regression charts can share logic with `plot_timeseries`.

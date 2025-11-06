@@ -6,6 +6,12 @@ website:
       - reference/plot_timeseries.qmd
       section: "\U0001F680 Data Visualization"
     - contents:
+      - reference/plot_acf_diagnostics.qmd
+      - reference/acf_diagnostics.qmd
+      - reference/seasonal_diagnostics.qmd
+      - reference/stl_diagnostics.qmd
+      section: "\U0001F680 Plotting Correlation, Seasonality, and Trends"
+    - contents:
       - reference/summarize_by_time.qmd
       - reference/apply_by_time.qmd
       - reference/pad_by_time.qmd

@@ -6,3 +6,4 @@ from .checks import *
 from .parallel_helpers import *
 from .string_helpers import *
 from .gpu_support import *
+from .selection import *
