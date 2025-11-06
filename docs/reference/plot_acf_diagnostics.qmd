@@ -39,15 +39,16 @@ plot_acf_diagnostics(
 ```
 
 Visualise ACF, PACF, and optional CCF diagnostics with Plotly, including
-grouped facets and extensive styling controls.
+grouped facets and extensive styling controls. Polars DataFrames are supported
+(they are converted internally to pandas).
 
 ## Parameters {.doc-section .doc-section-parameters}
 
 | Name              | Type                                                     | Description                                                                                                                                        | Default             |
 |-------------------|----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|
 | data              | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | Time series data or grouped data produced via ``DataFrame.groupby``.                                                                               | _required_          |
-| date_column       | str                                                      | Name of the datetime column.                                                                                                                       | _required_          |
-| value_column      | str                                                      | Numeric column to diagnose.                                                                                                                        | _required_          |
+| date_column       | str or ColumnSelector                                    | Name of the datetime column, or a tidy selector resolving to one column.                                                                           | _required_          |
+| value_column      | str or ColumnSelector                                    | Numeric column to diagnose, or a tidy selector resolving to one column.                                                                            | _required_          |
 | ccf_columns       | str or sequence                                          | Additional numeric columns whose cross-correlations should be drawn. Accepts literal names or tidy selectors from :mod:`pytimetk.utils.selection`. | `None`              |
 | lags              | int, sequence, slice, or str                             | Lag specification forwarded to :func:`pytimetk.acf_diagnostics`. Defaults to ``1000``.                                                             | `1000`              |
 | show_white_noise  | bool                                                     | Draw white-noise confidence bands around each subplot. Defaults to ``True``.                                                                       | `True`              |
@@ -115,13 +116,28 @@ fig
 ```
 
 ```{python}
-# Dropdown example
-fig_dropdown = tk.plot_acf_diagnostics(
-    data=df.groupby("id"),
+# Dropdown example without tidy selectors
+fig_dropdown = df.groupby("id").plot_acf_diagnostics(
     date_column="date",
     value_column="value",
-    ccf_columns="driver",
-    lags=15,
+    ccf_columns=["driver"],
+    lags="20 days",
+    plotly_dropdown=True,
+    height=700,
+)
+fig_dropdown
+```
+
+```{python}
+# Dopdown example with tidy selectors
+from pytimetk.utils.selection import contains
+
+fig_dropdown = tk.plot_acf_diagnostics(
+    data=df,
+    date_column="date",
+    value_column=contains("value", case=False),
+    ccf_columns=contains("driver"),
+    lags="20 days",
     plotly_dropdown=True,
     height=700,
 )

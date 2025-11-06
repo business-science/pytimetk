@@ -7,15 +7,21 @@ import pandas_flavor as pf
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+try:  # Optional dependency
+    import polars as pl
+except ImportError:  # pragma: no cover - optional import
+    pl = None
+
 from pytimetk.core.acf_diagnostics import acf_diagnostics
+from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
 
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def plot_acf_diagnostics(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
-    date_column: str,
-    value_column: str,
+    date_column: Union[str, ColumnSelector],
+    value_column: Union[str, ColumnSelector],
     ccf_columns: Optional[Union[str, Sequence[str], np.ndarray]] = None,
     lags: Union[str, int, Sequence[int], np.ndarray, range, slice] = 1000,
     show_white_noise: bool = True,
@@ -53,16 +59,17 @@ def plot_acf_diagnostics(
 ):
     """
     Visualise ACF, PACF, and optional CCF diagnostics with Plotly, including
-    grouped facets and extensive styling controls.
+    grouped facets and extensive styling controls. Polars DataFrames are supported
+    (they are converted internally to pandas).
 
     Parameters
     ----------
     data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
         Time series data or grouped data produced via ``DataFrame.groupby``.
-    date_column : str
-        Name of the datetime column.
-    value_column : str
-        Numeric column to diagnose.
+    date_column : str or ColumnSelector
+        Name of the datetime column, or a tidy selector resolving to one column.
+    value_column : str or ColumnSelector
+        Numeric column to diagnose, or a tidy selector resolving to one column.
     ccf_columns : str or sequence, optional
         Additional numeric columns whose cross-correlations should be drawn.
         Accepts literal names or tidy selectors from :mod:`pytimetk.utils.selection`.
@@ -148,19 +155,64 @@ def plot_acf_diagnostics(
     ```
 
     ```{python}
-    # Dropdown example
-    fig_dropdown = tk.plot_acf_diagnostics(
-        data=df.groupby("id"),
+    # Dropdown example without tidy selectors
+    fig_dropdown = df.groupby("id").plot_acf_diagnostics(
         date_column="date",
         value_column="value",
-        ccf_columns="driver",
-        lags=15,
+        ccf_columns=["driver"],
+        lags="20 days",
+        plotly_dropdown=True,
+        height=700,
+    )
+    fig_dropdown
+    ```
+
+    ```{python}
+    # Dopdown example with tidy selectors
+    from pytimetk.utils.selection import contains
+
+    fig_dropdown = tk.plot_acf_diagnostics(
+        data=df,
+        date_column="date",
+        value_column=contains("value", case=False),
+        ccf_columns=contains("driver"),
+        lags="20 days",
         plotly_dropdown=True,
         height=700,
     )
     fig_dropdown
     ```
     """
+    # Convert polars inputs to pandas for downstream compatibility
+    if pl is not None:
+        if isinstance(data, pl.DataFrame):
+            data = data.to_pandas()
+        elif hasattr(pl.dataframe.group_by, "GroupBy") and isinstance(
+            data,
+            pl.dataframe.group_by.GroupBy,  # type: ignore[arg-type]
+        ):
+            data = data.to_pandas()  # type: ignore[attr-defined]
+
+    # Resolve selectors for date/value to single column names
+    if not isinstance(date_column, str):
+        resolved_date = resolve_column_selection(
+            data, date_column, allow_none=False, require_match=True
+        )
+        if len(resolved_date) != 1:
+            raise ValueError(
+                "The `date_column` selector must resolve to exactly one column."
+            )
+        date_column = resolved_date[0]
+
+    if not isinstance(value_column, str):
+        resolved_value = resolve_column_selection(
+            data, value_column, allow_none=False, require_match=True
+        )
+        if len(resolved_value) != 1:
+            raise ValueError(
+                "The `value_column` selector must resolve to exactly one column."
+            )
+        value_column = resolved_value[0]
 
     diagnostics = acf_diagnostics(
         data=data,
