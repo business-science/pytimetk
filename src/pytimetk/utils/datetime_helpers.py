@@ -89,6 +89,15 @@ def parse_human_duration(
     ------
     ValueError
         If the input cannot be parsed or represents an unsupported unit.
+
+    Examples
+    --------
+    ```python
+    import pytimetk as tk
+
+    tk.parse_human_duration("45 minutes")
+    tk.parse_human_duration("3 months")
+    ```
     """
     if isinstance(value, pd.DateOffset):
         return value
@@ -171,6 +180,18 @@ def resolve_lag_sequence(
     ------
     ValueError
         When the input cannot be interpreted or the index is empty.
+
+    Examples
+    --------
+    ```python
+    import numpy as np
+    import pandas as pd
+    import pytimetk as tk
+
+    idx = pd.date_range("2020-01-01", periods=5, freq="D")
+    tk.resolve_lag_sequence("3 days", idx)
+    tk.resolve_lag_sequence([0, 2, 4], idx)
+    ```
     """
     if index is None:
         raise ValueError("`index` must be provided to resolve lag sequences.")

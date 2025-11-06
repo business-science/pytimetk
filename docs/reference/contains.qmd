@@ -1,0 +1,25 @@
+# contains { #pytimetk.contains }
+
+```python
+contains(pattern, *, case=True, regex=False)
+```
+
+Build a selector that returns columns containing ``pattern``.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+| Name    | Type   | Description                                                   | Default    |
+|---------|--------|---------------------------------------------------------------|------------|
+| pattern | str    | Substring or regular expression to match.                     | _required_ |
+| case    | bool   | Perform case-sensitive matching. Defaults to True.            | `True`     |
+| regex   | bool   | Treat ``pattern`` as a regular expression. Defaults to False. | `False`    |
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import pandas as pd
+from pytimetk.utils.selection import contains
+
+columns = pd.Index(["value", "VALUE_DELTA", "category"])
+contains("value", case=False)(columns)
+```

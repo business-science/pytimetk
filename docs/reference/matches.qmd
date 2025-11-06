@@ -1,0 +1,17 @@
+# matches { #pytimetk.matches }
+
+```python
+matches(pattern, *, flags=0)
+```
+
+Build a selector that returns columns matching the supplied regular expression.
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import pandas as pd
+from pytimetk.utils.selection import matches
+
+columns = pd.Index(["lag_1", "lag_2", "value"])
+matches(r"^lag_\d$")(columns)
+```

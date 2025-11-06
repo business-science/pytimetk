@@ -237,6 +237,15 @@ quartodoc:
         - week_of_month
         - timeseries_unit_frequency_table
         - time_scale_template
+    - title: 🧰 Tidy Helpers
+      desc: Column selection and duration parsing utilities for diagnostics APIs.
+      package: pytimetk
+      contents:
+        - contains
+        - starts_with
+        - ends_with
+        - matches
+        - resolve_column_selection
     - title: 🛠️ Visualization Utilities
       desc: Helper functions to make your life easier.
       package: pytimetk

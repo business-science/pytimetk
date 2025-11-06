@@ -103,6 +103,13 @@ website:
       - reference/time_scale_template.qmd
       section: "\U0001F6E0\uFE0F Date Utilities"
     - contents:
+      - reference/contains.qmd
+      - reference/starts_with.qmd
+      - reference/ends_with.qmd
+      - reference/matches.qmd
+      - reference/resolve_column_selection.qmd
+      section: "\U0001F9F0 Tidy Helpers"
+    - contents:
       - reference/theme_timetk.qmd
       - reference/palette_timetk.qmd
       section: "\U0001F6E0\uFE0F Visualization Utilities"

@@ -1,0 +1,17 @@
+# starts_with { #pytimetk.starts_with }
+
+```python
+starts_with(prefix, *, case=True)
+```
+
+Build a selector that returns columns starting with ``prefix``.
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import pandas as pd
+from pytimetk.utils.selection import starts_with
+
+columns = pd.Index(["value", "val_growth", "category"])
+starts_with("val")(columns)
+```

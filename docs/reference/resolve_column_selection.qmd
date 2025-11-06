@@ -1,0 +1,48 @@
+# resolve_column_selection { #pytimetk.resolve_column_selection }
+
+```python
+resolve_column_selection(
+    data,
+    selectors,
+    *,
+    allow_none=True,
+    require_match=True,
+    unique=True,
+)
+```
+
+Resolve flexible column selectors into a concrete list of column names.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+| Name          | Type                 | Description                                                                                                                                                                                                                                                                                                                                  | Default    |
+|---------------|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | DataFrame or GroupBy | Data source used to validate column existence.                                                                                                                                                                                                                                                                                               | _required_ |
+| selectors     | various              | - ``str``: treated as a literal column name. - ``Sequence[str]``: a collection of literal column names. - ``re.Pattern``: matches columns via ``pattern.search``. - ``Callable``: receives the column ``Index`` and must return an   iterable of column names. - ``None``: permitted when ``allow_none`` is True (default), yielding ``[]``. | _required_ |
+| allow_none    | bool                 | Allow ``None`` selectors without raising an error. Defaults to True.                                                                                                                                                                                                                                                                         | `True`     |
+| require_match | bool                 | Raise ``ValueError`` when a selector does not match any columns. Defaults to True.                                                                                                                                                                                                                                                           | `True`     |
+| unique        | bool                 | Return deduplicated column names while preserving order. Defaults to True.                                                                                                                                                                                                                                                                   | `True`     |
+
+## Returns {.doc-section .doc-section-returns}
+
+| Name   | Type        | Description                                         |
+|--------|-------------|-----------------------------------------------------|
+|        | list\[str\] | Ordered list of columns satisfying the selector(s). |
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import pandas as pd
+import pytimetk as tk
+from pytimetk.utils.selection import contains
+
+df = pd.DataFrame({"grp": [1, 1], "value": [10, 20], "category": ["a", "b"]})
+tk.resolve_column_selection(df, ["value", contains("cat")])
+```
+```{python}
+import polars as pl
+import pytimetk as tk
+
+pl_df = pl.DataFrame({"grp": [1, 1], "value": [10, 20], "extra": [0.1, 0.2]})
+tk.resolve_column_selection(pl_df, ["value"])
+```

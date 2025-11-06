@@ -165,6 +165,18 @@ Helper functions to make your life easier.
 | [timeseries_unit_frequency_table](timeseries_unit_frequency_table.qmd#pytimetk.timeseries_unit_frequency_table) | The function `timeseries_unit_frequency_table` returns a pandas DataFrame |
 | [time_scale_template](time_scale_template.qmd#pytimetk.time_scale_template) | The function `time_scale_template` returns a table with time scale |
 
+## 🧰 Tidy Helpers
+
+Column selection and duration parsing utilities for diagnostics APIs.
+
+| | |
+| --- | --- |
+| [contains](contains.qmd#pytimetk.contains) | Build a selector that returns columns containing ``pattern``. |
+| [starts_with](starts_with.qmd#pytimetk.starts_with) | Build a selector that returns columns starting with ``prefix``. |
+| [ends_with](ends_with.qmd#pytimetk.ends_with) | Build a selector that returns columns ending with ``suffix``. |
+| [matches](matches.qmd#pytimetk.matches) | Build a selector that returns columns matching the supplied regular expression. |
+| [resolve_column_selection](resolve_column_selection.qmd#pytimetk.resolve_column_selection) | Resolve flexible column selectors into a concrete list of column names. |
+
 ## 🛠️ Visualization Utilities
 
 Helper functions to make your life easier.

@@ -94,6 +94,13 @@ from .utils import (
     parallel_apply,
     progress_apply,
     parse_freq_str,
+    parse_human_duration,
+    resolve_lag_sequence,
+    contains,
+    starts_with,
+    ends_with,
+    matches,
+    resolve_column_selection,
 )
 from .feature_store import (
     FeatureStore,

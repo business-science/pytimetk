@@ -1,0 +1,17 @@
+# ends_with { #pytimetk.ends_with }
+
+```python
+ends_with(suffix, *, case=True)
+```
+
+Build a selector that returns columns ending with ``suffix``.
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import pandas as pd
+from pytimetk.utils.selection import ends_with
+
+columns = pd.Index(["value", "total_value", "category"])
+ends_with("value")(columns)
+```

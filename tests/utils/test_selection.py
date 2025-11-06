@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 from pytimetk.utils.selection import (
     contains,
@@ -37,3 +38,19 @@ def test_resolve_column_selection_with_groupby():
 
     resolved_group = resolve_column_selection(grouped, "value")
     assert resolved_group == ["value"]
+
+
+@pytest.mark.parametrize("engine", ["pandas", "polars"])
+def test_resolve_column_selection_with_polars(engine):
+    if engine == "polars":
+        pl = pytest.importorskip("polars")
+        pl_df = pl.DataFrame({"grp": [1, 1], "value": [10, 20], "extra": [0.1, 0.2]})
+        result = resolve_column_selection(pl_df, ["value"])
+        assert result == ["value"]
+
+        grouped = pl_df.group_by("grp")
+        result_group = resolve_column_selection(grouped, ["value"])
+        assert result_group == ["value"]
+    else:
+        df = pd.DataFrame({"grp": [1, 1], "value": [10, 20], "extra": [0.1, 0.2]})
+        assert resolve_column_selection(df, ["value"]) == ["value"]
