@@ -1,5 +1,5 @@
 import math
-from typing import Optional, Sequence, Union
+from typing import List, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -20,10 +20,13 @@ def plot_acf_diagnostics(
     lags: Union[str, int, Sequence[int], np.ndarray, range, slice] = 1000,
     show_white_noise: bool = True,
     title: str = "Lag Diagnostics",
-    x_lab: str = "Lag",
+    x_lab: str = "",
     y_lab: str = "Correlation",
     width: Optional[int] = None,
     height: Optional[int] = None,
+    plotly_dropdown: bool = False,
+    plotly_dropdown_x: float = 1.05,
+    plotly_dropdown_y: float = 1.05,
     # Group faceting
     group_ncols: Optional[int] = None,
     group_label_sep: str = ", ",
@@ -70,9 +73,14 @@ def plot_acf_diagnostics(
     title : str, optional
         Figure title. Defaults to ``"Lag Diagnostics"``.
     x_lab, y_lab : str, optional
-        Axis labels for the bottom row / first column.
+        Axis labels for the bottom row / first column. ``x_lab`` defaults to an empty string.
     width, height : int, optional
         Figure dimensions in pixels.
+    plotly_dropdown : bool, optional
+        When ``True`` and grouped data are supplied, render a single set of
+        panels with a Plotly dropdown to switch between groups. Defaults to ``False``.
+    plotly_dropdown_x, plotly_dropdown_y : float, optional
+        Position of the dropdown menu (only used when ``plotly_dropdown`` is ``True``).
     group_ncols : int, optional
         Number of facet columns when grouped data are supplied. Defaults to a single row.
     group_label_sep : str, optional
@@ -138,6 +146,20 @@ def plot_acf_diagnostics(
     )
     fig
     ```
+
+    ```{python}
+    # Dropdown example
+    fig_dropdown = tk.plot_acf_diagnostics(
+        data=df.groupby("id"),
+        date_column="date",
+        value_column="value",
+        ccf_columns="driver",
+        lags=15,
+        plotly_dropdown=True,
+        height=700,
+    )
+    fig_dropdown
+    ```
     """
 
     diagnostics = acf_diagnostics(
@@ -189,30 +211,43 @@ def plot_acf_diagnostics(
         group_labels = [""]
         n_groups = 1
 
-    if group_ncols is None or group_ncols <= 0:
-        ncols = n_groups
+    use_plotly_dropdown = bool(group_columns) and plotly_dropdown and n_groups > 1
+
+    if use_plotly_dropdown:
+        ncols = 1
+        group_rows = 1
+        rows = len(ordered_metrics)
     else:
-        ncols = max(1, min(group_ncols, n_groups))
+        if group_ncols is None or group_ncols <= 0:
+            ncols = n_groups
+        else:
+            ncols = max(1, min(group_ncols, n_groups))
 
-    group_rows = math.ceil(n_groups / ncols)
-    rows = group_rows * len(ordered_metrics)
+        group_rows = math.ceil(n_groups / ncols)
+        rows = group_rows * len(ordered_metrics)
 
-    subplot_titles = []
-    for group_row_idx in range(group_rows):
-        for metric in ordered_metrics:
-            for group_col_idx in range(ncols):
-                global_group_idx = group_row_idx * ncols + group_col_idx
-                if global_group_idx >= n_groups:
-                    subplot_titles.append("")
-                else:
-                    label = group_labels[global_group_idx]
-                    subplot_titles.append(
-                        metric if label == "" else f"{label}<br>{metric}"
-                    )
+    subplot_titles: List[str] = []
+    if use_plotly_dropdown:
+        subplot_titles = ordered_metrics
+    else:
+        for group_row_idx in range(group_rows):
+            for metric in ordered_metrics:
+                for group_col_idx in range(ncols):
+                    global_group_idx = group_row_idx * ncols + group_col_idx
+                    if global_group_idx >= n_groups:
+                        subplot_titles.append("")
+                    else:
+                        label = group_labels[global_group_idx]
+                        subplot_titles.append(
+                            metric if label == "" else f"{metric} — {label}"
+                        )
 
     marker_color = marker_color or line_color
     mode = "lines+markers" if show_markers else "lines"
     hovertemplate = hovertemplate or "Lag=%{x}<br>Correlation=%{y}<extra></extra>"
+
+    if height is None:
+        height = max(400, rows * 220)
 
     fig = make_subplots(
         rows=rows,
@@ -223,6 +258,8 @@ def plot_acf_diagnostics(
         subplot_titles=subplot_titles,
     )
 
+    trace_indices_by_group: List[List[int]] = [] if use_plotly_dropdown else []
+
     for group_idx in range(n_groups):
         group_row_idx = group_idx // ncols
         group_col_idx = group_idx % ncols
@@ -232,9 +269,16 @@ def plot_acf_diagnostics(
             for col in group_columns:
                 group_mask &= diagnostics[col] == row_values[col]
 
+        if use_plotly_dropdown:
+            group_trace_indices: List[int] = []
+
         for metric_idx, metric in enumerate(ordered_metrics):
-            row = group_row_idx * len(ordered_metrics) + metric_idx + 1
-            col = group_col_idx + 1
+            if use_plotly_dropdown:
+                row = metric_idx + 1
+                col = 1
+            else:
+                row = group_row_idx * len(ordered_metrics) + metric_idx + 1
+                col = group_col_idx + 1
             subset = diagnostics.loc[
                 group_mask & (diagnostics["metric"] == metric)
             ].sort_values("lag")
@@ -243,6 +287,7 @@ def plot_acf_diagnostics(
 
             x = subset["lag"]
             y = subset["value"]
+            trace_visible = (not use_plotly_dropdown) or (group_idx == 0)
 
             fig.add_trace(
                 go.Scatter(
@@ -262,10 +307,13 @@ def plot_acf_diagnostics(
                     name=metric,
                     showlegend=show_legend and group_idx == 0 and metric_idx == 0,
                     hovertemplate=hovertemplate,
+                    visible=trace_visible,
                 ),
                 row=row,
                 col=col,
             )
+            if use_plotly_dropdown:
+                group_trace_indices.append(len(fig.data) - 1)
 
             lag_min = x.min()
             lag_max = x.max()
@@ -283,10 +331,13 @@ def plot_acf_diagnostics(
                     ),
                     showlegend=False,
                     hoverinfo="skip",
+                    visible=trace_visible,
                 ),
                 row=row,
                 col=col,
             )
+            if use_plotly_dropdown:
+                group_trace_indices.append(len(fig.data) - 1)
 
             if show_white_noise:
                 upper = subset["white_noise_upper"].iloc[0]
@@ -304,10 +355,13 @@ def plot_acf_diagnostics(
                         ),
                         showlegend=False,
                         hoverinfo="skip",
+                        visible=trace_visible,
                     ),
                     row=row,
                     col=col,
                 )
+                if use_plotly_dropdown:
+                    group_trace_indices.append(len(fig.data) - 1)
                 fig.add_trace(
                     go.Scatter(
                         x=[lag_min, lag_max],
@@ -320,31 +374,76 @@ def plot_acf_diagnostics(
                         ),
                         showlegend=False,
                         hoverinfo="skip",
+                        visible=trace_visible,
                     ),
                     row=row,
                     col=col,
                 )
+                if use_plotly_dropdown:
+                    group_trace_indices.append(len(fig.data) - 1)
 
             # Apply axis labels
             if col == 1:
-                fig.update_yaxes(
-                    title_text=y_lab if metric_idx == 0 else "", row=row, col=col
-                )
+                y_title = y_lab if (metric_idx == 0 and group_idx == 0) else ""
+                fig.update_yaxes(title_text=y_title, row=row, col=col)
             else:
                 fig.update_yaxes(title_text="", row=row, col=col)
 
-    # Shared x-axis labels for bottom metric block
-    for group_row_idx in range(group_rows):
-        base_row = (group_row_idx + 1) * len(ordered_metrics)
-        for col in range(1, ncols + 1):
-            fig.update_xaxes(title_text=x_lab, row=base_row, col=col)
+        if use_plotly_dropdown:
+            trace_indices_by_group.append(group_trace_indices)
 
-    fig.update_layout(
-        title=dict(text=title, x=0.5),
+    # Shared x-axis labels for bottom metric block
+    if use_plotly_dropdown:
+        for metric_idx in range(1, len(ordered_metrics) + 1):
+            fig.update_xaxes(title_text=x_lab, row=metric_idx, col=1)
+    else:
+        for group_row_idx in range(group_rows):
+            base_row = (group_row_idx + 1) * len(ordered_metrics)
+            for col in range(1, ncols + 1):
+                fig.update_xaxes(title_text=x_lab, row=base_row, col=col)
+
+    layout_title = title
+
+    layout_kwargs = dict(
+        title=dict(text=layout_title, x=0.5),
         template="plotly_white",
-        margin=dict(l=60, r=20, t=60, b=50),
+        margin=dict(l=60, r=20, t=110, b=60),
         width=width,
         height=height,
     )
+
+    if use_plotly_dropdown:
+        buttons = []
+        total_traces = len(fig.data)
+        for idx, label in enumerate(group_labels):
+            button_label = label or f"Group {idx + 1}"
+            visibility = [False] * total_traces
+            for trace_idx in trace_indices_by_group[idx]:
+                visibility[trace_idx] = True
+            button_title = title
+            buttons.append(
+                dict(
+                    label=button_label,
+                    method="update",
+                    args=[
+                        {"visible": visibility},
+                        {"title": {"text": button_title}},
+                    ],
+                )
+            )
+        layout_kwargs["updatemenus"] = [
+            dict(
+                type="dropdown",
+                x=plotly_dropdown_x,
+                y=plotly_dropdown_y,
+                showactive=True,
+                buttons=buttons,
+            )
+        ]
+
+    fig.update_layout(**layout_kwargs)
+    fig.update_xaxes(title_standoff=20)
+    fig.update_yaxes(title_standoff=20)
+    fig.update_annotations(yshift=10)
 
     return fig

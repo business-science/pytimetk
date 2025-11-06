@@ -9,10 +9,13 @@ plot_acf_diagnostics(
     lags=1000,
     show_white_noise=True,
     title='Lag Diagnostics',
-    x_lab='Lag',
+    x_lab='',
     y_lab='Correlation',
     width=None,
     height=None,
+    plotly_dropdown=False,
+    plotly_dropdown_x=1.05,
+    plotly_dropdown_y=1.05,
     group_ncols=None,
     group_label_sep=', ',
     line_color='#2c3e50',
@@ -49,10 +52,13 @@ grouped facets and extensive styling controls.
 | lags              | int, sequence, slice, or str                             | Lag specification forwarded to :func:`pytimetk.acf_diagnostics`. Defaults to ``1000``.                                                             | `1000`              |
 | show_white_noise  | bool                                                     | Draw white-noise confidence bands around each subplot. Defaults to ``True``.                                                                       | `True`              |
 | title             | str                                                      | Figure title. Defaults to ``"Lag Diagnostics"``.                                                                                                   | `'Lag Diagnostics'` |
-| x_lab             | str                                                      | Axis labels for the bottom row / first column.                                                                                                     | `'Lag'`             |
-| y_lab             | str                                                      | Axis labels for the bottom row / first column.                                                                                                     | `'Lag'`             |
+| x_lab             | str                                                      | Axis labels for the bottom row / first column. ``x_lab`` defaults to an empty string.                                                              | `''`                |
+| y_lab             | str                                                      | Axis labels for the bottom row / first column. ``x_lab`` defaults to an empty string.                                                              | `''`                |
 | width             | int                                                      | Figure dimensions in pixels.                                                                                                                       | `None`              |
 | height            | int                                                      | Figure dimensions in pixels.                                                                                                                       | `None`              |
+| plotly_dropdown   | bool                                                     | When ``True`` and grouped data are supplied, render a single set of panels with a Plotly dropdown to switch between groups. Defaults to ``False``. | `False`             |
+| plotly_dropdown_x | float                                                    | Position of the dropdown menu (only used when ``plotly_dropdown`` is ``True``).                                                                    | `1.05`              |
+| plotly_dropdown_y | float                                                    | Position of the dropdown menu (only used when ``plotly_dropdown`` is ``True``).                                                                    | `1.05`              |
 | group_ncols       | int                                                      | Number of facet columns when grouped data are supplied. Defaults to a single row.                                                                  | `None`              |
 | group_label_sep   | str                                                      | Separator used when concatenating multiple group labels for facet titles.                                                                          | `', '`              |
 | line_color        | str                                                      | Colour of the ACF/PACF/CCF traces.                                                                                                                 | `'#2c3e50'`         |
@@ -106,4 +112,18 @@ fig = tk.plot_acf_diagnostics(
     show_legend=True,
 )
 fig
+```
+
+```{python}
+# Dropdown example
+fig_dropdown = tk.plot_acf_diagnostics(
+    data=df.groupby("id"),
+    date_column="date",
+    value_column="value",
+    ccf_columns="driver",
+    lags=15,
+    plotly_dropdown=True,
+    height=700,
+)
+fig_dropdown
 ```
