@@ -68,7 +68,9 @@ _HUMAN_DURATION_UNITS = {
 
 
 def parse_human_duration(
-    value: Union[str, int, float, pd.Timedelta, np.timedelta64, timedelta, pd.DateOffset],
+    value: Union[
+        str, int, float, pd.Timedelta, np.timedelta64, timedelta, pd.DateOffset
+    ],
 ) -> Union[pd.Timedelta, pd.DateOffset]:
     """
     Convert human-friendly duration input into a pandas Timedelta or DateOffset.
@@ -92,10 +94,13 @@ def parse_human_duration(
 
     Examples
     --------
-    ```python
+    ```{python}
     import pytimetk as tk
 
     tk.parse_human_duration("45 minutes")
+    ```
+
+    ```{python}
     tk.parse_human_duration("3 months")
     ```
     """
@@ -183,13 +188,16 @@ def resolve_lag_sequence(
 
     Examples
     --------
-    ```python
+    ```{python}
     import numpy as np
     import pandas as pd
     import pytimetk as tk
 
     idx = pd.date_range("2020-01-01", periods=5, freq="D")
     tk.resolve_lag_sequence("3 days", idx)
+    ```
+
+    ```{python}
     tk.resolve_lag_sequence([0, 2, 4], idx)
     ```
     """

@@ -101,6 +101,8 @@ website:
       - reference/week_of_month.qmd
       - reference/timeseries_unit_frequency_table.qmd
       - reference/time_scale_template.qmd
+      - reference/resolve_lag_sequence.qmd
+      - reference/parse_human_duration.qmd
       section: "\U0001F6E0\uFE0F Date Utilities"
     - contents:
       - reference/contains.qmd

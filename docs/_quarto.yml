@@ -237,6 +237,8 @@ quartodoc:
         - week_of_month
         - timeseries_unit_frequency_table
         - time_scale_template
+        - resolve_lag_sequence
+        - parse_human_duration
     - title: 🧰 Tidy Helpers
       desc: Column selection and duration parsing utilities for diagnostics APIs.
       package: pytimetk

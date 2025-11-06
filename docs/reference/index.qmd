@@ -164,6 +164,8 @@ Helper functions to make your life easier.
 | [week_of_month](week_of_month.qmd#pytimetk.week_of_month) | The "week_of_month" function calculates the week number of a given date |
 | [timeseries_unit_frequency_table](timeseries_unit_frequency_table.qmd#pytimetk.timeseries_unit_frequency_table) | The function `timeseries_unit_frequency_table` returns a pandas DataFrame |
 | [time_scale_template](time_scale_template.qmd#pytimetk.time_scale_template) | The function `time_scale_template` returns a table with time scale |
+| [resolve_lag_sequence](resolve_lag_sequence.qmd#pytimetk.resolve_lag_sequence) | Normalise lag specifications into a sorted numpy array of non-negative integers. |
+| [parse_human_duration](parse_human_duration.qmd#pytimetk.parse_human_duration) | Convert human-friendly duration input into a pandas Timedelta or DateOffset. |
 
 ## 🧰 Tidy Helpers
 

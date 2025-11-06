@@ -1,0 +1,37 @@
+# parse_human_duration { #pytimetk.parse_human_duration }
+
+```python
+parse_human_duration(value)
+```
+
+Convert human-friendly duration input into a pandas Timedelta or DateOffset.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+| Name   | Type                               | Description                                                                                                                                        | Default    |
+|--------|------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| value  | str or numeric or timedelta - like | Supported examples include: ``"30 minutes"``, ``"2 hours"``, ``"3 months"``, ``"1 year"``, ``pd.Timedelta("7D")``, ``datetime.timedelta(days=2)``. | _required_ |
+
+## Returns {.doc-section .doc-section-returns}
+
+| Name   | Type                                 | Description                                                                                                                            |
+|--------|--------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+|        | Union\[pd.Timedelta, pd.DateOffset\] | Returns a Timedelta for fixed-width units (seconds through weeks) and a DateOffset for calendar-aware units (months, quarters, years). |
+
+## Raises {.doc-section .doc-section-raises}
+
+| Name   | Type       | Description                                                      |
+|--------|------------|------------------------------------------------------------------|
+|        | ValueError | If the input cannot be parsed or represents an unsupported unit. |
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import pytimetk as tk
+
+tk.parse_human_duration("45 minutes")
+```
+
+```{python}
+tk.parse_human_duration("3 months")
+```
