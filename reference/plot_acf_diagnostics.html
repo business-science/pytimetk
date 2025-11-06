@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>pytimetk – plot_acf_diagnostics</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=330861489"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '330861489', { 'anonymize_ip': true});
+</script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-76139189-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-76139189-2');
+</script>
+
+<!-- SUMO -->
+<script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
+
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="https://www.business-science.io/img/business-science-logo.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">pytimetk</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools ms-auto">
+    <a href="https://github.com/business-science/pytimetk" rel="" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">plot_acf_diagnostics</li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PyTimeTK 📈</span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+ <span class="menu-text">🏁 Getting Started:</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../getting-started/01_installation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Install</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../getting-started/02_quick_start.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quick Start</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+ <span class="menu-text">🗺️ Guides:</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/01_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Visualization</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/02_timetk_concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PyTimeTK Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/03_pandas_frequency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pandas Frequencies</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/04_wrangling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Wrangling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/05_augmenting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Adding Features (Augmenting)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/06_anomalize.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Anomaly Detection</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+ <span class="menu-text">📘 Applied Tutorials:</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/01_sales_crm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sales Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/02_finance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Finance Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/03_demand_forecasting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Demand Forecasting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/04_anomaly_detection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Anomaly Detection in Website Traffic</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/05_clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Clustering Stocks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/06_correlationfunnel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Correlation Funnel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/07_timeseries_crossvalidation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Time Series Cross Validation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+ <span class="menu-text">🛠️ Production:</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../production/01_feature_store.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Feature Store &amp; Caching (Beta)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../production/02_gpu_acceleration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GPU Acceleration</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+ <span class="menu-text">🏎️ Performance:</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../performance/01_speed_comparisons.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Speed Comparisons</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📄 API Reference</span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://github.com/business-science/pytimetk" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">⭐ PyTimeTK on Github</span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../contributing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">🍻 Contributing</span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../changelog-news.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">📧 Change Log</span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">📚 More References:</span></span>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://www.business-science.io/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Business Science</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://www.quantscience.io/" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Quant Science</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://business-science.github.io/timetk/" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Timetk (R Version)</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/plot_acf_diagnostics.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">plot_acf_diagnostics</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>plot_acf_diagnostics(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    date_column,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    value_column,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    ccf_columns<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    lags<span class="op">=</span><span class="dv">1000</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    show_white_noise<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">'Lag Diagnostics'</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    x_lab<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    y_lab<span class="op">=</span><span class="st">'Correlation'</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    width<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    plotly_dropdown<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    plotly_dropdown_x<span class="op">=</span><span class="fl">1.05</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    plotly_dropdown_y<span class="op">=</span><span class="fl">1.05</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    group_ncols<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    group_label_sep<span class="op">=</span><span class="st">', '</span>,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    line_color<span class="op">=</span><span class="st">'#2c3e50'</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    line_width<span class="op">=</span><span class="fl">2.0</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    line_dash<span class="op">=</span><span class="st">'solid'</span>,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    marker_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    marker_size<span class="op">=</span><span class="fl">6.0</span>,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    marker_symbol<span class="op">=</span><span class="st">'circle'</span>,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    marker_line_color<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    marker_line_width<span class="op">=</span><span class="fl">0.0</span>,</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    show_markers<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    show_legend<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    zero_line_color<span class="op">=</span><span class="st">'#999999'</span>,</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    zero_line_width<span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    zero_line_dash<span class="op">=</span><span class="st">'dash'</span>,</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    white_noise_color<span class="op">=</span><span class="st">'#A6CEE3'</span>,</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    white_noise_dash<span class="op">=</span><span class="st">'dot'</span>,</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    white_noise_width<span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    hovertemplate<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Visualise ACF, PACF, and optional CCF diagnostics with Plotly, including grouped facets and extensive styling controls.</p>
+<section id="parameters" class="level2 doc-section doc-section-parameters">
+<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
+<table class="table">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 23%">
+<col style="width: 60%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>data</td>
+<td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
+<td>Time series data or grouped data produced via <code>DataFrame.groupby</code>.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>date_column</td>
+<td>str</td>
+<td>Name of the datetime column.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>value_column</td>
+<td>str</td>
+<td>Numeric column to diagnose.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>ccf_columns</td>
+<td>str or sequence</td>
+<td>Additional numeric columns whose cross-correlations should be drawn. Accepts literal names or tidy selectors from :mod:<code>pytimetk.utils.selection</code>.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>lags</td>
+<td>int, sequence, slice, or str</td>
+<td>Lag specification forwarded to :func:<code>pytimetk.acf_diagnostics</code>. Defaults to <code>1000</code>.</td>
+<td><code>1000</code></td>
+</tr>
+<tr class="even">
+<td>show_white_noise</td>
+<td>bool</td>
+<td>Draw white-noise confidence bands around each subplot. Defaults to <code>True</code>.</td>
+<td><code>True</code></td>
+</tr>
+<tr class="odd">
+<td>title</td>
+<td>str</td>
+<td>Figure title. Defaults to <code>"Lag Diagnostics"</code>.</td>
+<td><code>'Lag Diagnostics'</code></td>
+</tr>
+<tr class="even">
+<td>x_lab</td>
+<td>str</td>
+<td>Axis labels for the bottom row / first column. <code>x_lab</code> defaults to an empty string.</td>
+<td><code>''</code></td>
+</tr>
+<tr class="odd">
+<td>y_lab</td>
+<td>str</td>
+<td>Axis labels for the bottom row / first column. <code>x_lab</code> defaults to an empty string.</td>
+<td><code>''</code></td>
+</tr>
+<tr class="even">
+<td>width</td>
+<td>int</td>
+<td>Figure dimensions in pixels.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>height</td>
+<td>int</td>
+<td>Figure dimensions in pixels.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>plotly_dropdown</td>
+<td>bool</td>
+<td>When <code>True</code> and grouped data are supplied, render a single set of panels with a Plotly dropdown to switch between groups. Defaults to <code>False</code>.</td>
+<td><code>False</code></td>
+</tr>
+<tr class="odd">
+<td>plotly_dropdown_x</td>
+<td>float</td>
+<td>Position of the dropdown menu (only used when <code>plotly_dropdown</code> is <code>True</code>).</td>
+<td><code>1.05</code></td>
+</tr>
+<tr class="even">
+<td>plotly_dropdown_y</td>
+<td>float</td>
+<td>Position of the dropdown menu (only used when <code>plotly_dropdown</code> is <code>True</code>).</td>
+<td><code>1.05</code></td>
+</tr>
+<tr class="odd">
+<td>group_ncols</td>
+<td>int</td>
+<td>Number of facet columns when grouped data are supplied. Defaults to a single row.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>group_label_sep</td>
+<td>str</td>
+<td>Separator used when concatenating multiple group labels for facet titles.</td>
+<td><code>', '</code></td>
+</tr>
+<tr class="odd">
+<td>line_color</td>
+<td>str</td>
+<td>Colour of the ACF/PACF/CCF traces.</td>
+<td><code>'#2c3e50'</code></td>
+</tr>
+<tr class="even">
+<td>line_width</td>
+<td>float</td>
+<td>Line width in pixels. Defaults to <code>2.0</code>.</td>
+<td><code>2.0</code></td>
+</tr>
+<tr class="odd">
+<td>line_dash</td>
+<td>str</td>
+<td>Dash style for correlation lines (<code>"solid"</code>, <code>"dash"</code>, etc.).</td>
+<td><code>'solid'</code></td>
+</tr>
+<tr class="even">
+<td>marker_color</td>
+<td>str</td>
+<td>Colour for scatter markers. Defaults to <code>line_color</code>.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>marker_size</td>
+<td>float</td>
+<td>Marker size in pixels. Defaults to <code>6.0</code>.</td>
+<td><code>6.0</code></td>
+</tr>
+<tr class="even">
+<td>marker_symbol</td>
+<td>str</td>
+<td>Plotly marker symbol (<code>"circle"</code>, <code>"square"</code>, …).</td>
+<td><code>'circle'</code></td>
+</tr>
+<tr class="odd">
+<td>marker_line_color</td>
+<td>str</td>
+<td>Outline colour for markers. Defaults to <code>marker_color</code>.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>marker_line_width</td>
+<td>float</td>
+<td>Outline width for markers. Defaults to <code>0.0</code>.</td>
+<td><code>0.0</code></td>
+</tr>
+<tr class="odd">
+<td>show_markers</td>
+<td>bool</td>
+<td>Toggle markers on/off. Defaults to <code>True</code>.</td>
+<td><code>True</code></td>
+</tr>
+<tr class="even">
+<td>show_legend</td>
+<td>bool</td>
+<td>Display a legend for the metric traces. Defaults to <code>False</code>.</td>
+<td><code>False</code></td>
+</tr>
+<tr class="odd">
+<td>zero_line_color</td>
+<td>optional</td>
+<td>Styling for the horizontal zero reference line.</td>
+<td><code>'#999999'</code></td>
+</tr>
+<tr class="even">
+<td>zero_line_width</td>
+<td>optional</td>
+<td>Styling for the horizontal zero reference line.</td>
+<td><code>'#999999'</code></td>
+</tr>
+<tr class="odd">
+<td>zero_line_dash</td>
+<td>optional</td>
+<td>Styling for the horizontal zero reference line.</td>
+<td><code>'#999999'</code></td>
+</tr>
+<tr class="even">
+<td>white_noise_color</td>
+<td>optional</td>
+<td>Styling for the white-noise confidence bands.</td>
+<td><code>'#A6CEE3'</code></td>
+</tr>
+<tr class="odd">
+<td>white_noise_dash</td>
+<td>optional</td>
+<td>Styling for the white-noise confidence bands.</td>
+<td><code>'#A6CEE3'</code></td>
+</tr>
+<tr class="even">
+<td>white_noise_width</td>
+<td>optional</td>
+<td>Styling for the white-noise confidence bands.</td>
+<td><code>'#A6CEE3'</code></td>
+</tr>
+<tr class="odd">
+<td>hovertemplate</td>
+<td>str</td>
+<td>Custom Plotly hover template. Defaults to <code>"Lag=%{x}&lt;br&gt;Correlation=%{y}&lt;extra&gt;&lt;/extra&gt;"</code>.</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns" class="level2 doc-section doc-section-returns">
+<h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
+<table class="table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 18%">
+<col style="width: 76%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td>plotly.graph_objects.Figure</td>
+<td>A Plotly figure with one subplot per diagnostic metric (ACF, PACF, CCF traces) and optional facets for grouped series.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples" class="level2 doc-section doc-section-examples">
+<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> pd.date_range(<span class="st">"2020-01-01"</span>, periods<span class="op">=</span><span class="dv">40</span>, freq<span class="op">=</span><span class="st">"D"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"id"</span>: [<span class="st">"A"</span>] <span class="op">*</span> <span class="dv">20</span> <span class="op">+</span> [<span class="st">"B"</span>] <span class="op">*</span> <span class="dv">20</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"date"</span>: <span class="bu">list</span>(rng[:<span class="dv">20</span>]) <span class="op">+</span> <span class="bu">list</span>(rng[:<span class="dv">20</span>]),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"value"</span>: np.sin(np.linspace(<span class="dv">0</span>, <span class="dv">4</span> <span class="op">*</span> np.pi, <span class="dv">40</span>)),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"driver"</span>: np.cos(np.linspace(<span class="dv">0</span>, <span class="dv">4</span> <span class="op">*</span> np.pi, <span class="dv">40</span>)),</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> tk.plot_acf_diagnostics(</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>df.groupby(<span class="st">"id"</span>),</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    date_column<span class="op">=</span><span class="st">"date"</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    value_column<span class="op">=</span><span class="st">"value"</span>,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    ccf_columns<span class="op">=</span><span class="st">"driver"</span>,</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    lags<span class="op">=</span><span class="dv">15</span>,</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    group_ncols<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    show_legend<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>fig</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<div>                            <div id="2afa35c9-8f47-41b7-bf83-1f579937ffb1" class="plotly-graph-div" style="height:1320px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("2afa35c9-8f47-41b7-bf83-1f579937ffb1")) {                    Plotly.newPlot(                        "2afa35c9-8f47-41b7-bf83-1f579937ffb1",                        [{"hovertemplate":"Lag=%{x}\u003cbr\u003eCorrelation=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2c3e50","dash":"solid","width":2.0},"marker":{"color":"#2c3e50","line":{"color":"#2c3e50","width":0.0},"size":6.0,"symbol":"circle"},"mode":"lines+markers","name":"ACF","showlegend":true,"visible":true,"x":[0,1,2,3,4,5,6,7,8,9],"y":[1.0,0.9498883883597331,0.8122925337101378,0.6106011971414799,0.3727920371329272,0.1278090019722013,-0.09787656076664279,-0.2831197994535124,-0.4140642091532476,-0.485031590989936],"type":"scatter","xaxis":"x","yaxis":"y"},{"hoverinfo":"skip","line":{"color":"#999999","dash":"dash","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0,0],"type":"scatter","xaxis":"x","yaxis":"y"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0.4472135954999579,0.4472135954999579],"type":"scatter","xaxis":"x","yaxis":"y"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[-0.4472135954999579,-0.4472135954999579],"type":"scatter","xaxis":"x","yaxis":"y"},{"hovertemplate":"Lag=%{x}\u003cbr\u003eCorrelation=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2c3e50","dash":"solid","width":2.0},"marker":{"color":"#2c3e50","line":{"color":"#2c3e50","width":0.0},"size":6.0,"symbol":"circle"},"mode":"lines+markers","name":"PACF","showlegend":false,"visible":true,"x":[0,1,2,3,4,5,6,7,8,9],"y":[1.0,0.9498883883597332,-0.9210268021627098,0.21816739299504517,0.012938548891700874,0.036959182721155684,0.014580093135942255,-0.002784608934137084,-0.022342454473598988,-0.04044471390637967],"type":"scatter","xaxis":"x2","yaxis":"y2"},{"hoverinfo":"skip","line":{"color":"#999999","dash":"dash","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0,0],"type":"scatter","xaxis":"x2","yaxis":"y2"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0.4472135954999579,0.4472135954999579],"type":"scatter","xaxis":"x2","yaxis":"y2"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[-0.4472135954999579,-0.4472135954999579],"type":"scatter","xaxis":"x2","yaxis":"y2"},{"hovertemplate":"Lag=%{x}\u003cbr\u003eCorrelation=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2c3e50","dash":"solid","width":2.0},"marker":{"color":"#2c3e50","line":{"color":"#2c3e50","width":0.0},"size":6.0,"symbol":"circle"},"mode":"lines+markers","name":"CCF_driver","showlegend":false,"visible":true,"x":[0,1,2,3,4,5,6,7,8,9],"y":[-0.003965659098491705,0.3050868932773889,0.5534760839218481,0.7203621474164499,0.7959022981367028,0.7815089733383475,0.688758858778077,0.5371623152140029,0.3511297354736236,0.15655262773511167],"type":"scatter","xaxis":"x3","yaxis":"y3"},{"hoverinfo":"skip","line":{"color":"#999999","dash":"dash","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0,0],"type":"scatter","xaxis":"x3","yaxis":"y3"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0.4472135954999579,0.4472135954999579],"type":"scatter","xaxis":"x3","yaxis":"y3"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[-0.4472135954999579,-0.4472135954999579],"type":"scatter","xaxis":"x3","yaxis":"y3"},{"hovertemplate":"Lag=%{x}\u003cbr\u003eCorrelation=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2c3e50","dash":"solid","width":2.0},"marker":{"color":"#2c3e50","line":{"color":"#2c3e50","width":0.0},"size":6.0,"symbol":"circle"},"mode":"lines+markers","name":"ACF","showlegend":false,"visible":true,"x":[0,1,2,3,4,5,6,7,8,9],"y":[1.0,0.9498883883597329,0.8122925337101378,0.6106011971414798,0.37279203713292713,0.12780900197220124,-0.09787656076664285,-0.28311979945351246,-0.4140642091532476,-0.48503159098993587],"type":"scatter","xaxis":"x4","yaxis":"y4"},{"hoverinfo":"skip","line":{"color":"#999999","dash":"dash","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0,0],"type":"scatter","xaxis":"x4","yaxis":"y4"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0.4472135954999579,0.4472135954999579],"type":"scatter","xaxis":"x4","yaxis":"y4"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[-0.4472135954999579,-0.4472135954999579],"type":"scatter","xaxis":"x4","yaxis":"y4"},{"hovertemplate":"Lag=%{x}\u003cbr\u003eCorrelation=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2c3e50","dash":"solid","width":2.0},"marker":{"color":"#2c3e50","line":{"color":"#2c3e50","width":0.0},"size":6.0,"symbol":"circle"},"mode":"lines+markers","name":"PACF","showlegend":false,"visible":true,"x":[0,1,2,3,4,5,6,7,8,9],"y":[1.0,0.9498883883597328,-0.9210268021626963,0.21816739299488833,0.012938548891798426,0.03695918272112601,0.014580093135962119,-0.002784608934162808,-0.022342454473543643,-0.04044471390644344],"type":"scatter","xaxis":"x5","yaxis":"y5"},{"hoverinfo":"skip","line":{"color":"#999999","dash":"dash","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0,0],"type":"scatter","xaxis":"x5","yaxis":"y5"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0.4472135954999579,0.4472135954999579],"type":"scatter","xaxis":"x5","yaxis":"y5"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[-0.4472135954999579,-0.4472135954999579],"type":"scatter","xaxis":"x5","yaxis":"y5"},{"hovertemplate":"Lag=%{x}\u003cbr\u003eCorrelation=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2c3e50","dash":"solid","width":2.0},"marker":{"color":"#2c3e50","line":{"color":"#2c3e50","width":0.0},"size":6.0,"symbol":"circle"},"mode":"lines+markers","name":"CCF_driver","showlegend":false,"visible":true,"x":[0,1,2,3,4,5,6,7,8,9],"y":[0.003965659098491776,0.2975442588175333,0.5312347988128001,0.6857093637826772,0.7524016082472277,0.7336336193315194,0.6414313147486299,0.4952476311503793,0.31893479169295413,0.13738284011276025],"type":"scatter","xaxis":"x6","yaxis":"y6"},{"hoverinfo":"skip","line":{"color":"#999999","dash":"dash","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0,0],"type":"scatter","xaxis":"x6","yaxis":"y6"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0.4472135954999579,0.4472135954999579],"type":"scatter","xaxis":"x6","yaxis":"y6"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[-0.4472135954999579,-0.4472135954999579],"type":"scatter","xaxis":"x6","yaxis":"y6"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"matches":"x6","showticklabels":false,"title":{"standoff":20}},"yaxis":{"anchor":"x","domain":[0.8666666666666667,1.0],"title":{"text":"Correlation","standoff":20}},"xaxis2":{"anchor":"y2","domain":[0.0,1.0],"matches":"x6","showticklabels":false,"title":{"standoff":20}},"yaxis2":{"anchor":"x2","domain":[0.6933333333333334,0.8266666666666667],"title":{"text":"","standoff":20}},"xaxis3":{"anchor":"y3","domain":[0.0,1.0],"matches":"x6","showticklabels":false,"title":{"text":"","standoff":20}},"yaxis3":{"anchor":"x3","domain":[0.52,0.6533333333333333],"title":{"text":"","standoff":20}},"xaxis4":{"anchor":"y4","domain":[0.0,1.0],"matches":"x6","showticklabels":false,"title":{"standoff":20}},"yaxis4":{"anchor":"x4","domain":[0.3466666666666667,0.48],"title":{"text":"","standoff":20}},"xaxis5":{"anchor":"y5","domain":[0.0,1.0],"matches":"x6","showticklabels":false,"title":{"standoff":20}},"yaxis5":{"anchor":"x5","domain":[0.17333333333333334,0.30666666666666664],"title":{"text":"","standoff":20}},"xaxis6":{"anchor":"y6","domain":[0.0,1.0],"title":{"text":"","standoff":20}},"yaxis6":{"anchor":"x6","domain":[0.0,0.13333333333333333],"title":{"text":"","standoff":20}},"annotations":[{"font":{"size":16},"showarrow":false,"text":"ACF \u2014 id=A","x":0.5,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper","yshift":10},{"font":{"size":16},"showarrow":false,"text":"PACF \u2014 id=A","x":0.5,"xanchor":"center","xref":"paper","y":0.8266666666666667,"yanchor":"bottom","yref":"paper","yshift":10},{"font":{"size":16},"showarrow":false,"text":"CCF_driver \u2014 id=A","x":0.5,"xanchor":"center","xref":"paper","y":0.6533333333333333,"yanchor":"bottom","yref":"paper","yshift":10},{"font":{"size":16},"showarrow":false,"text":"ACF \u2014 id=B","x":0.5,"xanchor":"center","xref":"paper","y":0.48,"yanchor":"bottom","yref":"paper","yshift":10},{"font":{"size":16},"showarrow":false,"text":"PACF \u2014 id=B","x":0.5,"xanchor":"center","xref":"paper","y":0.30666666666666664,"yanchor":"bottom","yref":"paper","yshift":10},{"font":{"size":16},"showarrow":false,"text":"CCF_driver \u2014 id=B","x":0.5,"xanchor":"center","xref":"paper","y":0.13333333333333333,"yanchor":"bottom","yref":"paper","yshift":10}],"title":{"text":"Lag Diagnostics","x":0.5},"margin":{"l":60,"r":20,"t":110,"b":60},"height":1320},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('2afa35c9-8f47-41b7-bf83-1f579937ffb1');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dropdown example</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fig_dropdown <span class="op">=</span> tk.plot_acf_diagnostics(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>df.groupby(<span class="st">"id"</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    date_column<span class="op">=</span><span class="st">"date"</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    value_column<span class="op">=</span><span class="st">"value"</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    ccf_columns<span class="op">=</span><span class="st">"driver"</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    lags<span class="op">=</span><span class="dv">15</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    plotly_dropdown<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    height<span class="op">=</span><span class="dv">700</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>fig_dropdown</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+<div>                            <div id="c51b49c7-f3c1-43e6-8089-e61730b70deb" class="plotly-graph-div" style="height:700px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("c51b49c7-f3c1-43e6-8089-e61730b70deb")) {                    Plotly.newPlot(                        "c51b49c7-f3c1-43e6-8089-e61730b70deb",                        [{"hovertemplate":"Lag=%{x}\u003cbr\u003eCorrelation=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2c3e50","dash":"solid","width":2.0},"marker":{"color":"#2c3e50","line":{"color":"#2c3e50","width":0.0},"size":6.0,"symbol":"circle"},"mode":"lines+markers","name":"ACF","showlegend":false,"visible":true,"x":[0,1,2,3,4,5,6,7,8,9],"y":[1.0,0.9498883883597331,0.8122925337101378,0.6106011971414799,0.3727920371329272,0.1278090019722013,-0.09787656076664279,-0.2831197994535124,-0.4140642091532476,-0.485031590989936],"type":"scatter","xaxis":"x","yaxis":"y"},{"hoverinfo":"skip","line":{"color":"#999999","dash":"dash","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0,0],"type":"scatter","xaxis":"x","yaxis":"y"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0.4472135954999579,0.4472135954999579],"type":"scatter","xaxis":"x","yaxis":"y"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[-0.4472135954999579,-0.4472135954999579],"type":"scatter","xaxis":"x","yaxis":"y"},{"hovertemplate":"Lag=%{x}\u003cbr\u003eCorrelation=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2c3e50","dash":"solid","width":2.0},"marker":{"color":"#2c3e50","line":{"color":"#2c3e50","width":0.0},"size":6.0,"symbol":"circle"},"mode":"lines+markers","name":"PACF","showlegend":false,"visible":true,"x":[0,1,2,3,4,5,6,7,8,9],"y":[1.0,0.9498883883597332,-0.9210268021627098,0.21816739299504517,0.012938548891700874,0.036959182721155684,0.014580093135942255,-0.002784608934137084,-0.022342454473598988,-0.04044471390637967],"type":"scatter","xaxis":"x2","yaxis":"y2"},{"hoverinfo":"skip","line":{"color":"#999999","dash":"dash","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0,0],"type":"scatter","xaxis":"x2","yaxis":"y2"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0.4472135954999579,0.4472135954999579],"type":"scatter","xaxis":"x2","yaxis":"y2"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[-0.4472135954999579,-0.4472135954999579],"type":"scatter","xaxis":"x2","yaxis":"y2"},{"hovertemplate":"Lag=%{x}\u003cbr\u003eCorrelation=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2c3e50","dash":"solid","width":2.0},"marker":{"color":"#2c3e50","line":{"color":"#2c3e50","width":0.0},"size":6.0,"symbol":"circle"},"mode":"lines+markers","name":"CCF_driver","showlegend":false,"visible":true,"x":[0,1,2,3,4,5,6,7,8,9],"y":[-0.003965659098491705,0.3050868932773889,0.5534760839218481,0.7203621474164499,0.7959022981367028,0.7815089733383475,0.688758858778077,0.5371623152140029,0.3511297354736236,0.15655262773511167],"type":"scatter","xaxis":"x3","yaxis":"y3"},{"hoverinfo":"skip","line":{"color":"#999999","dash":"dash","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0,0],"type":"scatter","xaxis":"x3","yaxis":"y3"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[0.4472135954999579,0.4472135954999579],"type":"scatter","xaxis":"x3","yaxis":"y3"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":true,"x":[0,9],"y":[-0.4472135954999579,-0.4472135954999579],"type":"scatter","xaxis":"x3","yaxis":"y3"},{"hovertemplate":"Lag=%{x}\u003cbr\u003eCorrelation=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2c3e50","dash":"solid","width":2.0},"marker":{"color":"#2c3e50","line":{"color":"#2c3e50","width":0.0},"size":6.0,"symbol":"circle"},"mode":"lines+markers","name":"ACF","showlegend":false,"visible":false,"x":[0,1,2,3,4,5,6,7,8,9],"y":[1.0,0.9498883883597329,0.8122925337101378,0.6106011971414798,0.37279203713292713,0.12780900197220124,-0.09787656076664285,-0.28311979945351246,-0.4140642091532476,-0.48503159098993587],"type":"scatter","xaxis":"x","yaxis":"y"},{"hoverinfo":"skip","line":{"color":"#999999","dash":"dash","width":1.0},"mode":"lines","showlegend":false,"visible":false,"x":[0,9],"y":[0,0],"type":"scatter","xaxis":"x","yaxis":"y"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":false,"x":[0,9],"y":[0.4472135954999579,0.4472135954999579],"type":"scatter","xaxis":"x","yaxis":"y"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":false,"x":[0,9],"y":[-0.4472135954999579,-0.4472135954999579],"type":"scatter","xaxis":"x","yaxis":"y"},{"hovertemplate":"Lag=%{x}\u003cbr\u003eCorrelation=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2c3e50","dash":"solid","width":2.0},"marker":{"color":"#2c3e50","line":{"color":"#2c3e50","width":0.0},"size":6.0,"symbol":"circle"},"mode":"lines+markers","name":"PACF","showlegend":false,"visible":false,"x":[0,1,2,3,4,5,6,7,8,9],"y":[1.0,0.9498883883597328,-0.9210268021626963,0.21816739299488833,0.012938548891798426,0.03695918272112601,0.014580093135962119,-0.002784608934162808,-0.022342454473543643,-0.04044471390644344],"type":"scatter","xaxis":"x2","yaxis":"y2"},{"hoverinfo":"skip","line":{"color":"#999999","dash":"dash","width":1.0},"mode":"lines","showlegend":false,"visible":false,"x":[0,9],"y":[0,0],"type":"scatter","xaxis":"x2","yaxis":"y2"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":false,"x":[0,9],"y":[0.4472135954999579,0.4472135954999579],"type":"scatter","xaxis":"x2","yaxis":"y2"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":false,"x":[0,9],"y":[-0.4472135954999579,-0.4472135954999579],"type":"scatter","xaxis":"x2","yaxis":"y2"},{"hovertemplate":"Lag=%{x}\u003cbr\u003eCorrelation=%{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2c3e50","dash":"solid","width":2.0},"marker":{"color":"#2c3e50","line":{"color":"#2c3e50","width":0.0},"size":6.0,"symbol":"circle"},"mode":"lines+markers","name":"CCF_driver","showlegend":false,"visible":false,"x":[0,1,2,3,4,5,6,7,8,9],"y":[0.003965659098491776,0.2975442588175333,0.5312347988128001,0.6857093637826772,0.7524016082472277,0.7336336193315194,0.6414313147486299,0.4952476311503793,0.31893479169295413,0.13738284011276025],"type":"scatter","xaxis":"x3","yaxis":"y3"},{"hoverinfo":"skip","line":{"color":"#999999","dash":"dash","width":1.0},"mode":"lines","showlegend":false,"visible":false,"x":[0,9],"y":[0,0],"type":"scatter","xaxis":"x3","yaxis":"y3"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":false,"x":[0,9],"y":[0.4472135954999579,0.4472135954999579],"type":"scatter","xaxis":"x3","yaxis":"y3"},{"hoverinfo":"skip","line":{"color":"#A6CEE3","dash":"dot","width":1.0},"mode":"lines","showlegend":false,"visible":false,"x":[0,9],"y":[-0.4472135954999579,-0.4472135954999579],"type":"scatter","xaxis":"x3","yaxis":"y3"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"matches":"x3","showticklabels":false,"title":{"text":"","standoff":20}},"yaxis":{"anchor":"x","domain":[0.6933333333333334,1.0],"title":{"text":"","standoff":20}},"xaxis2":{"anchor":"y2","domain":[0.0,1.0],"matches":"x3","showticklabels":false,"title":{"text":"","standoff":20}},"yaxis2":{"anchor":"x2","domain":[0.3466666666666667,0.6533333333333333],"title":{"text":"","standoff":20}},"xaxis3":{"anchor":"y3","domain":[0.0,1.0],"title":{"text":"","standoff":20}},"yaxis3":{"anchor":"x3","domain":[0.0,0.3066666666666667],"title":{"text":"","standoff":20}},"annotations":[{"font":{"size":16},"showarrow":false,"text":"ACF","x":0.5,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper","yshift":10},{"font":{"size":16},"showarrow":false,"text":"PACF","x":0.5,"xanchor":"center","xref":"paper","y":0.6533333333333333,"yanchor":"bottom","yref":"paper","yshift":10},{"font":{"size":16},"showarrow":false,"text":"CCF_driver","x":0.5,"xanchor":"center","xref":"paper","y":0.3066666666666667,"yanchor":"bottom","yref":"paper","yshift":10}],"title":{"text":"Lag Diagnostics","x":0.5},"margin":{"l":60,"r":20,"t":110,"b":60},"height":700,"updatemenus":[{"buttons":[{"args":[{"visible":[true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false]},{"title":{"text":"Lag Diagnostics"}}],"label":"id=A","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,true,true,true]},{"title":{"text":"Lag Diagnostics"}}],"label":"id=B","method":"update"}],"showactive":true,"type":"dropdown","x":1.05,"y":1.05}]},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('c51b49c7-f3c1-43e6-8089-e61730b70deb');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
