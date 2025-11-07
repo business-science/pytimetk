@@ -7,6 +7,7 @@ from .plot import (
     plot_anomalies_cleaned,
     plot_correlation_funnel,
     plot_acf_diagnostics,
+    plot_seasonal_diagnostics,
 )
 from .plot.theme import (
     theme_timetk,

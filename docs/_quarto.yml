@@ -121,6 +121,7 @@ quartodoc:
       package: pytimetk
       contents:
       - plot_acf_diagnostics
+      - plot_seasonal_diagnostics
       - acf_diagnostics
       - seasonal_diagnostics
       - stl_diagnostics

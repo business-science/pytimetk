@@ -1,0 +1,88 @@
+# plot_seasonal_diagnostics { #pytimetk.plot_seasonal_diagnostics }
+
+```python
+plot_seasonal_diagnostics(
+    data,
+    date_column,
+    value_column,
+    feature_set='auto',
+    facet_vars=None,
+    facet_ncols=1,
+    geom='box',
+    geom_color='#2c3e50',
+    geom_outlier_color='#2c3e50',
+    title='Seasonal Diagnostics',
+    x_lab='',
+    y_lab='',
+    width=None,
+    height=None,
+    plotly_dropdown=False,
+    plotly_dropdown_x=1.05,
+    plotly_dropdown_y=1.05,
+)
+```
+
+Visualize seasonal patterns using box or violin plots grouped by seasonality
+features (hour, weekday, month, etc.). Works with pandas or polars inputs.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+| Name               | Type                                                     | Description                                                                                                                                | Default                  |
+|--------------------|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------------------|
+| data               | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | Time series data (long format) or grouped data. Polars DataFrames are supported.                                                           | _required_               |
+| date_column        | str or ColumnSelector                                    | Datetime column used to compute the seasonal features.                                                                                     | _required_               |
+| value_column       | str or ColumnSelector                                    | Numeric column plotted on the y-axis.                                                                                                      | _required_               |
+| feature_set        | str or sequence                                          | One or more of ``["second", "minute", "hour", "wday.lbl", "week", "month.lbl", "quarter", "year"]``. ``"auto"`` selects a sensible subset. | `'auto'`                 |
+| facet_vars         | str, sequence, or ColumnSelector                         | Additional categorical columns to facet by. They are treated as grouping columns for the diagnostics.                                      | `None`                   |
+| facet_ncols        | int                                                      | Number of facet columns when ``plotly_dropdown`` is ``False``. Defaults to 2.                                                              | `1`                      |
+| geom               | (box, violin)                                            | Plotting geometry for each seasonal feature. Defaults to ``"box"``.                                                                        | `"box"`                  |
+| geom_color         | str                                                      | Primary color for the box/violin geometry. Defaults to ``"#2c3e50"``.                                                                      | `'#2c3e50'`              |
+| geom_outlier_color | str                                                      | Outlier color for box plots. Defaults to ``"#2c3e50"``.                                                                                    | `'#2c3e50'`              |
+| title              | str                                                      | Plot title.                                                                                                                                | `'Seasonal Diagnostics'` |
+| x_lab              | str                                                      | Axis labels.                                                                                                                               | `''`                     |
+| y_lab              | str                                                      | Axis labels.                                                                                                                               | `''`                     |
+| width              | int                                                      | Figure dimensions in pixels. Height defaults to a sensible value based on the number of facets.                                            | `None`                   |
+| height             | int                                                      | Figure dimensions in pixels. Height defaults to a sensible value based on the number of facets.                                            | `None`                   |
+| plotly_dropdown    | bool                                                     | When ``True`` and facet combinations exist, render a dropdown to switch between them.                                                      | `False`                  |
+| plotly_dropdown_x  | float                                                    | Dropdown position (only used when ``plotly_dropdown`` is ``True``).                                                                        | `1.05`                   |
+| plotly_dropdown_y  | float                                                    | Dropdown position (only used when ``plotly_dropdown`` is ``True``).                                                                        | `1.05`                   |
+
+## Returns {.doc-section .doc-section-returns}
+
+| Name   | Type                        | Description                                                        |
+|--------|-----------------------------|--------------------------------------------------------------------|
+|        | plotly.graph_objects.Figure | Figure containing one subplot per seasonal feature for each facet. |
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import pytimetk as tk
+
+df = tk.load_dataset("taylor_30_min", parse_dates=["date"]).assign(
+    month_name=lambda d: d["date"].dt.month_name()
+)
+
+fig = tk.plot_seasonal_diagnostics(
+    data=df,
+    date_column="date",
+    value_column="value",
+    feature_set="auto",
+    geom="box",
+)
+fig
+```
+
+```{python}
+# Dropdown example, using tidy selectors
+from pytimetk.utils.selection import contains
+
+fig_dropdown = tk.plot_seasonal_diagnostics(
+    data=df,
+    date_column="date",
+    value_column=contains("value"),
+    feature_set="auto",
+    facet_vars="month_name",
+    plotly_dropdown=True,
+)
+fig_dropdown
+```

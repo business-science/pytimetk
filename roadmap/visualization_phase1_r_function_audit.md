@@ -70,6 +70,7 @@ This note catalogs the R implementations that pytimetk needs to port. Each secti
   - ✅ Prototype `acf_diagnostics` helper with Plotly visual (`plot_acf_diagnostics`) now supports grouped faceting, configurable styling, tidy selectors for column arguments, and an optional dropdown UX for switching groups.
   - ✅ Implemented `seasonal_diagnostics` helper using `augment_timeseries_signature` with auto feature selection heuristics.
   - ✅ Implemented `stl_diagnostics` helper leveraging statsmodels STL with auto/override frequency & trend parsing.
+  - ✅ Introduced `plot_seasonal_diagnostics` (Plotly) built atop the new helper with tidy selector support, dropdown faceting, and polars compatibility.
   - Build `time_series_cv_plan` helper that normalizes inputs from `TimeSeriesCV`, raw resample DataFrames, or iterables of splits into a tidy plotting frame.
 - **Parsing & selection**
   - ✅ Human-friendly duration parsing (`parse_human_duration`, `resolve_lag_sequence`) now supports specs like `"30 days"` or `"3 months"`.
