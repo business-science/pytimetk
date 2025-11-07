@@ -309,6 +309,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
  <span class="menu-text">GPU Acceleration</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../production/03_ray_parallelism.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ray Parallelism Quickstart</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -417,10 +423,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 7%">
-<col style="width: 18%">
-<col style="width: 68%">
 <col style="width: 5%">
+<col style="width: 13%">
+<col style="width: 76%">
+<col style="width: 4%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -451,8 +457,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="even">
 <td>leads</td>
-<td>int or tuple or list</td>
-<td>Lead specification. Accepts: - int: single lead value - tuple(start, end): inclusive range of leads - list[int]: explicit list of lead values</td>
+<td>int, tuple, list, or str</td>
+<td>Lead specification. Accepts: - int: single lead value - tuple(start, end): inclusive range of leads - list[int] or list[str]: explicit values/durations - str: duration (e.g., <code>"3 days"</code>) converted using <code>date_column</code></td>
 <td><code>1</code></td>
 </tr>
 <tr class="odd">

@@ -312,6 +312,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
  <span class="menu-text">GPU Acceleration</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../production/03_ray_parallelism.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ray Parallelism Quickstart</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -433,9 +439,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <table class="table">
 <colgroup>
 <col style="width: 2%">
-<col style="width: 8%">
-<col style="width: 86%">
-<col style="width: 2%">
+<col style="width: 6%">
+<col style="width: 89%">
+<col style="width: 1%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -466,8 +472,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="even">
 <td>lags</td>
-<td>int or tuple or list</td>
-<td>The <code>lags</code> parameter is an integer, tuple, or list that specifies the number of lagged values to add to the DataFrame. - If it is an integer, the function will add that number of lagged values for each column specified in the <code>value_column</code> parameter. - If it is a tuple, it will generate lags from the first to the second value (inclusive). - If it is a list, it will generate lags based on the values in the list.</td>
+<td>int, tuple, list, or str</td>
+<td>The <code>lags</code> parameter is an integer, tuple, or list that specifies the number of lagged values to add to the DataFrame. - If it is an integer, the function will add that number of lagged values for each column specified in the <code>value_column</code> parameter. - If it is a tuple, it will generate lags from the first to the second value (inclusive). - If it is a list, it will generate lags based on the values in the list. - If it is a string (e.g.&nbsp;<code>"3 days"</code>), the duration is converted into the number of observations implied by <code>date_column</code>.</td>
 <td><code>1</code></td>
 </tr>
 <tr class="odd">

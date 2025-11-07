@@ -312,6 +312,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
  <span class="menu-text">GPU Acceleration</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../production/03_ray_parallelism.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ray Parallelism Quickstart</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -456,13 +462,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="even">
 <td>date_column</td>
-<td>str</td>
-<td>The name of the column in the data frame that contains the dates or timestamps to be aggregated by. This column must be of type datetime64.</td>
+<td>str or ColumnSelector</td>
+<td>The column containing the timestamps to aggregate by (selector-friendly).</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>value_column</td>
-<td>str or list</td>
+<td>str, ColumnSelector, or list</td>
 <td>The <code>value_column</code> parameter is the name of one or more columns in the DataFrame that you want to aggregate by. It can be either a string representing a single column name, or a list of strings representing multiple column names.</td>
 <td><em>required</em></td>
 </tr>
