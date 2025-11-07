@@ -14,6 +14,7 @@ from .plot import (
 )
 from .plot.theme import (
     theme_timetk,
+    theme_plotly_timetk,
     palette_timetk,
 )
 from .core import (

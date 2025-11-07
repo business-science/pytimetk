@@ -258,6 +258,7 @@ quartodoc:
       contents:    
         - theme_timetk
         - palette_timetk
+        - theme_plotly_timetk
     - title: Extra Pandas Helpers (That Help Beyond Just Time Series)
       package: pytimetk
       contents:

@@ -1,4 +1,7 @@
 from plotnine import *
+import plotly.graph_objects as go
+
+from typing import Mapping, Optional, Sequence
 
 
 def theme_timetk(
@@ -195,3 +198,158 @@ def palette_timetk():
         light_purple="#cab2d6",  # light_purple
         purple="#6a3d9a",  # purple
     )
+
+
+def theme_plotly_timetk(
+    fig: go.Figure,
+    *,
+    colorway: Optional[Sequence[str]] = None,
+    font_family: str = "Inter, 'Segoe UI', Arial, sans-serif",
+    font_size: float = 12.0,
+    title_font_size: Optional[float] = None,
+    title_x: float = 0.5,
+    background_color: str = "#ffffff",
+    grid_color: str = "#e5ebf2",
+    axis_color: str = "#2c3e50",
+    margin: Optional[Mapping[str, float]] = None,
+    legend_kwargs: Optional[Mapping[str, object]] = None,
+    layout_kwargs: Optional[Mapping[str, object]] = None,
+    xaxis_kwargs: Optional[Mapping[str, object]] = None,
+    yaxis_kwargs: Optional[Mapping[str, object]] = None,
+) -> go.Figure:
+    """
+    Apply pytimetk styling to any Plotly ``go.Figure``.
+
+    Parameters
+    ----------
+    fig : plotly.graph_objects.Figure
+        The Plotly figure to update in-place.
+    colorway : Sequence[str], optional
+        Custom color sequence. Defaults to :func:`palette_timetk`.
+    font_family : str, optional
+        Font family used for titles, axes, and legend text.
+    font_size : float, optional
+        Base font size used for axes and legend text.
+    title_font_size : float, optional
+        Optional override for the plot title font size. Defaults to
+        ``font_size * 1.2``.
+    title_x : float, optional
+        Horizontal anchor for the figure title (0 = left, 0.5 = center).
+    background_color : str, optional
+        Paper/plot background color, defaults to white.
+    grid_color : str, optional
+        Color used for horizontal grid lines.
+    axis_color : str, optional
+        Color applied to ticks, tick labels, and legend text.
+    margin : Mapping[str, float], optional
+        Custom margin dictionary. Defaults to ``dict(l=60, r=40, t=70, b=60)``.
+    legend_kwargs, layout_kwargs, xaxis_kwargs, yaxis_kwargs : Mapping, optional
+        Dictionaries merged into the default legend/layout/axis styling.
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        The same figure that was passed in (allowing call chaining).
+
+    Examples
+    --------
+    ```{python}
+    import plotly.express as px
+    import pytimetk as tk
+
+    df = (
+        px.data.stocks()
+        .melt(id_vars="date", var_name="id", value_name="value")
+        .query("date <= '2015-12-31'")
+    )
+
+    # No styling
+    fig = px.line(df, x="date", y="value", color="id", title="Baseline Plotly")
+    fig
+    ```
+
+    ```{python}
+    # Apply timetk styling
+    tk.theme_plotly_timetk(fig)
+    fig
+    ```
+    """
+
+    if not isinstance(fig, go.Figure):
+        raise TypeError("`theme_plotly_timetk` expects a plotly.graph_objects.Figure.")
+
+    resolved_colorway = (
+        list(colorway) if colorway is not None else list(palette_timetk().values())
+    )
+    resolved_margin = dict(l=60, r=40, t=70, b=60)
+    if margin is not None:
+        resolved_margin.update(margin)
+
+    legend_layout = dict(
+        orientation="h",
+        x=0.5,
+        xanchor="center",
+        y=-0.2,
+        yanchor="top",
+        bgcolor="rgba(0,0,0,0)",
+        title=dict(text=""),
+        font=dict(size=font_size * 0.85, color=axis_color),
+    )
+    if legend_kwargs:
+        legend_layout.update(legend_kwargs)
+
+    base_layout = dict(
+        template="plotly_white",
+        colorway=resolved_colorway,
+        font=dict(family=font_family, size=font_size, color=axis_color),
+        title=dict(
+            font=dict(
+                family=font_family,
+                size=title_font_size
+                if title_font_size is not None
+                else font_size * 1.2,
+                color=axis_color,
+            ),
+            x=title_x,
+            xanchor="center",
+        ),
+        margin=resolved_margin,
+        legend=legend_layout,
+        paper_bgcolor=background_color,
+        plot_bgcolor=background_color,
+    )
+    if layout_kwargs:
+        base_layout.update(layout_kwargs)
+
+    fig.update_layout(**base_layout)
+
+    xaxis_layout = dict(
+        showgrid=False,
+        zeroline=False,
+        ticks="outside",
+        tickcolor=axis_color,
+        ticklen=4,
+        title=dict(standoff=12),
+        automargin=True,
+    )
+    if xaxis_kwargs:
+        xaxis_layout.update(xaxis_kwargs)
+
+    yaxis_layout = dict(
+        showgrid=True,
+        gridcolor=grid_color,
+        zeroline=False,
+        ticks="outside",
+        tickcolor=axis_color,
+        ticklen=4,
+        title=dict(standoff=12),
+        automargin=True,
+    )
+    if yaxis_kwargs:
+        yaxis_layout.update(yaxis_kwargs)
+
+    fig.update_xaxes(**xaxis_layout)
+    fig.update_yaxes(**yaxis_layout)
+    fig.update_annotations(yshift=10)
+
+    return fig
