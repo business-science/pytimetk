@@ -358,7 +358,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   <li><a href="#function-reference" id="toc-function-reference" class="nav-link active" data-scroll-target="#function-reference">Function reference</a>
   <ul class="collapse">
   <li><a href="#data-visualization" id="toc-data-visualization" class="nav-link" data-scroll-target="#data-visualization">🚀 Data Visualization</a></li>
-  <li><a href="#plotting-correlation-seasonality-and-trends" id="toc-plotting-correlation-seasonality-and-trends" class="nav-link" data-scroll-target="#plotting-correlation-seasonality-and-trends">🚀 Plotting Correlation, Seasonality, and Trends</a></li>
+  <li><a href="#plot-correlation-seasonality-and-trends" id="toc-plot-correlation-seasonality-and-trends" class="nav-link" data-scroll-target="#plot-correlation-seasonality-and-trends">🚀 Plot Correlation, Seasonality, and Trends</a></li>
   <li><a href="#wrangling-pandas-time-series-dataframes" id="toc-wrangling-pandas-time-series-dataframes" class="nav-link" data-scroll-target="#wrangling-pandas-time-series-dataframes">🔥 Wrangling Pandas Time Series DataFrames</a></li>
   <li><a href="#anomaly-detection" id="toc-anomaly-detection" class="nav-link" data-scroll-target="#anomaly-detection">🔍 Anomaly Detection</a></li>
   <li><a href="#correlation-funnel" id="toc-correlation-funnel" class="nav-link" data-scroll-target="#correlation-funnel">🌪️ Correlation Funnel</a></li>
@@ -394,17 +394,33 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><a href="../reference/plot_timeseries.html#pytimetk.plot_timeseries">plot_timeseries</a></td>
 <td>Creates time series plots using different plotting engines such as Plotnine,</td>
 </tr>
+<tr class="even">
+<td><a href="../reference/plot_time_series_boxplot.html#pytimetk.plot_time_series_boxplot">plot_time_series_boxplot</a></td>
+<td>Visualize rolling distributions of a time series by aggregating values into</td>
+</tr>
+<tr class="odd">
+<td><a href="../reference/plot_time_series_regression.html#pytimetk.plot_time_series_regression">plot_time_series_regression</a></td>
+<td>Fit a linear regression using a formula and visualise observed vs fitted</td>
+</tr>
 </tbody>
 </table>
 </section>
-<section id="plotting-correlation-seasonality-and-trends" class="level2">
-<h2 class="anchored" data-anchor-id="plotting-correlation-seasonality-and-trends">🚀 Plotting Correlation, Seasonality, and Trends</h2>
+<section id="plot-correlation-seasonality-and-trends" class="level2">
+<h2 class="anchored" data-anchor-id="plot-correlation-seasonality-and-trends">🚀 Plot Correlation, Seasonality, and Trends</h2>
 <p>Visualize correlation, seasonality, and trends with one line of code.</p>
 <table class="table">
 <tbody>
 <tr class="odd">
 <td><a href="../reference/plot_acf_diagnostics.html#pytimetk.plot_acf_diagnostics">plot_acf_diagnostics</a></td>
 <td>Visualise ACF, PACF, and optional CCF diagnostics with Plotly, including</td>
+</tr>
+<tr class="even">
+<td><a href="../reference/plot_seasonal_diagnostics.html#pytimetk.plot_seasonal_diagnostics">plot_seasonal_diagnostics</a></td>
+<td>Visualize seasonal patterns using box or violin plots grouped by seasonality</td>
+</tr>
+<tr class="odd">
+<td><a href="../reference/plot_stl_diagnostics.html#pytimetk.plot_stl_diagnostics">plot_stl_diagnostics</a></td>
+<td>Visualize STL decomposition components (observed, season, trend, remainder,</td>
 </tr>
 <tr class="even">
 <td><a href="../reference/acf_diagnostics.html#pytimetk.acf_diagnostics">acf_diagnostics</a></td>
