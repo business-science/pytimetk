@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>pytimetk – seasonal_diagnostics</title>
+<title>pytimetk – sorting_review</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,61 +20,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<link href="../favicon.ico" rel="icon">
-<script src="../site_libs/quarto-html/quarto.js"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -116,9 +82,6 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <!-- SUMO -->
 <script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -130,10 +93,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
-    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
     <img src="https://www.business-science.io/img/business-science-logo.png" alt="" class="navbar-logo">
     </a>
-    <a class="navbar-brand" href="../index.html">
+    <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">pytimetk</span>
     </a>
   </div>
@@ -149,7 +112,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">seasonal_diagnostics</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -163,7 +126,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">PyTimeTK 📈</span></a>
   </div>
 </li>
@@ -179,13 +142,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../getting-started/01_installation.html" class="sidebar-item-text sidebar-link">
+  <a href="./getting-started/01_installation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Install</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../getting-started/02_quick_start.html" class="sidebar-item-text sidebar-link">
+  <a href="./getting-started/02_quick_start.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Quick Start</span></a>
   </div>
 </li>
@@ -202,37 +165,37 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../guides/01_visualization.html" class="sidebar-item-text sidebar-link">
+  <a href="./guides/01_visualization.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Data Visualization</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../guides/02_timetk_concepts.html" class="sidebar-item-text sidebar-link">
+  <a href="./guides/02_timetk_concepts.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">PyTimeTK Basics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../guides/03_pandas_frequency.html" class="sidebar-item-text sidebar-link">
+  <a href="./guides/03_pandas_frequency.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Pandas Frequencies</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../guides/04_wrangling.html" class="sidebar-item-text sidebar-link">
+  <a href="./guides/04_wrangling.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Data Wrangling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../guides/05_augmenting.html" class="sidebar-item-text sidebar-link">
+  <a href="./guides/05_augmenting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Adding Features (Augmenting)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../guides/06_anomalize.html" class="sidebar-item-text sidebar-link">
+  <a href="./guides/06_anomalize.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Anomaly Detection</span></a>
   </div>
 </li>
@@ -249,43 +212,43 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../tutorials/01_sales_crm.html" class="sidebar-item-text sidebar-link">
+  <a href="./tutorials/01_sales_crm.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Sales Analysis</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../tutorials/02_finance.html" class="sidebar-item-text sidebar-link">
+  <a href="./tutorials/02_finance.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Finance Analysis</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../tutorials/03_demand_forecasting.html" class="sidebar-item-text sidebar-link">
+  <a href="./tutorials/03_demand_forecasting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Demand Forecasting</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../tutorials/04_anomaly_detection.html" class="sidebar-item-text sidebar-link">
+  <a href="./tutorials/04_anomaly_detection.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Anomaly Detection in Website Traffic</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../tutorials/05_clustering.html" class="sidebar-item-text sidebar-link">
+  <a href="./tutorials/05_clustering.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Clustering Stocks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../tutorials/06_correlationfunnel.html" class="sidebar-item-text sidebar-link">
+  <a href="./tutorials/06_correlationfunnel.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Correlation Funnel</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../tutorials/07_timeseries_crossvalidation.html" class="sidebar-item-text sidebar-link">
+  <a href="./tutorials/07_timeseries_crossvalidation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Time Series Cross Validation</span></a>
   </div>
 </li>
@@ -302,19 +265,19 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../production/01_feature_store.html" class="sidebar-item-text sidebar-link">
+  <a href="./production/01_feature_store.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Feature Store &amp; Caching (Beta)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../production/02_gpu_acceleration.html" class="sidebar-item-text sidebar-link">
+  <a href="./production/02_gpu_acceleration.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GPU Acceleration</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../production/03_ray_parallelism.html" class="sidebar-item-text sidebar-link">
+  <a href="./production/03_ray_parallelism.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Ray Parallelism Quickstart</span></a>
   </div>
 </li>
@@ -331,7 +294,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../performance/01_speed_comparisons.html" class="sidebar-item-text sidebar-link">
+  <a href="./performance/01_speed_comparisons.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Speed Comparisons</span></a>
   </div>
 </li>
@@ -340,7 +303,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
+  <a href="./reference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📄 API Reference</span></a>
   </div>
 </li>
@@ -354,14 +317,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../contributing.html" class="sidebar-item-text sidebar-link">
+  <a href="./contributing.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">🍻 Contributing</span></a>
   </div>
 </li>
         <li class="px-0"><hr class="sidebar-divider hi "></li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../changelog-news.html" class="sidebar-item-text sidebar-link">
+  <a href="./changelog-news.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">📧 Change Log</span></a>
   </div>
 </li>
@@ -398,256 +361,168 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
-  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#sorting-review" id="toc-sorting-review" class="nav-link active" data-scroll-target="#sorting-review">Sorting Review</a>
+  <ul class="collapse">
+  <li><a href="#scope-method" id="toc-scope-method" class="nav-link" data-scroll-target="#scope-method">Scope &amp; Method</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#detailed-notes" id="toc-detailed-notes" class="nav-link" data-scroll-target="#detailed-notes">Detailed Notes</a>
+  <ul class="collapse">
+  <li><a href="#augment_regime_detection" id="toc-augment_regime_detection" class="nav-link" data-scroll-target="#augment_regime_detection"><code>augment_regime_detection</code></a></li>
+  <li><a href="#stl_diagnostics-plot_stl_diagnostics" id="toc-stl_diagnostics-plot_stl_diagnostics" class="nav-link" data-scroll-target="#stl_diagnostics-plot_stl_diagnostics"><code>stl_diagnostics</code> &amp; <code>plot_stl_diagnostics</code></a></li>
+  <li><a href="#rolling-expanding-helpers" id="toc-rolling-expanding-helpers" class="nav-link" data-scroll-target="#rolling-expanding-helpers">Rolling / Expanding Helpers</a></li>
+  <li><a href="#shift-based-feature-generators" id="toc-shift-based-feature-generators" class="nav-link" data-scroll-target="#shift-based-feature-generators">Shift-Based Feature Generators</a></li>
+  <li><a href="#future_frame" id="toc-future_frame" class="nav-link" data-scroll-target="#future_frame"><code>future_frame</code></a></li>
+  <li><a href="#shared-helper-sort_dataframe" id="toc-shared-helper-sort_dataframe" class="nav-link" data-scroll-target="#shared-helper-sort_dataframe">Shared Helper: <code>sort_dataframe</code></a></li>
+  <li><a href="#gap-plot_timeseries" id="toc-gap-plot_timeseries" class="nav-link" data-scroll-target="#gap-plot_timeseries">Gap: <code>plot_timeseries</code></a></li>
+  </ul></li>
+  <li><a href="#recommended-next-steps" id="toc-recommended-next-steps" class="nav-link" data-scroll-target="#recommended-next-steps">Recommended Next Steps</a></li>
+  </ul></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/seasonal_diagnostics.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/sorting_review.md" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">seasonal_diagnostics</h1>
-</div>
 
 
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-</header>
-
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>seasonal_diagnostics(data, date_column, value_column, feature_set<span class="op">=</span><span class="st">'auto'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Prepare seasonal feature diagnostics akin to <code>tk_seasonal_diagnostics</code>.</p>
-<section id="parameters" class="level2 doc-section doc-section-parameters">
-<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
+<section id="sorting-review" class="level1">
+<h1>Sorting Review</h1>
+<section id="scope-method" class="level2">
+<h2 class="anchored" data-anchor-id="scope-method">Scope &amp; Method</h2>
+<ul>
+<li>Focused on time-series utilities where chronological order is required for correctness (decompositions, rolling/expanding windows, regime detection, future frame generation, and plotting).</li>
+<li>Verified each candidate by reading the implementation and cross-checking for explicit <code>sort_values</code>/<code>sort</code> calls or helper usage (<code>sort_dataframe</code>).</li>
+<li>Highlighted any gaps where sorting is expected but not enforced.</li>
+</ul>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
 <table class="table">
 <colgroup>
-<col style="width: 4%">
-<col style="width: 20%">
-<col style="width: 70%">
-<col style="width: 4%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
+<th>Function / Area</th>
+<th>Why sorting is required</th>
+<th>Evidence</th>
+<th>Status</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>data</td>
-<td>pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy</td>
-<td>Time series data (long format) or grouped data.</td>
-<td><em>required</em></td>
+<td><code>augment_regime_detection</code></td>
+<td>HMM log-returns must be chronological for stable training/prediction.</td>
+<td>Uses <code>sort_dataframe</code> before the pandas path and <code>frame.sort(sort_keys)</code> in the polars bridge (<code>src/pytimetk/finance/regime_detection.py:316-352, 494-527</code>).</td>
+<td>✅ Enforced</td>
 </tr>
 <tr class="even">
-<td>date_column</td>
-<td>str</td>
-<td>Name of the datetime column.</td>
-<td><em>required</em></td>
+<td><code>stl_diagnostics</code> (used by <code>plot_stl_diagnostics</code>)</td>
+<td>STL decomposition assumes ordered timestamps.</td>
+<td><code>_stl_diagnostics_single</code> sorts and resets index before fitting (<code>src/pytimetk/core/stl_diagnostics.py:91-149</code>); <code>plot_stl_diagnostics</code> delegates to it (<code>src/pytimetk/plot/plot_stl_diagnostics.py:226-239</code>).</td>
+<td>✅ Enforced</td>
 </tr>
 <tr class="odd">
-<td>value_column</td>
-<td>str</td>
-<td>Numeric measure to analyse.</td>
-<td><em>required</em></td>
+<td><code>augment_rolling</code></td>
+<td>Rolling windows require sequential order within each group.</td>
+<td>Pandas path calls <code>sort_dataframe</code> up front, cudf/polars paths sort by group/date before rolling (<code>src/pytimetk/feature_engineering/rolling.py:268-306, 458-518</code>).</td>
+<td>✅ Enforced</td>
 </tr>
 <tr class="even">
-<td>feature_set</td>
-<td>str or sequence</td>
-<td>One or more of <code>["second", "minute", "hour", "wday.lbl", "week", "month.lbl", "quarter", "year"]</code>. The special value <code>"auto"</code> selects features based on the timestamp scale and overall history.</td>
-<td><code>'auto'</code></td>
+<td><code>augment_rolling_apply</code></td>
+<td>Custom rolling apply expects deterministic window ordering.</td>
+<td>Grouped frames sorted by group/date; concatenated result re-sorted to the original index (<code>src/pytimetk/feature_engineering/rolling_apply.py:282-349, 351-404</code>).</td>
+<td>✅ Enforced</td>
+</tr>
+<tr class="odd">
+<td><code>augment_expanding</code></td>
+<td>Expanding stats are cumulative over ordered observations.</td>
+<td>Data sorted per group/date for pandas, cudf, and polars implementations (<code>src/pytimetk/feature_engineering/expanding.py:404-438, 478-487</code>).</td>
+<td>✅ Enforced</td>
+</tr>
+<tr class="even">
+<td>Shift-style helpers (<code>augment_diffs</code>, <code>augment_lags</code>, <code>augment_leads</code>)</td>
+<td>Forward/backward differences/leads rely on sequential rows.</td>
+<td>Each helper sorts by group/date, computes diffs/leads, then restores the original ordering (<code>src/pytimetk/feature_engineering/diffs.py:324-368</code>; similar patterns exist in <code>lags.py</code> and <code>leads.py</code>).</td>
+<td>✅ Enforced</td>
+</tr>
+<tr class="odd">
+<td><code>future_frame</code></td>
+<td>Frequency inference and extrapolation must examine ordered dates.</td>
+<td>Both ungrouped and grouped branches sort timestamps before calling <code>get_frequency</code> and generating future rows (<code>src/pytimetk/core/future.py:386-440</code>).</td>
+<td>✅ Enforced</td>
+</tr>
+<tr class="even">
+<td><code>plot_timeseries</code> (Plotly backend)</td>
+<td>Line traces should traverse chronological x-values to avoid self-crossing paths.</td>
+<td>Data is grouped with <code>sort=False</code> and fed to <code>go.Scatter</code> without sorting (see <code>src/pytimetk/plot/plot_timeseries.py:795-1076</code>).</td>
+<td>⚠️ Needs sorting</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="returns" class="level2 doc-section doc-section-returns">
-<h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
-<table class="table">
-<colgroup>
-<col style="width: 3%">
-<col style="width: 5%">
-<col style="width: 91%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td>pd.DataFrame</td>
-<td>Tidy data with: - grouping columns (when present) - <code>date</code> (or the supplied <code>date_column</code>) - the original <code>value_column</code> - <code>seasonal_feature</code> (e.g.&nbsp;<code>"hour"</code>) - <code>seasonal_value</code> (the actual categorical value for that observation)</td>
-</tr>
-</tbody>
-</table>
+<section id="detailed-notes" class="level2">
+<h2 class="anchored" data-anchor-id="detailed-notes">Detailed Notes</h2>
+<section id="augment_regime_detection" class="level3">
+<h3 class="anchored" data-anchor-id="augment_regime_detection"><code>augment_regime_detection</code></h3>
+<ul>
+<li>Sorting occurs immediately after converting to the requested engine via <code>sort_dataframe</code>, ensuring per-group chronological order before computing log returns and fitting HMMs (<code>src/pytimetk/finance/regime_detection.py:316-333</code>).</li>
+<li>The polars path mirrors this by adding a temporary row id, sorting by <code>group + date</code>, running the pandas implementation, then restoring the original order (<code>src/pytimetk/finance/regime_detection.py:490-527</code>). No additional action needed.</li>
+</ul>
 </section>
-<section id="examples" class="level2 doc-section doc-section-examples">
-<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> pd.date_range(<span class="st">"2020-01-01"</span>, periods<span class="op">=</span><span class="dv">48</span>, freq<span class="op">=</span><span class="st">"H"</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"id"</span>: [<span class="st">"A"</span>] <span class="op">*</span> <span class="dv">24</span> <span class="op">+</span> [<span class="st">"B"</span>] <span class="op">*</span> <span class="dv">24</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"date"</span>: <span class="bu">list</span>(rng[:<span class="dv">24</span>]) <span class="op">+</span> <span class="bu">list</span>(rng[:<span class="dv">24</span>]),</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"value"</span>: np.random.default_rng(<span class="dv">123</span>).normal(size<span class="op">=</span><span class="dv">48</span>),</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>diagnostics <span class="op">=</span> tk.seasonal_diagnostics(</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>df.groupby(<span class="st">"id"</span>),</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    date_column<span class="op">=</span><span class="st">"date"</span>,</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    value_column<span class="op">=</span><span class="st">"value"</span>,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    feature_set<span class="op">=</span>[<span class="st">"hour"</span>, <span class="st">"wday.lbl"</span>],</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>diagnostics.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<div>
+<section id="stl_diagnostics-plot_stl_diagnostics" class="level3">
+<h3 class="anchored" data-anchor-id="stl_diagnostics-plot_stl_diagnostics"><code>stl_diagnostics</code> &amp; <code>plot_stl_diagnostics</code></h3>
+<ul>
+<li><code>_stl_diagnostics_single</code> sorts the frame, coerces numeric types, and only then infers periods and fits STL, so each group is chronologically consistent (<code>src/pytimetk/core/stl_diagnostics.py:91-149</code>).</li>
+<li><code>plot_stl_diagnostics</code> trusts the sorted diagnostic output; no extra sorting is necessary so long as upstream behavior is preserved (<code>src/pytimetk/plot/plot_stl_diagnostics.py:226-239</code>).</li>
+</ul>
+</section>
+<section id="rolling-expanding-helpers" class="level3">
+<h3 class="anchored" data-anchor-id="rolling-expanding-helpers">Rolling / Expanding Helpers</h3>
+<ul>
+<li><code>augment_rolling</code> and <code>_augment_rolling_cudf_dataframe</code>/polars equivalents sort data by <code>group + date</code> and, when necessary, use <code>row_id_column</code> to restore original ordering so downstream joins remain aligned (<code>src/pytimetk/feature_engineering/rolling.py:268-304, 458-518</code>).</li>
+<li><code>augment_rolling_apply</code> sorts per group (or globally when ungrouped) before invoking custom window logic and reindexes to the original order (<code>src/pytimetk/feature_engineering/rolling_apply.py:282-349</code>).</li>
+<li><code>augment_expanding</code> follows the same pattern for expanding statistics, guaranteeing deterministic cumulative calculations (<code>src/pytimetk/feature_engineering/expanding.py:404-438, 478-487</code>).</li>
+</ul>
+</section>
+<section id="shift-based-feature-generators" class="level3">
+<h3 class="anchored" data-anchor-id="shift-based-feature-generators">Shift-Based Feature Generators</h3>
+<ul>
+<li>Difference/lead/lag utilities explicitly sort by <code>group + date</code> before applying <code>diff</code>, <code>pct_change</code>, or <code>shift</code>, then resort by a synthetic row id so the returned frame matches the caller’s original layout (<code>src/pytimetk/feature_engineering/diffs.py:324-368</code>; identical scaffolding exists in <code>leads.py</code> and <code>lags.py</code>).</li>
+</ul>
+</section>
+<section id="future_frame" class="level3">
+<h3 class="anchored" data-anchor-id="future_frame"><code>future_frame</code></h3>
+<ul>
+<li>Frequency detection (<code>get_frequency</code>) and the generation of future timestamps operate on <code>df[date_column].sort_values()</code> to avoid deriving cadence from unsorted inputs. Grouped inputs also infer frequency from a sorted reference group (<code>src/pytimetk/core/future.py:386-440</code>). This safeguards against irregular spacing artifacts.</li>
+</ul>
+</section>
+<section id="shared-helper-sort_dataframe" class="level3">
+<h3 class="anchored" data-anchor-id="shared-helper-sort_dataframe">Shared Helper: <code>sort_dataframe</code></h3>
+<ul>
+<li>Many of the functions above rely on <code>sort_dataframe</code> to standardize ordering while preserving grouping metadata (<code>src/pytimetk/utils/pandas_helpers.py:130-194</code>). Keeping this helper authoritative simplifies auditing future call sites.</li>
+</ul>
+</section>
+<section id="gap-plot_timeseries" class="level3">
+<h3 class="anchored" data-anchor-id="gap-plot_timeseries">Gap: <code>plot_timeseries</code></h3>
+<ul>
+<li>Neither the dropdown nor the faceted Plotly paths enforce sorting. Groups are created with <code>sort=False</code>, and <code>go.Scatter</code> traces consume whatever order the caller supplied (<code>src/pytimetk/plot/plot_timeseries.py:795-1076</code>). This can produce zig-zagging lines or incorrect annotations when the input frame is not pre-sorted.</li>
+<li><strong>Suggested fix:</strong> before plotting, apply <code>group.sort_values(date_column)</code> (or use the existing <code>sort_dataframe</code> helper) so every trace sees monotonically increasing dates. Re-sort back to the original index if the function must return data to callers.</li>
+</ul>
+</section>
+</section>
+<section id="recommended-next-steps" class="level2">
+<h2 class="anchored" data-anchor-id="recommended-next-steps">Recommended Next Steps</h2>
+<ol type="1">
+<li>Add an explicit sort (per group when grouping columns are provided, otherwise global) to <code>plot_timeseries</code> before constructing Plotly traces, along with a regression test that feeds unsorted data.</li>
+<li>Continue routing new time-series utilities through <code>sort_dataframe</code> to keep the sorting contract centralized and easier to audit.</li>
+</ol>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">id</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">value</th>
-<th data-quarto-table-cell-role="th">seasonal_feature</th>
-<th data-quarto-table-cell-role="th">seasonal_value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>A</td>
-<td>2020-01-01 00:00:00</td>
-<td>-0.989121</td>
-<td>hour</td>
-<td>0</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>A</td>
-<td>2020-01-01 01:00:00</td>
-<td>-0.367787</td>
-<td>hour</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>A</td>
-<td>2020-01-01 02:00:00</td>
-<td>1.287925</td>
-<td>hour</td>
-<td>2</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>A</td>
-<td>2020-01-01 03:00:00</td>
-<td>0.193974</td>
-<td>hour</td>
-<td>3</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>A</td>
-<td>2020-01-01 04:00:00</td>
-<td>0.920231</td>
-<td>hour</td>
-<td>4</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pytimetk.utils.selection <span class="im">import</span> contains</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>selector_diagnostics <span class="op">=</span> tk.seasonal_diagnostics(</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>df,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    date_column<span class="op">=</span>contains(<span class="st">"dat"</span>),</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    value_column<span class="op">=</span>contains(<span class="st">"val"</span>),</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    feature_set<span class="op">=</span>[<span class="st">"hour"</span>],</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>selector_diagnostics.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">value</th>
-<th data-quarto-table-cell-role="th">seasonal_feature</th>
-<th data-quarto-table-cell-role="th">seasonal_value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>2020-01-01 00:00:00</td>
-<td>-0.989121</td>
-<td>hour</td>
-<td>0</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>2020-01-01 00:00:00</td>
-<td>0.754770</td>
-<td>hour</td>
-<td>0</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2020-01-01 01:00:00</td>
-<td>-0.145978</td>
-<td>hour</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>2020-01-01 01:00:00</td>
-<td>-0.367787</td>
-<td>hour</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>2020-01-01 02:00:00</td>
-<td>1.287925</td>
-<td>hour</td>
-<td>2</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-
-
+</section>
 </section>
 
 </main> <!-- /main -->
