@@ -110,40 +110,33 @@ def make_future_timeseries(
     tk.make_future_timeseries(dates, 4, force_regular=True)
     ```
     """
-    # Convert idx to Pandas DateTime Index if it's a string or list of strings
     if isinstance(idx, str):
         idx = pd.to_datetime([idx])
-
-    if isinstance(idx, list):
+    elif isinstance(idx, list):
         idx = pd.to_datetime(idx)
 
-    # Check if idx is a Series or DatetimeIndex
     check_series_or_datetime(idx)
 
-    if len(idx) < 2:
-        if freq is None:
-            raise ValueError("`freq` must be provided if `idx` contains only 1 date.")
+    if isinstance(idx, pd.Series):
+        series = idx.copy()
+    elif isinstance(idx, pd.DatetimeIndex):
+        series = pd.Series(idx, name=idx.name or "idx")
+    else:
+        series = pd.Series(idx, name="idx")
 
-    # If idx is a DatetimeIndex, convert to Series
-    if isinstance(idx, pd.DatetimeIndex):
-        idx = pd.Series(idx, name="idx")
+    series = pd.to_datetime(series)
 
-    # Create a DatetimeIndex from the provided dates
-    dt_index = pd.DatetimeIndex(pd.Series(idx).values)
+    if len(series) < 2 and freq is None:
+        raise ValueError("`freq` must be provided if `idx` contains only 1 date.")
 
-    # Determine the frequency
-    if freq is None:
-        freq = get_frequency(dt_index, force_regular=force_regular)
+    dt_index = pd.DatetimeIndex(series.values)
 
-    # Generate the next four periods (dates)
-    future_dates = pd.date_range(start=dt_index[-1], periods=length_out + 1, freq=freq)[
-        1:
-    ]  # Exclude the first date as it's already in dt_index
+    freq_resolved = freq
+    if freq_resolved is None:
+        freq_resolved = get_frequency(dt_index, force_regular=force_regular)
 
-    # If the original index has a timezone, apply it to the future dates
-    if idx.dt.tz is not None:
-        future_dates = future_dates.tz_localize(idx.dt.tz)
+    future_dates = pd.date_range(
+        start=series.iloc[-1], periods=length_out + 1, freq=freq_resolved
+    )[1:]
 
-    ret = pd.Series(future_dates)
-
-    return ret
+    return pd.Series(future_dates)

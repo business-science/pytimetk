@@ -261,6 +261,40 @@ def test_future_frame_polars_accessor():
     assert_frame_equal(result_pd, expected, check_dtype=False)
 
 
+def test_future_frame_polars_grouped_matches_pandas():
+    sample = pd.DataFrame(
+        {
+            "grp": ["A", "A", "B", "B"],
+            "date": pd.to_datetime(
+                ["2022-01-01", "2022-01-02", "2022-01-01", "2022-01-03"]
+            ),
+            "value": [5, 6, 7, 8],
+        }
+    )
+
+    pandas_result = (
+        sample.groupby("grp")
+        .future_frame(date_column="date", length_out=2, freq="1D", threads=1)
+        .reset_index(drop=True)
+    )
+
+    pl_df = pl.from_pandas(sample)
+    polars_group = pl_df.group_by("grp", maintain_order=True)
+    polars_future = pytimetk.future_frame(
+        data=polars_group,
+        date_column="date",
+        length_out=2,
+        freq="1D",
+        engine="polars",
+    )
+    result_pd = polars_future.to_pandas().reset_index(drop=True)
+
+    expected = pandas_result.sort_values(["grp", "date"]).reset_index(drop=True)
+    actual = result_pd.sort_values(["grp", "date"]).reset_index(drop=True)
+
+    assert_frame_equal(actual, expected, check_dtype=False)
+
+
 # Run the tests
 if __name__ == "__main__":
     pytest.main([__file__])

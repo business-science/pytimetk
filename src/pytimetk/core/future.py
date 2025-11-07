@@ -4,8 +4,6 @@ import pandas_flavor as pf
 from typing import Union, Optional, Sequence, List
 
 from pytimetk.core.frequency import get_frequency
-from pytimetk.core.make_future_timeseries import make_future_timeseries
-
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column
 
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
@@ -46,29 +44,33 @@ def _resolve_selector_frame(
         return base.to_pandas()
     if isinstance(data, pl.DataFrame):
         return data.to_pandas()
-    if hasattr(data, "to_pandas"):
-        return data.to_pandas()
     raise TypeError(
-        "Column selectors currently require pandas or polars data. Convert to one of these before calling future_frame."
+        "Column selectors currently require pandas or polars data for `future_frame`."
     )
 
 
-def _normalize_frequency_spec(freq: Optional[Union[str, pd.DateOffset]]) -> Optional[pd.DateOffset]:
+def _normalize_frequency_spec(
+    freq: Optional[Union[str, pd.DateOffset]]
+) -> Optional[pd.DateOffset]:
     if freq is None:
         return None
+    if isinstance(freq, pd.DateOffset):
+        return freq
     try:
         return pd.tseries.frequencies.to_offset(freq)
-    except ValueError:
+    except Exception:
         duration = parse_human_duration(freq)
         if isinstance(duration, pd.DateOffset):
             return duration
         return pd.tseries.frequencies.to_offset(pd.to_timedelta(duration))
 
 
-def _freq_to_string(freq: Union[str, pd.DateOffset]) -> str:
-    if isinstance(freq, pd.DateOffset):
-        return freq.freqstr
-    return pd.tseries.frequencies.to_offset(freq).freqstr
+def _frequency_to_str(freq: Optional[pd.DateOffset]) -> Optional[str]:
+    if freq is None:
+        return None
+    return freq.freqstr
+
+
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -382,26 +384,33 @@ def _future_frame_pandas(
 
     if isinstance(working, pd.DataFrame):
         df = working.copy()
-        ts_series = df[date_column]
+        df[date_column] = pd.to_datetime(df[date_column])
 
-        new_dates = make_future_timeseries(
-            idx=ts_series, length_out=length_out, freq=freq, force_regular=force_regular
+        freq_resolved = freq
+        if freq_resolved is None:
+            freq_resolved = _normalize_frequency_spec(
+                get_frequency(
+                    df[date_column].sort_values(), force_regular=force_regular
+                )
+            )
+
+        future_index = _generate_future_index(
+            df[date_column].iloc[-1], freq_resolved, length_out
         )
-
-        new_rows = pd.DataFrame({date_column: new_dates})
+        new_rows = pd.DataFrame({date_column: future_index})
 
         if bind_data:
             extended_df = pd.concat([df, new_rows], axis=0, ignore_index=True)
         else:
             extended_df = new_rows
 
-        col_name_candidates = extended_df.columns[extended_df.nunique() == 1]
-        col_name = col_name_candidates[0] if not col_name_candidates.empty else None
-
-        if col_name is not None:
-            extended_df = extended_df.assign(
-                **{col_name: extended_df[col_name].ffill()}
-            )
+        constant_cols = [
+            col
+            for col in extended_df.columns
+            if col != date_column and extended_df[col].nunique(dropna=False) == 1
+        ]
+        if constant_cols:
+            extended_df[constant_cols] = extended_df[constant_cols].ffill()
 
         result = extended_df
 
@@ -413,22 +422,29 @@ def _future_frame_pandas(
         # If freq is None, infer the frequency from the first series in the data
         freq_local = freq
         if freq_local is None:
-            label_of_first_group = list(grouped.groups.keys())[0]
-
+            if len(grouped) == 0:
+                raise ValueError(
+                    "Cannot infer frequency from an empty grouped object. "
+                    "Provide `freq` explicitly."
+                )
+            label_of_first_group = next(iter(grouped.groups.keys()))
             first_group = grouped.get_group(label_of_first_group)
-
-            freq_local = get_frequency(
-                first_group[date_column].sort_values(), force_regular=force_regular
+            freq_local = _normalize_frequency_spec(
+                get_frequency(
+                    pd.to_datetime(first_group[date_column]).sort_values(),
+                    force_regular=force_regular,
+                )
             )
-        freq_local = _normalize_frequency_spec(freq_local)
 
         last_dates_df = grouped.agg({date_column: "max"}).reset_index()
+        last_dates_df[date_column] = pd.to_datetime(last_dates_df[date_column])
 
         # Use parallel processing if threads is greater than 1
         if threads != 1:
             threads_resolved = get_threads(threads)
 
-            chunk_size = int(len(last_dates_df) / threads_resolved)
+            chunk_size = max(int(len(last_dates_df) / threads_resolved), 10)
+            chunk_size = max(chunk_size, 1)
             subsets = [
                 last_dates_df.iloc[i : i + chunk_size]
                 for i in range(0, len(last_dates_df), chunk_size)
@@ -445,7 +461,6 @@ def _future_frame_pandas(
                             [group_names] * len(subsets),
                             [length_out] * len(subsets),
                             [freq_local] * len(subsets),
-                            [force_regular] * len(subsets),
                         ),
                         total=len(subsets),
                         display=show_progress,
@@ -465,11 +480,19 @@ def _future_frame_pandas(
                 desc="Future framing...",
             ):
                 future_dates_subset = _process_future_frame_rows(
-                    row, date_column, group_names, length_out, freq_local, force_regular
+                    row, date_column, group_names, length_out, freq_local
                 )
                 future_dates_list.append(future_dates_subset)
 
-        future_dates_df = pd.concat(future_dates_list, axis=0).reset_index(drop=True)
+        if future_dates_list:
+            future_dates_df = (
+                pd.concat(future_dates_list, axis=0)
+                .reset_index(drop=True)
+            )
+        else:
+            future_dates_df = pd.DataFrame(
+                columns=list(group_names) + [date_column]
+            )
 
         if bind_data:
             grouped_df = resolve_pandas_groupby_frame(grouped)
@@ -518,6 +541,7 @@ def _future_frame_polars(
         raise KeyError(f"{date_column} not found in DataFrame")
 
     dtype_date = frame.schema[date_column]
+    ordered_cols = list(frame.columns)
     other_columns = [
         col
         for col in frame.columns
@@ -533,21 +557,14 @@ def _future_frame_polars(
         except Exception:
             row_id_counter = None
 
-    def _future_dates(
-        series: pl.Series, inferred_freq: Optional[Union[str, pd.DateOffset]]
-    ) -> pl.Series:
-        pandas_series = series.to_pandas()
-        generated = make_future_timeseries(
-            idx=pandas_series,
-            length_out=length_out,
-            freq=inferred_freq,
-            force_regular=force_regular,
-        )
-        if len(generated) == 0:
-            return pl.Series(dtype=dtype_date, values=[])
-        future_series = pl.Series(generated).cast(dtype_date)
-        # Casting above ensures timezone/unit consistency
-        return future_series
+    def _cast_series(series: pl.Series) -> pl.Series:
+        if dtype_date == pl.Date:
+            return series.cast(pl.Date)
+        if isinstance(dtype_date, pl.datatypes.Datetime):
+            return series.cast(
+                pl.Datetime(time_unit=dtype_date.time_unit, time_zone=dtype_date.time_zone)
+            )
+        return series
 
     if resolved_groups:
         partitions = frame.partition_by(resolved_groups, maintain_order=True)
@@ -576,14 +593,16 @@ def _future_frame_polars(
         )
         for part in iterator:
             part_sorted = part.sort(date_column)
-            future_series = _future_dates(
-                part_sorted[date_column], freq_local
+            last_value = (
+                part_sorted.select(pl.col(date_column).max()).to_series().item()
             )
-
-            if len(future_series) == 0:
+            future_index = _generate_future_index(last_value, freq_local, length_out)
+            if len(future_index) == 0:
                 result_part = part_sorted if bind_data else part_sorted.head(0)
                 results.append(result_part)
                 continue
+
+            future_series = _cast_series(pl.Series(future_index))
 
             new_rows_dict = {date_column: future_series}
             for col in resolved_groups:
@@ -614,6 +633,7 @@ def _future_frame_polars(
                     row_id_counter += len(future_series)
 
             new_rows = pl.DataFrame(new_rows_dict)
+            new_rows = new_rows.select(ordered_cols)
 
             if bind_data:
                 combined = pl.concat(
@@ -627,11 +647,21 @@ def _future_frame_polars(
         result = pl.concat(results, how="vertical_relaxed")
     else:
         frame_sorted = frame.sort(date_column)
-        future_series = _future_dates(frame_sorted[date_column], freq)
+        freq_resolved = freq
+        if freq_resolved is None:
+            sample_dates = (
+                frame_sorted.select(pl.col(date_column)).to_series().to_pandas().sort_values()
+            )
+            freq_resolved = _normalize_frequency_spec(
+                get_frequency(sample_dates, force_regular=force_regular)
+            )
+        last_value = frame_sorted.select(pl.col(date_column).max()).to_series().item()
+        future_index = _generate_future_index(last_value, freq_resolved, length_out)
 
-        if len(future_series) == 0:
+        if len(future_index) == 0:
             result = frame_sorted if bind_data else frame_sorted.head(0)
         else:
+            future_series = _cast_series(pl.Series(future_index))
             new_rows_dict = {date_column: future_series}
             for col in other_columns:
                 new_rows_dict[col] = pl.Series(
@@ -652,6 +682,7 @@ def _future_frame_polars(
                     row_id_counter += len(future_series)
 
             new_rows = pl.DataFrame(new_rows_dict)
+            new_rows = new_rows.select(ordered_cols)
             if bind_data:
                 result = pl.concat(
                     [frame_sorted, new_rows],
@@ -678,16 +709,13 @@ def _future_frame_polars(
 
 
 def _process_future_frame_subset(
-    subset, date_column, group_names, length_out, freq, force_regular
+    subset, date_column, group_names, length_out, freq
 ):
     future_dates_list = []
     for _, row in subset.iterrows():
-        future_dates = make_future_timeseries(
-            idx=pd.Series(row[date_column]),
-            length_out=length_out,
-            freq=freq,
-            force_regular=force_regular,
-        )
+        future_dates = _generate_future_index(row[date_column], freq, length_out)
+        if len(future_dates) == 0:
+            continue
 
         future_dates_df = pd.DataFrame({date_column: future_dates})
         for group_name in group_names:
@@ -698,17 +726,26 @@ def _process_future_frame_subset(
 
 
 def _process_future_frame_rows(
-    row, date_column, group_names, length_out, freq, force_regular
+    row, date_column, group_names, length_out, freq
 ):
-    future_dates = make_future_timeseries(
-        idx=pd.Series(row[date_column]),
-        length_out=length_out,
-        freq=freq,
-        force_regular=force_regular,
-    )
+    future_dates = _generate_future_index(row[date_column], freq, length_out)
 
     future_dates_df = pd.DataFrame({date_column: future_dates})
     for group_name in group_names:
         future_dates_df[group_name] = row[group_name]
 
     return future_dates_df
+
+
+def _generate_future_index(
+    anchor_value, freq: Optional[pd.DateOffset], length_out: int
+) -> pd.DatetimeIndex:
+    if length_out <= 0:
+        return pd.DatetimeIndex([], dtype="datetime64[ns]")
+    if freq is None:
+        raise ValueError(
+            "Unable to determine frequency for future_frame. Provide `freq` explicitly."
+        )
+    anchor = pd.Timestamp(anchor_value)
+    future = pd.date_range(start=anchor, periods=length_out + 1, freq=freq)
+    return future[1:]

@@ -160,6 +160,36 @@ def test_pad_by_time_polars_accessor():
     assert_frame_equal(result_pd, expected, check_dtype=False)
 
 
+def test_pad_by_time_polars_grouped_matches_pandas():
+    df = pd.DataFrame(
+        {
+            "date": pd.to_datetime(
+                ["2022-01-01", "2022-01-03", "2022-01-02", "2022-01-04"]
+            ),
+            "value": [10, 20, 30, 40],
+            "group": ["A", "A", "B", "B"],
+        }
+    )
+
+    pandas_result = (
+        df.groupby("group")
+        .pad_by_time(date_column="date", freq="1D")
+        .reset_index(drop=True)
+    )
+
+    pl_df = pl.from_pandas(df)
+    polars_group = pl_df.group_by("group", maintain_order=True)
+    polars_result = pad_by_time(
+        data=polars_group, date_column="date", freq="1D", engine="polars"
+    ).to_pandas()
+
+    assert_frame_equal(
+        polars_result.reset_index(drop=True),
+        pandas_result,
+        check_dtype=False,
+    )
+
+
 if __name__ == "__main__":
     pytest.main()
 def test_pad_by_time_tidy_duration(test_dataframe):

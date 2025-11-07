@@ -16,8 +16,68 @@ from pytimetk.utils.dataframe_ops import (
     resolve_polars_group_columns,
 )
 from pytimetk.utils.polars_helpers import pandas_to_polars_frequency
+from functools import lru_cache
 from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
 from pytimetk.utils.datetime_helpers import parse_human_duration
+
+
+def _resolve_selector_frame(
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
+) -> pd.DataFrame:
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        return resolve_pandas_groupby_frame(data).copy()
+    if isinstance(data, pd.DataFrame):
+        return data.copy()
+    if isinstance(data, pl.dataframe.group_by.GroupBy):
+        base = getattr(data, "df", None)
+        if base is None:
+            raise TypeError(
+                "Unable to resolve columns from this polars GroupBy for selector resolution."
+            )
+        return base.to_pandas()
+    if isinstance(data, pl.DataFrame):
+        return data.to_pandas()
+    raise TypeError(
+        "Column selectors currently require pandas or polars data for `pad_by_time`."
+    )
+
+
+def _normalize_frequency(freq: Optional[str]) -> Union[str, pd.DateOffset, pd.Timedelta]:
+    if freq is None:
+        return "D"
+    if isinstance(freq, (pd.DateOffset, pd.Timedelta)):
+        return freq
+    try:
+        return pd.tseries.frequencies.to_offset(freq)
+    except Exception:
+        duration = parse_human_duration(freq)
+        if isinstance(duration, pd.DateOffset):
+            return duration
+        return pd.to_timedelta(duration)
+
+
+def _freq_to_string(freq: Union[str, pd.DateOffset, pd.Timedelta]) -> str:
+    if isinstance(freq, str):
+        return freq
+    try:
+        return pd.tseries.frequencies.to_offset(freq).freqstr
+    except Exception:
+        return str(freq)
+
+
+@lru_cache(maxsize=128)
+def _cached_polars_date_range(start_iso: str, end_iso: str, freq_str: str):
+    return pl.date_range(
+        start=pd.Timestamp(start_iso),
+        end=pd.Timestamp(end_iso),
+        interval=freq_str,
+        eager=True,
+    )
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -212,47 +272,37 @@ def pad_by_time(
             else data
         )
 
-    engine_resolved = normalize_engine(engine, data)
+    selector_snapshot = _resolve_selector_frame(data)
 
-    def _parse_date_bound(text: Optional[str]) -> Optional[pd.Timestamp]:
+    def _parse_date_bound(text: Optional[str], reference: pd.Series) -> Optional[pd.Timestamp]:
         if text is None:
             return None
         try:
             return pd.Timestamp(text)
         except Exception:
             duration = parse_human_duration(text)
-            reference = None
-            if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-                reference = resolve_pandas_groupby_frame(data)[date_column].min()
-            elif isinstance(data, pd.DataFrame):
-                reference = data[date_column].min()
-            elif isinstance(data, pl.DataFrame):
-                reference = data.to_pandas()[date_column].min()
-            else:
-                reference = resolve_pandas_groupby_frame(data)[date_column].min()
-            if reference is None:
-                raise ValueError(f"Unable to resolve reference date for '{text}'.")
+            base = pd.Timestamp(reference.min())
             if isinstance(duration, pd.DateOffset):
-                return pd.Timestamp(reference) + duration
+                return base + duration
             delta = pd.to_timedelta(duration)
-            return pd.Timestamp(reference) + delta
+            return base + delta
 
-    start_ts = _parse_date_bound(start_date)
-    end_ts = _parse_date_bound(end_date)
+    base_series = pd.Series(selector_snapshot[date_column])
+    start_ts = _parse_date_bound(start_date, base_series)
+    end_ts = _parse_date_bound(end_date, base_series)
+
+    if not base_series.empty:
+        if start_ts is None:
+            start_ts = pd.Timestamp(base_series.min())
+        if end_ts is None:
+            end_ts = pd.Timestamp(base_series.max())
 
     if start_ts is not None and end_ts is not None and start_ts > end_ts:
         raise ValueError("Start date cannot be greater than end date.")
 
-    resolved_freq = freq
-    if isinstance(freq, str):
-        try:
-            pd.tseries.frequencies.to_offset(freq)
-        except Exception:
-            duration = parse_human_duration(freq)
-            if isinstance(duration, pd.DateOffset):
-                resolved_freq = duration
-            else:
-                resolved_freq = pd.to_timedelta(duration)
+    freq_normalized = _normalize_frequency(freq)
+
+    engine_resolved = normalize_engine(engine, data)
 
     if engine_resolved == "pandas":
         conversion = convert_to_engine(data, "pandas")
@@ -260,7 +310,7 @@ def pad_by_time(
         result = _pad_by_time_pandas(
             prepared,
             date_column=date_column,
-            freq=resolved_freq,
+            freq=freq_normalized,
             start_date=start_ts,
             end_date=end_ts,
         )
@@ -272,7 +322,7 @@ def pad_by_time(
         result = _pad_by_time_polars(
             prepared,
             date_column=date_column,
-            freq=resolved_freq,
+            freq=_freq_to_string(freq_normalized),
             start_date=start_ts,
             end_date=end_ts,
             group_columns=conversion.group_columns,
@@ -288,7 +338,7 @@ def pad_by_time(
         result = _pad_by_time_cudf_dataframe(
             prepared,
             date_column=date_column,
-            freq=resolved_freq,
+            freq=freq_normalized,
             start_date=start_ts,
             end_date=end_ts,
             group_columns=conversion.group_columns,
@@ -302,10 +352,17 @@ def _pad_by_time_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     *,
     date_column: str,
-    freq: str,
+    freq: Union[str, pd.DateOffset, pd.Timedelta],
     start_date: Optional[pd.Timestamp],
     end_date: Optional[pd.Timestamp],
 ) -> pd.DataFrame:
+    def _build_range(start_bound, end_bound):
+        return pd.date_range(
+            start=start_bound,
+            end=end_bound,
+            freq=freq,
+        )
+
     if isinstance(data, pd.DataFrame):
         df = data.copy()
         df[date_column] = pd.to_datetime(df[date_column])
@@ -314,69 +371,51 @@ def _pad_by_time_pandas(
         min_date = start_date if start_date is not None else df[date_column].min()
         max_date = end_date if end_date is not None else df[date_column].max()
 
-        date_range = pd.date_range(start=min_date, end=max_date, freq=freq)
-        padded_df = pd.DataFrame({date_column: date_range})
-        padded_df = padded_df.merge(df, on=[date_column], how="left")
+        padded = (
+            df.set_index(date_column)
+            .reindex(_build_range(min_date, max_date))
+            .reset_index()
+            .rename(columns={"index": date_column})
+        )
 
-        padded_df.sort_values(by=[date_column], inplace=True)
-        padded_df.reset_index(drop=True, inplace=True)
+        constant_cols = padded.columns[padded.nunique(dropna=False) == 1]
+        if len(constant_cols) > 0:
+            padded[constant_cols] = padded[constant_cols].ffill()
 
-        col_name_candidates = padded_df.columns[padded_df.nunique() == 1]
-        col_name = col_name_candidates[0] if not col_name_candidates.empty else None
-
-        if col_name is not None:
-            padded_df = padded_df.assign(**{col_name: padded_df[col_name].ffill()})
-
-        return padded_df
+        return padded
 
     group_names = data.grouper.names
     df = resolve_pandas_groupby_frame(data).copy()
-
     df[date_column] = pd.to_datetime(df[date_column])
     df.sort_values(by=[*group_names, date_column], inplace=True)
 
-    padded_df = _pad_by_time_vectorized(
-        data=df,
-        date_column=date_column,
-        groupby_columns=list(group_names),
-        freq=freq,
-        start_date=start_date,
-        end_date=end_date,
-    )
+    grouped = df.groupby(group_names, sort=False, group_keys=False)
 
-    return padded_df[df.columns]
+    padded_frames: List[pd.DataFrame] = []
+    for keys, group_df in grouped:
+        if not isinstance(keys, tuple):
+            keys = (keys,)
 
+        start_bound = start_date if start_date is not None else group_df[date_column].min()
+        end_bound = end_date if end_date is not None else group_df[date_column].max()
 
-def _pad_by_time_vectorized(
-    data: pd.DataFrame,
-    date_column: str,
-    groupby_columns: list,
-    freq: str = "D",
-    start_date: Optional[pd.Timestamp] = None,
-    end_date: Optional[pd.Timestamp] = None,
-) -> pd.DataFrame:
-    # Calculate the overall min and max dates across the entire dataset if not provided
-    if start_date is None:
-        start_date = data[date_column].min()
-    if end_date is None:
-        end_date = data[date_column].max()
+        padded = (
+            group_df.set_index(date_column)
+            .reindex(_build_range(start_bound, end_bound))
+            .reset_index()
+            .rename(columns={"index": date_column})
+        )
 
-    # Create a full date range
-    all_dates = pd.date_range(start=start_date, end=end_date, freq=freq)
+        for col_name, key_value in zip(group_names, keys):
+            padded[col_name] = key_value
 
-    # Generate the Cartesian product of all_dates and unique group values
-    idx = pd.MultiIndex.from_product(
-        [data[col].unique() for col in groupby_columns] + [all_dates],
-        names=groupby_columns + [date_column],
-    )
-    cartesian_df = pd.DataFrame(index=idx).reset_index()
+        padded_frames.append(padded[group_df.columns])
 
-    # Merge to introduce NaN values for missing rows
-    padded_data = pd.merge(
-        cartesian_df, data, on=groupby_columns + [date_column], how="left"
-    )
+    if not padded_frames:
+        return df.head(0)
 
-    return padded_data
+    result = pd.concat(padded_frames, axis=0, ignore_index=True)
+    return result
 
 
 def _pad_by_time_polars(
@@ -398,52 +437,75 @@ def _pad_by_time_polars(
     freq_polars = pandas_to_polars_frequency(freq)
     dtype_date = frame.schema[date_column]
 
-    # Determine padding bounds
-    if start_date is None:
-        start_value = frame.select(pl.col(date_column).min()).to_series().item()
-    else:
-        start_value = start_date.to_pydatetime()
+    def _cast_range(series: pl.Series) -> pl.Series:
+        if dtype_date == pl.Date:
+            return series.cast(pl.Date)
+        if isinstance(dtype_date, pl.datatypes.Datetime):
+            return series.cast(
+                pl.Datetime(time_unit=dtype_date.time_unit, time_zone=dtype_date.time_zone)
+            )
+        return series
 
-    if end_date is None:
-        end_value = frame.select(pl.col(date_column).max()).to_series().item()
-    else:
-        end_value = end_date.to_pydatetime()
+    def _build_date_df(start_value, end_value) -> pl.DataFrame:
+        if start_value is None or end_value is None:
+            raise ValueError("Unable to determine start or end date for padding.")
+        start_ts = _convert_to_datetime(start_value)
+        end_ts = _convert_to_datetime(end_value)
+        if start_ts > end_ts:
+            raise ValueError("Start date cannot be after end date for padding.")
+        range_series = _cached_polars_date_range(
+            start_ts.isoformat(),
+            end_ts.isoformat(),
+            freq_polars,
+        ).clone()
+        range_series = _cast_range(range_series)
+        return pl.DataFrame({date_column: range_series})
 
-    if start_value is None or end_value is None:
-        raise ValueError("Unable to determine start or end date for padding.")
-
-    date_range = pl.date_range(
-        start=start_value,
-        end=end_value,
-        interval=freq_polars,
-        eager=True,
-    )
-    if dtype_date == pl.Date:
-        date_range = date_range.cast(pl.Date)
-    elif isinstance(dtype_date, pl.datatypes.Datetime):
-        date_range = date_range.cast(
-            pl.Datetime(time_unit=dtype_date.time_unit, time_zone=dtype_date.time_zone)
-        )
-
-    date_df = pl.DataFrame({date_column: date_range})
+    ordered_cols = list(frame.columns)
 
     if resolved_groups:
-        groups_df = frame.select(resolved_groups).unique()
-        cartesian = groups_df.join(date_df, how="cross")
-        join_keys = list(resolved_groups) + [date_column]
+        partitions = frame.partition_by(resolved_groups, maintain_order=True)
+        results: List[pl.DataFrame] = []
+        for part in partitions:
+            part_sorted = part.sort(date_column)
+            group_start = start_date if start_date is not None else part_sorted.select(
+                pl.col(date_column).min()
+            ).to_series().item()
+            group_end = end_date if end_date is not None else part_sorted.select(
+                pl.col(date_column).max()
+            ).to_series().item()
+
+            date_df = _build_date_df(group_start, group_end)
+
+            for col in resolved_groups:
+                key_value = part_sorted.select(pl.col(col).first()).item()
+                date_df = date_df.with_columns(pl.lit(key_value).alias(col))
+
+            join_keys = list(resolved_groups) + [date_column]
+            padded = date_df.join(part_sorted, on=join_keys, how="left").sort(join_keys)
+            padded = padded.select(ordered_cols)
+            results.append(padded)
+
+        padded = pl.concat(results, how="vertical_relaxed") if results else frame.head(0)
     else:
-        cartesian = date_df
-        join_keys = [date_column]
+        series_sorted = frame.sort(date_column)
+        global_start = start_date if start_date is not None else series_sorted.select(
+            pl.col(date_column).min()
+        ).to_series().item()
+        global_end = end_date if end_date is not None else series_sorted.select(
+            pl.col(date_column).max()
+        ).to_series().item()
 
-    padded = cartesian.join(frame, on=join_keys, how="left")
+        date_df = _build_date_df(global_start, global_end)
+        padded = date_df.join(series_sorted, on=[date_column], how="left").sort(date_column)
 
-    # Forward fill constant columns for non-grouped data
-    if not resolved_groups:
         constant_cols: List[str] = []
-        for col_name in frame.columns:
-            if col_name in join_keys:
+        for col_name in series_sorted.columns:
+            if col_name == date_column or col_name == row_id_column:
                 continue
-            unique_count = frame.select(pl.col(col_name).n_unique()).to_series().item()
+            unique_count = (
+                series_sorted.select(pl.col(col_name).n_unique()).to_series().item()
+            )
             if unique_count == 1:
                 constant_cols.append(col_name)
         if constant_cols:
@@ -451,9 +513,7 @@ def _pad_by_time_polars(
                 [pl.col(col).forward_fill() for col in constant_cols]
             )
 
-    padded = padded.sort(join_keys)
-    ordered_cols = join_keys + [col for col in frame.columns if col not in join_keys]
-    padded = padded.select(ordered_cols)
+        padded = padded.select(ordered_cols)
 
     # Drop row id column if it exists to avoid leaking conversion internals.
     if row_id_column and row_id_column in padded.columns:
