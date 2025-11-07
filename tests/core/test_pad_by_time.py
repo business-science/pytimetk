@@ -3,9 +3,7 @@ import pytest
 import numpy as np
 import polars as pl
 from pandas.testing import assert_frame_equal
-# noqa: F401
-
-# Import the pad_by_time function from your module
+from pytimetk.utils.selection import contains
 from pytimetk import pad_by_time
 
 data = {
@@ -164,3 +162,45 @@ def test_pad_by_time_polars_accessor():
 
 if __name__ == "__main__":
     pytest.main()
+def test_pad_by_time_tidy_duration(test_dataframe):
+    padded_df = test_dataframe.pad_by_time(
+        date_column=contains("date"),
+        freq="2 days",
+        end_date="2022-01-07",
+    )
+
+    expected = pd.DataFrame(
+        {
+            "date": pd.to_datetime(
+                [
+                    "2022-01-01",
+                    "2022-01-03",
+                    "2022-01-05",
+                    "2022-01-07",
+                ]
+            ),
+            "value": [1, 3, 5, np.nan],
+        }
+    )
+    assert_frame_equal(padded_df, expected, check_dtype=False)
+
+
+def test_pad_by_time_grouped_selector():
+    df = pd.DataFrame(
+        {
+            "grp": ["A", "A", "B", "B"],
+            "dt": pd.to_datetime(["2022-01-01", "2022-01-03", "2022-01-02", "2022-01-04"]),
+            "value": [10, 20, 30, 40],
+        }
+    )
+    baseline = (
+        df.groupby("grp")
+        .pad_by_time(date_column="dt", freq="1D")
+        .reset_index(drop=True)
+    )
+    selector_result = (
+        df.groupby("grp")
+        .pad_by_time(date_column=contains("d"), freq="1 days")
+        .reset_index(drop=True)
+    )
+    assert_frame_equal(selector_result, baseline, check_dtype=False)

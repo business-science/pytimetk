@@ -16,6 +16,8 @@ from pytimetk.utils.dataframe_ops import (
     resolve_polars_group_columns,
 )
 from pytimetk.utils.polars_helpers import pandas_to_polars_frequency
+from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
+from pytimetk.utils.datetime_helpers import parse_human_duration
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -31,7 +33,7 @@ def pad_by_time(
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
     ],
-    date_column: str,
+    date_column: Union[str, ColumnSelector],
     freq: str = "D",
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
@@ -49,15 +51,11 @@ def pad_by_time(
     data : DataFrame or GroupBy (pandas or polars)
         The `data` parameter can be either a pandas/polars DataFrame or a grouped
         object. It represents the data that you want to pad with missing dates.
-    date_column : str
-        The `date_column` parameter is a string that specifies the name of the
-        column in the DataFrame that contains the dates. This column will be
-        used to determine the minimum and maximum dates in theDataFrame, and to
-        generate the regular date range for padding.
+    date_column : str or ColumnSelector
+        Column containing the timestamps used to determine padding bounds.
     freq : str, optional
-        The `freq` parameter specifies the frequency at which the missing
-        timestamps should be generated. It accepts a string representing a
-        pandas frequency alias. Some common frequency aliases include:
+        Frequency for padding. Accepts pandas aliases (``"H"``, ``"MS"``, ...)
+        or human-friendly durations like ``"15 minutes"`` or ``"3 days"``.
 
         - S: secondly frequency
         - min: minute frequency
@@ -72,15 +70,9 @@ def pad_by_time(
         - QS: quarter start frequency
         - Y: year end frequency
         - YS: year start frequency
-    start_date : str, optional
-        Specifies the start of the padded series.  If NULL, it will use the
-        lowest value of the input variable. In the case of groups, it will use
-        the lowest value by group.
-
-    end_date  : str, optional;
-        Specifies the end of the padded series.  If NULL, it will use the highest
-        value of the input variable.  In the case of groups, it will use the
-        highest value by group.
+    start_date, end_date : str, optional
+        Optional bounds for padding. Accepts ISO strings or durations relative
+        to the observed min/max (e.g., ``"start: 1 month ago"``).
     engine : {"pandas", "polars", "cudf", "auto"}, optional
         Execution engine. ``"pandas"`` (default) performs the computation using pandas.
         ``"polars"`` converts the result to a polars DataFrame on return. ``"auto"``
@@ -184,15 +176,83 @@ def pad_by_time(
     """
     # Common checks
     check_dataframe_or_groupby(data)
-    check_date_column(data, date_column)
+
+    def _resolve_date_col(obj):
+        if isinstance(date_column, str):
+            return date_column
+        resolved = resolve_column_selection(
+            obj, date_column, allow_none=False, require_match=True
+        )
+        if len(resolved) != 1:
+            raise ValueError(
+                f"`date_column` selector must resolve to exactly one column (resolved={resolved})."
+            )
+        return resolved[0]
+
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        resolved_frame = resolve_pandas_groupby_frame(data)
+        date_column = _resolve_date_col(resolved_frame)
+        check_date_column(resolved_frame, date_column)
+    elif isinstance(data, pd.DataFrame):
+        date_column = _resolve_date_col(data)
+        check_date_column(data, date_column)
+    elif isinstance(data, pl.dataframe.group_by.GroupBy):
+        base = getattr(data, "df", None)
+        if base is None:
+            raise TypeError(
+                "Unable to resolve columns from this polars GroupBy for selector resolution."
+            )
+        date_column = _resolve_date_col(base.to_pandas())
+    elif isinstance(data, pl.DataFrame):
+        date_column = _resolve_date_col(data.to_pandas())
+    else:
+        date_column = _resolve_date_col(
+            resolve_pandas_groupby_frame(data)
+            if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy)
+            else data
+        )
 
     engine_resolved = normalize_engine(engine, data)
 
-    start_ts = pd.Timestamp(start_date) if start_date is not None else None
-    end_ts = pd.Timestamp(end_date) if end_date is not None else None
+    def _parse_date_bound(text: Optional[str]) -> Optional[pd.Timestamp]:
+        if text is None:
+            return None
+        try:
+            return pd.Timestamp(text)
+        except Exception:
+            duration = parse_human_duration(text)
+            reference = None
+            if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+                reference = resolve_pandas_groupby_frame(data)[date_column].min()
+            elif isinstance(data, pd.DataFrame):
+                reference = data[date_column].min()
+            elif isinstance(data, pl.DataFrame):
+                reference = data.to_pandas()[date_column].min()
+            else:
+                reference = resolve_pandas_groupby_frame(data)[date_column].min()
+            if reference is None:
+                raise ValueError(f"Unable to resolve reference date for '{text}'.")
+            if isinstance(duration, pd.DateOffset):
+                return pd.Timestamp(reference) + duration
+            delta = pd.to_timedelta(duration)
+            return pd.Timestamp(reference) + delta
+
+    start_ts = _parse_date_bound(start_date)
+    end_ts = _parse_date_bound(end_date)
 
     if start_ts is not None and end_ts is not None and start_ts > end_ts:
         raise ValueError("Start date cannot be greater than end date.")
+
+    resolved_freq = freq
+    if isinstance(freq, str):
+        try:
+            pd.tseries.frequencies.to_offset(freq)
+        except Exception:
+            duration = parse_human_duration(freq)
+            if isinstance(duration, pd.DateOffset):
+                resolved_freq = duration
+            else:
+                resolved_freq = pd.to_timedelta(duration)
 
     if engine_resolved == "pandas":
         conversion = convert_to_engine(data, "pandas")
@@ -200,7 +260,7 @@ def pad_by_time(
         result = _pad_by_time_pandas(
             prepared,
             date_column=date_column,
-            freq=freq,
+            freq=resolved_freq,
             start_date=start_ts,
             end_date=end_ts,
         )
@@ -212,7 +272,7 @@ def pad_by_time(
         result = _pad_by_time_polars(
             prepared,
             date_column=date_column,
-            freq=freq,
+            freq=resolved_freq,
             start_date=start_ts,
             end_date=end_ts,
             group_columns=conversion.group_columns,
@@ -228,7 +288,7 @@ def pad_by_time(
         result = _pad_by_time_cudf_dataframe(
             prepared,
             date_column=date_column,
-            freq=freq,
+            freq=resolved_freq,
             start_date=start_ts,
             end_date=end_ts,
             group_columns=conversion.group_columns,
