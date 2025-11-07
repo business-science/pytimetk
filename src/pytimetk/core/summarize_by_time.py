@@ -2,7 +2,7 @@ import pandas as pd
 import pandas_flavor as pf
 import polars as pl
 
-from typing import Union, Callable, Tuple, List
+from typing import Union, Callable, Tuple, List, Sequence
 import re
 import warnings
 from itertools import cycle
@@ -22,6 +22,7 @@ from pytimetk.utils.dataframe_ops import (
     restore_output_type,
     resolve_pandas_groupby_frame,
 )
+from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -40,8 +41,8 @@ def summarize_by_time(
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
     ],
-    date_column: str,
-    value_column: Union[str, List[str]],
+    date_column: Union[str, ColumnSelector],
+    value_column: Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]]],
     freq: str = "D",
     agg_func: Union[str, list, Tuple[str, Callable]] = "sum",
     wide_format: bool = False,
@@ -60,10 +61,9 @@ def summarize_by_time(
     data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
         A pandas DataFrame or a pandas GroupBy object. This is the data that you
         want to summarize by time.
-    date_column : str
-        The name of the column in the data frame that contains the dates or
-        timestamps to be aggregated by. This column must be of type datetime64.
-    value_column : str or list
+    date_column : str or ColumnSelector
+        The column containing the timestamps to aggregate by (selector-friendly).
+    value_column : str, ColumnSelector, or list
         The `value_column` parameter is the name of one or more columns in the
         DataFrame that you want to aggregate by. It can be either a string
         representing a single column name, or a list of strings representing
@@ -240,8 +240,61 @@ def summarize_by_time(
     """
     # Run common checks
     check_dataframe_or_groupby(data)
-    check_value_column(data, value_column)
-    check_date_column(data, date_column)
+
+    selector_frame = _resolve_selector_frame(data)
+
+    def _resolve_single(selector, label):
+        if isinstance(selector, str):
+            return selector
+        resolved = resolve_column_selection(
+            selector_frame, selector, allow_none=False, require_match=True
+        )
+        if len(resolved) != 1:
+            raise ValueError(
+                f"`{label}` selector must resolve to exactly one column (resolved={resolved})."
+            )
+        return resolved[0]
+
+    def _resolve_multi(selector, label):
+        if isinstance(selector, str):
+            return selector
+        if isinstance(selector, Sequence) and not isinstance(selector, (str, bytes)):
+            collected: List[str] = []
+            for entry in selector:
+                if isinstance(entry, str):
+                    collected.append(entry)
+                else:
+                    resolved = resolve_column_selection(
+                        selector_frame,
+                        entry,
+                        allow_none=False,
+                        require_match=True,
+                        unique=False,
+                    )
+                    collected.extend(resolved)
+            if not collected:
+                raise ValueError(f"`{label}` selector list did not match any columns.")
+            ordered: List[str] = []
+            seen = set()
+            for name in collected:
+                if name not in seen:
+                    seen.add(name)
+                    ordered.append(name)
+            return ordered
+        resolved = resolve_column_selection(
+            selector_frame, selector, allow_none=False, require_match=True
+        )
+        if len(resolved) != 1:
+            raise ValueError(
+                f"`{label}` selector must resolve to exactly one column (resolved={resolved})."
+            )
+        return resolved[0]
+
+    date_column = _resolve_single(date_column, "date_column")
+    value_column = _resolve_multi(value_column, "value_column")
+
+    check_value_column(selector_frame, value_column)
+    check_date_column(selector_frame, date_column)
 
     agg_has_custom = _agg_contains_custom(agg_func)
     agg_string_funcs: List[str] = []
@@ -534,3 +587,32 @@ def _agg_collect_strings(agg_spec: Union[str, List]) -> List[str]:
                 )
         return collected
     raise TypeError("Only string aggregations are supported for the cudf backend.")
+def _resolve_selector_frame(
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+        "cudf.DataFrame",
+    ],
+) -> pd.DataFrame:
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        return resolve_pandas_groupby_frame(data).copy()
+    if isinstance(data, pd.DataFrame):
+        return data.copy()
+    if pl is not None:
+        if isinstance(data, pl.dataframe.group_by.GroupBy):
+            base = getattr(data, "df", None)
+            if base is None:
+                raise TypeError(
+                    "Unable to resolve columns from the supplied polars GroupBy for selector resolution."
+                )
+            return base.to_pandas()
+        if isinstance(data, pl.DataFrame):
+            return data.to_pandas()
+    if hasattr(data, "to_pandas"):  # cudf or similar
+        return data.to_pandas()
+    raise TypeError(
+        "Column selectors currently require pandas or polars data. Convert to one of these "
+        "before calling summarize_by_time."
+    )

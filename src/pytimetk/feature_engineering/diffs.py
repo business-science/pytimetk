@@ -28,6 +28,7 @@ from pytimetk.utils.dataframe_ops import (
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.feature_engineering._shift_utils import resolve_shift_values
 
 
 @pf.register_groupby_method
@@ -43,7 +44,7 @@ def augment_diffs(
     ],
     date_column: str,
     value_column: Union[str, List[str]],
-    periods: Union[int, Tuple[int, int], List[int]] = 1,
+    periods: Union[int, Tuple[int, int], List[int], Sequence[Union[int, str]], str] = 1,
     normalize: bool = False,
     reduce_memory: bool = False,
     engine: Optional[str] = "auto",
@@ -67,7 +68,7 @@ def augment_diffs(
         The `value_column` parameter is the column(s) in the DataFrame that you
         want to add differences values for. It can be either a single column name
         (string) or a list of column names.
-    periods : int or tuple or list, optional
+    periods : int, tuple, list, or str, optional
         The `periods` parameter is an integer, tuple, or list that specifies the
         periods to shift values when differencing.
 
@@ -78,6 +79,8 @@ def augment_diffs(
           value (inclusive).
 
         - If it is a list, it will generate differences based on the values in the list.
+        - If it is a string (e.g. ``"7 days"``), the duration is converted into
+          the equivalent number of observations derived from ``date_column``.
     normalize : bool, optional
         The `normalize` parameter is used to specify whether to normalize the
         differenced values as a percentage difference. Default is False.
@@ -150,6 +153,13 @@ def augment_diffs(
     check_value_column(data, value_column)
     check_date_column(data, date_column)
 
+    resolved_periods = resolve_shift_values(
+        periods,
+        label="periods",
+        data=data,
+        date_column=date_column,
+    )
+
     engine_resolved = normalize_engine(engine, data)
     conversion: FrameConversion = convert_to_engine(data, engine_resolved)
     prepared_data = conversion.data
@@ -170,7 +180,7 @@ def augment_diffs(
         result = _augment_diffs_pandas(
             data=sorted_data,
             value_column=value_column,
-            periods=periods,
+            periods=resolved_periods,
             normalize=normalize,
         )
         if reduce_memory:
@@ -180,7 +190,7 @@ def augment_diffs(
             data=prepared_data,
             date_column=date_column,
             value_column=value_column,
-            periods=periods,
+            periods=resolved_periods,
             normalize=normalize,
             group_columns=conversion.group_columns,
             row_id_column=conversion.row_id_column,
@@ -190,7 +200,7 @@ def augment_diffs(
             data=prepared_data,
             date_column=date_column,
             value_column=value_column,
-            periods=periods,
+            periods=resolved_periods,
             normalize=normalize,
             group_columns=conversion.group_columns,
             row_id_column=conversion.row_id_column,
@@ -209,13 +219,11 @@ def augment_diffs(
 def _augment_diffs_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     value_column: Union[str, List[str]],
-    periods: Union[int, Tuple[int, int], List[int]],
+    periods: List[int],
     normalize: bool,
 ) -> pd.DataFrame:
     if isinstance(value_column, str):
         value_column = [value_column]
-
-    periods = _normalize_shift_values(periods, label="periods")
 
     if isinstance(data, pd.DataFrame):
         df = data.copy()
@@ -257,7 +265,7 @@ def _augment_diffs_polars(
     data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
-    periods: Union[int, Tuple[int, int], List[int]],
+    periods: List[int],
     normalize: bool,
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
@@ -265,7 +273,6 @@ def _augment_diffs_polars(
     if isinstance(value_column, str):
         value_column = [value_column]
 
-    periods = _normalize_shift_values(periods, label="periods")
     resolved_groups = resolve_polars_group_columns(data, group_columns)
 
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
@@ -302,7 +309,7 @@ def _augment_diffs_cudf(
     data: Union["cudf.DataFrame", "cudf.core.groupby.groupby.DataFrameGroupBy"],
     date_column: str,
     value_column: Union[str, List[str]],
-    periods: Union[int, Tuple[int, int], List[int]],
+    periods: List[int],
     normalize: bool,
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
@@ -315,8 +322,6 @@ def _augment_diffs_cudf(
 
     if isinstance(value_column, str):
         value_column = [value_column]
-
-    periods = _normalize_shift_values(periods, label="periods")
 
     if CudfDataFrameGroupBy is not None and isinstance(data, CudfDataFrameGroupBy):
         frame = resolve_pandas_groupby_frame(data).copy(deep=True)
@@ -364,21 +369,3 @@ def _augment_diffs_cudf(
         frame = frame.drop(columns=[temp_row_col])
 
     return frame
-
-
-def _normalize_shift_values(
-    values: Union[int, Tuple[int, int], List[int]],
-    label: str,
-) -> List[int]:
-    if isinstance(values, int):
-        return [values]
-    if isinstance(values, tuple):
-        if len(values) != 2:
-            raise ValueError(f"Invalid {label} specification: tuple must be length 2.")
-        start, end = values
-        return list(range(start, end + 1))
-    if isinstance(values, list):
-        return [int(v) for v in values]
-    raise TypeError(
-        f"Invalid {label} specification: type: {type(values)}. Please use int, tuple, or list."
-    )

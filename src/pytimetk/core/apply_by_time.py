@@ -17,6 +17,37 @@ from pytimetk.utils.dataframe_ops import (
     resolve_polars_group_columns,
     conversion_to_pandas,
 )
+from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
+
+
+def _resolve_selector_frame(
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+        "cudf.DataFrame",
+    ],
+) -> pd.DataFrame:
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        return resolve_pandas_groupby_frame(data).copy()
+    if isinstance(data, pd.DataFrame):
+        return data.copy()
+    if isinstance(data, pl.dataframe.group_by.GroupBy):
+        base = getattr(data, "df", None)
+        if base is None:
+            raise TypeError(
+                "Unable to resolve columns from the supplied polars GroupBy for selector resolution."
+            )
+        return base.to_pandas()
+    if isinstance(data, pl.DataFrame):
+        return data.to_pandas()
+    if hasattr(data, "to_pandas"):
+        return data.to_pandas()
+    raise TypeError(
+        "Column selectors currently require pandas or polars data. Convert to one of these "
+        "before calling apply_by_time."
+    )
 
 
 @pf.register_groupby_method
@@ -28,7 +59,7 @@ def apply_by_time(
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
     ],
-    date_column: str,
+    date_column: Union[str, ColumnSelector],
     freq: str = "D",
     wide_format: bool = False,
     fillna: int = 0,
@@ -44,8 +75,8 @@ def apply_by_time(
     data : DataFrame or GroupBy (pandas or polars)
         Tabular data on which the operation is performed. Supports both pandas
         and polars DataFrames / GroupBy objects.
-    date_column : str
-        The name of the column in the DataFrame that contains the dates.
+    date_column : str or ColumnSelector
+        The column containing timestamps used for resampling.
     freq : str, optional
         The `freq` parameter specifies the frequency at which the data should be
         resampled. It accepts a string representing a time frequency, such as "D"
@@ -187,7 +218,21 @@ def apply_by_time(
 
     # Run common checks
     check_dataframe_or_groupby(data)
-    check_date_column(data, date_column)
+    selector_frame = _resolve_selector_frame(data)
+    if isinstance(date_column, str):
+        resolved_date_column = date_column
+    else:
+        resolved = resolve_column_selection(
+            selector_frame, date_column, allow_none=False, require_match=True
+        )
+        if len(resolved) != 1:
+            raise ValueError(
+                f"`date_column` selector must resolve to exactly one column (resolved={resolved})."
+            )
+        resolved_date_column = resolved[0]
+
+    date_column = resolved_date_column
+    check_date_column(selector_frame, date_column)
 
     engine_resolved = normalize_engine(engine, data)
 

@@ -28,6 +28,7 @@ from pytimetk.utils.dataframe_ops import (
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.feature_engineering._shift_utils import resolve_shift_values
 
 
 @pf.register_groupby_method
@@ -43,7 +44,7 @@ def augment_leads(
     ],
     date_column: str,
     value_column: Union[str, List[str]],
-    leads: Union[int, Tuple[int, int], List[int]] = 1,
+    leads: Union[int, Tuple[int, int], List[int], Sequence[Union[int, str]], str] = 1,
     reduce_memory: bool = False,
     engine: Optional[str] = "auto",
 ) -> Union[pd.DataFrame, pl.DataFrame, "cudf.DataFrame"]:
@@ -58,12 +59,13 @@ def augment_leads(
         Name of the date column used to determine ordering prior to shifting.
     value_column : str or list
         One or more column names whose lead values will be appended.
-    leads : int or tuple or list, optional
+    leads : int, tuple, list, or str, optional
         Lead specification. Accepts:
 
         - int: single lead value
         - tuple(start, end): inclusive range of leads
-        - list[int]: explicit list of lead values
+        - list[int] or list[str]: explicit values/durations
+        - str: duration (e.g., ``"3 days"``) converted using ``date_column``
     reduce_memory : bool, optional
         If True, attempts to reduce memory usage (pandas only).
     engine : {"auto", "pandas", "polars", "cudf"}, optional
@@ -79,6 +81,13 @@ def augment_leads(
     check_dataframe_or_groupby(data)
     check_value_column(data, value_column, require_numeric_dtype=False)
     check_date_column(data, date_column)
+
+    resolved_leads = resolve_shift_values(
+        leads,
+        label="leads",
+        data=data,
+        date_column=date_column,
+    )
 
     engine_resolved = normalize_engine(engine, data)
     conversion: FrameConversion = convert_to_engine(data, engine_resolved)
@@ -101,7 +110,7 @@ def augment_leads(
             data=sorted_data,
             date_column=date_column,
             value_column=value_column,
-            leads=leads,
+            leads=resolved_leads,
         )
         if reduce_memory:
             result = reduce_memory_usage(result)
@@ -110,7 +119,7 @@ def augment_leads(
             data=prepared_data,
             date_column=date_column,
             value_column=value_column,
-            leads=leads,
+            leads=resolved_leads,
             group_columns=conversion.group_columns,
             row_id_column=conversion.row_id_column,
         )
@@ -119,7 +128,7 @@ def augment_leads(
             data=prepared_data,
             date_column=date_column,
             value_column=value_column,
-            leads=leads,
+            leads=resolved_leads,
             group_columns=conversion.group_columns,
             row_id_column=conversion.row_id_column,
         )
@@ -138,12 +147,10 @@ def _augment_leads_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
-    leads: Union[int, Tuple[int, int], List[int]] = 1,
+    leads: List[int],
 ) -> pd.DataFrame:
     if isinstance(value_column, str):
         value_column = [value_column]
-
-    leads = _normalize_shift_values(leads, label="leads")
 
     if isinstance(data, pd.DataFrame):
         df = data.copy()
@@ -169,14 +176,13 @@ def _augment_leads_polars(
     data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
     value_column: Union[str, List[str]],
-    leads: Union[int, Tuple[int, int], List[int]],
+    leads: List[int],
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
     if isinstance(value_column, str):
         value_column = [value_column]
 
-    leads = _normalize_shift_values(leads, label="leads")
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
     frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
@@ -205,7 +211,7 @@ def _augment_leads_cudf(
     data: Union["cudf.DataFrame", "cudf.core.groupby.groupby.DataFrameGroupBy"],
     date_column: str,
     value_column: Union[str, List[str]],
-    leads: Union[int, Tuple[int, int], List[int]],
+    leads: List[int],
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
 ):
@@ -217,8 +223,6 @@ def _augment_leads_cudf(
 
     if isinstance(value_column, str):
         value_column = [value_column]
-
-    leads = _normalize_shift_values(leads, label="leads")
 
     if CudfDataFrameGroupBy is not None and isinstance(data, CudfDataFrameGroupBy):
         frame = resolve_pandas_groupby_frame(data).copy(deep=True)
@@ -260,21 +264,3 @@ def _augment_leads_cudf(
         frame = frame.drop(columns=[temp_row_col])
 
     return frame
-
-
-def _normalize_shift_values(
-    values: Union[int, Tuple[int, int], List[int]],
-    label: str,
-) -> List[int]:
-    if isinstance(values, int):
-        return [values]
-    if isinstance(values, tuple):
-        if len(values) != 2:
-            raise ValueError(f"Invalid {label} specification: tuple must be length 2.")
-        start, end = values
-        return list(range(start, end + 1))
-    if isinstance(values, list):
-        return [int(v) for v in values]
-    raise TypeError(
-        f"Invalid {label} specification: type: {type(values)}. Please use int, tuple, or list."
-    )
