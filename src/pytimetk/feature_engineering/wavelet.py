@@ -170,11 +170,21 @@ def augment_wavelet(
     Examples
     --------
     ```{python}
+    import numpy as np
     import pandas as pd
     import polars as pl
     import pytimetk as tk
 
-    df = tk.load_dataset("taylor_30_min", parse_dates=["date"])
+    df = (
+        tk.load_dataset("taylor_30_min", parse_dates=["date"])
+        .assign(
+            category_1=lambda d: np.where(
+                d["date"].dt.hour < 12,
+                "Morning",
+                "Evening",
+            )
+        )
+    )
 
     df
     ```

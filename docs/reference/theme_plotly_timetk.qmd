@@ -1,0 +1,71 @@
+# theme_plotly_timetk { #pytimetk.theme_plotly_timetk }
+
+```python
+theme_plotly_timetk(
+    fig,
+    *,
+    colorway=None,
+    font_family="Inter, 'Segoe UI', Arial, sans-serif",
+    font_size=12.0,
+    title_font_size=None,
+    title_x=0.5,
+    background_color='#ffffff',
+    grid_color='#e5ebf2',
+    axis_color='#2c3e50',
+    margin=None,
+    legend_kwargs=None,
+    layout_kwargs=None,
+    xaxis_kwargs=None,
+    yaxis_kwargs=None,
+)
+```
+
+Apply pytimetk styling to any Plotly ``go.Figure``.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+| Name             | Type                        | Description                                                                      | Default                                  |
+|------------------|-----------------------------|----------------------------------------------------------------------------------|------------------------------------------|
+| fig              | plotly.graph_objects.Figure | The Plotly figure to update in-place.                                            | _required_                               |
+| colorway         | Sequence\[str\]             | Custom color sequence. Defaults to :func:`palette_timetk`.                       | `None`                                   |
+| font_family      | str                         | Font family used for titles, axes, and legend text.                              | `"Inter, 'Segoe UI', Arial, sans-serif"` |
+| font_size        | float                       | Base font size used for axes and legend text.                                    | `12.0`                                   |
+| title_font_size  | float                       | Optional override for the plot title font size. Defaults to ``font_size * 1.2``. | `None`                                   |
+| title_x          | float                       | Horizontal anchor for the figure title (0 = left, 0.5 = center).                 | `0.5`                                    |
+| background_color | str                         | Paper/plot background color, defaults to white.                                  | `'#ffffff'`                              |
+| grid_color       | str                         | Color used for horizontal grid lines.                                            | `'#e5ebf2'`                              |
+| axis_color       | str                         | Color applied to ticks, tick labels, and legend text.                            | `'#2c3e50'`                              |
+| margin           | Mapping\[str, float\]       | Custom margin dictionary. Defaults to ``dict(l=60, r=40, t=70, b=60)``.          | `None`                                   |
+| legend_kwargs    | Mapping                     | Dictionaries merged into the default legend/layout/axis styling.                 | `None`                                   |
+| layout_kwargs    | Mapping                     | Dictionaries merged into the default legend/layout/axis styling.                 | `None`                                   |
+| xaxis_kwargs     | Mapping                     | Dictionaries merged into the default legend/layout/axis styling.                 | `None`                                   |
+| yaxis_kwargs     | Mapping                     | Dictionaries merged into the default legend/layout/axis styling.                 | `None`                                   |
+
+## Returns {.doc-section .doc-section-returns}
+
+| Name   | Type                        | Description                                                  |
+|--------|-----------------------------|--------------------------------------------------------------|
+|        | plotly.graph_objects.Figure | The same figure that was passed in (allowing call chaining). |
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import plotly.express as px
+import pytimetk as tk
+
+df = (
+    px.data.stocks()
+    .melt(id_vars="date", var_name="id", value_name="value")
+    .query("date <= '2015-12-31'")
+)
+
+# No styling
+fig = px.line(df, x="date", y="value", color="id", title="Baseline Plotly")
+fig
+```
+
+```{python}
+# Apply timetk styling
+tk.theme_plotly_timetk(fig)
+fig
+```

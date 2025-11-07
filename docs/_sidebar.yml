@@ -118,6 +118,7 @@ website:
     - contents:
       - reference/theme_timetk.qmd
       - reference/palette_timetk.qmd
+      - reference/theme_plotly_timetk.qmd
       section: "\U0001F6E0\uFE0F Visualization Utilities"
     - contents:
       - reference/glimpse.qmd

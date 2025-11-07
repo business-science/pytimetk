@@ -191,6 +191,7 @@ Helper functions to make your life easier.
 | --- | --- |
 | [theme_timetk](theme_timetk.qmd#pytimetk.theme_timetk) | Returns a `plotnine` theme with timetk styles applied, allowing for |
 | [palette_timetk](palette_timetk.qmd#pytimetk.palette_timetk) | The function `palette_timetk` returns a dictionary of color codes for |
+| [theme_plotly_timetk](theme_plotly_timetk.qmd#pytimetk.theme_plotly_timetk) | Apply pytimetk styling to any Plotly ``go.Figure``. |
 
 ## Extra Pandas Helpers (That Help Beyond Just Time Series)
 

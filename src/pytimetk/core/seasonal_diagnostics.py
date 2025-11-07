@@ -215,6 +215,7 @@ def seasonal_diagnostics(
         feature_set=["hour", "wday.lbl"],
     )
     diagnostics.head()
+    ```
 
     ```{python}
     from pytimetk.utils.selection import contains

@@ -92,6 +92,7 @@ Matplotlib, and Plotly.
 ## Examples {.doc-section .doc-section-examples}
 
 ```{python}
+# Imports and Data
 import pytimetk as tk
 
 df = tk.load_dataset('m4_monthly', parse_dates = ['date'])
@@ -219,10 +220,9 @@ fig
 # Polars DataFrame using the tk accessor
 import polars as pl
 
-
 pl_df = pl.from_pandas(df[['id', 'date', 'value']])
 
-pl_df.tk.plot_timeseries(
+pl_df.group_by('id').tk.plot_timeseries(
     date_column='date',
     value_column='value',
     engine='plotly',

@@ -89,7 +89,6 @@ fourier_df
 # Example 4 - Polars DataFrame using the tk accessor
 import polars as pl
 
-
 pl_fourier = (
     pl.from_pandas(df)
       .group_by("id")

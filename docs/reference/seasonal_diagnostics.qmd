@@ -45,3 +45,15 @@ diagnostics = tk.seasonal_diagnostics(
 )
 diagnostics.head()
 ```
+
+```{python}
+from pytimetk.utils.selection import contains
+
+selector_diagnostics = tk.seasonal_diagnostics(
+    data=df,
+    date_column=contains("dat"),
+    value_column=contains("val"),
+    feature_set=["hour"],
+)
+selector_diagnostics.head()
+```
