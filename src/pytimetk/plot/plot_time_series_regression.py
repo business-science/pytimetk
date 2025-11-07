@@ -159,6 +159,23 @@ def plot_time_series_regression(
     )
     fig_grouped
     ```
+
+    ```{python}
+    # Example with additional time-series features (trend + day/hour effects)
+    df_features = df.assign(
+        dow=lambda d: d["date"].dt.dayofweek,
+        hour=lambda d: d["date"].dt.hour,
+    )
+
+    fig_features = tk.plot_time_series_regression(
+        data=df_features,
+        date_column="date",
+        formula="value ~ trend + C(dow) + C(hour)",
+        facet_ncol=1,
+        color_lab="Series",
+    )
+    fig_features
+    ```
     """
 
     if not isinstance(formula, str) or "~" not in formula:
