@@ -103,44 +103,56 @@ def augment_fip_momentum(
     import polars as pl
     import pytimetk as tk
 
-    df = tk.load_dataset('stocks_daily', parse_dates=['date'])
+    df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-    # Single window with original FIP
-    fip_df = (
-        df.query("symbol == 'AAPL'")
-        .augment_fip_momentum(
-            date_column='date',
-            close_column='close',
-            window=252
-        )
-    )
-    fip_df.tail()
+    df
     ```
 
     ```{python}
-    # Multiple windows, polars engine, modified FIP
-    pl_df = pl.from_pandas(df)
+    # FIP Momentum - pandas engine
     fip_df = (
-        pl_df.group_by('symbol')
-        .tk.augment_fip_momentum(
-            date_column='date',
-            close_column='close',
-            window=[63, 252],
-            fip_method='modified',
+        df
+        .query("symbol == 'AAPL'")
+        .augment_fip_momentum(
+            date_column="date",
+            close_column="close",
+            window=252,
         )
     )
-    fip_df.tail()
 
-    # Selector example
+    fip_df.glimpse()
+    ```
+
+    ```{python}
+    # FIP Momentum - polars engine
+    pl_df = pl.from_pandas(df)
+    fip_polars = (
+        pl_df
+        .group_by("symbol")
+        .tk.augment_fip_momentum(
+            date_column="date",
+            close_column="close",
+            window=[63, 252],
+            fip_method="modified",
+        )
+    )
+
+    fip_polars.glimpse()
+    ```
+
+    ```{python}
     from pytimetk.utils.selection import contains
 
     selector_df = (
-        df.augment_fip_momentum(
+        df
+        .augment_fip_momentum(
             date_column=contains("dat"),
             close_column=contains("clos"),
             window=252,
         )
     )
+
+    selector_df.glimpse()
     ```
     """
 

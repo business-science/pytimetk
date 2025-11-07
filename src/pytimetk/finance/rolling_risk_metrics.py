@@ -118,61 +118,74 @@ def augment_rolling_risk_metrics(
     import polars as pl
     import pytimetk as tk
 
-    df = tk.load_dataset('stocks_daily', parse_dates=['date'])
+    df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-    # Single stock risk metrics
-    risk_df = (
-        df.query("symbol == 'AAPL'")
-        .augment_rolling_risk_metrics(
-            date_column='date',
-            close_column='adjusted',
-            window=252
-        )
-    )
-    risk_df.head()
+    df
     ```
 
     ```{python}
-    # Multiple stocks with groupby and benchmark (polars)
+    # Rolling risk metrics - single stock (pandas)
+    risk_single = (
+        df
+        .query("symbol == 'AAPL'")
+        .augment_rolling_risk_metrics(
+            date_column="date",
+            close_column="adjusted",
+            window=252,
+        )
+    )
+
+    risk_single.glimpse()
+    ```
+
+    ```{python}
+    # Rolling risk metrics - polars grouped
     pl_df = pl.from_pandas(df)
-    risk_df = (
-        pl_df.group_by('symbol')
+    risk_polars = (
+        pl_df
+        .group_by("symbol")
         .tk.augment_rolling_risk_metrics(
-            date_column='date',
-            close_column='adjusted',
-            # benchmark_column='market_adjusted_returns',  # Use if a benchmark returns column exists
+            date_column="date",
+            close_column="adjusted",
             window=60,
         )
     )
-    risk_df.head()
+
+    risk_polars.glimpse()
     ```
 
     ```{python}
-    # Selective metrics
-    risk_df = (
-        df.groupby('symbol')
+    # Rolling risk metrics - selective pandas metrics
+    risk_selected = (
+        df
+        .groupby("symbol")
         .augment_rolling_risk_metrics(
-            date_column='date',
-            close_column='adjusted',
+            date_column="date",
+            close_column="adjusted",
             window=252,
-            metrics=['sharpe_ratio', 'sortino_ratio', 'volatility_annualized'],
+            metrics=["sharpe_ratio", "sortino_ratio", "volatility_annualized"],
         )
     )
-    risk_df.tail()
 
-    # Selector example
+    risk_selected.glimpse()
+    ```
+
+    ```{python}
     from pytimetk.utils.selection import contains
 
     selector_df = (
-        df.groupby('symbol')
+        df
+        .groupby("symbol")
         .augment_rolling_risk_metrics(
-            date_column=contains('dat'),
-            close_column=contains('adj'),
-            benchmark_column=contains('clos'),
+            date_column=contains("dat"),
+            close_column=contains("adj"),
+            benchmark_column=contains("clos"),
             window=63,
-            metrics=['sharpe_ratio'],
+            metrics=["sharpe_ratio"],
         )
     )
+
+    selector_df.glimpse()
     ```
     """
 

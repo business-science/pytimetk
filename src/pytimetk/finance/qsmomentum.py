@@ -94,14 +94,20 @@ def augment_qsmomentum(
     Examples
     --------
     ```{python}
-    import pytimetk as tk
+    import pandas as pd
     import polars as pl
+    import pytimetk as tk
 
     df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-    # Calculate QSM for multiple ROCs using pandas backend
+    df
+    ```
+
+    ```{python}
+    # QS Momentum - pandas engine
     qsm_pd = (
-        df.groupby("symbol")
+        df
+        .groupby("symbol")
         .augment_qsmomentum(
             date_column="date",
             close_column="close",
@@ -111,9 +117,14 @@ def augment_qsmomentum(
         )
     )
 
-    # Compute QSM on a polars DataFrame via the tk accessor
+    qsm_pd.glimpse()
+    ```
+
+    ```{python}
+    # QS Momentum - polars engine
+    pl_df = pl.from_pandas(df)
     qsm_pl = (
-        pl.from_pandas(df)
+        pl_df
         .group_by("symbol")
         .tk.augment_qsmomentum(
             date_column="date",
@@ -124,11 +135,15 @@ def augment_qsmomentum(
         )
     )
 
-    # Selector example
+    qsm_pl.glimpse()
+    ```
+
+    ```{python}
     from pytimetk.utils.selection import contains
 
     selector_df = (
-        df.groupby("symbol")
+        df
+        .groupby("symbol")
         .augment_qsmomentum(
             date_column=contains("dat"),
             close_column=contains("clos"),
@@ -137,6 +152,8 @@ def augment_qsmomentum(
             returns_period=126,
         )
     )
+
+    selector_df.glimpse()
     ```
     """
 

@@ -93,22 +93,36 @@ def augment_bbands(
     Examples
     --------
     ```{python}
+    import pandas as pd
     import polars as pl
     import pytimetk as tk
 
     df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-    # Augment a pandas DataFrame (engine inferred)
-    bbands_df = df.groupby("symbol").augment_bbands(
-        date_column="date",
-        close_column="close",
-        periods=[20, 40],
-        std_dev=[1.5, 2.0],
+    df
+    ```
+
+    ```{python}
+    # Bollinger Bands - pandas engine
+    bbands_df = (
+        df
+        .groupby("symbol")
+        .augment_bbands(
+            date_column="date",
+            close_column="close",
+            periods=[20, 40],
+            std_dev=[1.5, 2.0],
+        )
     )
 
-    # Polars DataFrame using the tk accessor
+    bbands_df.glimpse()
+    ```
+
+    ```{python}
+    # Bollinger Bands - polars engine
+    pl_df = pl.from_pandas(df.query("symbol == 'AAPL'"))
     bbands_pl = (
-        pl.from_pandas(df.query("symbol == 'AAPL'"))
+        pl_df
         .tk.augment_bbands(
             date_column="date",
             close_column="close",
@@ -117,17 +131,23 @@ def augment_bbands(
         )
     )
 
-    # Selector example
+    bbands_pl.glimpse()
+    ```
+
+    ```{python}
     from pytimetk.utils.selection import contains
 
     selector_demo = (
-        df.augment_bbands(
+        df
+        .augment_bbands(
             date_column=contains("dat"),
             close_column=contains("clos"),
             periods=20,
             std_dev=2,
         )
     )
+
+    selector_demo.glimpse()
     ```
     """
 

@@ -87,14 +87,20 @@ def augment_cmo(
     Examples
     --------
     ```{python}
-    import pytimetk as tk
+    import pandas as pd
     import polars as pl
+    import pytimetk as tk
 
     df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-    # Pandas example (engine inferred)
+    df
+    ```
+
+    ```{python}
+    # Chande Momentum Oscillator - pandas engine
     cmo_pd = (
-        df.groupby("symbol")
+        df
+        .groupby("symbol")
         .augment_cmo(
             date_column="date",
             close_column="close",
@@ -102,9 +108,14 @@ def augment_cmo(
         )
     )
 
-    # Polars example using the tk accessor
+    cmo_pd.glimpse()
+    ```
+
+    ```{python}
+    # Chande Momentum Oscillator - polars engine
+    pl_df = pl.from_pandas(df.query("symbol == 'AAPL'"))
     cmo_pl = (
-        pl.from_pandas(df.query("symbol == 'AAPL'"))
+        pl_df
         .tk.augment_cmo(
             date_column="date",
             close_column="close",
@@ -112,16 +123,22 @@ def augment_cmo(
         )
     )
 
-    # Selector example
+    cmo_pl.glimpse()
+    ```
+
+    ```{python}
     from pytimetk.utils.selection import contains
 
     selector_df = (
-        df.augment_cmo(
+        df
+        .augment_cmo(
             date_column=contains("dat"),
             close_column=contains("clos"),
             periods=14,
         )
     )
+
+    selector_df.glimpse()
     ```
     """
 

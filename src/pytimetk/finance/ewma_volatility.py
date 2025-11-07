@@ -95,59 +95,89 @@ def augment_ewma_volatility(
     import polars as pl
     import pytimetk as tk
 
-    df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
+    df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-    # Example 1 - Calculate EWMA volatility for a single stock
-
-    df.query("symbol == 'AAPL'").augment_ewma_volatility(
-        date_column='date',
-        close_column='close',
-        decay_factor=0.94,
-        window=[20, 50]
-    ).glimpse()
+    df
     ```
 
     ```{python}
-    # Example 2 - Calculate EWMA volatility for multiple stocks
-    df.groupby('symbol').augment_ewma_volatility(
-        date_column='date',
-        close_column='close',
-        decay_factor=0.94,
-        window=[20, 50]
-    ).glimpse()
+    # EWMA Volatility - single stock (pandas)
+    ewma_single = (
+        df
+        .query("symbol == 'AAPL'")
+        .augment_ewma_volatility(
+            date_column="date",
+            close_column="close",
+            decay_factor=0.94,
+            window=[20, 50],
+        )
+    )
+
+    ewma_single.glimpse()
     ```
 
     ```{python}
-    # Example 3 - Calculate EWMA volatility using Polars engine
-    pl_df = pl.from_pandas(df.query("symbol == 'AAPL'"))
-    pl_df.tk.augment_ewma_volatility(
-        date_column='date',
-        close_column='close',
-        decay_factor=0.94,
-        window=[20, 50]
-    ).glimpse()
+    # EWMA Volatility - grouped pandas engine
+    ewma_grouped = (
+        df
+        .groupby("symbol")
+        .augment_ewma_volatility(
+            date_column="date",
+            close_column="close",
+            decay_factor=0.94,
+            window=[20, 50],
+        )
+    )
+
+    ewma_grouped.glimpse()
     ```
 
     ```{python}
-    # Example 4 - Calculate EWMA volatility for multiple stocks using Polars engine
+    # EWMA Volatility - polars engine
+    pl_single = pl.from_pandas(df.query("symbol == 'AAPL'"))
+    ewma_polars = (
+        pl_single
+        .tk.augment_ewma_volatility(
+            date_column="date",
+            close_column="close",
+            decay_factor=0.94,
+            window=[20, 50],
+        )
+    )
+
+    ewma_polars.glimpse()
+    ```
+
+    ```{python}
+    # EWMA Volatility - polars grouped
     pl_df_full = pl.from_pandas(df)
-    pl_df_full.group_by('symbol').tk.augment_ewma_volatility(
-        date_column='date',
-        close_column='close',
-        decay_factor=0.94,
-        window=[20, 50]
-    ).glimpse()
+    ewma_polars_grouped = (
+        pl_df_full
+        .group_by("symbol")
+        .tk.augment_ewma_volatility(
+            date_column="date",
+            close_column="close",
+            decay_factor=0.94,
+            window=[20, 50],
+        )
+    )
 
-    # Selector example
+    ewma_polars_grouped.glimpse()
+    ```
+
+    ```{python}
     from pytimetk.utils.selection import contains
 
     selector_df = (
-        df.augment_ewma_volatility(
+        df
+        .augment_ewma_volatility(
             date_column=contains("dat"),
             close_column=contains("clos"),
             window=20,
         )
     )
+
+    selector_df.glimpse()
     ```
     """
 

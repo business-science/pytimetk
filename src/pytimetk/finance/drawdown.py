@@ -85,39 +85,56 @@ def augment_drawdown(
     Examples
     --------
     ```{python}
-    import pytimetk as tk
+    import pandas as pd
     import polars as pl
+    import pytimetk as tk
 
     df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-    # Pandas DataFrame (engine inferred)
+    df
+    ```
+
+    ```{python}
+    # Drawdown - pandas engine
     dd_pd = (
-        df.groupby("symbol")
+        df
+        .groupby("symbol")
         .augment_drawdown(
             date_column="date",
             close_column="close",
         )
     )
 
-    # Polars DataFrame using the tk accessor
+    dd_pd.glimpse()
+    ```
+
+    ```{python}
+    # Drawdown - polars engine
+    pl_df = pl.from_pandas(df.query("symbol == 'AAPL'"))
     dd_pl = (
-        pl.from_pandas(df.query("symbol == 'AAPL'"))
+        pl_df
         .tk.augment_drawdown(
             date_column="date",
             close_column="close",
         )
     )
 
-    # Selector example
+    dd_pl.glimpse()
+    ```
+
+    ```{python}
     from pytimetk.utils.selection import contains
 
     selector_df = (
-        df.groupby("symbol")
+        df
+        .groupby("symbol")
         .augment_drawdown(
             date_column=contains("dat"),
             close_column=contains("clos"),
         )
     )
+
+    selector_df.glimpse()
     ```
     """
 
