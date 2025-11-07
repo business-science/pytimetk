@@ -13,8 +13,6 @@ except ImportError:  # pragma: no cover - cudf optional
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
@@ -28,6 +26,8 @@ from pytimetk.utils.dataframe_ops import (
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.utils.selection import ColumnSelector
+from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 
 
 @pf.register_groupby_method
@@ -41,8 +41,8 @@ def augment_macd(
         "cudf.DataFrame",
         "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
-    date_column: str,
-    close_column: str,
+    date_column: Union[str, ColumnSelector],
+    close_column: Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]]],
     fast_period: int = 12,
     slow_period: int = 26,
     signal_period: int = 9,
@@ -56,10 +56,11 @@ def augment_macd(
     ----------
     data : DataFrame or GroupBy (pandas or polars)
         Input financial data.
-    date_column : str
-        Name of the column containing date information.
-    close_column : str
-        Name of the column containing closing price data.
+    date_column : str or ColumnSelector
+        Name of the column containing date information (tidy selectors supported).
+    close_column : str or ColumnSelector
+        Name of the column containing closing price data. Selector inputs must
+        resolve to a single column.
     fast_period : int, optional
         Number of periods for the fast EMA in MACD calculation.
     slow_period : int, optional
@@ -153,11 +154,36 @@ def augment_macd(
     df_macd.glimpse()
     ```
 
+    ```{python}
+    from pytimetk.utils.selection import contains
+
+    (
+        df
+            .groupby('symbol')
+            .augment_macd(
+                date_column = contains('dat'),
+                close_column = contains('clos'),
+                fast_period = 12,
+                slow_period = 26,
+                signal_period = 9,
+            )
+    )
+    ```
+
     """
 
     check_dataframe_or_groupby(data)
-    check_value_column(data, close_column)
-    check_date_column(data, date_column)
+    date_column, close_columns = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=close_column,
+        require_numeric=True,
+    )
+    if len(close_columns) != 1:
+        raise ValueError(
+            "`close_column` selector must resolve to exactly one column for MACD."
+        )
+    close_column = close_columns[0]
 
     engine_resolved = normalize_engine(engine, data)
 

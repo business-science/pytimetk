@@ -5,6 +5,7 @@ import pytimetk as tk
 import os
 import multiprocessing as mp
 from itertools import product
+from pytimetk.utils.selection import contains
 
 # Setup to avoid multiprocessing warnings
 mp.set_start_method("spawn", force=True)
@@ -154,6 +155,15 @@ def test_macd_edge_cases(df):
             signal_period=9,
             engine="pandas",
         )
+    # Selector resolving to multiple columns should error
+    with pytest.raises(ValueError, match="selector must resolve to exactly one column"):
+        df.augment_macd(
+            date_column="date",
+            close_column=["close", "open"],
+            fast_period=12,
+            slow_period=26,
+            signal_period=9,
+        )
 
 
 def test_macd_polars_dataframe_roundtrip(pl_df):
@@ -214,3 +224,15 @@ def test_macd_polars_groupby_roundtrip(pl_df):
         pandas_group.reset_index(drop=True),
         polars_group.to_pandas().reset_index(drop=True),
     )
+
+
+def test_macd_supports_tidy_selectors(df):
+    result = df.groupby("symbol").augment_macd(
+        date_column=contains("dat"),
+        close_column=contains("clos"),
+        fast_period=12,
+        slow_period=26,
+        signal_period=9,
+    )
+    col = "close_macd_line_12_26_9"
+    assert col in result.columns

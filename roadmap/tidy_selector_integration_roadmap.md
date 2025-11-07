@@ -13,11 +13,12 @@
 
 ## Phase 1 — Plotting Enhancements
 1. ✅ `plot_acf_diagnostics` accepts tidy selectors for `value_column` / `ccf_columns` and handles polars inputs.
-2. Extend tidy selectors beyond the visualization layer:
-   - [ ] `plot_timeseries` (date/value/color columns + dropdown facets).
+2. ✅ `plot_timeseries` already supports tidy selectors; add docs/examples to highlight the capability.
+3. In progress: extend tidy selectors beyond the visualization layer:
    - [ ] Core resampling helpers: `summarize_by_time`, `apply_by_time`, `pad_by_time`, `future_frame`.
-   - [ ] Feature engineering ops (`augment_lags/leads/diffs`, rolling/expanding helpers) and finance indicators (`rsi`, `macd`, etc.) so value columns can be resolved via selectors.
-3. Update usage docs with selector-driven examples (pandas + polars) for each upgraded API.
+   - ✅ Feature engineering ops (`augment_lags`, `augment_leads`, `augment_diffs`) now resolve selectors + duration specs.
+   - [ ] Finance indicators (`augment_rsi`, `augment_macd`, indicators in `pytimetk/finance`) should accept selectors for price columns.
+4. Update usage docs with selector-driven examples (pandas + polars) for each upgraded API.
 
 ## Phase 2 — Diagnostic & Feature APIs
 1. `seasonal_diagnostics` / `stl_diagnostics`: allow selectors for value columns and optional facets.

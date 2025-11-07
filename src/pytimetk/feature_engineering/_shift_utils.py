@@ -145,12 +145,22 @@ def resolve_shift_columns(
     data,
     date_column: Union[str, ColumnSelector],
     value_column: Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]]],
+    *,
+    require_numeric: bool = False,
 ) -> Tuple[str, List[str]]:
     frame = _resolve_selector_frame(data)
     date_resolved = _resolve_single_column(frame, date_column, "date_column")
     value_resolved = _resolve_multi_columns(frame, value_column, "value_column")
+    if date_resolved in frame.columns:
+        series = frame[date_resolved]
+        if not pd.api.types.is_datetime64_any_dtype(series):
+            try:
+                frame[date_resolved] = pd.to_datetime(series)
+            except Exception:
+                pass
+
+    check_value_column(frame, value_resolved, require_numeric_dtype=require_numeric)
     check_date_column(frame, date_resolved)
-    check_value_column(frame, value_resolved, require_numeric_dtype=False)
     return date_resolved, value_resolved
 
 

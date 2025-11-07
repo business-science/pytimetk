@@ -5,6 +5,7 @@ import pytimetk as tk
 import os
 import multiprocessing as mp
 from itertools import product
+from pytimetk.utils.selection import contains
 
 # Setup to avoid multiprocessing warnings
 mp.set_start_method("spawn", force=True)
@@ -155,3 +156,15 @@ def test_rsi_polars_groupby_roundtrip(pl_df):
         pandas_group.reset_index(drop=True),
         polars_group.to_pandas().reset_index(drop=True),
     )
+
+
+def test_rsi_supports_tidy_selectors(df):
+    result = (
+        df.groupby("symbol")
+        .augment_rsi(
+            date_column=contains("dat"),
+            close_column=contains("clos"),
+            periods=[14],
+        )
+    )
+    assert "close_rsi_14" in result.columns
