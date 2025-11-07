@@ -236,6 +236,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
  <span class="menu-text">Anomaly Detection</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/07_polars.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Speeding Up Workflows with Polars</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../guides/08_selectors_dates.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tidy Selectors &amp; Human-Friendly Periods</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -432,8 +444,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    freq<span class="op">=</span><span class="st">'D'</span>,</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    start_date<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    end_date<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    fillna<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'pandas'</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Make irregular time series regular by padding with missing dates.</p>
 <p>The <code>pad_by_time</code> function inserts missing dates into a Pandas DataFrame or DataFrameGroupBy object, through the process making an irregularly spaced time series regularly spaced.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
@@ -485,6 +498,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <td><code>None</code></td>
 </tr>
 <tr class="even">
+<td>fillna</td>
+<td>scalar</td>
+<td>When provided, all newly padded rows have their non-date/group columns filled with this value instead of the default forward/backward fill.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
 <td>engine</td>
 <td>(pandas, polars, cudf, auto)</td>
 <td>Execution engine. <code>"pandas"</code> (default) performs the computation using pandas. <code>"polars"</code> converts the result to a polars DataFrame on return. <code>"auto"</code> infers the engine from the input data.</td>
