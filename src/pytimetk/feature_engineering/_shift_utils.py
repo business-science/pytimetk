@@ -6,6 +6,8 @@ import pandas as pd
 
 from pytimetk.utils.datetime_helpers import resolve_lag_sequence
 from pytimetk.utils.dataframe_ops import resolve_pandas_groupby_frame
+from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
+from pytimetk.utils.checks import check_value_column, check_date_column
 
 try:  # Optional dependency
     import polars as pl
@@ -51,6 +53,105 @@ def _extract_date_series(
     raise TypeError(
         "Date-based lag specifications currently require pandas, polars, or cudf inputs."
     )
+
+
+def _resolve_selector_frame(
+    data,
+) -> pd.DataFrame:
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        return resolve_pandas_groupby_frame(data).copy()
+    if isinstance(data, pd.DataFrame):
+        return data.copy()
+    if pl is not None:
+        if isinstance(data, pl.dataframe.group_by.GroupBy):
+            base = getattr(data, "df", None)
+            if base is None:
+                raise TypeError(
+                    "Unable to resolve columns from this polars GroupBy for selector resolution."
+                )
+            return base.to_pandas()
+        if isinstance(data, pl.DataFrame):
+            return data.to_pandas()
+    if cudf is not None:
+        if isinstance(data, CudfGroupBy):
+            return resolve_pandas_groupby_frame(data).copy()
+        if isinstance(data, cudf.DataFrame):
+            return data.to_pandas()
+    if hasattr(data, "to_pandas"):
+        return data.to_pandas()
+    raise TypeError(
+        "Column selectors currently require pandas, polars, or cudf inputs for shift helpers."
+    )
+
+
+def _resolve_single_column(frame: pd.DataFrame, selector, label: str) -> str:
+    if isinstance(selector, str):
+        return selector
+    resolved = resolve_column_selection(
+        frame, selector, allow_none=False, require_match=True
+    )
+    if len(resolved) != 1:
+        raise ValueError(
+            f"`{label}` selector must resolve to exactly one column (resolved={resolved})."
+        )
+    return resolved[0]
+
+
+def _resolve_multi_columns(frame: pd.DataFrame, selector, label: str) -> List[str]:
+    if isinstance(selector, (str, bytes)):
+        return [selector]
+    if isinstance(selector, Sequence) and not isinstance(selector, (str, bytes)):
+        collected: List[str] = []
+        for entry in selector:
+            if isinstance(entry, str):
+                collected.append(entry)
+            else:
+                resolved = resolve_column_selection(
+                    frame,
+                    entry,
+                    allow_none=False,
+                    require_match=True,
+                    unique=False,
+                )
+                collected.extend(resolved)
+        if not collected:
+            raise ValueError(f"`{label}` selector list did not match any columns.")
+        ordered: List[str] = []
+        seen = set()
+        for name in collected:
+            if name not in seen:
+                seen.add(name)
+                ordered.append(name)
+        return ordered
+    resolved = resolve_column_selection(
+        frame,
+        selector,
+        allow_none=False,
+        require_match=True,
+        unique=False,
+    )
+    if not resolved:
+        raise ValueError(f"`{label}` selector did not resolve to any columns.")
+    ordered = []
+    seen = set()
+    for name in resolved:
+        if name not in seen:
+            seen.add(name)
+            ordered.append(name)
+    return ordered
+
+
+def resolve_shift_columns(
+    data,
+    date_column: Union[str, ColumnSelector],
+    value_column: Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]]],
+) -> Tuple[str, List[str]]:
+    frame = _resolve_selector_frame(data)
+    date_resolved = _resolve_single_column(frame, date_column, "date_column")
+    value_resolved = _resolve_multi_columns(frame, value_column, "value_column")
+    check_date_column(frame, date_resolved)
+    check_value_column(frame, value_resolved, require_numeric_dtype=False)
+    return date_resolved, value_resolved
 
 
 def resolve_shift_values(

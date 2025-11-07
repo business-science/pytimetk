@@ -14,8 +14,6 @@ except ImportError:  # pragma: no cover - cudf optional
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
@@ -28,7 +26,8 @@ from pytimetk.utils.dataframe_ops import (
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
-from pytimetk.feature_engineering._shift_utils import resolve_shift_values
+from pytimetk.feature_engineering._shift_utils import resolve_shift_values, resolve_shift_columns
+from pytimetk.utils.selection import ColumnSelector
 
 
 @pf.register_groupby_method
@@ -42,8 +41,8 @@ def augment_lags(
         "cudf.DataFrame",
         "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
-    date_column: str,
-    value_column: Union[str, List[str]],
+    date_column: Union[str, ColumnSelector],
+    value_column: Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]]],
     lags: Union[int, Tuple[int, int], List[int], Sequence[Union[int, str]], str] = 1,
     reduce_memory: bool = False,
     engine: Optional[str] = "auto",
@@ -59,14 +58,13 @@ def augment_lags(
     ----------
     data : DataFrame or GroupBy (pandas or polars)
         The input tabular data or grouped data to augment with lagged columns.
-    date_column : str
-        The `date_column` parameter is a string that specifies the name of the
-        column in the DataFrame that contains the dates. This column will be
-        used to sort the data before adding the lagged values.
-    value_column : str or list
+    date_column : str or ColumnSelector
+        The column containing timestamps used to order the data before shifting.
+        Accepts tidy selectors (e.g., ``contains("date")``) for convenience.
+    value_column : str, ColumnSelector, or list
         The `value_column` parameter is the column(s) in the DataFrame that you
-        want to add lagged values for. It can be either a single column name
-        (string) or a list of column names.
+        want to add lagged values for. It can be either a single column name,
+        a tidy selector, or a list mixing both.
     lags : int, tuple, list, or str, optional
         The `lags` parameter is an integer, tuple, or list that specifies the
         number of lagged values to add to the DataFrame.
@@ -145,8 +143,11 @@ def augment_lags(
     """
     # Run common checks
     check_dataframe_or_groupby(data)
-    check_value_column(data, value_column, require_numeric_dtype=False)
-    check_date_column(data, date_column)
+    date_column, value_column = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=value_column,
+    )
 
     resolved_lags = resolve_shift_values(
         lags,

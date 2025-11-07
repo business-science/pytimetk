@@ -4,6 +4,7 @@ import pytest
 
 # Ensure the function and dependencies are imported
 import pytimetk as tk
+from pytimetk.utils.selection import contains
 
 # Sample data for testing
 @pytest.fixture
@@ -108,6 +109,15 @@ def test_polars_groupby_roundtrip(df_sample, pl_df_sample):
 
     assert isinstance(polars_group, pl.DataFrame)
     pd.testing.assert_frame_equal(pandas_group, polars_group.to_pandas())
+
+
+def test_lags_with_selectors(df_sample):
+    result = df_sample.augment_lags(
+        date_column=contains("da"),
+        value_column=contains("val"),
+        lags="2 days",
+    )
+    assert "value_lag_2" in result.columns
 
 
 if __name__ == "__main__":

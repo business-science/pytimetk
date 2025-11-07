@@ -4,6 +4,7 @@ import polars as pl
 import pytest
 
 import pytimetk as tk
+from pytimetk.utils.selection import contains
 
 
 @pytest.fixture
@@ -104,3 +105,12 @@ def test_augment_pct_change_groupby_parity(df_sample, pl_df_sample):
 
     assert isinstance(polars_group, pl.DataFrame)
     pd.testing.assert_frame_equal(pandas_group, polars_group.to_pandas())
+
+
+def test_augment_diffs_with_selectors(df_sample):
+    result = df_sample.augment_diffs(
+        date_column=contains("dat"),
+        value_column=contains("val"),
+        periods="2 days",
+    )
+    assert "value_diff_2" in result.columns

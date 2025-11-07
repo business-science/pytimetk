@@ -14,8 +14,6 @@ except ImportError:  # pragma: no cover - cudf optional
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
@@ -28,7 +26,8 @@ from pytimetk.utils.dataframe_ops import (
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
-from pytimetk.feature_engineering._shift_utils import resolve_shift_values
+from pytimetk.feature_engineering._shift_utils import resolve_shift_values, resolve_shift_columns
+from pytimetk.utils.selection import ColumnSelector
 
 
 @pf.register_groupby_method
@@ -42,8 +41,8 @@ def augment_leads(
         "cudf.DataFrame",
         "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
-    date_column: str,
-    value_column: Union[str, List[str]],
+    date_column: Union[str, ColumnSelector],
+    value_column: Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]]],
     leads: Union[int, Tuple[int, int], List[int], Sequence[Union[int, str]], str] = 1,
     reduce_memory: bool = False,
     engine: Optional[str] = "auto",
@@ -55,10 +54,11 @@ def augment_leads(
     ----------
     data : DataFrame or GroupBy (pandas or polars)
         Input tabular data to augment.
-    date_column : str
+    date_column : str or ColumnSelector
         Name of the date column used to determine ordering prior to shifting.
-    value_column : str or list
-        One or more column names whose lead values will be appended.
+        Accepts tidy selectors for convenience.
+    value_column : str, ColumnSelector, or list
+        One or more column names/tidy selectors whose lead values will be appended.
     leads : int, tuple, list, or str, optional
         Lead specification. Accepts:
 
@@ -79,8 +79,11 @@ def augment_leads(
     """
 
     check_dataframe_or_groupby(data)
-    check_value_column(data, value_column, require_numeric_dtype=False)
-    check_date_column(data, date_column)
+    date_column, value_column = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=value_column,
+    )
 
     resolved_leads = resolve_shift_values(
         leads,

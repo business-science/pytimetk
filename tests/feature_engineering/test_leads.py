@@ -4,6 +4,7 @@ import pytest
 import numpy as np
 from pytimetk import augment_leads  
 import pytimetk as tk
+from pytimetk.utils.selection import contains
 
 # Sample Data for testing
 @pytest.fixture
@@ -94,6 +95,16 @@ def test_polars_groupby_roundtrip(df_sample, pl_df_sample):
 
     assert isinstance(polars_group, pl.DataFrame)
     pd.testing.assert_frame_equal(pandas_group, polars_group.to_pandas())
+
+
+def test_leads_with_selectors(df_sample):
+    result = augment_leads(
+        df_sample,
+        date_column=contains("dat"),
+        value_column=[contains("val")],
+        leads="2 days",
+    )
+    assert "value_lead_2" in result.columns
 
 if __name__ == "__main__":
     pytest.main()

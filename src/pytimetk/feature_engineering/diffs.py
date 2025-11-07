@@ -14,8 +14,6 @@ except ImportError:  # pragma: no cover - cudf optional
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
@@ -28,7 +26,7 @@ from pytimetk.utils.dataframe_ops import (
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
-from pytimetk.feature_engineering._shift_utils import resolve_shift_values
+from pytimetk.feature_engineering._shift_utils import resolve_shift_values, resolve_shift_columns
 
 
 @pf.register_groupby_method
@@ -150,8 +148,11 @@ def augment_diffs(
     ```
     """
     check_dataframe_or_groupby(data)
-    check_value_column(data, value_column)
-    check_date_column(data, date_column)
+    date_column, value_column = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=value_column,
+    )
 
     resolved_periods = resolve_shift_values(
         periods,
