@@ -29,8 +29,8 @@ to mitigate the effects of mean reversion.
 | Name          | Type                                                            | Description                                                                                                                                                                                        | Default      |
 |---------------|-----------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | data          | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | Input pandas DataFrame or grouped DataFrame containing time series data.                                                                                                                           | _required_   |
-| date_column   | str                                                             | Name of the column with dates or timestamps.                                                                                                                                                       | _required_   |
-| close_column  | str                                                             | Name of the column with closing prices to calculate returns.                                                                                                                                       | _required_   |
+| date_column   | str or ColumnSelector                                           | Name or selector for the column with dates or timestamps.                                                                                                                                          | _required_   |
+| close_column  | str, ColumnSelector, or list                                    | Column(s) with closing prices to calculate returns. Must resolve to a single column.                                                                                                               | _required_   |
 | window        | Union\[int, List\[int\]\]                                       | Size of the rolling window(s) as an integer or list of integers (default is 252).                                                                                                                  | `252`        |
 | reduce_memory | bool                                                            | If True, reduces memory usage of the DataFrame. Default is False.                                                                                                                                  | `False`      |
 | engine        | str                                                             | Computation engine: 'pandas' or 'polars'. Default is 'pandas'.                                                                                                                                     | `'auto'`     |
@@ -56,31 +56,54 @@ import pandas as pd
 import polars as pl
 import pytimetk as tk
 
-df = tk.load_dataset('stocks_daily', parse_dates=['date'])
+df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-# Single window with original FIP
-fip_df = (
-    df.query("symbol == 'AAPL'")
-    .augment_fip_momentum(
-        date_column='date',
-        close_column='close',
-        window=252
-    )
-)
-fip_df.tail()
+df
 ```
 
 ```{python}
-# Multiple windows, polars engine, modified FIP
-pl_df = pl.from_pandas(df)
+# FIP Momentum - pandas engine
 fip_df = (
-    pl_df.group_by('symbol')
-    .tk.augment_fip_momentum(
-        date_column='date',
-        close_column='close',
-        window=[63, 252],
-        fip_method='modified',
+    df
+    .query("symbol == 'AAPL'")
+    .augment_fip_momentum(
+        date_column="date",
+        close_column="close",
+        window=252,
     )
 )
-fip_df.tail()
+
+fip_df.glimpse()
+```
+
+```{python}
+# FIP Momentum - polars engine
+pl_df = pl.from_pandas(df)
+fip_polars = (
+    pl_df
+    .group_by("symbol")
+    .tk.augment_fip_momentum(
+        date_column="date",
+        close_column="close",
+        window=[63, 252],
+        fip_method="modified",
+    )
+)
+
+fip_polars.glimpse()
+```
+
+```{python}
+from pytimetk.utils.selection import contains
+
+selector_df = (
+    df
+    .augment_fip_momentum(
+        date_column=contains("dat"),
+        close_column=contains("clos"),
+        window=252,
+    )
+)
+
+selector_df.glimpse()
 ```

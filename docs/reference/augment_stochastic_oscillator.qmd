@@ -21,10 +21,10 @@ Calculate Stochastic Oscillator (%K and %D) using pandas or polars backends.
 | Name          | Type                                   | Description                                                                                                                                | Default    |
 |---------------|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|------------|
 | data          | DataFrame or GroupBy(pandas or polars) | Input financial data. Grouped inputs are processed per group before the indicators are appended.                                           | _required_ |
-| date_column   | str                                    | Name of the column containing date information.                                                                                            | _required_ |
-| high_column   | str                                    | Column containing high prices.                                                                                                             | _required_ |
-| low_column    | str                                    | Column containing low prices.                                                                                                              | _required_ |
-| close_column  | str                                    | Column containing closing prices. Resulting columns are prefixed with this name.                                                           | _required_ |
+| date_column   | str or ColumnSelector                  | Name of the column containing date information (selectors supported).                                                                      | _required_ |
+| high_column   | str or ColumnSelector                  | Column containing high prices.                                                                                                             | _required_ |
+| low_column    | str or ColumnSelector                  | Column containing low prices.                                                                                                              | _required_ |
+| close_column  | str or ColumnSelector                  | Column containing closing prices. Resulting columns are prefixed with this name.                                                           | _required_ |
 | k_periods     | int, tuple, or list                    | Lookback window(s) for the %K calculation. Accepts a single integer, an inclusive tuple range, or an explicit list. Defaults to ``14``.    | `14`       |
 | d_periods     | int or list                            | Lookback window(s) for the %D smoothing calculation. Defaults to ``3``.                                                                    | `3`        |
 | reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data. If a polars input is supplied a warning is emitted and no conversion occurs. | `False`    |
@@ -72,5 +72,18 @@ stoch_pl = (
         k_periods=14,
         d_periods=[3],
     )
+)
+
+from pytimetk.utils.selection import contains
+selector_demo = (
+    df
+        .augment_stochastic_oscillator(
+            date_column=contains("dat"),
+            high_column=contains("high"),
+            low_column=contains("low"),
+            close_column=contains("clos"),
+            k_periods=14,
+            d_periods=[3],
+        )
 )
 ```

@@ -19,8 +19,8 @@ Calculate Exponentially Weighted Moving Average (EWMA) volatility for a financia
 | Name          | Type                                         | Description                                                                                                                                                                                                                                                       | Default    |
 |---------------|----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
 | data          | DataFrame or GroupBy(pandas or polars)       | Input time-series data. Grouped inputs are processed per group before the indicator is appended.                                                                                                                                                                  | _required_ |
-| date_column   | str                                          | Column name containing dates or timestamps.                                                                                                                                                                                                                       | _required_ |
-| close_column  | str                                          | Column name with closing prices to calculate volatility.                                                                                                                                                                                                          | _required_ |
+| date_column   | str or ColumnSelector                        | Column name or selector containing dates or timestamps.                                                                                                                                                                                                           | _required_ |
+| close_column  | str, ColumnSelector, or list                 | Column(s) with closing prices to calculate volatility. Must resolve to a single column.                                                                                                                                                                           | _required_ |
 | decay_factor  | float                                        | Smoothing factor (lambda) for EWMA, between 0 and 1. Higher values give more weight to past data. Default is 0.94 (RiskMetrics standard).                                                                                                                         | `0.94`     |
 | window        | Union\[int, Tuple\[int, int\], List\[int\]\] | Size of the rolling window to initialize EWMA calculation. For each window value the EWMA volatility is only computed when at least that many observations are available. You may provide a single integer or multiple values (via tuple or list). Default is 20. | `20`       |
 | reduce_memory | bool                                         | If True, reduces memory usage before calculation. Default is False.                                                                                                                                                                                               | `False`    |
@@ -51,46 +51,87 @@ import pandas as pd
 import polars as pl
 import pytimetk as tk
 
-df = tk.load_dataset("stocks_daily", parse_dates = ['date'])
+df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-# Example 1 - Calculate EWMA volatility for a single stock
-
-df.query("symbol == 'AAPL'").augment_ewma_volatility(
-    date_column='date',
-    close_column='close',
-    decay_factor=0.94,
-    window=[20, 50]
-).glimpse()
+df
 ```
 
 ```{python}
-# Example 2 - Calculate EWMA volatility for multiple stocks
-df.groupby('symbol').augment_ewma_volatility(
-    date_column='date',
-    close_column='close',
-    decay_factor=0.94,
-    window=[20, 50]
-).glimpse()
+# EWMA Volatility - single stock (pandas)
+ewma_single = (
+    df
+    .query("symbol == 'AAPL'")
+    .augment_ewma_volatility(
+        date_column="date",
+        close_column="close",
+        decay_factor=0.94,
+        window=[20, 50],
+    )
+)
+
+ewma_single.glimpse()
 ```
 
 ```{python}
-# Example 3 - Calculate EWMA volatility using Polars engine
-pl_df = pl.from_pandas(df.query("symbol == 'AAPL'"))
-pl_df.tk.augment_ewma_volatility(
-    date_column='date',
-    close_column='close',
-    decay_factor=0.94,
-    window=[20, 50]
-).glimpse()
+# EWMA Volatility - grouped pandas engine
+ewma_grouped = (
+    df
+    .groupby("symbol")
+    .augment_ewma_volatility(
+        date_column="date",
+        close_column="close",
+        decay_factor=0.94,
+        window=[20, 50],
+    )
+)
+
+ewma_grouped.glimpse()
 ```
 
 ```{python}
-# Example 4 - Calculate EWMA volatility for multiple stocks using Polars engine
+# EWMA Volatility - polars engine
+pl_single = pl.from_pandas(df.query("symbol == 'AAPL'"))
+ewma_polars = (
+    pl_single
+    .tk.augment_ewma_volatility(
+        date_column="date",
+        close_column="close",
+        decay_factor=0.94,
+        window=[20, 50],
+    )
+)
+
+ewma_polars.glimpse()
+```
+
+```{python}
+# EWMA Volatility - polars grouped
 pl_df_full = pl.from_pandas(df)
-pl_df_full.group_by('symbol').tk.augment_ewma_volatility(
-    date_column='date',
-    close_column='close',
-    decay_factor=0.94,
-    window=[20, 50]
-).glimpse()
+ewma_polars_grouped = (
+    pl_df_full
+    .group_by("symbol")
+    .tk.augment_ewma_volatility(
+        date_column="date",
+        close_column="close",
+        decay_factor=0.94,
+        window=[20, 50],
+    )
+)
+
+ewma_polars_grouped.glimpse()
+```
+
+```{python}
+from pytimetk.utils.selection import contains
+
+selector_df = (
+    df
+    .augment_ewma_volatility(
+        date_column=contains("dat"),
+        close_column=contains("clos"),
+        window=20,
+    )
+)
+
+selector_df.glimpse()
 ```

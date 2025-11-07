@@ -445,14 +445,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="even">
 <td>date_column</td>
-<td>str</td>
-<td>Name of the date column used to determine ordering prior to shifting.</td>
+<td>str or ColumnSelector</td>
+<td>Name of the date column used to determine ordering prior to shifting. Accepts tidy selectors for convenience.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>value_column</td>
-<td>str or list</td>
-<td>One or more column names whose lead values will be appended.</td>
+<td>str, ColumnSelector, or list</td>
+<td>One or more column names/tidy selectors whose lead values will be appended.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">

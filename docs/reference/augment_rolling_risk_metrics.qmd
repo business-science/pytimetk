@@ -24,11 +24,11 @@ the augmented DataFrame with columns for Sharpe Ratio, Sortino Ratio, and other 
 | Name                 | Type                                                            | Description                                                                                                                                                                                                               | Default    |
 |----------------------|-----------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
 | data                 | Union\[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy\] | The input data can be a pandas DataFrame or a pandas DataFrameGroupBy object containing the time series data for risk metric calculations.                                                                                | _required_ |
-| date_column          | str                                                             | The name of the column containing dates or timestamps.                                                                                                                                                                    | _required_ |
-| close_column         | str                                                             | The column containing closing prices to calculate returns and risk metrics from.                                                                                                                                          | _required_ |
+| date_column          | str or ColumnSelector                                           | The name or selector of the column containing dates or timestamps.                                                                                                                                                        | _required_ |
+| close_column         | str, ColumnSelector, or list                                    | The column(s) containing closing prices to calculate returns and risk metrics from. Must resolve to exactly one column.                                                                                                   | _required_ |
 | window               | int                                                             | The rolling window size for calculations (e.g., 252 for annual). Default is 252.                                                                                                                                          | `252`      |
 | risk_free_rate       | float                                                           | The assumed risk-free rate (e.g., 0.0 for 0%). Default is 0.0.                                                                                                                                                            | `0.0`      |
-| benchmark_column     | str or None                                                     | The column containing benchmark returns (e.g., market index) for Treynor and Information Ratios. Default is None.                                                                                                         | `None`     |
+| benchmark_column     | str, ColumnSelector, or None                                    | Column containing benchmark returns (e.g., market index) for Treynor and Information Ratios. If provided it must resolve to one column. Default is None.                                                                  | `None`     |
 | annualization_factor | int                                                             | The factor to annualize returns and volatility (e.g., 252 for daily data). Default is 252.                                                                                                                                | `252`      |
 | metrics              | List\[str\] or None                                             | The list of risk metrics to calculate. Choose from: 'sharpe_ratio', 'sortino_ratio', 'treynor_ratio', 'information_ratio', 'omega_ratio', 'volatility_annualized', 'skewness', 'kurtosis'. Default is None (all metrics). | `None`     |
 | reduce_memory        | bool                                                            | If True, reduces memory usage of the DataFrame before calculation. Default is False.                                                                                                                                      | `False`    |
@@ -60,45 +60,72 @@ import pandas as pd
 import polars as pl
 import pytimetk as tk
 
-df = tk.load_dataset('stocks_daily', parse_dates=['date'])
+df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-# Single stock risk metrics
-risk_df = (
-    df.query("symbol == 'AAPL'")
-    .augment_rolling_risk_metrics(
-        date_column='date',
-        close_column='adjusted',
-        window=252
-    )
-)
-risk_df.head()
+df
 ```
 
 ```{python}
-# Multiple stocks with groupby and benchmark (polars)
+# Rolling risk metrics - single stock (pandas)
+risk_single = (
+    df
+    .query("symbol == 'AAPL'")
+    .augment_rolling_risk_metrics(
+        date_column="date",
+        close_column="adjusted",
+        window=252,
+    )
+)
+
+risk_single.glimpse()
+```
+
+```{python}
+# Rolling risk metrics - polars grouped
 pl_df = pl.from_pandas(df)
-risk_df = (
-    pl_df.group_by('symbol')
+risk_polars = (
+    pl_df
+    .group_by("symbol")
     .tk.augment_rolling_risk_metrics(
-        date_column='date',
-        close_column='adjusted',
-        # benchmark_column='market_adjusted_returns',  # Use if a benchmark returns column exists
+        date_column="date",
+        close_column="adjusted",
         window=60,
     )
 )
-risk_df.head()
+
+risk_polars.glimpse()
 ```
 
 ```{python}
-# Selective metrics
-risk_df = (
-    df.groupby('symbol')
+# Rolling risk metrics - selective pandas metrics
+risk_selected = (
+    df
+    .groupby("symbol")
     .augment_rolling_risk_metrics(
-        date_column='date',
-        close_column='adjusted',
+        date_column="date",
+        close_column="adjusted",
         window=252,
-        metrics=['sharpe_ratio', 'sortino_ratio', 'volatility_annualized'],
+        metrics=["sharpe_ratio", "sortino_ratio", "volatility_annualized"],
     )
 )
-risk_df.tail()
+
+risk_selected.glimpse()
+```
+
+```{python}
+from pytimetk.utils.selection import contains
+
+selector_df = (
+    df
+    .groupby("symbol")
+    .augment_rolling_risk_metrics(
+        date_column=contains("dat"),
+        close_column=contains("adj"),
+        benchmark_column=contains("clos"),
+        window=63,
+        metrics=["sharpe_ratio"],
+    )
+)
+
+selector_df.glimpse()
 ```

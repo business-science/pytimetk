@@ -20,8 +20,8 @@ Calculate Quant Science Momentum (QSM) for pandas or polars inputs.
 | Name            | Type                                   | Description                                                                                                                                | Default    |
 |-----------------|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|------------|
 | data            | DataFrame or GroupBy(pandas or polars) | Input financial data. Grouped inputs are processed per group before the momentum columns are appended.                                     | _required_ |
-| date_column     | str                                    | Name of the column containing date information.                                                                                            | _required_ |
-| close_column    | str                                    | Column containing closing prices used to compute QSM.                                                                                      | _required_ |
+| date_column     | str or ColumnSelector                  | Name or selector for the column containing date information.                                                                               | _required_ |
+| close_column    | str, ColumnSelector, or list           | Column(s) containing closing prices used to compute QSM. Must resolve to exactly one column.                                               | _required_ |
 | roc_fast_period | int, tuple, or list                    | Lookback window(s) for the fast Rate of Change (ROC). Accepts a single integer, an inclusive tuple range, or a list of explicit periods.   | `21`       |
 | roc_slow_period | int, tuple, or list                    | Lookback window(s) for the slow ROC component.                                                                                             | `252`      |
 | returns_period  | int, tuple, or list                    | Lookback window(s) used when calculating the rolling standard deviation of returns.                                                        | `126`      |
@@ -44,14 +44,20 @@ these rules a ``ValueError`` is raised to surface the configuration issue.
 ## Examples {.doc-section .doc-section-examples}
 
 ```{python}
-import pytimetk as tk
+import pandas as pd
 import polars as pl
+import pytimetk as tk
 
 df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-# Calculate QSM for multiple ROCs using pandas backend
+df
+```
+
+```{python}
+# QS Momentum - pandas engine
 qsm_pd = (
-    df.groupby("symbol")
+    df
+    .groupby("symbol")
     .augment_qsmomentum(
         date_column="date",
         close_column="close",
@@ -61,9 +67,14 @@ qsm_pd = (
     )
 )
 
-# Compute QSM on a polars DataFrame via the tk accessor
+qsm_pd.glimpse()
+```
+
+```{python}
+# QS Momentum - polars engine
+pl_df = pl.from_pandas(df)
 qsm_pl = (
-    pl.from_pandas(df)
+    pl_df
     .group_by("symbol")
     .tk.augment_qsmomentum(
         date_column="date",
@@ -73,4 +84,24 @@ qsm_pl = (
         returns_period=126,
     )
 )
+
+qsm_pl.glimpse()
+```
+
+```{python}
+from pytimetk.utils.selection import contains
+
+selector_df = (
+    df
+    .groupby("symbol")
+    .augment_qsmomentum(
+        date_column=contains("dat"),
+        close_column=contains("clos"),
+        roc_fast_period=21,
+        roc_slow_period=252,
+        returns_period=126,
+    )
+)
+
+selector_df.glimpse()
 ```

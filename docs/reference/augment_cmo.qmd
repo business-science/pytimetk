@@ -18,8 +18,8 @@ Calculate the Chande Momentum Oscillator (CMO) using pandas or polars backends.
 | Name          | Type                                   | Description                                                                                                                                     | Default    |
 |---------------|----------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|------------|
 | data          | DataFrame or GroupBy(pandas or polars) | Input financial data. Grouped inputs are processed per group before the indicator columns are appended.                                         | _required_ |
-| date_column   | str                                    | Name of the column containing date information.                                                                                                 | _required_ |
-| close_column  | str                                    | Name of the column containing closing prices.                                                                                                   | _required_ |
+| date_column   | str or ColumnSelector                  | Name or selector for the column containing date information.                                                                                    | _required_ |
+| close_column  | str, ColumnSelector, or list           | Column(s) containing closing prices. Selectors/lists must resolve to a single column.                                                           | _required_ |
 | periods       | int, tuple, or list                    | Lookback window(s) applied to the CMO calculation. Accepts a single integer, an inclusive tuple range, or an explicit list. Defaults to ``14``. | `14`       |
 | reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data. If a polars input is supplied a warning is emitted and no conversion occurs.      | `False`    |
 | engine        | (auto, pandas, polars)                 | Execution engine. ``"auto"`` (default) infers the backend from the input data while allowing explicit overrides.                                | `"auto"`   |
@@ -40,14 +40,20 @@ returning ``NaN`` which matches the pandas behaviour.
 ## Examples {.doc-section .doc-section-examples}
 
 ```{python}
-import pytimetk as tk
+import pandas as pd
 import polars as pl
+import pytimetk as tk
 
 df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-# Pandas example (engine inferred)
+df
+```
+
+```{python}
+# Chande Momentum Oscillator - pandas engine
 cmo_pd = (
-    df.groupby("symbol")
+    df
+    .groupby("symbol")
     .augment_cmo(
         date_column="date",
         close_column="close",
@@ -55,13 +61,35 @@ cmo_pd = (
     )
 )
 
-# Polars example using the tk accessor
+cmo_pd.glimpse()
+```
+
+```{python}
+# Chande Momentum Oscillator - polars engine
+pl_df = pl.from_pandas(df.query("symbol == 'AAPL'"))
 cmo_pl = (
-    pl.from_pandas(df.query("symbol == 'AAPL'"))
+    pl_df
     .tk.augment_cmo(
         date_column="date",
         close_column="close",
         periods=14,
     )
 )
+
+cmo_pl.glimpse()
+```
+
+```{python}
+from pytimetk.utils.selection import contains
+
+selector_df = (
+    df
+    .augment_cmo(
+        date_column=contains("dat"),
+        close_column=contains("clos"),
+        periods=14,
+    )
+)
+
+selector_df.glimpse()
 ```

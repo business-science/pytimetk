@@ -20,10 +20,10 @@ Calculate Average Directional Index (ADX), +DI, and -DI using pandas or polars b
 | Name          | Type                                   | Description                                                                                                                                   | Default    |
 |---------------|----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|------------|
 | data          | DataFrame or GroupBy(pandas or polars) | Input financial data. Grouped inputs are processed per group before the indicators are appended.                                              | _required_ |
-| date_column   | str                                    | Name of the column containing date information.                                                                                               | _required_ |
-| high_column   | str                                    | Name of the column containing high prices.                                                                                                    | _required_ |
-| low_column    | str                                    | Name of the column containing low prices.                                                                                                     | _required_ |
-| close_column  | str                                    | Name of the column containing closing prices. Indicator columns are prefixed with this name.                                                  | _required_ |
+| date_column   | str or ColumnSelector                  | Name of the column containing date information (tidy selectors supported).                                                                    | _required_ |
+| high_column   | str or ColumnSelector                  | Column names used to compute the indicator. Selectors must resolve to a single column each.                                                   | _required_ |
+| low_column    | str or ColumnSelector                  | Column names used to compute the indicator. Selectors must resolve to a single column each.                                                   | _required_ |
+| close_column  | str or ColumnSelector                  | Column names used to compute the indicator. Selectors must resolve to a single column each.                                                   | _required_ |
 | periods       | int, tuple, or list                    | Lookback windows for smoothing. Accepts an integer, a tuple specifying an inclusive range, or a list of explicit periods. Defaults to ``14``. | `14`       |
 | reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data. If a polars input is supplied a warning is emitted and no conversion occurs.    | `False`    |
 | engine        | (auto, pandas, polars)                 | Execution engine. ``"auto"`` (default) infers the backend from the input data while allowing explicit overrides.                              | `"auto"`   |
@@ -78,4 +78,17 @@ adx_pl = pl_df.tk.augment_adx(
 )
 
 adx_pl.glimpse()
+
+# Selector example
+from pytimetk.utils.selection import contains
+demo = (
+    df
+        .augment_adx(
+            date_column=contains("dat"),
+            high_column=contains("high"),
+            low_column=contains("low"),
+            close_column=contains("clos"),
+            periods=14,
+        )
+)
 ```

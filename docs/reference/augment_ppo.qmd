@@ -19,8 +19,8 @@ Calculate the Percentage Price Oscillator (PPO) for pandas or polars data.
 | Name          | Type                                   | Description                                                                                                                  | Default    |
 |---------------|----------------------------------------|------------------------------------------------------------------------------------------------------------------------------|------------|
 | data          | DataFrame or GroupBy(pandas or polars) | Financial data to augment with PPO values. Grouped inputs are processed per group before the indicator columns are appended. | _required_ |
-| date_column   | str                                    | Name of the column containing date information.                                                                              | _required_ |
-| close_column  | str                                    | Name of the closing price column.                                                                                            | _required_ |
+| date_column   | str or ColumnSelector                  | Name of the column containing date information (selectors supported).                                                        | _required_ |
+| close_column  | str, ColumnSelector, or list           | Closing price column(s). Selectors resolving to multiple columns return a PPO per column.                                    | _required_ |
 | fast_period   | int                                    | Lookback window for the fast EMA.                                                                                            | `12`       |
 | slow_period   | int                                    | Lookback window for the slow EMA.                                                                                            | `26`       |
 | reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data.                                                                | `False`    |
@@ -74,5 +74,16 @@ ppo_pl = (
         fast_period=12,
         slow_period=26,
     )
+)
+
+from pytimetk.utils.selection import contains
+selector_demo = (
+    df
+        .augment_ppo(
+            date_column=contains("dat"),
+            close_column=contains("clos"),
+            fast_period=12,
+            slow_period=26,
+        )
 )
 ```

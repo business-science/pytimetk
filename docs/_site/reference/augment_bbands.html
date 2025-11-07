@@ -116,6 +116,9 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 <!-- SUMO -->
 <script src="//load.sumome.com/" data-sumo-site-id="070b24e7e068776f081d1a2a477c11bcfe804d8310bdfd4e44277194b8e41b07" async="async"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -458,14 +461,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="even">
 <td>date_column</td>
-<td>str</td>
-<td>Name of the column containing date information. Used to preserve the original ordering of results.</td>
+<td>str or ColumnSelector</td>
+<td>Name/selector for the column containing date information. Supports tidy selectors such as <code>contains("date")</code>.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>close_column</td>
-<td>str</td>
-<td>Name of the closing price column used to compute the moving average and standard deviation.</td>
+<td>str, ColumnSelector, or list</td>
+<td>Column(s) containing the prices used to compute the moving average and standard deviation. Selectors or lists must resolve to a single column.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
@@ -526,29 +529,272 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"stocks_daily"</span>, parse_dates<span class="op">=</span>[<span class="st">"date"</span>])</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Augment a pandas DataFrame (engine inferred)</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>bbands_df <span class="op">=</span> df.groupby(<span class="st">"symbol"</span>).augment_bbands(</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    date_column<span class="op">=</span><span class="st">"date"</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    close_column<span class="op">=</span><span class="st">"close"</span>,</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    periods<span class="op">=</span>[<span class="dv">20</span>, <span class="dv">40</span>],</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    std_dev<span class="op">=</span>[<span class="fl">1.5</span>, <span class="fl">2.0</span>],</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Polars DataFrame using the tk accessor</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>bbands_pl <span class="op">=</span> (</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    pl.from_pandas(df.query(<span class="st">"symbol == 'AAPL'"</span>))</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    .tk.augment_bbands(</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"date"</span>,</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">"close"</span>,</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        periods<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">15</span>),</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        std_dev<span class="op">=</span><span class="dv">2</span>,</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"stocks_daily"</span>, parse_dates<span class="op">=</span>[<span class="st">"date"</span>])</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">adjusted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>META</td>
+<td>2013-01-02</td>
+<td>27.440001</td>
+<td>28.180000</td>
+<td>27.420000</td>
+<td>28.000000</td>
+<td>69846400</td>
+<td>28.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>META</td>
+<td>2013-01-03</td>
+<td>27.879999</td>
+<td>28.469999</td>
+<td>27.590000</td>
+<td>27.770000</td>
+<td>63140600</td>
+<td>27.770000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>META</td>
+<td>2013-01-04</td>
+<td>28.010000</td>
+<td>28.930000</td>
+<td>27.830000</td>
+<td>28.760000</td>
+<td>72715400</td>
+<td>28.760000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>META</td>
+<td>2013-01-07</td>
+<td>28.690001</td>
+<td>29.790001</td>
+<td>28.650000</td>
+<td>29.420000</td>
+<td>83781800</td>
+<td>29.420000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>META</td>
+<td>2013-01-08</td>
+<td>29.510000</td>
+<td>29.600000</td>
+<td>28.860001</td>
+<td>29.059999</td>
+<td>45871300</td>
+<td>29.059999</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16189</td>
+<td>GOOG</td>
+<td>2023-09-15</td>
+<td>138.800003</td>
+<td>139.360001</td>
+<td>137.179993</td>
+<td>138.300003</td>
+<td>48947600</td>
+<td>138.300003</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">16190</td>
+<td>GOOG</td>
+<td>2023-09-18</td>
+<td>137.630005</td>
+<td>139.929993</td>
+<td>137.630005</td>
+<td>138.960007</td>
+<td>16233600</td>
+<td>138.960007</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16191</td>
+<td>GOOG</td>
+<td>2023-09-19</td>
+<td>138.250000</td>
+<td>139.175003</td>
+<td>137.500000</td>
+<td>138.830002</td>
+<td>15479100</td>
+<td>138.830002</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">16192</td>
+<td>GOOG</td>
+<td>2023-09-20</td>
+<td>138.830002</td>
+<td>138.839996</td>
+<td>134.520004</td>
+<td>134.589996</td>
+<td>21473500</td>
+<td>134.589996</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16193</td>
+<td>GOOG</td>
+<td>2023-09-21</td>
+<td>132.389999</td>
+<td>133.190002</td>
+<td>131.089996</td>
+<td>131.360001</td>
+<td>22042700</td>
+<td>131.360001</td>
+</tr>
+</tbody>
+</table>
+
+<p>16194 rows × 8 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bollinger Bands - pandas engine</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>bbands_df <span class="op">=</span> (</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"symbol"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    .augment_bbands(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"date"</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">"close"</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        periods<span class="op">=</span>[<span class="dv">20</span>, <span class="dv">40</span>],</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        std_dev<span class="op">=</span>[<span class="fl">1.5</span>, <span class="fl">2.0</span>],</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>bbands_df.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 20 columns
+symbol:                     object            ['META', 'META', 'META', ' ...
+date:                       datetime64[ns]    [Timestamp('2013-01-02 00: ...
+open:                       float64           [27.440000534057617, 27.87 ...
+high:                       float64           [28.18000030517578, 28.469 ...
+low:                        float64           [27.420000076293945, 27.59 ...
+close:                      float64           [28.0, 27.770000457763672, ...
+volume:                     int64             [69846400, 63140600, 72715 ...
+adjusted:                   float64           [28.0, 27.770000457763672, ...
+close_bband_middle_20_1.5:  float64           [nan, nan, nan, nan, nan,  ...
+close_bband_upper_20_1.5:   float64           [nan, nan, nan, nan, nan,  ...
+close_bband_lower_20_1.5:   float64           [nan, nan, nan, nan, nan,  ...
+close_bband_middle_20_2.0:  float64           [nan, nan, nan, nan, nan,  ...
+close_bband_upper_20_2.0:   float64           [nan, nan, nan, nan, nan,  ...
+close_bband_lower_20_2.0:   float64           [nan, nan, nan, nan, nan,  ...
+close_bband_middle_40_1.5:  float64           [nan, nan, nan, nan, nan,  ...
+close_bband_upper_40_1.5:   float64           [nan, nan, nan, nan, nan,  ...
+close_bband_lower_40_1.5:   float64           [nan, nan, nan, nan, nan,  ...
+close_bband_middle_40_2.0:  float64           [nan, nan, nan, nan, nan,  ...
+close_bband_upper_40_2.0:   float64           [nan, nan, nan, nan, nan,  ...
+close_bband_lower_40_2.0:   float64           [nan, nan, nan, nan, nan,  ...</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bollinger Bands - polars engine</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pl_df <span class="op">=</span> pl.from_pandas(df.query(<span class="st">"symbol == 'AAPL'"</span>))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>bbands_pl <span class="op">=</span> (</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    pl_df</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    .tk.augment_bbands(</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">"date"</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span><span class="st">"close"</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        periods<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">15</span>),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        std_dev<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>bbands_pl.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 2699
+Columns: 26
+$ symbol                             &lt;str&gt; 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL', 'AAPL'
+$ date                      &lt;datetime[ns]&gt; 2013-01-02 00:00:00, 2013-01-03 00:00:00, 2013-01-04 00:00:00, 2013-01-07 00:00:00, 2013-01-08 00:00:00, 2013-01-09 00:00:00, 2013-01-10 00:00:00, 2013-01-11 00:00:00, 2013-01-14 00:00:00, 2013-01-15 00:00:00
+$ open                               &lt;f64&gt; 19.779285430908203, 19.567142486572266, 19.177499771118164, 18.64285659790039, 18.90035629272461, 18.66071319580078, 18.876785278320312, 18.60714340209961, 17.952856063842773, 17.796428680419922
+$ high                               &lt;f64&gt; 19.821428298950195, 19.63107109069824, 19.236785888671875, 18.9035701751709, 18.996070861816406, 18.750356674194336, 18.882856369018555, 18.761428833007812, 18.125, 17.82107162475586
+$ low                                &lt;f64&gt; 19.343929290771484, 19.321428298950195, 18.77964210510254, 18.399999618530273, 18.616071701049805, 18.428213119506836, 18.41142845153809, 18.53642845153809, 17.80392837524414, 17.26357078552246
+$ close                              &lt;f64&gt; 19.608213424682617, 19.36071395874023, 18.821428298950195, 18.71071434020996, 18.761070251464844, 18.467857360839844, 18.696786880493164, 18.582143783569336, 17.91964340209961, 17.354286193847656
+$ volume                             &lt;i64&gt; 560518000, 352965200, 594333600, 484156400, 458707200, 407604400, 601146000, 350506800, 734207600, 876772400
+$ adjusted                           &lt;f64&gt; 16.791179656982422, 16.579240798950195, 16.1174373626709, 16.02262306213379, 16.065746307373047, 15.814659118652344, 16.010698318481445, 15.912524223327637, 15.345203399658203, 14.86106777191162
+$ close_bband_middle_10_2.0          &lt;f64&gt; None, None, None, None, None, None, None, None, None, 18.628285789489745
+$ close_bband_upper_10_2.0           &lt;f64&gt; None, None, None, None, None, None, None, None, None, 19.913457143287992
+$ close_bband_lower_10_2.0           &lt;f64&gt; None, None, None, None, None, None, None, None, None, 17.343114435691497
+$ close_bband_middle_11_2.0          &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_bband_upper_11_2.0           &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_bband_lower_11_2.0           &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_bband_middle_12_2.0          &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_bband_upper_12_2.0           &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_bband_lower_12_2.0           &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_bband_middle_13_2.0          &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_bband_upper_13_2.0           &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_bband_lower_13_2.0           &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_bband_middle_14_2.0          &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_bband_upper_14_2.0           &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_bband_lower_14_2.0           &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_bband_middle_15_2.0          &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_bband_upper_15_2.0           &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_bband_lower_15_2.0           &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pytimetk.utils.selection <span class="im">import</span> contains</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>selector_demo <span class="op">=</span> (</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    .augment_bbands(</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span>contains(<span class="st">"dat"</span>),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        close_column<span class="op">=</span>contains(<span class="st">"clos"</span>),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        periods<span class="op">=</span><span class="dv">20</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        std_dev<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>selector_demo.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 16194 rows of 11 columns
+symbol:                     object            ['META', 'META', 'META', ' ...
+date:                       datetime64[ns]    [Timestamp('2013-01-02 00: ...
+open:                       float64           [27.440000534057617, 27.87 ...
+high:                       float64           [28.18000030517578, 28.469 ...
+low:                        float64           [27.420000076293945, 27.59 ...
+close:                      float64           [28.0, 27.770000457763672, ...
+volume:                     int64             [69846400, 63140600, 72715 ...
+adjusted:                   float64           [28.0, 27.770000457763672, ...
+close_bband_middle_20_2.0:  float64           [nan, nan, nan, 15.9840752 ...
+close_bband_upper_20_2.0:   float64           [nan, nan, nan, 31.0152697 ...
+close_bband_lower_20_2.0:   float64           [nan, nan, nan, 0.95288072 ...</code></pre>
+</div>
 </div>
 
 

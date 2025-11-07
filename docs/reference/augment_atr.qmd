@@ -21,10 +21,10 @@ Calculate Average True Range (ATR) or Normalised ATR for pandas or polars data.
 | Name          | Type                                   | Description                                                                                                                                | Default    |
 |---------------|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|------------|
 | data          | DataFrame or GroupBy(pandas or polars) | Input financial data. Grouped inputs are processed per group before the indicators are appended.                                           | _required_ |
-| date_column   | str                                    | Name of the column containing date information.                                                                                            | _required_ |
-| high_column   | str                                    | Column names used to compute the true range and ATR.                                                                                       | _required_ |
-| low_column    | str                                    | Column names used to compute the true range and ATR.                                                                                       | _required_ |
-| close_column  | str                                    | Column names used to compute the true range and ATR.                                                                                       | _required_ |
+| date_column   | str or ColumnSelector                  | Name of the column containing date information. Accepts tidy selectors.                                                                    | _required_ |
+| high_column   | str or ColumnSelector                  | Column names/selectors used to compute the true range and ATR.                                                                             | _required_ |
+| low_column    | str or ColumnSelector                  | Column names/selectors used to compute the true range and ATR.                                                                             | _required_ |
+| close_column  | str or ColumnSelector                  | Column names/selectors used to compute the true range and ATR.                                                                             | _required_ |
 | periods       | int, tuple, or list                    | Rolling window lengths. Accepts an integer, an inclusive tuple range, or an explicit list. Defaults to ``20``.                             | `20`       |
 | normalize     | bool                                   | When ``True``, report the normalised ATR (``ATR / close * 100``). Defaults to ``False``.                                                   | `False`    |
 | reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data. If a polars input is supplied a warning is emitted and no conversion occurs. | `False`    |
@@ -79,5 +79,18 @@ atr_pl = (
         periods=14,
         normalize=True,
     )
+)
+
+# Selector example
+from pytimetk.utils.selection import contains
+selector_example = (
+    df
+        .augment_atr(
+            date_column=contains("dat"),
+            high_column=contains("high"),
+            low_column=contains("low"),
+            close_column=contains("clos"),
+            periods=14,
+        )
 )
 ```

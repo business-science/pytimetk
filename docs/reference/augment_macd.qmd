@@ -17,16 +17,16 @@ Calculate MACD for a given financial instrument using either pandas or polars en
 
 ## Parameters {.doc-section .doc-section-parameters}
 
-| Name          | Type                                   | Description                                                                   | Default    |
-|---------------|----------------------------------------|-------------------------------------------------------------------------------|------------|
-| data          | DataFrame or GroupBy(pandas or polars) | Input financial data.                                                         | _required_ |
-| date_column   | str                                    | Name of the column containing date information.                               | _required_ |
-| close_column  | str                                    | Name of the column containing closing price data.                             | _required_ |
-| fast_period   | int                                    | Number of periods for the fast EMA in MACD calculation.                       | `12`       |
-| slow_period   | int                                    | Number of periods for the slow EMA in MACD calculation.                       | `26`       |
-| signal_period | int                                    | Number of periods for the signal line EMA in MACD calculation.                | `9`        |
-| reduce_memory | bool                                   | Whether to reduce memory usage of the data before performing the calculation. | `False`    |
-| engine        | (auto, pandas, polars, cudf)           | Computation engine to use. Defaults to infer from the input data type.        | `"auto"`   |
+| Name          | Type                                   | Description                                                                                        | Default    |
+|---------------|----------------------------------------|----------------------------------------------------------------------------------------------------|------------|
+| data          | DataFrame or GroupBy(pandas or polars) | Input financial data.                                                                              | _required_ |
+| date_column   | str or ColumnSelector                  | Name of the column containing date information (tidy selectors supported).                         | _required_ |
+| close_column  | str or ColumnSelector                  | Name of the column containing closing price data. Selector inputs must resolve to a single column. | _required_ |
+| fast_period   | int                                    | Number of periods for the fast EMA in MACD calculation.                                            | `12`       |
+| slow_period   | int                                    | Number of periods for the slow EMA in MACD calculation.                                            | `26`       |
+| signal_period | int                                    | Number of periods for the signal line EMA in MACD calculation.                                     | `9`        |
+| reduce_memory | bool                                   | Whether to reduce memory usage of the data before performing the calculation.                      | `False`    |
+| engine        | (auto, pandas, polars, cudf)           | Computation engine to use. Defaults to infer from the input data type.                             | `"auto"`   |
 
 ## Returns {.doc-section .doc-section-returns}
 
@@ -106,4 +106,20 @@ df_macd = (
 )
 
 df_macd.glimpse()
+```
+
+```{python}
+from pytimetk.utils.selection import contains
+
+(
+    df
+        .groupby('symbol')
+        .augment_macd(
+            date_column = contains('dat'),
+            close_column = contains('clos'),
+            fast_period = 12,
+            slow_period = 26,
+            signal_period = 9,
+        )
+)
 ```

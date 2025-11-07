@@ -19,8 +19,8 @@ Calculate Bollinger Bands for pandas or polars data.
 | Name          | Type                                   | Description                                                                                                                                                                                  | Default    |
 |---------------|----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
 | data          | DataFrame or GroupBy(pandas or polars) | Input financial data. Grouped inputs are processed per group before the bands are appended.                                                                                                  | _required_ |
-| date_column   | str                                    | Name of the column containing date information. Used to preserve the original ordering of results.                                                                                           | _required_ |
-| close_column  | str                                    | Name of the closing price column used to compute the moving average and standard deviation.                                                                                                  | _required_ |
+| date_column   | str or ColumnSelector                  | Name/selector for the column containing date information. Supports tidy selectors such as ``contains("date")``.                                                                              | _required_ |
+| close_column  | str, ColumnSelector, or list           | Column(s) containing the prices used to compute the moving average and standard deviation. Selectors or lists must resolve to a single column.                                               | _required_ |
 | periods       | int, tuple, or list                    | Rolling window lengths. An integer adds a single window, a tuple ``(start, end)`` expands to every integer in the inclusive range, and a list provides explicit windows. Defaults to ``20``. | `20`       |
 | std_dev       | float, int, or list                    | Number(s) of standard deviations used when constructing the upper and lower bands. Integers are converted to floats. Defaults to ``2``.                                                      | `2`        |
 | reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data. If a polars input is supplied a warning is emitted and no conversion occurs.                                                   | `False`    |
@@ -43,22 +43,36 @@ behaviour of the pandas implementation.
 ## Examples {.doc-section .doc-section-examples}
 
 ```{python}
+import pandas as pd
 import polars as pl
 import pytimetk as tk
 
 df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-# Augment a pandas DataFrame (engine inferred)
-bbands_df = df.groupby("symbol").augment_bbands(
-    date_column="date",
-    close_column="close",
-    periods=[20, 40],
-    std_dev=[1.5, 2.0],
+df
+```
+
+```{python}
+# Bollinger Bands - pandas engine
+bbands_df = (
+    df
+    .groupby("symbol")
+    .augment_bbands(
+        date_column="date",
+        close_column="close",
+        periods=[20, 40],
+        std_dev=[1.5, 2.0],
+    )
 )
 
-# Polars DataFrame using the tk accessor
+bbands_df.glimpse()
+```
+
+```{python}
+# Bollinger Bands - polars engine
+pl_df = pl.from_pandas(df.query("symbol == 'AAPL'"))
 bbands_pl = (
-    pl.from_pandas(df.query("symbol == 'AAPL'"))
+    pl_df
     .tk.augment_bbands(
         date_column="date",
         close_column="close",
@@ -66,4 +80,22 @@ bbands_pl = (
         std_dev=2,
     )
 )
+
+bbands_pl.glimpse()
+```
+
+```{python}
+from pytimetk.utils.selection import contains
+
+selector_demo = (
+    df
+    .augment_bbands(
+        date_column=contains("dat"),
+        close_column=contains("clos"),
+        periods=20,
+        std_dev=2,
+    )
+)
+
+selector_demo.glimpse()
 ```

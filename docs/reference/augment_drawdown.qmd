@@ -17,8 +17,8 @@ Calculate running drawdown statistics for pandas or polars data.
 | Name          | Type                                   | Description                                                                                                                                | Default    |
 |---------------|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|------------|
 | data          | DataFrame or GroupBy(pandas or polars) | Input time-series data. Grouped inputs are processed per group before the drawdown metrics are appended.                                   | _required_ |
-| date_column   | str                                    | Name of the column containing date information.                                                                                            | _required_ |
-| close_column  | str                                    | Name of the column containing the values used to compute drawdowns.                                                                        | _required_ |
+| date_column   | str or ColumnSelector                  | Name or selector for the column containing date information.                                                                               | _required_ |
+| close_column  | str, ColumnSelector, or list           | Column(s) containing the values used to compute drawdowns. Must resolve to a single column.                                                | _required_ |
 | reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data. If a polars input is supplied a warning is emitted and no conversion occurs. | `False`    |
 | engine        | (auto, pandas, polars)                 | Execution engine. ``"auto"`` (default) infers the backend from the input data while allowing explicit overrides.                           | `"auto"`   |
 
@@ -38,26 +38,54 @@ zero the percentage drawdown is left as ``NaN`` to avoid division by zero.
 ## Examples {.doc-section .doc-section-examples}
 
 ```{python}
-import pytimetk as tk
+import pandas as pd
 import polars as pl
+import pytimetk as tk
 
 df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-# Pandas DataFrame (engine inferred)
+df
+```
+
+```{python}
+# Drawdown - pandas engine
 dd_pd = (
-    df.groupby("symbol")
+    df
+    .groupby("symbol")
     .augment_drawdown(
         date_column="date",
         close_column="close",
     )
 )
 
-# Polars DataFrame using the tk accessor
+dd_pd.glimpse()
+```
+
+```{python}
+# Drawdown - polars engine
+pl_df = pl.from_pandas(df.query("symbol == 'AAPL'"))
 dd_pl = (
-    pl.from_pandas(df.query("symbol == 'AAPL'"))
+    pl_df
     .tk.augment_drawdown(
         date_column="date",
         close_column="close",
     )
 )
+
+dd_pl.glimpse()
+```
+
+```{python}
+from pytimetk.utils.selection import contains
+
+selector_df = (
+    df
+    .groupby("symbol")
+    .augment_drawdown(
+        date_column=contains("dat"),
+        close_column=contains("clos"),
+    )
+)
+
+selector_df.glimpse()
 ```

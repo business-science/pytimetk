@@ -19,8 +19,8 @@ Add rate-of-change (ROC) columns to a pandas or polars DataFrame.
 | Name          | Type                                   | Description                                                                                                                                                                                                           | Default    |
 |---------------|----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
 | data          | DataFrame or GroupBy(pandas or polars) | Input financial data. Grouped inputs are expanded per group before computing ROC features.                                                                                                                            | _required_ |
-| date_column   | str                                    | Name of the column containing date information. Used to preserve the original ordering.                                                                                                                               | _required_ |
-| close_column  | str                                    | Name of the column containing closing prices on which the ROC is computed.                                                                                                                                            | _required_ |
+| date_column   | str or ColumnSelector                  | Name of the column containing date information (tidy selectors supported) used to preserve the original ordering.                                                                                                     | _required_ |
+| close_column  | str, ColumnSelector, or list           | Column(s) containing closing prices on which the ROC is computed. Lists or multiple selectors compute an ROC per column.                                                                                              | _required_ |
 | periods       | int, tuple, or list                    | Lookback windows used for the denominator term. An integer adds a single ROC column, a tuple ``(start, end)`` expands to the inclusive range ``start..end``, and a list provides explicit periods. Defaults to ``1``. | `1`        |
 | start_index   | int                                    | Offset applied to the numerator. When ``0`` (default) the current value is used; otherwise the numerator uses ``close.shift(start_index)``.                                                                           | `0`        |
 | reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data. If used with polars inputs a warning is emitted and no conversion is performed.                                                                         | `False`    |
@@ -68,5 +68,17 @@ roc_pl = (
         close_column="close",
         periods=(5, 10),
     )
+)
+
+# Selector example
+from pytimetk.utils.selection import contains
+
+selector_demo = (
+    df
+        .augment_roc(
+            date_column=contains("dat"),
+            close_column=contains("clos"),
+            periods=[5, 10],
+        )
 )
 ```

@@ -18,8 +18,8 @@ Calculate the Relative Strength Index (RSI) for pandas or polars data.
 | Name          | Type                                   | Description                                                                                                                                  | Default    |
 |---------------|----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|------------|
 | data          | DataFrame or GroupBy(pandas or polars) | Financial data to augment. Grouped inputs are processed per group before RSI columns are appended.                                           | _required_ |
-| date_column   | str                                    | Name of the column containing date information.                                                                                              | _required_ |
-| close_column  | str or list\[str\]                     | Column name(s) containing the closing prices used to compute RSI. When a list is supplied an RSI is generated for each column.               | _required_ |
+| date_column   | str or ColumnSelector                  | Name of the column containing date information. Accepts tidy selectors such as ``contains("date")``.                                         | _required_ |
+| close_column  | str, ColumnSelector, or list           | Column name(s) containing the closing prices used to compute RSI. Lists (or multiple selectors) generate an RSI for each column.             | _required_ |
 | periods       | int, tuple, or list                    | Lookback window(s) used when computing RSI. Accepts an integer, an inclusive tuple range, or a list of explicit periods. Defaults to ``14``. | `14`       |
 | reduce_memory | bool                                   | Attempt to reduce memory usage when operating on pandas data. If a polars input is supplied a warning is emitted and no conversion occurs.   | `False`    |
 | engine        | (auto, pandas, polars, cudf)           | Execution engine. ``"auto"`` (default) infers the backend from the input data while allowing explicit overrides.                             | `"auto"`   |
@@ -66,5 +66,16 @@ rsi_pl = (
         close_column=["close"],
         periods=14,
     )
+)
+
+# Selector example
+from pytimetk.utils.selection import contains
+selector_demo = (
+    df
+        .augment_rsi(
+            date_column=contains("dat"),
+            close_column=contains("clos"),
+            periods=[14],
+        )
 )
 ```

@@ -460,14 +460,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="even">
 <td>date_column</td>
-<td>str</td>
-<td>The <code>date_column</code> parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the lagged values.</td>
+<td>str or ColumnSelector</td>
+<td>The column containing timestamps used to order the data before shifting. Accepts tidy selectors (e.g., <code>contains("date")</code>) for convenience.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>value_column</td>
-<td>str or list</td>
-<td>The <code>value_column</code> parameter is the column(s) in the DataFrame that you want to add lagged values for. It can be either a single column name (string) or a list of column names.</td>
+<td>str, ColumnSelector, or list</td>
+<td>The <code>value_column</code> parameter is the column(s) in the DataFrame that you want to add lagged values for. It can be either a single column name, a tidy selector, or a list mixing both.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
