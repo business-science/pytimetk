@@ -5,5 +5,6 @@ from .plot_anomalies_cleaned import *
 from .plot_correlation_funnel import *
 from .theme import *
 from .plot_time_series_boxplot import *
+from .plot_time_series_regression import *
 from .plot_acf_diagnostics import *
 from .plot_seasonal_diagnostics import *

@@ -117,13 +117,13 @@ quartodoc:
       contents:
       - plot_timeseries
       - plot_time_series_boxplot
+      - plot_time_series_regression
     - title: 🚀 Plotting Correlation, Seasonality, and Trends
       desc: Visualize correlation, seasonality, and trends with one line of code.
       package: pytimetk
       contents:
       - plot_acf_diagnostics
       - plot_seasonal_diagnostics
-      - plot_time_series_boxplot
       - acf_diagnostics
       - seasonal_diagnostics
       - stl_diagnostics

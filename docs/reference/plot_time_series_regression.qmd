@@ -1,0 +1,63 @@
+# plot_time_series_regression { #pytimetk.plot_time_series_regression }
+
+```python
+plot_time_series_regression(
+    data,
+    date_column,
+    formula,
+    show_summary=False,
+    model_kwargs=None,
+    **plot_kwargs,
+)
+```
+
+Fit a linear regression using a formula and visualise observed vs fitted
+values over time using :func:`pytimetk.plot_timeseries`.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+| Name          | Type                  | Description                                                                                                                                        | Default    |
+|---------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|------------|
+| data          | DataFrame or GroupBy  | Long-format time series data or grouped data via ``DataFrame.groupby``. Polars inputs are automatically converted to pandas.                       | _required_ |
+| date_column   | str or ColumnSelector | Datetime column used on the x-axis.                                                                                                                | _required_ |
+| formula       | str                   | Patsy/Statsmodels formula passed to :func:`statsmodels.formula.api.ols`.                                                                           | _required_ |
+| show_summary  | bool                  | Print statsmodels regression summaries (per group when grouped).                                                                                   | `False`    |
+| model_kwargs  | dict                  | Extra keyword arguments forwarded to :func:`statsmodels.formula.api.ols`. Use this to pass ``eval_env`` when formulas depend on outer scope names. | `None`     |
+| **plot_kwargs | dict                  | Additional keyword arguments forwarded to :func:`pytimetk.plot_timeseries` (faceting, dropdowns, theme overrides, etc.).                           | `{}`       |
+
+## Returns {.doc-section .doc-section-returns}
+
+| Name   | Type                        | Description                                                |
+|--------|-----------------------------|------------------------------------------------------------|
+|        | plotly.graph_objects.Figure | Plotly figure showing observed vs fitted values over time. |
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import numpy as np
+import pytimetk as tk
+
+df = tk.load_dataset("taylor_30_min", parse_dates=["date"]).assign(
+    trend=lambda d: np.arange(len(d))
+)
+
+fig = tk.plot_time_series_regression(
+    data=df,
+    date_column="date",
+    formula="value ~ trend",
+    title="Observed vs Fitted",
+)
+fig
+```
+
+```{python}
+# Grouped example
+df["half"] = np.where(df["trend"] < df["trend"].median(), "H1", "H2")
+fig_grouped = tk.plot_time_series_regression(
+    data=df.groupby("half"),
+    date_column="date",
+    formula="value ~ trend",
+    facet_ncol=1,
+)
+fig_grouped
+```

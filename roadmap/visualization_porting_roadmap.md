@@ -40,7 +40,7 @@
    - [ ] `plot_stl_diagnostics()`
    - [x] `plot_seasonal_diagnostics()`
    - [x] `plot_time_series_boxplot()`
-   - [ ] `plot_time_series_regression()`
+   - [x] `plot_time_series_regression()`
    - [ ] `plot_time_series_cv_plan()`
 2. Provide sensible defaults (palette, titles, hover labels) and expose optional kwargs for advanced styling.
 3. Ensure each function returns a plotly `Figure` and optionally accepts `show=False` to defer rendering.

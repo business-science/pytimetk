@@ -5,11 +5,11 @@ website:
     - contents:
       - reference/plot_timeseries.qmd
       - reference/plot_time_series_boxplot.qmd
+      - reference/plot_time_series_regression.qmd
       section: "\U0001F680 Data Visualization"
     - contents:
       - reference/plot_acf_diagnostics.qmd
       - reference/plot_seasonal_diagnostics.qmd
-      - reference/plot_time_series_boxplot.qmd
       - reference/acf_diagnostics.qmd
       - reference/seasonal_diagnostics.qmd
       - reference/stl_diagnostics.qmd
