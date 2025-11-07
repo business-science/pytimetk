@@ -126,7 +126,6 @@ def augment_fourier(
     # Example 4 - Polars DataFrame using the tk accessor
     import polars as pl
 
-
     pl_fourier = (
         pl.from_pandas(df)
           .group_by("id")
@@ -166,15 +165,10 @@ def augment_fourier(
 
     periods = [int(p) for p in periods]
 
-    sorted_data, _ = sort_dataframe(prepared_data, date_column, keep_grouped_df=True)
-
-    if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
-        base_df = resolve_pandas_groupby_frame(prepared_data)
-    else:
-        base_df = prepared_data
+    prepared_data, _ = sort_dataframe(prepared_data, date_column, keep_grouped_df=True)
 
     result = _augment_fourier_pandas(
-        base_df,
+        prepared_data,
         date_column,
         periods,
         max_order,
@@ -192,10 +186,8 @@ def augment_fourier(
 
 
 def calc_fourier(x, period, type: str, K=1):
-    term = K / period
-    return (
-        np.sin(2 * np.pi * term * x) if type == "sin" else np.cos(2 * np.pi * term * x)
-    )
+    angle = 2 * np.pi * (K * x / period)
+    return np.sin(angle) if type == "sin" else np.cos(angle)
 
 
 def date_to_seq_scale_factor(
@@ -205,22 +197,48 @@ def date_to_seq_scale_factor(
 
 
 def _augment_fourier_pandas(
-    base_df: pd.DataFrame,
+    prepared_data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
     periods: List[int],
     max_order: int,
 ) -> pd.DataFrame:
-    sorted_df = base_df.sort_values(date_column)
-    new_cols_sorted = _compute_fourier_columns(
-        sorted_df, date_column, periods, max_order
-    )
-    if new_cols_sorted.empty:
+    if isinstance(prepared_data, pd.core.groupby.generic.DataFrameGroupBy):
+        base_df = resolve_pandas_groupby_frame(prepared_data)
+        pieces = []
+        for _, group in prepared_data:
+            pieces.append(
+                _compute_fourier_columns_for_group(
+                    group, date_column, periods, max_order
+                )
+            )
+        new_cols = pd.concat(pieces) if pieces else pd.DataFrame(index=base_df.index)
+    else:
+        base_df = prepared_data
+        new_cols = _compute_fourier_columns_for_group(
+            base_df, date_column, periods, max_order
+        )
+
+    if new_cols.empty:
         return base_df.copy()
 
-    new_cols = new_cols_sorted.reindex(base_df.index)
     result_df = base_df.copy()
-    result_df[new_cols.columns] = new_cols
+    result_df[new_cols.columns] = new_cols.reindex(base_df.index)
     return result_df
+
+
+def _compute_fourier_columns_for_group(
+    frame: pd.DataFrame,
+    date_column: str,
+    periods: List[int],
+    max_order: int,
+) -> pd.DataFrame:
+    if frame.empty:
+        return pd.DataFrame(index=frame.index)
+    frame_sorted = frame.sort_values(date_column)
+    new_cols_sorted = _compute_fourier_columns(
+        frame_sorted, date_column, periods, max_order
+    )
+    return new_cols_sorted.reindex(frame.index)
 
 
 def _compute_fourier_columns(
@@ -245,17 +263,17 @@ def _compute_fourier_columns(
         )
 
     min_date = frame[date_column].min()
-    radians = (
-        2 * np.pi * (frame[date_column] - min_date).dt.total_seconds() / scale_factor
-    )
+    time_steps = (frame[date_column] - min_date).dt.total_seconds() / scale_factor
 
     data = {}
     for type_val in ("sin", "cos"):
         for K_val in range(1, max_order + 1):
             for period_val in periods:
+                if period_val == 0:
+                    raise ValueError("`periods` entries must be non-zero integers.")
                 col_name = f"{date_column}_{type_val}_{K_val}_{period_val}"
                 data[col_name] = calc_fourier(
-                    x=radians,
+                    x=time_steps,
                     period=period_val,
                     type=type_val,
                     K=K_val,

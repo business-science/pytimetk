@@ -7,8 +7,6 @@ import warnings
 from typing import List, Optional, Sequence, Union
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -20,6 +18,8 @@ from pytimetk.utils.dataframe_ops import (
     resolve_polars_group_columns,
     restore_output_type,
 )
+from pytimetk.utils.selection import ColumnSelector
+from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 
 
 @pf.register_groupby_method
@@ -31,8 +31,8 @@ def augment_wavelet(
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
     ],
-    date_column: str,
-    value_column: str,
+    date_column: Union[str, ColumnSelector],
+    value_column: Union[str, ColumnSelector],
     method: str,
     sample_rate: str,
     scales: Union[str, List[str]],
@@ -56,10 +56,10 @@ def augment_wavelet(
     data : DataFrame or GroupBy (pandas or polars)
         Input DataFrame or grouped object with one or more columns of
         real-valued signals.
-    value_column : str or list
-        List of column names in 'data' to which the Hilbert transform will be
-        applied.
-    sample_rate :
+    value_column : str or ColumnSelector
+        Column containing the signal to transform. Supports tidy selectors such
+        as ``contains("Sales")`` and must resolve to a single numeric column.
+    sample_rate : float or int
         Sampling rate of the input data.
         For time-series data, the sample rate (sample_rate) typically refers
         to the frequency at which data points are collected.
@@ -170,53 +170,79 @@ def augment_wavelet(
     Examples
     --------
     ```{python}
-    # Example 1: Using Pandas Engine on a pandas groupby object
-    import pytimetk as tk
     import pandas as pd
+    import polars as pl
+    import pytimetk as tk
 
-    df = tk.datasets.load_dataset('walmart_sales_weekly', parse_dates = ['Date'])
+    df = tk.load_dataset("taylor_30_min", parse_dates=["date"])
 
-    wavelet_df = (
-        df
-            .groupby('id')
-            .augment_wavelet(
-                date_column = 'Date',
-                value_column ='Weekly_Sales',
-                scales = [15],
-                sample_rate =1,
-                method = 'bump'
-            )
-        )
-    wavelet_df.head()
-
+    df
     ```
 
     ```{python}
-    # Example 2: Using the polars accessor on a DataFrame
-    import pytimetk as tk
-    import polars as pl
-
-
-    df = tk.load_dataset('taylor_30_min', parse_dates = ['date'])
-
-    result_df = (
-        pl.from_pandas(df)
-            .tk.augment_wavelet(
-                date_column = 'date',
-                value_column ='value',
-                scales = [15],
-                sample_rate =1000,
-                method = 'morlet'
-            )
+    # Wavelet transform - pandas groupby
+    wavelet_df = (
+        df
+        .groupby("category_1")
+        .augment_wavelet(
+            date_column="date",
+            value_column="value",
+            scales=[15],
+            sample_rate=1000,
+            method="morlet",
+        )
     )
 
-    result_df.head()
+    wavelet_df.glimpse()
+    ```
+
+    ```{python}
+    # Wavelet transform - polars accessor
+    wavelet_polars = (
+        pl.from_pandas(df)
+        .tk.augment_wavelet(
+            date_column="date",
+            value_column="value",
+            scales=[15],
+            sample_rate=1000,
+            method="morlet",
+        )
+    )
+
+    wavelet_polars.glimpse()
+    ```
+
+    ```{python}
+    from pytimetk.utils.selection import contains
+
+    selector_example = (
+        df
+        .groupby("category_1")
+        .augment_wavelet(
+            date_column=contains("dat"),
+            value_column=contains("val"),
+            scales=[30],
+            sample_rate=48,
+            method="bump",
+        )
+    )
+
+    selector_example.glimpse()
     ```
     """
     # Run common checks
     check_dataframe_or_groupby(data)
-    check_value_column(data, value_column)
-    check_date_column(data, date_column)
+    date_column, value_columns = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=value_column,
+        require_numeric=True,
+    )
+    if len(value_columns) != 1:
+        raise ValueError(
+            "`value_column` selector must resolve to exactly one column for augment_wavelet."
+        )
+    value_column = value_columns[0]
 
     engine_resolved = normalize_engine(engine, data)
 
@@ -254,17 +280,26 @@ def augment_wavelet(
         scales_list = list(scales)
 
     wavelet_function = wavelet_functions[method]
-    sample_rate_value = float(sample_rate)
+    try:
+        sample_rate_value = float(sample_rate)
+    except (TypeError, ValueError) as exc:
+        raise TypeError("`sample_rate` must be a numeric value.") from exc
 
     def compute_cwt(signal, wavelet_func, scale_values, sampling_rate):
         coefficients = []
         for scale in scale_values:
+            scale_float = float(scale)
+            if scale_float == 0:
+                raise ValueError("`scales` entries must be non-zero.")
             wavelet_data = wavelet_func(
                 np.arange(-len(signal) // 2, len(signal) // 2)
                 / sampling_rate
-                / float(scale)
+                / scale_float
             )
-            convolution = np.convolve(signal, np.conj(wavelet_data), mode="same")
+            normalization = 1.0 / np.sqrt(abs(scale_float))
+            convolution = normalization * np.convolve(
+                signal, np.conj(wavelet_data), mode="same"
+            )
             coefficients.append(convolution)
         return np.array(coefficients)
 
@@ -348,12 +383,17 @@ def _augment_wavelet_polars(
         coeffs: List[np.ndarray] = []
         for scale in scales:
             scale_float = float(scale)
+            if scale_float == 0:
+                raise ValueError("`scales` entries must be non-zero.")
             wavelet_data = wavelet_function(
                 np.arange(-len(signal) // 2, len(signal) // 2)
                 / sample_rate
                 / scale_float
             )
-            convolution = np.convolve(signal, np.conj(wavelet_data), mode="same")
+            normalization = 1.0 / np.sqrt(abs(scale_float))
+            convolution = normalization * np.convolve(
+                signal, np.conj(wavelet_data), mode="same"
+            )
             coeffs.append(convolution)
         return coeffs
 

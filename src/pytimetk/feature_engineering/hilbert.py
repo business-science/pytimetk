@@ -199,38 +199,14 @@ def _augment_hilbert_pandas(
     date_column: str,
     value_columns: List[str],
 ):
-    # Type checks
-    # if not isinstance(data, (pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy)):
-    #     raise TypeError("Input must be a pandas DataFrame or DataFrameGroupBy object")
-    if not isinstance(value_columns, list) or not all(
-        isinstance(col, str) for col in value_columns
-    ):
-        raise TypeError("value_column must be a list of strings")
-
-    # If 'data' is a DataFrame, convert it to a groupby object with a dummy group
-    if isinstance(data, pd.DataFrame):
-        if any(col not in data.columns for col in value_columns):
-            missing_cols = [col for col in value_columns if col not in data.columns]
-            raise KeyError(f"Columns {missing_cols} do not exist in the DataFrame")
-        data = data.sort_values(by=date_column)
-        data = data.groupby(np.zeros(len(data)))
-
-    # Function to apply Hilbert transform to each group
-    def apply_hilbert(group):
+    def apply_hilbert(frame: pd.DataFrame) -> pd.DataFrame:
+        if frame.empty:
+            return frame
+        updated = frame.copy()
         for col in value_columns:
-            # Ensure the column exists in the DataFrame
-            if col not in group.columns:
-                raise KeyError(f"Column '{col}' does not exist in the group")
-
-            # Get the signal from the DataFrame
-            signal = group[col].values
-
-            # Compute the FFT of the signal
+            signal = updated[col].to_numpy()
             N = signal.size
             Xf = np.fft.fft(signal)
-
-            # Create a zero-phase version of the signal with the negative
-            # frequencies zeroed out
             h = np.zeros(N)
             if N % 2 == 0:
                 h[0] = h[N // 2] = 1
@@ -238,23 +214,17 @@ def _augment_hilbert_pandas(
             else:
                 h[0] = 1
                 h[1 : (N + 1) // 2] = 2
-
             Xf *= h
-
-            # Perform the inverse FFT
             x_analytic = np.fft.ifft(Xf)
+            updated[f"{col}_hilbert_real"] = np.real(x_analytic)
+            updated[f"{col}_hilbert_imag"] = np.imag(x_analytic)
+        return updated
 
-            # Update the DataFrame
-            group[f"{col}_hilbert_real"] = np.real(x_analytic)
-            group[f"{col}_hilbert_imag"] = np.imag(x_analytic)
-        return group
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        frames = [apply_hilbert(group) for _, group in data]
+        return pd.concat(frames).sort_index() if frames else data.obj.copy()
 
-    # Apply the Hilbert transform to each group and concatenate the results
-    df_hilbert = pd.concat(
-        (apply_hilbert(group) for _, group in data), ignore_index=True
-    )
-
-    return df_hilbert
+    return apply_hilbert(data)
 
 
 def _augment_hilbert_polars(

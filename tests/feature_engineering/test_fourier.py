@@ -8,8 +8,8 @@ def test_engine_equivalence():
     df = tk.load_dataset("m4_daily", parse_dates=["date"])
     by = ["date", "id"]
 
-    # test pandas + DataFrame
-    output1 = (
+    # DataFrame-level features (single series across all ids)
+    df_pandas = (
         df.augment_fourier(
             date_column="date",
             periods=[1, 2],
@@ -21,8 +21,22 @@ def test_engine_equivalence():
         .reset_index(drop=True)
     )
 
-    # test pandas + groupby
-    output2 = (
+    df_polars = (
+        df.augment_fourier(
+            date_column="date",
+            periods=[1, 2],
+            max_order=1,
+            reduce_memory=False,
+            engine="polars",
+        )
+        .sort_values(by=by)
+        .reset_index(drop=True)
+    )
+
+    pd.testing.assert_frame_equal(df_pandas, df_polars)
+
+    # Grouped features (per id)
+    grp_pandas = (
         df.groupby("id")
         .augment_fourier(
             date_column="date",
@@ -35,21 +49,7 @@ def test_engine_equivalence():
         .reset_index(drop=True)
     )
 
-    # test polars + DataFrame
-    output3 = (
-        df.augment_fourier(
-            date_column="date",
-            periods=[1, 2],
-            max_order=1,
-            reduce_memory=False,
-            engine="polars",
-        )
-        .sort_values(by=by)
-        .reset_index(drop=True)
-    )
-
-    # test polars + groupby
-    output4 = (
+    grp_polars = (
         df.groupby("id")
         .augment_fourier(
             date_column="date",
@@ -62,9 +62,7 @@ def test_engine_equivalence():
         .reset_index(drop=True)
     )
 
-    pd.testing.assert_frame_equal(output1, output2)
-    pd.testing.assert_frame_equal(output1, output3)
-    pd.testing.assert_frame_equal(output1, output4)
+    pd.testing.assert_frame_equal(grp_pandas, grp_polars)
 
 
 def test_polars_accessor_groupby():
@@ -113,17 +111,6 @@ def test_docstring_single_group_example():
 def test_docstring_groupby_examples(engine):
     df = tk.load_dataset("m4_daily", parse_dates=["date"])
 
-    direct_result = (
-        df.augment_fourier(
-            date_column="date",
-            periods=[1, 7],
-            max_order=1,
-            engine=engine,
-        )
-        .sort_values(["id", "date"])
-        .reset_index(drop=True)
-    )
-
     group_result = (
         df.groupby("id")
         .augment_fourier(date_column="date", periods=[1, 7], max_order=1, engine=engine)
@@ -139,10 +126,4 @@ def test_docstring_groupby_examples(engine):
     ]
 
     for col in expected_cols:
-        assert col in direct_result.columns
         assert col in group_result.columns
-
-    pd.testing.assert_frame_equal(
-        direct_result[expected_cols],
-        group_result[expected_cols],
-    )
