@@ -7,6 +7,7 @@ import numpy as np
 import pytimetk as tk
 import os
 import multiprocessing as mp
+from pytimetk.utils.selection import contains
 
 # Avoid multiprocessing/threading warnings / over-subscription
 mp.set_start_method("spawn", force=True)
@@ -201,7 +202,9 @@ def test_qsmomentum_edge_cases(df):
             )
 
     # Missing close column
-    with pytest.raises(ValueError, match=r"value_column.*close.*not.*found.*data"):
+    with pytest.raises(
+        ValueError, match=r"`value_column` \(close\) not found in `data`"
+    ):
         df[["symbol", "date"]].augment_qsmomentum(
             date_column="date",
             close_column="close",
@@ -261,3 +264,14 @@ def test_qsmomentum_edge_cases(df):
             returns_period="bad",
             engine="pandas",
         )
+
+
+def test_qsmomentum_supports_tidy_selectors(df):
+    result = df.groupby("symbol").augment_qsmomentum(
+        date_column=contains("dat"),
+        close_column=contains("clos"),
+        roc_fast_period=5,
+        roc_slow_period=252,
+        returns_period=126,
+    )
+    assert "close_qsmom_5_252_126" in result.columns

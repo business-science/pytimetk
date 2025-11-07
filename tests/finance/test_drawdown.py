@@ -4,6 +4,7 @@ import pytimetk as tk
 import os
 import multiprocessing as mp
 import numpy as np
+from pytimetk.utils.selection import contains
 
 # Align multiprocessing behaviour with existing finance tests to avoid warnings.
 mp.set_start_method("spawn", force=True)
@@ -119,3 +120,11 @@ def test_drawdown_invalid_inputs(df):
             close_column="close",
             engine="pandas",
         )
+
+
+def test_drawdown_supports_tidy_selectors(df):
+    result = df.groupby("symbol").augment_drawdown(
+        date_column=contains("dat"),
+        close_column=contains("clos"),
+    )
+    assert {"close_peak", "close_drawdown", "close_drawdown_pct"}.issubset(result.columns)

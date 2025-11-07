@@ -13,8 +13,6 @@ except ImportError:  # pragma: no cover - cudf optional
 from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
@@ -29,6 +27,8 @@ from pytimetk.utils.dataframe_ops import (
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
 from pytimetk.utils.polars_helpers import collect_lazyframe
+from pytimetk.utils.selection import ColumnSelector
+from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 
 
 @pf.register_groupby_method
@@ -42,8 +42,8 @@ def augment_cmo(
         "cudf.DataFrame",
         "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
-    date_column: str,
-    close_column: str,
+    date_column: Union[str, ColumnSelector],
+    close_column: Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]]],
     periods: Union[int, Tuple[int, int], List[int]] = 14,
     reduce_memory: bool = False,
     engine: Optional[str] = "auto",
@@ -56,10 +56,11 @@ def augment_cmo(
     data : DataFrame or GroupBy (pandas or polars)
         Input financial data. Grouped inputs are processed per group before the
         indicator columns are appended.
-    date_column : str
-        Name of the column containing date information.
-    close_column : str
-        Name of the column containing closing prices.
+    date_column : str or ColumnSelector
+        Name or selector for the column containing date information.
+    close_column : str, ColumnSelector, or list
+        Column(s) containing closing prices. Selectors/lists must resolve to a
+        single column.
     periods : int, tuple, or list, optional
         Lookback window(s) applied to the CMO calculation. Accepts a single
         integer, an inclusive tuple range, or an explicit list. Defaults to ``14``.
@@ -110,12 +111,30 @@ def augment_cmo(
             periods=14,
         )
     )
+
+    # Selector example
+    from pytimetk.utils.selection import contains
+
+    selector_df = (
+        df.augment_cmo(
+            date_column=contains("dat"),
+            close_column=contains("clos"),
+            periods=14,
+        )
+    )
     ```
     """
 
     check_dataframe_or_groupby(data)
-    check_value_column(data, close_column, require_numeric_dtype=True)
-    check_date_column(data, date_column)
+    date_column, close_columns = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=close_column,
+        require_numeric=True,
+    )
+    if len(close_columns) != 1:
+        raise ValueError("`close_column` selector must resolve to exactly one column.")
+    close_column = close_columns[0]
 
     periods_list = _normalize_periods(periods)
 

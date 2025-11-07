@@ -5,6 +5,7 @@ import pytimetk as tk
 import os
 import multiprocessing as mp
 from itertools import product
+from pytimetk.utils.selection import contains
 
 # Setup to avoid multiprocessing warnings
 mp.set_start_method("spawn", force=True)
@@ -99,7 +100,9 @@ def test_bbands_edge_cases(df):
     )
 
     # Missing columns
-    with pytest.raises(ValueError, match=".*`value_column`.*not found.*"):
+    with pytest.raises(
+        ValueError, match=r"`value_column` \(close\) not found in `data`"
+    ):
         df[["symbol", "date"]].augment_bbands(
             date_column="date",
             close_column="close",
@@ -173,3 +176,26 @@ def test_bbands_polars_groupby_roundtrip(pl_df):
         pandas_group.reset_index(drop=True),
         polars_group.to_pandas().reset_index(drop=True),
     )
+
+
+@pytest.mark.parametrize("backend", ["pandas", "polars"])
+def test_bbands_supports_tidy_selectors(df, pl_df, backend):
+    if backend == "pandas":
+        result = df.groupby("symbol").augment_bbands(
+            date_column=contains("dat"),
+            close_column=contains("clos"),
+            periods=20,
+            std_dev=2,
+        )
+    else:
+        result = (
+            pl_df.group_by("symbol")
+            .tk.augment_bbands(
+                date_column=contains("dat"),
+                close_column=contains("clos"),
+                periods=20,
+                std_dev=2,
+            )
+            .to_pandas()
+        )
+    assert "close_bband_middle_20_2.0" in result.columns

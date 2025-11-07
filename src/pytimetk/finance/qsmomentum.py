@@ -12,8 +12,6 @@ except ImportError:  # pragma: no cover - cudf optional
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
@@ -28,6 +26,8 @@ from pytimetk.utils.dataframe_ops import (
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
 from pytimetk.utils.polars_helpers import collect_lazyframe
+from pytimetk.utils.selection import ColumnSelector
+from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 
 
 @pf.register_groupby_method
@@ -41,8 +41,8 @@ def augment_qsmomentum(
         "cudf.DataFrame",
         "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
-    date_column: str,
-    close_column: str,
+    date_column: Union[str, ColumnSelector],
+    close_column: Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]]],
     roc_fast_period: Union[int, Tuple[int, int], List[int]] = 21,
     roc_slow_period: Union[int, Tuple[int, int], List[int]] = 252,
     returns_period: Union[int, Tuple[int, int], List[int]] = 126,
@@ -57,10 +57,11 @@ def augment_qsmomentum(
     data : DataFrame or GroupBy (pandas or polars)
         Input financial data. Grouped inputs are processed per group before the
         momentum columns are appended.
-    date_column : str
-        Name of the column containing date information.
-    close_column : str
-        Column containing closing prices used to compute QSM.
+    date_column : str or ColumnSelector
+        Name or selector for the column containing date information.
+    close_column : str, ColumnSelector, or list
+        Column(s) containing closing prices used to compute QSM. Must resolve
+        to exactly one column.
     roc_fast_period : int, tuple, or list, optional
         Lookback window(s) for the fast Rate of Change (ROC). Accepts a single
         integer, an inclusive tuple range, or a list of explicit periods.
@@ -122,13 +123,34 @@ def augment_qsmomentum(
             returns_period=126,
         )
     )
+
+    # Selector example
+    from pytimetk.utils.selection import contains
+
+    selector_df = (
+        df.groupby("symbol")
+        .augment_qsmomentum(
+            date_column=contains("dat"),
+            close_column=contains("clos"),
+            roc_fast_period=21,
+            roc_slow_period=252,
+            returns_period=126,
+        )
+    )
     ```
     """
 
     # --- Common checks ---
     check_dataframe_or_groupby(data)
-    check_value_column(data, close_column)
-    check_date_column(data, date_column)
+    date_column, close_columns = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=close_column,
+        require_numeric=True,
+    )
+    if len(close_columns) != 1:
+        raise ValueError("`close_column` selector must resolve to exactly one column.")
+    close_column = close_columns[0]
 
     if isinstance(
         data, (pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy)

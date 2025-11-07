@@ -5,6 +5,7 @@ import pandas as pd
 import pytimetk as tk
 import os
 import multiprocessing as mp
+from pytimetk.utils.selection import contains
 
 # Setup to avoid multiprocessing/threading warnings
 mp.set_start_method("spawn", force=True)
@@ -101,7 +102,9 @@ def test_ewma_volatility_edge_cases(df):
     )
 
     # Missing columns
-    with pytest.raises(ValueError, match=r"value_column.*close.*not.*found.*data"):
+    with pytest.raises(
+        ValueError, match=r"`value_column` \(close\) not found in `data`"
+    ):
         df[["symbol", "date"]].augment_ewma_volatility(
             date_column="date",
             close_column="close",
@@ -133,3 +136,12 @@ def test_ewma_volatility_edge_cases(df):
         df.augment_ewma_volatility(
             date_column="date", close_column="close", decay_factor=1.5, window=[20]
         )
+
+
+def test_ewma_volatility_supports_tidy_selectors(df):
+    result = df.groupby("symbol").augment_ewma_volatility(
+        date_column=contains("dat"),
+        close_column=contains("clos"),
+        window=20,
+    )
+    assert "close_ewma_vol_20_0.94" in result.columns

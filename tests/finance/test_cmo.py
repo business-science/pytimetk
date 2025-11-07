@@ -4,6 +4,7 @@ import pytimetk as tk
 import os
 import multiprocessing as mp
 from itertools import product
+from pytimetk.utils.selection import contains
 
 # Setup to avoid multiprocessing warnings
 mp.set_start_method("spawn", force=True)
@@ -86,7 +87,7 @@ def test_cmo_edge_cases(df):
 
     # Missing columns
     with pytest.raises(
-        ValueError, match="`value_column` \\(close\\) not found in `data`"
+        ValueError, match=r"`value_column` \(close\) not found in `data`"
     ):
         df[["symbol", "date"]].augment_cmo(
             date_column="date", close_column="close", periods=[14], engine="pandas"
@@ -100,3 +101,12 @@ def test_cmo_edge_cases(df):
         empty_df.augment_cmo(
             date_column="date", close_column="close", periods=[14], engine="pandas"
         )
+
+
+def test_cmo_supports_tidy_selectors(df):
+    result = df.groupby("symbol").augment_cmo(
+        date_column=contains("dat"),
+        close_column=contains("clos"),
+        periods=14,
+    )
+    assert "close_cmo_14" in result.columns

@@ -11,8 +11,6 @@ except ImportError:  # pragma: no cover - cudf optional
     cudf = None  # type: ignore
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
@@ -26,6 +24,8 @@ from pytimetk.utils.dataframe_ops import (
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.utils.selection import ColumnSelector
+from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 from scipy import stats  # For skewness and kurtosis
 
 
@@ -40,11 +40,13 @@ def augment_rolling_risk_metrics(
         "cudf.DataFrame",
         "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
-    date_column: str,
-    close_column: str,
+    date_column: Union[str, ColumnSelector],
+    close_column: Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]]],
     window: Union[int, List[int]] = 252,
     risk_free_rate: float = 0.0,
-    benchmark_column: Optional[str] = None,
+    benchmark_column: Optional[
+        Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]]]
+    ] = None,
     annualization_factor: int = 252,
     metrics: Optional[List[str]] = None,
     reduce_memory: bool = False,
@@ -59,16 +61,18 @@ def augment_rolling_risk_metrics(
     data : Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy]
         The input data can be a pandas DataFrame or a pandas DataFrameGroupBy object
         containing the time series data for risk metric calculations.
-    date_column : str
-        The name of the column containing dates or timestamps.
-    close_column : str
-        The column containing closing prices to calculate returns and risk metrics from.
+    date_column : str or ColumnSelector
+        The name or selector of the column containing dates or timestamps.
+    close_column : str, ColumnSelector, or list
+        The column(s) containing closing prices to calculate returns and risk
+        metrics from. Must resolve to exactly one column.
     window : int, optional
         The rolling window size for calculations (e.g., 252 for annual). Default is 252.
     risk_free_rate : float, optional
         The assumed risk-free rate (e.g., 0.0 for 0%). Default is 0.0.
-    benchmark_column : str or None, optional
-        The column containing benchmark returns (e.g., market index) for Treynor and Information Ratios.
+    benchmark_column : str, ColumnSelector, or None, optional
+        Column containing benchmark returns (e.g., market index) for Treynor
+        and Information Ratios. If provided it must resolve to one column.
         Default is None.
     annualization_factor : int, optional
         The factor to annualize returns and volatility (e.g., 252 for daily data). Default is 252.
@@ -155,6 +159,20 @@ def augment_rolling_risk_metrics(
         )
     )
     risk_df.tail()
+
+    # Selector example
+    from pytimetk.utils.selection import contains
+
+    selector_df = (
+        df.groupby('symbol')
+        .augment_rolling_risk_metrics(
+            date_column=contains('dat'),
+            close_column=contains('adj'),
+            benchmark_column=contains('clos'),
+            window=63,
+            metrics=['sharpe_ratio'],
+        )
+    )
     ```
     """
 
@@ -192,10 +210,28 @@ def augment_rolling_risk_metrics(
 
     # Existing checks...
     check_dataframe_or_groupby(data)
-    check_value_column(data, close_column)
-    check_date_column(data, date_column)
+    date_column, close_columns = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=close_column,
+        require_numeric=True,
+    )
+    if len(close_columns) != 1:
+        raise ValueError("`close_column` selector must resolve to exactly one column.")
+    close_column = close_columns[0]
+
     if benchmark_column is not None:
-        check_value_column(data, benchmark_column)
+        _, benchmark_columns = resolve_shift_columns(
+            data,
+            date_column=date_column,
+            value_column=benchmark_column,
+            require_numeric=True,
+        )
+        if len(benchmark_columns) != 1:
+            raise ValueError(
+                "`benchmark_column` selector must resolve to exactly one column."
+            )
+        benchmark_column = benchmark_columns[0]
 
     engine_resolved = normalize_engine(engine, data)
     if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency

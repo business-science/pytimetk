@@ -4,6 +4,7 @@ import pytimetk as tk
 import os
 import multiprocessing as mp
 from itertools import product
+from pytimetk.utils.selection import contains
 
 # Setup to avoid multiprocessing warnings
 mp.set_start_method("spawn", force=True)
@@ -102,7 +103,7 @@ def test_fip_momentum_edge_cases(df):
 
     # Missing columns
     with pytest.raises(
-        ValueError, match="`value_column` \\(close\\) not found in `data`"
+        ValueError, match=r"`value_column` \(close\) not found in `data`"
     ):
         df[["symbol", "date"]].augment_fip_momentum(
             date_column="date",
@@ -150,3 +151,12 @@ def test_fip_momentum_edge_cases(df):
     assert result_negative_skip["close_fip_momentum_63"].isna().sum() > 0, (
         "Expected NaNs with negative skip_window"
     )
+
+
+def test_fip_momentum_supports_tidy_selectors(df):
+    result = df.groupby("symbol").augment_fip_momentum(
+        date_column=contains("dat"),
+        close_column=contains("clos"),
+        window=63,
+    )
+    assert "close_fip_momentum_63" in result.columns

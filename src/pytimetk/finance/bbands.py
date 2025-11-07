@@ -12,8 +12,6 @@ except ImportError:  # pragma: no cover - cudf optional
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
@@ -27,6 +25,8 @@ from pytimetk.utils.dataframe_ops import (
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.utils.selection import ColumnSelector
+from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 
 
 @pf.register_groupby_method
@@ -40,8 +40,8 @@ def augment_bbands(
         "cudf.DataFrame",
         "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
-    date_column: str,
-    close_column: str,
+    date_column: Union[str, ColumnSelector],
+    close_column: Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]]],
     periods: Union[int, Tuple[int, int], List[int]] = 20,
     std_dev: Union[int, float, List[float]] = 2,
     reduce_memory: bool = False,
@@ -55,12 +55,12 @@ def augment_bbands(
     data : DataFrame or GroupBy (pandas or polars)
         Input financial data. Grouped inputs are processed per group before the
         bands are appended.
-    date_column : str
-        Name of the column containing date information. Used to preserve the
-        original ordering of results.
-    close_column : str
-        Name of the closing price column used to compute the moving average and
-        standard deviation.
+    date_column : str or ColumnSelector
+        Name/selector for the column containing date information. Supports tidy
+        selectors such as ``contains("date")``.
+    close_column : str, ColumnSelector, or list
+        Column(s) containing the prices used to compute the moving average and
+        standard deviation. Selectors or lists must resolve to a single column.
     periods : int, tuple, or list, optional
         Rolling window lengths. An integer adds a single window, a tuple
         ``(start, end)`` expands to every integer in the inclusive range, and a
@@ -116,12 +116,33 @@ def augment_bbands(
             std_dev=2,
         )
     )
+
+    # Selector example
+    from pytimetk.utils.selection import contains
+
+    selector_demo = (
+        df.augment_bbands(
+            date_column=contains("dat"),
+            close_column=contains("clos"),
+            periods=20,
+            std_dev=2,
+        )
+    )
     ```
     """
 
     check_dataframe_or_groupby(data)
-    check_value_column(data, close_column)
-    check_date_column(data, date_column)
+    date_column, close_columns = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=close_column,
+        require_numeric=True,
+    )
+    if len(close_columns) != 1:
+        raise ValueError(
+            "`close_column` selector must resolve to exactly one column."
+        )
+    close_column = close_columns[0]
 
     period_list = _normalize_periods(periods)
     std_list = _normalize_std_dev(std_dev)

@@ -13,8 +13,6 @@ except ImportError:  # pragma: no cover - cudf optional
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
@@ -29,6 +27,8 @@ from pytimetk.utils.dataframe_ops import (
 from pytimetk.utils.polars_helpers import collect_lazyframe
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.utils.selection import ColumnSelector
+from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 
 
 @pf.register_groupby_method
@@ -40,8 +40,8 @@ def augment_ewma_volatility(
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
     ],
-    date_column: str,
-    close_column: str,
+    date_column: Union[str, ColumnSelector],
+    close_column: Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]]],
     decay_factor: float = 0.94,
     window: Union[int, Tuple[int, int], List[int]] = 20,
     reduce_memory: bool = False,
@@ -54,10 +54,11 @@ def augment_ewma_volatility(
     data : DataFrame or GroupBy (pandas or polars)
         Input time-series data. Grouped inputs are processed per group before
         the indicator is appended.
-    date_column : str
-        Column name containing dates or timestamps.
-    close_column : str
-        Column name with closing prices to calculate volatility.
+    date_column : str or ColumnSelector
+        Column name or selector containing dates or timestamps.
+    close_column : str, ColumnSelector, or list
+        Column(s) with closing prices to calculate volatility. Must resolve to
+        a single column.
     decay_factor : float, optional
         Smoothing factor (lambda) for EWMA, between 0 and 1. Higher values give more weight to past data. Default is 0.94 (RiskMetrics standard).
     window : Union[int, Tuple[int, int], List[int]], optional
@@ -136,13 +137,31 @@ def augment_ewma_volatility(
         decay_factor=0.94,
         window=[20, 50]
     ).glimpse()
+
+    # Selector example
+    from pytimetk.utils.selection import contains
+
+    selector_df = (
+        df.augment_ewma_volatility(
+            date_column=contains("dat"),
+            close_column=contains("clos"),
+            window=20,
+        )
+    )
     ```
     """
 
     # Run common checks
     check_dataframe_or_groupby(data)
-    check_value_column(data, close_column)
-    check_date_column(data, date_column)
+    date_column, close_columns = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=close_column,
+        require_numeric=True,
+    )
+    if len(close_columns) != 1:
+        raise ValueError("`close_column` selector must resolve to exactly one column.")
+    close_column = close_columns[0]
 
     if not 0 < decay_factor < 1:
         raise ValueError("decay_factor must be between 0 and 1.")
