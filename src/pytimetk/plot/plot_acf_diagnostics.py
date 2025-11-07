@@ -13,6 +13,7 @@ except ImportError:  # pragma: no cover - optional import
     pl = None
 
 from pytimetk.core.acf_diagnostics import acf_diagnostics
+from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
 
 
@@ -193,26 +194,13 @@ def plot_acf_diagnostics(
         ):
             data = data.to_pandas()  # type: ignore[attr-defined]
 
-    # Resolve selectors for date/value to single column names
-    if not isinstance(date_column, str):
-        resolved_date = resolve_column_selection(
-            data, date_column, allow_none=False, require_match=True
-        )
-        if len(resolved_date) != 1:
-            raise ValueError(
-                "The `date_column` selector must resolve to exactly one column."
-            )
-        date_column = resolved_date[0]
-
-    if not isinstance(value_column, str):
-        resolved_value = resolve_column_selection(
-            data, value_column, allow_none=False, require_match=True
-        )
-        if len(resolved_value) != 1:
-            raise ValueError(
-                "The `value_column` selector must resolve to exactly one column."
-            )
-        value_column = resolved_value[0]
+    date_column, value_columns = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=value_column,
+        require_numeric=True,
+    )
+    value_column = value_columns[0]
 
     diagnostics = acf_diagnostics(
         data=data,

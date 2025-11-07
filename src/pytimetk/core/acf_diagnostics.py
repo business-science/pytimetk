@@ -11,11 +11,10 @@ from statsmodels.tsa.stattools import pacf as sm_pacf
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.datetime_helpers import resolve_lag_sequence
-from pytimetk.utils.selection import resolve_column_selection
+from pytimetk.utils.selection import resolve_column_selection, ColumnSelector
+from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 from pytimetk.utils.dataframe_ops import resolve_pandas_groupby_frame
 
 
@@ -122,9 +121,9 @@ def _acf_diagnostics_single(frame: pd.DataFrame, config: _ACFConfig) -> pd.DataF
 @pf.register_dataframe_method
 def acf_diagnostics(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
-    date_column: str,
-    value_column: str,
-    ccf_columns: Optional[Union[str, Sequence[str], np.ndarray]] = None,
+    date_column: Union[str, ColumnSelector],
+    value_column: Union[str, ColumnSelector],
+    ccf_columns: Optional[Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]], np.ndarray]] = None,
     lags: Union[str, int, Sequence[int], np.ndarray, range, slice] = 1000,
 ) -> pd.DataFrame:
     """
@@ -188,8 +187,13 @@ def acf_diagnostics(
     ```
     """
     check_dataframe_or_groupby(data)
-    check_date_column(data, date_column)
-    check_value_column(data, value_column, require_numeric_dtype=True)
+    date_column, value_columns = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=value_column,
+        require_numeric=True,
+    )
+    value_column = value_columns[0]
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         base_frame = resolve_pandas_groupby_frame(data)
