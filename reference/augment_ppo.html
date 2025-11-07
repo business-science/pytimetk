@@ -458,14 +458,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="even">
 <td>date_column</td>
-<td>str</td>
-<td>Name of the column containing date information.</td>
+<td>str or ColumnSelector</td>
+<td>Name of the column containing date information (selectors supported).</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>close_column</td>
-<td>str</td>
-<td>Name of the closing price column.</td>
+<td>str, ColumnSelector, or list</td>
+<td>Closing price column(s). Selectors resolving to multiple columns return a PPO per column.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
@@ -555,7 +555,18 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        fast_period<span class="op">=</span><span class="dv">12</span>,</span>
 <span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        slow_period<span class="op">=</span><span class="dv">26</span>,</span>
 <span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pytimetk.utils.selection <span class="im">import</span> contains</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>selector_demo <span class="op">=</span> (</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>        .augment_ppo(</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span>contains(<span class="st">"dat"</span>),</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span>contains(<span class="st">"clos"</span>),</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>            fast_period<span class="op">=</span><span class="dv">12</span>,</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>            slow_period<span class="op">=</span><span class="dv">26</span>,</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

@@ -459,26 +459,26 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="even">
 <td>date_column</td>
-<td>str</td>
-<td>Name of the column containing date information.</td>
+<td>str or ColumnSelector</td>
+<td>Name of the column containing date information (tidy selectors supported).</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>high_column</td>
-<td>str</td>
-<td>Name of the column containing high prices.</td>
+<td>str or ColumnSelector</td>
+<td>Column names used to compute the indicator. Selectors must resolve to a single column each.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>low_column</td>
-<td>str</td>
-<td>Name of the column containing low prices.</td>
+<td>str or ColumnSelector</td>
+<td>Column names used to compute the indicator. Selectors must resolve to a single column each.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>close_column</td>
-<td>str</td>
-<td>Name of the column containing closing prices. Indicator columns are prefixed with this name.</td>
+<td>str or ColumnSelector</td>
+<td>Column names used to compute the indicator. Selectors must resolve to a single column each.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
@@ -582,7 +582,20 @@ close_adx_28:       float64           [21.4952142144854, 24.298216606705 ...</co
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    periods<span class="op">=</span><span class="dv">14</span>,</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>adx_pl.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>adx_pl.glimpse()</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Selector example</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pytimetk.utils.selection <span class="im">import</span> contains</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>demo <span class="op">=</span> (</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        .augment_adx(</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span>contains(<span class="st">"dat"</span>),</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>            high_column<span class="op">=</span>contains(<span class="st">"high"</span>),</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>            low_column<span class="op">=</span>contains(<span class="st">"low"</span>),</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span>contains(<span class="st">"clos"</span>),</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span><span class="dv">14</span>,</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 2699
 Columns: 11
@@ -594,9 +607,9 @@ $ low                        &lt;f64&gt; 19.343929290771484, 19.321428298950195,
 $ close                      &lt;f64&gt; 19.608213424682617, 19.36071395874023, 18.821428298950195, 18.71071434020996, 18.761070251464844, 18.467857360839844, 18.696786880493164, 18.582143783569336, 17.91964340209961, 17.354286193847656
 $ volume                     &lt;i64&gt; 560518000, 352965200, 594333600, 484156400, 458707200, 407604400, 601146000, 350506800, 734207600, 876772400
 $ adjusted                   &lt;f64&gt; 16.791179656982422, 16.579240798950195, 16.1174373626709, 16.02262306213379, 16.065746307373047, 15.814659118652344, 16.010698318481445, 15.912524223327637, 15.345203399658203, 14.86106777191162
-$ close_plus_di_14           &lt;f64&gt; 0.0, 0.0, 0.0, 0.0, 1.4086529900299278, 1.3357370327531486, 3.2946355294876097, 3.175213538310561, 2.7975109354213354, 2.5248350001853535
-$ close_minus_di_14          &lt;f64&gt; 0.0, 0.34525921952158917, 8.48343224466678, 13.540429706785595, 12.756866293718087, 15.017938717809615, 13.919011176217822, 13.41448312903257, 23.015351236530428, 28.79996854804468
-$ close_adx_14               &lt;f64&gt; nan, nan, nan, nan, nan, nan, nan, nan, nan, nan
+$ close_plus_di_14           &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_minus_di_14          &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
+$ close_adx_14               &lt;f64&gt; None, None, None, None, None, None, None, None, None, None
 </code></pre>
 </div>
 </div>

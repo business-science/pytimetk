@@ -440,10 +440,10 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="table">
 <colgroup>
-<col style="width: 10%">
-<col style="width: 27%">
-<col style="width: 54%">
 <col style="width: 8%">
+<col style="width: 23%">
+<col style="width: 59%">
+<col style="width: 7%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -462,14 +462,14 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="even">
 <td>date_column</td>
-<td>str</td>
-<td>Name of the column containing date information.</td>
+<td>str or ColumnSelector</td>
+<td>Name of the column containing date information (tidy selectors supported).</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>close_column</td>
-<td>str</td>
-<td>Name of the column containing closing price data.</td>
+<td>str or ColumnSelector</td>
+<td>Name of the column containing closing price data. Selector inputs must resolve to a single column.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
@@ -756,6 +756,203 @@ $ close_macd_line_12_26_9                 &lt;f64&gt; 0.0, -0.018347541830820546
 $ close_macd_signal_line_12_26_9          &lt;f64&gt; 0.0, -0.0036695083661641096, 0.006356599901108666, 0.03495669430178629, 0.06787606630635726, 0.12603255403782854, 0.207998884833333, 0.3068187378705171, 0.398037573029252, 0.46524192757592653
 $ close_macd_histogram_12_26_9            &lt;f64&gt; 0.0, -0.014678033464656437, 0.0401044330690911, 0.11440037760271048, 0.1316774880182839, 0.23262595092588512, 0.32786532318201783, 0.39527941214873624, 0.3648753406349394, 0.2688174181866976
 </code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pytimetk.utils.selection <span class="im">import</span> contains</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">'symbol'</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        .augment_macd(</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            date_column <span class="op">=</span> contains(<span class="st">'dat'</span>),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>            close_column <span class="op">=</span> contains(<span class="st">'clos'</span>),</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>            fast_period <span class="op">=</span> <span class="dv">12</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>            slow_period <span class="op">=</span> <span class="dv">26</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>            signal_period <span class="op">=</span> <span class="dv">9</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">adjusted</th>
+<th data-quarto-table-cell-role="th">close_macd_line_12_26_9</th>
+<th data-quarto-table-cell-role="th">close_macd_signal_line_12_26_9</th>
+<th data-quarto-table-cell-role="th">close_macd_histogram_12_26_9</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>META</td>
+<td>2013-01-02</td>
+<td>27.440001</td>
+<td>28.180000</td>
+<td>27.420000</td>
+<td>28.000000</td>
+<td>69846400</td>
+<td>28.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>META</td>
+<td>2013-01-03</td>
+<td>27.879999</td>
+<td>28.469999</td>
+<td>27.590000</td>
+<td>27.770000</td>
+<td>63140600</td>
+<td>27.770000</td>
+<td>-0.018348</td>
+<td>-0.003670</td>
+<td>-0.014678</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>META</td>
+<td>2013-01-04</td>
+<td>28.010000</td>
+<td>28.930000</td>
+<td>27.830000</td>
+<td>28.760000</td>
+<td>72715400</td>
+<td>28.760000</td>
+<td>0.046461</td>
+<td>0.006357</td>
+<td>0.040104</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>META</td>
+<td>2013-01-07</td>
+<td>28.690001</td>
+<td>29.790001</td>
+<td>28.650000</td>
+<td>29.420000</td>
+<td>83781800</td>
+<td>29.420000</td>
+<td>0.149357</td>
+<td>0.034957</td>
+<td>0.114400</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>META</td>
+<td>2013-01-08</td>
+<td>29.510000</td>
+<td>29.600000</td>
+<td>28.860001</td>
+<td>29.059999</td>
+<td>45871300</td>
+<td>29.059999</td>
+<td>0.199554</td>
+<td>0.067876</td>
+<td>0.131677</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16189</td>
+<td>GOOG</td>
+<td>2023-09-15</td>
+<td>138.800003</td>
+<td>139.360001</td>
+<td>137.179993</td>
+<td>138.300003</td>
+<td>48947600</td>
+<td>138.300003</td>
+<td>2.387279</td>
+<td>2.318196</td>
+<td>0.069083</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">16190</td>
+<td>GOOG</td>
+<td>2023-09-18</td>
+<td>137.630005</td>
+<td>139.929993</td>
+<td>137.630005</td>
+<td>138.960007</td>
+<td>16233600</td>
+<td>138.960007</td>
+<td>2.399411</td>
+<td>2.334439</td>
+<td>0.064972</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16191</td>
+<td>GOOG</td>
+<td>2023-09-19</td>
+<td>138.250000</td>
+<td>139.175003</td>
+<td>137.500000</td>
+<td>138.830002</td>
+<td>15479100</td>
+<td>138.830002</td>
+<td>2.371201</td>
+<td>2.341791</td>
+<td>0.029410</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">16192</td>
+<td>GOOG</td>
+<td>2023-09-20</td>
+<td>138.830002</td>
+<td>138.839996</td>
+<td>134.520004</td>
+<td>134.589996</td>
+<td>21473500</td>
+<td>134.589996</td>
+<td>1.983843</td>
+<td>2.270202</td>
+<td>-0.286358</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16193</td>
+<td>GOOG</td>
+<td>2023-09-21</td>
+<td>132.389999</td>
+<td>133.190002</td>
+<td>131.089996</td>
+<td>131.360001</td>
+<td>22042700</td>
+<td>131.360001</td>
+<td>1.400087</td>
+<td>2.096179</td>
+<td>-0.696092</td>
+</tr>
+</tbody>
+</table>
+
+<p>16194 rows × 11 columns</p>
+</div>
 </div>
 </div>
 

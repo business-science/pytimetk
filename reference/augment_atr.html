@@ -460,26 +460,26 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="even">
 <td>date_column</td>
-<td>str</td>
-<td>Name of the column containing date information.</td>
+<td>str or ColumnSelector</td>
+<td>Name of the column containing date information. Accepts tidy selectors.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>high_column</td>
-<td>str</td>
-<td>Column names used to compute the true range and ATR.</td>
+<td>str or ColumnSelector</td>
+<td>Column names/selectors used to compute the true range and ATR.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>low_column</td>
-<td>str</td>
-<td>Column names used to compute the true range and ATR.</td>
+<td>str or ColumnSelector</td>
+<td>Column names/selectors used to compute the true range and ATR.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>close_column</td>
-<td>str</td>
-<td>Column names used to compute the true range and ATR.</td>
+<td>str or ColumnSelector</td>
+<td>Column names/selectors used to compute the true range and ATR.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
@@ -571,7 +571,20 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>        periods<span class="op">=</span><span class="dv">14</span>,</span>
 <span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>        normalize<span class="op">=</span><span class="va">True</span>,</span>
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Selector example</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pytimetk.utils.selection <span class="im">import</span> contains</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>selector_example <span class="op">=</span> (</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>        .augment_atr(</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span>contains(<span class="st">"dat"</span>),</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>            high_column<span class="op">=</span>contains(<span class="st">"high"</span>),</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>            low_column<span class="op">=</span>contains(<span class="st">"low"</span>),</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>            close_column<span class="op">=</span>contains(<span class="st">"clos"</span>),</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span><span class="dv">14</span>,</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
