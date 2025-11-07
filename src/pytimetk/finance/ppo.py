@@ -14,8 +14,6 @@ except ImportError:  # pragma: no cover - cudf optional
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
@@ -29,6 +27,8 @@ from pytimetk.utils.dataframe_ops import (
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.utils.selection import ColumnSelector
+from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 
 
 @pf.register_groupby_method
@@ -42,8 +42,8 @@ def augment_ppo(
         "cudf.DataFrame",
         "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
-    date_column: str,
-    close_column: str,
+    date_column: Union[str, ColumnSelector],
+    close_column: Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]]],
     fast_period: int = 12,
     slow_period: int = 26,
     reduce_memory: bool = False,
@@ -57,10 +57,10 @@ def augment_ppo(
     data : DataFrame or GroupBy (pandas or polars)
         Financial data to augment with PPO values. Grouped inputs are processed
         per group before the indicator columns are appended.
-    date_column : str
-        Name of the column containing date information.
-    close_column : str
-        Name of the closing price column.
+    date_column : str or ColumnSelector
+        Name of the column containing date information (selectors supported).
+    close_column : str, ColumnSelector, or list
+        Closing price column(s). Selectors resolving to multiple columns return a PPO per column.
     fast_period : int, optional
         Lookback window for the fast EMA.
     slow_period : int, optional
@@ -118,12 +118,27 @@ def augment_ppo(
             slow_period=26,
         )
     )
+
+    from pytimetk.utils.selection import contains
+    selector_demo = (
+        df
+            .augment_ppo(
+                date_column=contains("dat"),
+                close_column=contains("clos"),
+                fast_period=12,
+                slow_period=26,
+            )
+    )
     ```
     """
 
     check_dataframe_or_groupby(data)
-    check_value_column(data, close_column)
-    check_date_column(data, date_column)
+    date_column, close_cols = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=close_column,
+        require_numeric=True,
+    )
 
     engine_resolved = normalize_engine(engine, data)
     if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
@@ -134,6 +149,10 @@ def augment_ppo(
     conversion_engine = engine_resolved
     conversion: FrameConversion = convert_to_engine(data, conversion_engine)
     prepared_data = conversion.data
+
+    if len(close_cols) != 1:
+        raise ValueError("`close_column` selector must resolve to exactly one column.")
+    close_column = close_cols[0]
 
     if reduce_memory and conversion_engine == "pandas":
         prepared_data = reduce_memory_usage(prepared_data)

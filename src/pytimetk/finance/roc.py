@@ -12,8 +12,6 @@ except ImportError:  # pragma: no cover - cudf optional
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
@@ -27,6 +25,8 @@ from pytimetk.utils.dataframe_ops import (
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.utils.selection import ColumnSelector
+from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 
 
 @pf.register_groupby_method
@@ -38,8 +38,8 @@ def augment_roc(
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
     ],
-    date_column: str,
-    close_column: str,
+    date_column: Union[str, ColumnSelector],
+    close_column: Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]]],
     periods: Union[int, Tuple[int, int], List[int]] = 1,
     start_index: int = 0,
     reduce_memory: bool = False,
@@ -53,12 +53,12 @@ def augment_roc(
     data : DataFrame or GroupBy (pandas or polars)
         Input financial data. Grouped inputs are expanded per group before
         computing ROC features.
-    date_column : str
-        Name of the column containing date information. Used to preserve the
-        original ordering.
-    close_column : str
-        Name of the column containing closing prices on which the ROC is
-        computed.
+    date_column : str or ColumnSelector
+        Name of the column containing date information (tidy selectors supported)
+        used to preserve the original ordering.
+    close_column : str, ColumnSelector, or list
+        Column(s) containing closing prices on which the ROC is computed. Lists or
+        multiple selectors compute an ROC per column.
     periods : int, tuple, or list, optional
         Lookback windows used for the denominator term. An integer adds a
         single ROC column, a tuple ``(start, end)`` expands to the inclusive
@@ -117,12 +117,29 @@ def augment_roc(
             periods=(5, 10),
         )
     )
+
+    # Selector example
+    from pytimetk.utils.selection import contains
+
+    selector_demo = (
+        df
+            .augment_roc(
+                date_column=contains("dat"),
+                close_column=contains("clos"),
+                periods=[5, 10],
+            )
+    )
     ```
     """
 
     check_dataframe_or_groupby(data)
-    check_value_column(data, close_column)
-    check_date_column(data, date_column)
+    date_column, close_cols = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=close_column,
+        require_numeric=True,
+    )
+    close_columns = close_cols
 
     periods_list = _normalize_periods(periods)
     if start_index >= min(periods_list):
@@ -146,8 +163,6 @@ def augment_roc(
             RuntimeWarning,
             stacklevel=2,
         )
-
-    close_columns = [close_column]
 
     if conversion_engine == "pandas":
         sorted_data, _ = sort_dataframe(

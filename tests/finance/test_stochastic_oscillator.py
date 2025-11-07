@@ -8,6 +8,7 @@ import numpy as np
 import pytimetk as tk
 import os
 import multiprocessing as mp
+from pytimetk.utils.selection import contains
 
 # Avoid multiprocessing/threading warnings / over-subscription
 mp.set_start_method("spawn", force=True)
@@ -362,3 +363,18 @@ def test_stochastic_oscillator_polars_groupby_roundtrip(pl_df, df):
     ).to_pandas().reset_index(drop=True)
 
     pd.testing.assert_frame_equal(pandas_group, polars_group)
+
+
+def test_stochastic_oscillator_supports_selectors(df):
+    result = (
+        df.groupby("symbol")
+        .augment_stochastic_oscillator(
+            date_column=contains("dat"),
+            high_column=contains("high"),
+            low_column=contains("low"),
+            close_column=contains("clos"),
+            k_periods=[14],
+            d_periods=[3],
+        )
+    )
+    assert any("close_stoch_k_14" in col or "close_stochastic_k_14" in col for col in result.columns)

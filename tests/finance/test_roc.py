@@ -8,6 +8,7 @@ import polars as pl
 import pytimetk as tk
 import os
 import multiprocessing as mp
+from pytimetk.utils.selection import contains
 
 # Avoid multiprocessing/threading warnings / over-subscription
 mp.set_start_method("spawn", force=True)
@@ -162,6 +163,19 @@ def test_roc(df, engine, periods, start_index):
             f"Expected >= {start_index} NaNs for {col} (ungrouped)"
         )
         _assert_roc_reasonable(res_u[col], f"{col} (ungrouped)")
+
+
+def test_roc_supports_tidy_selectors(df):
+    result = (
+        df.groupby("symbol")
+        .augment_roc(
+            date_column=contains("dat"),
+            close_column=contains("clos"),
+            periods=[5],
+            start_index=1,
+        )
+    )
+    assert any(col.startswith("close_roc_1_5") for col in result.columns)
 
 
 def test_roc_edge_cases(df):

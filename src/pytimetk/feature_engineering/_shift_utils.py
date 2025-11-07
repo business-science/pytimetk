@@ -159,6 +159,8 @@ def resolve_shift_columns(
             except Exception:
                 pass
 
+    if isinstance(value_resolved, str):
+        value_resolved = [value_resolved]
     check_value_column(frame, value_resolved, require_numeric_dtype=require_numeric)
     check_date_column(frame, date_resolved)
     return date_resolved, value_resolved

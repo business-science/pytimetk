@@ -14,8 +14,6 @@ from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.polars_helpers import collect_lazyframe
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
@@ -29,6 +27,8 @@ from pytimetk.utils.dataframe_ops import (
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.utils.selection import ColumnSelector
+from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 
 
 @pf.register_groupby_method
@@ -42,10 +42,10 @@ def augment_stochastic_oscillator(
         "cudf.DataFrame",
         "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
-    date_column: str,
-    high_column: str,
-    low_column: str,
-    close_column: str,
+    date_column: Union[str, ColumnSelector],
+    high_column: Union[str, ColumnSelector],
+    low_column: Union[str, ColumnSelector],
+    close_column: Union[str, ColumnSelector],
     k_periods: Union[int, Tuple[int, int], List[int]] = 14,
     d_periods: Union[int, List[int]] = 3,
     reduce_memory: bool = False,
@@ -59,13 +59,13 @@ def augment_stochastic_oscillator(
     data : DataFrame or GroupBy (pandas or polars)
         Input financial data. Grouped inputs are processed per group before
         the indicators are appended.
-    date_column : str
-        Name of the column containing date information.
-    high_column : str
+    date_column : str or ColumnSelector
+        Name of the column containing date information (selectors supported).
+    high_column : str or ColumnSelector
         Column containing high prices.
-    low_column : str
+    low_column : str or ColumnSelector
         Column containing low prices.
-    close_column : str
+    close_column : str or ColumnSelector
         Column containing closing prices. Resulting columns are prefixed with
         this name.
     k_periods : int, tuple, or list, optional
@@ -124,14 +124,48 @@ def augment_stochastic_oscillator(
             d_periods=[3],
         )
     )
+
+    from pytimetk.utils.selection import contains
+    selector_demo = (
+        df
+            .augment_stochastic_oscillator(
+                date_column=contains("dat"),
+                high_column=contains("high"),
+                low_column=contains("low"),
+                close_column=contains("clos"),
+                k_periods=14,
+                d_periods=[3],
+            )
+    )
     ```
     """
 
     check_dataframe_or_groupby(data)
-    check_value_column(data, high_column)
-    check_value_column(data, low_column)
-    check_value_column(data, close_column)
-    check_date_column(data, date_column)
+    date_column, close_cols = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=close_column,
+        require_numeric=True,
+    )
+    _, high_cols = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=high_column,
+        require_numeric=True,
+    )
+    _, low_cols = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=low_column,
+        require_numeric=True,
+    )
+    if len(close_cols) != 1 or len(high_cols) != 1 or len(low_cols) != 1:
+        raise ValueError(
+            "`high_column`, `low_column`, and `close_column` selectors must resolve to exactly one column."
+        )
+    close_column = close_cols[0]
+    high_column = high_cols[0]
+    low_column = low_cols[0]
 
     k_values = _normalize_periods(k_periods, label="k_periods")
     d_values = _normalize_d_periods(d_periods)

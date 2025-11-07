@@ -5,6 +5,7 @@ import pytimetk as tk
 import os
 import multiprocessing as mp
 from itertools import product
+from pytimetk.utils.selection import contains
 
 # Setup to avoid multiprocessing warnings
 mp.set_start_method("spawn", force=True)
@@ -139,6 +140,15 @@ def test_ppo_edge_cases(df):
             engine="pandas",
         )
 
+    with pytest.raises(ValueError, match="selector must resolve to exactly one column"):
+        df.augment_ppo(
+            date_column="date",
+            close_column=["close", "open"],
+            fast_period=12,
+            slow_period=26,
+            engine="pandas",
+        )
+
 
 def test_ppo_polars_dataframe_roundtrip(pl_df):
     pandas_single = (
@@ -162,6 +172,19 @@ def test_ppo_polars_dataframe_roundtrip(pl_df):
         pandas_result.reset_index(drop=True),
         polars_result.to_pandas().reset_index(drop=True),
     )
+
+
+def test_ppo_supports_tidy_selectors(df):
+    result = (
+        df.groupby("symbol")
+        .augment_ppo(
+            date_column=contains("dat"),
+            close_column=contains("clos"),
+            fast_period=12,
+            slow_period=26,
+        )
+    )
+    assert "close_ppo_line_12_26" in result.columns
 
 
 def test_ppo_polars_groupby_roundtrip(pl_df):
