@@ -295,6 +295,23 @@ def test_future_frame_polars_grouped_matches_pandas():
     assert_frame_equal(actual, expected, check_dtype=False)
 
 
+def test_future_frame_accepts_deprecated_aliases():
+    df_local = pd.DataFrame(
+        {
+            "id": ["A"] * 5,
+            "date": pd.date_range("2022-01-01", periods=5, freq="ME"),
+            "value": range(5),
+        }
+    )
+    legacy = df_local.groupby("id").future_frame(
+        date_column="date", length_out=1, freq="M", threads=1
+    )
+    modern = df_local.groupby("id").future_frame(
+        date_column="date", length_out=1, freq="ME", threads=1
+    )
+    assert_frame_equal(legacy, modern, check_dtype=False)
+
+
 # Run the tests
 if __name__ == "__main__":
     pytest.main([__file__])

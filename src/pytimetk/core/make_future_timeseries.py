@@ -5,6 +5,7 @@ from typing import Union, Optional, List
 from pytimetk.core.frequency import get_frequency
 
 from pytimetk.utils.checks import check_series_or_datetime
+from pytimetk.utils.datetime_helpers import normalize_frequency_alias
 
 
 @pf.register_series_method
@@ -134,6 +135,9 @@ def make_future_timeseries(
     freq_resolved = freq
     if freq_resolved is None:
         freq_resolved = get_frequency(dt_index, force_regular=force_regular)
+
+    if isinstance(freq_resolved, str):
+        freq_resolved = normalize_frequency_alias(freq_resolved)
 
     future_dates = pd.date_range(
         start=series.iloc[-1], periods=length_out + 1, freq=freq_resolved

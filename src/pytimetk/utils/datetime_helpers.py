@@ -66,6 +66,17 @@ _HUMAN_DURATION_UNITS = {
     "years": "years",
 }
 
+_FREQ_ALIAS_PAIRS = [
+    ("CBM", "CBME"),
+    ("BM", "BME"),
+    ("SM", "SME"),
+    ("M", "ME"),
+    ("BQ", "BQE"),
+    ("Q", "QE"),
+    ("BY", "BYE"),
+    ("Y", "YE"),
+]
+
 
 def parse_human_duration(
     value: Union[
@@ -155,6 +166,42 @@ def parse_human_duration(
 
     # Timedelta-based units
     return pd.to_timedelta(quantity, unit=canonical_unit)
+
+
+def normalize_frequency_alias(freq: str) -> str:
+    """
+    Normalize deprecated pandas frequency aliases to their modern equivalents.
+
+    Parameters
+    ----------
+    freq : str
+        Frequency string (e.g. ``"M"``, ``"Q-NOV"``, ``"ME"``, ``"3D"``).
+
+    Returns
+    -------
+    str
+        Returns ``freq`` unchanged if it does not match any deprecated alias.
+        Otherwise the alias portion is replaced with the new spelling (e.g.
+        ``"M" -> "ME"``, ``"Q-NOV" -> "QE-NOV"``).
+    """
+
+    if not isinstance(freq, str):
+        return freq
+
+    text = freq.strip()
+    if not text:
+        return text
+
+    upper = text.upper()
+    for deprecated, new in _FREQ_ALIAS_PAIRS:
+        alias_len = len(deprecated)
+        if upper == deprecated:
+            return new
+        prefix = f"{deprecated}-"
+        if upper.startswith(prefix):
+            remainder = text[alias_len:]
+            return new + remainder
+    return text
 
 
 def resolve_lag_sequence(

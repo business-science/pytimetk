@@ -234,3 +234,15 @@ def test_pad_by_time_grouped_selector():
         .reset_index(drop=True)
     )
     assert_frame_equal(selector_result, baseline, check_dtype=False)
+
+
+def test_pad_by_time_accepts_deprecated_aliases():
+    df = pd.DataFrame(
+        {
+            "date": pd.date_range("2022-01-01", periods=3, freq="15D"),
+            "value": [1, 2, 3],
+        }
+    )
+    deprecated = df.pad_by_time(date_column="date", freq="Q")
+    modern = df.pad_by_time(date_column="date", freq="QE")
+    assert_frame_equal(deprecated, modern, check_dtype=False)

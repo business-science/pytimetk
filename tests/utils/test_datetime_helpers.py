@@ -1,7 +1,11 @@
 import numpy as np
 import pandas as pd
 
-from pytimetk.utils.datetime_helpers import parse_human_duration, resolve_lag_sequence
+from pytimetk.utils.datetime_helpers import (
+    parse_human_duration,
+    resolve_lag_sequence,
+    normalize_frequency_alias,
+)
 
 
 def test_parse_human_duration_numeric_and_calendar_units():
@@ -31,3 +35,10 @@ def test_resolve_lag_sequence_from_phrase_clamps_to_length():
     idx = pd.date_range("2021-01-01", periods=5, freq="D")
     result = resolve_lag_sequence("10 days", idx)
     assert result.max() == len(idx) - 1
+
+
+def test_normalize_frequency_aliases():
+    assert normalize_frequency_alias("m") == "ME"
+    assert normalize_frequency_alias("Q-nov") == "QE-nov"
+    assert normalize_frequency_alias("bq-feb") == "BQE-feb"
+    assert normalize_frequency_alias("ME") == "ME"

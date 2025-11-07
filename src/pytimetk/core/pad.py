@@ -18,7 +18,7 @@ from pytimetk.utils.dataframe_ops import (
 from pytimetk.utils.polars_helpers import pandas_to_polars_frequency
 from functools import lru_cache
 from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
-from pytimetk.utils.datetime_helpers import parse_human_duration
+from pytimetk.utils.datetime_helpers import parse_human_duration, normalize_frequency_alias
 
 
 def _resolve_selector_frame(
@@ -52,6 +52,8 @@ def _normalize_frequency(freq: Optional[str]) -> Union[str, pd.DateOffset, pd.Ti
         return "D"
     if isinstance(freq, (pd.DateOffset, pd.Timedelta)):
         return freq
+    if isinstance(freq, str):
+        freq = normalize_frequency_alias(freq)
     try:
         return pd.tseries.frequencies.to_offset(freq)
     except Exception:

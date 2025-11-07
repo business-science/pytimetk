@@ -67,6 +67,11 @@ def test_make_future_timeseries_quarterly():
     expect = pd.Series(pd.date_range("2011-04-02", periods = 4, freq="D"))
     
     assert_series_equal(result_3, expect)
+
+    # Deprecated alias should match new alias
+    legacy = tk.make_future_timeseries(["2011-01-01", "2011-02-01"], 2, "M")
+    modern = tk.make_future_timeseries(["2011-01-01", "2011-02-01"], 2, "ME")
+    assert_series_equal(legacy, modern)
     
 def test_make_future_timeseries_compound_freq():
     

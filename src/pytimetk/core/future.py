@@ -18,7 +18,7 @@ from pytimetk.utils.dataframe_ops import (
     resolve_polars_group_columns,
 )
 from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
-from pytimetk.utils.datetime_helpers import parse_human_duration
+from pytimetk.utils.datetime_helpers import parse_human_duration, normalize_frequency_alias
 from pytimetk.utils.ray_helpers import run_ray_tasks
 
 
@@ -53,6 +53,8 @@ def _normalize_frequency_spec(
 ) -> Optional[pd.DateOffset]:
     if freq is None:
         return None
+    if isinstance(freq, str):
+        freq = normalize_frequency_alias(freq)
     if isinstance(freq, pd.DateOffset):
         return freq
     try:
