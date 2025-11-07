@@ -122,7 +122,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2025-11-07T02:25:54.623Z</lastmod>
+    <lastmod>2025-11-07T02:45:35.061Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_pandas_frequency.html</loc>
@@ -470,6 +470,10 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/plot_time_series_regression.html</loc>
-    <lastmod>2025-11-07T02:25:59.759Z</lastmod>
+    <lastmod>2025-11-07T02:31:54.943Z</lastmod>
+  </url>
+  <url>
+    <loc>https://business-science.github.io/pytimetk/reference/plot_stl_diagnostics.html</loc>
+    <lastmod>2025-11-07T02:45:42.382Z</lastmod>
   </url>
 </urlset>

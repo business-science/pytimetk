@@ -15,7 +15,7 @@
 1. ✅ `plot_acf_diagnostics` accepts tidy selectors for `value_column` / `ccf_columns` and handles polars inputs.
 2. Extend tidy selectors to remaining visualization functions in priority order:
    - [x] `plot_seasonal_diagnostics` (for `.facet_vars` / `.feature_set`)
-   - [ ] `plot_stl_diagnostics`
+   - [x] `plot_stl_diagnostics`
    - [x] `plot_time_series_boxplot`, `plot_time_series_regression`, and other upcoming R parity ports.
 3. Update usage docs with selector-driven examples (pandas + polars).
 

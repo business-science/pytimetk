@@ -8,6 +8,7 @@ from .plot import (
     plot_correlation_funnel,
     plot_time_series_boxplot,
     plot_time_series_regression,
+    plot_stl_diagnostics,
     plot_acf_diagnostics,
     plot_seasonal_diagnostics,
 )

@@ -1,0 +1,96 @@
+# plot_stl_diagnostics { #pytimetk.plot_stl_diagnostics }
+
+```python
+plot_stl_diagnostics(
+    data,
+    date_column,
+    value_column,
+    feature_set=('observed', 'season', 'trend', 'remainder', 'seasadj'),
+    facet_vars=None,
+    facet_ncols=1,
+    frequency='auto',
+    trend='auto',
+    robust=True,
+    line_color='#2c3e50',
+    line_width=2.0,
+    line_dash='solid',
+    line_alpha=1.0,
+    title='STL Diagnostics',
+    x_lab='',
+    y_lab='',
+    width=None,
+    height=None,
+    plotly_dropdown=False,
+    plotly_dropdown_x=1.05,
+    plotly_dropdown_y=1.05,
+    hovertemplate=None,
+)
+```
+
+Visualize STL decomposition components (observed, season, trend, remainder,
+seasonally adjusted) for one or more time series using Plotly. Supports
+tidy selectors, pandas GroupBy objects, and polars inputs.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+| Name              | Type                                                     | Description                                                                                                                  | Default                                                   |
+|-------------------|----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
+| data              | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | Time series data in long format, optionally grouped.                                                                         | _required_                                                |
+| date_column       | str or ColumnSelector                                    | Datetime column plotted on the x-axis.                                                                                       | _required_                                                |
+| value_column      | str or ColumnSelector                                    | Numeric column that is decomposed.                                                                                           | _required_                                                |
+| feature_set       | str or sequence                                          | Subset (or single value) of ``{"observed", "season", "trend", "remainder", "seasadj"}`` to plot. Defaults to all components. | `('observed', 'season', 'trend', 'remainder', 'seasadj')` |
+| facet_vars        | str, sequence, or ColumnSelector                         | Additional categorical columns used to facet the output.                                                                     | `None`                                                    |
+| facet_ncols       | int                                                      | Number of facet columns when ``plotly_dropdown`` is ``False``.                                                               | `1`                                                       |
+| frequency         | (str, int, float)                                        | Seasonal period forwarded to :func:`pytimetk.core.stl_diagnostics.stl_diagnostics`.                                          | `'auto'`                                                  |
+| trend             | (str, int, float)                                        | STL trend window specification forwarded to :func:`stl_diagnostics`.                                                         | `'auto'`                                                  |
+| robust            | bool                                                     | Use robust STL fitting. Defaults to ``True``.                                                                                | `True`                                                    |
+| line_color        | optional                                                 | Styling for the component lines.                                                                                             | `'#2c3e50'`                                               |
+| line_width        | optional                                                 | Styling for the component lines.                                                                                             | `'#2c3e50'`                                               |
+| line_dash         | optional                                                 | Styling for the component lines.                                                                                             | `'#2c3e50'`                                               |
+| line_alpha        | optional                                                 | Styling for the component lines.                                                                                             | `'#2c3e50'`                                               |
+| title             | str                                                      | Figure and axis labels.                                                                                                      | `'STL Diagnostics'`                                       |
+| x_lab             | str                                                      | Figure and axis labels.                                                                                                      | `'STL Diagnostics'`                                       |
+| y_lab             | str                                                      | Figure and axis labels.                                                                                                      | `'STL Diagnostics'`                                       |
+| width             | int                                                      | Figure dimensions in pixels.                                                                                                 | `None`                                                    |
+| height            | int                                                      | Figure dimensions in pixels.                                                                                                 | `None`                                                    |
+| plotly_dropdown   | bool                                                     | When ``True`` and multiple facet combinations exist, render a dropdown to switch between them.                               | `False`                                                   |
+| plotly_dropdown_x | float                                                    | Dropdown anchor coordinates.                                                                                                 | `1.05`                                                    |
+| plotly_dropdown_y | float                                                    | Dropdown anchor coordinates.                                                                                                 | `1.05`                                                    |
+| hovertemplate     | str                                                      | Custom Plotly hover template.                                                                                                | `None`                                                    |
+
+## Returns {.doc-section .doc-section-returns}
+
+| Name   | Type                        | Description                                          |
+|--------|-----------------------------|------------------------------------------------------|
+|        | plotly.graph_objects.Figure | Interactive figure showing STL components per facet. |
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import pytimetk as tk
+
+df = tk.load_dataset("taylor_30_min", parse_dates=["date"])
+
+fig = tk.plot_stl_diagnostics(
+    data=df,
+    date_column="date",
+    value_column="value",
+    title="STL decomposition",
+)
+fig
+```
+
+```{python}
+# Faceted example with additional feature configuration
+df_features = df.assign(hour=lambda d: d["date"].dt.hour)
+
+fig_faceted = tk.plot_stl_diagnostics(
+    data=df_features,
+    date_column="date",
+    value_column="value",
+    feature_set=["observed", "trend", "remainder"],
+    facet_vars="hour",
+    plotly_dropdown=True,
+)
+fig_faceted
+```

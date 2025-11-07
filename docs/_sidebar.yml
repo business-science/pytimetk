@@ -10,10 +10,11 @@ website:
     - contents:
       - reference/plot_acf_diagnostics.qmd
       - reference/plot_seasonal_diagnostics.qmd
+      - reference/plot_stl_diagnostics.qmd
       - reference/acf_diagnostics.qmd
       - reference/seasonal_diagnostics.qmd
       - reference/stl_diagnostics.qmd
-      section: "\U0001F680 Plotting Correlation, Seasonality, and Trends"
+      section: "\U0001F680 Plot Correlation, Seasonality, and Trends"
     - contents:
       - reference/summarize_by_time.qmd
       - reference/apply_by_time.qmd

@@ -633,6 +633,9 @@ def _get_median_timestamps(idx, period):
     if isinstance(idx, pd.DatetimeIndex):
         idx = pd.Series(idx, name="idx")
 
+    if isinstance(idx, pd.Series):
+        idx = idx.copy()
+
     idx_floor = floor_date(idx, period)
     idx_floor.name = "idx_floor"
 

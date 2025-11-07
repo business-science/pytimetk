@@ -37,7 +37,7 @@
 ## Phase 3 — Plotting Functions
 1. Implement visualization functions in the following order (building on utilities):
    - [x] `plot_acf_diagnostics()`
-   - [ ] `plot_stl_diagnostics()`
+   - [x] `plot_stl_diagnostics()`
    - [x] `plot_seasonal_diagnostics()`
    - [x] `plot_time_series_boxplot()`
    - [x] `plot_time_series_regression()`
