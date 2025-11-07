@@ -7,7 +7,7 @@ import numpy as np
 import polars as pl
 import pytimetk as tk
 import os
-import multiprocess as mp
+import multiprocessing as mp
 
 # Avoid multiprocessing/threading warnings / over-subscription
 mp.set_start_method("spawn", force=True)

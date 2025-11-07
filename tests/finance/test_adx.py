@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import pytimetk as tk
 import os
-import multiprocess as mp
+import multiprocessing as mp
 
 # Setup to avoid multiprocessing/threading warnings
 mp.set_start_method("spawn", force=True)

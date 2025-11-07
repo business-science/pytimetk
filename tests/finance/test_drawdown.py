@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 import pytimetk as tk
 import os
-import multiprocess as mp
+import multiprocessing as mp
 import numpy as np
 
 # Align multiprocessing behaviour with existing finance tests to avoid warnings.

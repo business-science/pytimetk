@@ -3,7 +3,7 @@ import pandas as pd
 import polars as pl
 import pytimetk as tk
 import os
-import multiprocess as mp
+import multiprocessing as mp
 from itertools import product
 
 # Setup to avoid multiprocessing warnings

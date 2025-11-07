@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 import pytimetk as tk
 import os
-import multiprocess as mp
+import multiprocessing as mp
 import numpy as np
 
 # Skip the entire module if hmmlearn (optional dependency) is not present.

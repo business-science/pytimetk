@@ -2,7 +2,7 @@ import pytimetk as tk
 import pandas as pd
 import polars as pl
 import pytest
-import multiprocess as mp  # Use multiprocess instead of multiprocessing
+import multiprocessing as mp  # Control multiprocessing context for cross-platform consistency
 from itertools import product
 # noqa: F401
 
