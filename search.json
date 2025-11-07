@@ -2657,7 +2657,7 @@
     "href": "reference/theme_plotly_timetk.html#examples",
     "title": "theme_plotly_timetk",
     "section": "Examples",
-    "text": "Examples\n\nimport plotly.express as px\nimport pytimetk as tk\n\ndf = (\n    px.data.stocks()\n    .melt(id_vars=\"date\", var_name=\"id\", value_name=\"value\")\n    .query(\"date &lt;= '2015-12-31'\")\n)\n\n# No styling\nfig = px.line(df, x=\"date\", y=\"value\", color=\"id\", title=\"Baseline Plotly\")\nfig\n\n\n                                                \n\n\n\n# Apply timetk styling\ntk.theme_plotly_timetk(fig)\nfig"
+    "text": "Examples\n\nimport plotly.express as px\nimport pytimetk as tk\n\ndf = (\n    px.data.stocks()\n    .melt(id_vars=\"date\", var_name=\"id\", value_name=\"value\")\n)\n\n# No styling\nfig = px.line(df, x=\"date\", y=\"value\", color=\"id\", title=\"Baseline Plotly\")\nfig\n\n\n                                                \n\n\n\n# Apply timetk styling\ntk.theme_plotly_timetk(fig)\nfig"
   },
   {
     "objectID": "reference/augment_rolling_apply.html",
