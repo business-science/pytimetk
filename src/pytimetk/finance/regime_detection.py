@@ -19,8 +19,6 @@ except ImportError:  # pragma: no cover - cudf optional
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
@@ -34,6 +32,8 @@ from pytimetk.utils.dataframe_ops import (
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
+from pytimetk.utils.selection import ColumnSelector
+from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 
 
 @pf.register_groupby_method
@@ -45,8 +45,8 @@ def augment_regime_detection(
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
     ],
-    date_column: str,
-    close_column: str,
+    date_column: Union[str, ColumnSelector],
+    close_column: Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]]],
     window: Union[int, Tuple[int, int], List[int]] = 252,
     n_regimes: int = 2,
     method: str = "hmm",
@@ -63,10 +63,11 @@ def augment_regime_detection(
     data : DataFrame or GroupBy (pandas or polars)
         Input time-series data. Grouped inputs are processed per group before
         the regime labels are appended.
-    date_column : str
-        Column name containing dates or timestamps.
-    close_column : str
-        Column name with closing prices for regime detection.
+    date_column : str or ColumnSelector
+        Column (or selector) containing dates or timestamps.
+    close_column : str, ColumnSelector, or list
+        Column(s) with closing prices used for regime detection. Must resolve to
+        exactly one column.
     window : Union[int, Tuple[int, int], List[int]], optional
         Size of the rolling window to fit the regime detection model. Default is 252.
     n_regimes : int, optional
@@ -99,69 +100,79 @@ def augment_regime_detection(
 
     Examples
     --------
-    ```python
+    ```{python}
     import pandas as pd
     import polars as pl
     import pytimetk as tk
 
-    df = tk.load_dataset('stocks_daily', parse_dates=['date'])
+    df = tk.load_dataset("stocks_daily", parse_dates=["date"])
 
-    # Example 1 - Single stock regime detection with pandas engine
-    # Requires hmmlearn: pip install hmmlearn
-    regime_df = (
-        df.query("symbol == 'AAPL'")
+    df
+    ```
+
+    ```{python}
+    # Regime detection - pandas single stock (requires hmmlearn)
+    regime_single = (
+        df
+        .query("symbol == 'AAPL'")
         .augment_regime_detection(
-            date_column='date',
-            close_column='close',
+            date_column="date",
+            close_column="close",
             window=252,
-            n_regimes=2
+            n_regimes=2,
         )
     )
-    regime_df.head().glimpse()
+
+    regime_single.glimpse()
     ```
 
-    ```python
-    # Example 2 - Multiple stocks with groupby using pandas engine
-    # Requires hmmlearn: pip install hmmlearn
-    regime_df = (
-        df.groupby('symbol')
+    ```{python}
+    # Regime detection - pandas grouped (requires hmmlearn)
+    regime_grouped = (
+        df
+        .groupby("symbol")
         .augment_regime_detection(
-            date_column='date',
-            close_column='close',
-            window=[252, 504],  # One year and two years
-            n_regimes=3
-        )
-    )
-    regime_df.groupby('symbol').tail(1).glimpse()
-    ```
-
-    ```python
-    # Example 3 - Single stock regime detection with polars engine
-    # Requires hmmlearn: pip install hmmlearn
-    pl_single = pl.from_pandas(df.query("symbol == 'AAPL'"))
-    regime_df = pl_single.tk.augment_regime_detection(
-        date_column='date',
-        close_column='close',
-        window=252,
-        n_regimes=2
-    )
-    regime_df.glimpse()
-    ```
-
-    ```python
-    # Example 4 - Multiple stocks with groupby using polars engine
-    # Requires hmmlearn: pip install hmmlearn
-    pl_df = pl.from_pandas(df)
-    regime_df = (
-        pl_df.group_by('symbol')
-        .tk.augment_regime_detection(
-            date_column='date',
-            close_column='close',
-            window=504,
+            date_column="date",
+            close_column="close",
+            window=[252, 504],
             n_regimes=3,
         )
     )
-    regime_df.groupby('symbol').tail(1).glimpse()
+
+    regime_grouped.groupby("symbol").tail(1)
+    ```
+
+    ```{python}
+    # Regime detection - polars engine (requires hmmlearn)
+    pl_single = pl.from_pandas(df.query("symbol == 'AAPL'"))
+    regime_polars = (
+        pl_single
+        .tk.augment_regime_detection(
+            date_column="date",
+            close_column="close",
+            window=252,
+            n_regimes=2,
+        )
+    )
+
+    regime_polars.glimpse()
+    ```
+
+    ```{python}
+    from pytimetk.utils.selection import contains
+
+    selector_demo = (
+        df
+        .groupby("symbol")
+        .augment_regime_detection(
+            date_column=contains("dat"),
+            close_column=contains("clos"),
+            window=252,
+            n_regimes=2,
+        )
+    )
+
+    selector_demo.groupby("symbol").tail(1)
     ```
     """
 
@@ -172,15 +183,16 @@ def augment_regime_detection(
             "Please install it using: `pip install hmmlearn`"
         )
 
-    if method.lower() == "hmm" and GaussianHMM is None:
-        raise ImportError(
-            "The 'hmm' method requires the 'hmmlearn' package, which is not installed. "
-            "Please install it using: `pip install hmmlearn`"
-        )
-
     check_dataframe_or_groupby(data)
-    check_value_column(data, close_column)
-    check_date_column(data, date_column)
+    date_column, close_columns = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=close_column,
+        require_numeric=True,
+    )
+    if len(close_columns) != 1:
+        raise ValueError("`close_column` selector must resolve to exactly one column.")
+    close_column = close_columns[0]
 
     if n_regimes < 2:
         raise ValueError("n_regimes must be at least 2.")

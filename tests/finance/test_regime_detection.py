@@ -4,6 +4,7 @@ import pytimetk as tk
 import os
 import multiprocessing as mp
 import numpy as np
+from pytimetk.utils.selection import contains
 
 # Skip the entire module if hmmlearn (optional dependency) is not present.
 pytest.importorskip("hmmlearn.hmm")
@@ -95,3 +96,25 @@ def test_regime_detection_invalid_inputs(regime_df):
             close_column="close",
             window=30,
         )
+
+    with pytest.raises(
+        ValueError, match=r"`value_column` \(close\) not found in `data`"
+    ):
+        regime_df[["symbol", "date"]].augment_regime_detection(
+            date_column="date",
+            close_column="close",
+            window=30,
+        )
+
+
+def test_regime_detection_supports_tidy_selectors(regime_df):
+    result = regime_df.groupby("symbol").augment_regime_detection(
+        date_column=contains("dat"),
+        close_column=contains("clos"),
+        window=60,
+        n_regimes=2,
+        step_size=20,
+        n_iter=10,
+        n_jobs=1,
+    )
+    assert "close_regime_60" in result.columns
