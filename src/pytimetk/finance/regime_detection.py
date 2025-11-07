@@ -12,11 +12,45 @@ try:
 except ImportError:  # pragma: no cover - optional dependency
     GaussianHMM = None
 
-try:
-    from pomegranate import HiddenMarkovModel, NormalDistribution
-except ImportError:  # pragma: no cover - optional dependency
-    HiddenMarkovModel = None
-    NormalDistribution = None
+import importlib
+import importlib.util
+
+_POMEGRANATE_MODEL = None
+_POMEGRANATE_DIST = None
+
+
+def _ensure_pomegranate_available():
+    """
+    Lazily import pomegranate regardless of major version.
+    Returns (HiddenMarkovModel, NormalDistribution) classes.
+    """
+    global _POMEGRANATE_MODEL, _POMEGRANATE_DIST
+    if _POMEGRANATE_MODEL is not None and _POMEGRANATE_DIST is not None:
+        return _POMEGRANATE_MODEL, _POMEGRANATE_DIST
+
+    last_error = None
+
+    try:
+        from pomegranate import HiddenMarkovModel as legacy_hmm
+        from pomegranate import NormalDistribution as legacy_norm
+
+        _POMEGRANATE_MODEL = legacy_hmm
+        _POMEGRANATE_DIST = legacy_norm
+    except ImportError as exc:
+        last_error = exc
+
+    if _POMEGRANATE_MODEL is None or _POMEGRANATE_DIST is None:
+        message = (
+            "The 'pomegranate' backend requires the legacy pomegranate>=0.14,<1.0 "
+            "release which exposes HiddenMarkovModel/NormalDistribution. "
+            "Install it with `pip install 'pomegranate<1.0'`."
+        )
+        if last_error is not None:
+            message += f" Original error: {last_error}"
+        raise ImportError(message)
+
+    return _POMEGRANATE_MODEL, _POMEGRANATE_DIST
+
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -42,7 +76,7 @@ from pytimetk.utils.selection import ColumnSelector
 from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 
 HMMLEARN_AVAILABLE = GaussianHMM is not None
-POMEGRANATE_AVAILABLE = HiddenMarkovModel is not None and NormalDistribution is not None
+POMEGRANATE_AVAILABLE = importlib.util.find_spec("pomegranate") is not None
 
 
 @pf.register_groupby_method
@@ -110,7 +144,7 @@ def augment_regime_detection(
     -----
     - Uses Hidden Markov Model (HMM) to identify latent regimes based on log returns.
     - Regimes reflect distinct statistical states (e.g., high/low volatility, trending).
-    - Requires 'hmmlearn' package. Install with `pip install hmmlearn` or the faster `pomegranate` package.
+    - Requires 'hmmlearn' package. Install with `pip install hmmlearn` or the faster `pomegranate` package. Install with `pip install pomegranate<=1.0.0`.
 
     Examples
     --------
@@ -173,6 +207,7 @@ def augment_regime_detection(
     ```
 
     ```{python}
+    # Pomegranate backend with column selectors
     from pytimetk.utils.selection import contains
 
     selector_demo = (
@@ -182,7 +217,8 @@ def augment_regime_detection(
             date_column=contains("dat"),
             close_column=contains("clos"),
             window=252,
-            n_regimes=2,
+            n_regimes=5,
+            hmm_backend="pomegranate", # pomegranate<=1.0.0 required
         )
     )
 
@@ -190,10 +226,21 @@ def augment_regime_detection(
     ```
 
     ``` {python}
-    # Visualize detected regimes with plot_timeseries
+    # Visualizing regimes
+    SYMBOLS = ['AAPL', 'AMZN', 'MSFT', 'GOOG', 'NVDA']
+    SYMBOL = 'NVDA'
 
-
-
+    (
+        selector_demo
+        .query(f"symbol == '{SYMBOL}'")
+        .plot_timeseries(
+            date_column="date",
+            value_column="close",
+            color_column="close_regime_252",
+            smooth=False,
+            title=f"{SYMBOL} Close Price with Detected Regimes",
+        )
+    )
     ```
     """
 
@@ -207,7 +254,12 @@ def augment_regime_detection(
             "Invalid `hmm_backend`. Choose from {'auto', 'pomegranate', 'hmmlearn'}."
         )
     if backend == "auto":
-        backend = "pomegranate" if POMEGRANATE_AVAILABLE else "hmmlearn"
+        if HMMLEARN_AVAILABLE:
+            backend = "hmmlearn"
+        elif POMEGRANATE_AVAILABLE:
+            backend = "pomegranate"
+        else:
+            backend = "hmmlearn"
 
     if backend == "pomegranate" and not POMEGRANATE_AVAILABLE:
         raise ImportError(
@@ -323,8 +375,17 @@ def _augment_regime_detection_pandas(
 
     col = close_column
 
-    df["log_returns"] = np.log(df[col] / df[col].shift(1))
+    if group_names:
+        prev = df.groupby(group_names)[col].shift(1)
+    else:
+        prev = df[col].shift(1)
+    df["log_returns"] = np.log(df[col] / prev)
     df["log_returns"] = df["log_returns"].replace([np.inf, -np.inf], np.nan)
+
+    pome_model_cls = None
+    pome_dist_cls = None
+    if hmm_backend == "pomegranate":
+        pome_model_cls, pome_dist_cls = _ensure_pomegranate_available()
 
     def detect_regimes(series, window, n_regimes, step_size, n_iter):
         values = series.to_numpy(dtype=float, copy=False)
@@ -369,8 +430,8 @@ def _augment_regime_detection_pandas(
                 else:
                     sequence = window_data.ravel().tolist()
                     if pom_model is None:
-                        pom_model = HiddenMarkovModel.from_samples(
-                            NormalDistribution,
+                        pom_model = pome_model_cls.from_samples(
+                            pome_dist_cls,
                             n_components=n_regimes,
                             X=[sequence],
                             algorithm="baum-welch",
