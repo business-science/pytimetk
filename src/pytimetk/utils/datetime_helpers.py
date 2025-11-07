@@ -150,6 +150,8 @@ def parse_human_duration(
         if canonical_unit == "quarters":
             return pd.DateOffset(months=quantity_int * 3)
         return pd.DateOffset(years=quantity_int)
+    if canonical_unit == "weeks":
+        return pd.to_timedelta(quantity, unit="W")
 
     # Timedelta-based units
     return pd.to_timedelta(quantity, unit=canonical_unit)

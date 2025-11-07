@@ -6,6 +6,7 @@ from .plot import (
     plot_anomalies_decomp,
     plot_anomalies_cleaned,
     plot_correlation_funnel,
+    plot_time_series_boxplot,
     plot_acf_diagnostics,
     plot_seasonal_diagnostics,
 )

@@ -36,12 +36,12 @@
 
 ## Phase 3 — Plotting Functions
 1. Implement visualization functions in the following order (building on utilities):
-   - `plot_acf_diagnostics()`
-   - `plot_stl_diagnostics()`
-   - `plot_seasonal_diagnostics()`
-   - `plot_time_series_boxplot()`
-   - `plot_time_series_regression()`
-   - `plot_time_series_cv_plan()`
+   - [x] `plot_acf_diagnostics()`
+   - [ ] `plot_stl_diagnostics()`
+   - [x] `plot_seasonal_diagnostics()`
+   - [x] `plot_time_series_boxplot()`
+   - [ ] `plot_time_series_regression()`
+   - [ ] `plot_time_series_cv_plan()`
 2. Provide sensible defaults (palette, titles, hover labels) and expose optional kwargs for advanced styling.
 3. Ensure each function returns a plotly `Figure` and optionally accepts `show=False` to defer rendering.
 4. Add smoke tests that validate figure generation and key trace counts for canonical datasets.

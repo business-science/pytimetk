@@ -7,6 +7,7 @@ Visualize time series data with one line of code.
 | | |
 | --- | --- |
 | [plot_timeseries](plot_timeseries.qmd#pytimetk.plot_timeseries) | Creates time series plots using different plotting engines such as Plotnine, |
+| [plot_time_series_boxplot](plot_time_series_boxplot.qmd#pytimetk.plot_time_series_boxplot) | Visualize rolling distributions of a time series by aggregating values into |
 
 ## 🚀 Plotting Correlation, Seasonality, and Trends
 
@@ -16,6 +17,7 @@ Visualize correlation, seasonality, and trends with one line of code.
 | --- | --- |
 | [plot_acf_diagnostics](plot_acf_diagnostics.qmd#pytimetk.plot_acf_diagnostics) | Visualise ACF, PACF, and optional CCF diagnostics with Plotly, including |
 | [plot_seasonal_diagnostics](plot_seasonal_diagnostics.qmd#pytimetk.plot_seasonal_diagnostics) | Visualize seasonal patterns using box or violin plots grouped by seasonality |
+| [plot_time_series_boxplot](plot_time_series_boxplot.qmd#pytimetk.plot_time_series_boxplot) | Visualize rolling distributions of a time series by aggregating values into |
 | [acf_diagnostics](acf_diagnostics.qmd#pytimetk.acf_diagnostics) | Compute tidy autocorrelation, partial autocorrelation, and optional |
 | [seasonal_diagnostics](seasonal_diagnostics.qmd#pytimetk.seasonal_diagnostics) | Prepare seasonal feature diagnostics akin to ``tk_seasonal_diagnostics``. |
 | [stl_diagnostics](stl_diagnostics.qmd#pytimetk.stl_diagnostics) | Generate STL decomposition diagnostics (observed, season, trend, remainder, seasadj). |

@@ -1,0 +1,126 @@
+# plot_time_series_boxplot { #pytimetk.plot_time_series_boxplot }
+
+```python
+plot_time_series_boxplot(
+    data,
+    date_column,
+    value_column,
+    period,
+    color_column=None,
+    color_palette=None,
+    facet_vars=None,
+    facet_ncols=1,
+    facet_label_sep=', ',
+    box_fill_color='#2c3e50',
+    box_fill_alpha=0.25,
+    box_line_color='#2c3e50',
+    box_line_width=1.2,
+    outlier_color='#2c3e50',
+    boxpoints='outliers',
+    smooth=True,
+    smooth_func='mean',
+    smooth_color='#3366FF',
+    smooth_line_width=2.0,
+    smooth_line_dash='solid',
+    smooth_alpha=0.9,
+    y_intercept=None,
+    y_intercept_color='#2c3e50',
+    y_intercept_dash='dash',
+    legend_show=True,
+    color_lab='Legend',
+    title='Time Series Box Plot',
+    x_lab='',
+    y_lab='',
+    width=None,
+    height=None,
+    plotly_dropdown=False,
+    plotly_dropdown_x=1.05,
+    plotly_dropdown_y=1.05,
+    hovertemplate=None,
+)
+```
+
+Visualize rolling distributions of a time series by aggregating values into
+fixed windows (weeks, months, etc.) and rendering box plots per window.
+Supports pandas or polars inputs, tidy-style selectors, grouped data, and an
+optional Plotly dropdown for faceted series.
+
+## Parameters {.doc-section .doc-section-parameters}
+
+| Name              | Type                                                     | Description                                                                                                                                                             | Default                  |
+|-------------------|----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------|
+| data              | pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy | Long-format time series data or grouped data whose groups are treated as facet combinations. Polars DataFrames are converted automatically.                             | _required_               |
+| date_column       | str or ColumnSelector                                    | Datetime column to bucket by ``period``.                                                                                                                                | _required_               |
+| value_column      | str or ColumnSelector                                    | Numeric column plotted on the y-axis.                                                                                                                                   | _required_               |
+| period            | str, pd.DateOffset, Timedelta, or timedelta              | Window size passed to :func:`pytimetk.floor_date`. Accepts pandas frequency strings (``"7D"``, ``"1M"``) or human-friendly durations (``"30 minutes"``, ``"2 weeks"``). | _required_               |
+| color_column      | str or ColumnSelector                                    | Optional categorical column that splits the distribution/legend.                                                                                                        | `None`                   |
+| color_palette     | dict, sequence, or str                                   | Custom palette for ``color_column``. Dicts map ``{category: "#RRGGBB"}``. Sequences are cycled; ``"timetk"`` reuses the package palette.                                | `None`                   |
+| facet_vars        | str, sequence, or ColumnSelector                         | Additional columns used to facet the output. Combined with any pandas ``groupby`` columns on the input.                                                                 | `None`                   |
+| facet_ncols       | int                                                      | Number of subplot columns when ``plotly_dropdown`` is ``False``.                                                                                                        | `1`                      |
+| facet_label_sep   | str                                                      | Separator used when composing facet labels (default ``", "``).                                                                                                          | `', '`                   |
+| box_fill_color    | optional                                                 | Styling for boxes when ``color_column`` is ``None``.                                                                                                                    | `'#2c3e50'`              |
+| box_fill_alpha    | optional                                                 | Styling for boxes when ``color_column`` is ``None``.                                                                                                                    | `'#2c3e50'`              |
+| box_line_color    | optional                                                 | Outline styling for box traces.                                                                                                                                         | `'#2c3e50'`              |
+| box_line_width    | optional                                                 | Outline styling for box traces.                                                                                                                                         | `'#2c3e50'`              |
+| outlier_color     | str                                                      | Marker color for outliers.                                                                                                                                              | `'#2c3e50'`              |
+| boxpoints         | str                                                      | Plotly ``boxpoints`` argument (``"outliers"``, ``"all"``, ``False``).                                                                                                   | `'outliers'`             |
+| smooth            | bool                                                     | Draw a smoothed summary line over the box centers.                                                                                                                      | `True`                   |
+| smooth_func       | str or callable                                          | Aggregation applied before plotting the smoothing line (default ``"mean"``).                                                                                            | `'mean'`                 |
+| smooth_color      | optional                                                 | Styling for the smoothing line.                                                                                                                                         | `'#3366FF'`              |
+| smooth_line_width | optional                                                 | Styling for the smoothing line.                                                                                                                                         | `'#3366FF'`              |
+| smooth_line_dash  | optional                                                 | Styling for the smoothing line.                                                                                                                                         | `'#3366FF'`              |
+| smooth_alpha      | optional                                                 | Styling for the smoothing line.                                                                                                                                         | `'#3366FF'`              |
+| y_intercept       | float                                                    | Optional horizontal reference line.                                                                                                                                     | `None`                   |
+| legend_show       | bool                                                     | Display the legend (only applies when ``color_column`` is supplied).                                                                                                    | `True`                   |
+| color_lab         | str                                                      | Legend title when ``color_column`` is provided.                                                                                                                         | `'Legend'`               |
+| title             | str                                                      | Layout titles and axis labels.                                                                                                                                          | `'Time Series Box Plot'` |
+| x_lab             | str                                                      | Layout titles and axis labels.                                                                                                                                          | `'Time Series Box Plot'` |
+| y_lab             | str                                                      | Layout titles and axis labels.                                                                                                                                          | `'Time Series Box Plot'` |
+| width             | int                                                      | Figure size in pixels. Height defaults to a sensible value based on the number of facets.                                                                               | `None`                   |
+| height            | int                                                      | Figure size in pixels. Height defaults to a sensible value based on the number of facets.                                                                               | `None`                   |
+| plotly_dropdown   | bool                                                     | When True and multiple facet combinations exist, render a dropdown to switch between them instead of drawing subplots.                                                  | `False`                  |
+| plotly_dropdown_x | float                                                    | Dropdown anchor location.                                                                                                                                               | `1.05`                   |
+| plotly_dropdown_y | float                                                    | Dropdown anchor location.                                                                                                                                               | `1.05`                   |
+| hovertemplate     | str                                                      | Custom hover template for the box traces.                                                                                                                               | `None`                   |
+
+## Returns {.doc-section .doc-section-returns}
+
+| Name   | Type                        | Description                                                                                                                |
+|--------|-----------------------------|----------------------------------------------------------------------------------------------------------------------------|
+|        | plotly.graph_objects.Figure | Figure containing one subplot per facet (or dropdown entry) with box plots per period bucket and optional smoothing lines. |
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import pytimetk as tk
+
+df = tk.load_dataset("taylor_30_min", parse_dates=["date"]).assign(
+    month=lambda d: d["date"].dt.month_name()
+)
+
+fig = tk.plot_time_series_boxplot(
+    data=df,
+    date_column="date",
+    value_column="value",
+    period="1 week",
+    facet_vars="month",
+    title="Weekly Revenue Distribution",
+)
+fig
+```
+
+```{python}
+# Dropdown example with tidy selectors
+from pytimetk.utils.selection import contains
+
+fig_dropdown = tk.plot_time_series_boxplot(
+    data=df.assign(weekday=lambda d: d["date"].dt.day_name()),
+    date_column="date",
+    value_column=contains("value"),
+    period="1 week",
+    facet_vars="month",
+    color_column="weekday",
+    plotly_dropdown=True,
+)
+fig_dropdown
+```

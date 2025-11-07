@@ -9,6 +9,10 @@ def test_parse_human_duration_numeric_and_calendar_units():
     assert isinstance(td, pd.Timedelta)
     assert td == pd.Timedelta(seconds=90)
 
+    td_weeks = parse_human_duration("2 weeks")
+    assert isinstance(td_weeks, pd.Timedelta)
+    assert td_weeks == pd.Timedelta(weeks=2)
+
     offset = parse_human_duration("3 months")
     assert isinstance(offset, pd.DateOffset)
     assert offset.kwds.get("months") == 3 and offset.n == 1
