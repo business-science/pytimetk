@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytimetk as tk
+from pytimetk.utils.selection import contains
 
 
 def _hourly_frame():
@@ -60,3 +61,14 @@ def test_seasonal_diagnostics_grouped_union_of_features():
     # ensure both groups present and auto union includes year fallback
     all_features = set(result["seasonal_feature"].unique())
     assert {"hour", "wday.lbl", "week"}.issubset(all_features)
+
+
+def test_seasonal_diagnostics_supports_tidy_selectors():
+    df = _hourly_frame()
+    result = tk.seasonal_diagnostics(
+        data=df,
+        date_column=contains("dat"),
+        value_column=contains("val"),
+        feature_set=["hour"],
+    )
+    assert "hour" in set(result["seasonal_feature"].unique())

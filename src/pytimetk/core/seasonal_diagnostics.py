@@ -8,9 +8,9 @@ from typing import List, Sequence, Union
 from pytimetk.feature_engineering import augment_timeseries_signature
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
+from pytimetk.utils.selection import ColumnSelector
+from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 
 _SEASONAL_FEATURE_MAP = {
     "second": "second",
@@ -161,8 +161,8 @@ def _seasonal_diagnostics_single(
 @pf.register_dataframe_method
 def seasonal_diagnostics(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
-    date_column: str,
-    value_column: str,
+    date_column: Union[str, ColumnSelector],
+    value_column: Union[str, ColumnSelector],
     feature_set: Union[str, Sequence[str], None] = "auto",
 ) -> pd.DataFrame:
     """
@@ -215,11 +215,27 @@ def seasonal_diagnostics(
         feature_set=["hour", "wday.lbl"],
     )
     diagnostics.head()
+
+    ```{python}
+    from pytimetk.utils.selection import contains
+
+    selector_diagnostics = tk.seasonal_diagnostics(
+        data=df,
+        date_column=contains("dat"),
+        value_column=contains("val"),
+        feature_set=["hour"],
+    )
+    selector_diagnostics.head()
     ```
     """
     check_dataframe_or_groupby(data)
-    check_date_column(data, date_column)
-    check_value_column(data, value_column, require_numeric_dtype=True)
+    date_column, value_columns = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=value_column,
+        require_numeric=True,
+    )
+    value_column = value_columns[0]
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names

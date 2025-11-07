@@ -216,7 +216,7 @@ def augment_regime_detection(
         .augment_regime_detection(
             date_column=contains("dat"),
             close_column=contains("clos"),
-            window=126,
+            window=252,
             n_regimes=4,
             hmm_backend="pomegranate", # pomegranate<=1.0.0 required
         )
