@@ -7,8 +7,6 @@ from typing import List, Optional, Sequence, Union
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -20,6 +18,7 @@ from pytimetk.utils.dataframe_ops import (
     resolve_polars_group_columns,
     restore_output_type,
 )
+from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 
 
 @pf.register_groupby_method
@@ -147,8 +146,12 @@ def augment_hilbert(
     """
     # Run common checks
     check_dataframe_or_groupby(data)
-    check_value_column(data, value_column)
-    check_date_column(data, date_column)
+    date_column, value_columns = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=value_column,
+        require_numeric=True,
+    )
 
     engine_resolved = normalize_engine(engine, data)
 
@@ -168,14 +171,10 @@ def augment_hilbert(
         prepared_data, date_column, keep_grouped_df=True
     )
 
-    value_columns: List[str] = (
-        [value_column] if isinstance(value_column, str) else list(value_column)
-    )
-
     result = _augment_hilbert_pandas(
         prepared_data,
         date_column,
-        value_columns,
+        list(value_columns),
     )
 
     if not isinstance(result, pd.DataFrame):

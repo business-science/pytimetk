@@ -1,5 +1,6 @@
 import polars as pl
 import pytimetk as tk
+from pytimetk.utils.selection import contains
 
 
 def test_augment_hilbert_polars_groupby():
@@ -16,5 +17,20 @@ def test_augment_hilbert_polars_groupby():
 
     assert isinstance(result, pl.DataFrame)
     assert result.height == len(df)
+    assert "Weekly_Sales_hilbert_real" in result.columns
+    assert "Weekly_Sales_hilbert_imag" in result.columns
+
+
+def test_augment_hilbert_supports_tidy_selectors():
+    df = tk.load_dataset("walmart_sales_weekly", parse_dates=["Date"]).head(40)
+
+    result = (
+        df.groupby("id")
+        .augment_hilbert(
+            date_column=contains("ate"),
+            value_column=contains("Sales"),
+        )
+    )
+
     assert "Weekly_Sales_hilbert_real" in result.columns
     assert "Weekly_Sales_hilbert_imag" in result.columns
