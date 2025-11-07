@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="How to take advantage of pytimetk’s Ray-backed helpers for faster time-series workflows.">
 
-<title>pytimetk – augment_diffs</title>
+<title>pytimetk - Ray Parallelism Quickstart</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -63,6 +64,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../performance/01_speed_comparisons.html" rel="next">
+<link href="../production/02_gpu_acceleration.html" rel="prev">
 <link href="../favicon.ico" rel="icon">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -119,8 +122,15 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
 
 
+<meta property="og:title" content="pytimetk - Ray Parallelism Quickstart">
+<meta property="og:description" content="How to take advantage of pytimetk’s Ray-backed helpers for faster time-series workflows.">
+<meta property="og:site-name" content="pytimetk">
+<meta name="twitter:title" content="pytimetk - Ray Parallelism Quickstart">
+<meta name="twitter:description" content="How to take advantage of pytimetk’s Ray-backed helpers for faster time-series workflows.">
+<meta name="twitter:card" content="summary">
 </head>
 
 <body class="nav-sidebar floating nav-fixed">
@@ -149,7 +159,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">augment_diffs</li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../production/01_feature_store.html">🛠️ Production:</a></li><li class="breadcrumb-item"><a href="../production/03_ray_parallelism.html">Ray Parallelism Quickstart</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -293,13 +303,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
  <span class="menu-text">🛠️ Production:</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../production/01_feature_store.html" class="sidebar-item-text sidebar-link">
@@ -314,7 +324,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../production/03_ray_parallelism.html" class="sidebar-item-text sidebar-link">
+  <a href="../production/03_ray_parallelism.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Ray Parallelism Quickstart</span></a>
   </div>
 </li>
@@ -398,20 +408,25 @@ gtag('config', '330861489', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
-  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#why-ray" id="toc-why-ray" class="nav-link active" data-scroll-target="#why-ray">Why Ray?</a></li>
+  <li><a href="#example-ts_features-with-ray" id="toc-example-ts_features-with-ray" class="nav-link" data-scroll-target="#example-ts_features-with-ray">Example: <code>ts_features</code> with Ray</a></li>
+  <li><a href="#troubleshooting-tips" id="toc-troubleshooting-tips" class="nav-link" data-scroll-target="#troubleshooting-tips">Troubleshooting Tips</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/reference/augment_diffs.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/business-science/pytimetk/edit/main/production/03_ray_parallelism.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/business-science/pytimetk/issues" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">augment_diffs</h1>
+<h1 class="title">Ray Parallelism Quickstart</h1>
 </div>
 
+<div>
+  <div class="description">
+    How to take advantage of pytimetk’s Ray-backed helpers for faster time-series workflows.
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -424,463 +439,86 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 
 </header>
 
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>augment_diffs(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    date_column,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    value_column,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    periods<span class="op">=</span><span class="dv">1</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    normalize<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    reduce_memory<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">=</span><span class="st">'auto'</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Adds differences and percentage difference (percentage change) to a Pandas DataFrame or DataFrameGroupBy object.</p>
-<p>The <code>augment_diffs</code> function takes a Pandas DataFrame or GroupBy object, a date column, a value column or list of value columns, and a period or list of periods, and adds differenced versions of the value columns to the DataFrame.</p>
-<section id="parameters" class="level2 doc-section doc-section-parameters">
-<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
-<table class="table">
-<colgroup>
-<col style="width: 2%">
-<col style="width: 6%">
-<col style="width: 89%">
-<col style="width: 1%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>data</td>
-<td>DataFrame or GroupBy(pandas or polars)</td>
-<td>The input data to augment with differenced columns.</td>
-<td><em>required</em></td>
-</tr>
-<tr class="even">
-<td>date_column</td>
-<td>str</td>
-<td>The <code>date_column</code> parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to sort the data before adding the differenced values.</td>
-<td><em>required</em></td>
-</tr>
-<tr class="odd">
-<td>value_column</td>
-<td>str or list</td>
-<td>The <code>value_column</code> parameter is the column(s) in the DataFrame that you want to add differences values for. It can be either a single column name (string) or a list of column names.</td>
-<td><em>required</em></td>
-</tr>
-<tr class="even">
-<td>periods</td>
-<td>int, tuple, list, or str</td>
-<td>The <code>periods</code> parameter is an integer, tuple, or list that specifies the periods to shift values when differencing. - If it is an integer, the function will add that number of differences values for each column specified in the <code>value_column</code> parameter. - If it is a tuple, it will generate differences from the first to the second value (inclusive). - If it is a list, it will generate differences based on the values in the list. - If it is a string (e.g.&nbsp;<code>"7 days"</code>), the duration is converted into the equivalent number of observations derived from <code>date_column</code>.</td>
-<td><code>1</code></td>
-</tr>
-<tr class="odd">
-<td>normalize</td>
-<td>bool</td>
-<td>The <code>normalize</code> parameter is used to specify whether to normalize the differenced values as a percentage difference. Default is False.</td>
-<td><code>False</code></td>
-</tr>
-<tr class="even">
-<td>reduce_memory</td>
-<td>bool</td>
-<td>The <code>reduce_memory</code> parameter is used to specify whether to reduce the memory usage of the DataFrame by converting int, float to smaller bytes and str to categorical data. This reduces memory for large data but may impact resolution of float and will change str to categorical. Default is True.</td>
-<td><code>False</code></td>
-</tr>
-<tr class="odd">
-<td>engine</td>
-<td>(auto, pandas, polars, cudf)</td>
-<td>Execution engine. When “auto” (default) the backend is inferred from the input data type. Use “pandas”, “polars”, or “cudf” to force a specific backend.</td>
-<td><code>"auto"</code></td>
-</tr>
-</tbody>
-</table>
+<section id="why-ray" class="level2">
+<h2 class="anchored" data-anchor-id="why-ray">Why Ray?</h2>
+<p>Many of pytimetk’s performance-sensitive helpers (e.g., <code>future_frame</code>, <code>ts_features</code>, rolling/expanding utilities) now fan work out via <a href="https://www.ray.io/">Ray</a> whenever you set <code>threads != 1</code>. Shipping Ray as a core dependency means you already have everything installed—there are just two knobs to remember:</p>
+<ol type="1">
+<li><strong>Enable parallelism</strong> by passing <code>threads=-1</code> (all cores) or any value &gt; 1.</li>
+<li><strong>Disable parallelism</strong> by leaving <code>threads=1</code> (the default) if you want strictly single-threaded execution.</li>
+</ol>
+<p>To keep things predictable, Ray is initialized lazily the first time a helper actually needs it, so the common single-threaded path has zero extra overhead.</p>
 </section>
-<section id="returns" class="level2 doc-section doc-section-returns">
-<h2 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h2>
-<table class="table">
-<colgroup>
-<col style="width: 7%">
-<col style="width: 10%">
-<col style="width: 81%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td>DataFrame</td>
-<td>DataFrame with differenced columns added. The return type matches the input backend.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="examples" class="level2 doc-section doc-section-examples">
-<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
+<section id="example-ts_features-with-ray" class="level2">
+<h2 class="anchored" data-anchor-id="example-ts_features-with-ray">Example: <code>ts_features</code> with Ray</h2>
+<p>The snippet below mirrors the production behavior. Run it from any Python session (no Ray-specific bootstrapping required):</p>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> polars <span class="im">as</span> pl</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">'m4_daily'</span>, parse_dates<span class="op">=</span>[<span class="st">'date'</span>])</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">id</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>D10</td>
-<td>2014-07-03</td>
-<td>2076.2</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>D10</td>
-<td>2014-07-04</td>
-<td>2073.4</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>D10</td>
-<td>2014-07-05</td>
-<td>2048.7</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>D10</td>
-<td>2014-07-06</td>
-<td>2048.9</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>D10</td>
-<td>2014-07-07</td>
-<td>2006.4</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9738</td>
-<td>D500</td>
-<td>2012-09-19</td>
-<td>9418.8</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9739</td>
-<td>D500</td>
-<td>2012-09-20</td>
-<td>9365.7</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9740</td>
-<td>D500</td>
-<td>2012-09-21</td>
-<td>9445.9</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">9741</td>
-<td>D500</td>
-<td>2012-09-22</td>
-<td>9497.9</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">9742</td>
-<td>D500</td>
-<td>2012-09-23</td>
-<td>9545.3</td>
-</tr>
-</tbody>
-</table>
-
-<p>9743 rows × 3 columns</p>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytimetk <span class="im">as</span> tk</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tsfeatures <span class="im">import</span> acf_features, hurst</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Load a small grouped dataset</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> tk.load_dataset(<span class="st">"m4_hourly"</span>, parse_dates<span class="op">=</span>[<span class="st">"date"</span>])</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract a couple of features per id using Ray workers</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>feature_df <span class="op">=</span> (</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    df</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        .groupby(<span class="st">"id"</span>, sort<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        .ts_features(</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">"date"</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">"value"</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>            features<span class="op">=</span>[acf_features, hurst],</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>            freq<span class="op">=</span><span class="dv">24</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            threads<span class="op">=-</span><span class="dv">1</span>,          <span class="co"># &lt;-- spin up Ray workers (all cores)</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>            show_progress<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(feature_df.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2025-11-07 09:12:21,496 INFO worker.py:2012 -- Started a local Ray instance.</code></pre>
 </div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"84b318682a35460c8281849ddfa97355","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
 </div>
-</div>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1 - Add 7 differenced values for a single DataFrame object (pandas)</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>diffed_df_single <span class="op">=</span> (</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'id == "D10"'</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        .augment_diffs(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">7</span>)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>diffed_df_single.glimpse()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;: 674 rows of 10 columns
-id:            object            ['D10', 'D10', 'D10', 'D10', 'D10', 'D1 ...
-date:          datetime64[ns]    [Timestamp('2014-07-03 00:00:00'), Time ...
-value:         float64           [2076.2, 2073.4, 2048.7, 2048.9, 2006.4 ...
-value_diff_1:  float64           [nan, -2.799999999999727, -24.700000000 ...
-value_diff_2:  float64           [nan, nan, -27.5, -24.5, -42.2999999999 ...
-value_diff_3:  float64           [nan, nan, nan, -27.299999999999727, -6 ...
-value_diff_4:  float64           [nan, nan, nan, nan, -69.79999999999973 ...
-value_diff_5:  float64           [nan, nan, nan, nan, nan, -58.599999999 ...
-value_diff_6:  float64           [nan, nan, nan, nan, nan, nan, -57.0999 ...
-value_diff_7:  float64           [nan, nan, nan, nan, nan, nan, nan, -68 ...</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2 - Add differenced values via the polars accessor</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>diffed_df <span class="op">=</span> (</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    pl.from_pandas(df)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    .group_by(<span class="st">'id'</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    .tk.augment_diffs(</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        value_column<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        periods<span class="op">=</span><span class="dv">2</span>,</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>diffed_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<div><style>
-.dataframe > thead > tr,
-.dataframe > tbody > tr {
-  text-align: right;
-  white-space: pre-wrap;
-}
-</style>
-<small>shape: (9_743, 4)</small>
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th">id</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">value</th>
-<th data-quarto-table-cell-role="th">value_diff_2</th>
-</tr>
-<tr class="odd">
-<th>str</th>
-<th>datetime[ns]</th>
-<th>f64</th>
-<th>f64</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>"D10"</td>
-<td>2014-07-03 00:00:00</td>
-<td>2076.2</td>
-<td>null</td>
-</tr>
-<tr class="even">
-<td>"D10"</td>
-<td>2014-07-04 00:00:00</td>
-<td>2073.4</td>
-<td>null</td>
-</tr>
-<tr class="odd">
-<td>"D10"</td>
-<td>2014-07-05 00:00:00</td>
-<td>2048.7</td>
-<td>-27.5</td>
-</tr>
-<tr class="even">
-<td>"D10"</td>
-<td>2014-07-06 00:00:00</td>
-<td>2048.9</td>
-<td>-24.5</td>
-</tr>
-<tr class="odd">
-<td>"D10"</td>
-<td>2014-07-07 00:00:00</td>
-<td>2006.4</td>
-<td>-42.3</td>
-</tr>
-<tr class="even">
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-</tr>
-<tr class="odd">
-<td>"D500"</td>
-<td>2012-09-19 00:00:00</td>
-<td>9418.8</td>
-<td>-18.9</td>
-</tr>
-<tr class="even">
-<td>"D500"</td>
-<td>2012-09-20 00:00:00</td>
-<td>9365.7</td>
-<td>-66.2</td>
-</tr>
-<tr class="odd">
-<td>"D500"</td>
-<td>2012-09-21 00:00:00</td>
-<td>9445.9</td>
-<td>27.1</td>
-</tr>
-<tr class="even">
-<td>"D500"</td>
-<td>2012-09-22 00:00:00</td>
-<td>9497.9</td>
-<td>132.2</td>
-</tr>
-<tr class="odd">
-<td>"D500"</td>
-<td>2012-09-23 00:00:00</td>
-<td>9545.3</td>
-<td>99.4</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3 add 2 differenced values, 2 and 4, for a single DataFrame object (pandas)</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>diffed_df_single_two <span class="op">=</span> (</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    df</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'id == "D10"'</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        .augment_diffs(</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>            date_column<span class="op">=</span><span class="st">'date'</span>,</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>            value_column<span class="op">=</span><span class="st">'value'</span>,</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>            periods<span class="op">=</span>[<span class="dv">2</span>, <span class="dv">4</span>]</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>diffed_df_single_two</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<div>
+<pre><code>     id     hurst    x_acf1   x_acf10  diff1_acf1  diff1_acf10  diff2_acf1  \
+0   H10  0.899455  0.935151  2.857201    0.181541     0.422999   -0.557066   
+1  H150  0.464328  0.909548  2.548242    0.316810     0.350988   -0.422249   
+2  H410  0.480160  0.803585  1.235837    0.258207     0.222276   -0.216247   
+3   H50  0.890642  0.972679  3.225596    0.933112     3.583310    0.433440   
 
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">id</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">value</th>
-<th data-quarto-table-cell-role="th">value_diff_2</th>
-<th data-quarto-table-cell-role="th">value_diff_4</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>D10</td>
-<td>2014-07-03</td>
-<td>2076.2</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>D10</td>
-<td>2014-07-04</td>
-<td>2073.4</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>D10</td>
-<td>2014-07-05</td>
-<td>2048.7</td>
-<td>-27.5</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>D10</td>
-<td>2014-07-06</td>
-<td>2048.9</td>
-<td>-24.5</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>D10</td>
-<td>2014-07-07</td>
-<td>2006.4</td>
-<td>-42.3</td>
-<td>-69.8</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">669</td>
-<td>D10</td>
-<td>2016-05-02</td>
-<td>2630.7</td>
-<td>57.8</td>
-<td>50.8</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">670</td>
-<td>D10</td>
-<td>2016-05-03</td>
-<td>2649.3</td>
-<td>48.3</td>
-<td>105.3</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">671</td>
-<td>D10</td>
-<td>2016-05-04</td>
-<td>2631.8</td>
-<td>1.1</td>
-<td>58.9</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">672</td>
-<td>D10</td>
-<td>2016-05-05</td>
-<td>2622.5</td>
-<td>-26.8</td>
-<td>21.5</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">673</td>
-<td>D10</td>
-<td>2016-05-06</td>
-<td>2620.1</td>
-<td>-11.7</td>
-<td>-10.6</td>
-</tr>
-</tbody>
-</table>
-
-<p>674 rows × 5 columns</p>
+   diff2_acf10  seas_acf1  
+0     0.331021   0.869954  
+1     0.227795   0.711519  
+2     0.219944   0.752024  
+3     0.847016   0.900682  </code></pre>
 </div>
 </div>
-</div>
+<p>Behind the scenes:</p>
+<ul>
+<li>The grouped frame is chunked by <code>id</code>.</li>
+<li>Ray initializes (if it hasn’t already) using the available CPU count.</li>
+<li>Each chunk runs in parallel, and the results are stitched back together in the original order.</li>
+</ul>
+<p>If you need to fall back to single-threaded mode—for example, when debugging inside an environment that restricts background processes—just set <code>threads=1</code> and the helper will never touch Ray.</p>
+</section>
+<section id="troubleshooting-tips" class="level2">
+<h2 class="anchored" data-anchor-id="troubleshooting-tips">Troubleshooting Tips</h2>
+<ul>
+<li><strong>Memory pressure?</strong> Use smaller <code>threads</code> values (e.g., <code>threads=2</code>) to limit the number of Ray workers.</li>
+<li><strong>Jupyter notebooks</strong> sometimes keep Ray clusters alive between runs. Call <code>import ray; ray.shutdown()</code> if you need to tear down the cluster manually.</li>
+<li><strong>Progress bars</strong> still work. If you prefer silence, set <code>show_progress=False</code>.</li>
+</ul>
 
 
 </section>
 
 </main> <!-- /main -->
+<script type="application/vnd.jupyter.widget-state+json">
+{"state":{"053c29299c9b4bcaa003a31b7b43cd96":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"1f4e2572a9f64469891a9844f731ea93":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"39e6fa8a4bd54581843d3ad111cdbb4c":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"485aea07c15349ad81024441e1053a81":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"50148363ce1e45f481571c3531904902":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"5dc61681c7414fa9943e1899a15bc0ef":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_485aea07c15349ad81024441e1053a81","placeholder":"​","style":"IPY_MODEL_39e6fa8a4bd54581843d3ad111cdbb4c","tabbable":null,"tooltip":null,"value":" 4/4 [00:03&lt;00:00,  3.11s/it]"}},"84b318682a35460c8281849ddfa97355":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HBoxModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HBoxModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HBoxView","box_style":"","children":["IPY_MODEL_f506c84318e44b57b01f4c2c385efb29","IPY_MODEL_aaac781ef8a54f0c8075d4faa58410fc","IPY_MODEL_5dc61681c7414fa9943e1899a15bc0ef"],"layout":"IPY_MODEL_50148363ce1e45f481571c3531904902","tabbable":null,"tooltip":null}},"922f2af6e3cb4e21bfb209b237a6b5f6":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"aaac781ef8a54f0c8075d4faa58410fc":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"success","description":"","description_allow_html":false,"layout":"IPY_MODEL_1f4e2572a9f64469891a9844f731ea93","max":4,"min":0,"orientation":"horizontal","style":"IPY_MODEL_cf698dc7f011477f8354662e23512b71","tabbable":null,"tooltip":null,"value":4}},"cf698dc7f011477f8354662e23512b71":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":null,"description_width":""}},"f506c84318e44b57b01f4c2c385efb29":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_053c29299c9b4bcaa003a31b7b43cd96","placeholder":"​","style":"IPY_MODEL_922f2af6e3cb4e21bfb209b237a6b5f6","tabbable":null,"tooltip":null,"value":"TS Featurizing...: 100%"}}},"version_major":2,"version_minor":0}
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -1229,6 +867,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../production/02_gpu_acceleration.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">GPU Acceleration</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../performance/01_speed_comparisons.html" class="pagination-link">
+        <span class="nav-page-text">Speed Comparisons</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
 
 

@@ -42,12 +42,13 @@ Note: Requires the `tsfeatures` package to be installed.
 
 ## Performance
 
-This function uses parallel processing to speed up computation for large
+This function uses Ray-based parallel processing to speed up computation for large
 datasets with many time series groups:
 
 Parallel processing has overhead and may not be faster on small datasets.
 
-To use parallel processing, set `threads = -1` to use all available processors.
+To use parallel processing, set `threads = -1` (or any value other than ``1``) to
+use Ray workers across the available processors.
 
 ## Examples {.doc-section .doc-section-examples}
 

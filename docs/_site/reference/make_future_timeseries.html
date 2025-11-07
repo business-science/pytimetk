@@ -309,6 +309,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
  <span class="menu-text">GPU Acceleration</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../production/03_ray_parallelism.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ray Parallelism Quickstart</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -450,8 +456,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="odd">
 <td>freq</td>
-<td>str</td>
-<td>The <code>frequency</code> parameter is a string that specifies the frequency of the future dates. If <code>frequency</code> is set to <code>None</code>, the frequency of the future dates will be inferred from the input data (e.g.&nbsp;business calendars might be used). The default value is <code>None</code>.</td>
+<td>str or pd.DateOffset</td>
+<td>Frequency of the future dates. When <code>None</code>, the cadence is inferred from the input data (respecting <code>force_regular</code>). Accepts pandas offsets or human-friendly strings e.g.&nbsp;<code>"2 weeks"</code>.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">

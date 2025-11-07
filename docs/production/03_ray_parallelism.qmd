@@ -19,6 +19,7 @@ The snippet below mirrors the production behavior. Run it from any Python sessio
 ```{python}
 import pandas as pd
 import pytimetk as tk
+from tsfeatures import acf_features, hurst
 
 # Load a small grouped dataset
 df = tk.load_dataset("m4_hourly", parse_dates=["date"])
@@ -30,7 +31,7 @@ feature_df = (
         .ts_features(
             date_column="date",
             value_column="value",
-            features=["acf_features", "hurst"],
+            features=[acf_features, hurst],
             freq=24,
             threads=-1,          # <-- spin up Ray workers (all cores)
             show_progress=True,

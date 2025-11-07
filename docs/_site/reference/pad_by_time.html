@@ -312,6 +312,12 @@ gtag('config', '330861489', { 'anonymize_ip': true});
  <span class="menu-text">GPU Acceleration</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../production/03_ray_parallelism.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ray Parallelism Quickstart</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -435,8 +441,8 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <table class="table">
 <colgroup>
 <col style="width: 2%">
-<col style="width: 6%">
-<col style="width: 89%">
+<col style="width: 7%">
+<col style="width: 87%">
 <col style="width: 2%">
 </colgroup>
 <thead>
@@ -456,26 +462,26 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </tr>
 <tr class="even">
 <td>date_column</td>
-<td>str</td>
-<td>The <code>date_column</code> parameter is a string that specifies the name of the column in the DataFrame that contains the dates. This column will be used to determine the minimum and maximum dates in theDataFrame, and to generate the regular date range for padding.</td>
+<td>str or ColumnSelector</td>
+<td>Column containing the timestamps used to determine padding bounds.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>freq</td>
 <td>str</td>
-<td>The <code>freq</code> parameter specifies the frequency at which the missing timestamps should be generated. It accepts a string representing a pandas frequency alias. Some common frequency aliases include: - S: secondly frequency - min: minute frequency - H: hourly frequency - B: business day frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - BMS: Business month start - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency</td>
+<td>Frequency for padding. Accepts pandas aliases (<code>"H"</code>, <code>"MS"</code>, …) or human-friendly durations like <code>"15 minutes"</code> or <code>"3 days"</code>. - S: secondly frequency - min: minute frequency - H: hourly frequency - B: business day frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - BMS: Business month start - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency</td>
 <td><code>'D'</code></td>
 </tr>
 <tr class="even">
 <td>start_date</td>
 <td>str</td>
-<td>Specifies the start of the padded series. If NULL, it will use the lowest value of the input variable. In the case of groups, it will use the lowest value by group.</td>
+<td>Optional bounds for padding. Accepts ISO strings or durations relative to the observed min/max (e.g., <code>"start: 1 month ago"</code>).</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>end_date</td>
-<td>Optional[str]</td>
-<td>Specifies the end of the padded series. If NULL, it will use the highest value of the input variable. In the case of groups, it will use the highest value by group.</td>
+<td>str</td>
+<td>Optional bounds for padding. Accepts ISO strings or durations relative to the observed min/max (e.g., <code>"start: 1 month ago"</code>).</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
@@ -744,7 +750,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2013-01-05</td>
-<td>AAPL</td>
+<td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -755,7 +761,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2013-01-06</td>
-<td>AAPL</td>
+<td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -777,7 +783,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <tr class="odd">
 <td data-quarto-table-cell-role="th">3910</td>
 <td>2023-09-17</td>
-<td>AAPL</td>
+<td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
