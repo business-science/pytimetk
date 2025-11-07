@@ -11,7 +11,7 @@ from pytimetk.utils.checks import check_series_or_datetime
 def make_future_timeseries(
     idx: Union[str, List[str], pd.Series, pd.DatetimeIndex],
     length_out: int,
-    freq: Optional[str] = None,
+    freq: Optional[Union[str, pd.DateOffset]] = None,
     force_regular: bool = False,
 ) -> pd.Series:
     """
@@ -30,11 +30,10 @@ def make_future_timeseries(
     length_out : int
         The parameter `length_out` is an integer that represents the number of
         future dates to generate for the time series.
-    freq : str, optional
-        The `frequency` parameter is a string that specifies the frequency of the
-        future dates. If `frequency` is set to `None`, the frequency of the future
-        dates will be inferred from the input data (e.g. business calendars might
-        be used). The default value is `None`.
+    freq : str or pd.DateOffset, optional
+        Frequency of the future dates. When ``None``, the cadence is inferred
+        from the input data (respecting ``force_regular``). Accepts pandas
+        offsets or human-friendly strings e.g. ``"2 weeks"``.
     force_regular : bool, optional
         The `force_regular` parameter is a boolean flag that determines whether
         the frequency of the future dates should be forced to be regular. If

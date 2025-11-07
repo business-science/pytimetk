@@ -21,6 +21,54 @@ from pytimetk.utils.dataframe_ops import (
     resolve_pandas_groupby_frame,
     resolve_polars_group_columns,
 )
+from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
+from pytimetk.utils.datetime_helpers import parse_human_duration
+
+
+def _resolve_selector_frame(
+    data: Union[
+        pd.DataFrame,
+        pd.core.groupby.generic.DataFrameGroupBy,
+        pl.DataFrame,
+        pl.dataframe.group_by.GroupBy,
+    ],
+) -> pd.DataFrame:
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        return resolve_pandas_groupby_frame(data).copy()
+    if isinstance(data, pd.DataFrame):
+        return data.copy()
+    if isinstance(data, pl.dataframe.group_by.GroupBy):
+        base = getattr(data, "df", None)
+        if base is None:
+            raise TypeError(
+                "Unable to resolve columns from this polars GroupBy for selector resolution."
+            )
+        return base.to_pandas()
+    if isinstance(data, pl.DataFrame):
+        return data.to_pandas()
+    if hasattr(data, "to_pandas"):
+        return data.to_pandas()
+    raise TypeError(
+        "Column selectors currently require pandas or polars data. Convert to one of these before calling future_frame."
+    )
+
+
+def _normalize_frequency_spec(freq: Optional[Union[str, pd.DateOffset]]) -> Optional[pd.DateOffset]:
+    if freq is None:
+        return None
+    try:
+        return pd.tseries.frequencies.to_offset(freq)
+    except ValueError:
+        duration = parse_human_duration(freq)
+        if isinstance(duration, pd.DateOffset):
+            return duration
+        return pd.tseries.frequencies.to_offset(pd.to_timedelta(duration))
+
+
+def _freq_to_string(freq: Union[str, pd.DateOffset]) -> str:
+    if isinstance(freq, pd.DateOffset):
+        return freq.freqstr
+    return pd.tseries.frequencies.to_offset(freq).freqstr
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -37,7 +85,7 @@ def future_frame(
         pl.DataFrame,
         pl.dataframe.group_by.GroupBy,
     ],
-    date_column: str,
+    date_column: Union[str, ColumnSelector],
     length_out: int,
     freq: Optional[str] = None,
     force_regular: bool = False,
@@ -59,11 +107,13 @@ def future_frame(
     data : DataFrame or GroupBy (pandas or polars)
         The `data` parameter is the input DataFrame or grouped object that you want to
         extend with future dates.
-    date_column : str
-        The `date_column` parameter is a string that specifies the name of the
-        column in the DataFrame that contains the dates. This column will be
-        used to generate future dates.
+    date_column : str or ColumnSelector
+        Column containing the timestamps that anchor the extension.
     freq : str, optional
+        Frequency for generated dates. When ``None`` the cadence is inferred
+        from the observed series (respecting ``force_regular``). Accepts pandas
+        aliases (e.g., ``"MS"``, ``"H"``) or human-friendly durations like
+        ``"2 weeks"``.
     length_out : int
         The `length_out` parameter specifies the number of future dates to be
         added to the DataFrame.
@@ -237,7 +287,24 @@ def future_frame(
 
     # Common checks
     check_dataframe_or_groupby(data)
-    check_date_column(data, date_column)
+
+    selector_frame = _resolve_selector_frame(data)
+    if isinstance(date_column, str):
+        resolved_date_column = date_column
+    else:
+        resolved = resolve_column_selection(
+            selector_frame, date_column, allow_none=False, require_match=True
+        )
+        if len(resolved) != 1:
+            raise ValueError(
+                f"`date_column` selector must resolve to exactly one column (resolved={resolved})."
+            )
+        resolved_date_column = resolved[0]
+
+    date_column = resolved_date_column
+    check_date_column(selector_frame, date_column)
+
+    freq_offset = _normalize_frequency_spec(freq)
 
     engine_resolved = normalize_engine(engine, data)
 
@@ -248,7 +315,7 @@ def future_frame(
             data=prepared,
             date_column=date_column,
             length_out=length_out,
-            freq=freq,
+            freq=freq_offset,
             force_regular=force_regular,
             bind_data=bind_data,
             threads=threads,
@@ -264,7 +331,7 @@ def future_frame(
             prepared,
             date_column=date_column,
             length_out=length_out,
-            freq=freq,
+            freq=freq_offset,
             force_regular=force_regular,
             bind_data=bind_data,
             threads=threads,
@@ -285,7 +352,7 @@ def future_frame(
             data=pandas_prepared,
             date_column=date_column,
             length_out=length_out,
-            freq=freq,
+            freq=freq_offset,
             force_regular=force_regular,
             bind_data=bind_data,
             threads=threads,
@@ -302,7 +369,7 @@ def _future_frame_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
     length_out: int,
-    freq: Optional[str] = None,
+    freq: Optional[Union[str, pd.DateOffset]] = None,
     force_regular: bool = False,
     bind_data: bool = True,
     threads: int = 1,
@@ -353,6 +420,7 @@ def _future_frame_pandas(
             freq_local = get_frequency(
                 first_group[date_column].sort_values(), force_regular=force_regular
             )
+        freq_local = _normalize_frequency_spec(freq_local)
 
         last_dates_df = grouped.agg({date_column: "max"}).reset_index()
 
@@ -430,7 +498,7 @@ def _future_frame_polars(
     data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     date_column: str,
     length_out: int,
-    freq: Optional[str],
+    freq: Optional[Union[str, pd.DateOffset]],
     force_regular: bool,
     bind_data: bool,
     threads: int,
@@ -440,6 +508,8 @@ def _future_frame_polars(
 ) -> pl.DataFrame:
     if length_out < 0:
         raise ValueError("`length_out` must be non-negative.")
+
+    freq = _normalize_frequency_spec(freq)
 
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
@@ -463,7 +533,9 @@ def _future_frame_polars(
         except Exception:
             row_id_counter = None
 
-    def _future_dates(series: pl.Series, inferred_freq: Optional[str]) -> pl.Series:
+    def _future_dates(
+        series: pl.Series, inferred_freq: Optional[Union[str, pd.DateOffset]]
+    ) -> pl.Series:
         pandas_series = series.to_pandas()
         generated = make_future_timeseries(
             idx=pandas_series,
@@ -491,7 +563,9 @@ def _future_frame_polars(
                 .to_pandas()
                 .sort_values()
             )
-            freq_local = get_frequency(sample_dates, force_regular=force_regular)
+            freq_local = _normalize_frequency_spec(
+                get_frequency(sample_dates, force_regular=force_regular)
+            )
 
         results: List[pl.DataFrame] = []
         iterator = conditional_tqdm(

@@ -4,7 +4,7 @@ import polars as pl
 import pytest
 from pandas.testing import assert_series_equal, assert_frame_equal
 import pytimetk
-# noqa: F401
+from pytimetk.utils.selection import contains
 
 # Creates a sample DataFrame for testing
 data = {
@@ -110,6 +110,49 @@ def test_future_frame():
     expected_df_irregular["date"] = pd.to_datetime(expected_df_irregular["date"])
 
     assert_frame_equal(extended_df_irregular, expected_df_irregular, check_dtype=False)
+
+
+def test_future_frame_selector_and_duration():
+    df_local = pd.DataFrame(
+        {
+            "grp": ["A", "A", "B", "B"],
+            "timestamp": pd.to_datetime(
+                ["2022-01-01", "2022-01-03", "2022-01-02", "2022-01-04"]
+            ),
+            "value": [1, 2, 3, 4],
+        }
+    )
+    baseline = (
+        df_local.groupby("grp")
+        .future_frame(date_column="timestamp", length_out=1, freq="2D")
+        .reset_index(drop=True)
+    )
+
+    selector_version = (
+        df_local.groupby("grp")
+        .future_frame(date_column=contains("stamp"), length_out=1, freq="2 days")
+        .reset_index(drop=True)
+    )
+
+    assert_frame_equal(baseline, selector_version, check_dtype=False)
+
+
+def test_future_frame_duration_single_series():
+    df_local = pd.DataFrame(
+        {
+            "date": pd.to_datetime(["2022-01-01", "2022-01-03"]),
+            "value": [10, 20],
+        }
+    )
+    extended = df_local.future_frame(
+        date_column=contains("da"), length_out=2, freq="3 days"
+    )
+    expected_dates = pd.Series(
+        pd.to_datetime(["2022-01-01", "2022-01-03", "2022-01-06", "2022-01-09"])
+    )
+    assert_series_equal(
+        extended["date"], expected_dates, check_freq=False, check_names=False
+    )
 
 
 def test_example_1():
