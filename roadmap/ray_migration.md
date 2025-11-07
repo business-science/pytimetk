@@ -7,10 +7,10 @@
 - Migrated `parallel_apply` plus all pandas-based rolling/expanding helpers (`augment_expanding`, `augment_expanding_apply`, `augment_rolling`, `augment_rolling_apply`) to the shared Ray helper with sequential fallbacks when Ray is absent.
 
 ### In Progress
-- Track optional packaging guidance (e.g., docs/README) so users know to `pip install ray` for multi-threaded features.
+- Update README/docs to highlight Ray as a core dependency, explain its role in threaded helpers, and describe how to disable parallel paths (e.g., set `threads=1`) when needed.
 - Monitor remaining modules (pad/future variants, CV helpers) for additional opportunities once the current changes stabilize.
 
 ### Next Steps
-1. Document Ray as an optional install path (extras or README guidance) so CLI users understand how to enable fast parallel branches.
+1. Add troubleshooting guidance for Ray-related issues (worker startup, resource constraints) so users can self-diagnose.
 2. Evaluate additional candidates (`ts_features` variants that operate per-series, CV helpers) once the current stack is verified in real workloads.
 3. Consider profiling GPU/cudf paths to confirm Ray isn’t needed there or whether similar helpers would benefit those execution modes.

@@ -1,0 +1,55 @@
+---
+title: "Ray Parallelism Quickstart"
+description: "How to take advantage of pytimetk's Ray-backed helpers for faster time-series workflows."
+---
+
+## Why Ray?
+
+Many of pytimetk's performance-sensitive helpers (e.g., `future_frame`, `ts_features`, rolling/expanding utilities) now fan work out via [Ray](https://www.ray.io/) whenever you set `threads != 1`. Shipping Ray as a core dependency means you already have everything installed—there are just two knobs to remember:
+
+1. **Enable parallelism** by passing `threads=-1` (all cores) or any value > 1.
+2. **Disable parallelism** by leaving `threads=1` (the default) if you want strictly single-threaded execution.
+
+To keep things predictable, Ray is initialized lazily the first time a helper actually needs it, so the common single-threaded path has zero extra overhead.
+
+## Example: `ts_features` with Ray
+
+The snippet below mirrors the production behavior. Run it from any Python session (no Ray-specific bootstrapping required):
+
+```{python}
+import pandas as pd
+import pytimetk as tk
+
+# Load a small grouped dataset
+df = tk.load_dataset("m4_hourly", parse_dates=["date"])
+
+# Extract a couple of features per id using Ray workers
+feature_df = (
+    df
+        .groupby("id", sort=False)
+        .ts_features(
+            date_column="date",
+            value_column="value",
+            features=["acf_features", "hurst"],
+            freq=24,
+            threads=-1,          # <-- spin up Ray workers (all cores)
+            show_progress=True,
+        )
+)
+
+print(feature_df.head())
+```
+
+Behind the scenes:
+
+- The grouped frame is chunked by `id`.
+- Ray initializes (if it hasn’t already) using the available CPU count.
+- Each chunk runs in parallel, and the results are stitched back together in the original order.
+
+If you need to fall back to single-threaded mode—for example, when debugging inside an environment that restricts background processes—just set `threads=1` and the helper will never touch Ray.
+
+## Troubleshooting Tips
+
+- **Memory pressure?** Use smaller `threads` values (e.g., `threads=2`) to limit the number of Ray workers.
+- **Jupyter notebooks** sometimes keep Ray clusters alive between runs. Call `import ray; ray.shutdown()` if you need to tear down the cluster manually.
+- **Progress bars** still work. If you prefer silence, set `show_progress=False`.
