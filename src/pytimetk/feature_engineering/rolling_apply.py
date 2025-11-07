@@ -2,16 +2,16 @@ import pandas as pd
 import polars as pl
 import pandas_flavor as pf
 import numpy as np
+import warnings
 
 from typing import Callable, List, Optional, Sequence, Tuple, Union
-
-from pathos.multiprocessing import ProcessingPool
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
 )
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
+from pytimetk.utils.ray_helpers import run_ray_tasks
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
     convert_to_engine,
@@ -298,20 +298,42 @@ def _augment_rolling_apply_pandas(
             desc="Processing rolling apply...",
             display=show_progress,
         ):
-            args = group, windows, window_funcs, min_periods, center
-            result_dfs.append(_process_single_rolling_apply_group(args))
-    else:
-        # Prepare to use pathos.multiprocessing
-        pool = ProcessingPool(threads_resolved)
-        args = [(group, windows, window_funcs, min_periods, center) for group in grouped]
-        result_dfs = list(
-            conditional_tqdm(
-                pool.map(_process_single_rolling_apply_group, args),
-                total=len(grouped),
-                desc="Processing rolling apply...",
-                display=show_progress,
+            result_dfs.append(
+                _process_single_rolling_apply_group(
+                    group, windows, window_funcs, min_periods, center
+                )
             )
-        )
+    else:
+        groups = list(grouped)
+        args_list = [
+            (group, windows, window_funcs, min_periods, center) for group in groups
+        ]
+        try:
+            result_dfs = run_ray_tasks(
+                _process_single_rolling_apply_group,
+                args_list,
+                num_cpus=threads_resolved,
+                desc="Processing rolling apply...",
+                show_progress=show_progress,
+            )
+        except ImportError:
+            warnings.warn(
+                "Ray is not installed; falling back to sequential rolling apply. "
+                "Install `ray` or set `threads=1` to silence this warning.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            result_dfs = [
+                _process_single_rolling_apply_group(
+                    group, windows, window_funcs, min_periods, center
+                )
+                for group in conditional_tqdm(
+                    groups,
+                    total=len(groups),
+                    desc="Processing rolling apply...",
+                    display=show_progress,
+                )
+            ]
 
     # Combine processed dataframes and sort by index
     result_df = pd.concat(result_dfs, copy=False).sort_index()
@@ -382,9 +404,9 @@ def _augment_rolling_apply_polars(
     return combined
 
 
-def _process_single_rolling_apply_group(args):
-    group, windows, window_funcs, min_periods, center = args
-
+def _process_single_rolling_apply_group(
+    group, windows, window_funcs, min_periods, center
+):
     name, group_df = group
     results = {}
     for window_size in windows:

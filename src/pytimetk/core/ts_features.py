@@ -4,9 +4,8 @@ import pandas_flavor as pf
 
 from functools import partial
 
-from concurrent.futures import ProcessPoolExecutor, as_completed
-
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
+from pytimetk.utils.ray_helpers import run_ray_tasks
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
@@ -152,12 +151,13 @@ def ts_features(
     -----
     ## Performance
 
-    This function uses parallel processing to speed up computation for large
+    This function uses Ray-based parallel processing to speed up computation for large
     datasets with many time series groups:
 
     Parallel processing has overhead and may not be faster on small datasets.
 
-    To use parallel processing, set `threads = -1` to use all available processors.
+    To use parallel processing, set `threads = -1` (or any value other than ``1``) to
+    use Ray workers across the available processors.
 
     Examples
     --------
@@ -337,20 +337,18 @@ def _ts_features_pandas(
         return partial_get_feats(name, group, features=features_to_use)
 
     if threads_resolved != 1:
-        with ProcessPoolExecutor(threads_resolved) as executor:
-            futures = [
-                executor.submit(partial_get_feats, *args)
-                for args in construct_df.groupby("unique_id")
-            ]
-
-            ts_features_frames = []
-            for future in conditional_tqdm(
-                as_completed(futures),
-                total=len(futures),
-                desc="TS Featurizing...",
-                display=show_progress,
-            ):
-                ts_features_frames.append(future.result())
+        grouped_unique = list(construct_df.groupby("unique_id"))
+        args_list = [
+            (name, group, freq, scale, features_to_use) for name, group in grouped_unique
+        ]
+        ray_results = run_ray_tasks(
+            _tsfeatures_ray_worker,
+            args_list,
+            num_cpus=threads_resolved,
+            desc="TS Featurizing...",
+            show_progress=show_progress,
+        )
+        ts_features_frames = ray_results
     else:
         ts_features_frames = []
         total_groups = construct_df["unique_id"].nunique()
@@ -372,3 +370,14 @@ def _ts_features_pandas(
     ts_features_df.drop(columns=["unique_id"], inplace=True)
 
     return ts_features_df
+
+
+def _tsfeatures_ray_worker(name, group, freq, scale, features_to_use):
+    return _get_feats(
+        name,
+        group,
+        freq=freq,
+        scale=scale,
+        features=features_to_use,
+        dict_freqs=dict_freqs,
+    )

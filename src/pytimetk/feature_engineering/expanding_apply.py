@@ -2,16 +2,16 @@ import pandas as pd
 import polars as pl
 import pandas_flavor as pf
 import numpy as np
+import warnings
 
 from typing import Callable, List, Optional, Sequence, Tuple, Union
-
-from pathos.multiprocessing import ProcessingPool
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
 )
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
+from pytimetk.utils.ray_helpers import run_ray_tasks
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
@@ -276,19 +276,42 @@ def _augment_expanding_apply_pandas(
             desc="Processing expanding apply...",
             display=show_progress,
         ):
-            args = group, window_funcs, min_periods_resolved
-            result_dfs.append(_process_single_expanding_apply_group(args))
-    else:
-        pool = ProcessingPool(threads_resolved)
-        args = [(group, window_funcs, min_periods_resolved) for group in grouped]
-        result_dfs = list(
-            conditional_tqdm(
-                pool.map(_process_single_expanding_apply_group, args),
-                total=len(grouped),
-                desc="Processing expanding apply...",
-                display=show_progress,
+            result_dfs.append(
+                _process_single_expanding_apply_group(
+                    group, window_funcs, min_periods_resolved
+                )
             )
-        )
+    else:
+        groups = list(grouped)
+        args_list = [
+            (group, window_funcs, min_periods_resolved) for group in groups
+        ]
+        try:
+            result_dfs = run_ray_tasks(
+                _process_single_expanding_apply_group,
+                args_list,
+                num_cpus=threads_resolved,
+                desc="Processing expanding apply...",
+                show_progress=show_progress,
+            )
+        except ImportError:
+            warnings.warn(
+                "Ray is not installed; falling back to sequential expanding apply. "
+                "Install `ray` or set `threads=1` to silence this warning.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            result_dfs = [
+                _process_single_expanding_apply_group(
+                    group, window_funcs, min_periods_resolved
+                )
+                for group in conditional_tqdm(
+                    groups,
+                    total=len(groups),
+                    desc="Processing expanding apply...",
+                    display=show_progress,
+                )
+            ]
 
     result_df = pd.concat(result_dfs).sort_index()
     result_df.index = original_index
@@ -361,9 +384,7 @@ def _augment_expanding_apply_polars(
     return combined
 
 
-def _process_single_expanding_apply_group(args):
-    group, window_func, min_periods = args
-
+def _process_single_expanding_apply_group(group, window_func, min_periods):
     # Apply DataFrame-based expanding window functions
     name, group_df = group
     result_dfs = []

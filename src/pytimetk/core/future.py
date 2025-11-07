@@ -8,8 +8,6 @@ from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column
 
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 
-from concurrent.futures import ProcessPoolExecutor
-
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.dataframe_ops import (
     convert_to_engine,
@@ -21,6 +19,7 @@ from pytimetk.utils.dataframe_ops import (
 )
 from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
 from pytimetk.utils.datetime_helpers import parse_human_duration
+from pytimetk.utils.ray_helpers import run_ray_tasks
 
 
 def _resolve_selector_frame(
@@ -165,8 +164,8 @@ def future_frame(
     datasets with many time series groups:
 
     - We vectorize where possible and use parallel processing to speed up.
-    - The `threads` parameter controls the number of threads to use for parallel
-      processing.
+    - The `threads` parameter controls the number of Ray workers used for
+      parallel processing (Ray initializes automatically when `threads != 1`).
 
         - Set threads = -1 to use all available processors.
         - Set threads = 1 to disable parallel processing.
@@ -450,25 +449,20 @@ def _future_frame_pandas(
                 for i in range(0, len(last_dates_df), chunk_size)
             ]
 
+            args_list = [
+                (subset, date_column, group_names, length_out, freq_local)
+                for subset in subsets
+            ]
+            ray_results = run_ray_tasks(
+                _process_future_frame_subset,
+                args_list,
+                num_cpus=threads_resolved,
+                desc="Future framing...",
+                show_progress=show_progress,
+            )
             future_dates_list = []
-            with ProcessPoolExecutor(max_workers=threads_resolved) as executor:
-                results = list(
-                    conditional_tqdm(
-                        executor.map(
-                            _process_future_frame_subset,
-                            subsets,
-                            [date_column] * len(subsets),
-                            [group_names] * len(subsets),
-                            [length_out] * len(subsets),
-                            [freq_local] * len(subsets),
-                        ),
-                        total=len(subsets),
-                        display=show_progress,
-                        desc="Future framing...",
-                    )
-                )
-                for future_dates_subset in results:
-                    future_dates_list.extend(future_dates_subset)
+            for subset_result in ray_results:
+                future_dates_list.extend(subset_result)
 
         # Use non-parallel processing if threads is 1
         else:

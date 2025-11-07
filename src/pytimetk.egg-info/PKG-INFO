@@ -14,7 +14,6 @@ Requires-Dist: holidays<0.34,>=0.33
 Requires-Dist: matplotlib<4.0.0,>=3.8.0
 Requires-Dist: pandas-flavor<0.7.0,>=0.6.0
 Requires-Dist: pandas>=2.0.0
-Requires-Dist: pathos<0.4.0,>=0.3.1
 Requires-Dist: plotly<6.0.0,>=5.17.0
 Requires-Dist: plotnine<0.13.0,>=0.12.3
 Requires-Dist: polars<2.0.0,>=1.2.0
@@ -25,6 +24,7 @@ Requires-Dist: timebasedcv<0.4,>=0.3
 Requires-Dist: tqdm<5.0.0,>=4.66.1
 Requires-Dist: tsfeatures<0.5.0,>=0.4.5
 Requires-Dist: xarray<2025.0.0,>=2024.6.0
+Requires-Dist: ray>=2.10.0
 Dynamic: author
 Dynamic: author-email
 Dynamic: description

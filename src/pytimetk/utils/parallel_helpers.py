@@ -2,9 +2,10 @@ import pandas as pd
 import pandas_flavor as pf
 from functools import partial
 from multiprocessing import cpu_count
-from pathos.multiprocessing import ProcessingPool
+from typing import Iterable, Callable, List, Tuple
+import warnings
 
-from typing import Iterable, Callable
+from pytimetk.utils.ray_helpers import run_ray_tasks
 
 
 @pf.register_groupby_method
@@ -236,23 +237,49 @@ def parallel_apply(
     if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         raise TypeError("`data` is not a Pandas DataFrameGroupBy object.")
 
-    if threads is None:
-        threads = cpu_count()
-    if threads == -1:
-        threads = cpu_count()
-
-    pool = ProcessingPool(threads)
-
     groups = list(data)
-    func = partial(func, **kwargs)
-    results = list(
-        conditional_tqdm(
-            pool.map(func, (group for _, group in groups)),
+    if not groups:
+        return pd.DataFrame()
+
+    threads_resolved = get_threads(threads)
+
+    def _apply_local(group_df):
+        return func(group_df, **kwargs)
+
+    if threads_resolved == 1:
+        iterator = conditional_tqdm(
+            (group for _, group in groups),
             total=len(groups),
             display=show_progress,
             desc=desc,
         )
-    )
+        results = [_apply_local(group) for group in iterator]
+    else:
+        args_list = [
+            (func, kwargs, group) for _, group in groups
+        ]
+        try:
+            results = run_ray_tasks(
+                _parallel_apply_worker,
+                args_list,
+                num_cpus=threads_resolved,
+                desc=desc,
+                show_progress=show_progress,
+            )
+        except ImportError:
+            warnings.warn(
+                "Ray is not installed; falling back to sequential apply. "
+                "Install `ray` or set `threads=1` to silence this warning.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            iterator = conditional_tqdm(
+                (group for _, group in groups),
+                total=len(groups),
+                display=show_progress,
+                desc=desc,
+            )
+            results = [_apply_local(group) for group in iterator]
 
     # Begin post-processing to format results properly
     results_dict = {}
@@ -322,3 +349,7 @@ def get_tqdm():
     except (NameError, ImportError):  # Not in an IPython environment
         from tqdm import tqdm
     return tqdm
+
+
+def _parallel_apply_worker(func: Callable, kwargs: dict, group_df: pd.DataFrame):
+    return func(group_df, **kwargs)

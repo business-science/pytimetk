@@ -11,7 +11,6 @@ try:  # Optional cudf dependency for GPU acceleration
 except ImportError:  # pragma: no cover - cudf optional
     cudf = None  # type: ignore
 
-from pathos.multiprocessing import ProcessingPool
 from functools import partial
 
 from pytimetk._polars_compat import ensure_polars_rolling_kwargs
@@ -21,6 +20,7 @@ from pytimetk.utils.checks import (
     check_value_column,
 )
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
+from pytimetk.utils.ray_helpers import run_ray_tasks
 from pytimetk.utils.polars_helpers import update_dict
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -438,6 +438,22 @@ def _augment_expanding_cudf_dataframe(
     return df_sorted
 
 
+def _expanding_window_ray_worker(
+    group_df: pd.DataFrame,
+    value_columns: List[str],
+    window_funcs: List[Union[str, Tuple[str, Callable]]],
+    min_periods: Optional[int],
+    kwargs: dict,
+) -> pd.DataFrame:
+    return _process_expanding_window(
+        group_df,
+        value_columns=value_columns,
+        window_funcs=window_funcs,
+        min_periods=min_periods,
+        **kwargs,
+    )
+
+
 def _augment_expanding_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: str,
@@ -479,7 +495,6 @@ def _augment_expanding_pandas(
             **kwargs,
         )
 
-        # Use tqdm to display progress for the loop
         result_dfs = [
             func(group)
             for _, group in conditional_tqdm(
@@ -490,26 +505,41 @@ def _augment_expanding_pandas(
             )
         ]
     else:
-        # Prepare to use pathos.multiprocessing
-        pool = ProcessingPool(threads)
-
-        # Use partial to "freeze" arguments for _process_single_roll
-        func = partial(
-            _process_expanding_window,
-            value_columns=value_columns,
-            window_funcs=window_funcs,
-            min_periods=min_periods,
-            **kwargs,
-        )
-
-        result_dfs = list(
-            conditional_tqdm(
-                pool.map(func, (group for _, group in grouped)),
-                total=len(grouped),
+        groups = list(grouped)
+        group_frames = [group for _, group in groups]
+        args_list = [
+            (group, value_columns, window_funcs, min_periods, kwargs)
+            for group in group_frames
+        ]
+        try:
+            result_dfs = run_ray_tasks(
+                _expanding_window_ray_worker,
+                args_list,
+                num_cpus=threads,
+                desc="Calculating Expanding...",
+                show_progress=show_progress,
+            )
+        except ImportError:
+            warnings.warn(
+                "Ray is not installed; falling back to sequential expanding calculations. "
+                "Install `ray` or set `threads=1` to silence this warning.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            func = partial(
+                _process_expanding_window,
+                value_columns=value_columns,
+                window_funcs=window_funcs,
+                min_periods=min_periods,
+                **kwargs,
+            )
+            iterator = conditional_tqdm(
+                group_frames,
+                total=len(group_frames),
                 desc="Calculating Expanding...",
                 display=show_progress,
             )
-        )
+            result_dfs = [func(group) for group in iterator]
 
     result_df = pd.concat(result_dfs).sort_index()  # Sort by the original index
 
