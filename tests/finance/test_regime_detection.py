@@ -1,6 +1,7 @@
 import pytest
 import pandas as pd
 import pytimetk as tk
+import pytimetk.finance.regime_detection as reg_mod
 import os
 import multiprocessing as mp
 import numpy as np
@@ -105,6 +106,27 @@ def test_regime_detection_invalid_inputs(regime_df):
             close_column="close",
             window=30,
         )
+
+
+def test_regime_detection_backend_validation(regime_df):
+    with pytest.raises(ValueError, match="Invalid `hmm_backend`"):
+        regime_df.augment_regime_detection(
+            date_column="date",
+            close_column="close",
+            window=60,
+            n_regimes=2,
+            hmm_backend="invalid-backend",
+        )
+
+    if not reg_mod.POMEGRANATE_AVAILABLE:
+        with pytest.raises(ImportError, match="pomegranate"):
+            regime_df.augment_regime_detection(
+                date_column="date",
+                close_column="close",
+                window=60,
+                n_regimes=2,
+                hmm_backend="pomegranate",
+            )
 
 
 def test_regime_detection_supports_tidy_selectors(regime_df):

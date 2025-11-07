@@ -9,8 +9,14 @@ from joblib import Parallel, delayed
 
 try:
     from hmmlearn.hmm import GaussianHMM
-except ImportError:
+except ImportError:  # pragma: no cover - optional dependency
     GaussianHMM = None
+
+try:
+    from pomegranate import HiddenMarkovModel, NormalDistribution
+except ImportError:  # pragma: no cover - optional dependency
+    HiddenMarkovModel = None
+    NormalDistribution = None
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -35,6 +41,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 from pytimetk.utils.selection import ColumnSelector
 from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 
+HMMLEARN_AVAILABLE = GaussianHMM is not None
+POMEGRANATE_AVAILABLE = HiddenMarkovModel is not None and NormalDistribution is not None
+
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
@@ -54,6 +63,7 @@ def augment_regime_detection(
     n_iter: int = 100,
     n_jobs: int = -1,
     reduce_memory: bool = False,
+    hmm_backend: str = "auto",
     engine: Optional[str] = "auto",
 ) -> Union[pd.DataFrame, pl.DataFrame]:
     """Detect regimes in a financial time series using a specified method (e.g., HMM).
@@ -82,6 +92,10 @@ def augment_regime_detection(
         Number of parallel jobs for group processing (-1 uses all cores). Default is -1.
     reduce_memory : bool, optional
         If True, reduces memory usage. Default is False.
+    hmm_backend : {"auto", "pomegranate", "hmmlearn"}, optional
+        Backend library used for the HMM implementation. ``"auto"`` (default)
+        prefers the faster ``pomegranate`` backend when installed, otherwise
+        falls back to ``hmmlearn``.
     engine : {"auto", "pandas", "polars"}, optional
         Execution engine. ``"auto"`` (default) infers the backend from the
         input data while allowing explicit overrides.
@@ -111,7 +125,7 @@ def augment_regime_detection(
     ```
 
     ```{python}
-    # Regime detection - pandas single stock (requires hmmlearn)
+    # Regime detection - pandas single stock (requires hmm backend)
     regime_single = (
         df
         .query("symbol == 'AAPL'")
@@ -127,7 +141,7 @@ def augment_regime_detection(
     ```
 
     ```{python}
-    # Regime detection - pandas grouped (requires hmmlearn)
+    # Regime detection - pandas grouped (requires hmm backend)
     regime_grouped = (
         df
         .groupby("symbol")
@@ -143,7 +157,7 @@ def augment_regime_detection(
     ```
 
     ```{python}
-    # Regime detection - polars engine (requires hmmlearn)
+    # Regime detection - polars engine (requires hmm backend)
     pl_single = pl.from_pandas(df.query("symbol == 'AAPL'"))
     regime_polars = (
         pl_single
@@ -176,11 +190,27 @@ def augment_regime_detection(
     ```
     """
 
-    # Check for hmmlearn availability
-    if method.lower() == "hmm" and GaussianHMM is None:
+    method_lc = method.lower()
+    if method_lc != "hmm":
+        raise ValueError("Only 'hmm' method is currently supported.")
+
+    backend = hmm_backend.lower()
+    if backend not in {"auto", "pomegranate", "hmmlearn"}:
+        raise ValueError(
+            "Invalid `hmm_backend`. Choose from {'auto', 'pomegranate', 'hmmlearn'}."
+        )
+    if backend == "auto":
+        backend = "pomegranate" if POMEGRANATE_AVAILABLE else "hmmlearn"
+
+    if backend == "pomegranate" and not POMEGRANATE_AVAILABLE:
         raise ImportError(
-            "The 'hmm' method requires the 'hmmlearn' package, which is not installed. "
-            "Please install it using: `pip install hmmlearn`"
+            "The 'pomegranate' backend requires the 'pomegranate' package. "
+            "Install it with `pip install pomegranate`."
+        )
+    if backend == "hmmlearn" and not HMMLEARN_AVAILABLE:
+        raise ImportError(
+            "The 'hmmlearn' backend requires the 'hmmlearn' package. "
+            "Install it with `pip install hmmlearn`."
         )
 
     check_dataframe_or_groupby(data)
@@ -196,8 +226,6 @@ def augment_regime_detection(
 
     if n_regimes < 2:
         raise ValueError("n_regimes must be at least 2.")
-    if method.lower() != "hmm":
-        raise ValueError("Only 'hmm' method is currently supported.")
     if step_size < 1:
         raise ValueError("step_size must be at least 1.")
 
@@ -238,6 +266,7 @@ def augment_regime_detection(
             n_regimes=n_regimes,
             step_size=step_size,
             n_iter=n_iter,
+            hmm_backend=backend,
             n_jobs=n_jobs,
         )
         if reduce_memory:
@@ -251,6 +280,7 @@ def augment_regime_detection(
             n_regimes=n_regimes,
             step_size=step_size,
             n_iter=n_iter,
+            hmm_backend=backend,
             n_jobs=n_jobs,
             group_columns=conversion.group_columns,
             row_id_column=conversion.row_id_column,
@@ -272,6 +302,7 @@ def _augment_regime_detection_pandas(
     n_regimes: int,
     step_size: int,
     n_iter: int,
+    hmm_backend: str,
     n_jobs: int,
 ) -> pd.DataFrame:
     """Pandas implementation of regime detection using HMM."""
@@ -289,29 +320,69 @@ def _augment_regime_detection_pandas(
     df["log_returns"] = df["log_returns"].replace([np.inf, -np.inf], np.nan)
 
     def detect_regimes(series, window, n_regimes, step_size, n_iter):
-        n = len(series)
+        values = series.to_numpy(dtype=float, copy=False)
+        n = len(values)
         regimes = np.full(n, np.nan, dtype=float)
+        min_obs = max(window // 2, n_regimes * 10)
+        hmm_model = None
+        hmm_params = None
+        pom_model = None
         for i in range(window - 1, n, step_size):
-            window_data = series[max(0, i - window + 1) : i + 1].dropna()
-            if len(window_data) < max(window // 2, n_regimes * 10):
+            start = max(0, i - window + 1)
+            window_values = values[start : i + 1]
+            finite_idx = np.where(np.isfinite(window_values))[0]
+            if len(finite_idx) < min_obs:
                 continue
-            window_data = window_data.values.reshape(-1, 1)
-            if not np.all(np.isfinite(window_data)):
-                continue
+            window_data = window_values[finite_idx].reshape(-1, 1)
             try:
-                model = GaussianHMM(
-                    n_components=n_regimes, covariance_type="diag", n_iter=n_iter
-                )
-                model.fit(window_data)
-                predicted = model.predict(window_data)
-                # Fill regimes from i-step_size+1 to i with the last predicted value
-                start_idx = max(0, i - step_size + 1)
-                regimes[start_idx : i + 1] = predicted[
-                    -step_size if i > window - 1 else -start_idx :
-                ]
-            except ValueError as e:
-                print(f"Warning: HMM fit failed at index {i} with error: {e}")
+                if hmm_backend == "hmmlearn":
+                    if hmm_model is None:
+                        hmm_model = GaussianHMM(
+                            n_components=n_regimes,
+                            covariance_type="diag",
+                            n_iter=n_iter,
+                            tol=1e-3,
+                        )
+                    if hmm_params is not None:
+                        hmm_model.startprob_ = hmm_params["startprob"]
+                        hmm_model.transmat_ = hmm_params["transmat"]
+                        hmm_model.means_ = hmm_params["means"]
+                        hmm_model.covars_ = hmm_params["covars"]
+                        hmm_model.init_params = ""
+                    else:
+                        hmm_model.init_params = "stmc"
+                    hmm_model.fit(window_data)
+                    predicted = hmm_model.predict(window_data)
+                    hmm_params = {
+                        "startprob": hmm_model.startprob_.copy(),
+                        "transmat": hmm_model.transmat_.copy(),
+                        "means": hmm_model.means_.copy(),
+                        "covars": hmm_model.covars_.copy(),
+                    }
+                else:
+                    sequence = window_data.ravel().tolist()
+                    if pom_model is None:
+                        pom_model = HiddenMarkovModel.from_samples(
+                            NormalDistribution,
+                            n_components=n_regimes,
+                            X=[sequence],
+                            algorithm="baum-welch",
+                            max_iterations=n_iter,
+                            stop_threshold=1e-3,
+                        )
+                    else:
+                        pom_model.fit(
+                            [sequence],
+                            algorithm="baum-welch",
+                            max_iterations=n_iter,
+                            stop_threshold=1e-3,
+                        )
+                    predicted = np.asarray(pom_model.predict(sequence))
+            except ValueError:
                 continue
+            tail_len = min(step_size, len(finite_idx))
+            target_positions = finite_idx[-tail_len:] + start
+            regimes[target_positions] = predicted[-tail_len:]
         return pd.Series(regimes, index=series.index)
 
     for window in windows:
@@ -341,6 +412,7 @@ def _augment_regime_detection_polars(
     n_regimes: int,
     step_size: int,
     n_iter: int,
+    hmm_backend: str,
     n_jobs: int,
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
@@ -367,6 +439,7 @@ def _augment_regime_detection_polars(
             n_regimes=n_regimes,
             step_size=step_size,
             n_iter=n_iter,
+            hmm_backend=hmm_backend,
             n_jobs=n_jobs,
         )
     else:
@@ -378,6 +451,7 @@ def _augment_regime_detection_polars(
             n_regimes=n_regimes,
             step_size=step_size,
             n_iter=n_iter,
+            hmm_backend=hmm_backend,
             n_jobs=n_jobs,
         )
 
