@@ -383,10 +383,9 @@ def plot_timeseries(
     # Polars DataFrame using the tk accessor
     import polars as pl
 
-
     pl_df = pl.from_pandas(df[['id', 'date', 'value']])
 
-    pl_df.tk.plot_timeseries(
+    pl_df.group_by('id').tk.plot_timeseries(
         date_column='date',
         value_column='value',
         engine='plotly',
@@ -1139,6 +1138,19 @@ def _plot_timeseries_plotly(
                         legendgroup=name,
                     )
                     fig.add_trace(trace)
+                    if smooth:
+                        smooth_trace = go.Scatter(
+                            x=color_sorted[date_column],
+                            y=color_sorted["__smooth"],
+                            mode="lines",
+                            line=dict(
+                                color=hex_to_rgba(smooth_color, alpha=smooth_alpha),
+                                width=smooth_size,
+                            ),
+                            showlegend=False,
+                            name="Smoother",
+                        )
+                        fig.add_trace(smooth_trace)
                 # Remove duplicate legends in each legend group
                 seen_legendgroups = set()
                 for trace in fig.data:
@@ -1159,19 +1171,19 @@ def _plot_timeseries_plotly(
                     name="Time Series",
                 )
                 fig.add_trace(trace)
-            if smooth:
-                trace = go.Scatter(
-                    x=data_sorted[date_column],
-                    y=data_sorted["__smooth"],
-                    mode="lines",
-                    line=dict(
-                        color=hex_to_rgba(smooth_color, alpha=smooth_alpha),
-                        width=smooth_size,
-                    ),
-                    showlegend=False,
-                    name="Smoother",
-                )
-                fig.add_trace(trace)
+                if smooth:
+                    trace = go.Scatter(
+                        x=data_sorted[date_column],
+                        y=data_sorted["__smooth"],
+                        mode="lines",
+                        line=dict(
+                            color=hex_to_rgba(smooth_color, alpha=smooth_alpha),
+                            width=smooth_size,
+                        ),
+                        showlegend=False,
+                        name="Smoother",
+                    )
+                    fig.add_trace(trace)
             if y_intercept is not None:
                 if not isinstance(y_intercept, list):
                     y_intercept = [y_intercept]
