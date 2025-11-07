@@ -216,8 +216,8 @@ def augment_regime_detection(
         .augment_regime_detection(
             date_column=contains("dat"),
             close_column=contains("clos"),
-            window=252,
-            n_regimes=5,
+            window=126,
+            n_regimes=4,
             hmm_backend="pomegranate", # pomegranate<=1.0.0 required
         )
     )
@@ -236,7 +236,7 @@ def augment_regime_detection(
         .plot_timeseries(
             date_column="date",
             value_column="close",
-            color_column="close_regime_252",
+            color_column=contains("regime_"),
             smooth=False,
             title=f"{SYMBOL} Close Price with Detected Regimes",
         )
