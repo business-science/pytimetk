@@ -144,7 +144,7 @@ def augment_regime_detection(
     -----
     - Uses Hidden Markov Model (HMM) to identify latent regimes based on log returns.
     - Regimes reflect distinct statistical states (e.g., high/low volatility, trending).
-    - Requires 'hmmlearn' package. Install with `pip install hmmlearn` or the faster `pomegranate` package. Install with `pip install pomegranate<=1.0.0`.
+    - Requires 'hmmlearn' package. Install with `pip install hmmlearn` or the faster optional `pomegranate` backend via `pip install 'pytimetk[regime_backends]'` (equivalent to `pip install 'pomegranate<1.0'`).
 
     Examples
     --------

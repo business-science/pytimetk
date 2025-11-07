@@ -260,7 +260,6 @@ def theme_plotly_timetk(
     df = (
         px.data.stocks()
         .melt(id_vars="date", var_name="id", value_name="value")
-        .query("date <= '2015-12-31'")
     )
 
     # No styling
