@@ -25,6 +25,7 @@ Requires-Dist: tqdm<5.0.0,>=4.66.1
 Requires-Dist: tsfeatures<0.5.0,>=0.4.5
 Requires-Dist: xarray<2025.0.0,>=2024.6.0
 Requires-Dist: ray>=2.10.0
+Requires-Dist: multiprocess>=0.70.17
 Dynamic: author
 Dynamic: author-email
 Dynamic: description
