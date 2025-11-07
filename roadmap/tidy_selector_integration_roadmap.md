@@ -13,11 +13,11 @@
 
 ## Phase 1 — Plotting Enhancements
 1. ✅ `plot_acf_diagnostics` accepts tidy selectors for `value_column` / `ccf_columns` and handles polars inputs.
-2. Extend tidy selectors to remaining visualization functions in priority order:
-   - [x] `plot_seasonal_diagnostics` (for `.facet_vars` / `.feature_set`)
-   - [x] `plot_stl_diagnostics`
-   - [x] `plot_time_series_boxplot`, `plot_time_series_regression`, and other upcoming R parity ports.
-3. Update usage docs with selector-driven examples (pandas + polars).
+2. Extend tidy selectors beyond the visualization layer:
+   - [ ] `plot_timeseries` (date/value/color columns + dropdown facets).
+   - [ ] Core resampling helpers: `summarize_by_time`, `apply_by_time`, `pad_by_time`, `future_frame`.
+   - [ ] Feature engineering ops (`augment_lags/leads/diffs`, rolling/expanding helpers) and finance indicators (`rsi`, `macd`, etc.) so value columns can be resolved via selectors.
+3. Update usage docs with selector-driven examples (pandas + polars) for each upgraded API.
 
 ## Phase 2 — Diagnostic & Feature APIs
 1. `seasonal_diagnostics` / `stl_diagnostics`: allow selectors for value columns and optional facets.

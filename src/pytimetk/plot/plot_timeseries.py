@@ -12,7 +12,7 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 from pytimetk.plot.theme import theme_timetk, palette_timetk
 from pytimetk.utils.plot_helpers import hex_to_rgba, name_to_hex
 
-from typing import Union, Optional, List
+from typing import Union, Optional, List, Sequence
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
@@ -20,15 +20,16 @@ from pytimetk.utils.checks import (
     check_value_column,
 )
 from pytimetk.utils.dataframe_ops import resolve_pandas_groupby_frame
+from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
 
 
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def plot_timeseries(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
-    date_column: str,
-    value_column: Union[str, List[str]],
-    color_column: Union[str, List[str]] = None,
+    date_column: Union[str, ColumnSelector],
+    value_column: Union[str, Sequence[Union[str, ColumnSelector]]],
+    color_column: Union[str, Sequence[Union[str, ColumnSelector]]] = None,
     color_palette: Optional[Union[dict, list, str]] = None,
     facet_ncol: int = 1,
     facet_nrow: Optional[int] = None,
@@ -70,10 +71,10 @@ def plot_timeseries(
     data : pd.DataFrame or pd.core.groupby.generic.DataFrameGroupBy
         The input data for the plot. It can be either a Pandas DataFrame or a
         Pandas DataFrameGroupBy object.
-    date_column : str
-        The name of the column in the DataFrame that contains the dates for the
-        time series data.
-    value_column : str or list
+    date_column : str or ColumnSelector
+        The name (or tidy selector) of the column in the DataFrame that contains
+        the dates for the time series data.
+    value_column : str, ColumnSelector, or list
         The `value_column` parameter is used to specify the name of the column
         in the DataFrame that contains the values for the time series data. This
         column will be plotted on the y-axis of the time series plot.
@@ -86,7 +87,7 @@ def plot_timeseries(
         WIDE-FORMAT PLOTTING:
         If the `value_column` parameter is a list, it will plotted
         as multiple time series (wide-format).
-    color_column : str
+    color_column : str, ColumnSelector, or list
         The `color_column` parameter is an optional parameter that specifies the
         column in the DataFrame that will be used to assign colors to the
         different time series. If this parameter is not provided, all time
@@ -331,6 +332,22 @@ def plot_timeseries(
     ```
 
     ```{python}
+    # Tidy selector example (Plotly)
+    from pytimetk.utils.selection import contains
+
+    fig = (
+        df
+            .plot_timeseries(
+                date_column='date',
+                value_column=contains('value'),
+                color_column=contains('id'),
+                engine='plotly',
+            )
+    )
+    fig
+    ```
+
+    ```{python}
     # Plotnine Object: Single Time Series
     fig = (
         df
@@ -451,13 +468,90 @@ def plot_timeseries(
 
     # Common checks
     check_dataframe_or_groupby(data)
-    check_date_column(data, date_column)
 
+    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
+        group_names = data.grouper.names
+        resolved_data = resolve_pandas_groupby_frame(data).copy()
+    elif isinstance(data, pd.DataFrame):
+        group_names = None
+        resolved_data = data.copy()
+    else:
+        raise ValueError("data must be a DataFrame or GroupBy object")
+
+    def _resolve_single_column(selector, label):
+        if isinstance(selector, str):
+            return selector
+        resolved = resolve_column_selection(
+            resolved_data,
+            selector,
+            allow_none=False,
+            require_match=True,
+        )
+        if len(resolved) != 1:
+            raise ValueError(
+                f"`{label}` selector must resolve to exactly one column (resolved={resolved})."
+            )
+        return resolved[0]
+
+    def _resolve_multi_column(selector, label):
+        if isinstance(selector, str):
+            return selector
+        if isinstance(selector, Sequence) and not isinstance(selector, (str, bytes)):
+            collected: List[str] = []
+            for entry in selector:
+                if isinstance(entry, str):
+                    collected.append(entry)
+                else:
+                    resolved = resolve_column_selection(
+                        resolved_data,
+                        entry,
+                        allow_none=False,
+                        require_match=True,
+                        unique=False,
+                    )
+                    collected.extend(resolved)
+            if not collected:
+                raise ValueError(f"`{label}` selector list did not match any columns.")
+            ordered: List[str] = []
+            seen = set()
+            for name in collected:
+                if name not in seen:
+                    seen.add(name)
+                    ordered.append(name)
+            return ordered
+        resolved = resolve_column_selection(
+            resolved_data,
+            selector,
+            allow_none=False,
+            require_match=True,
+        )
+        if len(resolved) != 1:
+            raise ValueError(
+                f"`{label}` selector must resolve to exactly one column (resolved={resolved})."
+            )
+        return resolved[0]
+
+    date_column = _resolve_single_column(date_column, "date_column")
+    value_column = _resolve_multi_column(value_column, "value_column")
+    if color_column is not None:
+        color_column = _resolve_multi_column(color_column, "color_column")
+
+    check_date_column(resolved_data, date_column)
     if isinstance(value_column, list):
         for col in value_column:
-            check_value_column(data, col)
+            check_value_column(resolved_data, col)
     else:
-        check_value_column(data, value_column)
+        check_value_column(resolved_data, value_column)
+
+    if isinstance(color_column, list):
+        for col in color_column:
+            if col not in resolved_data.columns:
+                raise ValueError(f"`color_column` '{col}' not found in DataFrame.")
+    elif isinstance(color_column, str):
+        if color_column not in resolved_data.columns:
+            raise ValueError(f"`color_column` '{color_column}' not found in DataFrame.")
+
+    data = resolved_data
 
     # Handle line_size
     if line_size is None:
@@ -473,18 +567,6 @@ def plot_timeseries(
     smooth_color = name_to_hex(smooth_color)
     y_intercept_color = name_to_hex(y_intercept_color)
     x_intercept_color = name_to_hex(x_intercept_color)
-
-    # Initialize group_names
-    group_names = None
-
-    # Handle DataFrames and GroupBy objects
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        group_names = data.grouper.names
-        data = resolve_pandas_groupby_frame(data).copy()
-    elif isinstance(data, pd.DataFrame):
-        data = data.copy()
-    else:
-        raise ValueError("data must be a DataFrame or GroupBy object")
 
     # Reshape data if value_column is a list (wide format)
     if isinstance(value_column, list):

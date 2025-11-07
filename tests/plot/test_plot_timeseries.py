@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import polars as pl
 import pytimetk
+from pytimetk.utils.selection import contains
 
 # noqa: F401
 import plotly
@@ -108,6 +109,16 @@ def test_plot_timeseries_groupby_polars_accessor():
     fig = pl_df.group_by("id").tk.plot_timeseries(
         date_column="date",
         value_column="value",
+        engine="plotly",
+    )
+    assert isinstance(fig, plotly.graph_objs._figure.Figure)
+
+
+def test_plot_timeseries_tidy_selectors():
+    fig = data.plot_timeseries(
+        date_column="date",
+        value_column=contains("val"),
+        color_column=contains("id"),
         engine="plotly",
     )
     assert isinstance(fig, plotly.graph_objs._figure.Figure)
