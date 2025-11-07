@@ -13,8 +13,6 @@ except ImportError:  # pragma: no cover - cudf optional
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
-    check_date_column,
-    check_value_column,
 )
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
@@ -29,6 +27,8 @@ from pytimetk.utils.dataframe_ops import (
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
 from pytimetk.utils.polars_helpers import collect_lazyframe
+from pytimetk.utils.selection import ColumnSelector
+from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 
 
 @pf.register_groupby_method
@@ -42,10 +42,10 @@ def augment_adx(
         "cudf.DataFrame",
         "cudf.core.groupby.groupby.DataFrameGroupBy",
     ],
-    date_column: str,
-    high_column: str,
-    low_column: str,
-    close_column: str,
+    date_column: Union[str, ColumnSelector],
+    high_column: Union[str, ColumnSelector],
+    low_column: Union[str, ColumnSelector],
+    close_column: Union[str, ColumnSelector],
     periods: Union[int, Tuple[int, int], List[int]] = 14,
     reduce_memory: bool = False,
     engine: Optional[str] = "auto",
@@ -58,15 +58,11 @@ def augment_adx(
     data : DataFrame or GroupBy (pandas or polars)
         Input financial data. Grouped inputs are processed per group before the
         indicators are appended.
-    date_column : str
-        Name of the column containing date information.
-    high_column : str
-        Name of the column containing high prices.
-    low_column : str
-        Name of the column containing low prices.
-    close_column : str
-        Name of the column containing closing prices. Indicator columns are
-        prefixed with this name.
+    date_column : str or ColumnSelector
+        Name of the column containing date information (tidy selectors supported).
+    high_column, low_column, close_column : str or ColumnSelector
+        Column names used to compute the indicator. Selectors must resolve to a
+        single column each.
     periods : int, tuple, or list, optional
         Lookback windows for smoothing. Accepts an integer, a tuple specifying
         an inclusive range, or a list of explicit periods. Defaults to ``14``.
@@ -132,14 +128,48 @@ def augment_adx(
     )
 
     adx_pl.glimpse()
+
+    # Selector example
+    from pytimetk.utils.selection import contains
+    demo = (
+        df
+            .augment_adx(
+                date_column=contains("dat"),
+                high_column=contains("high"),
+                low_column=contains("low"),
+                close_column=contains("clos"),
+                periods=14,
+            )
+    )
     ```
     """
 
     check_dataframe_or_groupby(data)
-    check_value_column(data, high_column)
-    check_value_column(data, low_column)
-    check_value_column(data, close_column)
-    check_date_column(data, date_column)
+    date_column, close_cols = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=close_column,
+        require_numeric=True,
+    )
+    _, high_cols = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=high_column,
+        require_numeric=True,
+    )
+    _, low_cols = resolve_shift_columns(
+        data,
+        date_column=date_column,
+        value_column=low_column,
+        require_numeric=True,
+    )
+    if len(close_cols) != 1 or len(high_cols) != 1 or len(low_cols) != 1:
+        raise ValueError(
+            "`high_column`, `low_column`, and `close_column` selectors must resolve to exactly one column."
+        )
+    close_column = close_cols[0]
+    high_column = high_cols[0]
+    low_column = low_cols[0]
 
     periods_list = _normalize_periods(periods)
 

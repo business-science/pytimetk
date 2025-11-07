@@ -7,6 +7,7 @@ import numpy as np
 import pytimetk as tk
 import os
 import multiprocessing as mp
+from pytimetk.utils.selection import contains
 
 # Setup to avoid multiprocessing/threading warnings
 mp.set_start_method("spawn", force=True)
@@ -235,3 +236,17 @@ def test_adx_edge_cases(df):
             close_column="close",
             periods=["bad"],
         )
+
+
+def test_adx_supports_tidy_selectors(df):
+    result = (
+        df.groupby("symbol")
+        .augment_adx(
+            date_column=contains("dat"),
+            high_column=contains("high"),
+            low_column=contains("low"),
+            close_column=contains("clos"),
+            periods=[14],
+        )
+    )
+    assert any(col.startswith("close_adx_14") for col in result.columns)

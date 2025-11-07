@@ -4,6 +4,7 @@ import pytimetk as tk
 import os
 import multiprocessing as mp
 from itertools import product
+from pytimetk.utils.selection import contains
 
 # Setup to avoid multiprocessing warnings
 mp.set_start_method("spawn", force=True)
@@ -112,3 +113,17 @@ def test_atr_edge_cases(df):
             periods=[14],
             engine="pandas",
         )
+
+
+def test_atr_supports_tidy_selectors(df):
+    result = (
+        df.groupby("symbol")
+        .augment_atr(
+            date_column=contains("dat"),
+            high_column=contains("high"),
+            low_column=contains("low"),
+            close_column=contains("clos"),
+            periods=[14],
+        )
+    )
+    assert "close_atr_14" in result.columns

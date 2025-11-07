@@ -17,7 +17,7 @@
 3. In progress: extend tidy selectors beyond the visualization layer:
    - [ ] Core resampling helpers: `summarize_by_time`, `apply_by_time`, `pad_by_time`, `future_frame`.
    - ✅ Feature engineering ops (`augment_lags`, `augment_leads`, `augment_diffs`) now resolve selectors + duration specs.
-   - [ ] Finance indicators (`augment_rsi`, `augment_macd`, indicators in `pytimetk/finance`) should accept selectors for price columns.
+   - ✅ Finance indicators (`augment_rsi`, `augment_macd`, `augment_atr`, `augment_adx`) now accept selectors for price columns (pandas + polars).
 4. Update usage docs with selector-driven examples (pandas + polars) for each upgraded API.
 
 ## Phase 2 — Diagnostic & Feature APIs
