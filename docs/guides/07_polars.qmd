@@ -1,0 +1,109 @@
+---
+title: "Speeding Up Workflows with Polars"
+jupyter: python3
+toc: true
+toc-depth: 3
+number-sections: true
+number-depth: 2
+code-fold: show
+code-tools:
+  source: false
+  toggle: true
+---
+
+::: {.callout-important}
+## Why Polars?
+
+Polars shines on wide datasets and large groups thanks to its columnar memory model and eager/lazy execution. `pytimetk` supports Polars both through the `.tk` accessor and via `engine="polars"` on many heavy-hitting helpers, so you can keep your existing workflows while getting a speed boost.
+:::
+
+# Setup
+
+```{python}
+import polars as pl
+import pytimetk as tk
+```
+
+We'll use the `m4_daily` dataset (multiple daily series). Start in pandas, then convert to Polars.
+
+```{python}
+m4_daily_pd = tk.load_dataset("m4_daily", parse_dates=["date"])
+m4_daily_pl = pl.from_pandas(m4_daily_pd)
+
+m4_daily_pl
+```
+
+# Plotting Directly from Polars
+
+Every Polars `DataFrame` gains a `.tk` accessor once `pytimetk` is imported. This means you can send Polars data straight into the visual helpers without bouncing back to pandas.
+
+```{python}
+single_series = m4_daily_pl.filter(pl.col("id") == "D10")
+
+single_series.tk.plot_timeseries(
+    date_column="date",
+    value_column="value",
+    title="Polars-powered plot_timeseries()",
+)
+```
+
+# Time-Based Aggregations with the Polars Engine
+
+When you pass `engine="polars"` the heavy lifting happens in Polars, but the result returns as a pandas frame (so it works with the rest of the ecosystem). This is handy for weekly/monthly summaries across many groups.
+
+```{python}
+weekly_summary = (
+    m4_daily_pl
+    .group_by("id")
+    .tk.summarize_by_time(
+        date_column="date",
+        value_column="value",
+        freq="W",
+        agg_func="mean",
+        engine="polars",
+    )
+)
+
+weekly_summary.head()
+```
+
+# Rolling Features without Leaving Polars
+
+The same pattern applies to rolling window computations. Here we build trailing 7-day mean and standard deviation per series, computed entirely with the Polars backend.
+
+```{python}
+rolling_features = (
+    m4_daily_pl
+    .group_by("id")
+    .tk.augment_rolling(
+        date_column="date",
+        value_column="value",
+        window=7,
+        window_func=["mean", "std"],
+        engine="polars",
+    )
+)
+
+rolling_features.head()
+```
+
+If you need a pandas DataFrame afterwards, just convert:
+
+```{python}
+rolling_features.to_pandas().head()
+```
+
+# Pure Polars Pipelines
+
+You can stay in Polars from end-to-end:
+
+1. Prep data with `pl.DataFrame` operations.
+2. Call `.tk` helpers that support Polars inputs.
+3. Only convert to pandas at the final step if your next tool requires it.
+
+This keeps the data in a columnar format for as long as possible, unlocking better cache usage and multithreading—without rewriting the entire pytimetk API.
+
+# Next Steps
+
+- Revisit the [Data Visualization Guide](./01_visualization.html) to combine Polars-powered preprocessing with the latest plotting helpers.
+- Check the [function reference](../reference/index.qmd) for each helper’s `engine` support matrix.

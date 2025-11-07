@@ -7,6 +7,7 @@ pad_by_time(
     freq='D',
     start_date=None,
     end_date=None,
+    fillna=None,
     engine='pandas',
 )
 ```
@@ -26,6 +27,7 @@ time series regularly spaced.
 | freq        | str                                    | Frequency for padding. Accepts pandas aliases (``"H"``, ``"MS"``, ...) or human-friendly durations like ``"15 minutes"`` or ``"3 days"``.  - S: secondly frequency - min: minute frequency - H: hourly frequency - B: business day frequency - D: daily frequency - W: weekly frequency - M: month end frequency - MS: month start frequency - BMS: Business month start - Q: quarter end frequency - QS: quarter start frequency - Y: year end frequency - YS: year start frequency | `'D'`      |
 | start_date  | str                                    | Optional bounds for padding. Accepts ISO strings or durations relative to the observed min/max (e.g., ``"start: 1 month ago"``).                                                                                                                                                                                                                                                                                                                                                     | `None`     |
 | end_date    | str                                    | Optional bounds for padding. Accepts ISO strings or durations relative to the observed min/max (e.g., ``"start: 1 month ago"``).                                                                                                                                                                                                                                                                                                                                                     | `None`     |
+| fillna      | scalar                                 | When provided, all newly padded rows have their non-date/group columns filled with this value instead of the default forward/backward fill.                                                                                                                                                                                                                                                                                                                                          | `None`     |
 | engine      | (pandas, polars, cudf, auto)           | Execution engine. ``"pandas"`` (default) performs the computation using pandas. ``"polars"`` converts the result to a polars DataFrame on return. ``"auto"`` infers the engine from the input data.                                                                                                                                                                                                                                                                                  | `"pandas"` |
 
 ## Returns {.doc-section .doc-section-returns}

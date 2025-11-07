@@ -99,6 +99,7 @@ def pad_by_time(
     freq: str = "D",
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
+    fillna: Optional[Union[int, float]] = None,
     engine: str = "pandas",
 ) -> Union[pd.DataFrame, pl.DataFrame]:
     """
@@ -135,6 +136,9 @@ def pad_by_time(
     start_date, end_date : str, optional
         Optional bounds for padding. Accepts ISO strings or durations relative
         to the observed min/max (e.g., ``"start: 1 month ago"``).
+    fillna : scalar, optional
+        When provided, all newly padded rows have their non-date/group columns
+        filled with this value instead of the default forward/backward fill.
     engine : {"pandas", "polars", "cudf", "auto"}, optional
         Execution engine. ``"pandas"`` (default) performs the computation using pandas.
         ``"polars"`` converts the result to a polars DataFrame on return. ``"auto"``
@@ -315,6 +319,7 @@ def pad_by_time(
             freq=freq_normalized,
             start_date=start_ts,
             end_date=end_ts,
+            fillna=fillna,
         )
         return restore_output_type(result, conversion)
 
@@ -329,6 +334,7 @@ def pad_by_time(
             end_date=end_ts,
             group_columns=conversion.group_columns,
             row_id_column=conversion.row_id_column,
+            fillna=fillna,
         )
         return restore_output_type(result, conversion)
 
@@ -344,6 +350,7 @@ def pad_by_time(
             start_date=start_ts,
             end_date=end_ts,
             group_columns=conversion.group_columns,
+            fillna=fillna,
         )
         return restore_output_type(result, conversion)
 
@@ -357,6 +364,7 @@ def _pad_by_time_pandas(
     freq: Union[str, pd.DateOffset, pd.Timedelta],
     start_date: Optional[pd.Timestamp],
     end_date: Optional[pd.Timestamp],
+    fillna: Optional[Union[int, float]],
 ) -> pd.DataFrame:
     def _build_range(start_bound, end_bound):
         return pd.date_range(
@@ -373,12 +381,17 @@ def _pad_by_time_pandas(
         min_date = start_date if start_date is not None else df[date_column].min()
         max_date = end_date if end_date is not None else df[date_column].max()
 
-        padded = (
+        base = (
             df.set_index(date_column)
             .reindex(_build_range(min_date, max_date))
             .reset_index()
             .rename(columns={"index": date_column})
         )
+        if fillna is not None:
+            fill_cols = [col for col in base.columns if col != date_column]
+            base[fill_cols] = base[fill_cols].fillna(fillna)
+            return base
+        padded = base
 
         constant_cols = padded.columns[padded.nunique(dropna=False) == 1]
         if len(constant_cols) > 0:
@@ -411,6 +424,19 @@ def _pad_by_time_pandas(
         for col_name, key_value in zip(group_names, keys):
             padded[col_name] = key_value
 
+        if fillna is not None:
+            fill_cols = [col for col in padded.columns if col not in (*group_names, date_column)]
+            padded[fill_cols] = padded[fill_cols].fillna(fillna)
+        else:
+            constant_cols = [
+                col
+                for col in group_df.columns
+                if col not in (*group_names, date_column)
+                and group_df[col].nunique(dropna=False) == 1
+            ]
+            if constant_cols:
+                padded[constant_cols] = padded[constant_cols].ffill()
+
         padded_frames.append(padded[group_df.columns])
 
     if not padded_frames:
@@ -429,6 +455,7 @@ def _pad_by_time_polars(
     end_date: Optional[pd.Timestamp],
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
+    fillna: Optional[Union[int, float]],
 ) -> pl.DataFrame:
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
@@ -485,6 +512,31 @@ def _pad_by_time_polars(
 
             join_keys = list(resolved_groups) + [date_column]
             padded = date_df.join(part_sorted, on=join_keys, how="left").sort(join_keys)
+            if fillna is not None:
+                fill_cols = [col for col in padded.columns if col not in join_keys]
+                padded = padded.with_columns(
+                    [
+                        pl.when(pl.col(col).is_null())
+                        .then(pl.lit(fillna))
+                        .otherwise(pl.col(col))
+                        .alias(col)
+                        for col in fill_cols
+                    ]
+                )
+            else:
+                constant_cols: List[str] = []
+                for col_name in part_sorted.columns:
+                    if col_name in join_keys or col_name == row_id_column:
+                        continue
+                    unique_count = (
+                        part_sorted.select(pl.col(col_name).n_unique()).to_series().item()
+                    )
+                    if unique_count == 1:
+                        constant_cols.append(col_name)
+                if constant_cols:
+                    padded = padded.with_columns(
+                        [pl.col(col).forward_fill() for col in constant_cols]
+                    )
             padded = padded.select(ordered_cols)
             results.append(padded)
 
@@ -501,19 +553,31 @@ def _pad_by_time_polars(
         date_df = _build_date_df(global_start, global_end)
         padded = date_df.join(series_sorted, on=[date_column], how="left").sort(date_column)
 
-        constant_cols: List[str] = []
-        for col_name in series_sorted.columns:
-            if col_name == date_column or col_name == row_id_column:
-                continue
-            unique_count = (
-                series_sorted.select(pl.col(col_name).n_unique()).to_series().item()
-            )
-            if unique_count == 1:
-                constant_cols.append(col_name)
-        if constant_cols:
+        if fillna is not None:
+            fill_cols = [col for col in padded.columns if col not in {date_column, row_id_column}]
             padded = padded.with_columns(
-                [pl.col(col).forward_fill() for col in constant_cols]
+                [
+                    pl.when(pl.col(col).is_null())
+                    .then(pl.lit(fillna))
+                    .otherwise(pl.col(col))
+                    .alias(col)
+                    for col in fill_cols
+                ]
             )
+        else:
+            constant_cols: List[str] = []
+            for col_name in series_sorted.columns:
+                if col_name == date_column or col_name == row_id_column:
+                    continue
+                unique_count = (
+                    series_sorted.select(pl.col(col_name).n_unique()).to_series().item()
+                )
+                if unique_count == 1:
+                    constant_cols.append(col_name)
+            if constant_cols:
+                padded = padded.with_columns(
+                    [pl.col(col).forward_fill() for col in constant_cols]
+                )
 
         padded = padded.select(ordered_cols)
 
@@ -532,6 +596,7 @@ def _pad_by_time_cudf_dataframe(
     start_date: Optional[pd.Timestamp],
     end_date: Optional[pd.Timestamp],
     group_columns: Optional[Sequence[str]],
+    fillna: Optional[Union[int, float]],
 ) -> "cudf.DataFrame":
     if cudf is None:  # pragma: no cover - optional dependency
         raise ImportError("cudf is required to execute the cudf pad_by_time backend.")
@@ -569,8 +634,18 @@ def _pad_by_time_cudf_dataframe(
                 sort=False,
             )
             merged = merged.sort_values(by=group_cols + [date_column])
-            for col in merged.columns:
-                if col not in group_cols + [date_column]:
+            value_cols = [col for col in merged.columns if col not in group_cols + [date_column]]
+            if fillna is not None:
+                for col in value_cols:
+                    merged[col] = merged[col].fillna(fillna)
+            else:
+                constant_cols = [
+                    col
+                    for col in group_df.columns
+                    if col not in group_cols + [date_column]
+                    and group_df[col].nunique(dropna=False) == 1
+                ]
+                for col in constant_cols:
                     merged[col] = merged[col].fillna(method="ffill")
             frames.append(merged)
 
@@ -587,9 +662,18 @@ def _pad_by_time_cudf_dataframe(
     padded = cudf.DataFrame({date_column: date_range})
     merged = padded.merge(df, on=[date_column], how="left", sort=False)
     merged = merged.sort_values(by=[date_column])
-    const_cols = [col for col in merged.columns if col != date_column and merged[col].nunique() == 1]
-    for col in const_cols:
-        merged[col] = merged[col].fillna(method="ffill")
+    value_cols = [col for col in merged.columns if col != date_column]
+    if fillna is not None:
+        for col in value_cols:
+            merged[col] = merged[col].fillna(fillna)
+    else:
+        const_cols = [
+            col
+            for col in merged.columns
+            if col != date_column and merged[col].nunique(dropna=False) == 1
+        ]
+        for col in const_cols:
+            merged[col] = merged[col].fillna(method="ffill")
     return merged
 
 

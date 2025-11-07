@@ -30,8 +30,9 @@ Run the following code to setup for this tutorial.
 
 ```{python}
 # Import packages
-import pytimetk as tk
+import numpy as np
 import pandas as pd
+import pytimetk as tk
 ```
 
 # Plotting Time Series
@@ -127,6 +128,148 @@ taylor_30_min.plot_timeseries(
 )
 ```
 
+# Diagnostics and Distribution Views
+
+Once you are comfortable with the core line charts, pytimetk also ships higher-level Plotly helpers that uncover seasonality, trends, and distribution shifts without hand-writing subplot logic.
+
+## STL diagnostics (`plot_stl_diagnostics`)
+
+Use STL to break a series into observed, seasonal, trend, remainder, and seasonally adjusted components. Faceting on an additional column (such as month) makes it easy to compare patterns side-by-side.
+
+```{python}
+stl_fig = tk.plot_stl_diagnostics(
+    data=taylor_30_min,
+    date_column="date",
+    value_column="value",
+    facet_vars="month",
+    facet_ncols=3,
+    plotly_dropdown=True,
+)
+stl_fig
+```
+
+## Seasonal feature diagnostics (`plot_seasonal_diagnostics`)
+
+For categorical seasonality (hour-of-day, weekday labels, etc.), `plot_seasonal_diagnostics()` summarizes the value distribution for each seasonal feature. The output pairs nicely with tooltips and dropdowns when you set `plotly_dropdown=True`.
+
+```{python}
+seasonal_fig = tk.plot_seasonal_diagnostics(
+    data=taylor_30_min,
+    date_column="date",
+    value_column="value",
+    feature_set=["hour", "wday.lbl", "month.lbl"],
+    plotly_dropdown=True,
+)
+seasonal_fig
+```
+
+## Boxplots over arbitrary periods (`plot_time_series_boxplot`)
+
+Need to understand the distribution of values within rolling periods (days, weeks, months)? `plot_time_series_boxplot()` aggregates each period into a box-and-whisker view, optionally overlaying a smoother.
+
+```{python}
+boxplot_fig = tk.plot_time_series_boxplot(
+    data=taylor_30_min,
+    date_column="date",
+    value_column="value",
+    period="1D",
+    color_column="month",
+    smooth_func="median",
+    smooth_color="#18BC9C",
+)
+boxplot_fig
+```
+
+# Visualizing Anomalies End-to-End
+
+The anomaly plotting helpers sit on top of `tk.anomalize()`, so you can go from detection to diagnostics with only a few lines of code. Below we use the bike sales daily dataset and group by product category to illustrate a multi-series workflow.
+
+```{python}
+bike_sales = (
+    tk.load_dataset("bike_sales_sample", parse_dates=["order_date"])
+    .groupby(["category_1", "order_date"], as_index=False, observed=True)
+    .agg(total_price=("total_price", "sum"))
+)
+
+anomalize_df = (
+    bike_sales
+    .groupby("category_1")
+    .anomalize(
+        date_column="order_date",
+        value_column="total_price",
+        method="twitter",
+        iqr_alpha=0.10,
+        clean_alpha=0.75,
+        clean="min_max",
+    )
+)
+```
+
+Plot detected anomalies with ribbons for the expected bounds:
+
+```{python}
+anomaly_fig = (
+    anomalize_df
+    .groupby("category_1")
+    .plot_anomalies(
+        date_column="order_date",
+        plotly_dropdown=True,
+        plotly_dropdown_x=1.02,
+        plotly_dropdown_y=1.12,
+    )
+)
+anomaly_fig
+```
+
+Inspect the underlying decomposition (observed, seasonal, trend, remainder) without leaving Plotly:
+
+```{python}
+anomaly_decomp = (
+    anomalize_df
+    .groupby("category_1")
+    .plot_anomalies_decomp(
+        date_column="order_date",
+        width=1000,
+        height=700,
+    )
+)
+anomaly_decomp
+```
+
+And compare original vs. cleaned series to confirm whether the remediation strategy (e.g., replacing anomalies with min/max bounds) behaves as expected:
+
+```{python}
+anomaly_cleaned = (
+    anomalize_df
+    .groupby("category_1")
+    .plot_anomalies_cleaned(
+        date_column="order_date",
+    )
+)
+anomaly_cleaned
+```
+
+# Upgrading Native Plotly Charts with `theme_plotly_timetk`
+
+If you build custom Plotly Express charts (outside of pytimetk’s helpers), you can still adopt the timetk visual language. Pass any `go.Figure` to `tk.theme_plotly_timetk()` to sync fonts, margins, axes, and colors with the rest of the toolkit.
+
+```{python}
+import plotly.express as px
+
+custom_fig = px.line(
+    taylor_30_min,
+    x="date",
+    y="value",
+    title="Baseline Plotly Express Figure",
+)
+
+tk.theme_plotly_timetk(
+    custom_fig,
+    legend_kwargs=dict(y=-0.25),
+    colorway=["#2c3e50", "#18BC9C"],
+)
+custom_fig
+```
 
 # Next steps
 

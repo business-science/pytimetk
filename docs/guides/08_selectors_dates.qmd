@@ -1,0 +1,162 @@
+---
+title: "Tidy Selectors & Human-Friendly Periods"
+jupyter: python3
+toc: true
+toc-depth: 3
+number-sections: true
+number-depth: 2
+code-fold: show
+code-tools:
+  source: false
+  toggle: true
+---
+
+::: {.callout-note}
+## Why this guide?
+
+Many pytimetk helpers accept **tidy selectors** for columns and **human-readable durations** for periods/frequencies. Mastering these inputs keeps your code expressive and resilient as schemas evolve.
+:::
+
+# Setup
+
+```{python}
+import numpy as np
+import pandas as pd
+import pytimetk as tk
+from pytimetk.utils.selection import contains, starts_with, ends_with
+```
+
+We'll use the bike sales dataset, trimmed to a few relevant columns.
+
+```{python}
+sales = tk.load_dataset("bike_sales_sample", parse_dates=["order_date"])
+sales = sales[
+    [
+        "order_date",
+        "category_1",
+        "category_2",
+        "total_price",
+        "quantity",
+        "model",
+    ]
+]
+sales.head()
+```
+
+# Tidy Selectors Basics
+
+Selectors are callables (or patterns) that resolve to concrete column names at runtime. They work anywhere you see `ColumnSelector` in the docs—`plot_timeseries`, `summarize_by_time`, `augment_*`, etc.
+
+## String & list selectors
+
+Passing a string or list behaves exactly like pandas:
+
+```{python}
+sales.groupby("category_1").plot_timeseries(
+    date_column="order_date",
+    value_column="total_price",
+    color_column="category_1",
+)
+```
+
+## Helper selectors
+
+Use helpers from `pytimetk.utils.selection` to match columns dynamically:
+
+```{python}
+sales.groupby("category_1").plot_timeseries(
+    date_column="order_date",
+    value_column=contains("price", case=False),
+    color_column="category_1",
+)
+```
+
+```{python}
+wide_stats = (
+    sales
+    .summarize_by_time(
+        date_column="order_date",
+        value_column=[contains("price"), ends_with("quantity")],
+        freq="MS",
+        agg_func=["sum", "mean"],
+    )
+)
+wide_stats.head()
+```
+
+Under the hood, selectors resolve through `tk.resolve_column_selection`, so you can even supply regular expressions or custom callables if needed.
+
+# Human-Friendly Periods & Durations
+
+Frequency-oriented helpers (e.g., `pad_by_time`, `future_frame`, `plot_time_series_boxplot`) accept pandas offsets **or** natural language strings. pytimetk converts the latter using `tk.parse_human_duration`.
+
+```{python}
+print(tk.parse_human_duration("45 minutes"))
+print(tk.parse_human_duration("3 months"))
+```
+
+## Using durations in helpers
+
+### `pad_by_time`
+
+Ensure a continuous hourly series and fill padded rows with zeros:
+
+```{python}
+sales_hourly = (
+    sales.groupby(["category_1", "order_date"], as_index=False)
+    .agg(total_price=("total_price", "sum"))
+)
+
+hourly = (
+    sales_hourly
+    .groupby("category_1")
+    .pad_by_time(
+        date_column="order_date",
+        freq="1H",
+        fillna=0,
+    )
+)
+hourly.head()
+```
+
+### `future_frame`
+
+Generate 60 additional days while keeping the output separate from the historical data:
+
+```{python}
+future_dates = tk.future_frame(
+    data=sales,
+    date_column="order_date",
+    length_out=60,   # number of new rows
+    freq="1D",       # human-friendly specs like "30 minutes" also work
+    bind_data=False,
+)
+future_dates.tail()
+```
+
+### `plot_time_series_boxplot`
+
+Mix selectors and durations to build rolling distributions over arbitrary periods:
+
+```{python}
+box_fig = sales.groupby('category_1').plot_time_series_boxplot(
+    date_column="order_date",
+    value_column=contains("price"),
+    period="6 weeks",
+    color_column="category_1",
+    smooth=False,
+    plotly_dropdown=True,
+)
+box_fig
+```
+
+# Takeaways
+
+- **Selectors** keep your code schema-aware—no need to rename dozens of columns manually.
+- **Human durations** reduce friction when you’re thinking in business cadence (“2 weeks”, “6 hours”) instead of frequency codes.
+- Both patterns work across pandas, Polars, and cudf engines as long as the helper documents support for `ColumnSelector` or duration inputs.
+
+# Next Steps
+
+- Revisit [Guide 01 – Visualization](./01_visualization.html) and refactor examples to use selectors where appropriate.
+- Explore the [API reference](../reference/index.qmd) and search for `ColumnSelector` or “duration” to discover which helpers accept these flexible inputs.
