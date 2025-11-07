@@ -255,6 +255,7 @@ def plot_timeseries(
     Examples
     --------
     ```{python}
+    # Imports and Data
     import pytimetk as tk
 
     df = tk.load_dataset('m4_monthly', parse_dates = ['date'])
@@ -771,6 +772,10 @@ def _plot_timeseries_plotly(
 
     data = data.copy()
 
+    def _sort_by_date(frame: pd.DataFrame) -> pd.DataFrame:
+        """Return a frame sorted chronologically by the x-axis column."""
+        return frame.sort_values(by=date_column, kind="mergesort")
+
     # Assign colors to groups
     if color_column is not None:
         if not isinstance(color_column, list):
@@ -801,14 +806,16 @@ def _plot_timeseries_plotly(
         shapes_per_group = {}
 
         for i, (group_name, group) in enumerate(grouped):
+            group_sorted = _sort_by_date(group)
             if color_column is not None:
-                color_group = group.merge(color_df, on=color_column, how="left")
+                color_group = group_sorted.merge(color_df, on=color_column, how="left")
                 for name, color_subgroup in color_group.groupby("_color_group_names"):
-                    color = color_subgroup["_color"].unique()[0]
+                    color_sub_sorted = _sort_by_date(color_subgroup)
+                    color = color_sub_sorted["_color"].unique()[0]
                     color = name_to_hex(color)
                     trace = go.Scatter(
-                        x=color_subgroup[date_column],
-                        y=color_subgroup[value_column],
+                        x=color_sub_sorted[date_column],
+                        y=color_sub_sorted[value_column],
                         mode="lines",
                         line=dict(
                             color=hex_to_rgba(color, alpha=line_alpha), width=line_size
@@ -823,8 +830,8 @@ def _plot_timeseries_plotly(
                     group_values.append(group_name)
             else:
                 trace = go.Scatter(
-                    x=group[date_column],
-                    y=group[value_column],
+                    x=group_sorted[date_column],
+                    y=group_sorted[value_column],
                     mode="lines",
                     line=dict(
                         color=hex_to_rgba(line_color, alpha=line_alpha), width=line_size
@@ -841,8 +848,8 @@ def _plot_timeseries_plotly(
             if smooth:
                 # Assuming 'smooth' processing is done prior and stored in '__smooth' column
                 trace = go.Scatter(
-                    x=group[date_column],
-                    y=group["__smooth"],
+                    x=group_sorted[date_column],
+                    y=group_sorted["__smooth"],
                     mode="lines",
                     line=dict(
                         color=hex_to_rgba(smooth_color, alpha=smooth_alpha),
@@ -866,8 +873,8 @@ def _plot_timeseries_plotly(
                         type="line",
                         y0=y,
                         y1=y,
-                        x0=group[date_column].min(),
-                        x1=group[date_column].max(),
+                        x0=group_sorted[date_column].min(),
+                        x1=group_sorted[date_column].max(),
                         line=dict(color=y_intercept_color, width=1),
                     )
                     shapes.append(shape)
@@ -879,8 +886,8 @@ def _plot_timeseries_plotly(
                         type="line",
                         x0=x,
                         x1=x,
-                        y0=group[value_column].min(),
-                        y1=group[value_column].max(),
+                        y0=group_sorted[value_column].min(),
+                        y1=group_sorted[value_column].max(),
                         line=dict(color=x_intercept_color, width=1),
                     )
                     shapes.append(shape)
@@ -1007,23 +1014,27 @@ def _plot_timeseries_plotly(
         # ADD TRACES -----
         if group_names is not None:
             for i, (name, group) in enumerate(grouped):
+                group_sorted = _sort_by_date(group)
                 row = i // facet_ncol + 1
                 col = i % facet_ncol + 1
                 if color_column is not None:
-                    color_group = group.merge(color_df, on=color_column, how="left")
+                    color_group = group_sorted.merge(
+                        color_df, on=color_column, how="left"
+                    )
                     color_group = color_group.merge(
                         group_lookup_df, on=group_names, how="left"
                     )
-                    for j, (name, color_group) in enumerate(
+                    for j, (name, color_partition) in enumerate(
                         color_group.groupby("_color_group_names")
                     ):
-                        color = color_group["_color"].unique()[0]
-                        grp_nm = color_group["_group_names"].unique()[0]
-                        name = color_group["_color_group_names"].unique()[0]
+                        color_sorted = _sort_by_date(color_partition)
+                        color = color_sorted["_color"].unique()[0]
+                        grp_nm = color_sorted["_group_names"].unique()[0]
+                        name = color_sorted["_color_group_names"].unique()[0]
                         color = name_to_hex(color)
                         trace = go.Scatter(
-                            x=color_group[date_column],
-                            y=color_group[value_column],
+                            x=color_sorted[date_column],
+                            y=color_sorted[value_column],
                             mode="lines",
                             line=dict(
                                 color=hex_to_rgba(color, alpha=line_alpha),
@@ -1043,9 +1054,10 @@ def _plot_timeseries_plotly(
                         else:
                             seen_legendgroups.add(legendgroup)
                 else:
-                    group_group = group.merge(
+                    group_group = group_sorted.merge(
                         group_lookup_df, on=group_names, how="left"
                     )
+                    group_group = _sort_by_date(group_group)
                     grp_nm = group_group["_group_names"].unique()[0]
                     trace = go.Scatter(
                         x=group_group[date_column],
@@ -1062,8 +1074,8 @@ def _plot_timeseries_plotly(
                     fig.layout.annotations[i].update(text=grp_nm)
                 if smooth:
                     trace = go.Scatter(
-                        x=group[date_column],
-                        y=group["__smooth"],
+                        x=group_sorted[date_column],
+                        y=group_sorted["__smooth"],
                         mode="lines",
                         line=dict(
                             color=hex_to_rgba(smooth_color, alpha=smooth_alpha),
@@ -1082,8 +1094,8 @@ def _plot_timeseries_plotly(
                                 type="line",
                                 y0=y,
                                 y1=y,
-                                x0=group[date_column].min(),
-                                x1=group[date_column].max(),
+                                x0=group_sorted[date_column].min(),
+                                x1=group_sorted[date_column].max(),
                                 line=dict(color=y_intercept_color, width=1),
                             ),
                             row=row,
@@ -1098,23 +1110,27 @@ def _plot_timeseries_plotly(
                                 type="line",
                                 x0=x,
                                 x1=x,
-                                y0=group[value_column].min(),
-                                y1=group[value_column].max(),
+                                y0=group_sorted[value_column].min(),
+                                y1=group_sorted[value_column].max(),
                                 line=dict(color=x_intercept_color, width=1),
                             ),
                             row=row,
                             col=col,
                         )
         else:
+            data_sorted = _sort_by_date(data)
             if color_column is not None:
-                color_group = data.merge(color_df, on=color_column, how="left")
-                for j, (name, color_group) in enumerate(color_group.groupby("_color")):
-                    color = color_group["_color"].unique()[0]
-                    name = color_group["_color_group_names"].unique()[0]
+                color_group = data_sorted.merge(color_df, on=color_column, how="left")
+                for j, (name, color_partition) in enumerate(
+                    color_group.groupby("_color")
+                ):
+                    color_sorted = _sort_by_date(color_partition)
+                    color = color_sorted["_color"].unique()[0]
+                    name = color_sorted["_color_group_names"].unique()[0]
                     color = name_to_hex(color)
                     trace = go.Scatter(
-                        x=color_group[date_column],
-                        y=color_group[value_column],
+                        x=color_sorted[date_column],
+                        y=color_sorted[value_column],
                         mode="lines",
                         line=dict(
                             color=hex_to_rgba(color, alpha=line_alpha), width=line_size
@@ -1133,8 +1149,8 @@ def _plot_timeseries_plotly(
                         seen_legendgroups.add(legendgroup)
             else:
                 trace = go.Scatter(
-                    x=data[date_column],
-                    y=data[value_column],
+                    x=data_sorted[date_column],
+                    y=data_sorted[value_column],
                     mode="lines",
                     line=dict(
                         color=hex_to_rgba(line_color, alpha=line_alpha), width=line_size
@@ -1145,8 +1161,8 @@ def _plot_timeseries_plotly(
                 fig.add_trace(trace)
             if smooth:
                 trace = go.Scatter(
-                    x=data[date_column],
-                    y=data["__smooth"],
+                    x=data_sorted[date_column],
+                    y=data_sorted["__smooth"],
                     mode="lines",
                     line=dict(
                         color=hex_to_rgba(smooth_color, alpha=smooth_alpha),
@@ -1165,8 +1181,8 @@ def _plot_timeseries_plotly(
                             type="line",
                             y0=y,
                             y1=y,
-                            x0=data[date_column].min(),
-                            x1=data[date_column].max(),
+                            x0=data_sorted[date_column].min(),
+                            x1=data_sorted[date_column].max(),
                             line=dict(color=y_intercept_color, width=1),
                         )
                     )
@@ -1179,8 +1195,8 @@ def _plot_timeseries_plotly(
                             type="line",
                             x0=x,
                             x1=x,
-                            y0=data[value_column].min(),
-                            y1=data[value_column].max(),
+                            y0=data_sorted[value_column].min(),
+                            y1=data_sorted[value_column].max(),
                             line=dict(color=x_intercept_color, width=1),
                         )
                     )
