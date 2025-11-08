@@ -6,6 +6,87 @@ toc-depth: 3
 number-sections: false
 ---
 
+# pytimetk 2.4.0
+
+# pytimetk 2.4.0 Release Notes
+
+## Overview
+This release introduces significant enhancements to visualization capabilities, integrates tidy selectors for improved column handling, completes the migration to Ray for parallelism, and includes various performance optimizations and bug fixes. Key themes include better diagnostics plotting, more flexible data manipulation, and improved documentation.
+
+## New Features
+
+- **Advanced Plotting Diagnostics**: Added new APIs for visualizing time series diagnostics. These functions provide interactive and insightful plots to analyze correlation, seasonality, and trends.
+
+  | Function                  | Description |
+  |---------------------------|-------------|
+  | `plot_acf_diagnostics`   | Plot ACF, PACF, and CCF with interactive dropdowns. |
+  | `plot_seasonal_diagnostics` | Box/violin plots for seasonal features (e.g., hour, weekday, month). |
+  | `plot_stl_diagnostics`   | Decompose series into observed, season, trend, remainder, and seasonally adjusted components. |
+  | `plot_time_series_boxplot` | Rolling distribution boxplots with optional smoothers. |
+  | `plot_time_series_regression` | Fit and visualize linear regressions with observed vs. fitted/residuals views. |
+
+- **Tidy Selectors Integration**: 
+  - Added support for tidy selectors (`contains`, `starts_with`, `ends_with`, `matches`) in multiple functions.
+  - Enables human-readable column selection (e.g., `contains("date")`).
+  - Integrated into: `acf_diagnostics`, `augment_adx`, `augment_atr`, `augment_bbands`, `augment_cmo`, `augment_diffs`, `augment_ewm`, `augment_fourier`, `augment_hilbert`, `augment_hurst_exponent`, `augment_lags`, `augment_leads`, `augment_macd`, `augment_ppo`, `augment_qsmomentum`, `augment_roc`, `augment_rsi`, `augment_stochastic_oscillator`, `augment_wavelet`, `future_frame`, `pad_by_time`, `seasonal_diagnostics`, `stl_diagnostics`, `summarize_by_time`.
+
+- **Human-Friendly Durations**: 
+  - Added `parse_human_duration` for converting strings like "3 days" or "2 weeks" to offsets.
+  - Integrated into lag/lead specs and bounds for `future_frame` and `pad_by_time`.
+
+- **Ray Parallelism**: 
+  - Completed migration to Ray for distributed computing.
+  - Added Ray migration guide and multiprocessing support.
+
+- **Plotly Theme**: 
+  - Introduced `theme_plotly_timetk` for consistent styling on custom Plotly figures.
+
+- **New Guides**: 
+  - Added guides for Polars workflows, tidy selectors, and human-friendly periods.
+  - Enhanced documentation with new examples and visual elements.
+
+## Improvements
+
+- **Performance**:
+  - Speed improvements in `future_frame` and `pad_by_time`.
+  - Migrated from `hmmlearn` to `pomegranate` for better performance in regime detection.
+  - Upgraded pandas datetime aliases for compatibility.
+
+- **Visualization**:
+  - Updated plotting APIs roadmap.
+  - Enhanced examples in docs and docstrings.
+
+- **Other**:
+  - Added `fillna` option to `pad_by_time`.
+  - Improved sorting in `plot_timeseries`.
+  - Added visual elements to docs.
+
+## Bug Fixes
+
+- Fixed dropdown issues in `plot_acf_diagnostics`.
+- Resolved missing multiprocessing in Ray setup.
+- Fixed bugs in Fourier, Hilbert, and Wavelet transforms.
+- Corrected connected smoothers in `plot_timeseries`.
+- GH Actions fixes.
+- Sorting review and fixes (#286).
+
+## Documentation
+
+- Multiple doc updates for accuracy and completeness.
+- Updated Quarto sidebar and YAML for better navigation.
+- New guides for selectors, dates, and Polars.
+- Enhanced examples and docstrings.
+
+## Distribution
+
+- Built and added `pytimetk-2.4.0-py3-none-any.whl` and `pytimetk-2.4.0.tar.gz`.
+
+## Breaking Changes
+
+- None identified in this release.
+
+For full details, see the commit history. Thanks to @mdancho84 for all contributions!
+
 # pytimetk 2.3.0 
 
 We're excited to announce the release of pytimetk 2.3.0! This update focuses on significant performance and memory optimizations, particularly for users leveraging the Polars engine. We've introduced native Polars implementations for several key functions, reducing reliance on pandas fallbacks and unlocking faster, more efficient operations on large datasets. Benchmarks show impressive gains, including up to ~7X speedups in EWM (Exponential Weighted Moving) calculations.

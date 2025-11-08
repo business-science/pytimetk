@@ -2464,25 +2464,67 @@
     "text": "3.4 Step 4: Visualizing the Forecast\nVisualization is crucial to understand how well the model predicts future values. We collect the actual and predicted values for each fold and combine them for easy plotting.\n\n# Lists to store the combined data\ncombined_data = []\n\n# Iterate through each fold and collect the data\nfor i, (train_index, test_index) in enumerate(cv_splitter.split(X, y), start=1):\n    # Get the training and forecast data from the original DataFrame\n    train_df = walmart_sales_df.iloc[train_index].copy()\n    test_df = walmart_sales_df.iloc[test_index].copy()\n    \n    # Fit the model on the training data\n    model.fit(X.iloc[train_index], y[train_index])\n    \n    # Predict on the test set\n    y_pred = model.predict(X.iloc[test_index])\n    \n    # Add the actual and predicted values\n    train_df['Actual'] = y[train_index]\n    train_df['Predicted'] = None  # No predictions for training data\n    train_df['Fold'] = i  # Indicate the current fold\n    \n    test_df['Actual'] = y[test_index]\n    test_df['Predicted'] = y_pred  # Predictions for the test data\n    test_df['Fold'] = i  # Indicate the current fold\n    \n    # Append both the training and forecast DataFrames to the combined data list\n    combined_data.extend([train_df, test_df])\n\n# Combine all the data into a single DataFrame\nfull_forecast_df = pd.concat(combined_data, ignore_index=True)\n\nfull_forecast_df = full_forecast_df[['id', 'Date', 'Actual', 'Predicted', 'Fold']]\n\nfull_forecast_df.glimpse()\n\n&lt;class 'pandas.core.frame.DataFrame'&gt;: 4060 rows of 5 columns\nid:         object            ['1_1', '1_1', '1_1', '1_1', '1_1', '1_1', ...\nDate:       datetime64[ns]    [Timestamp('2010-08-06 00:00:00'), Timesta ...\nActual:     float64           [17508.41, 15536.4, 15740.13, 15793.87, 16 ...\nPredicted:  float64           [nan, nan, nan, nan, nan, nan, nan, nan, n ...\nFold:       int64             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...\n\n\n\nPreparing Data for Visualization\nTo make the data easier to plot, we use pd.melt() to transform the Actual and Predicted columns into a long format.\n\n# Melt the Actual and Predicted columns\nmelted_df = pd.melt(\n    full_forecast_df,\n    id_vars=['id', 'Date', 'Fold'],  # Columns to keep\n    value_vars=['Actual', 'Predicted'],  # Columns to melt\n    var_name='Type',  # Name for the new column indicating 'Actual' or 'Predicted'\n    value_name='Value'  # Name for the new column with the values\n)\n\nmelted_df[\"unique_id\"] = \"ID_\" + melted_df['id'] + \"-Fold_\" + melted_df[\"Fold\"].astype(str)\n\nmelted_df.glimpse()\n\n&lt;class 'pandas.core.frame.DataFrame'&gt;: 8120 rows of 6 columns\nid:         object            ['1_1', '1_1', '1_1', '1_1', '1_1', '1_1', ...\nDate:       datetime64[ns]    [Timestamp('2010-08-06 00:00:00'), Timesta ...\nFold:       int64             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...\nType:       object            ['Actual', 'Actual', 'Actual', 'Actual', ' ...\nValue:      float64           [17508.41, 15536.4, 15740.13, 15793.87, 16 ...\nunique_id:  object            ['ID_1_1-Fold_1', 'ID_1_1-Fold_1', 'ID_1_1 ...\n\n\n\n\nPlotting the Forecasts\nFinally, we use plot_timeseries() to visualize the forecasts, comparing the actual and predicted values for each fold.\n\nmelted_df \\\n    .groupby('unique_id') \\\n    .plot_timeseries(\n        \"Date\", \"Value\",\n        color_column = \"Type\",\n        smooth=False, \n        plotly_dropdown=True\n    )"
   },
   {
-    "objectID": "changelog-news.html",
-    "href": "changelog-news.html",
+    "objectID": "changelog-news.html#overview",
+    "href": "changelog-news.html#overview",
     "title": "Changelog for Pytimetk",
-    "section": "",
-    "text": "We’re excited to announce the release of pytimetk 2.3.0! This update focuses on significant performance and memory optimizations, particularly for users leveraging the Polars engine. We’ve introduced native Polars implementations for several key functions, reducing reliance on pandas fallbacks and unlocking faster, more efficient operations on large datasets. Benchmarks show impressive gains, including up to ~7X speedups in EWM (Exponential Weighted Moving) calculations.\n\n\n\nPolars-Native Optimizations:\n\nAdded dedicated Polars paths for pad_by_time, future_frame, augment_ewm, augment_rolling_apply, augment_expanding_apply, and the scalar branch of apply_by_time. This eliminates unnecessary conversions to pandas, keeping data in Arrow buffers for zero-copy chaining and reduced memory overhead.\nFor EWM operations (augment_ewm), Polars users now benefit from direct ewm_mean/std/var applications, avoiding round-trips to pandas. Benchmark results on 200k rows demonstrate ~7X faster execution (0.004s vs. 0.030s in pandas).\nTightened conversion plumbing to use shallow copies (copy(deep=False)) only when necessary, reusing cached pandas views during fallbacks to minimize copy-on-write churn.\n\nMemory Efficiency:\n\nImplemented shallow pandas copies in various modules to avoid deep-copy overhead.\nPolars fallbacks now clone prepared frames before mutations, preserving originals for reuse and further reducing memory spikes.\nEnhanced row identifier handling inside Polars/cuDF, eliminating mutations on pandas frames.\n\ncuDF Support:\n\nAdded cuDF dataframe operations, extending GPU-accelerated capabilities for compatible environments.\n\nBenchmarking and Documentation:\n\nNew benchmarks (e.g., ewm_polars_profile.py) to quantify improvements—reproducible with commands like PYTHONPATH=src python zzz_local/benchmarks/ewm_polars_profile.py --rows 200000 --groups 25 --repeats 5.\nUpdated roadmap (performance_memory_review.md) with completed items and remaining todos, including Polars-native wide-format for apply_by_time and extending optimizations to finance indicators.\n\n\n\n\n\n\nNone in this release. Existing pandas-based workflows remain fully compatible, with Polars enhancements opt-in via the engine=\"polars\" parameter."
+    "section": "Overview",
+    "text": "Overview\nThis release introduces significant enhancements to visualization capabilities, integrates tidy selectors for improved column handling, completes the migration to Ray for parallelism, and includes various performance optimizations and bug fixes. Key themes include better diagnostics plotting, more flexible data manipulation, and improved documentation."
   },
   {
-    "objectID": "changelog-news.html#key-improvements",
-    "href": "changelog-news.html#key-improvements",
+    "objectID": "changelog-news.html#new-features",
+    "href": "changelog-news.html#new-features",
     "title": "Changelog for Pytimetk",
-    "section": "",
-    "text": "Polars-Native Optimizations:\n\nAdded dedicated Polars paths for pad_by_time, future_frame, augment_ewm, augment_rolling_apply, augment_expanding_apply, and the scalar branch of apply_by_time. This eliminates unnecessary conversions to pandas, keeping data in Arrow buffers for zero-copy chaining and reduced memory overhead.\nFor EWM operations (augment_ewm), Polars users now benefit from direct ewm_mean/std/var applications, avoiding round-trips to pandas. Benchmark results on 200k rows demonstrate ~7X faster execution (0.004s vs. 0.030s in pandas).\nTightened conversion plumbing to use shallow copies (copy(deep=False)) only when necessary, reusing cached pandas views during fallbacks to minimize copy-on-write churn.\n\nMemory Efficiency:\n\nImplemented shallow pandas copies in various modules to avoid deep-copy overhead.\nPolars fallbacks now clone prepared frames before mutations, preserving originals for reuse and further reducing memory spikes.\nEnhanced row identifier handling inside Polars/cuDF, eliminating mutations on pandas frames.\n\ncuDF Support:\n\nAdded cuDF dataframe operations, extending GPU-accelerated capabilities for compatible environments.\n\nBenchmarking and Documentation:\n\nNew benchmarks (e.g., ewm_polars_profile.py) to quantify improvements—reproducible with commands like PYTHONPATH=src python zzz_local/benchmarks/ewm_polars_profile.py --rows 200000 --groups 25 --repeats 5.\nUpdated roadmap (performance_memory_review.md) with completed items and remaining todos, including Polars-native wide-format for apply_by_time and extending optimizations to finance indicators."
+    "section": "New Features",
+    "text": "New Features\n\nAdvanced Plotting Diagnostics: Added new APIs for visualizing time series diagnostics. These functions provide interactive and insightful plots to analyze correlation, seasonality, and trends.\n\n\n\n\n\n\n\nFunction\nDescription\n\n\n\n\nplot_acf_diagnostics\nPlot ACF, PACF, and CCF with interactive dropdowns.\n\n\nplot_seasonal_diagnostics\nBox/violin plots for seasonal features (e.g., hour, weekday, month).\n\n\nplot_stl_diagnostics\nDecompose series into observed, season, trend, remainder, and seasonally adjusted components.\n\n\nplot_time_series_boxplot\nRolling distribution boxplots with optional smoothers.\n\n\nplot_time_series_regression\nFit and visualize linear regressions with observed vs. fitted/residuals views.\n\n\n\nTidy Selectors Integration:\n\nAdded support for tidy selectors (contains, starts_with, ends_with, matches) in multiple functions.\nEnables human-readable column selection (e.g., contains(\"date\")).\nIntegrated into: acf_diagnostics, augment_adx, augment_atr, augment_bbands, augment_cmo, augment_diffs, augment_ewm, augment_fourier, augment_hilbert, augment_hurst_exponent, augment_lags, augment_leads, augment_macd, augment_ppo, augment_qsmomentum, augment_roc, augment_rsi, augment_stochastic_oscillator, augment_wavelet, future_frame, pad_by_time, seasonal_diagnostics, stl_diagnostics, summarize_by_time.\n\nHuman-Friendly Durations:\n\nAdded parse_human_duration for converting strings like “3 days” or “2 weeks” to offsets.\nIntegrated into lag/lead specs and bounds for future_frame and pad_by_time.\n\nRay Parallelism:\n\nCompleted migration to Ray for distributed computing.\nAdded Ray migration guide and multiprocessing support.\n\nPlotly Theme:\n\nIntroduced theme_plotly_timetk for consistent styling on custom Plotly figures.\n\nNew Guides:\n\nAdded guides for Polars workflows, tidy selectors, and human-friendly periods.\nEnhanced documentation with new examples and visual elements."
+  },
+  {
+    "objectID": "changelog-news.html#improvements",
+    "href": "changelog-news.html#improvements",
+    "title": "Changelog for Pytimetk",
+    "section": "Improvements",
+    "text": "Improvements\n\nPerformance:\n\nSpeed improvements in future_frame and pad_by_time.\nMigrated from hmmlearn to pomegranate for better performance in regime detection.\nUpgraded pandas datetime aliases for compatibility.\n\nVisualization:\n\nUpdated plotting APIs roadmap.\nEnhanced examples in docs and docstrings.\n\nOther:\n\nAdded fillna option to pad_by_time.\nImproved sorting in plot_timeseries.\nAdded visual elements to docs."
+  },
+  {
+    "objectID": "changelog-news.html#bug-fixes",
+    "href": "changelog-news.html#bug-fixes",
+    "title": "Changelog for Pytimetk",
+    "section": "Bug Fixes",
+    "text": "Bug Fixes\n\nFixed dropdown issues in plot_acf_diagnostics.\nResolved missing multiprocessing in Ray setup.\nFixed bugs in Fourier, Hilbert, and Wavelet transforms.\nCorrected connected smoothers in plot_timeseries.\nGH Actions fixes.\nSorting review and fixes (#286)."
+  },
+  {
+    "objectID": "changelog-news.html#documentation",
+    "href": "changelog-news.html#documentation",
+    "title": "Changelog for Pytimetk",
+    "section": "Documentation",
+    "text": "Documentation\n\nMultiple doc updates for accuracy and completeness.\nUpdated Quarto sidebar and YAML for better navigation.\nNew guides for selectors, dates, and Polars.\nEnhanced examples and docstrings."
+  },
+  {
+    "objectID": "changelog-news.html#distribution",
+    "href": "changelog-news.html#distribution",
+    "title": "Changelog for Pytimetk",
+    "section": "Distribution",
+    "text": "Distribution\n\nBuilt and added pytimetk-2.4.0-py3-none-any.whl and pytimetk-2.4.0.tar.gz."
   },
   {
     "objectID": "changelog-news.html#breaking-changes",
     "href": "changelog-news.html#breaking-changes",
     "title": "Changelog for Pytimetk",
-    "section": "",
-    "text": "None in this release. Existing pandas-based workflows remain fully compatible, with Polars enhancements opt-in via the engine=\"polars\" parameter."
+    "section": "Breaking Changes",
+    "text": "Breaking Changes\n\nNone identified in this release.\n\nFor full details, see the commit history. Thanks to @mdancho84 for all contributions!"
+  },
+  {
+    "objectID": "changelog-news.html#key-improvements",
+    "href": "changelog-news.html#key-improvements",
+    "title": "Changelog for Pytimetk",
+    "section": "Key Improvements",
+    "text": "Key Improvements\n\nPolars-Native Optimizations:\n\nAdded dedicated Polars paths for pad_by_time, future_frame, augment_ewm, augment_rolling_apply, augment_expanding_apply, and the scalar branch of apply_by_time. This eliminates unnecessary conversions to pandas, keeping data in Arrow buffers for zero-copy chaining and reduced memory overhead.\nFor EWM operations (augment_ewm), Polars users now benefit from direct ewm_mean/std/var applications, avoiding round-trips to pandas. Benchmark results on 200k rows demonstrate ~7X faster execution (0.004s vs. 0.030s in pandas).\nTightened conversion plumbing to use shallow copies (copy(deep=False)) only when necessary, reusing cached pandas views during fallbacks to minimize copy-on-write churn.\n\nMemory Efficiency:\n\nImplemented shallow pandas copies in various modules to avoid deep-copy overhead.\nPolars fallbacks now clone prepared frames before mutations, preserving originals for reuse and further reducing memory spikes.\nEnhanced row identifier handling inside Polars/cuDF, eliminating mutations on pandas frames.\n\ncuDF Support:\n\nAdded cuDF dataframe operations, extending GPU-accelerated capabilities for compatible environments.\n\nBenchmarking and Documentation:\n\nNew benchmarks (e.g., ewm_polars_profile.py) to quantify improvements—reproducible with commands like PYTHONPATH=src python zzz_local/benchmarks/ewm_polars_profile.py --rows 200000 --groups 25 --repeats 5.\nUpdated roadmap (performance_memory_review.md) with completed items and remaining todos, including Polars-native wide-format for apply_by_time and extending optimizations to finance indicators."
+  },
+  {
+    "objectID": "changelog-news.html#breaking-changes-1",
+    "href": "changelog-news.html#breaking-changes-1",
+    "title": "Changelog for Pytimetk",
+    "section": "Breaking Changes",
+    "text": "Breaking Changes\n\nNone in this release. Existing pandas-based workflows remain fully compatible, with Polars enhancements opt-in via the engine=\"polars\" parameter."
   },
   {
     "objectID": "changelog-news.html#key-updates",
@@ -2499,8 +2541,8 @@
     "text": "Release Summary\npytimetk 2.1.0 introduces GPU acceleration (Beta) powered by NVIDIA RAPIDS. Feature engineering helpers and Polars lazy pipelines now tap the GPU when cudf and polars[gpu] are installed, while remaining fully backward compatible with CPU-only environments.\n\nGPU Acceleration (Beta)\n\nOptional install via pip install pytimetk[gpu] --extra-index-url=https://pypi.nvidia.com plus pip install \"polars[gpu]\" --extra-index-url=https://pypi.nvidia.com.\nAutomatic CPU fallback whenever the GPU engine is unavailable or a plan is not supported, so existing notebooks keep running.\nRuntime helpers in pytimetk.utils.gpu_support (is_cudf_available(), is_polars_gpu_available()) make it easy to validate the environment.\n\n\n\nDocumentation & Examples\n\nNew GPU Acceleration guide (production/02_gpu_acceleration.html) walks through setup, verification, and sample pipelines.\nFresh examples show GPU-accelerated workflows for augment_rolling, financial indicators (RSI/MACD), and Polars lazy frames.\nPolars lazy execution improvements reduce overhead when collecting on the GPU.\n\n\n\nPerformance Highlights\n\nRolling window statistics receive 10–100× speed-ups on large datasets with the Polars GPU engine.\nFinancial indicators such as RSI and MACD benchmark 5–50× faster on compatible hardware.\n\n\n\nCompatibility & Known Issues\n\nGPU support is opt-in and retains CPU fallbacks for unsupported functions (e.g., custom Python callbacks, expression-incompatible pipelines).\nMulti-GPU deployments remain experimental and will be documented in future iterations.\n\nFull Changelog: https://github.com/business-science/pytimetk/compare/v2.0.1...v2.1.0"
   },
   {
-    "objectID": "changelog-news.html#improvements",
-    "href": "changelog-news.html#improvements",
+    "objectID": "changelog-news.html#improvements-1",
+    "href": "changelog-news.html#improvements-1",
     "title": "Changelog for Pytimetk",
     "section": "Improvements",
     "text": "Improvements\n\naugment_spline() now validates both date_column and value_column, sorts data by date before generating spline bases, and restores the original row order once features are added for both pandas and Polars engines.\n\nFull Changelog: https://github.com/business-science/pytimetk/compare/v2.0.0...v2.0.1"
@@ -2513,57 +2555,57 @@
     "text": "Highlights\n\nFirst-class Polars support via a .tk accessor spanning core helpers, feature engineering, and plotting routines.\nIntroduced Feature Store & Caching (Beta) to persist expensive feature engineering steps and reload them on demand. Optional MLflow integration keeps feature lineage tied to experiments.\nAdded augment_spline() for spline basis expansions alongside broader financial indicator coverage.\nMajor documentation refresh, including Polars-first examples and a new clustering tutorial."
   },
   {
-    "objectID": "changelog-news.html#new-features",
-    "href": "changelog-news.html#new-features",
+    "objectID": "changelog-news.html#new-features-1",
+    "href": "changelog-news.html#new-features-1",
     "title": "Changelog for Pytimetk",
     "section": "New Features",
     "text": "New Features\n\nPolars .tk Accessor\n\nAccess pytimetk helpers directly on pl.DataFrame objects (df.tk.plot_timeseries(...), df.tk.augment_timeseries_signature(...)) with performance parity to pandas paths.\nFinancial indicators (ADX, ATR, BBands, CMO, MACD, PPO, ROC, RSI, stochastic oscillator, etc.) now ship with Polars implementations.\n\n\n\nFeature Store & Caching (Beta)\n\nRegister transforms once and rebuild feature sets on-demand with automatic versioning and metadata.\nSupports local paths or any pyarrow.fs (e.g., S3), plus optional MLflow artifact logging.\n\n\n\nSpline Basis Expansions\n\naugment_spline() creates spline features for modeling non-linear trends (B-splines, natural splines) across pandas and Polars engines."
-  },
-  {
-    "objectID": "changelog-news.html#improvements-1",
-    "href": "changelog-news.html#improvements-1",
-    "title": "Changelog for Pytimetk",
-    "section": "Improvements",
-    "text": "Improvements\n\nUpgraded pandas_flavor, refactored tests, and resolved deprecations across anomalize and Hilbert pipelines.\nEnhanced Polars compatibility for diffs, pct change, lags/leads, risk metrics, and plotting helpers.\nDocumentation updates covering Feature Store, spline usage, and new tutorials."
-  },
-  {
-    "objectID": "changelog-news.html#bug-fixes",
-    "href": "changelog-news.html#bug-fixes",
-    "title": "Changelog for Pytimetk",
-    "section": "Bug Fixes",
-    "text": "Bug Fixes\n\nResolved Plotly x-axis date labeling and multiple Polars interoperability gaps (sequence helpers, summarize/filter utilities, EWM args).\nStabilized GitHub Actions with refreshed dependency matrix.\n\nFull Changelog: https://github.com/business-science/pytimetk/compare/v1.2.5...v2.0.0"
-  },
-  {
-    "objectID": "changelog-news.html#bug-fixes-1",
-    "href": "changelog-news.html#bug-fixes-1",
-    "title": "Changelog for Pytimetk",
-    "section": "Bug Fixes",
-    "text": "Bug Fixes\n\nPolars backends now supply both partition_by and order_by when building window expressions with .over(), resolving runtime errors on recent Polars releases.\n\nFull Changelog: https://github.com/business-science/pytimetk/compare/v1.2.4...v1.2.5"
   },
   {
     "objectID": "changelog-news.html#improvements-2",
     "href": "changelog-news.html#improvements-2",
     "title": "Changelog for Pytimetk",
     "section": "Improvements",
-    "text": "Improvements\n\nFixed a regression in QS Momentum calculations when using the 21-126-126 configuration.\nAdded a point_color argument to plot_correlation_funnel() for finer-grained styling.\n\nFull Changelog: https://github.com/business-science/pytimetk/compare/v1.2.3...v1.2.4"
+    "text": "Improvements\n\nUpgraded pandas_flavor, refactored tests, and resolved deprecations across anomalize and Hilbert pipelines.\nEnhanced Polars compatibility for diffs, pct change, lags/leads, risk metrics, and plotting helpers.\nDocumentation updates covering Feature Store, spline usage, and new tutorials."
+  },
+  {
+    "objectID": "changelog-news.html#bug-fixes-1",
+    "href": "changelog-news.html#bug-fixes-1",
+    "title": "Changelog for Pytimetk",
+    "section": "Bug Fixes",
+    "text": "Bug Fixes\n\nResolved Plotly x-axis date labeling and multiple Polars interoperability gaps (sequence helpers, summarize/filter utilities, EWM args).\nStabilized GitHub Actions with refreshed dependency matrix.\n\nFull Changelog: https://github.com/business-science/pytimetk/compare/v1.2.5...v2.0.0"
+  },
+  {
+    "objectID": "changelog-news.html#bug-fixes-2",
+    "href": "changelog-news.html#bug-fixes-2",
+    "title": "Changelog for Pytimetk",
+    "section": "Bug Fixes",
+    "text": "Bug Fixes\n\nPolars backends now supply both partition_by and order_by when building window expressions with .over(), resolving runtime errors on recent Polars releases.\n\nFull Changelog: https://github.com/business-science/pytimetk/compare/v1.2.4...v1.2.5"
   },
   {
     "objectID": "changelog-news.html#improvements-3",
     "href": "changelog-news.html#improvements-3",
     "title": "Changelog for Pytimetk",
     "section": "Improvements",
-    "text": "Improvements\n\naugment_fip_momentum(): Improve calculation. Allow user to flip the sign with fip_method = 'modified'. Users can also use skip_window to skip the first n periods before the calculation. This helps with mean reversion."
+    "text": "Improvements\n\nFixed a regression in QS Momentum calculations when using the 21-126-126 configuration.\nAdded a point_color argument to plot_correlation_funnel() for finer-grained styling.\n\nFull Changelog: https://github.com/business-science/pytimetk/compare/v1.2.3...v1.2.4"
   },
   {
     "objectID": "changelog-news.html#improvements-4",
     "href": "changelog-news.html#improvements-4",
     "title": "Changelog for Pytimetk",
     "section": "Improvements",
-    "text": "Improvements\n\naugment_rolling_risk_metrics(): 100X speedup for polars rolling kurtosis"
+    "text": "Improvements\n\naugment_fip_momentum(): Improve calculation. Allow user to flip the sign with fip_method = 'modified'. Users can also use skip_window to skip the first n periods before the calculation. This helps with mean reversion."
   },
   {
     "objectID": "changelog-news.html#improvements-5",
     "href": "changelog-news.html#improvements-5",
+    "title": "Changelog for Pytimetk",
+    "section": "Improvements",
+    "text": "Improvements\n\naugment_rolling_risk_metrics(): 100X speedup for polars rolling kurtosis"
+  },
+  {
+    "objectID": "changelog-news.html#improvements-6",
+    "href": "changelog-news.html#improvements-6",
     "title": "Changelog for Pytimetk",
     "section": "Improvements:",
     "text": "Improvements:\n\naugment_rolling_risk_metrics(): Gains a new metrics argument allowing users to speed up calculations by only requesting the rolling risk metrics they need. Default None is all metrics."
@@ -2583,22 +2625,22 @@
     "text": "Bug Fixes and Speed Improvements\n\nsummarize_by_time(): polars engine rebuild. Columns should match pandas engine.\n__init__.py: updated to fix circular imports\nget_date_summary(): Fixed issues with polar tz\naugment_hilbert(): Improve polars engine and fix error with groupby()\naugment_ewm(): fix example from pytimetk import augment_ewm\ntest_plot_timeseries: Fix broken test"
   },
   {
-    "objectID": "changelog-news.html#bug-fixes-2",
-    "href": "changelog-news.html#bug-fixes-2",
+    "objectID": "changelog-news.html#bug-fixes-3",
+    "href": "changelog-news.html#bug-fixes-3",
     "title": "Changelog for Pytimetk",
     "section": "Bug Fixes",
     "text": "Bug Fixes\n\naugment_rsi(): fix issue with pandas engine column names"
   },
   {
-    "objectID": "changelog-news.html#bug-fixes-3",
-    "href": "changelog-news.html#bug-fixes-3",
+    "objectID": "changelog-news.html#bug-fixes-4",
+    "href": "changelog-news.html#bug-fixes-4",
     "title": "Changelog for Pytimetk",
     "section": "Bug Fixes",
     "text": "Bug Fixes\n\naugment_ppo(): fixed issues with leftover multi-index when using grouped df and pandas engine\naugment_qsmomentum(): Fixed issue with divide by zero when standard deviation is zero"
   },
   {
-    "objectID": "changelog-news.html#new-features-1",
-    "href": "changelog-news.html#new-features-1",
+    "objectID": "changelog-news.html#new-features-2",
+    "href": "changelog-news.html#new-features-2",
     "title": "Changelog for Pytimetk",
     "section": "New Features",
     "text": "New Features\n\nTime Series Cross Validation (TSCV)\nIntegration with timebasedcv #291. New Classes:\n\nTimeSeriesCV(): An enhanced version of TimeBasedSplit() that defaults to mode = \"backwards\", allows for maximum splits using split_limit, and adds enhanced diagnostics like glimpse() and plot()\n\n\n\nPlotly Dropdowns\nA plotly dropdown automates the group-wise analysis. Instead of facets, which are only powerful for &lt;=9 plots at a time, a dropdown can easily visualize more plots.\n\nplot_timeseries(): Gets new parameters plotly_dropdown, plotly_dropdown_x, plotly_dropdown_y #301\nplot_anomalies(): Gets new parameters plotly_dropdown, plotly_dropdown_x, plotly_dropdown_y #301\n\n\n\nWide-Format Plotting\n\nplot_timeseries(value_column = list(), color_column=list()): Now supports multiple columns in wide format for grouped time series data visualization. #136"
@@ -2618,8 +2660,8 @@
     "text": "Pandas and Polars Compatibility:\nUpgrading to:\n\npandas &gt;= 2.0.0\npolars &gt;= 1.2.0\n\nUse pytimetk &lt;=0.4.0 to support:\n\npandas &lt;2.0.0\npolars &lt;1.0.0"
   },
   {
-    "objectID": "changelog-news.html#improvements-6",
-    "href": "changelog-news.html#improvements-6",
+    "objectID": "changelog-news.html#improvements-7",
+    "href": "changelog-news.html#improvements-7",
     "title": "Changelog for Pytimetk",
     "section": "Improvements:",
     "text": "Improvements:\n\nImplement sort_dataframe(): This function is used internally to make sure Polars and Pandas engines perform grouped operations consistently and correctly. #286 #290\n.augment_lags() and .augment_leads(): value_column now accepts any dtype. #295"
