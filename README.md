@@ -17,44 +17,36 @@
   </a>
 </div>
 
-# pytimetk
+# pytimetk — the time-series toolkit for people who build stuff
 
-> Time series easier, faster, more fun. Pytimetk.
+> Time series easier, faster, more fun.
 
-[**Please ⭐ us on GitHub (it takes 2-seconds and means a lot).**](https://github.com/business-science/pytimetk)
+[**Please ⭐ us on GitHub (it takes 2‑seconds and makes a huge difference).**](https://github.com/business-science/pytimetk)
 
-# Introducing pytimetk: Simplifying Time Series Analysis for Everyone
+---
 
-Time series analysis is fundamental in many fields, from business forecasting to scientific research. While the Python ecosystem offers tools like `pandas`, they sometimes can be verbose and not optimized for all operations, especially for complex time-based aggregations and visualizations.
+## Why pytimetk?
 
-Enter **pytimetk**. Crafted with a blend of ease-of-use and computational efficiency, `pytimetk` significantly simplifies the process of time series manipulation and visualization. By leveraging the `polars` backend, you can experience speed improvements ranging from 3X to a whopping 3500X. Let's dive into a comparative analysis.
+- **Single API, multiple engines.** Every helper works on `pandas` _and_ `Polars` (many run on NVIDIA cudf/GPU as well).
+- **Productivity first.** Visualization, aggregation, feature engineering, anomaly detection, and regime modeling in a couple of lines.
+- **Performance obsessed.** Vectorized Polars support, GPU acceleration (beta), and feature-store style caching.
 
-| Features/Properties | **pytimetk**                  | **pandas (+matplotlib)**               |
-|---------------------|-------------------------------|---------------------------------------|
-| **Speed**           | 🚀 3X to 3500X Faster          | 🐢 Standard                           |
-| **Code Simplicity** | 🎉 Concise, readable syntax    | 📜 Often verbose                      |
-| `plot_timeseries()` | 🎨 2 lines, no customization  | 🎨 16 lines, customization needed    |
-| `summarize_by_time()` | 🕐 2 lines, 13.4X faster     | 🕐 6 lines, 2 for-loops               |
-| `pad_by_time()`     | ⛳ 2 lines, fills gaps in timeseries        | ❌ No equivalent    |
-| `anomalize()`       | 📈 2 lines, detects and corrects anomalies  | ❌ No equivalent    |
-| `augment_timeseries_signature()` | 📅 1 line, all calendar features    | 🕐 29 lines of `dt` extractors |
-| `augment_rolling()` | 🏎️ 10X to 3500X faster     | 🐢 Slow Rolling Operations |
-| polars `.tk` plotting | ✅ Plot directly on `pl.DataFrame` (`plot_timeseries`, `plot_anomalies`, `plot_correlation_funnel`, …) | ❌ pandas-only accessor |
-| polars `.tk` accessor | ✅ Core, feature, and plotting helpers available via `.tk` on pandas/polars | ❌ N/A |
-| Feature store & caching (beta) | 🗃️ Persist, version, and reuse feature sets (with optional MLflow logging) | ❌ Manual recompute, no metadata lineage |
-| GPU acceleration (beta) | ⚡ Optional RAPIDS-powered pipelines with automatic CPU fallback | ❌ CPU only |
+### The toolkit at a glance
 
-As evident from the table, **pytimetk** is not just about speed; it also simplifies your codebase. For example, `summarize_by_time()`, converts a 6-line, double for-loop routine in `pandas` into a concise 2-line operation. And with the `polars` engine, get results 13.4X faster than `pandas`!
-  
-Similarly, `plot_timeseries()` dramatically streamlines the plotting process, encapsulating what would typically require 16 lines of `matplotlib` code into a mere 2-line command in **pytimetk**, without sacrificing customization or quality. And with `plotly` and `plotnine` engines, you can create interactive plots and beautiful static visualizations with just a few lines of code.
+| Workflow | pytimetk API | Superpower | Docs |
+| --- | --- | --- | --- |
+| Visualization & diagnostics | `plot_timeseries`, `plot_stl_diagnostics`, `plot_time_series_boxplot`, `theme_plotly_timetk` | Interactive Plotly charts, STL faceting, distribution-aware plots, Plotly theming helper | [Visualization guide](https://business-science.github.io/pytimetk/guides/01_visualization.html) |
+| Time-aware aggregations | `summarize_by_time`, `apply_by_time`, `pad_by_time(fillna=…)` | Resample, roll up, and now fill padded rows with a single scalar | [Selectors & periods guide](https://business-science.github.io/pytimetk/guides/08_selectors_dates.html) |
+| Feature engineering | `augment_timeseries_signature`, `augment_rolling`, `augment_wavelet`, `feature_store` | Calendar signatures, GPU-ready rolling windows, wavelets, reusable feature sets | [Feature engineering reference](https://business-science.github.io/pytimetk/reference/index.html#feature-engineering) |
+| Anomaly workflows | `anomalize`, `plot_anomalies`, `plot_anomalies_decomp`, `plot_anomalies_cleaned` | Detect → diagnose → visualize anomalies without switching libraries | [Anomaly docs](https://business-science.github.io/pytimetk/reference/anomalize.html) |
+| Finance & regimes | `augment_regime_detection` (✨ `regime_backends` extra), `augment_macd`, … | HMM-based regime detection with hmmlearn or pomegranate, dozens of indicators | [Finance module](https://business-science.github.io/pytimetk/reference/index.html#finance) |
+| Polars-native workflows | `.tk` accessor on `pl.DataFrame`, `engine="polars"` on heavy helpers | Plot, summarize, and engineer features without ever leaving Polars | [Polars guide](https://business-science.github.io/pytimetk/guides/07_polars.html) |
+| Production extras (beta) | Feature store, MLflow integration, GPU acceleration | Cache expensive transforms, log metadata, or flip a switch for RAPIDS | [Production docs](https://business-science.github.io/pytimetk/production/02_gpu_acceleration.html) |
 
-For calendar features, **pytimetk** offers `augment_timeseries_signature()` which cuts down on over 30 lines of `pandas` dt extractions. For rolling features, **pytimetk** offers `augment_rolling()`, which is 10X to 3500X faster than `pandas`. It also offers `pad_by_time()` to fill gaps in your time series data, and `anomalize()` to detect and correct anomalies in your time series data.
+---
 
-Join the revolution in time series analysis. Reduce your code complexity, increase your productivity, and harness the speed that **pytimetk** brings to your workflows.
 
-Explore more at our [pytimetk homepage](https://business-science.github.io/pytimetk/).
-
-# Installation
+## Installation
 
 Install the latest stable version of `pytimetk` using `pip`:
 
@@ -68,50 +60,98 @@ Alternatively you can install the development version:
 pip install --upgrade --force-reinstall git+https://github.com/business-science/pytimetk.git
 ```
 
-# Quickstart:
+---
 
-This is a simple code to test the function `summarize_by_time`:
+## 60‑second tour
 
 ```python
-import pytimetk as tk
+import numpy as np
 import pandas as pd
+import pytimetk as tk
+from pytimetk.utils.selection import contains
 
-df = tk.datasets.load_dataset('bike_sales_sample')
-df['order_date'] = pd.to_datetime(df['order_date'])
+sales = tk.load_dataset("bike_sales_sample", parse_dates=["order_date"])
 
-df \
-    .groupby("category_2") \
+# 1. Summaries in one line (Polars engine for speed)
+monthly = (
+    sales.groupby("category_1")
     .summarize_by_time(
-        date_column='order_date', 
-        value_column= 'total_price',
-        freq = "MS",
-        agg_func = ['mean', 'sum'],
-        engine = "polars"
+        date_column="order_date",
+        value_column="total_price",
+        freq="MS",
+        agg_func=["sum", "mean"],
+        engine="polars",
     )
+)
+
+# 2. Visualize straight from Polars/pandas
+monthly.plot_timeseries(
+    date_column="order_date",
+    value_column=contains("sum"),
+    color_column="category_1",
+    title="Revenue by Category",
+    plotly_dropdown=True,
+)
+
+# 3. Fill gaps + detect anomalies
+hourly = (
+    sales.groupby(["category_1", "order_date"], as_index=False)
+    .agg(total_price=("total_price", "sum"))
+    .groupby("category_1")
+    .pad_by_time(date_column="order_date", freq="1H", fillna=0)
+)
+
+anomalies = (
+    hourly.groupby("category_1")
+    .anomalize("order_date", "total_price")
+    .plot_anomalies(date_column="order_date", plotly_dropdown=True)
+)
 ```
 
-## What's New in pytimetk 2.1.0
+---
 
-- **GPU acceleration (Beta)** unlocks optional NVIDIA RAPIDS support for feature engineering (lags, diffs, leads, rolling/expanding statistics, finance indicators, etc.) and Polars lazy pipelines with automatic CPU fallback.
-- Works with `polars.LazyFrame.collect(engine="gpu")`; set `PYTIMETK_POLARS_GPU=0` if you need to force CPU execution.
-- `pytimetk.utils.gpu_support` exposes helpers such as `is_cudf_available()` and `is_polars_gpu_available()` so you can assert runtime readiness.
-- CPU-only environments run unchanged because GPU acceleration remains fully opt-in.
+## Fresh in the latest releases
 
-### Enable GPU support
+- **New data visualizations** Discover new time series plots like Time Series Box Plots, Regression Plots, Seasonal and Decomposition plots in our upgraded [Guide 01](https://business-science.github.io/pytimetk/guides/01_visualization.html).
+- **Selectors + natural periods guide.** Learn how to point at columns with `contains()`/`starts_with()` and specify periods like `"2 weeks"` or `"45 minutes"`. → [Guide 08](guides/08_selectors_dates.html)
+- **Polars everywhere.** Dedicated [Polars guide](https://business-science.github.io/pytimetk/guides/07_polars.html) plus `.tk` accessor coverage for plotting, feature engineering, and gap filling.
+- **GPU + Feature Store (beta).** Run rolling stats using our [RAPIDS cudf guide](https://business-science.github.io/pytimetk/production/02_gpu_acceleration.html) or cache/track expensive feature sets with metadata and MLflow hooks in our new [Feature Store guide](https://business-science.github.io/pytimetk/production/01_feature_store.html).
 
-```bash
-pip install pytimetk[gpu] --extra-index-url=https://pypi.nvidia.com
-pip install "polars[gpu]" --extra-index-url=https://pypi.nvidia.com
+
+---
+
+## Guides & docs
+
+| Topic | Why read it? |
+| --- | --- |
+| [Quick Start](https://business-science.github.io/pytimetk/getting-started/02_quick_start.html) | Load data, plot, summarize, and forecast-ready features in ~5 minutes. |
+| [Visualization Guide](https://business-science.github.io/pytimetk/guides/01_visualization.html) | Deep dive into `plot_timeseries`, STL diagnostics, anomaly plots, and Plotly theming. |
+| [Polars Guide](https://business-science.github.io/pytimetk/guides/07_polars.html) | How to keep data in Polars while still using pytimetk plotting/feature APIs. |
+| [Selectors & Human Durations](https://business-science.github.io/pytimetk/guides/08_selectors_dates.html) | Column selectors, natural-language periods, and new padding/future-frame tricks. |
+| [Production / GPU](https://business-science.github.io/pytimetk/production/02_gpu_acceleration.html) | Feature store beta, caching, MLflow logging, and NVIDIA RAPIDS setup. |
+| [API Reference](https://business-science.github.io/pytimetk/reference/index.html) | Full catalogue of helpers by module. |
+
+---
+
+## Quickstart snippet
+
+```python
+import pandas as pd
+import pytimetk as tk
+
+df = tk.load_dataset("bike_sales_sample", parse_dates=["order_date"])
+
+(df.groupby("category_2")
+   .summarize_by_time(
+       date_column="order_date",
+       value_column="total_price",
+       freq="MS",
+       agg_func=["mean", "sum"],
+       engine="polars",
+   ))
 ```
 
-See the [GPU acceleration guide](https://business-science.github.io/pytimetk/production/02_gpu_acceleration.html) for environment validation commands, supported APIs, and current limitations.
-
-
-## What's New in pytimetk 2.0.0
-
-- Added polars `.tk` accessor support for plotting helpers (`plot_timeseries`, `plot_anomalies`, `plot_anomalies_decomp`, `plot_anomalies_cleaned`, `plot_correlation_funnel`).
-- Polars users can now call these functions directly on `pl.DataFrame` objects via the `.tk` accessor; results mirror the pandas interface (Plotly `Figure` or plotnine `ggplot`).
-- See the [change log](https://business-science.github.io/pytimetk/changelog.html) for more details.
+---
 
 ## Feature Store & Caching (Beta)
 
@@ -144,16 +184,6 @@ print(result.from_cache)  # False first run, True on subsequent builds
 
 - Supports local disk or any `pyarrow` filesystem (e.g., `s3://`, `gs://`) via the `artifact_uri` parameter, plus optional file-based locking for concurrent jobs.
 - Optional MLflow helpers capture feature versions and artifacts with your experiments for reproducible pipelines.
-
-# Documentation
-
-Get started with the [pytimetk documentation](https://business-science.github.io/pytimetk/)
-
-- [📈 Overview](https://business-science.github.io/pytimetk/)
-- [🏁 Getting Started](https://business-science.github.io/pytimetk/getting-started/02_quick_start.html)
-- [🗺️ Beginner Guides](https://business-science.github.io/pytimetk/guides/01_visualization.html)
-- [📘Applied Data Science Tutorials](https://business-science.github.io/pytimetk/tutorials/01_sales_crm.html)
-- [📄 API Reference](https://business-science.github.io/pytimetk/reference/)
 
 # 🏆 More Coming Soon...
 

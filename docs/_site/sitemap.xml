@@ -126,7 +126,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/index.html</loc>
-    <lastmod>2025-11-07T23:16:33.534Z</lastmod>
+    <lastmod>2025-11-08T01:01:56.029Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/get_pandas_frequency.html</loc>
@@ -218,7 +218,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/production/03_ray_parallelism.html</loc>
-    <lastmod>2025-11-07T23:16:03.031Z</lastmod>
+    <lastmod>2025-11-08T01:19:55.417Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/08_selectors_dates.html</loc>
@@ -230,7 +230,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/01_visualization.html</loc>
-    <lastmod>2025-11-07T23:15:58.787Z</lastmod>
+    <lastmod>2025-11-08T01:21:53.275Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/02_timetk_concepts.html</loc>
@@ -242,7 +242,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/index.html</loc>
-    <lastmod>2025-11-07T23:15:54.207Z</lastmod>
+    <lastmod>2025-11-08T01:39:59.185Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/contributing.html</loc>
@@ -262,7 +262,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/06_anomalize.html</loc>
-    <lastmod>2025-11-07T23:15:58.016Z</lastmod>
+    <lastmod>2025-11-08T01:12:08.465Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/guides/05_augmenting.html</loc>
@@ -274,11 +274,11 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/production/02_gpu_acceleration.html</loc>
-    <lastmod>2025-11-07T23:16:02.639Z</lastmod>
+    <lastmod>2025-11-08T01:17:53.802Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/production/01_feature_store.html</loc>
-    <lastmod>2025-11-07T23:16:03.515Z</lastmod>
+    <lastmod>2025-11-08T01:18:43.066Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/tutorials/04_anomaly_detection.html</loc>
@@ -298,7 +298,7 @@
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/changelog-news.html</loc>
-    <lastmod>2025-11-07T23:16:16.471Z</lastmod>
+    <lastmod>2025-11-08T01:23:07.486Z</lastmod>
   </url>
   <url>
     <loc>https://business-science.github.io/pytimetk/reference/augment_rolling.html</loc>
