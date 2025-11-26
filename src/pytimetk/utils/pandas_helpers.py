@@ -3,6 +3,10 @@ import pandas_flavor as pf
 import polars as pl
 import re
 
+from pytimetk.utils.pandas_flavor_compat import patch_pandas_flavor
+
+patch_pandas_flavor()
+
 from pytimetk.utils.checks import check_dataframe_or_groupby
 from pytimetk.utils.dataframe_ops import resolve_pandas_groupby_frame
 

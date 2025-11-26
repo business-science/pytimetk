@@ -1,5 +1,9 @@
 # *** Import everything to make pytimetk a standalone package ***
 
+from .utils.pandas_flavor_compat import patch_pandas_flavor
+
+patch_pandas_flavor()
+
 from .plot import (
     plot_timeseries,
     plot_anomalies,
