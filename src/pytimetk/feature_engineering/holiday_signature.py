@@ -1,16 +1,20 @@
 # Dependencies
+from __future__ import annotations
+
 import pandas as pd
-import numpy as np
-import polars as pl
-import pandas_flavor as pf
 import warnings
+
+from typing import TYPE_CHECKING, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
+
+if TYPE_CHECKING:
+    import polars as pl
 
 try:
     import holidays
 except ImportError:
     pass
-
-from typing import Union
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
@@ -500,7 +504,8 @@ def get_holiday_signature(
     result[features.columns] = features
 
     if engine_normalised == "polars":
+        import polars as pl
+
         return pl.from_pandas(result)
 
     return result
-

@@ -1,7 +1,10 @@
-from plotnine import *
-import plotly.graph_objects as go
+from typing import Mapping, Optional, Sequence, TYPE_CHECKING, Any
 
-from typing import Mapping, Optional, Sequence
+from pytimetk.utils.requirements import require_plotnine, require_plotly
+
+if TYPE_CHECKING:
+    import plotly.graph_objects as go
+    from plotnine.themes.theme import theme
 
 
 def theme_timetk(
@@ -97,6 +100,8 @@ def theme_timetk(
     ```
 
     """
+    require_plotnine()
+    from plotnine import theme, element_line, element_rect, element_blank, element_text
 
     # Tidyquant colors
     blue = "#2c3e50"
@@ -201,7 +206,7 @@ def palette_timetk():
 
 
 def theme_plotly_timetk(
-    fig: go.Figure,
+    fig: "go.Figure",
     *,
     colorway: Optional[Sequence[str]] = None,
     font_family: str = "Inter, 'Segoe UI', Arial, sans-serif",
@@ -216,7 +221,7 @@ def theme_plotly_timetk(
     layout_kwargs: Optional[Mapping[str, object]] = None,
     xaxis_kwargs: Optional[Mapping[str, object]] = None,
     yaxis_kwargs: Optional[Mapping[str, object]] = None,
-) -> go.Figure:
+) -> "go.Figure":
     """
     Apply pytimetk styling to any Plotly ``go.Figure``.
 
@@ -273,6 +278,8 @@ def theme_plotly_timetk(
     fig
     ```
     """
+    require_plotly()
+    import plotly.graph_objects as go
 
     if not isinstance(fig, go.Figure):
         raise TypeError("`theme_plotly_timetk` expects a plotly.graph_objects.Figure.")

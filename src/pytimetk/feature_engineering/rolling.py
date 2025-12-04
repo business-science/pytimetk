@@ -1,10 +1,15 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
-import pandas_flavor as pf
 import inspect
 import warnings
 
-from typing import Callable, List, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, Callable, List, Optional, Sequence, Tuple, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
+
+if TYPE_CHECKING:
+    import polars as pl
 
 try:  # Optional cudf dependency for GPU acceleration
     import cudf  # type: ignore
@@ -230,7 +235,9 @@ def augment_rolling(
 
     engine_resolved = normalize_engine(engine, data)
 
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -346,9 +353,8 @@ def augment_rolling(
         cudf_df: Optional["cudf.DataFrame"] = None
         if isinstance(prepared_data, cudf.DataFrame):
             cudf_df = prepared_data
-        elif (
-            CudfDataFrameGroupBy is not None
-            and isinstance(prepared_data, CudfDataFrameGroupBy)
+        elif CudfDataFrameGroupBy is not None and isinstance(
+            prepared_data, CudfDataFrameGroupBy
         ):
             cudf_df = prepared_data.obj.copy(deep=True)
         if isinstance(prepared_data, tuple) and len(prepared_data) == 2:
@@ -357,9 +363,8 @@ def augment_rolling(
         elif cudf_df is None:
             fallback_reason = "Unsupported cudf object type for augment_rolling."
         elif unsupported_kwargs:
-            fallback_reason = (
-                "Unsupported cudf rolling kwargs: "
-                + ", ".join(sorted(unsupported_kwargs))
+            fallback_reason = "Unsupported cudf rolling kwargs: " + ", ".join(
+                sorted(unsupported_kwargs)
             )
 
         if fallback_reason is not None:
@@ -489,13 +494,12 @@ def _augment_rolling_cudf_dataframe(
             )
 
             if group_columns:
-                rolling_obj = (
-                    df_sorted.groupby(list(group_columns), sort=False)[col]
-                    .rolling(
-                        window=window_size,
-                        min_periods=resolved_min,
-                        center=center,
-                    )
+                rolling_obj = df_sorted.groupby(list(group_columns), sort=False)[
+                    col
+                ].rolling(
+                    window=window_size,
+                    min_periods=resolved_min,
+                    center=center,
                 )
                 for func in window_funcs:
                     new_column_name = f"{col}_rolling_{func}_win_{window_size}"
@@ -568,7 +572,15 @@ def _augment_rolling_pandas(
             groups = list(grouped)
             group_frames = [group for _, group in groups]
             args_list = [
-                (group, value_columns, window_funcs, windows, min_periods, center, kwargs)
+                (
+                    group,
+                    value_columns,
+                    window_funcs,
+                    windows,
+                    min_periods,
+                    center,
+                    kwargs,
+                )
                 for group in group_frames
             ]
             try:
@@ -809,6 +821,8 @@ def _augment_rolling_polars(
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
+    import polars as pl
+
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
 

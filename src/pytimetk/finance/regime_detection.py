@@ -1,11 +1,13 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
 import numpy as np
 
-import pandas_flavor as pf
 import warnings
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple, Union
 from joblib import Parallel, delayed
+
+import pytimetk.utils.pandas_flavor_compat as pf
 
 try:
     from hmmlearn.hmm import GaussianHMM
@@ -14,6 +16,9 @@ except ImportError:  # pragma: no cover - optional dependency
 
 import importlib
 import importlib.util
+
+if TYPE_CHECKING:
+    import polars as pl
 
 _POMEGRANATE_MODEL = None
 _POMEGRANATE_DIST = None
@@ -486,6 +491,7 @@ def _augment_regime_detection_polars(
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
     """Polars implementation of regime detection using HMM (via pandas)."""
+    import polars as pl
 
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data

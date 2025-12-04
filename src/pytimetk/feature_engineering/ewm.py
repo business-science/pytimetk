@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
-import pandas_flavor as pf
 import warnings
 
-from typing import Optional, Union, List, Sequence, Any, Tuple
+from typing import TYPE_CHECKING, Optional, Union, List, Sequence, Any, Tuple
 
 import numpy as np
+
+import pytimetk.utils.pandas_flavor_compat as pf
+
+if TYPE_CHECKING:
+    import polars as pl
 
 try:  # Optional dependency for GPU acceleration
     import cudf  # type: ignore
@@ -171,7 +176,9 @@ def augment_ewm(
             stacklevel=2,
         )
 
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -252,9 +259,13 @@ def augment_ewm(
                 cudf_df,
                 date_column=date_column,
                 value_columns=(
-                    [value_column] if isinstance(value_column, str) else list(value_column)
+                    [value_column]
+                    if isinstance(value_column, str)
+                    else list(value_column)
                 ),
-                window_funcs=[window_func] if isinstance(window_func, str) else list(window_func),
+                window_funcs=[window_func]
+                if isinstance(window_func, str)
+                else list(window_func),
                 alpha=alpha,
                 group_columns=conversion.group_columns,
                 row_id_column=conversion.row_id_column,
@@ -352,9 +363,7 @@ def _augment_ewm_pandas(
     window_funcs = [window_func] if isinstance(window_func, str) else list(window_func)
 
     base_frame = (
-        data
-        if isinstance(data, pd.DataFrame)
-        else resolve_pandas_groupby_frame(data)
+        data if isinstance(data, pd.DataFrame) else resolve_pandas_groupby_frame(data)
     )
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -389,6 +398,8 @@ def _augment_ewm_pandas(
         result = reduce_memory_usage(result)
 
     return result
+
+
 def _augment_ewm_polars(
     data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     *,
@@ -400,6 +411,8 @@ def _augment_ewm_polars(
     row_id_column: Optional[str],
     **kwargs,
 ) -> pl.DataFrame:
+    import polars as pl
+
     value_columns = (
         [value_column] if isinstance(value_column, str) else list(value_column)
     )

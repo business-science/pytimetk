@@ -40,21 +40,10 @@ jobs:
       - name: Check-out repository
         uses: actions/checkout@v4
 
-      - name: Install poetry
+      - name: Install nox
         run: |
           python -m pip install --upgrade pip
-          python -m pip install poetry==1.8.3
+          python -m pip install nox
 
-      - name: Install package
-        run: |
-          poetry install
-          if [ "${{ matrix.config.polars-version }}" == "latest" ]; then
-            poetry add polars@latest
-          else
-            poetry add polars==${{ matrix.config.polars-version }}
-          fi
-      
-      - run: poetry run pytest --version
-
-      - name: Test with pytest
-        run: poetry run pytest tests/ --verbose
+      - name: Test with pytest via nox
+        run: nox -s tests_polars -- --polars-version ${{ matrix.config.polars-version }} --verbose

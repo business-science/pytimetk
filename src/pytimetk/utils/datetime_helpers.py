@@ -1,12 +1,18 @@
+from __future__ import annotations
+
 import pandas as pd
 import numpy as np
-import polars as pl
-import pandas_flavor as pf
+from pytimetk.utils import pandas_flavor_compat as pf
 
 from datetime import datetime, timedelta
 from dateutil import parser
-from typing import Iterable, List, Sequence, Union
+from typing import TYPE_CHECKING, Iterable, List, Sequence, Union
 import re
+
+from pytimetk.utils.requirements import require_polars
+
+if TYPE_CHECKING:
+    import polars as pl
 
 from pytimetk.utils.checks import check_series_or_datetime
 from pytimetk.utils.polars_helpers import pandas_to_polars_frequency
@@ -443,6 +449,8 @@ def _floor_date_polars(
     """
     Robust date flooring.
     """
+    require_polars()
+    import polars as pl
 
     # If idx is a DatetimeIndex, convert to Series
     if isinstance(idx, pd.DatetimeIndex):
@@ -703,6 +711,8 @@ def _week_of_month_polars(idx: Union[pd.Series, pd.DatetimeIndex]) -> pd.Series:
     """
     The "week_of_month" function calculates the week number of a given date within its month.
     """
+    require_polars()
+    import polars as pl
 
     if isinstance(idx, pd.DatetimeIndex):
         idx = pl.Series(idx).alias("idx")
@@ -830,6 +840,9 @@ def _is_holiday_polars(
     country_name: str = "UnitedStates",
     country: str = None,
 ) -> pd.Series:
+    require_polars()
+    import polars as pl
+
     # This function requires the holidays package to be installed
     try:
         import holidays

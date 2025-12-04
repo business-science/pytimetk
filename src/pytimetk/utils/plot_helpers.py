@@ -1,8 +1,17 @@
 import re
-import matplotlib.colors as mcolors
+from pytimetk.utils.requirements import has_matplotlib
 
 
 def name_to_hex(color_name):
+    if not has_matplotlib():
+        # Fallback or return as is if matplotlib is not available
+        # Many plotting libraries accept names directly, so returning the name might work
+        # or we could implement a small lookup table for common colors if needed.
+        # For now, let's return the name and let the plotting engine handle it or fail.
+        return color_name
+
+    import matplotlib.colors as mcolors
+
     try:
         hex_color = mcolors.to_hex(color_name)
     except:

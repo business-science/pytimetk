@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
-import polars as pl
-import pandas_flavor as pf
 import warnings
 
-from typing import List, Optional, Sequence, Union
+from typing import TYPE_CHECKING, List, Optional, Sequence, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -28,6 +30,9 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
 from pytimetk.utils.selection import ColumnSelector
 from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
+
+if TYPE_CHECKING:
+    import polars as pl
 
 
 @pf.register_groupby_method
@@ -187,7 +192,9 @@ def augment_macd(
 
     engine_resolved = normalize_engine(engine, data)
 
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -352,6 +359,8 @@ def _augment_macd_polars(
     """
     Internal function to calculate MACD using Polars.
     """
+    import polars as pl
+
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
     frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
@@ -433,8 +442,12 @@ def _augment_macd_cudf_dataframe(
     df_sorted[close_column] = df_sorted[close_column].astype("float64")
 
     macd_alias = f"{close_column}_macd_line_{fast_period}_{slow_period}_{signal_period}"
-    signal_alias = f"{close_column}_macd_signal_line_{fast_period}_{slow_period}_{signal_period}"
-    hist_alias = f"{close_column}_macd_histogram_{fast_period}_{slow_period}_{signal_period}"
+    signal_alias = (
+        f"{close_column}_macd_signal_line_{fast_period}_{slow_period}_{signal_period}"
+    )
+    hist_alias = (
+        f"{close_column}_macd_histogram_{fast_period}_{slow_period}_{signal_period}"
+    )
 
     df_sorted[macd_alias] = np.nan
     df_sorted[signal_alias] = np.nan
@@ -452,7 +465,9 @@ def _augment_macd_cudf_dataframe(
         ema_fast = close.ewm(span=fast_period, adjust=False, min_periods=0).mean()
         ema_slow = close.ewm(span=slow_period, adjust=False, min_periods=0).mean()
         macd_line = ema_fast - ema_slow
-        signal_line = macd_line.ewm(span=signal_period, adjust=False, min_periods=0).mean()
+        signal_line = macd_line.ewm(
+            span=signal_period, adjust=False, min_periods=0
+        ).mean()
         hist = macd_line - signal_line
 
         df_sorted.loc[idx, macd_alias] = macd_line

@@ -1,10 +1,15 @@
 # Dependencies
+from __future__ import annotations
+
 import pandas as pd
 import numpy as np
-import polars as pl
-import pandas_flavor as pf
 import warnings
-from typing import Union
+from typing import TYPE_CHECKING, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
+
+if TYPE_CHECKING:
+    import polars as pl
 
 from pytimetk.utils.datetime_helpers import week_of_month
 from pytimetk.utils.checks import (
@@ -296,6 +301,8 @@ def get_timeseries_signature(
         feature_frame = reduce_memory_usage(feature_frame)
 
     if engine_normalised == "polars":
+        import polars as pl
+
         return pl.from_pandas(feature_frame)
 
     return feature_frame

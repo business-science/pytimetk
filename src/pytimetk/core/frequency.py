@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 import pandas as pd
-import pandas_flavor as pf
 import numpy as np
-import polars as pl
 
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
+import pytimetk.utils.pandas_flavor_compat as pf
+from pytimetk.utils.requirements import has_polars
 from pytimetk.utils.checks import check_series_or_datetime, check_series_polars
+
+if TYPE_CHECKING:
+    import polars as pl
 from pytimetk.utils.datetime_helpers import floor_date
 
 
@@ -62,6 +67,8 @@ def get_unit_and_scale(freq_median_seconds, engine="pandas"):
 
 
 def _get_frequency_summary_polars(idx: pl.Series, force_regular: bool = False):
+    import polars as pl
+
     check_series_polars(idx)
 
     pandas_series = idx.to_pandas()
@@ -310,6 +317,8 @@ def _timeseries_unit_frequency_table_pandas(wide_format: bool = False) -> pd.Dat
 
 
 def _timeseries_unit_frequency_table_polars(wide_format: bool = False) -> pd.DataFrame:
+    import polars as pl
+
     _table = pl.DataFrame(
         {
             "unit": ["sec", "min", "hour", "day", "week", "month", "quarter", "year"],
@@ -386,6 +395,8 @@ def _time_scale_template_pandas(wide_format: bool = False):
 
 
 def _time_scale_template_polars(wide_format: bool = False):
+    import polars as pl
+
     _table = pl.DataFrame(
         {
             "median_unit": ["S", "T", "H", "D", "W", "M", "Q", "Y"],
@@ -467,9 +478,14 @@ def get_seasonal_frequency(
     tk.get_seasonal_frequency(idx, engine='polars')
     ```
     """
+    if has_polars():
+        import polars as pl
 
-    polars_idx = idx if isinstance(idx, pl.Series) else None
-    pandas_idx = idx.to_pandas() if isinstance(idx, pl.Series) else idx
+        polars_idx = idx if isinstance(idx, pl.Series) else None
+        pandas_idx = idx.to_pandas() if isinstance(idx, pl.Series) else idx
+    else:
+        polars_idx = None
+        pandas_idx = idx
 
     check_series_or_datetime(pandas_idx)
 
@@ -581,9 +597,14 @@ def get_trend_frequency(
     tk.get_trend_frequency(idx, engine='polars')
     ```
     """
+    if has_polars():
+        import polars as pl
 
-    polars_idx = idx if isinstance(idx, pl.Series) else None
-    pandas_idx = idx.to_pandas() if isinstance(idx, pl.Series) else idx
+        polars_idx = idx if isinstance(idx, pl.Series) else None
+        pandas_idx = idx.to_pandas() if isinstance(idx, pl.Series) else idx
+    else:
+        polars_idx = None
+        pandas_idx = idx
 
     check_series_or_datetime(pandas_idx)
 

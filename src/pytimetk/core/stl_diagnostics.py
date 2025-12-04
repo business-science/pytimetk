@@ -5,7 +5,7 @@ from typing import Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
-import pandas_flavor as pf
+import pytimetk.utils.pandas_flavor_compat as pf
 from statsmodels.tsa.seasonal import STL
 
 from pytimetk.core.frequency import get_seasonal_frequency, get_trend_frequency

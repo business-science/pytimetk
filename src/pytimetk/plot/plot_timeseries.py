@@ -1,18 +1,18 @@
 import pandas as pd
 import numpy as np
-import pandas_flavor as pf
-
-from plotnine import *
-
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+from pytimetk.utils import pandas_flavor_compat as pf
 
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
 from pytimetk.plot.theme import theme_timetk, palette_timetk
 from pytimetk.utils.plot_helpers import hex_to_rgba, name_to_hex
+from pytimetk.utils.requirements import require_plotnine, require_plotly
 
-from typing import Union, Optional, List, Sequence
+from typing import Union, Optional, List, Sequence, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import plotly.graph_objects as go
+    from plotnine import *
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
@@ -641,6 +641,7 @@ def plot_timeseries(
 
     # Engine
     if engine in ["plotnine", "matplotlib"]:
+        require_plotnine()
         fig = _plot_timeseries_plotnine(
             data=data,
             date_column=date_column,
@@ -691,6 +692,7 @@ def plot_timeseries(
             fig = fig.draw()
 
     elif engine == "plotly":
+        require_plotly()
         fig = _plot_timeseries_plotly(
             data=data,
             date_column=date_column,
@@ -768,6 +770,9 @@ def _plot_timeseries_plotly(
     height=None,
 ):
     """This function is not intended to be called directly. It is used by the `plot_timeseries` function."""
+
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
 
     data = data.copy()
 
@@ -1279,6 +1284,19 @@ def _plot_timeseries_plotnine(
     height=None,
 ):
     """This function is not intended to be called directly. It is used by the `plot_timeseries` function."""
+
+    from plotnine import (
+        ggplot,
+        aes,
+        geom_line,
+        geom_hline,
+        geom_vline,
+        labs,
+        scale_x_datetime,
+        scale_color_manual,
+        facet_wrap,
+        theme,
+    )
 
     # Data Setup
 

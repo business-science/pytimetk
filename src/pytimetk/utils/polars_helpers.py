@@ -1,11 +1,15 @@
+from __future__ import annotations
+
 import os
 import warnings
-from typing import Optional
-
-import polars as pl
+from typing import TYPE_CHECKING, Optional
 
 from pytimetk.utils.gpu_support import is_polars_gpu_available
+from pytimetk.utils.requirements import require_polars
 from pytimetk.utils.string_helpers import parse_freq_str
+
+if TYPE_CHECKING:
+    import polars as pl
 
 _GPU_WARNED = False
 
@@ -38,6 +42,9 @@ def pandas_to_polars_frequency(pandas_freq_str, default=(1, "d")):
 
 
 def pandas_to_polars_aggregation_mapping(column_name):
+    require_polars()
+    import polars as pl
+
     return {
         "sum": pl.col(column_name).sum().alias(f"{column_name}_sum"),
         "mean": pl.col(column_name).mean().alias(f"{column_name}_mean"),
@@ -104,6 +111,8 @@ def collect_lazyframe(
         is skipped. ``None`` (default) respects the environment variable and
         defaults to attempting the GPU when available.
     """
+    require_polars()
+    import polars as pl
 
     try_gpu: bool
     if force_gpu is not None:

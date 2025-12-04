@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
-import polars as pl
 
-import pandas_flavor as pf
 import warnings
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -29,6 +31,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 from pytimetk.utils.polars_helpers import collect_lazyframe
 from pytimetk.utils.selection import ColumnSelector
 from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
+
+if TYPE_CHECKING:
+    import polars as pl
 
 
 @pf.register_groupby_method
@@ -174,7 +179,9 @@ def augment_adx(
     periods_list = _normalize_periods(periods)
 
     engine_resolved = normalize_engine(engine, data)
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -388,26 +395,38 @@ def _augment_adx_cudf_dataframe(
         if group_list:
             for _, group_df in df_sorted.groupby(group_list, sort=False):
                 idx = group_df.index
-                tr_smooth.loc[idx] = group_df["__adx_tr"].ewm(
-                    alpha=alpha,
-                    adjust=False,
-                ).mean()
-                plus_dm_smooth.loc[idx] = group_df["__adx_plus_dm"].ewm(
-                    alpha=alpha,
-                    adjust=False,
-                ).mean()
-                minus_dm_smooth.loc[idx] = group_df["__adx_minus_dm"].ewm(
-                    alpha=alpha,
-                    adjust=False,
-                ).mean()
+                tr_smooth.loc[idx] = (
+                    group_df["__adx_tr"]
+                    .ewm(
+                        alpha=alpha,
+                        adjust=False,
+                    )
+                    .mean()
+                )
+                plus_dm_smooth.loc[idx] = (
+                    group_df["__adx_plus_dm"]
+                    .ewm(
+                        alpha=alpha,
+                        adjust=False,
+                    )
+                    .mean()
+                )
+                minus_dm_smooth.loc[idx] = (
+                    group_df["__adx_minus_dm"]
+                    .ewm(
+                        alpha=alpha,
+                        adjust=False,
+                    )
+                    .mean()
+                )
         else:
             tr_smooth = df_sorted["__adx_tr"].ewm(alpha=alpha, adjust=False).mean()
-            plus_dm_smooth = df_sorted["__adx_plus_dm"].ewm(
-                alpha=alpha, adjust=False
-            ).mean()
-            minus_dm_smooth = df_sorted["__adx_minus_dm"].ewm(
-                alpha=alpha, adjust=False
-            ).mean()
+            plus_dm_smooth = (
+                df_sorted["__adx_plus_dm"].ewm(alpha=alpha, adjust=False).mean()
+            )
+            minus_dm_smooth = (
+                df_sorted["__adx_minus_dm"].ewm(alpha=alpha, adjust=False).mean()
+            )
 
         plus_di = (plus_dm_smooth / tr_smooth) * 100
         minus_di = (minus_dm_smooth / tr_smooth) * 100
@@ -420,10 +439,14 @@ def _augment_adx_cudf_dataframe(
             adx_series = cudf.Series(np.nan, index=df_sorted.index, dtype="float64")
             for _, group_df in df_sorted.groupby(group_list, sort=False):
                 idx = group_df.index
-                adx_series.loc[idx] = dx.loc[idx].ewm(
-                    alpha=alpha,
-                    adjust=False,
-                ).mean()
+                adx_series.loc[idx] = (
+                    dx.loc[idx]
+                    .ewm(
+                        alpha=alpha,
+                        adjust=False,
+                    )
+                    .mean()
+                )
         else:
             adx_series = dx.ewm(alpha=alpha, adjust=False).mean()
 
@@ -449,6 +472,8 @@ def _augment_adx_polars(
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
+    import polars as pl
+
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
     frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
@@ -492,15 +517,11 @@ def _augment_adx_polars(
             (pl.col(low_column) - pl.col(prev_close_alias)).abs(),
         ).alias(tr_alias),
         pl.when(delta_high_expr > delta_low_expr)
-        .then(
-            pl.max_horizontal(delta_high_expr, pl.lit(0.0))
-        )
+        .then(pl.max_horizontal(delta_high_expr, pl.lit(0.0)))
         .otherwise(0.0)
         .alias(plus_dm_alias),
         pl.when(delta_low_expr > delta_high_expr)
-        .then(
-            pl.max_horizontal(delta_low_expr, pl.lit(0.0))
-        )
+        .then(pl.max_horizontal(delta_low_expr, pl.lit(0.0)))
         .otherwise(0.0)
         .alias(minus_dm_alias),
     )
@@ -517,9 +538,7 @@ def _augment_adx_polars(
         minus_alias = f"{close_column}_minus_di_{period}"
         adx_alias = f"{close_column}_adx_{period}"
 
-        temp_columns.extend(
-            [plus_sm_alias, minus_sm_alias, tr_sm_alias, dx_alias]
-        )
+        temp_columns.extend([plus_sm_alias, minus_sm_alias, tr_sm_alias, dx_alias])
 
         lazy_frame = lazy_frame.with_columns(
             _maybe_over(
@@ -533,19 +552,13 @@ def _augment_adx_polars(
                 )
             ).alias(minus_sm_alias),
             _maybe_over(
-                pl.col(tr_alias).ewm_mean(
-                    alpha=alpha, adjust=False, min_periods=period
-                )
+                pl.col(tr_alias).ewm_mean(alpha=alpha, adjust=False, min_periods=period)
             ).alias(tr_sm_alias),
         )
 
         lazy_frame = lazy_frame.with_columns(
-            (
-                100 * (pl.col(plus_sm_alias) / pl.col(tr_sm_alias))
-            ).alias(plus_alias),
-            (
-                100 * (pl.col(minus_sm_alias) / pl.col(tr_sm_alias))
-            ).alias(minus_alias),
+            (100 * (pl.col(plus_sm_alias) / pl.col(tr_sm_alias))).alias(plus_alias),
+            (100 * (pl.col(minus_sm_alias) / pl.col(tr_sm_alias))).alias(minus_alias),
         )
 
         lazy_frame = lazy_frame.with_columns(
@@ -558,9 +571,7 @@ def _augment_adx_polars(
 
         lazy_frame = lazy_frame.with_columns(
             _maybe_over(
-                pl.col(dx_alias).ewm_mean(
-                    alpha=alpha, adjust=False, min_periods=period
-                )
+                pl.col(dx_alias).ewm_mean(alpha=alpha, adjust=False, min_periods=period)
             ).alias(adx_alias)
         )
 

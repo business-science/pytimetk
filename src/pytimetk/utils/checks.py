@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 import numpy as np
-import polars as pl
 
 import pandas as pd
 from importlib.metadata import distribution, PackageNotFoundError
 
-from typing import Union, List, Iterable
+from typing import TYPE_CHECKING, Union, List, Iterable
+
+from pytimetk.utils.requirements import has_polars
 
 try:  # Optional dependency for GPU acceleration
     import cudf  # type: ignore
@@ -12,6 +15,9 @@ try:  # Optional dependency for GPU acceleration
 except ImportError:  # pragma: no cover - cudf optional
     cudf = None  # type: ignore
     CudfDataFrameGroupBy = None  # type: ignore
+
+if TYPE_CHECKING:
+    import polars as pl
 
 from pytimetk.utils.dataframe_ops import resolve_pandas_groupby_frame
 
@@ -67,14 +73,14 @@ def check_dataframe_or_groupby(
         pd.core.groupby.generic.DataFrameGroupBy,
     ]
 
-    try:
+    if has_polars():
+        import polars as pl
+
         authorized += [
             pl.DataFrame,
             pl.dataframe.group_by.GroupBy,
             pl.LazyFrame,
         ]  # type: ignore[attr-defined]
-    except AttributeError:
-        pass
     if cudf is not None:
         authorized += [cudf.DataFrame]  # type: ignore[attr-defined]
         if CudfDataFrameGroupBy is not None:
@@ -88,8 +94,13 @@ def check_dataframe_or_groupby(
 
 
 def check_dataframe_or_groupby_polars(
-    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
+    data: "Union[pl.DataFrame, pl.dataframe.group_by.GroupBy]",
 ) -> None:
+    from pytimetk.utils.requirements import require_polars
+
+    require_polars()
+    import polars as pl
+
     check_data_type(
         data,
         authorized_dtypes=[pl.DataFrame, pl.dataframe.group_by.GroupBy],
@@ -97,7 +108,12 @@ def check_dataframe_or_groupby_polars(
     )
 
 
-def check_series_polars(data: pl.Series) -> None:
+def check_series_polars(data: "pl.Series") -> None:
+    from pytimetk.utils.requirements import require_polars
+
+    require_polars()
+    import polars as pl
+
     check_data_type(
         data,
         authorized_dtypes=[pl.Series],
@@ -139,44 +155,51 @@ def check_date_column(
             )
         return None
 
-    if isinstance(data, pl.dataframe.group_by.GroupBy):
-        frame = data.df
-        schema = frame.schema
-        if date_column not in schema:
-            raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
-        dtype = schema[date_column]
-        if not dtype.is_temporal():
-            raise TypeError(
-                f"`date_column` ({date_column}) is not a temporal dtype. "
-                f"Dtype Found: {dtype}"
-            )
-        return None
+    if has_polars():
+        import polars as pl
 
-    if isinstance(data, pl.DataFrame):
-        schema = data.schema
-        if date_column not in schema:
-            raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
-        dtype = schema[date_column]
-        if not dtype.is_temporal():
-            raise TypeError(
-                f"`date_column` ({date_column}) is not a temporal dtype. "
-                f"Dtype Found: {dtype}"
-            )
-        return None
+        if isinstance(data, pl.dataframe.group_by.GroupBy):
+            frame = data.df
+            schema = frame.schema
+            if date_column not in schema:
+                raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
+            dtype = schema[date_column]
+            if not dtype.is_temporal():
+                raise TypeError(
+                    f"`date_column` ({date_column}) is not a temporal dtype. "
+                    f"Dtype Found: {dtype}"
+                )
+            return None
 
-    if isinstance(data, pl.LazyFrame):
-        schema = data.schema
-        if date_column not in schema:
-            raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
-        dtype = schema[date_column]
-        if not dtype.is_temporal():
-            raise TypeError(
-                f"`date_column` ({date_column}) is not a temporal dtype. "
-                f"Dtype Found: {dtype}"
-            )
-        return None
+        if isinstance(data, pl.DataFrame):
+            schema = data.schema
+            if date_column not in schema:
+                raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
+            dtype = schema[date_column]
+            if not dtype.is_temporal():
+                raise TypeError(
+                    f"`date_column` ({date_column}) is not a temporal dtype. "
+                    f"Dtype Found: {dtype}"
+                )
+            return None
 
-    if cudf is not None and CudfDataFrameGroupBy is not None and isinstance(data, CudfDataFrameGroupBy):
+        if isinstance(data, pl.LazyFrame):
+            schema = data.schema
+            if date_column not in schema:
+                raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
+            dtype = schema[date_column]
+            if not dtype.is_temporal():
+                raise TypeError(
+                    f"`date_column` ({date_column}) is not a temporal dtype. "
+                    f"Dtype Found: {dtype}"
+                )
+            return None
+
+    if (
+        cudf is not None
+        and CudfDataFrameGroupBy is not None
+        and isinstance(data, CudfDataFrameGroupBy)
+    ):
         frame = resolve_pandas_groupby_frame(data)
         if date_column not in frame.columns:
             raise ValueError(f"`date_column` ({date_column}) not found in `data`.")
@@ -228,20 +251,27 @@ def check_value_column(
         _check_columns_pandas(data, value_column, require_numeric_dtype)
         return None
 
-    if isinstance(data, pl.dataframe.group_by.GroupBy):
-        frame = data.df
-        _check_columns_polars(frame, value_column, require_numeric_dtype)
-        return None
+    if has_polars():
+        import polars as pl
 
-    if isinstance(data, pl.DataFrame):
-        _check_columns_polars(data, value_column, require_numeric_dtype)
-        return None
+        if isinstance(data, pl.dataframe.group_by.GroupBy):
+            frame = data.df
+            _check_columns_polars(frame, value_column, require_numeric_dtype)
+            return None
 
-    if isinstance(data, pl.LazyFrame):
-        _check_columns_polars(data, value_column, require_numeric_dtype)
-        return None
+        if isinstance(data, pl.DataFrame):
+            _check_columns_polars(data, value_column, require_numeric_dtype)
+            return None
 
-    if cudf is not None and CudfDataFrameGroupBy is not None and isinstance(data, CudfDataFrameGroupBy):
+        if isinstance(data, pl.LazyFrame):
+            _check_columns_polars(data, value_column, require_numeric_dtype)
+            return None
+
+    if (
+        cudf is not None
+        and CudfDataFrameGroupBy is not None
+        and isinstance(data, CudfDataFrameGroupBy)
+    ):
         frame = resolve_pandas_groupby_frame(data)
         _check_columns_cudf(frame, value_column, require_numeric_dtype)
         return None
@@ -268,7 +298,7 @@ def _check_columns_pandas(
 
 
 def _check_columns_polars(
-    frame: Union[pl.DataFrame, pl.LazyFrame],
+    frame: "Union[pl.DataFrame, pl.LazyFrame]",
     columns: List[str],
     require_numeric_dtype: bool,
 ) -> None:

@@ -1,9 +1,8 @@
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
 import pytest
 
-import pytimetk as tk
+from pytimetk.plot import plot_time_series_regression
 
 
 def _regression_df():
@@ -22,8 +21,11 @@ def _regression_df():
 
 
 def test_plot_time_series_regression_basic():
+    pytest.importorskip("plotly")
+    import plotly.graph_objects as go
+
     df = _regression_df()
-    fig = tk.plot_time_series_regression(
+    fig = plot_time_series_regression(
         data=df,
         date_column="date",
         formula="value ~ trend",
@@ -34,8 +36,11 @@ def test_plot_time_series_regression_basic():
 
 
 def test_plot_time_series_regression_grouped():
+    pytest.importorskip("plotly")
+    import plotly.graph_objects as go
+
     df = _regression_df()
-    fig = tk.plot_time_series_regression(
+    fig = plot_time_series_regression(
         data=df.groupby("segment"),
         date_column="date",
         formula="value ~ trend",
@@ -46,11 +51,14 @@ def test_plot_time_series_regression_grouped():
 
 @pytest.mark.parametrize("engine", ["pandas", "polars"])
 def test_plot_time_series_regression_polars(engine):
+    pytest.importorskip("plotly")
+    import plotly.graph_objects as go
+
     df = _regression_df()
     if engine == "polars":
         pl = pytest.importorskip("polars")
         df = pl.from_pandas(df)
-    fig = tk.plot_time_series_regression(
+    fig = plot_time_series_regression(
         data=df,
         date_column="date",
         formula="value ~ trend",

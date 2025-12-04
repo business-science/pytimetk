@@ -1,10 +1,15 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
-import pandas_flavor as pf
 import numpy as np
 import warnings
 
-from typing import Callable, List, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, Callable, List, Optional, Sequence, Tuple, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
+
+if TYPE_CHECKING:
+    import polars as pl
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
@@ -283,9 +288,7 @@ def _augment_expanding_apply_pandas(
             )
     else:
         groups = list(grouped)
-        args_list = [
-            (group, window_funcs, min_periods_resolved) for group in groups
-        ]
+        args_list = [(group, window_funcs, min_periods_resolved) for group in groups]
         try:
             result_dfs = run_ray_tasks(
                 _process_single_expanding_apply_group,
@@ -333,7 +336,9 @@ def _augment_expanding_apply_polars(
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
 
-    sort_keys = list(resolved_groups) + [date_column] if resolved_groups else [date_column]
+    sort_keys = (
+        list(resolved_groups) + [date_column] if resolved_groups else [date_column]
+    )
     frame_sorted = frame.sort(sort_keys)
 
     partitions = (

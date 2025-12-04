@@ -1,16 +1,19 @@
+from __future__ import annotations
+
 import pandas as pd
-import pandas_flavor as pf
-import polars as pl
 import re
 
-from pytimetk.utils.pandas_flavor_compat import patch_pandas_flavor
+from typing import Union, List, Callable
 
-patch_pandas_flavor()
+import pytimetk.utils.pandas_flavor_compat as pf
+from pytimetk.utils.requirements import require_polars
+
 
 from pytimetk.utils.checks import check_dataframe_or_groupby
 from pytimetk.utils.dataframe_ops import resolve_pandas_groupby_frame
 
-from typing import Union, List, Callable
+
+pf.patch_pandas_flavor()
 
 
 @pf.register_dataframe_method
@@ -94,6 +97,9 @@ def _glimpse_pandas(data: pd.DataFrame, max_width: int = 76) -> None:
 
 
 def _glimpse_polars(df, max_width=76):
+    require_polars()
+    import polars as pl
+
     _max_len = len(max(df.columns, key=len))
 
     final_df = (

@@ -12,6 +12,7 @@ from pathlib import Path
 import time
 import warnings
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
     Dict,
@@ -27,19 +28,23 @@ from typing import (
 )
 
 import pandas as pd
-import polars as pl
 
 import pyarrow.fs as pa_fs
 
-from pytimetk.utils.dataframe_ops import identify_frame_kind, resolve_pandas_groupby_frame
-
-_FEATURE_STORE_BETA_MESSAGE = (
-    "Feature Store & Caching is currently in beta. APIs and storage formats may change before general availability."
+from pytimetk.utils.dataframe_ops import (
+    identify_frame_kind,
+    resolve_pandas_groupby_frame,
 )
+
+if TYPE_CHECKING:
+    import polars as pl
+
+_FEATURE_STORE_BETA_MESSAGE = "Feature Store & Caching is currently in beta. APIs and storage formats may change before general availability."
 
 
 def _warn_feature_store_beta() -> None:
     warnings.warn(_FEATURE_STORE_BETA_MESSAGE, UserWarning, stacklevel=2)
+
 
 Jsonable = Union[str, int, float, bool, None, Mapping[str, Any], Sequence[Any]]
 TransformCallable = Callable[[Any], Any]
@@ -205,7 +210,9 @@ class LocalArtifactBackend(ArtifactBackend):
     ) -> str:
         version_dir = self.base_path / name / version
         version_dir.mkdir(parents=True, exist_ok=True)
-        artifact_path = version_dir / f"features.{_extension_for_format(storage_format)}"
+        artifact_path = (
+            version_dir / f"features.{_extension_for_format(storage_format)}"
+        )
         _write_frame(frame, artifact_path, storage_format, writer_options)
         return str(artifact_path)
 
@@ -217,7 +224,9 @@ class LocalArtifactBackend(ArtifactBackend):
         if path.exists():
             path.unlink()
         parent = path.parent
-        while parent != self.base_path and parent.exists() and not any(parent.iterdir()):
+        while (
+            parent != self.base_path and parent.exists() and not any(parent.iterdir())
+        ):
             parent.rmdir()
             parent = parent.parent
 
@@ -245,7 +254,9 @@ class PyArrowArtifactBackend(ArtifactBackend):
         storage_format: str,
         writer_options: Optional[Mapping[str, Any]] = None,
     ) -> str:
-        relative_path = posixpath.join(name, version, f"features.{_extension_for_format(storage_format)}")
+        relative_path = posixpath.join(
+            name, version, f"features.{_extension_for_format(storage_format)}"
+        )
         directory = posixpath.dirname(relative_path)
         if directory:
             self._fs.create_dir(directory, recursive=True)
@@ -279,6 +290,8 @@ class PyArrowArtifactBackend(ArtifactBackend):
         raise ValueError(
             f"Storage path '{storage_path}' is not within artifact root '{base}'."
         )
+
+
 class FeatureStore:
     """
     Lightweight on-disk feature store with metadata cataloguing.
@@ -303,7 +316,9 @@ class FeatureStore:
         self._registry: Dict[str, RegisteredTransform] = {}
         self._catalog: List[Dict[str, Any]] = self._load_catalog()
         artifact_uri = artifact_uri or str(self.root_path)
-        self._artifact_backend = artifact_backend or _create_artifact_backend(artifact_uri)
+        self._artifact_backend = artifact_backend or _create_artifact_backend(
+            artifact_uri
+        )
         self.enable_locking = enable_locking
         self._lock_manager = (
             FileLockManager(
@@ -385,7 +400,9 @@ class FeatureStore:
                 from_cache=True,
             )
 
-        lock_cm = self._lock_manager.acquire(name) if self._lock_manager else nullcontext()
+        lock_cm = (
+            self._lock_manager.acquire(name) if self._lock_manager else nullcontext()
+        )
         with lock_cm:
             entry = self._find_entry(name=name, cache_key=cache_key, version=version)
             if entry and not refresh:
@@ -404,7 +421,9 @@ class FeatureStore:
                 or self.default_storage_format
             )
             version_id = version or (
-                entry["version"] if entry and not refresh else _derive_version(cache_key)
+                entry["version"]
+                if entry and not refresh
+                else _derive_version(cache_key)
             )
 
             storage_path = self._artifact_backend.write(
@@ -416,7 +435,9 @@ class FeatureStore:
             )
 
             combined_tags = tuple(sorted({*transform.tags, *(tags or ())}))
-            resolved_key_columns = tuple(key_columns or transform.default_key_columns or ())
+            resolved_key_columns = tuple(
+                key_columns or transform.default_key_columns or ()
+            )
             metadata_map: Dict[str, Any] = {
                 "name": name,
                 "version": version_id,
@@ -428,8 +449,12 @@ class FeatureStore:
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "data_fingerprint": data_fingerprint,
                 "transform_fingerprint": transform_fingerprint,
-                "transform_module": getattr(transform.function, "__module__", "unknown"),
-                "transform_name": getattr(transform.function, "__qualname__", repr(transform.function)),
+                "transform_module": getattr(
+                    transform.function, "__module__", "unknown"
+                ),
+                "transform_name": getattr(
+                    transform.function, "__qualname__", repr(transform.function)
+                ),
                 "transform_kwargs": combined_kwargs,
                 "pytimetk_version": _pytimetk_version(),
                 "package_versions": _package_versions(),
@@ -469,7 +494,9 @@ class FeatureStore:
     ) -> FeatureSetResult:
         entry = self._find_entry(name=name, version=version)
         if not entry:
-            raise KeyError(f"No feature set named '{name}' found (version={version or 'latest'}).")
+            raise KeyError(
+                f"No feature set named '{name}' found (version={version or 'latest'})."
+            )
         return self._load_entry(entry, return_engine=return_engine, from_cache=True)
 
     # ------------------------------------------------------------------ #
@@ -488,13 +515,19 @@ class FeatureStore:
     def describe(self, name: str, version: Optional[str] = None) -> FeatureSetMetadata:
         entry = self._find_entry(name=name, version=version)
         if not entry:
-            raise KeyError(f"No feature set named '{name}' found (version={version or 'latest'}).")
+            raise KeyError(
+                f"No feature set named '{name}' found (version={version or 'latest'})."
+            )
         return _metadata_from_dict(entry)
 
-    def drop(self, name: str, version: Optional[str] = None, *, delete_artifact: bool = True) -> None:
+    def drop(
+        self, name: str, version: Optional[str] = None, *, delete_artifact: bool = True
+    ) -> None:
         entry = self._find_entry(name=name, version=version)
         if not entry:
-            raise KeyError(f"No feature set named '{name}' found (version={version or 'latest'}).")
+            raise KeyError(
+                f"No feature set named '{name}' found (version={version or 'latest'})."
+            )
         self._catalog.remove(entry)
         self._persist_catalog()
 
@@ -511,7 +544,9 @@ class FeatureStore:
         return_engine: str = "polars",
     ) -> FeatureSetResult:
         if not feature_specs:
-            raise ValueError("`feature_specs` must contain at least one feature set identifier.")
+            raise ValueError(
+                "`feature_specs` must contain at least one feature set identifier."
+            )
 
         loaded: List[FeatureSetResult] = []
         for spec in feature_specs:
@@ -520,7 +555,9 @@ class FeatureStore:
 
         join_columns = tuple(join_keys or loaded[0].metadata.key_columns or ())
         if not join_columns:
-            raise ValueError("`join_keys` must be provided when feature metadata does not specify default keys.")
+            raise ValueError(
+                "`join_keys` must be provided when feature metadata does not specify default keys."
+            )
 
         combined = loaded[0].data
         for result in loaded[1:]:
@@ -585,7 +622,9 @@ class FeatureStore:
             return None
 
         if cache_key:
-            candidates = [entry for entry in candidates if entry["cache_key"] == cache_key]
+            candidates = [
+                entry for entry in candidates if entry["cache_key"] == cache_key
+            ]
 
         if version:
             for entry in candidates:
@@ -634,7 +673,9 @@ class FeatureStore:
     def _persist_catalog(self) -> None:
         tmp_path = self.catalog_path.with_suffix(".tmp")
         with tmp_path.open("w", encoding="utf-8") as fh:
-            json.dump({"feature_sets": self._catalog}, fh, indent=2, default=_json_serialize)
+            json.dump(
+                {"feature_sets": self._catalog}, fh, indent=2, default=_json_serialize
+            )
         tmp_path.replace(self.catalog_path)
 
 
@@ -688,6 +729,7 @@ def feature_store(
 # Helpers
 # ---------------------------------------------------------------------- #
 
+
 def _resolve_root_path(
     root_path: Optional[Union[str, os.PathLike[str]]],
 ) -> Path:
@@ -722,6 +764,8 @@ def _package_versions() -> Dict[str, str]:
 
 
 def _dataframe_fingerprint(data: Union[pd.DataFrame, pl.DataFrame]) -> str:
+    import polars as pl
+
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         pandas_df = resolve_pandas_groupby_frame(data)
     elif isinstance(data, pd.DataFrame):
@@ -749,6 +793,8 @@ def _dataframe_fingerprint(data: Union[pd.DataFrame, pl.DataFrame]) -> str:
 
 
 def _ensure_polars_df(data: Union[pd.DataFrame, pl.DataFrame]) -> pl.DataFrame:
+    import polars as pl
+
     if isinstance(data, pl.DataFrame):
         return data
     if isinstance(data, pd.DataFrame):
@@ -756,7 +802,11 @@ def _ensure_polars_df(data: Union[pd.DataFrame, pl.DataFrame]) -> pl.DataFrame:
     raise TypeError("Expected pandas or polars DataFrame result from transform.")
 
 
-def _read_frame(target: Union[Path, str, BinaryIO], storage_format: str) -> pl.DataFrame:
+def _read_frame(
+    target: Union[Path, str, BinaryIO], storage_format: str
+) -> pl.DataFrame:
+    import polars as pl
+
     storage_format = storage_format.lower()
     if storage_format == "parquet":
         return pl.read_parquet(target)
@@ -830,7 +880,11 @@ def _coerce_return_frame(
     if return_engine == "pandas":
         pandas_df = frame.to_pandas()
         if base_input is not None and isinstance(base_input, pd.DataFrame):
-            pandas_df.index = base_input.index if len(base_input.index) == len(pandas_df) else pandas_df.index
+            pandas_df.index = (
+                base_input.index
+                if len(base_input.index) == len(pandas_df)
+                else pandas_df.index
+            )
         return pandas_df
     raise ValueError("Unsupported `return_engine`.")
 
@@ -840,15 +894,22 @@ def _normalise_for_hash(payload: Mapping[str, Any]) -> Mapping[str, Any]:
         if isinstance(value, (str, int, float, bool)) or value is None:
             return value
         if isinstance(value, Mapping):
-            return {str(k): serialise(v) for k, v in sorted(value.items(), key=lambda item: str(item[0]))}
-        if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+            return {
+                str(k): serialise(v)
+                for k, v in sorted(value.items(), key=lambda item: str(item[0]))
+            }
+        if isinstance(value, Sequence) and not isinstance(
+            value, (str, bytes, bytearray)
+        ):
             return [serialise(item) for item in value]
         return repr(value)
 
     return {str(key): serialise(value) for key, value in payload.items()}
 
 
-def _make_cache_key(name: str, data_fingerprint: str, transform_fingerprint: str) -> str:
+def _make_cache_key(
+    name: str, data_fingerprint: str, transform_fingerprint: str
+) -> str:
     hasher = sha256()
     hasher.update(name.encode())
     hasher.update(data_fingerprint.encode())
@@ -886,17 +947,18 @@ def _create_artifact_backend_with_name(name: str, artifact_uri: str) -> Artifact
     return _create_artifact_backend(artifact_uri)
 
 
-def _backend_from_metadata(entry: Mapping[str, Any], default_backend: ArtifactBackend) -> ArtifactBackend:
+def _backend_from_metadata(
+    entry: Mapping[str, Any], default_backend: ArtifactBackend
+) -> ArtifactBackend:
     backend_name = entry.get("storage_backend")
     artifact_uri = entry.get("artifact_uri")
 
     if not backend_name or not artifact_uri:
         return default_backend
 
-    if (
-        backend_name == default_backend.name
-        and artifact_uri.rstrip("/") == default_backend.artifact_uri.rstrip("/")
-    ):
+    if backend_name == default_backend.name and artifact_uri.rstrip(
+        "/"
+    ) == default_backend.artifact_uri.rstrip("/"):
         return default_backend
 
     try:

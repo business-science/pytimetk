@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
-import pandas_flavor as pf
 import warnings
 
-from typing import Callable, Dict, List, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Sequence, Union
 
+from pytimetk.utils import pandas_flavor_compat as pf
+from pytimetk.utils.requirements import has_polars
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column
 from pytimetk.utils.pandas_helpers import flatten_multiindex_column_names
 from pytimetk.utils.memory_helpers import reduce_memory_usage
@@ -18,6 +20,9 @@ from pytimetk.utils.dataframe_ops import (
     conversion_to_pandas,
 )
 from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
+
+if TYPE_CHECKING:
+    import polars as pl
 
 
 def _resolve_selector_frame(
@@ -33,15 +38,18 @@ def _resolve_selector_frame(
         return resolve_pandas_groupby_frame(data).copy()
     if isinstance(data, pd.DataFrame):
         return data.copy()
-    if isinstance(data, pl.dataframe.group_by.GroupBy):
-        base = getattr(data, "df", None)
-        if base is None:
-            raise TypeError(
-                "Unable to resolve columns from the supplied polars GroupBy for selector resolution."
-            )
-        return base.to_pandas()
-    if isinstance(data, pl.DataFrame):
-        return data.to_pandas()
+    if has_polars():
+        import polars as pl
+
+        if isinstance(data, pl.dataframe.group_by.GroupBy):
+            base = getattr(data, "df", None)
+            if base is None:
+                raise TypeError(
+                    "Unable to resolve columns from the supplied polars GroupBy for selector resolution."
+                )
+            return base.to_pandas()
+        if isinstance(data, pl.DataFrame):
+            return data.to_pandas()
     if hasattr(data, "to_pandas"):
         return data.to_pandas()
     raise TypeError(
@@ -329,7 +337,11 @@ def _apply_by_time_pandas(
     else:
         group_names = list(data.grouper.names)
         if date_column not in group_names:
-            data = resolve_pandas_groupby_frame(data).set_index(date_column).groupby(group_names)
+            data = (
+                resolve_pandas_groupby_frame(data)
+                .set_index(date_column)
+                .groupby(group_names)
+            )
 
     grouped = data.resample(rule=freq, kind="timestamp")
 
@@ -366,10 +378,16 @@ def _apply_by_time_polars(
     row_id_column: Optional[str],
     group_columns: Optional[Sequence[str]],
 ) -> pl.DataFrame:
-    resolved_groups = resolve_polars_group_columns(prepared, group_columns)
-    frame = prepared.df if isinstance(prepared, pl.dataframe.group_by.GroupBy) else prepared
+    import polars as pl
 
-    sort_keys = list(resolved_groups) + [date_column] if resolved_groups else [date_column]
+    resolved_groups = resolve_polars_group_columns(prepared, group_columns)
+    frame = (
+        prepared.df if isinstance(prepared, pl.dataframe.group_by.GroupBy) else prepared
+    )
+
+    sort_keys = (
+        list(resolved_groups) + [date_column] if resolved_groups else [date_column]
+    )
     frame_sorted = frame.sort(sort_keys)
 
     partitions = (

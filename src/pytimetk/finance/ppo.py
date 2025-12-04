@@ -1,11 +1,13 @@
-import pandas as pd
-import polars as pl
+from __future__ import annotations
 
-import pandas_flavor as pf
+import pandas as pd
+
 import warnings
-from typing import Optional, Sequence, Union
+from typing import TYPE_CHECKING, Optional, Sequence, Union
 
 import numpy as np
+
+import pytimetk.utils.pandas_flavor_compat as pf
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -29,6 +31,9 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
 from pytimetk.utils.selection import ColumnSelector
 from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
+
+if TYPE_CHECKING:
+    import polars as pl
 
 
 @pf.register_groupby_method
@@ -141,7 +146,9 @@ def augment_ppo(
     )
 
     engine_resolved = normalize_engine(engine, data)
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -259,12 +266,16 @@ def _augment_ppo_cudf_dataframe(
             ppo_series = ppo_series.where(denom != 0)
             df_sorted.loc[group_indices, result_name] = ppo_series
     else:
-        ema_fast = df_sorted[close_column].ewm(
-            span=fast_period, adjust=False, min_periods=0
-        ).mean()
-        ema_slow = df_sorted[close_column].ewm(
-            span=slow_period, adjust=False, min_periods=0
-        ).mean()
+        ema_fast = (
+            df_sorted[close_column]
+            .ewm(span=fast_period, adjust=False, min_periods=0)
+            .mean()
+        )
+        ema_slow = (
+            df_sorted[close_column]
+            .ewm(span=slow_period, adjust=False, min_periods=0)
+            .mean()
+        )
         denom = ema_slow
         ppo_series = ((ema_fast - ema_slow) / denom) * 100
         df_sorted[result_name] = ppo_series.where(denom != 0)
@@ -320,6 +331,8 @@ def _augment_ppo_polars(
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
+    import polars as pl
+
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
     frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)

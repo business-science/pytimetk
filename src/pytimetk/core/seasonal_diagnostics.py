@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import pandas as pd
-import pandas_flavor as pf
+import pytimetk.utils.pandas_flavor_compat as pf
 
 from typing import List, Sequence, Union
 
-from pytimetk.feature_engineering import augment_timeseries_signature
+from pytimetk.feature_engineering.timeseries_signature import (
+    augment_timeseries_signature,
+)
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
 )

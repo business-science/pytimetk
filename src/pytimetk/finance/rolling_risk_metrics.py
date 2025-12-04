@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
-import pandas_flavor as pf
 import numpy as np
 import warnings
-from typing import List, Optional, Sequence, Union
+from typing import TYPE_CHECKING, List, Optional, Sequence, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -27,6 +29,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 from pytimetk.utils.selection import ColumnSelector
 from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 from scipy import stats  # For skewness and kurtosis
+
+if TYPE_CHECKING:
+    import polars as pl
 
 
 @pf.register_groupby_method
@@ -247,7 +252,9 @@ def augment_rolling_risk_metrics(
         benchmark_column = benchmark_columns[0]
 
     engine_resolved = normalize_engine(engine, data)
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -663,9 +670,7 @@ def _augment_rolling_risk_metrics_cudf_dataframe(
         df_sorted["__rrm_returns"] < 0, 0.0
     )
     df_sorted["__rrm_neg_sq"] = df_sorted["__rrm_neg"] ** 2
-    df_sorted["__rrm_neg_mask"] = (
-        df_sorted["__rrm_returns"] < 0
-    ).astype("float64")
+    df_sorted["__rrm_neg_mask"] = (df_sorted["__rrm_returns"] < 0).astype("float64")
     df_sorted["__rrm_returns_sq"] = df_sorted["__rrm_returns"] ** 2
     df_sorted["__rrm_returns_cu"] = df_sorted["__rrm_returns"] ** 3
     df_sorted["__rrm_returns_qu"] = df_sorted["__rrm_returns"] ** 4
@@ -673,7 +678,9 @@ def _augment_rolling_risk_metrics_cudf_dataframe(
     if benchmark_column is not None:
         df_sorted[benchmark_column] = df_sorted[benchmark_column].astype("float64")
         if group_list:
-            prev_bench = df_sorted.groupby(group_list, sort=False)[benchmark_column].shift(1)
+            prev_bench = df_sorted.groupby(group_list, sort=False)[
+                benchmark_column
+            ].shift(1)
         else:
             prev_bench = df_sorted[benchmark_column].shift(1)
         bench_ratio = df_sorted[benchmark_column] / prev_bench
@@ -689,9 +696,15 @@ def _augment_rolling_risk_metrics_cudf_dataframe(
 
     if group_list:
         grouped_returns = df_sorted.groupby(group_list, sort=False)["__rrm_returns"]
-        grouped_returns_sq = df_sorted.groupby(group_list, sort=False)["__rrm_returns_sq"]
-        grouped_returns_cu = df_sorted.groupby(group_list, sort=False)["__rrm_returns_cu"]
-        grouped_returns_qu = df_sorted.groupby(group_list, sort=False)["__rrm_returns_qu"]
+        grouped_returns_sq = df_sorted.groupby(group_list, sort=False)[
+            "__rrm_returns_sq"
+        ]
+        grouped_returns_cu = df_sorted.groupby(group_list, sort=False)[
+            "__rrm_returns_cu"
+        ]
+        grouped_returns_qu = df_sorted.groupby(group_list, sort=False)[
+            "__rrm_returns_qu"
+        ]
         grouped_neg_sq = df_sorted.groupby(group_list, sort=False)["__rrm_neg_sq"]
         grouped_neg_mask = df_sorted.groupby(group_list, sort=False)["__rrm_neg_mask"]
         grouped_pos = df_sorted.groupby(group_list, sort=False)["__rrm_pos"]
@@ -790,52 +803,78 @@ def _augment_rolling_risk_metrics_cudf_dataframe(
                     .reset_index(drop=True)
                 )
         else:
-            mean_ret = df_sorted["__rrm_returns"].rolling(
-                window=w, min_periods=min_periods
-            ).mean()
-            std_ret = df_sorted["__rrm_returns"].rolling(
-                window=w, min_periods=min_periods
-            ).std()
-            count = df_sorted["__rrm_returns"].rolling(
-                window=w, min_periods=min_periods
-            ).count()
-            neg_sq = df_sorted["__rrm_neg_sq"].rolling(
-                window=w, min_periods=min_periods
-            ).sum()
-            neg_count = df_sorted["__rrm_neg_mask"].rolling(
-                window=w, min_periods=min_periods
-            ).sum()
-            pos_sum = df_sorted["__rrm_pos"].rolling(
-                window=w, min_periods=min_periods
-            ).sum()
-            neg_sum = df_sorted["__rrm_neg"].rolling(
-                window=w, min_periods=min_periods
-            ).sum()
-            sum_returns = df_sorted["__rrm_returns"].rolling(
-                window=w, min_periods=min_periods
-            ).sum()
-            sum_sq = df_sorted["__rrm_returns_sq"].rolling(
-                window=w, min_periods=min_periods
-            ).sum()
-            sum_cu = df_sorted["__rrm_returns_cu"].rolling(
-                window=w, min_periods=min_periods
-            ).sum()
-            sum_qu = df_sorted["__rrm_returns_qu"].rolling(
-                window=w, min_periods=min_periods
-            ).sum()
+            mean_ret = (
+                df_sorted["__rrm_returns"]
+                .rolling(window=w, min_periods=min_periods)
+                .mean()
+            )
+            std_ret = (
+                df_sorted["__rrm_returns"]
+                .rolling(window=w, min_periods=min_periods)
+                .std()
+            )
+            count = (
+                df_sorted["__rrm_returns"]
+                .rolling(window=w, min_periods=min_periods)
+                .count()
+            )
+            neg_sq = (
+                df_sorted["__rrm_neg_sq"]
+                .rolling(window=w, min_periods=min_periods)
+                .sum()
+            )
+            neg_count = (
+                df_sorted["__rrm_neg_mask"]
+                .rolling(window=w, min_periods=min_periods)
+                .sum()
+            )
+            pos_sum = (
+                df_sorted["__rrm_pos"].rolling(window=w, min_periods=min_periods).sum()
+            )
+            neg_sum = (
+                df_sorted["__rrm_neg"].rolling(window=w, min_periods=min_periods).sum()
+            )
+            sum_returns = (
+                df_sorted["__rrm_returns"]
+                .rolling(window=w, min_periods=min_periods)
+                .sum()
+            )
+            sum_sq = (
+                df_sorted["__rrm_returns_sq"]
+                .rolling(window=w, min_periods=min_periods)
+                .sum()
+            )
+            sum_cu = (
+                df_sorted["__rrm_returns_cu"]
+                .rolling(window=w, min_periods=min_periods)
+                .sum()
+            )
+            sum_qu = (
+                df_sorted["__rrm_returns_qu"]
+                .rolling(window=w, min_periods=min_periods)
+                .sum()
+            )
             if benchmark_column is not None:
-                bench_mean = df_sorted["__rrm_bench_returns"].rolling(
-                    window=w, min_periods=min_periods
-                ).mean()
-                sum_bench_sq = df_sorted["__rrm_bench_sq"].rolling(
-                    window=w, min_periods=min_periods
-                ).sum()
-                sum_ret_bench = df_sorted["__rrm_ret_bench"].rolling(
-                    window=w, min_periods=min_periods
-                ).sum()
-                diff_std = df_sorted["__rrm_diff_returns"].rolling(
-                    window=w, min_periods=min_periods
-                ).std()
+                bench_mean = (
+                    df_sorted["__rrm_bench_returns"]
+                    .rolling(window=w, min_periods=min_periods)
+                    .mean()
+                )
+                sum_bench_sq = (
+                    df_sorted["__rrm_bench_sq"]
+                    .rolling(window=w, min_periods=min_periods)
+                    .sum()
+                )
+                sum_ret_bench = (
+                    df_sorted["__rrm_ret_bench"]
+                    .rolling(window=w, min_periods=min_periods)
+                    .sum()
+                )
+                diff_std = (
+                    df_sorted["__rrm_diff_returns"]
+                    .rolling(window=w, min_periods=min_periods)
+                    .std()
+                )
 
         if "sharpe_ratio" in metrics:
             sharpe = ((mean_ret - risk_free_rate) / std_ret) * np.sqrt(
@@ -850,9 +889,9 @@ def _augment_rolling_risk_metrics_cudf_dataframe(
         if "sortino_ratio" in metrics:
             downside_var = (neg_sq / neg_count).where(neg_count > 0, np.nan)
             downside_std = downside_var.pow(0.5)
-            sortino = (
-                (mean_ret - risk_free_rate) / downside_std
-            ) * np.sqrt(annualization_factor)
+            sortino = ((mean_ret - risk_free_rate) / downside_std) * np.sqrt(
+                annualization_factor
+            )
             df_sorted[f"{close_column}_sortino_ratio_{w}"] = sortino
 
         if "omega_ratio" in metrics:
@@ -866,11 +905,7 @@ def _augment_rolling_risk_metrics_cudf_dataframe(
             variance = (sum_sq / count) - avg.pow(2)
             std_pop = variance.where(variance > 0, np.nan).pow(0.5)
             if "skewness" in metrics:
-                mu3 = (
-                    (sum_cu / count)
-                    - 3 * avg * (sum_sq / count)
-                    + 2 * avg.pow(3)
-                )
+                mu3 = (sum_cu / count) - 3 * avg * (sum_sq / count) + 2 * avg.pow(3)
                 skew = mu3 / std_pop.pow(3)
                 df_sorted[f"{close_column}_skewness_{w}"] = skew
             if "kurtosis" in metrics:
@@ -940,6 +975,8 @@ def _augment_rolling_risk_metrics_polars(
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
+    import polars as pl
+
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
     frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
@@ -976,9 +1013,9 @@ def _augment_rolling_risk_metrics_polars(
     if benchmark_column and any(
         m in metrics for m in ["treynor_ratio", "information_ratio"]
     ):
-        bench_returns = (
-            pl.col(benchmark_column).log() - pl.col(benchmark_column).log().shift(1)
-        )
+        bench_returns = pl.col(benchmark_column).log() - pl.col(
+            benchmark_column
+        ).log().shift(1)
         if resolved_groups:
             bench_returns = bench_returns.over(resolved_groups)
         df = df.with_columns(bench_returns.alias(f"{benchmark_column}_returns"))
@@ -1063,9 +1100,7 @@ def _augment_rolling_risk_metrics_polars(
 
         # Apply the expressions for this window in a separate call
         if resolved_groups:
-            df = df.with_columns(
-                [e.over(resolved_groups) for e in exprs]
-            )
+            df = df.with_columns([e.over(resolved_groups) for e in exprs])
         else:
             df = df.with_columns(exprs)
 

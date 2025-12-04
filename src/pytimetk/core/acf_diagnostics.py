@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import List, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
-import pandas_flavor as pf
+import pytimetk.utils.pandas_flavor_compat as pf
 
 from statsmodels.tsa.stattools import acf as sm_acf
 from statsmodels.tsa.stattools import ccf as sm_ccf
@@ -123,7 +125,9 @@ def acf_diagnostics(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: Union[str, ColumnSelector],
     value_column: Union[str, ColumnSelector],
-    ccf_columns: Optional[Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]], np.ndarray]] = None,
+    ccf_columns: Optional[
+        Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]], np.ndarray]
+    ] = None,
     lags: Union[str, int, Sequence[int], np.ndarray, range, slice] = 1000,
 ) -> pd.DataFrame:
     """

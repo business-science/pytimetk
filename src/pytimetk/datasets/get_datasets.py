@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
 from importlib.resources import files
 
 
@@ -97,6 +98,8 @@ def load_dataset(
         with open(text_path, "r", encoding="utf-8") as f:
             df = pd.read_csv(f, **kwargs)
     elif engine == "polars":
+        import polars as pl
+
         df = pl.read_csv(text_path).to_pandas()
 
     return df

@@ -1,5 +1,5 @@
 import pandas as pd
-import pandas_flavor as pf
+from pytimetk.utils import pandas_flavor_compat as pf
 from functools import partial
 from multiprocessing import cpu_count
 from typing import Iterable, Callable, List, Tuple
@@ -255,9 +255,7 @@ def parallel_apply(
         )
         results = [_apply_local(group) for group in iterator]
     else:
-        args_list = [
-            (func, kwargs, group) for _, group in groups
-        ]
+        args_list = [(func, kwargs, group) for _, group in groups]
         try:
             results = run_ray_tasks(
                 _parallel_apply_worker,

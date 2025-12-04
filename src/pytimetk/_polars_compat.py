@@ -6,12 +6,17 @@ import inspect
 from functools import lru_cache
 from typing import Any, Dict
 
-import polars as pl
+from pytimetk.utils.requirements import has_polars
 
 
 @lru_cache(maxsize=None)
 def _polars_supports_min_samples() -> bool:
     """Return True if the current Polars version accepts `min_samples`."""
+    if not has_polars():
+        return True  # Default to modern API when polars not installed
+
+    import polars as pl
+
     try:
         signature = inspect.signature(pl.Expr.rolling_mean)
     except (TypeError, ValueError):

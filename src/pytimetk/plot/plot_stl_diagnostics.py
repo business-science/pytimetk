@@ -1,10 +1,15 @@
+from __future__ import annotations
 import math
-from typing import List, Optional, Sequence, Union
+from typing import List, Optional, Sequence, Union, TYPE_CHECKING
 
 import pandas as pd
-import pandas_flavor as pf
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+from pytimetk.utils import pandas_flavor_compat as pf
+
+from pytimetk.utils.requirements import require_plotly
+
+if TYPE_CHECKING:
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
 
 try:  # Optional dependency for seamless polars support
     import polars as pl
@@ -327,6 +332,10 @@ def plot_stl_diagnostics(
     )
     if subplot_titles is not None:
         subplot_kwargs["subplot_titles"] = subplot_titles
+
+    require_plotly()
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
 
     fig = make_subplots(**subplot_kwargs)
 

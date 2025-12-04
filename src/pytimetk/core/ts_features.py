@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
-import pandas_flavor as pf
 
 from functools import partial
+from typing import TYPE_CHECKING, Optional, Union
 
+import pytimetk.utils.pandas_flavor_compat as pf
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 from pytimetk.utils.ray_helpers import run_ray_tasks
+
+if TYPE_CHECKING:
+    import polars as pl
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
@@ -339,7 +344,8 @@ def _ts_features_pandas(
     if threads_resolved != 1:
         grouped_unique = list(construct_df.groupby("unique_id"))
         args_list = [
-            (name, group, freq, scale, features_to_use) for name, group in grouped_unique
+            (name, group, freq, scale, features_to_use)
+            for name, group in grouped_unique
         ]
         ray_results = run_ray_tasks(
             _tsfeatures_ray_worker,

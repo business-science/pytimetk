@@ -1,10 +1,19 @@
 from functools import wraps
+from typing import Callable
 
-import pandas_flavor as pf
+try:
+    import pandas_flavor as pf
+
+    _has_pandas_flavor = True
+except ImportError:
+    pf = None
+    _has_pandas_flavor = False
 
 
 def patch_pandas_flavor() -> None:
     """Shim pandas_flavor rename of register_groupby_method in 0.8.0+."""
+    if not _has_pandas_flavor:
+        return
 
     # Pull definitions from both the top-level and the register module so we
     # can bridge exports that may have moved or been renamed.
@@ -57,3 +66,43 @@ def patch_pandas_flavor() -> None:
 
     if register_df_groupby and not hasattr(pf, "register_dataframe_groupby_method"):
         pf.register_dataframe_groupby_method = register_df_groupby
+
+
+# Expose decorators
+if _has_pandas_flavor:
+    # Ensure patch is applied if needed (though usually called from __init__)
+    # But we can't call it here if it's circular.
+    # Let's assume patch_pandas_flavor is called from __init__.py
+
+    # We need to get the methods from pf, but they might be patched later.
+    # So we can define wrappers that delegate to pf.
+
+    def register_dataframe_method(func: Callable) -> Callable:
+        return pf.register_dataframe_method(func)
+
+    def register_groupby_method(func: Callable) -> Callable:
+        # This might be patched, so access it dynamically or ensure patch is run.
+        # Since we import this module in __init__ and run patch, it should be fine.
+        # But wait, if we import this module to get the decorators, we might import it BEFORE __init__ runs patch?
+        # No, __init__ imports this module.
+
+        if hasattr(pf, "register_groupby_method"):
+            return pf.register_groupby_method(func)
+        # Fallback if patch hasn't run or failed?
+        return func
+
+    def register_series_method(func: Callable) -> Callable:
+        if hasattr(pf, "register_series_method"):
+            return pf.register_series_method(func)
+        return func
+
+else:
+
+    def register_dataframe_method(func: Callable) -> Callable:
+        return func
+
+    def register_groupby_method(func: Callable) -> Callable:
+        return func
+
+    def register_series_method(func: Callable) -> Callable:
+        return func

@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
-import pandas_flavor as pf
 import warnings
-from typing import Optional, Sequence, Union
+from typing import TYPE_CHECKING, Optional, Sequence, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -26,6 +28,9 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
 from pytimetk.utils.selection import ColumnSelector
 from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
+
+if TYPE_CHECKING:
+    import polars as pl
 
 
 @pf.register_groupby_method
@@ -150,7 +155,9 @@ def augment_drawdown(
     close_column = close_columns[0]
 
     engine_resolved = normalize_engine(engine, data)
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -291,6 +298,7 @@ def _augment_drawdown_polars(
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
     """Polars implementation of drawdown calculation."""
+    import polars as pl
 
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
@@ -313,9 +321,9 @@ def _augment_drawdown_polars(
         )
     )
     result = result.with_columns(
-        (
-            pl.col(f"{close_column}_drawdown") / pl.col(f"{close_column}_peak")
-        ).alias(f"{close_column}_drawdown_pct")
+        (pl.col(f"{close_column}_drawdown") / pl.col(f"{close_column}_peak")).alias(
+            f"{close_column}_drawdown_pct"
+        )
     ).sort(row_col)
 
     if generated:

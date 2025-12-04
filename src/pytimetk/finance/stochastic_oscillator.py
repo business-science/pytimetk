@@ -1,9 +1,11 @@
-import pandas as pd
-import polars as pl
+from __future__ import annotations
 
-import pandas_flavor as pf
+import pandas as pd
+
 import warnings
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -29,6 +31,9 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
 from pytimetk.utils.selection import ColumnSelector
 from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
+
+if TYPE_CHECKING:
+    import polars as pl
 
 
 @pf.register_groupby_method
@@ -171,7 +176,9 @@ def augment_stochastic_oscillator(
     d_values = _normalize_d_periods(d_periods)
 
     engine_resolved = normalize_engine(engine, data)
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -314,9 +321,9 @@ def _augment_stochastic_cudf_dataframe(
                     .reset_index(drop=True)
                 )
             else:
-                df_sorted[d_alias] = df_sorted[k_alias].rolling(
-                    window=d, min_periods=1
-                ).mean()
+                df_sorted[d_alias] = (
+                    df_sorted[k_alias].rolling(window=d, min_periods=1).mean()
+                )
 
     if row_id_column and row_id_column in df_sorted.columns:
         df_sorted = df_sorted.sort_values(row_id_column)
@@ -385,6 +392,8 @@ def _augment_stochastic_polars(
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
+    import polars as pl
+
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
     frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
@@ -401,26 +410,16 @@ def _augment_stochastic_polars(
     lazy_frame = sorted_frame.lazy()
 
     for k in k_periods:
-        band_kwargs = ensure_polars_rolling_kwargs(
-            {"window_size": k, "min_samples": 1}
-        )
-        lowest_low_expr = _maybe_over(
-            pl.col(low_column).rolling_min(**band_kwargs)
-        )
-        highest_high_expr = _maybe_over(
-            pl.col(high_column).rolling_max(**band_kwargs)
-        )
+        band_kwargs = ensure_polars_rolling_kwargs({"window_size": k, "min_samples": 1})
+        lowest_low_expr = _maybe_over(pl.col(low_column).rolling_min(**band_kwargs))
+        highest_high_expr = _maybe_over(pl.col(high_column).rolling_max(**band_kwargs))
         denom_expr = highest_high_expr - lowest_low_expr
 
         k_alias = f"{close_column}_stoch_k_{k}"
         lazy_frame = lazy_frame.with_columns(
             pl.when(denom_expr == 0)
             .then(None)
-            .otherwise(
-                100
-                * (pl.col(close_column) - lowest_low_expr)
-                / denom_expr
-            )
+            .otherwise(100 * (pl.col(close_column) - lowest_low_expr) / denom_expr)
             .alias(k_alias)
         )
 
@@ -430,9 +429,7 @@ def _augment_stochastic_polars(
                 {"window_size": d, "min_samples": 1}
             )
             lazy_frame = lazy_frame.with_columns(
-                _maybe_over(
-                    pl.col(k_alias).rolling_mean(**avg_kwargs)
-                ).alias(d_alias)
+                _maybe_over(pl.col(k_alias).rolling_mean(**avg_kwargs)).alias(d_alias)
             )
 
     result = collect_lazyframe(lazy_frame).sort(row_col)
@@ -443,7 +440,9 @@ def _augment_stochastic_polars(
     return result
 
 
-def _normalize_periods(periods: Union[int, Tuple[int, int], List[int]], label: str) -> List[int]:
+def _normalize_periods(
+    periods: Union[int, Tuple[int, int], List[int]], label: str
+) -> List[int]:
     if isinstance(periods, int):
         return [periods]
     if isinstance(periods, tuple):

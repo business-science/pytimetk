@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
-import polars as pl
 
-import pandas_flavor as pf
 import warnings
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -29,6 +31,9 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 from pytimetk.utils.polars_helpers import collect_lazyframe
 from pytimetk.utils.selection import ColumnSelector
 from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
+
+if TYPE_CHECKING:
+    import polars as pl
 
 
 @pf.register_groupby_method
@@ -115,7 +120,7 @@ def augment_rsi(
             periods=14,
         )
     )
-    
+
     # Selector example
     from pytimetk.utils.selection import contains
     selector_demo = (
@@ -139,7 +144,9 @@ def augment_rsi(
 
     engine_resolved = normalize_engine(engine, data)
 
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -248,6 +255,8 @@ def _augment_rsi_polars(
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
+    import polars as pl
+
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
     frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
@@ -275,14 +284,10 @@ def _augment_rsi_polars(
         )
         lazy_frame = lazy_frame.with_columns(
             _maybe_over(
-                pl.when(pl.col(delta_name) > 0)
-                .then(pl.col(delta_name))
-                .otherwise(0.0)
+                pl.when(pl.col(delta_name) > 0).then(pl.col(delta_name)).otherwise(0.0)
             ).alias(gain_name),
             _maybe_over(
-                pl.when(pl.col(delta_name) < 0)
-                .then(-pl.col(delta_name))
-                .otherwise(0.0)
+                pl.when(pl.col(delta_name) < 0).then(-pl.col(delta_name)).otherwise(0.0)
             ).alias(loss_name),
         )
 
@@ -392,6 +397,8 @@ def _calculate_rsi_pandas(series: pd.Series, period=14):
     # Calculate RSI
     ret = 100 - (100 / (1 + (mean_gains / mean_losses)))
     return ret
+
+
 def _normalize_periods(periods: Union[int, Tuple[int, int], List[int]]) -> List[int]:
     if isinstance(periods, int):
         return [periods]

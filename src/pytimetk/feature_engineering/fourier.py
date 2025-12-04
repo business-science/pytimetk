@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
 import numpy as np
-import pandas_flavor as pf
 import warnings
-from typing import Tuple
-from typing import Union, List
+from typing import TYPE_CHECKING, Tuple, Union, List
+
+import pytimetk.utils.pandas_flavor_compat as pf
+
+if TYPE_CHECKING:
+    import polars as pl
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,

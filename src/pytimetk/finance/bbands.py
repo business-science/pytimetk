@@ -1,9 +1,11 @@
-import pandas as pd
-import polars as pl
+from __future__ import annotations
 
-import pandas_flavor as pf
+import pandas as pd
+
 import warnings
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -27,6 +29,9 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
 from pytimetk.utils.selection import ColumnSelector
 from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
+
+if TYPE_CHECKING:
+    import polars as pl
 
 
 @pf.register_groupby_method
@@ -159,16 +164,16 @@ def augment_bbands(
         require_numeric=True,
     )
     if len(close_columns) != 1:
-        raise ValueError(
-            "`close_column` selector must resolve to exactly one column."
-        )
+        raise ValueError("`close_column` selector must resolve to exactly one column.")
     close_column = close_columns[0]
 
     period_list = _normalize_periods(periods)
     std_list = _normalize_std_dev(std_dev)
 
     engine_resolved = normalize_engine(engine, data)
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -266,15 +271,20 @@ def _augment_bbands_cudf_dataframe(
 
     for period in periods:
         if group_list:
-            rolling_obj = (
-                df_sorted.groupby(group_list, sort=False)[close_column]
-                .rolling(window=period, min_periods=period)
-            )
+            rolling_obj = df_sorted.groupby(group_list, sort=False)[
+                close_column
+            ].rolling(window=period, min_periods=period)
             ma_series = rolling_obj.mean().reset_index(drop=True)
             std_series = rolling_obj.std().reset_index(drop=True)
         else:
-            ma_series = df_sorted[close_column].rolling(window=period, min_periods=period).mean()
-            std_series = df_sorted[close_column].rolling(window=period, min_periods=period).std()
+            ma_series = (
+                df_sorted[close_column]
+                .rolling(window=period, min_periods=period)
+                .mean()
+            )
+            std_series = (
+                df_sorted[close_column].rolling(window=period, min_periods=period).std()
+            )
 
         for sd in std_dev:
             fmt = _format_sd(sd)
@@ -322,7 +332,9 @@ def _augment_bbands_pandas(
 
             for sd in std_dev:
                 fmt = _format_sd(sd)
-                base_df[f"{close_column}_bband_middle_{period}_{fmt}"] = rolling["_mean"]
+                base_df[f"{close_column}_bband_middle_{period}_{fmt}"] = rolling[
+                    "_mean"
+                ]
                 base_df[f"{close_column}_bband_upper_{period}_{fmt}"] = (
                     rolling["_mean"] + rolling["_std"] * sd
                 )
@@ -344,6 +356,8 @@ def _augment_bbands_polars(
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
+    import polars as pl
+
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
     frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
