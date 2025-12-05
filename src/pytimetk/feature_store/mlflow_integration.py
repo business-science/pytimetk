@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import os
 from dataclasses import asdict
-from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence, Tuple, Union
 
 import pandas as pd
 
-from .store import FeatureSetResult, FeatureStore
-
 if TYPE_CHECKING:
     import polars as pl
+
+from .store import FeatureSetResult, FeatureStore
 
 
 __all__ = [
@@ -192,9 +192,7 @@ def load_features_from_mlflow(
     client = mlflow.tracking.MlflowClient()
     run = client.get_run(run_id)
 
-    param_key = (
-        version_param or f"{_parameter_prefix(params_prefix, name)}_feature_version"
-    )
+    param_key = version_param or f"{_parameter_prefix(params_prefix, name)}_feature_version"
     version_value = run.data.params.get(param_key)
     if version_value is None:
         message = (

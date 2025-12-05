@@ -176,9 +176,7 @@ def augment_ewm(
             stacklevel=2,
         )
 
-    if (
-        engine_resolved == "cudf" and cudf is None
-    ):  # pragma: no cover - optional dependency
+    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -258,14 +256,8 @@ def augment_ewm(
             result = _augment_ewm_cudf_dataframe(
                 cudf_df,
                 date_column=date_column,
-                value_columns=(
-                    [value_column]
-                    if isinstance(value_column, str)
-                    else list(value_column)
-                ),
-                window_funcs=[window_func]
-                if isinstance(window_func, str)
-                else list(window_func),
+                value_columns=([value_column] if isinstance(value_column, str) else list(value_column)),
+                window_funcs=[window_func] if isinstance(window_func, str) else list(window_func),
                 alpha=alpha,
                 group_columns=conversion.group_columns,
                 row_id_column=conversion.row_id_column,
@@ -363,7 +355,9 @@ def _augment_ewm_pandas(
     window_funcs = [window_func] if isinstance(window_func, str) else list(window_func)
 
     base_frame = (
-        data if isinstance(data, pd.DataFrame) else resolve_pandas_groupby_frame(data)
+        data
+        if isinstance(data, pd.DataFrame)
+        else resolve_pandas_groupby_frame(data)
     )
 
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
@@ -398,8 +392,6 @@ def _augment_ewm_pandas(
         result = reduce_memory_usage(result)
 
     return result
-
-
 def _augment_ewm_polars(
     data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     *,

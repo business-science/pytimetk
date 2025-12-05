@@ -125,9 +125,7 @@ def acf_diagnostics(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     date_column: Union[str, ColumnSelector],
     value_column: Union[str, ColumnSelector],
-    ccf_columns: Optional[
-        Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]], np.ndarray]
-    ] = None,
+    ccf_columns: Optional[Union[str, ColumnSelector, Sequence[Union[str, ColumnSelector]], np.ndarray]] = None,
     lags: Union[str, int, Sequence[int], np.ndarray, range, slice] = 1000,
 ) -> pd.DataFrame:
     """

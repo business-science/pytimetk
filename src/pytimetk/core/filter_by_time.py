@@ -369,9 +369,7 @@ def _filter_by_time_cudf(
 
     if end_date == "end":
         end_value = df[date_column].max()
-        end_value = (
-            end_value.to_pandas() if hasattr(end_value, "to_pandas") else end_value
-        )
+        end_value = end_value.to_pandas() if hasattr(end_value, "to_pandas") else end_value
     else:
         end_value = parse_end_date(end_date)
 

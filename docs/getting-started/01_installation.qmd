@@ -35,11 +35,11 @@ pip install git+https://github.com/business-science/pytimetk.git
 
 `pytimetk` comes with several optional dependencies that can be installed via extras:
 
-- `pandas`: Installs pandas (required for pandas engine).
-- `polars`: Installs polars (required for polars engine).
-- `plotly`: Installs plotly (required for interactive plotting).
-- `plotnine`: Installs plotnine (required for static plotting).
-- `matplotlib`: Installs matplotlib (required for some static plotting).
+- `pandas`: Installs pandas (required for the pandas engine).
+- `polars`: Installs polars (required for the polars engine).
+- `plotly`: Installs plotly (required for the plotly plotting engine).
+- `plotnine`: Installs plotnine (required for the plotnine plotting engine).
+- `matplotlib`: Installs matplotlib and plotnine and plotnine (required for some the matplotlib plotting engine).
 - `all`: Installs all optional dependencies.
 
 Example:

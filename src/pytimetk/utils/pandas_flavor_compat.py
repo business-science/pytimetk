@@ -70,22 +70,11 @@ def patch_pandas_flavor() -> None:
 
 # Expose decorators
 if _has_pandas_flavor:
-    # Ensure patch is applied if needed (though usually called from __init__)
-    # But we can't call it here if it's circular.
-    # Let's assume patch_pandas_flavor is called from __init__.py
-
-    # We need to get the methods from pf, but they might be patched later.
-    # So we can define wrappers that delegate to pf.
 
     def register_dataframe_method(func: Callable) -> Callable:
         return pf.register_dataframe_method(func)
 
     def register_groupby_method(func: Callable) -> Callable:
-        # This might be patched, so access it dynamically or ensure patch is run.
-        # Since we import this module in __init__ and run patch, it should be fine.
-        # But wait, if we import this module to get the decorators, we might import it BEFORE __init__ runs patch?
-        # No, __init__ imports this module.
-
         if hasattr(pf, "register_groupby_method"):
             return pf.register_groupby_method(func)
         # Fallback if patch hasn't run or failed?

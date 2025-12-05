@@ -54,9 +54,7 @@ def _make_sequence(
     if start_ts > end_ts:
         raise ValueError("`start_date` must be on or before `end_date`.")
 
-    all_days = pd.date_range(
-        start=start_ts.normalize(), end=end_ts.normalize(), freq="D"
-    )
+    all_days = pd.date_range(start=start_ts.normalize(), end=end_ts.normalize(), freq="D")
     filtered = all_days[all_days.dayofweek.isin(allowed_weekdays)]
 
     holidays_to_remove = _build_holiday_filter(filtered, remove_holidays, country)

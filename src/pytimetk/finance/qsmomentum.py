@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import pandas as pd
 import numpy as np
+import pandas_flavor as pf
 import warnings
-from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple, Union
+from typing import List, Optional, Sequence, Tuple, Union, TYPE_CHECKING
 
-import pytimetk.utils.pandas_flavor_compat as pf
+if TYPE_CHECKING:
+    import polars as pl
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -30,9 +32,6 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 from pytimetk.utils.polars_helpers import collect_lazyframe
 from pytimetk.utils.selection import ColumnSelector
 from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
-
-if TYPE_CHECKING:
-    import polars as pl
 
 
 @pf.register_groupby_method
@@ -307,8 +306,6 @@ def _calculate_qsmomentum_pandas(
 def _calculate_qsmomentum_polars(
     close, roc_fast_period, roc_slow_period, returns_period
 ):
-    import polars as pl
-
     close = pl.Series(close).drop_nulls()
     if close.dtype in (pl.Float32, pl.Float64):
         close = close.drop_nans()

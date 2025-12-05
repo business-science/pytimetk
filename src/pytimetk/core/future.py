@@ -702,9 +702,7 @@ def _future_frame_polars(
             if bind_data:
                 constant_cols: List[str] = []
                 for col in other_columns:
-                    unique = (
-                        frame_sorted.select(pl.col(col).n_unique()).to_series().item()
-                    )
+                    unique = frame_sorted.select(pl.col(col).n_unique()).to_series().item()
                     if unique == 1:
                         constant_cols.append(col)
                 if constant_cols:
@@ -718,7 +716,9 @@ def _future_frame_polars(
 # UTILITIES ------------------------------------------------------------------
 
 
-def _process_future_frame_subset(subset, date_column, group_names, length_out, freq):
+def _process_future_frame_subset(
+    subset, date_column, group_names, length_out, freq
+):
     future_dates_list = []
     for _, row in subset.iterrows():
         future_dates = _generate_future_index(row[date_column], freq, length_out)
@@ -733,7 +733,9 @@ def _process_future_frame_subset(subset, date_column, group_names, length_out, f
     return future_dates_list
 
 
-def _process_future_frame_rows(row, date_column, group_names, length_out, freq):
+def _process_future_frame_rows(
+    row, date_column, group_names, length_out, freq
+):
     future_dates = _generate_future_index(row[date_column], freq, length_out)
 
     future_dates_df = pd.DataFrame({date_column: future_dates})

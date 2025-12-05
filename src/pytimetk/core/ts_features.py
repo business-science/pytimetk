@@ -344,8 +344,7 @@ def _ts_features_pandas(
     if threads_resolved != 1:
         grouped_unique = list(construct_df.groupby("unique_id"))
         args_list = [
-            (name, group, freq, scale, features_to_use)
-            for name, group in grouped_unique
+            (name, group, freq, scale, features_to_use) for name, group in grouped_unique
         ]
         ray_results = run_ray_tasks(
             _tsfeatures_ray_worker,

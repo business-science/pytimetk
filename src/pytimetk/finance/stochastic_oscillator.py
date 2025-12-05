@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import pandas as pd
 
+import pandas_flavor as pf
 import warnings
-from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple, Union
+from typing import List, Optional, Sequence, Tuple, Union, TYPE_CHECKING
 
-import pytimetk.utils.pandas_flavor_compat as pf
+if TYPE_CHECKING:
+    import polars as pl
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -31,9 +33,6 @@ from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
 from pytimetk.utils.selection import ColumnSelector
 from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
-
-if TYPE_CHECKING:
-    import polars as pl
 
 
 @pf.register_groupby_method
@@ -392,8 +391,6 @@ def _augment_stochastic_polars(
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
-    import polars as pl
-
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
     frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)

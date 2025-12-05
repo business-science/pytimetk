@@ -255,7 +255,9 @@ def parallel_apply(
         )
         results = [_apply_local(group) for group in iterator]
     else:
-        args_list = [(func, kwargs, group) for _, group in groups]
+        args_list = [
+            (func, kwargs, group) for _, group in groups
+        ]
         try:
             results = run_ray_tasks(
                 _parallel_apply_worker,

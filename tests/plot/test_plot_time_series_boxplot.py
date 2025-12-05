@@ -1,5 +1,7 @@
 import pytest
 
+import numpy as np
+
 from pytimetk.plot import plot_time_series_boxplot
 from pytimetk.utils.selection import contains
 
@@ -7,7 +9,6 @@ from pytimetk.utils.selection import contains
 @pytest.fixture
 def df():
     pd = pytest.importorskip("pandas")
-    np = pytest.importorskip("numpy")
     rng = pd.date_range("2021-01-01", periods=240, freq="H")
     df = pd.DataFrame(
         {

@@ -26,9 +26,7 @@ def _to_pandas(data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupB
         pl_groupby_cls = getattr(pl.dataframe.group_by, "GroupBy", None)
         if isinstance(data, pl.DataFrame):
             return data.to_pandas()
-        if pl_groupby_cls is not None and isinstance(
-            data, pl_groupby_cls
-        ):  # pragma: no cover - optional path
+        if pl_groupby_cls is not None and isinstance(data, pl_groupby_cls):  # pragma: no cover - optional path
             return data.to_pandas()  # type: ignore[attr-defined]
     return data
 
@@ -184,9 +182,7 @@ def plot_time_series_regression(
     """
 
     if not isinstance(formula, str) or "~" not in formula:
-        raise ValueError(
-            "`formula` must be a Patsy-style string such as 'y ~ x1 + x2'."
-        )
+        raise ValueError("`formula` must be a Patsy-style string such as 'y ~ x1 + x2'.")
 
     data = _to_pandas(data)
 
@@ -202,15 +198,11 @@ def plot_time_series_regression(
     if frame.empty:
         raise ValueError("`data` contains no rows.")
 
-    date_column_name = _resolve_date_column(
-        frame if not group_columns else frame, date_column
-    )
+    date_column_name = _resolve_date_column(frame if not group_columns else frame, date_column)
     frame[date_column_name] = pd.to_datetime(frame[date_column_name], errors="coerce")
     frame = frame.dropna(subset=[date_column_name])
     if frame.empty:
-        raise ValueError(
-            "No valid rows remain after coercing `date_column` to datetime."
-        )
+        raise ValueError("No valid rows remain after coercing `date_column` to datetime.")
 
     model_kwargs = model_kwargs.copy() if model_kwargs is not None else {}
     model_kwargs.setdefault("eval_env", 2)
@@ -222,12 +214,7 @@ def plot_time_series_regression(
         for key, group_df in grouped:
             if group_df.empty:
                 continue
-            label = ", ".join(
-                f"{col}={val}"
-                for col, val in zip(
-                    group_columns, key if isinstance(key, tuple) else (key,)
-                )
-            )
+            label = ", ".join(f"{col}={val}" for col, val in zip(group_columns, key if isinstance(key, tuple) else (key,)))
             result_frames.append(
                 _fit_group(
                     group_df,

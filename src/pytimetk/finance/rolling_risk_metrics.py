@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import pandas as pd
+import pandas_flavor as pf
 import numpy as np
 import warnings
-from typing import TYPE_CHECKING, List, Optional, Sequence, Union
+from typing import List, Optional, Sequence, Union, TYPE_CHECKING
 
-import pytimetk.utils.pandas_flavor_compat as pf
+if TYPE_CHECKING:
+    import polars as pl
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -29,9 +31,6 @@ from pytimetk.utils.pandas_helpers import sort_dataframe
 from pytimetk.utils.selection import ColumnSelector
 from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 from scipy import stats  # For skewness and kurtosis
-
-if TYPE_CHECKING:
-    import polars as pl
 
 
 @pf.register_groupby_method

@@ -681,9 +681,7 @@ def _pad_by_time_cudf_dataframe(
             )
             start_val = _convert_to_datetime(min_date_value)
             end_val = _convert_to_datetime(max_date_value)
-            date_range = cudf.Series(
-                cudf.date_range(start=start_val, end=end_val, freq=freq)
-            )
+            date_range = cudf.Series(cudf.date_range(start=start_val, end=end_val, freq=freq))
             padded = cudf.DataFrame({date_column: date_range})
             for col_name, key_value in zip(group_cols, keys):
                 padded[col_name] = key_value
@@ -711,11 +709,7 @@ def _pad_by_time_cudf_dataframe(
                     merged[col] = merged[col].fillna(method="ffill")
             frames.append(merged)
 
-        result = (
-            cudf.concat(frames, ignore_index=True)
-            if frames
-            else cudf.DataFrame(columns=group_cols + [date_column])
-        )
+        result = cudf.concat(frames, ignore_index=True) if frames else cudf.DataFrame(columns=group_cols + [date_column])
         ordered_cols = group_cols + [date_column]
         other_cols = [col for col in result.columns if col not in ordered_cols]
         return result[ordered_cols + other_cols]
@@ -743,9 +737,7 @@ def _pad_by_time_cudf_dataframe(
     return merged
 
 
-def _convert_to_datetime(
-    value: Union[pd.Timestamp, "cudf.Scalar", None],
-) -> pd.Timestamp:
+def _convert_to_datetime(value: Union[pd.Timestamp, "cudf.Scalar", None]) -> pd.Timestamp:
     if value is None:
         raise ValueError("Unable to determine start or end date for padding.")
     if isinstance(value, pd.Timestamp):

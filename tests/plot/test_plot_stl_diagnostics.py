@@ -1,5 +1,7 @@
 import pytest
 
+import numpy as np
+
 from pytimetk.plot import plot_stl_diagnostics
 from pytimetk.utils.selection import contains
 
@@ -7,7 +9,6 @@ from pytimetk.utils.selection import contains
 @pytest.fixture
 def df():
     pd = pytest.importorskip("pandas")
-    np = pytest.importorskip("numpy")
     rng = pd.date_range("2020-01-01", periods=120, freq="D")
     id_series = np.where(np.arange(len(rng)) < len(rng) / 2, "A", "B")
     values = np.sin(np.linspace(0, 8 * np.pi, len(rng))) + np.random.default_rng(

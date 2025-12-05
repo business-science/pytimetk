@@ -598,8 +598,6 @@ def _agg_collect_strings(agg_spec: Union[str, List]) -> List[str]:
                 )
         return collected
     raise TypeError("Only string aggregations are supported for the cudf backend.")
-
-
 def _resolve_selector_frame(
     data: Union[
         pd.DataFrame,

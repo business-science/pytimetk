@@ -337,11 +337,7 @@ def _apply_by_time_pandas(
     else:
         group_names = list(data.grouper.names)
         if date_column not in group_names:
-            data = (
-                resolve_pandas_groupby_frame(data)
-                .set_index(date_column)
-                .groupby(group_names)
-            )
+            data = resolve_pandas_groupby_frame(data).set_index(date_column).groupby(group_names)
 
     grouped = data.resample(rule=freq, kind="timestamp")
 
@@ -381,13 +377,9 @@ def _apply_by_time_polars(
     import polars as pl
 
     resolved_groups = resolve_polars_group_columns(prepared, group_columns)
-    frame = (
-        prepared.df if isinstance(prepared, pl.dataframe.group_by.GroupBy) else prepared
-    )
+    frame = prepared.df if isinstance(prepared, pl.dataframe.group_by.GroupBy) else prepared
 
-    sort_keys = (
-        list(resolved_groups) + [date_column] if resolved_groups else [date_column]
-    )
+    sort_keys = list(resolved_groups) + [date_column] if resolved_groups else [date_column]
     frame_sorted = frame.sort(sort_keys)
 
     partitions = (

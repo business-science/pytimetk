@@ -6,7 +6,10 @@ import pandas as pd
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Literal, Optional, Sequence, Tuple, Union
 
-from pytimetk.utils.requirements import has_polars
+from pytimetk.utils.requirements import has_polars, require_polars
+
+if TYPE_CHECKING:
+    import polars as pl
 
 try:  # Optional dependency; imported lazily when available
     import cudf  # type: ignore
@@ -15,8 +18,7 @@ except ImportError:  # pragma: no cover - GPU support optional
     cudf = None  # type: ignore
     CudfDataFrameGroupBy = None  # type: ignore
 
-if TYPE_CHECKING:
-    import polars as pl
+from pytimetk.utils.polars_helpers import collect_lazyframe
 
 
 def resolve_pandas_groupby_frame(
@@ -156,6 +158,11 @@ def identify_frame_kind(data: AnyFrame) -> FrameKind:
         return "pandas_groupby"
     if isinstance(data, pd.DataFrame):
         return "pandas_df"
+    if cudf is not None:
+        if CudfDataFrameGroupBy is not None and isinstance(data, CudfDataFrameGroupBy):
+            return "cudf_groupby"
+        if isinstance(data, cudf.DataFrame):
+            return "cudf_df"
     if has_polars():
         import polars as pl
 
@@ -165,11 +172,6 @@ def identify_frame_kind(data: AnyFrame) -> FrameKind:
             return "polars_groupby"
         if isinstance(data, pl.DataFrame):
             return "polars_df"
-    if cudf is not None:
-        if CudfDataFrameGroupBy is not None and isinstance(data, CudfDataFrameGroupBy):
-            return "cudf_groupby"
-        if isinstance(data, cudf.DataFrame):
-            return "cudf_df"
     raise TypeError("`data` must be a pandas, cudf, or polars DataFrame/GroupBy.")
 
 
@@ -201,6 +203,7 @@ def convert_to_engine(
     Ensure the data matches the target engine. Returns conversion metadata that
     can be used to restore the result to the original input type.
     """
+
     original_kind = identify_frame_kind(data)
 
     if engine == "pandas":
@@ -217,8 +220,6 @@ def convert_to_engine(
                 pandas_cache=data if isinstance(data, pd.DataFrame) else None,
             )
         if original_kind == "polars_lazy":
-            from pytimetk.utils.polars_helpers import collect_lazyframe
-
             collected = collect_lazyframe(data)
             pandas_df = collected.to_pandas()
             return FrameConversion(
@@ -264,11 +265,8 @@ def convert_to_engine(
             )
 
     if engine == "polars":
-        from pytimetk.utils.requirements import require_polars
-
         require_polars()
         import polars as pl
-        from pytimetk.utils.polars_helpers import collect_lazyframe
 
         if original_kind == "pandas_df":
             pandas_index = data.index.copy()
@@ -440,12 +438,14 @@ def convert_to_engine(
 
 
 def restore_output_type(
-    result: Union[pd.DataFrame, "pl.DataFrame", Any],
+    result: Union[pd.DataFrame, pl.DataFrame, Any],
     conversion: FrameConversion,
-) -> Union[pd.DataFrame, "pl.DataFrame", Any]:
+) -> Union[pd.DataFrame, pl.DataFrame, Any]:
     """
     Convert the result back to the type implied by the original input.
     """
+    from pytimetk.utils.requirements import has_polars
+
     # Normalise ordering based on temporary row identifiers when present.
     if conversion.row_id_column:
         if has_polars():
@@ -489,9 +489,6 @@ def restore_output_type(
         return result
 
     if conversion.original_kind in ("polars_df", "polars_groupby"):
-        from pytimetk.utils.requirements import require_polars
-
-        require_polars()
         import polars as pl
 
         if isinstance(result, pd.DataFrame):
@@ -500,9 +497,6 @@ def restore_output_type(
             return pl.from_pandas(result.to_pandas())
         return result
     if conversion.original_kind == "polars_lazy":
-        from pytimetk.utils.requirements import require_polars
-
-        require_polars()
         import polars as pl
 
         if isinstance(result, pd.DataFrame):
@@ -553,6 +547,8 @@ def conversion_to_pandas(
     -> polars transformation a temporary row identifier may exist; this helper
     strips that column before returning the pandas frame.
     """
+    from pytimetk.utils.requirements import has_polars
+
     if conversion.pandas_cache is not None:
         cached = conversion.pandas_cache
         if isinstance(cached, pd.core.groupby.generic.DataFrameGroupBy):
@@ -616,9 +612,9 @@ def conversion_to_pandas(
 
 
 def ensure_row_id_column(
-    frame: "pl.DataFrame",
+    frame: pl.DataFrame,
     existing_column: Optional[str] = None,
-) -> "Tuple[pl.DataFrame, str, bool]":
+) -> Tuple[pl.DataFrame, str, bool]:
     """
     Ensure a row identifier column exists on the provided polars frame.
     Returns the frame (possibly modified), the column name, and a flag indicating
@@ -640,7 +636,7 @@ def _make_temp_column(columns: Sequence[str], base: str = ROW_ID_BASE) -> str:
 
 
 def _extract_polars_group_columns(
-    groupby: "pl.dataframe.group_by.GroupBy",
+    groupby: pl.dataframe.group_by.GroupBy,
 ) -> Sequence[str]:
     columns = []
     for entry in groupby.by:
@@ -694,20 +690,19 @@ def _extract_cudf_group_columns(
 
 
 def resolve_polars_group_columns(
-    data: "Union[pl.DataFrame, pl.dataframe.group_by.GroupBy]",
+    data: Union[pl.DataFrame, pl.dataframe.group_by.GroupBy],
     group_columns: Optional[Sequence[str]] = None,
 ) -> Sequence[str]:
     """
     Resolve the list of polars group columns from either stored metadata or the
     groupby object itself.
     """
+    import polars as pl
+
     if group_columns:
         return list(group_columns)
-    if has_polars():
-        import polars as pl
-
-        if isinstance(data, pl.dataframe.group_by.GroupBy):
-            return list(_extract_polars_group_columns(data))
+    if isinstance(data, pl.dataframe.group_by.GroupBy):
+        return list(_extract_polars_group_columns(data))
     return []
 
 
