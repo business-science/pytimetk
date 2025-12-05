@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import pandas_flavor as pf
+import pytimetk.utils.pandas_flavor_compat as pf
 from pytimetk.utils.dataframe_ops import resolve_pandas_groupby_frame
 
 from typing import Union

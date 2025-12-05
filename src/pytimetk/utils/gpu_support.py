@@ -15,7 +15,7 @@ import importlib
 import importlib.util
 from typing import Optional
 
-import polars as pl
+from pytimetk.utils.requirements import has_polars
 
 _CUDA_AVAILABLE_CACHE: Optional[bool] = None
 _CUDF_AVAILABLE_CACHE: Optional[bool] = None
@@ -88,6 +88,10 @@ def is_polars_gpu_available() -> bool:
     This does not validate that an NVIDIA device is present; it merely asserts
     that the runtime was installed with GPU support (``polars[gpu]``).
     """
+    if not has_polars():
+        return False
+    import polars as pl
+
     return hasattr(pl, "GPUEngine")
 
 

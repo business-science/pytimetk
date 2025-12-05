@@ -1,9 +1,12 @@
+from __future__ import annotations
 import pandas as pd
-import pandas_flavor as pf
-import plotly.graph_objects as go
+from pytimetk.utils import pandas_flavor_compat as pf
 import statsmodels.formula.api as smf
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import plotly.graph_objects as go
 
 try:  # Optional dependency for seamless polars support
     import polars as pl

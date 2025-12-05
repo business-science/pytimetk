@@ -1,10 +1,13 @@
 import pandas as pd
-import pandas_flavor as pf
-from typing import Union, Optional
+from pytimetk.utils import pandas_flavor_compat as pf
+from typing import Union, Optional, TYPE_CHECKING
 from functools import partial
-import plotly.graph_objects as go
 
-from plotnine import *
+from pytimetk.utils.requirements import require_plotly, require_plotnine
+
+if TYPE_CHECKING:
+    import plotly.graph_objects as go
+    from plotnine import *
 
 from pytimetk.plot import plot_timeseries
 from pytimetk.utils.plot_helpers import hex_to_rgba, rgba_to_hex, parse_rgba
@@ -344,6 +347,7 @@ def plot_anomalies(
             line_size = 0.65
 
     if engine == "plotly":
+        require_plotly()
         if anom_size is None:
             anom_size = 6.0
 
@@ -382,6 +386,7 @@ def plot_anomalies(
         )
 
     else:
+        require_plotnine()
         if anom_size is None:
             anom_size = 1.0
 
@@ -468,6 +473,9 @@ def _plot_anomalies_plotly(
     plotly_dropdown_y: float = 1,
 ):
     """This function plots anomalies with an optional Plotly dropdown to switch between groups."""
+
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
 
     # Plot Setup
     ribbon_color_rgba = hex_to_rgba(ribbon_fill, ribbon_alpha)
@@ -863,6 +871,19 @@ def _plot_anomalies_plotnine(
     width: Optional[int] = None,
     height: Optional[int] = None,
 ):
+    from plotnine import (
+        ggplot,
+        aes,
+        geom_line,
+        geom_ribbon,
+        geom_point,
+        geom_hline,
+        geom_vline,
+        labs,
+        scale_x_datetime,
+        facet_wrap,
+    )
+
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
 

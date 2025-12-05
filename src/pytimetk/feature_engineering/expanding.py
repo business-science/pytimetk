@@ -1,10 +1,15 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
-import pandas_flavor as pf
 import inspect
 import warnings
 
-from typing import Callable, List, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, Callable, List, Optional, Sequence, Tuple, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
+
+if TYPE_CHECKING:
+    import polars as pl
 
 try:  # Optional cudf dependency for GPU acceleration
     import cudf  # type: ignore
@@ -239,7 +244,9 @@ def augment_expanding(
 
     engine_resolved = normalize_engine(engine, data)
 
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -409,16 +416,17 @@ def _augment_expanding_cudf_dataframe(
             df_sorted[col] = df_sorted[col].astype("float64")
 
         if group_columns:
-            expanding_obj = (
-                df_sorted.groupby(list(group_columns), sort=False)[col]
-                .expanding(min_periods=resolved_min)
-            )
+            expanding_obj = df_sorted.groupby(list(group_columns), sort=False)[
+                col
+            ].expanding(min_periods=resolved_min)
             for func in window_funcs:
                 if func == "quantile":
                     result_series = expanding_obj.quantile(0.5).reset_index(drop=True)
                     new_column_name = f"{col}_expanding_quantile_50"
                 else:
-                    result_series = getattr(expanding_obj, func)().reset_index(drop=True)
+                    result_series = getattr(expanding_obj, func)().reset_index(
+                        drop=True
+                    )
                     new_column_name = f"{col}_expanding_{func}"
                 df_sorted[new_column_name] = result_series
         else:
@@ -687,6 +695,8 @@ def _augment_expanding_polars(
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
+    import polars as pl
+
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
 

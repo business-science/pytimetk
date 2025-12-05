@@ -1,9 +1,13 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
 
 import pandas_flavor as pf
 import warnings
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import List, Optional, Sequence, Tuple, Union, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import polars as pl
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -146,7 +150,9 @@ def augment_roc(
         raise ValueError("start_index must be less than the minimum value in periods.")
 
     engine_resolved = normalize_engine(engine, data)
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -326,6 +332,8 @@ def _augment_roc_polars(
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
+    import polars as pl
+
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
     frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
@@ -354,6 +362,8 @@ def _roc_expression(
     start_index: int,
     groups: Sequence[str],
 ) -> pl.Expr:
+    import polars as pl
+
     numerator = pl.col(col) if start_index == 0 else pl.col(col).shift(start_index)
     denominator = pl.col(col).shift(period)
 

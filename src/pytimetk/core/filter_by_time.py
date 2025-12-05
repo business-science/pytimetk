@@ -1,8 +1,13 @@
 # Imports
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
-import pandas_flavor as pf
-from typing import Union
+from typing import TYPE_CHECKING, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
+
+if TYPE_CHECKING:
+    import polars as pl
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
@@ -211,7 +216,9 @@ def filter_by_time(
 
     engine_resolved = normalize_engine(engine, data)
 
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -336,7 +343,9 @@ def _filter_by_time_cudf(
     end_date: str,
 ) -> "cudf.DataFrame":
     if cudf is None:  # pragma: no cover - optional dependency
-        raise ImportError("cudf is required to execute the cudf filter_by_time backend.")
+        raise ImportError(
+            "cudf is required to execute the cudf filter_by_time backend."
+        )
 
     if hasattr(data, "obj"):
         df = data.obj.copy(deep=True)
@@ -350,7 +359,11 @@ def _filter_by_time_cudf(
 
     if start_date == "start":
         start_value = df[date_column].min()
-        start_value = start_value.to_pandas() if hasattr(start_value, "to_pandas") else start_value
+        start_value = (
+            start_value.to_pandas()
+            if hasattr(start_value, "to_pandas")
+            else start_value
+        )
     else:
         start_value = pd.to_datetime(start_date)
 

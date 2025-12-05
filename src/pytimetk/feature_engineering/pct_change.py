@@ -1,9 +1,13 @@
-import pandas as pd
-import polars as pl
-import pandas_flavor as pf
-from typing import List, Optional, Tuple, Union
+from __future__ import annotations
 
-from pytimetk.feature_engineering import augment_diffs
+import pandas as pd
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
+from pytimetk.feature_engineering.diffs import augment_diffs
+
+if TYPE_CHECKING:
+    import polars as pl
 
 
 @pf.register_groupby_method

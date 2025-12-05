@@ -1,9 +1,14 @@
-import pandas as pd
-import polars as pl
-import numpy as np
-import pandas_flavor as pf
+from __future__ import annotations
 
-from typing import Union
+import pandas as pd
+import numpy as np
+
+from typing import TYPE_CHECKING, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
+
+if TYPE_CHECKING:
+    import polars as pl
 
 from pytimetk.utils.dataframe_ops import (
     convert_to_engine,

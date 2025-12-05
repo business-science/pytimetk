@@ -1,9 +1,14 @@
-import pandas as pd
-import pandas_flavor as pf
-import numpy as np
-import polars as pl
+from __future__ import annotations
 
-from typing import List, Sequence, Union
+import pandas as pd
+import numpy as np
+
+from typing import TYPE_CHECKING, List, Sequence, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
+
+if TYPE_CHECKING:
+    import polars as pl
 
 from pytimetk.core.frequency import get_frequency_summary
 

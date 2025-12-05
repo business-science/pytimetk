@@ -118,7 +118,10 @@ from .feature_store import (
     FeatureSetResult,
     feature_store,
 )
-from . import polars_namespace  # noqa: F401
+from .utils.requirements import has_polars
+
+if has_polars():
+    from . import polars_namespace
 
 from importlib.metadata import version
 

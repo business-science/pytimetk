@@ -1,13 +1,14 @@
-import numpy as np
-import pandas as pd
-import plotly.graph_objects as go
 import pytest
 
-import pytimetk as tk
+import numpy as np
+
+from pytimetk.plot import plot_seasonal_diagnostics
 from pytimetk.utils.selection import contains
 
 
-def _sample_df():
+@pytest.fixture
+def df():
+    pd = pytest.importorskip("pandas")
     rng = pd.date_range("2020-01-01", periods=48, freq="H")
     df = pd.DataFrame(
         {
@@ -19,9 +20,11 @@ def _sample_df():
     return df
 
 
-def test_plot_seasonal_diagnostics_basic_box():
-    df = _sample_df()
-    fig = tk.plot_seasonal_diagnostics(
+def test_plot_seasonal_diagnostics_basic_box(df):
+    pytest.importorskip("plotly")
+    import plotly.graph_objects as go
+
+    fig = plot_seasonal_diagnostics(
         data=df.groupby("id"),
         date_column="date",
         value_column="value",
@@ -31,9 +34,11 @@ def test_plot_seasonal_diagnostics_basic_box():
     assert isinstance(fig, go.Figure)
 
 
-def test_plot_seasonal_diagnostics_tidy_selectors_violin():
-    df = _sample_df()
-    fig = tk.plot_seasonal_diagnostics(
+def test_plot_seasonal_diagnostics_tidy_selectors_violin(df):
+    pytest.importorskip("plotly")
+    import plotly.graph_objects as go
+
+    fig = plot_seasonal_diagnostics(
         data=df,
         date_column="date",
         value_column=contains("val"),
@@ -46,12 +51,14 @@ def test_plot_seasonal_diagnostics_tidy_selectors_violin():
 
 
 @pytest.mark.parametrize("engine", ["pandas", "polars"])
-def test_plot_seasonal_diagnostics_polars(engine):
-    df = _sample_df()
+def test_plot_seasonal_diagnostics_polars(engine, df):
+    pytest.importorskip("plotly")
+    import plotly.graph_objects as go
+
     if engine == "polars":
         pl = pytest.importorskip("polars")
         pl_df = pl.from_pandas(df)
-        fig = tk.plot_seasonal_diagnostics(
+        fig = plot_seasonal_diagnostics(
             data=pl_df,
             date_column="date",
             value_column="value",
@@ -59,7 +66,7 @@ def test_plot_seasonal_diagnostics_polars(engine):
         )
         assert isinstance(fig, go.Figure)
     else:
-        fig = tk.plot_seasonal_diagnostics(
+        fig = plot_seasonal_diagnostics(
             data=df,
             date_column="date",
             value_column="value",

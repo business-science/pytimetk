@@ -1,10 +1,19 @@
 from functools import wraps
+from typing import Callable
 
-import pandas_flavor as pf
+try:
+    import pandas_flavor as pf
+
+    _has_pandas_flavor = True
+except ImportError:
+    pf = None
+    _has_pandas_flavor = False
 
 
 def patch_pandas_flavor() -> None:
     """Shim pandas_flavor rename of register_groupby_method in 0.8.0+."""
+    if not _has_pandas_flavor:
+        return
 
     # Pull definitions from both the top-level and the register module so we
     # can bridge exports that may have moved or been renamed.
@@ -57,3 +66,32 @@ def patch_pandas_flavor() -> None:
 
     if register_df_groupby and not hasattr(pf, "register_dataframe_groupby_method"):
         pf.register_dataframe_groupby_method = register_df_groupby
+
+
+# Expose decorators
+if _has_pandas_flavor:
+
+    def register_dataframe_method(func: Callable) -> Callable:
+        return pf.register_dataframe_method(func)
+
+    def register_groupby_method(func: Callable) -> Callable:
+        if hasattr(pf, "register_groupby_method"):
+            return pf.register_groupby_method(func)
+        # Fallback if patch hasn't run or failed?
+        return func
+
+    def register_series_method(func: Callable) -> Callable:
+        if hasattr(pf, "register_series_method"):
+            return pf.register_series_method(func)
+        return func
+
+else:
+
+    def register_dataframe_method(func: Callable) -> Callable:
+        return func
+
+    def register_groupby_method(func: Callable) -> Callable:
+        return func
+
+    def register_series_method(func: Callable) -> Callable:
+        return func

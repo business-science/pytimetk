@@ -1,12 +1,13 @@
-import pandas as pd
-import pandas_flavor as pf
-import polars as pl
+from __future__ import annotations
 
-from typing import Union, Callable, Tuple, List, Sequence
+import pandas as pd
+from typing import TYPE_CHECKING, Union, Callable, Tuple, List, Sequence
 import re
 import warnings
 from itertools import cycle
 
+from pytimetk.utils import pandas_flavor_compat as pf
+from pytimetk.utils.requirements import has_polars
 from pytimetk.utils.pandas_helpers import flatten_multiindex_column_names
 
 from pytimetk.utils.checks import (
@@ -23,6 +24,9 @@ from pytimetk.utils.dataframe_ops import (
     resolve_pandas_groupby_frame,
 )
 from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
+
+if TYPE_CHECKING:
+    import polars as pl
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -317,7 +321,9 @@ def summarize_by_time(
             )
             conversion_engine = "pandas"
         elif cudf is None:  # pragma: no cover - optional dependency
-            raise ImportError("cudf is required for engine='cudf', but it is not installed.")
+            raise ImportError(
+                "cudf is required for engine='cudf', but it is not installed."
+            )
     conversion = convert_to_engine(data, conversion_engine)
     prepared = conversion.data
 
@@ -378,7 +384,11 @@ def _summarize_by_time_pandas(
     group_names = None
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         group_names = data.grouper.names
-        data = resolve_pandas_groupby_frame(data).set_index(date_column).groupby(group_names)
+        data = (
+            resolve_pandas_groupby_frame(data)
+            .set_index(date_column)
+            .groupby(group_names)
+        )
 
     # Group data by the groups columns if groups is not None
     # if groups is not None:
@@ -436,7 +446,7 @@ def _summarize_by_time_pandas(
         data.columns = new_columns
 
     return data
- 
+
 
 def _summarize_by_time_cudf(
     prepared: Union["cudf.DataFrame", "cudf.core.groupby.groupby.DataFrameGroupBy"],
@@ -448,7 +458,9 @@ def _summarize_by_time_cudf(
     conversion: FrameConversion,
 ) -> "cudf.DataFrame":
     if cudf is None:  # pragma: no cover - optional dependency
-        raise ImportError("cudf is required to execute the cudf summarize_by_time backend.")
+        raise ImportError(
+            "cudf is required to execute the cudf summarize_by_time backend."
+        )
 
     if hasattr(prepared, "obj"):
         df = resolve_pandas_groupby_frame(prepared).copy(deep=True)
@@ -503,10 +515,7 @@ def _summarize_by_time_cudf(
         result = result[ordered_cols]
     else:
         result = (
-            df_sorted.set_index(date_column)
-            .resample(freq)
-            .agg(agg_dict)
-            .reset_index()
+            df_sorted.set_index(date_column).resample(freq).agg(agg_dict).reset_index()
         )
         result = _flatten_columns(result)
 
@@ -526,6 +535,8 @@ def _summarize_by_time_polars(
     fillna: int,
     conversion: FrameConversion,
 ) -> pl.DataFrame:
+    import polars as pl
+
     agg_funcs = [agg_func] if isinstance(agg_func, str) else list(agg_func)
     if any(not isinstance(func, str) for func in agg_funcs):
         raise ValueError(
@@ -600,7 +611,9 @@ def _resolve_selector_frame(
         return resolve_pandas_groupby_frame(data).copy()
     if isinstance(data, pd.DataFrame):
         return data.copy()
-    if pl is not None:
+    if has_polars():
+        import polars as pl
+
         if isinstance(data, pl.dataframe.group_by.GroupBy):
             base = getattr(data, "df", None)
             if base is None:

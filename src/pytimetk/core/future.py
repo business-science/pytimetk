@@ -1,8 +1,10 @@
-import pandas as pd
-import polars as pl
-import pandas_flavor as pf
-from typing import Union, Optional, Sequence, List
+from __future__ import annotations
 
+import pandas as pd
+from typing import TYPE_CHECKING, Union, Optional, Sequence, List
+
+import pytimetk.utils.pandas_flavor_compat as pf
+from pytimetk.utils.requirements import has_polars
 from pytimetk.core.frequency import get_frequency
 from pytimetk.utils.checks import check_dataframe_or_groupby, check_date_column
 
@@ -18,8 +20,14 @@ from pytimetk.utils.dataframe_ops import (
     resolve_polars_group_columns,
 )
 from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
-from pytimetk.utils.datetime_helpers import parse_human_duration, normalize_frequency_alias
+from pytimetk.utils.datetime_helpers import (
+    parse_human_duration,
+    normalize_frequency_alias,
+)
 from pytimetk.utils.ray_helpers import run_ray_tasks
+
+if TYPE_CHECKING:
+    import polars as pl
 
 
 def _resolve_selector_frame(
@@ -34,22 +42,25 @@ def _resolve_selector_frame(
         return resolve_pandas_groupby_frame(data).copy()
     if isinstance(data, pd.DataFrame):
         return data.copy()
-    if isinstance(data, pl.dataframe.group_by.GroupBy):
-        base = getattr(data, "df", None)
-        if base is None:
-            raise TypeError(
-                "Unable to resolve columns from this polars GroupBy for selector resolution."
-            )
-        return base.to_pandas()
-    if isinstance(data, pl.DataFrame):
-        return data.to_pandas()
+    if has_polars():
+        import polars as pl
+
+        if isinstance(data, pl.dataframe.group_by.GroupBy):
+            base = getattr(data, "df", None)
+            if base is None:
+                raise TypeError(
+                    "Unable to resolve columns from this polars GroupBy for selector resolution."
+                )
+            return base.to_pandas()
+        if isinstance(data, pl.DataFrame):
+            return data.to_pandas()
     raise TypeError(
         "Column selectors currently require pandas or polars data for `future_frame`."
     )
 
 
 def _normalize_frequency_spec(
-    freq: Optional[Union[str, pd.DateOffset]]
+    freq: Optional[Union[str, pd.DateOffset]],
 ) -> Optional[pd.DateOffset]:
     if freq is None:
         return None
@@ -70,7 +81,6 @@ def _frequency_to_str(freq: Optional[pd.DateOffset]) -> Optional[str]:
     if freq is None:
         return None
     return freq.freqstr
-
 
 
 try:  # Optional cudf dependency
@@ -481,14 +491,11 @@ def _future_frame_pandas(
                 future_dates_list.append(future_dates_subset)
 
         if future_dates_list:
-            future_dates_df = (
-                pd.concat(future_dates_list, axis=0)
-                .reset_index(drop=True)
+            future_dates_df = pd.concat(future_dates_list, axis=0).reset_index(
+                drop=True
             )
         else:
-            future_dates_df = pd.DataFrame(
-                columns=list(group_names) + [date_column]
-            )
+            future_dates_df = pd.DataFrame(columns=list(group_names) + [date_column])
 
         if bind_data:
             grouped_df = resolve_pandas_groupby_frame(grouped)
@@ -558,7 +565,9 @@ def _future_frame_polars(
             return series.cast(pl.Date)
         if isinstance(dtype_date, pl.datatypes.Datetime):
             return series.cast(
-                pl.Datetime(time_unit=dtype_date.time_unit, time_zone=dtype_date.time_zone)
+                pl.Datetime(
+                    time_unit=dtype_date.time_unit, time_zone=dtype_date.time_zone
+                )
             )
         return series
 
@@ -646,7 +655,10 @@ def _future_frame_polars(
         freq_resolved = freq
         if freq_resolved is None:
             sample_dates = (
-                frame_sorted.select(pl.col(date_column)).to_series().to_pandas().sort_values()
+                frame_sorted.select(pl.col(date_column))
+                .to_series()
+                .to_pandas()
+                .sort_values()
             )
             freq_resolved = _normalize_frequency_spec(
                 get_frequency(sample_dates, force_regular=force_regular)

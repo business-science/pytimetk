@@ -1,5 +1,5 @@
 import pandas as pd
-import pandas_flavor as pf
+from pytimetk.utils import pandas_flavor_compat as pf
 from functools import partial
 from multiprocessing import cpu_count
 from typing import Iterable, Callable, List, Tuple

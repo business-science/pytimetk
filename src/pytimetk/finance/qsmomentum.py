@@ -1,9 +1,13 @@
+from __future__ import annotations
+
 import pandas as pd
 import numpy as np
-import polars as pl
 import pandas_flavor as pf
 import warnings
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import List, Optional, Sequence, Tuple, Union, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import polars as pl
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -169,9 +173,7 @@ def augment_qsmomentum(
         raise ValueError("`close_column` selector must resolve to exactly one column.")
     close_column = close_columns[0]
 
-    if isinstance(
-        data, (pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy)
-    ):
+    if isinstance(data, (pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy)):
         data, _ = sort_dataframe(data, date_column, keep_grouped_df=True)
 
     # Normalize params to lists
@@ -203,7 +205,9 @@ def augment_qsmomentum(
 
     engine_resolved = normalize_engine(engine, data)
 
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -325,6 +329,8 @@ def _calculate_qsmomentum_polars(
 
     mom = (roc_slow_calc - roc_fast_calc) / std_returns
     return mom
+
+
 def _augment_qsmomentum_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     close_column: str,
@@ -346,9 +352,7 @@ def _augment_qsmomentum_pandas(
                 df.groupby(group_names)[close_column]
                 .rolling(window=sp, min_periods=sp)
                 .apply(
-                    lambda window: _calculate_qsmomentum_pandas(
-                        window, fp, sp, rp
-                    ),
+                    lambda window: _calculate_qsmomentum_pandas(window, fp, sp, rp),
                     raw=False,
                 )
                 .reset_index(level=0, drop=True)
@@ -358,9 +362,7 @@ def _augment_qsmomentum_pandas(
                 df[close_column]
                 .rolling(window=sp, min_periods=sp)
                 .apply(
-                    lambda window: _calculate_qsmomentum_pandas(
-                        window, fp, sp, rp
-                    ),
+                    lambda window: _calculate_qsmomentum_pandas(window, fp, sp, rp),
                     raw=False,
                 )
             )
@@ -376,6 +378,8 @@ def _augment_qsmomentum_polars(
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
+    import polars as pl
+
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
     frame_with_id, row_col, generated = ensure_row_id_column(frame, row_id_column)
@@ -430,22 +434,19 @@ def _augment_qsmomentum_cudf_dataframe(
 
     if group_columns:
         group_list = list(group_columns)
-        df_sorted["__returns"] = (
-            df_sorted.groupby(group_list, sort=False)[close_column]
-            .pct_change()
-        )
+        df_sorted["__returns"] = df_sorted.groupby(group_list, sort=False)[
+            close_column
+        ].pct_change()
     else:
         df_sorted["__returns"] = df_sorted[close_column].pct_change()
 
     for fp, sp, rp in combos:
         if group_columns:
-            fast_shift = (
-                df_sorted.groupby(group_list, sort=False)[close_column]
-                .shift(fp)
+            fast_shift = df_sorted.groupby(group_list, sort=False)[close_column].shift(
+                fp
             )
-            slow_shift = (
-                df_sorted.groupby(group_list, sort=False)[close_column]
-                .shift(sp)
+            slow_shift = df_sorted.groupby(group_list, sort=False)[close_column].shift(
+                sp
             )
         else:
             fast_shift = df_sorted[close_column].shift(fp)

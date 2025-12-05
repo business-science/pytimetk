@@ -1,13 +1,14 @@
-import numpy as np
-import pandas as pd
-import plotly.graph_objects as go
 import pytest
 
-import pytimetk as tk
+import numpy as np
+
+from pytimetk.plot import plot_time_series_boxplot
 from pytimetk.utils.selection import contains
 
 
-def _sample_df():
+@pytest.fixture
+def df():
+    pd = pytest.importorskip("pandas")
     rng = pd.date_range("2021-01-01", periods=240, freq="H")
     df = pd.DataFrame(
         {
@@ -20,9 +21,11 @@ def _sample_df():
     return df
 
 
-def test_plot_time_series_boxplot_basic():
-    df = _sample_df()
-    fig = tk.plot_time_series_boxplot(
+def test_plot_time_series_boxplot_basic(df):
+    pytest.importorskip("plotly")
+    import plotly.graph_objects as go
+
+    fig = plot_time_series_boxplot(
         data=df,
         date_column="date",
         value_column="value",
@@ -34,9 +37,11 @@ def test_plot_time_series_boxplot_basic():
     assert len(fig.data) > 0
 
 
-def test_plot_time_series_boxplot_tidy_dropdown():
-    df = _sample_df()
-    fig = tk.plot_time_series_boxplot(
+def test_plot_time_series_boxplot_tidy_dropdown(df):
+    pytest.importorskip("plotly")
+    import plotly.graph_objects as go
+
+    fig = plot_time_series_boxplot(
         data=df.groupby("segment"),
         date_column="date",
         value_column=contains("val"),
@@ -48,19 +53,21 @@ def test_plot_time_series_boxplot_tidy_dropdown():
 
 
 @pytest.mark.parametrize("engine", ["pandas", "polars"])
-def test_plot_time_series_boxplot_polars(engine):
-    df = _sample_df()
+def test_plot_time_series_boxplot_polars(engine, df):
+    pytest.importorskip("plotly")
+    import plotly.graph_objects as go
+
     if engine == "polars":
         pl = pytest.importorskip("polars")
         pl_df = pl.from_pandas(df)
-        fig = tk.plot_time_series_boxplot(
+        fig = plot_time_series_boxplot(
             data=pl_df,
             date_column="date",
             value_column="value",
             period="12 hours",
         )
     else:
-        fig = tk.plot_time_series_boxplot(
+        fig = plot_time_series_boxplot(
             data=df,
             date_column="date",
             value_column="value",

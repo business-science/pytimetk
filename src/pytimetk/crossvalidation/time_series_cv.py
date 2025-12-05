@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import pandas as pd
 import numpy as np
 
-import plotly.graph_objects as go
 
 from sklearn.model_selection import BaseCrossValidator
 
@@ -309,6 +310,8 @@ class TimeSeriesCV(TimeBasedSplit):
         engine : str
             The plotting engine to use. Default is "plotly".
         """
+        import plotly.graph_objects as go
+
         # Handle color palette
         if color_palette is None:
             color_palette = list(palette_timetk().values())  # Default colors

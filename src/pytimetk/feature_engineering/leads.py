@@ -1,9 +1,14 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
-import pandas_flavor as pf
 import warnings
 
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
+
+if TYPE_CHECKING:
+    import polars as pl
 
 try:  # Optional dependency for GPU acceleration
     import cudf  # type: ignore
@@ -26,7 +31,10 @@ from pytimetk.utils.dataframe_ops import (
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
-from pytimetk.feature_engineering._shift_utils import resolve_shift_values, resolve_shift_columns
+from pytimetk.feature_engineering._shift_utils import (
+    resolve_shift_values,
+    resolve_shift_columns,
+)
 from pytimetk.utils.selection import ColumnSelector
 
 
@@ -183,6 +191,8 @@ def _augment_leads_polars(
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
+    import polars as pl
+
     if isinstance(value_column, str):
         value_column = [value_column]
 

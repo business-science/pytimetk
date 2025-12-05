@@ -1,10 +1,16 @@
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
-import polars as pl
-import pandas_flavor as pf
 import warnings
 
-from typing import List, Optional, Sequence, Union
+from typing import TYPE_CHECKING, List, Optional, Sequence, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
+
+if TYPE_CHECKING:
+    import polars as pl
+
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
 )
@@ -380,6 +386,8 @@ def _augment_wavelet_polars(
     group_columns: Optional[Sequence[str]],
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
+    import polars as pl
+
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
 

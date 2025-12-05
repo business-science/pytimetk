@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import pandas as pd
-import pandas_flavor as pf
 from typing import Union, Optional, List
 
+import pytimetk.utils.pandas_flavor_compat as pf
 from pytimetk.core.frequency import get_frequency
 
 from pytimetk.utils.checks import check_series_or_datetime

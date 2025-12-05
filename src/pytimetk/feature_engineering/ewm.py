@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
-import pandas_flavor as pf
 import warnings
 
-from typing import Optional, Union, List, Sequence, Any, Tuple
+from typing import TYPE_CHECKING, Optional, Union, List, Sequence, Any, Tuple
 
 import numpy as np
+
+import pytimetk.utils.pandas_flavor_compat as pf
+
+if TYPE_CHECKING:
+    import polars as pl
 
 try:  # Optional dependency for GPU acceleration
     import cudf  # type: ignore
@@ -251,9 +256,7 @@ def augment_ewm(
             result = _augment_ewm_cudf_dataframe(
                 cudf_df,
                 date_column=date_column,
-                value_columns=(
-                    [value_column] if isinstance(value_column, str) else list(value_column)
-                ),
+                value_columns=([value_column] if isinstance(value_column, str) else list(value_column)),
                 window_funcs=[window_func] if isinstance(window_func, str) else list(window_func),
                 alpha=alpha,
                 group_columns=conversion.group_columns,
@@ -400,6 +403,8 @@ def _augment_ewm_polars(
     row_id_column: Optional[str],
     **kwargs,
 ) -> pl.DataFrame:
+    import polars as pl
+
     value_columns = (
         [value_column] if isinstance(value_column, str) else list(value_column)
     )

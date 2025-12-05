@@ -1,11 +1,16 @@
-import pandas as pd
-import polars as pl
-from datetime import datetime
-import pandas_flavor as pf
+from __future__ import annotations
 
-from typing import List, Sequence, Union
+import pandas as pd
+from datetime import datetime
+
+from typing import TYPE_CHECKING, List, Sequence, Union
+
+import pytimetk.utils.pandas_flavor_compat as pf
 
 import holidays
+
+if TYPE_CHECKING:
+    import polars as pl
 
 
 def _coerce_to_timestamp(
@@ -58,6 +63,8 @@ def _make_sequence(
         filtered = filtered[~filtered.normalize().isin(normalized_holidays)]
 
     if engine == "polars":
+        import polars as pl
+
         return pl.Series(label, filtered.to_pydatetime())
     if engine == "pandas":
         return pd.Series(filtered, name=label)

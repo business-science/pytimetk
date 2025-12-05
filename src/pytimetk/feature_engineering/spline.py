@@ -1,11 +1,12 @@
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
-import polars as pl
-import pandas_flavor as pf
 from patsy import bs, cr, cc
-from typing import Literal, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Literal, Optional, Sequence, Union
 import warnings
 
+import pytimetk.utils.pandas_flavor_compat as pf
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -20,6 +21,9 @@ from pytimetk.utils.dataframe_ops import (
     resolve_pandas_groupby_frame,
     restore_output_type,
 )
+
+if TYPE_CHECKING:
+    import polars as pl
 
 
 SplineTypeInput = Literal[
@@ -349,6 +353,8 @@ def _augment_spline_polars(
     row_id_column: Optional[str],
     group_columns: Optional[Sequence[str]],
 ) -> pl.DataFrame:
+    import polars as pl
+
     if isinstance(data, pl.dataframe.group_by.GroupBy):
         base_df = data.df
         grouped_cols = list(group_columns or _resolve_polars_group_columns(data))
@@ -408,6 +414,8 @@ def _augment_spline_polars(
 def _resolve_polars_group_columns(
     groupby: pl.dataframe.group_by.GroupBy,
 ) -> Sequence[str]:
+    import polars as pl
+
     columns = []
     for entry in groupby.by:
         if isinstance(entry, str):
@@ -432,6 +440,8 @@ def _augment_spline_polars_frame(
     upper_bound: Optional[float],
     prefix: Optional[str],
 ) -> pl.DataFrame:
+    import polars as pl
+
     sorted_frame = frame.sort(date_column)
 
     basis = _build_spline_basis_matrix(

@@ -1,5 +1,5 @@
+import pytest
 import pandas as pd
-import polars as pl
 
 # noqa: F401
 import plotly.graph_objects as go
@@ -31,6 +31,7 @@ def test_plot_correlation_funnel_plotnine():
 
 
 def test_plot_correlation_funnel_polars_accessor():
+    pl = pytest.importorskip("polars")
     df = _sample_correlation_frame()
     pl_df = pl.from_pandas(df)
 

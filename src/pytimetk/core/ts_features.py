@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
-import pandas_flavor as pf
 
 from functools import partial
+from typing import TYPE_CHECKING, Optional, Union
 
+import pytimetk.utils.pandas_flavor_compat as pf
 from pytimetk.utils.parallel_helpers import conditional_tqdm, get_threads
 from pytimetk.utils.ray_helpers import run_ray_tasks
+
+if TYPE_CHECKING:
+    import polars as pl
 
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,

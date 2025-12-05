@@ -1,4 +1,4 @@
-import polars as pl
+import pytest
 import pytimetk as tk
 
 # noqa: F401
@@ -54,6 +54,7 @@ def test_plot_anomalies_cleaned_engines():
 
 
 def test_plot_anomalies_polars_accessor():
+    pl = pytest.importorskip("polars")
     data = _sample_anomalize_frame()
     pl_df = pl.from_pandas(data)
 
@@ -65,6 +66,7 @@ def test_plot_anomalies_polars_accessor():
 
 
 def test_plot_anomalies_groupby_polars_accessor():
+    pl = pytest.importorskip("polars")
     data = _sample_anomalize_frame().copy()
     data["group"] = "grp1"
     pl_df = pl.from_pandas(data)

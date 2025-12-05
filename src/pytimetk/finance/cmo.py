@@ -1,9 +1,13 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
 
 import pandas_flavor as pf
 import warnings
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import List, Optional, Sequence, Tuple, Union, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import polars as pl
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -156,7 +160,9 @@ def augment_cmo(
     periods_list = _normalize_periods(periods)
 
     engine_resolved = normalize_engine(engine, data)
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -270,8 +276,12 @@ def _augment_cmo_cudf_dataframe(
                 .reset_index(drop=True)
             )
         else:
-            gain_sum = df_sorted["__cmo_gain"].rolling(window=period, min_periods=period).sum()
-            loss_sum = df_sorted["__cmo_loss"].rolling(window=period, min_periods=period).sum()
+            gain_sum = (
+                df_sorted["__cmo_gain"].rolling(window=period, min_periods=period).sum()
+            )
+            loss_sum = (
+                df_sorted["__cmo_loss"].rolling(window=period, min_periods=period).sum()
+            )
 
         denominator = gain_sum + loss_sum
         numerator = gain_sum - loss_sum
@@ -371,15 +381,13 @@ def _augment_cmo_polars(
         rolling_kwargs = ensure_polars_rolling_kwargs(
             {"window_size": period, "min_samples": period}
         )
-        gain_sum_expr = _maybe_over(
-            pl.col("__cmo_gain").rolling_sum(**rolling_kwargs)
-        )
-        loss_sum_expr = _maybe_over(
-            pl.col("__cmo_loss").rolling_sum(**rolling_kwargs)
-        )
+        gain_sum_expr = _maybe_over(pl.col("__cmo_gain").rolling_sum(**rolling_kwargs))
+        loss_sum_expr = _maybe_over(pl.col("__cmo_loss").rolling_sum(**rolling_kwargs))
         denom_expr = gain_sum_expr + loss_sum_expr
-        cmo_expr = pl.when(denom_expr == 0).then(None).otherwise(
-            100 * (gain_sum_expr - loss_sum_expr) / denom_expr
+        cmo_expr = (
+            pl.when(denom_expr == 0)
+            .then(None)
+            .otherwise(100 * (gain_sum_expr - loss_sum_expr) / denom_expr)
         )
         lazy_frame = lazy_frame.with_columns(
             cmo_expr.alias(f"{close_column}_cmo_{period}")

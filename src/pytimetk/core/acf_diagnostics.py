@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import List, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
-import pandas_flavor as pf
+import pytimetk.utils.pandas_flavor_compat as pf
 
 from statsmodels.tsa.stattools import acf as sm_acf
 from statsmodels.tsa.stattools import ccf as sm_ccf

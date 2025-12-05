@@ -1,5 +1,5 @@
 import pandas as pd
-import pandas_flavor as pf
+from pytimetk.utils import pandas_flavor_compat as pf
 
 from typing import Union, Optional
 

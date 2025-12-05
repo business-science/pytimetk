@@ -1,7 +1,6 @@
 import pytest
 import pandas as pd
 import numpy as np
-import polars as pl
 import pytimetk
 from pytimetk.utils.selection import contains
 
@@ -85,6 +84,7 @@ def test_groupby_handling():
 
 
 def test_plot_timeseries_polars_accessor_plotly():
+    pl = pytest.importorskip("polars")
     pl_df = pl.from_pandas(data)
     fig = pl_df.tk.plot_timeseries(
         date_column="date",
@@ -95,6 +95,7 @@ def test_plot_timeseries_polars_accessor_plotly():
 
 
 def test_plot_timeseries_polars_accessor_plotnine():
+    pl = pytest.importorskip("polars")
     pl_df = pl.from_pandas(data)
     fig = pl_df.tk.plot_timeseries(
         date_column="date",
@@ -105,6 +106,7 @@ def test_plot_timeseries_polars_accessor_plotnine():
 
 
 def test_plot_timeseries_groupby_polars_accessor():
+    pl = pytest.importorskip("polars")
     pl_df = pl.from_pandas(data)
     fig = pl_df.group_by("id").tk.plot_timeseries(
         date_column="date",

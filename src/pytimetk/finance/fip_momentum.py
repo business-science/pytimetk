@@ -1,9 +1,13 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
 import numpy as np
 import pandas_flavor as pf
 import warnings
-from typing import List, Optional, Sequence, Union
+from typing import List, Optional, Sequence, Union, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import polars as pl
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -181,7 +185,9 @@ def augment_fip_momentum(
     close_column = close_columns[0]
 
     engine_resolved = normalize_engine(engine, data)
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -275,9 +281,7 @@ def _augment_fip_momentum_pandas(
         group_names = data.grouper.names
         df = resolve_pandas_groupby_frame(data).copy(deep=False)
     else:
-        raise TypeError(
-            "Unsupported data type passed to _augment_fip_momentum_pandas."
-        )
+        raise TypeError("Unsupported data type passed to _augment_fip_momentum_pandas.")
 
     col = close_column
     df[f"{col}_returns"] = df[col].pct_change()
@@ -336,9 +340,7 @@ def _augment_fip_momentum_cudf_dataframe(
     row_id_column: Optional[str],
 ) -> "cudf.DataFrame":
     if cudf is None:  # pragma: no cover - optional dependency
-        raise ImportError(
-            "cudf is required to execute the cudf FIP momentum backend."
-        )
+        raise ImportError("cudf is required to execute the cudf FIP momentum backend.")
 
     sort_columns: List[str] = [date_column]
     if group_columns:
@@ -456,9 +458,9 @@ def _augment_fip_momentum_polars(
         temp_columns.append("__fip_row")
 
     lazy_frame = lazy_frame.with_columns(
-        (
-            pl.col(close_column) / pl.col(close_column).shift(1) - 1
-        ).alias("__fip_returns")
+        (pl.col(close_column) / pl.col(close_column).shift(1) - 1).alias(
+            "__fip_returns"
+        )
     )
 
     if skip_window > 0:

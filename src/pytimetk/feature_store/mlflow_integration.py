@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import os
 from dataclasses import asdict
-from typing import Any, Mapping, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence, Tuple, Union
 
 import pandas as pd
-import polars as pl
+
+if TYPE_CHECKING:
+    import polars as pl
 
 from .store import FeatureSetResult, FeatureStore
 

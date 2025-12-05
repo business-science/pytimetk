@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
 import numpy as np
 
 import pandas_flavor as pf
 import warnings
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import List, Optional, Sequence, Tuple, Union, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import polars as pl
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -199,7 +203,9 @@ def augment_ewma_volatility(
     window_list = _normalize_windows(window)
 
     engine_resolved = normalize_engine(engine, data)
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -290,9 +296,11 @@ def _augment_ewma_volatility_pandas(
 
         for win in windows:
             col_name = f"{close_column}_ewma_vol_{win}_{decay_factor:.2f}"
-            ewma_variance = df["squared_returns"].ewm(
-                alpha=1 - decay_factor, adjust=False, min_periods=win
-            ).mean()
+            ewma_variance = (
+                df["squared_returns"]
+                .ewm(alpha=1 - decay_factor, adjust=False, min_periods=win)
+                .mean()
+            )
             df[col_name] = np.sqrt(ewma_variance)
 
         return df.drop(columns=["log_returns", "squared_returns"])
@@ -313,9 +321,7 @@ def _augment_ewma_volatility_pandas(
                 .ewm(alpha=1 - decay_factor, adjust=False, min_periods=win)
                 .mean()
             )
-            df[col_name] = (
-                ewma_variance.apply(np.sqrt).reset_index(level=0, drop=True)
-            )
+            df[col_name] = ewma_variance.apply(np.sqrt).reset_index(level=0, drop=True)
 
         return df.drop(columns=["log_returns", "squared_returns"])
 
@@ -355,7 +361,7 @@ def _augment_ewma_volatility_cudf_dataframe(
     ratio = ratio.where(prev_close != 0)
     log_returns = cudf.Series(np.log(ratio))
     df_sorted["__ewma_log_returns"] = log_returns
-    df_sorted["__ewma_squared_returns"] = log_returns ** 2
+    df_sorted["__ewma_squared_returns"] = log_returns**2
 
     alpha = 1 - decay_factor
 
@@ -365,19 +371,27 @@ def _augment_ewma_volatility_cudf_dataframe(
             result_series = cudf.Series(np.nan, index=df_sorted.index, dtype="float64")
             for _, group_df in df_sorted.groupby(group_list, sort=False):
                 idx = group_df.index
-                variance = group_df["__ewma_squared_returns"].ewm(
-                    alpha=alpha,
-                    adjust=False,
-                    min_periods=win,
-                ).mean()
+                variance = (
+                    group_df["__ewma_squared_returns"]
+                    .ewm(
+                        alpha=alpha,
+                        adjust=False,
+                        min_periods=win,
+                    )
+                    .mean()
+                )
                 result_series.loc[idx] = variance.sqrt()
             df_sorted[col_name] = result_series
         else:
-            variance = df_sorted["__ewma_squared_returns"].ewm(
-                alpha=alpha,
-                adjust=False,
-                min_periods=win,
-            ).mean()
+            variance = (
+                df_sorted["__ewma_squared_returns"]
+                .ewm(
+                    alpha=alpha,
+                    adjust=False,
+                    min_periods=win,
+                )
+                .mean()
+            )
             df_sorted[col_name] = variance.sqrt()
 
     df_sorted = df_sorted.drop(columns=["__ewma_log_returns", "__ewma_squared_returns"])
@@ -398,6 +412,7 @@ def _augment_ewma_volatility_polars(
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
     """Polars implementation of EWMA volatility calculation with varying minimum periods."""
+    import polars as pl
 
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data
@@ -425,15 +440,13 @@ def _augment_ewma_volatility_polars(
     )
 
     lazy_frame = lazy_frame.with_columns(
-        _maybe_over(pl.col("__ewma_log_price").shift(1)).alias(
-            "__ewma_prev_log_price"
-        )
+        _maybe_over(pl.col("__ewma_log_price").shift(1)).alias("__ewma_prev_log_price")
     )
 
     lazy_frame = lazy_frame.with_columns(
-        (
-            pl.col("__ewma_log_price") - pl.col("__ewma_prev_log_price")
-        ).alias("__ewma_log_return")
+        (pl.col("__ewma_log_price") - pl.col("__ewma_prev_log_price")).alias(
+            "__ewma_log_return"
+        )
     )
 
     lazy_frame = lazy_frame.with_columns(
@@ -449,8 +462,9 @@ def _augment_ewma_volatility_polars(
 
     for win in windows:
         vol_expr = _maybe_over(
-            pl.col("__ewma_sq_return")
-            .ewm_mean(alpha=1 - decay_factor, adjust=False, min_periods=win)
+            pl.col("__ewma_sq_return").ewm_mean(
+                alpha=1 - decay_factor, adjust=False, min_periods=win
+            )
         ).sqrt()
         lazy_frame = lazy_frame.with_columns(
             vol_expr.alias(f"{close_column}_ewma_vol_{win}_{decay_factor:.2f}")

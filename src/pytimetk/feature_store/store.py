@@ -12,6 +12,7 @@ from pathlib import Path
 import time
 import warnings
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
     Dict,
@@ -27,9 +28,11 @@ from typing import (
 )
 
 import pandas as pd
-import polars as pl
 
 import pyarrow.fs as pa_fs
+
+if TYPE_CHECKING:
+    import polars as pl
 
 from pytimetk.utils.dataframe_ops import identify_frame_kind, resolve_pandas_groupby_frame
 
@@ -722,6 +725,8 @@ def _package_versions() -> Dict[str, str]:
 
 
 def _dataframe_fingerprint(data: Union[pd.DataFrame, pl.DataFrame]) -> str:
+    import polars as pl
+
     if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         pandas_df = resolve_pandas_groupby_frame(data)
     elif isinstance(data, pd.DataFrame):
@@ -749,6 +754,8 @@ def _dataframe_fingerprint(data: Union[pd.DataFrame, pl.DataFrame]) -> str:
 
 
 def _ensure_polars_df(data: Union[pd.DataFrame, pl.DataFrame]) -> pl.DataFrame:
+    import polars as pl
+
     if isinstance(data, pl.DataFrame):
         return data
     if isinstance(data, pd.DataFrame):
@@ -757,6 +764,8 @@ def _ensure_polars_df(data: Union[pd.DataFrame, pl.DataFrame]) -> pl.DataFrame:
 
 
 def _read_frame(target: Union[Path, str, BinaryIO], storage_format: str) -> pl.DataFrame:
+    import polars as pl
+
     storage_format = storage_format.lower()
     if storage_format == "parquet":
         return pl.read_parquet(target)
@@ -825,6 +834,8 @@ def _coerce_return_frame(
     return_engine: str,
     base_input: Any = None,
 ) -> Union[pd.DataFrame, pl.DataFrame]:
+    import polars as pl
+
     if return_engine == "polars":
         return frame
     if return_engine == "pandas":

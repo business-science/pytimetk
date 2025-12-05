@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 import pandas as pd
-import polars as pl
 import numpy as np
 
 import pandas_flavor as pf
 import warnings
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import List, Optional, Sequence, Tuple, Union, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import polars as pl
 from joblib import Parallel, delayed
 
 try:
@@ -486,6 +490,7 @@ def _augment_regime_detection_polars(
     row_id_column: Optional[str],
 ) -> pl.DataFrame:
     """Polars implementation of regime detection using HMM (via pandas)."""
+    import polars as pl
 
     resolved_groups = resolve_polars_group_columns(data, group_columns)
     frame = data.df if isinstance(data, pl.dataframe.group_by.GroupBy) else data

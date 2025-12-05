@@ -1,8 +1,11 @@
 import re
-import matplotlib.colors as mcolors
+from pytimetk.utils.requirements import require_matplotlib
 
 
 def name_to_hex(color_name):
+    require_matplotlib()
+    import matplotlib.colors as mcolors
+
     try:
         hex_color = mcolors.to_hex(color_name)
     except:

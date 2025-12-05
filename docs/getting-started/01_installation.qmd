@@ -22,13 +22,30 @@ This library is currently under development and is not intended for general usag
 Let's get you up and running with `pytimetk` fast with the latest stable release. 
 
 ```bash
-pip install pytimetk
+pip install "pytimetk[all]"
 ```
 
 You can install from GitHub with this code. 
 
 ```bash
 pip install git+https://github.com/business-science/pytimetk.git
+```
+
+# Installation Extras
+
+`pytimetk` comes with several optional dependencies that can be installed via extras:
+
+- `pandas`: Installs pandas (required for the pandas engine).
+- `polars`: Installs polars (required for the polars engine).
+- `plotly`: Installs plotly (required for the plotly plotting engine).
+- `plotnine`: Installs plotnine (required for the plotnine plotting engine).
+- `matplotlib`: Installs matplotlib and plotnine and plotnine (required for some the matplotlib plotting engine).
+- `all`: Installs all optional dependencies.
+
+Example:
+
+```bash
+pip install "pytimetk[polars,plotly]"
 ```
 
 # Next steps

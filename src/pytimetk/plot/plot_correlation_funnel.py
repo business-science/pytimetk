@@ -1,14 +1,15 @@
 import pandas as pd
 import numpy as np
-import pandas_flavor as pf
+from pytimetk.utils import pandas_flavor_compat as pf
 
-from typing import Optional
-
-import plotly.express as px
-
-from plotnine import ggplot, aes, geom_vline, geom_point, geom_text, labs, xlim
+from typing import Optional, TYPE_CHECKING
 
 from pytimetk.plot.theme import theme_timetk
+from pytimetk.utils.requirements import require_plotly, require_plotnine
+
+if TYPE_CHECKING:
+    import plotly.express as px
+    from plotnine import ggplot, aes, geom_vline, geom_point, geom_text, labs, xlim
 
 
 @pf.register_dataframe_method
@@ -144,6 +145,9 @@ def plot_correlation_funnel(
         )
 
     if engine == "plotly":
+        require_plotly()
+        import plotly.express as px
+
         fig = px.scatter(
             data,
             x="correlation",
@@ -194,6 +198,9 @@ def plot_correlation_funnel(
         return fig
 
     else:
+        require_plotnine()
+        from plotnine import ggplot, aes, geom_vline, geom_point, geom_text, labs, xlim
+
         data["feature"] = pd.Categorical(
             data["feature"], categories=data["feature"].unique()[::-1], ordered=True
         )
