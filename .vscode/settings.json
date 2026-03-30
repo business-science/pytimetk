@@ -14,5 +14,7 @@
     "[python]": {
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "charliermarsh.ruff"
-    }
+    },
+    "python-envs.defaultEnvManager": "ms-python.python:conda",
+    "python-envs.defaultPackageManager": "ms-python.python:conda"
 }
