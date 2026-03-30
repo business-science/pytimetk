@@ -49,9 +49,9 @@ jobs:
         run: |
           poetry install
           if [ "${{ matrix.config.polars-version }}" == "latest" ]; then
-            poetry add polars@latest
+            poetry run python -m pip install --upgrade "polars"
           else
-            poetry add polars==${{ matrix.config.polars-version }}
+            poetry run python -m pip install --upgrade "polars==${{ matrix.config.polars-version }}"
           fi
       
       - run: poetry run pytest --version
