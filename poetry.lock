@@ -158,7 +158,7 @@ description = "Unbearably fast near-real-time hybrid runtime-static type-checkin
 optional = false
 python-versions = ">=3.8"
 groups = ["docs"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine != \"aarch64\" and platform_machine != \"x86_64\") or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") or python_version >= \"3.12\" and (platform_machine != \"aarch64\" and platform_machine != \"x86_64\")"
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\" or platform_machine != \"aarch64\" and platform_machine != \"x86_64\")"
 files = [
     {file = "beartype-0.19.0-py3-none-any.whl", hash = "sha256:33b2694eda0daf052eb2aff623ed9a8a586703bbf0a90bbc475a83bbf427f699"},
     {file = "beartype-0.19.0.tar.gz", hash = "sha256:de42dfc1ba5c3710fde6c3002e3bd2cad236ed4d2aabe876345ab0b4234a6573"},
@@ -178,7 +178,7 @@ description = "Extensible memoizing collections and decorators"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "cachetools-6.2.1-py3-none-any.whl", hash = "sha256:09868944b6dde876dfd44e1d47e18484541eaf12f26f29b7af91b26cc892d701"},
     {file = "cachetools-6.2.1.tar.gz", hash = "sha256:3f391e4bd8f8bf0931169baf7456cc822705f4e2a31f840d218f445b9a854201"},
@@ -522,7 +522,7 @@ description = "Python bindings for CUDA"
 optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "cuda_bindings-12.9.3-cp310-cp310-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:467f7b2330b4fdf78b281661e7d06f487a2dfd61b61f74eda478af3189df16bf"},
     {file = "cuda_bindings-12.9.3-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:4b44e89e38f0a4fd9ce35f54a61a7da11d0b940c825be988c7402ecd3c128491"},
@@ -564,7 +564,7 @@ description = "cuda.core: (experimental) pythonic CUDA module"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "cuda_core-0.3.2-cp310-cp310-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:7a2a1f7e96e68c0bbc710592e78ca09c951afc10238c739482e265da1e6ea102"},
     {file = "cuda_core-0.3.2-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:1058402b41320516d5022a1cdfc7063909bf620e91126f851d859302b77d02d1"},
@@ -601,7 +601,7 @@ description = "Pathfinder for CUDA components"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "cuda_pathfinder-1.3.1-py3-none-any.whl", hash = "sha256:0f04527f647e16ee26055447d3e4479bd608acce60f6506b14043f51d71736e7"},
 ]
@@ -613,7 +613,7 @@ description = "CUDA Python: Performance meets Productivity"
 optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "cuda_python-12.9.3-py3-none-any.whl", hash = "sha256:0282f3777ec16d8502cff74fcfcdfc96886ffd4a175a2fb03c2544357c2149a0"},
 ]
@@ -631,7 +631,7 @@ description = "CUDA Toolkit meta-package"
 optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "cuda_toolkit-12.9.1-py2.py3-none-any.whl", hash = "sha256:0c8636dfacbecfe9867a949a211864f080a805bc54023ce4a361aa4e1fd8738b"},
 ]
@@ -671,7 +671,7 @@ description = "cuDF - GPU Dataframe"
 optional = true
 python-versions = ">=3.10"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "cudf_cu12-25.10.0-cp310-cp310-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:72cb209847adb4299a82b143bb2420ab2da90f5c9aca127ca3e01c78b0efe570"},
     {file = "cudf_cu12-25.10.0-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:130ef1f0d90cae33356454ae92a51540dcd7074779b5e1d95b1a2f979d14cdfa"},
@@ -717,7 +717,7 @@ description = "CuPy: NumPy & SciPy for GPU"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "cupy_cuda12x-13.6.0-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:9e37f60f27ff9625dfdccc4688a09852707ec613e32ea9404f425dd22a386d14"},
     {file = "cupy_cuda12x-13.6.0-cp310-cp310-manylinux2014_x86_64.whl", hash = "sha256:e78409ea72f5ac7d6b6f3d33d99426a94005254fa57e10617f430f9fd7c3a0a1"},
@@ -919,7 +919,7 @@ description = "Fast, re-entrant optimistic lock implemented in Cython"
 optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "fastrlock-0.8.3-cp27-cp27m-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:bbbe31cb60ec32672969651bf68333680dacaebe1a1ec7952b8f5e6e23a70aa5"},
     {file = "fastrlock-0.8.3-cp27-cp27m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:45055702fe9bff719cdc62caa849aa7dbe9e3968306025f639ec62ef03c65e88"},
@@ -1087,7 +1087,7 @@ description = "File-system specification"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "fsspec-2025.9.0-py3-none-any.whl", hash = "sha256:530dc2a2af60a414a832059574df4a6e10cce927f6f4a78209390fe38955cfb7"},
     {file = "fsspec-2025.9.0.tar.gz", hash = "sha256:19fd429483d25d28b65ec68f9f4adc16c17ea2c7c7bf54ec61360d478fb19c19"},
@@ -1608,7 +1608,7 @@ description = "cuDF - GPU Dataframe (C++)"
 optional = true
 python-versions = ">=3.10"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "libcudf_cu12-25.10.0-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:162d00e389fb841d4dc1c45c4cbca1f6ebb84b895f366e8b4c758a6c9aeb4bbd"},
     {file = "libcudf_cu12-25.10.0-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:fc7de43fd01ff4f567c40497be6935e22664b49cfb98b31a783493e7b9b0fc8e"},
@@ -1626,7 +1626,7 @@ description = "KvikIO - GPUDirect Storage (C++)"
 optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "libkvikio_cu12-25.10.0-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:902fc326a7d5a1f3ca612016712ca518f9115a0fcb8331a9bdce19f71d810cdf"},
     {file = "libkvikio_cu12-25.10.0-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:5ca9fdc6e87f2616c14cf574d838d9ac3521f0c7685469f1911f645dd78b1ba8"},
@@ -1639,7 +1639,7 @@ description = "rmm - RAPIDS Memory Manager"
 optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "librmm_cu12-25.10.0-py3-none-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:33a5d506209ba23d7b9b5637033f9542df846cdd6b5c1e57b4d611431f119165"},
     {file = "librmm_cu12-25.10.0-py3-none-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:e12e97008002562f6b61d1168f4d842677a580256006669a6f66d870dab4b764"},
@@ -1691,7 +1691,7 @@ files = [
     {file = "markdown-it-py-3.0.0.tar.gz", hash = "sha256:e3f60a94fa066dc52ec76661e37c851cb232d92f9886b15cb560aaada2df8feb"},
     {file = "markdown_it_py-3.0.0-py3-none-any.whl", hash = "sha256:355216845c60bd96232cd8d8c40e8f9765cc86f46880e43a8fd22dc1a1a8cab1"},
 ]
-markers = {main = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\"", docs = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine != \"aarch64\" and platform_machine != \"x86_64\") or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") or python_version >= \"3.12\" and (platform_machine != \"aarch64\" and platform_machine != \"x86_64\")"}
+markers = {main = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")", docs = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\" or platform_machine != \"aarch64\" and platform_machine != \"x86_64\")"}
 
 [package.dependencies]
 mdurl = ">=0.1,<1.0"
@@ -1800,7 +1800,7 @@ files = [
     {file = "mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8"},
     {file = "mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba"},
 ]
-markers = {main = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\"", docs = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine != \"aarch64\" and platform_machine != \"x86_64\") or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") or python_version >= \"3.12\" and (platform_machine != \"aarch64\" and platform_machine != \"x86_64\")"}
+markers = {main = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")", docs = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\" or platform_machine != \"aarch64\" and platform_machine != \"x86_64\")"}
 
 [[package]]
 name = "mizani"
@@ -2054,7 +2054,7 @@ description = "CUDA target for Numba"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "numba_cuda-0.19.1-py3-none-any.whl", hash = "sha256:2a0a144506993538615f697a888dd04de47eff9f521603cfa92a159161ab3941"},
     {file = "numba_cuda-0.19.1.tar.gz", hash = "sha256:181600ca8cbdc5984c3b4198880f71029b116dfde0397bceef666ff830a72c90"},
@@ -2141,7 +2141,7 @@ description = "CUDA CCCL"
 optional = true
 python-versions = ">=3"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "nvidia_cuda_cccl_cu12-12.9.27-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:d7898b38aa68beaa234d48f0868273702342a196d6e2e9d0ef058dca2390ebea"},
     {file = "nvidia_cuda_cccl_cu12-12.9.27-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:37869e17ce2e1ecec6eddf1927cca0f8c34e64fd848d40453df559091e2d7117"},
@@ -2155,7 +2155,7 @@ description = "CUDA nvcc"
 optional = true
 python-versions = ">=3"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "nvidia_cuda_nvcc_cu12-12.9.86-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl", hash = "sha256:5d6a0d32fdc7ea39917c20065614ae93add6f577d840233237ff08e9a38f58f0"},
     {file = "nvidia_cuda_nvcc_cu12-12.9.86-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:44e1eca4d08926193a558d2434b1bf83d57b4d5743e0c431c0c83d51da1df62b"},
@@ -2169,7 +2169,7 @@ description = "NVRTC native runtime libraries"
 optional = true
 python-versions = ">=3"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "nvidia_cuda_nvrtc_cu12-12.9.86-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl", hash = "sha256:210cf05005a447e29214e9ce50851e83fc5f4358df8b453155d5e1918094dcb4"},
     {file = "nvidia_cuda_nvrtc_cu12-12.9.86-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:096d4de6bda726415dfaf3198d4f5c522b8e70139c97feef5cd2ca6d4cd9cead"},
@@ -2183,7 +2183,7 @@ description = "CUDA Runtime native Libraries"
 optional = true
 python-versions = ">=3"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "nvidia_cuda_runtime_cu12-12.9.79-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:83469a846206f2a733db0c42e223589ab62fd2fabac4432d2f8802de4bded0a4"},
     {file = "nvidia_cuda_runtime_cu12-12.9.79-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:25bba2dfb01d48a9b59ca474a1ac43c6ebf7011f1b0b8cc44f54eb6ac48a96c3"},
@@ -2197,7 +2197,7 @@ description = "Nvidia JIT LTO Library"
 optional = true
 python-versions = ">=3"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "nvidia_nvjitlink_cu12-12.9.86-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl", hash = "sha256:e3f1171dbdc83c5932a45f0f4c99180a70de9bd2718c1ab77d14104f6d7147f9"},
     {file = "nvidia_nvjitlink_cu12-12.9.86-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:994a05ef08ef4b0b299829cde613a424382aff7efb08a7172c1fa616cc3af2ca"},
@@ -2211,7 +2211,7 @@ description = "Python NVTX - Python code annotation library"
 optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "nvtx-0.2.13-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:462bdcc65a12b53bfa3e7df564ddfb72092a030a923dccd1cf88c4b771ecae3f"},
     {file = "nvtx-0.2.13-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7874534af889ab7c2c63554c73119d193d2beb7671b551b7f43de5b97ceb5971"},
@@ -2602,7 +2602,7 @@ description = "Multiple dispatch in Python"
 optional = false
 python-versions = ">=3.8"
 groups = ["docs"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine != \"aarch64\" and platform_machine != \"x86_64\") or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") or python_version >= \"3.12\" and (platform_machine != \"aarch64\" and platform_machine != \"x86_64\")"
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\" or platform_machine != \"aarch64\" and platform_machine != \"x86_64\")"
 files = [
     {file = "plum_dispatch-2.5.7-py3-none-any.whl", hash = "sha256:06471782eea0b3798c1e79dca2af2165bafcfa5eb595540b514ddd81053b1ede"},
     {file = "plum_dispatch-2.5.7.tar.gz", hash = "sha256:a7908ad5563b93f387e3817eb0412ad40cfbad04bc61d869cf7a76cd58a3895d"},
@@ -2992,7 +2992,7 @@ files = [
     {file = "pygments-2.19.1-py3-none-any.whl", hash = "sha256:9ea1544ad55cecf4b8242fab6dd35a93bbce657034b0611ee383099054ab6d8c"},
     {file = "pygments-2.19.1.tar.gz", hash = "sha256:61c16d2a8576dc0649d9f39e089b5f02bcd27fba10d8fb4dcc28173f7a45151f"},
 ]
-markers = {main = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\"", dev = "(python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\" or platform_machine != \"aarch64\" and platform_machine != \"x86_64\")", docs = "(python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\" or platform_machine != \"aarch64\" and platform_machine != \"x86_64\")"}
+markers = {main = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")", dev = "(python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\" or platform_machine != \"aarch64\" and platform_machine != \"x86_64\")", docs = "(python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\" or platform_machine != \"aarch64\" and platform_machine != \"x86_64\")"}
 
 [package.extras]
 windows-terminal = ["colorama (>=0.4.6)"]
@@ -3004,7 +3004,7 @@ description = "pylibcudf - Python bindings for libcudf"
 optional = true
 python-versions = ">=3.10"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "pylibcudf_cu12-25.10.0-cp310-cp310-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:75217bbdcf0d6fe0eff487a49646b4b0694e65e05c28a1a462a6119767bddc9c"},
     {file = "pylibcudf_cu12-25.10.0-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:609daf953bf1f5be1b07421ef164a015fc4cccba83a09a1dbe05a0bd83d1b4cd"},
@@ -3374,7 +3374,7 @@ description = "Logging framework for RAPIDS built around spdlog"
 optional = true
 python-versions = ">=3.10"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "rapids_logger-0.1.19-py3-none-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:27be79b29d4545aef9b7f4608c258b5acfe984081a8bdf72381948c0dfccf14f"},
     {file = "rapids_logger-0.1.19-py3-none-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:6797beb4a0d6874658944ddc38a1245059cd30ac6304f1e1f2b7d8c23db7dd18"},
@@ -3491,7 +3491,7 @@ files = [
     {file = "rich-13.9.4-py3-none-any.whl", hash = "sha256:6049d5e6ec054bf2779ab3358186963bac2ea89175919d699e378b99738c2a90"},
     {file = "rich-13.9.4.tar.gz", hash = "sha256:439594978a49a09530cff7ebc4b5c7103ef57baf48d5ea3184f21d9a2befa098"},
 ]
-markers = {main = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\"", docs = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine != \"aarch64\" and platform_machine != \"x86_64\") or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") or python_version >= \"3.12\" and (platform_machine != \"aarch64\" and platform_machine != \"x86_64\")"}
+markers = {main = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")", docs = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\" or platform_machine != \"aarch64\" and platform_machine != \"x86_64\")"}
 
 [package.dependencies]
 markdown-it-py = ">=2.2.0"
@@ -3508,7 +3508,7 @@ description = "rmm - RAPIDS Memory Manager"
 optional = true
 python-versions = ">=3.10"
 groups = ["main"]
-markers = "python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.10\" and python_version <= \"3.11\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu\" or python_version >= \"3.12\" and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and extra == \"gpu-cu12\""
+markers = "python_version >= \"3.10\" and (python_version <= \"3.11\" or python_version >= \"3.12\") and (platform_machine == \"aarch64\" or platform_machine == \"x86_64\") and platform_system == \"Linux\" and (extra == \"gpu\" or extra == \"gpu-cu12\")"
 files = [
     {file = "rmm_cu12-25.10.0-cp310-cp310-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:350d1ce023cd6f1da7b22b0e201e9443cc967162b87a2e1b5b5cd4c44e8a2b14"},
     {file = "rmm_cu12-25.10.0-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:78883b94f5878f12c020a323517f8f6fb598ecbda9c63821e36bc34859ab2f42"},
@@ -4216,4 +4216,4 @@ regime-backends = ["pomegranate"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9"
-content-hash = "a704404407ec995e1cd94f54e633ee70cca0d1509b47ffb5065295ba0a6a8c98"
+content-hash = "72fb270bdbac75422e042739e313a8837ed86694eb649c0cf87767cd037d7a7c"
