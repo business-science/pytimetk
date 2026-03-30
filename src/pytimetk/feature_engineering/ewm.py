@@ -381,7 +381,7 @@ def _augment_ewm_pandas(
 
     result = pd.concat(result_dfs, copy=False)
     if group_names is not None:
-        result = result.sort_index(level=group_names)
+        result = result.sort_values(by=[*group_names, date_column], kind="mergesort")
     else:
         result = result.sort_index()
 

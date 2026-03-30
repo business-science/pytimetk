@@ -3,6 +3,15 @@ import polars as pl
 from importlib.resources import files
 
 
+def _normalize_datetime_columns(frame: pd.DataFrame) -> pd.DataFrame:
+    """Normalize pandas datetime columns to nanosecond precision."""
+
+    for column in frame.columns:
+        if pd.api.types.is_datetime64_any_dtype(frame[column].dtype):
+            frame[column] = frame[column].dt.as_unit("ns")
+    return frame
+
+
 def load_dataset(
     name: str = "m4_daily", verbose: bool = False, engine: str = "pandas", **kwargs
 ) -> pd.DataFrame:
@@ -99,7 +108,7 @@ def load_dataset(
     elif engine == "polars":
         df = pl.read_csv(text_path).to_pandas()
 
-    return df
+    return _normalize_datetime_columns(df)
 
 
 def get_available_datasets():

@@ -17,7 +17,7 @@ def pandas_to_polars_frequency(pandas_freq_str, default=(1, "d")):
 
     dict_mapping = {
         "S": (1, "s"),
-        "min": (1, "m"),
+        "MIN": (1, "m"),
         "T": (1, "m"),
         "H": (1, "h"),
         "D": (1, "d"),

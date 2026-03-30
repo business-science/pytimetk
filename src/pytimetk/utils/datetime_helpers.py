@@ -70,11 +70,20 @@ _FREQ_ALIAS_PAIRS = [
     ("CBM", "CBME"),
     ("BM", "BME"),
     ("SM", "SME"),
-    ("M", "ME"),
     ("BQ", "BQE"),
-    ("Q", "QE"),
     ("BY", "BYE"),
+    ("BA", "BYE"),
+    ("BAS", "BYS"),
+    ("A", "YE"),
+    ("AS", "YS"),
+    ("M", "ME"),
+    ("Q", "QE"),
     ("Y", "YE"),
+    ("H", "h"),
+    ("T", "min"),
+    ("L", "ms"),
+    ("U", "us"),
+    ("N", "ns"),
 ]
 
 
@@ -191,17 +200,29 @@ def normalize_frequency_alias(freq: str) -> str:
     text = freq.strip()
     if not text:
         return text
+    if re.search(r"\s", text):
+        return text
 
-    upper = text.upper()
-    for deprecated, new in _FREQ_ALIAS_PAIRS:
-        alias_len = len(deprecated)
-        if upper == deprecated:
-            return new
-        prefix = f"{deprecated}-"
-        if upper.startswith(prefix):
-            remainder = text[alias_len:]
-            return new + remainder
-    return text
+    token_pattern = re.compile(r"(?P<count>\d*)(?P<token>[A-Za-z]+(?:-[A-Za-z]+)?)")
+
+    def _replace(match: re.Match) -> str:
+        count = match.group("count")
+        token = match.group("token")
+        base, sep, suffix = token.partition("-")
+        base_upper = base.upper()
+
+        normalized = base
+        for deprecated, new in _FREQ_ALIAS_PAIRS:
+            if base_upper == deprecated:
+                normalized = new
+                break
+
+        if sep:
+            normalized = f"{normalized}-{suffix}"
+
+        return f"{count}{normalized}"
+
+    return token_pattern.sub(_replace, text)
 
 
 def resolve_lag_sequence(
@@ -392,6 +413,7 @@ def _floor_date_pandas(
     if isinstance(idx, pd.DatetimeIndex):
         idx = pd.Series(idx, name="idx")
 
+    unit = normalize_frequency_alias(unit)
     nm = idx.name
 
     # Fix for pandas bug: When unit is greater than the length of the index, the floor function returns the first day of the year
@@ -407,8 +429,12 @@ def _floor_date_pandas(
     quantity = int(quantity) if quantity else 1
 
     if quantity == 1:
+        period_freq = unit_2 if unit_2 in {"M", "Q", "Y"} else unit
         # DOESN'T WORK WITH MULTIPLES OF FREQUENCIES "2M" "3D" "4H"
-        date = pd.Series(pd.PeriodIndex(idx.values, freq=unit).to_timestamp(), name=nm)
+        date = pd.Series(
+            pd.PeriodIndex(idx.values, freq=period_freq).to_timestamp(),
+            name=nm,
+        )
     else:
         if unit_2 == "M":
             # Floor to N-month intervals using vectorized operations
@@ -433,6 +459,9 @@ def _floor_date_pandas(
             # DOESN'T WORK WITH IRREGULAR FREQUENCIES (MONTH, QUARTER, YEAR, ETC)
             date = idx.dt.floor(unit)
 
+    if pd.api.types.is_datetime64_any_dtype(date.dtype):
+        date = date.dt.as_unit("ns")
+
     return date
 
 
@@ -448,7 +477,10 @@ def _floor_date_polars(
     if isinstance(idx, pd.DatetimeIndex):
         idx = pl.Series(idx).alias("idx")
 
+    unit = normalize_frequency_alias(unit)
     date = (idx.dt.truncate(every=pandas_to_polars_frequency(unit))).to_pandas()
+    if pd.api.types.is_datetime64_any_dtype(date.dtype):
+        date = date.dt.as_unit("ns")
 
     return date
 
@@ -516,6 +548,7 @@ def ceil_date(
 
 
 def freq_to_dateoffset(freq_str):
+    freq_str = normalize_frequency_alias(freq_str)
     # Adjusted regex to account for potential absence of numeric part
     quantity, unit = parse_freq_str(freq_str)
 
@@ -553,6 +586,7 @@ def freq_to_dateoffset(freq_str):
 
 
 def freq_to_timedelta(freq_str):
+    freq_str = normalize_frequency_alias(freq_str)
     unit_mapping = {
         "D": "days",
         "H": "hours",

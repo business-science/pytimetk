@@ -18,12 +18,13 @@ from pytimetk.utils.checks import (
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
     convert_to_engine,
+    conversion_to_pandas,
     ensure_row_id_column,
     normalize_engine,
+    pandas_groupby_apply,
     resolve_pandas_groupby_frame,
     resolve_polars_group_columns,
     restore_output_type,
-    conversion_to_pandas,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -285,8 +286,10 @@ def _augment_ppo_pandas(
         group_names = data.grouper.names
         base_df = resolve_pandas_groupby_frame(data).copy(deep=False)
 
-        base_df = base_df.groupby(group_names, group_keys=False).apply(
-            lambda x: _calculate_ppo_pandas(x, close_column, fast_period, slow_period)
+        base_df = pandas_groupby_apply(
+            base_df.groupby(group_names, group_keys=False),
+            lambda x: _calculate_ppo_pandas(x, close_column, fast_period, slow_period),
+            include_groups=True,
         )
         return base_df
 

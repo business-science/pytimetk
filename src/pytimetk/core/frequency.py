@@ -16,8 +16,11 @@ IRREGULAR_TO_REGULAR = {
     "W-SUN": "W",
     "B": "D",
     "BM": "M",
+    "BME": "M",
     "BQ": "Q",
+    "BQE": "Q",
     "BA": "A",
+    "BYE": "Y",
     "BY": "Y",
     "BMS": "MS",
     "BQS": "QS",
@@ -94,14 +97,16 @@ def _get_frequency_summary_pandas(
             _scale = float(_freq_median.days)
             _unit = "D"
 
-    return pd.DataFrame(
+    ret = pd.DataFrame(
         {
             "freq_inferred_unit": [_freq_inferred],
-            "freq_median_timedelta": [_freq_median],
             "freq_median_scale": [_scale],
             "freq_median_unit": [_unit],
         }
     )
+    ret.insert(1, "freq_median_timedelta", pd.to_timedelta([str(_freq_median)]))
+
+    return ret
 
 
 def get_frequency_summary(

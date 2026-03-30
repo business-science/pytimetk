@@ -75,8 +75,6 @@ def _resolve_period(
     if isinstance(value, str):
         try:
             offset = pd.tseries.frequencies.to_offset(value)
-            if offset.delta is not None:
-                return _duration_to_period(offset.delta, index)
             return _duration_to_period(offset, index)
         except (ValueError, TypeError):
             parsed = parse_human_duration(value)

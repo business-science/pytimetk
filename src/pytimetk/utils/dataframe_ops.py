@@ -1,3 +1,4 @@
+import inspect
 import numpy as np
 import pandas as pd
 import polars as pl
@@ -446,9 +447,11 @@ def restore_output_type(
 
     if conversion.original_kind in ("polars_df", "polars_groupby"):
         if isinstance(result, pd.DataFrame):
-            return pl.from_pandas(result)
+            return _normalize_polars_temporal_columns(pl.from_pandas(result))
         if cudf is not None and isinstance(result, cudf.DataFrame):
-            return pl.from_pandas(result.to_pandas())
+            return _normalize_polars_temporal_columns(pl.from_pandas(result.to_pandas()))
+        if isinstance(result, pl.DataFrame):
+            return _normalize_polars_temporal_columns(result)
         return result
     if conversion.original_kind == "polars_lazy":
         if isinstance(result, pd.DataFrame):
@@ -459,7 +462,7 @@ def restore_output_type(
             polars_df = result
         else:
             raise TypeError("Unable to convert result back to polars LazyFrame.")
-        return polars_df.lazy()
+        return _normalize_polars_temporal_columns(polars_df).lazy()
 
     if conversion.original_kind in ("cudf_df", "cudf_groupby"):
         if cudf is None:
@@ -620,6 +623,82 @@ def _extract_pandas_group_columns(
     raise AttributeError(
         "Unable to resolve group columns from the supplied pandas GroupBy object."
     )
+
+
+def pandas_groupby_apply(
+    groupby: pd.core.groupby.generic.DataFrameGroupBy,
+    func,
+    *args,
+    include_groups: Optional[bool] = None,
+    **kwargs,
+):
+    """Call pandas GroupBy.apply while bridging pandas 2/3 include_groups semantics."""
+
+    parameters = inspect.signature(type(groupby).apply).parameters
+    if "include_groups" in parameters:
+        if include_groups is None:
+            include_groups = True
+        if include_groups:
+            # pandas 3 removed include_groups=True; emulate the historical behaviour
+            # by iterating the groups directly, which still includes grouping columns.
+            results = [func(group, *args, **kwargs) for _, group in groupby]
+            if not results:
+                return pd.DataFrame()
+            first_result = results[0]
+            if isinstance(first_result, (pd.DataFrame, pd.Series)):
+                if getattr(groupby, "group_keys", True):
+                    group_names = list(_extract_pandas_group_columns(groupby))
+                    keys = [name for name, _ in groupby]
+                    return pd.concat(results, keys=keys, names=group_names)
+                return pd.concat(results, axis=0)
+            keys = [name for name, _ in groupby]
+            if len(_extract_pandas_group_columns(groupby)) == 1:
+                key_values = [
+                    key[0] if isinstance(key, tuple) and len(key) == 1 else key
+                    for key in keys
+                ]
+                return pd.Series(
+                    results,
+                    index=pd.Index(key_values, name=_extract_pandas_group_columns(groupby)[0]),
+                )
+            return pd.Series(
+                results,
+                index=pd.MultiIndex.from_tuples(
+                    [
+                        key if isinstance(key, tuple) else (key,)
+                        for key in keys
+                    ],
+                    names=_extract_pandas_group_columns(groupby),
+                ),
+            )
+        return groupby.apply(func, *args, include_groups=False, **kwargs)
+    return groupby.apply(func, *args, **kwargs)
+
+
+def pandas_groupby_default_includes_groups(
+    groupby: pd.core.groupby.generic.DataFrameGroupBy,
+) -> bool:
+    """Return whether the current pandas GroupBy.apply default includes group columns."""
+
+    parameters = inspect.signature(type(groupby).apply).parameters
+    include_groups = parameters.get("include_groups")
+    if include_groups is None:
+        return True
+    return include_groups.default is not False
+
+
+def _normalize_polars_temporal_columns(frame: pl.DataFrame) -> pl.DataFrame:
+    """Cast datetime columns to nanosecond precision for pandas parity."""
+
+    temporal_exprs = []
+    for column_name, dtype in frame.schema.items():
+        if isinstance(dtype, pl.datatypes.Datetime) and dtype.time_unit != "ns":
+            temporal_exprs.append(pl.col(column_name).dt.cast_time_unit("ns"))
+
+    if not temporal_exprs:
+        return frame
+
+    return frame.with_columns(temporal_exprs)
 
 
 def _extract_cudf_group_columns(

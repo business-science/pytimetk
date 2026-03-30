@@ -263,7 +263,7 @@ def _check_columns_pandas(
     for column in columns:
         if column not in frame.columns:
             raise ValueError(f"`value_column` ({column}) not found in `data`.")
-        if require_numeric_dtype and not np.issubdtype(frame[column].dtype, np.number):
+        if require_numeric_dtype and not pd.api.types.is_numeric_dtype(frame[column].dtype):
             raise TypeError(f"`value_column` ({column}) is not a numeric dtype.")
 
 

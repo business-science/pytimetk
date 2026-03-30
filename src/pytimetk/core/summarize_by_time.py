@@ -23,6 +23,7 @@ from pytimetk.utils.dataframe_ops import (
     resolve_pandas_groupby_frame,
 )
 from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
+from pytimetk.utils.datetime_helpers import normalize_frequency_alias
 
 try:  # Optional cudf dependency
     import cudf  # type: ignore
@@ -367,6 +368,8 @@ def _summarize_by_time_pandas(
     wide_format: bool = False,
     fillna: int = 0,
 ) -> pd.DataFrame:
+    freq = normalize_frequency_alias(freq)
+
     # Convert value_column to a list if it is not already
     if not isinstance(value_column, list):
         value_column = [value_column]
@@ -385,7 +388,7 @@ def _summarize_by_time_pandas(
     #     data = data.groupby(groups)
 
     # Resample data based on the specified freq
-    data = data.resample(rule=freq, kind="timestamp")
+    data = data.resample(rule=freq)
 
     # Create a dictionary mapping each value column to the aggregating function(s)
     agg_dict = {col: agg_func for col in value_column}

@@ -17,12 +17,13 @@ from pytimetk.utils.checks import (
 from pytimetk.utils.dataframe_ops import (
     FrameConversion,
     convert_to_engine,
+    conversion_to_pandas,
     ensure_row_id_column,
     normalize_engine,
+    pandas_groupby_apply,
     resolve_pandas_groupby_frame,
     resolve_polars_group_columns,
     restore_output_type,
-    conversion_to_pandas,
 )
 from pytimetk.utils.memory_helpers import reduce_memory_usage
 from pytimetk.utils.pandas_helpers import sort_dataframe
@@ -282,10 +283,12 @@ def _augment_macd_pandas(
 
         df = data.copy(deep=False)
 
-        df = df.groupby(group_names, group_keys=False).apply(
+        df = pandas_groupby_apply(
+            df.groupby(group_names, group_keys=False),
             lambda x: _calculate_macd_pandas(
                 x, close_column, fast_period, slow_period, signal_period
-            )
+            ),
+            include_groups=True,
         )
     elif isinstance(data, pd.DataFrame):
         # If data is a DataFrame, apply MACD calculation directly

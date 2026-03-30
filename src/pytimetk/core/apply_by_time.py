@@ -18,6 +18,7 @@ from pytimetk.utils.dataframe_ops import (
     conversion_to_pandas,
 )
 from pytimetk.utils.selection import ColumnSelector, resolve_column_selection
+from pytimetk.utils.datetime_helpers import normalize_frequency_alias
 
 
 def _resolve_selector_frame(
@@ -314,6 +315,7 @@ def _apply_by_time_pandas(
     named_funcs: Dict[str, callable],
 ) -> pd.DataFrame:
     data = prepared
+    freq = normalize_frequency_alias(freq)
 
     if reduce_memory:
         if isinstance(data, pd.DataFrame):
@@ -331,7 +333,7 @@ def _apply_by_time_pandas(
         if date_column not in group_names:
             data = resolve_pandas_groupby_frame(data).set_index(date_column).groupby(group_names)
 
-    grouped = data.resample(rule=freq, kind="timestamp")
+    grouped = data.resample(rule=freq)
 
     def custom_agg(group):
         agg_values = {}

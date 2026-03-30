@@ -1,10 +1,13 @@
 import pandas as pd
 import pandas_flavor as pf
-from functools import partial
 from multiprocessing import cpu_count
-from typing import Iterable, Callable, List, Tuple
+from typing import Iterable, Callable, List
 import warnings
 
+from pytimetk.utils.dataframe_ops import (
+    _extract_pandas_group_columns,
+    pandas_groupby_default_includes_groups,
+)
 from pytimetk.utils.ray_helpers import run_ray_tasks
 
 
@@ -64,24 +67,14 @@ def progress_apply(
     ```
 
     """
-
-    tqdm = get_tqdm()
-
-    tqdm.pandas(
+    return parallel_apply(
+        data=data,
+        func=func,
+        show_progress=show_progress,
+        threads=1,
         desc=desc,
+        **kwargs,
     )
-
-    # BugFix: prior to pandas 2.0.0 the group_keys parameter was set to _NoDefault.no_default. After 2.0.0 group_keys is set to True by default. This causes an error when trying to apply a function to a grouped dataframe. The following code fixes this issue.
-    if isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
-        if data.group_keys is not True:
-            data.group_keys = True
-
-    if show_progress:
-        ret = data.progress_apply(func, **kwargs)
-    else:
-        ret = data.apply(func, **kwargs)
-
-    return ret
 
 
 @pf.register_groupby_method
@@ -237,7 +230,13 @@ def parallel_apply(
     if not isinstance(data, pd.core.groupby.generic.DataFrameGroupBy):
         raise TypeError("`data` is not a Pandas DataFrameGroupBy object.")
 
-    groups = list(data)
+    group_names = list(_extract_pandas_group_columns(data))
+    include_groups = pandas_groupby_default_includes_groups(data)
+
+    groups = [
+        (name, _prepare_group_for_apply(group, group_names, include_groups))
+        for name, group in data
+    ]
     if not groups:
         return pd.DataFrame()
 
@@ -274,46 +273,24 @@ def parallel_apply(
                 stacklevel=2,
             )
             iterator = conditional_tqdm(
-                (group for _, group in groups),
-                total=len(groups),
-                display=show_progress,
-                desc=desc,
+            (group for _, group in groups),
+            total=len(groups),
+            display=show_progress,
+            desc=desc,
             )
             results = [_apply_local(group) for group in iterator]
 
-    # Begin post-processing to format results properly
-    results_dict = {}
-    for (name, _), result in zip(groups, results):
-        if isinstance(result, pd.DataFrame):
-            if not isinstance(name, tuple):
-                name = (name,)
-            if isinstance(result.index, pd.RangeIndex) and result.index.start == 0:
-                new_idx = range(len(result))
-                multiindex_tuples = [name + (i,) for i in new_idx]
-            else:
-                multiindex_tuples = [name + (idx,) for idx in result.index]
-            group_keys = data.keys
-            if not isinstance(group_keys, list):
-                group_keys = [group_keys]
-            names = list(group_keys) + [
-                result.index.name if result.index.name else None
-            ]
-            result.index = pd.MultiIndex.from_tuples(multiindex_tuples, names=names)
-        else:
-            result = pd.Series([result])
-            result.index = [name]
-            result.index.name = data.keys[0]
-            result.name = None
-        results_dict[name] = result
+    ordered_names = [name for name, _ in groups]
+    first_result = results[0]
 
-    # Convert the keys to tuples if necessary
-    grouped_df_groups_keys = data.groups.keys()
-    first_key_groups = next(iter(data.groups))
-    if isinstance(name, tuple) and not isinstance(first_key_groups, tuple):
-        grouped_df_groups_keys = [tuple([key]) for key in grouped_df_groups_keys]
-    ordered_results = [results_dict[key] for key in grouped_df_groups_keys]
+    if isinstance(first_result, (pd.DataFrame, pd.Series)):
+        return pd.concat(results, keys=ordered_names, names=group_names)
 
-    return pd.concat(ordered_results, axis=0)
+    return pd.Series(
+        results,
+        index=_build_group_index(ordered_names, group_names),
+        name=None,
+    )
 
 
 # Utility functions
@@ -353,3 +330,28 @@ def get_tqdm():
 
 def _parallel_apply_worker(func: Callable, kwargs: dict, group_df: pd.DataFrame):
     return func(group_df, **kwargs)
+
+
+def _prepare_group_for_apply(
+    group: pd.DataFrame,
+    group_names: List[str],
+    include_groups: bool,
+) -> pd.DataFrame:
+    if include_groups:
+        return group
+    return group.drop(columns=group_names, errors="ignore")
+
+
+def _build_group_index(group_names: List, index_names: List[str]) -> pd.Index:
+    if len(index_names) == 1:
+        values = [
+            name[0] if isinstance(name, tuple) and len(name) == 1 else name
+            for name in group_names
+        ]
+        return pd.Index(values, name=index_names[0])
+
+    tuples = [
+        name if isinstance(name, tuple) else (name,)
+        for name in group_names
+    ]
+    return pd.MultiIndex.from_tuples(tuples, names=index_names)
