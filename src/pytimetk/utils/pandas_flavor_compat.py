@@ -57,3 +57,34 @@ def patch_pandas_flavor() -> None:
 
     if register_df_groupby and not hasattr(pf, "register_dataframe_groupby_method"):
         pf.register_dataframe_groupby_method = register_df_groupby
+
+    _patch_groupby_grouper()
+
+
+def _patch_groupby_grouper() -> None:
+    """Restore the removed pandas GroupBy.grouper attribute on pandas 3.x."""
+
+    try:
+        from pandas.core.groupby.generic import DataFrameGroupBy, SeriesGroupBy
+    except Exception:  # pragma: no cover - pandas import failure
+        return
+
+    def _install_grouper_property(groupby_cls):
+        if hasattr(groupby_cls, "grouper"):
+            return
+        if getattr(groupby_cls, "_pytimetk_grouper_patched", False):
+            return
+
+        def _getter(self):
+            try:
+                return object.__getattribute__(self, "_grouper")
+            except AttributeError as exc:
+                raise AttributeError(
+                    f"'{type(self).__name__}' object has no attribute 'grouper'"
+                ) from exc
+
+        groupby_cls.grouper = property(_getter)  # type: ignore[attr-defined]
+        groupby_cls._pytimetk_grouper_patched = True
+
+    for groupby_cls in (DataFrameGroupBy, SeriesGroupBy):
+        _install_grouper_property(groupby_cls)

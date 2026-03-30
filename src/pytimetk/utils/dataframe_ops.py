@@ -596,7 +596,30 @@ def _extract_polars_group_columns(
 def _extract_pandas_group_columns(
     groupby: pd.core.groupby.generic.DataFrameGroupBy,
 ) -> Sequence[str]:
-    return [str(col) for col in groupby.grouper.names]
+    grouper = getattr(groupby, "_grouper", None)
+    if grouper is not None:
+        names = [str(col) for col in getattr(grouper, "names", []) if col is not None]
+        if names:
+            return names
+
+        groupings = getattr(grouper, "groupings", [])
+        names = [
+            str(name)
+            for name in (getattr(grouping, "name", None) for grouping in groupings)
+            if name is not None
+        ]
+        if names:
+            return names
+
+    keys = getattr(groupby, "keys", None)
+    if isinstance(keys, (list, tuple)):
+        return [str(col) for col in keys if col is not None]
+    if keys is not None:
+        return [str(keys)]
+
+    raise AttributeError(
+        "Unable to resolve group columns from the supplied pandas GroupBy object."
+    )
 
 
 def _extract_cudf_group_columns(
