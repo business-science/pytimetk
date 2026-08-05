@@ -92,13 +92,37 @@ def _assert_qsmom_reasonable(series: pd.Series, name: str):
         assert False, msg
 
 
-def _largest_window(roc_fast_periods, roc_slow_period, returns_period):
-    fast_max = (
-        max(roc_fast_periods)
-        if isinstance(roc_fast_periods, list)
-        else int(roc_fast_periods)
-    )
-    return max(fast_max, int(roc_slow_period), int(returns_period))
+def _manual_qsmomentum(close, fast, slow, returns_period):
+    close = np.asarray(close, dtype=float)
+    fast_close = close[-(fast + 1)]
+    slow_close = close[-(slow + 1)]
+    slow_leg = (fast_close - slow_close) / (slow_close + 1e-10)
+    fast_leg = (close[-1] - fast_close) / (fast_close + 1e-10)
+    returns = close[1:] / close[:-1] - 1
+    volatility = np.std(returns[-returns_period:], ddof=0)
+    return (slow_leg - fast_leg) / volatility
+
+
+def _make_qsmomentum_data(rows_per_group=40):
+    frames = []
+    for group_number, symbol in enumerate(["A", "B"]):
+        row = np.arange(rows_per_group, dtype=float)
+        frames.append(
+            pd.DataFrame(
+                {
+                    "market": f"M{group_number}",
+                    "symbol": symbol,
+                    "date": pd.date_range("2024-01-01", periods=rows_per_group),
+                    "close": (
+                        100.0 * (group_number + 1)
+                        + 0.3 * row
+                        + np.sin(row / 2.0)
+                        + 0.02 * row**2
+                    ),
+                }
+            )
+        )
+    return pd.concat(frames, ignore_index=True)
 
 
 # ---------- Main tests ----------
@@ -118,16 +142,13 @@ def test_qsmomentum(df, engine, roc_fast_period, roc_slow_period, returns_period
     Test augment_qsmomentum with grouped/ungrouped data, multiple engines, and fast-period sets.
     Verifies:
       - QS columns exist (close_qsmom_{fast}_{slow}_{ret})
-      - Warm-up NaNs per group are at least min(fast, returns_period) - 1
-        (implementations may bootstrap earlier than the largest window)
+      - Each group has exactly slow-period warm-up NaNs
       - Values are finite and not absurd
     """
     value_prefix = "close_"
     fast_list = (
         roc_fast_period if isinstance(roc_fast_period, list) else [roc_fast_period]
     )
-    upper_hint = _largest_window(fast_list, roc_slow_period, returns_period)
-
     # Grouped
     res_g = df.groupby("symbol").augment_qsmomentum(
         date_column="date",
@@ -142,11 +163,9 @@ def test_qsmomentum(df, engine, roc_fast_period, roc_slow_period, returns_period
             res_g.columns, value_prefix, f, roc_slow_period, returns_period
         )
         nan_counts = res_g.groupby("symbol")[col].apply(lambda s: int(s.isna().sum()))
-        lower = max(0, min(int(f), int(returns_period)) - 1)
-        # Lower bound only; upper bound left flexible (impl differences).
-        assert (nan_counts >= lower).all(), (
-            f"Expected >= {lower} NaNs per group for {col}, got {nan_counts.to_dict()} "
-            f"(largest window hint: {upper_hint})"
+        assert (nan_counts == roc_slow_period).all(), (
+            f"Expected {roc_slow_period} NaNs per group for {col}, "
+            f"got {nan_counts.to_dict()}"
         )
         _assert_qsmom_reasonable(res_g[col], f"{col} (grouped)")
 
@@ -163,11 +182,163 @@ def test_qsmomentum(df, engine, roc_fast_period, roc_slow_period, returns_period
         col = _resolve_qsmom_col(
             res_u.columns, value_prefix, f, roc_slow_period, returns_period
         )
-        lower = max(0, min(int(f), int(returns_period)) - 1)
-        assert res_u[col].isna().sum() >= lower, (
-            f"Expected >= {lower} NaNs for {col} (ungrouped)"
+        assert res_u[col].isna().sum() == roc_slow_period, (
+            f"Expected {roc_slow_period} NaNs for {col} (ungrouped)"
         )
         _assert_qsmom_reasonable(res_u[col], f"{col} (ungrouped)")
+
+
+@pytest.mark.parametrize("engine", ["pandas", "polars"])
+def test_qsmomentum_matches_documented_formula(engine):
+    data = _make_qsmomentum_data(rows_per_group=20).query("symbol == 'A'")
+    result = data.augment_qsmomentum(
+        date_column="date",
+        close_column="close",
+        roc_fast_period=3,
+        roc_slow_period=10,
+        returns_period=10,
+        engine=engine,
+    )
+    expected = _manual_qsmomentum(
+        data["close"].iloc[-11:],
+        fast=3,
+        slow=10,
+        returns_period=10,
+    )
+
+    assert result["close_qsmom_3_10_10"].isna().sum() == 10
+    assert result["close_qsmom_3_10_10"].iloc[-1] == pytest.approx(
+        expected, rel=1e-10, abs=1e-12
+    )
+
+
+@pytest.mark.parametrize("engine", ["pandas", "polars"])
+@pytest.mark.parametrize(
+    "fast_periods,slow_periods,returns_periods",
+    [
+        ([2, 4], [8, 10], [3, 5]),
+        ([4, 2], [10, 8], [5, 3]),
+    ],
+)
+def test_qsmomentum_multi_parameter_calls_match_single_calls(
+    engine, fast_periods, slow_periods, returns_periods
+):
+    data = _make_qsmomentum_data()
+    grouped = data.groupby("symbol")
+    multi = grouped.augment_qsmomentum(
+        date_column="date",
+        close_column="close",
+        roc_fast_period=fast_periods,
+        roc_slow_period=slow_periods,
+        returns_period=returns_periods,
+        engine=engine,
+    )
+
+    for fast in fast_periods:
+        for slow in slow_periods:
+            for returns_period in returns_periods:
+                if fast >= slow or returns_period > slow:
+                    continue
+                column = f"close_qsmom_{fast}_{slow}_{returns_period}"
+                single = grouped.augment_qsmomentum(
+                    date_column="date",
+                    close_column="close",
+                    roc_fast_period=fast,
+                    roc_slow_period=slow,
+                    returns_period=returns_period,
+                    engine=engine,
+                )
+                np.testing.assert_allclose(
+                    multi[column],
+                    single[column],
+                    rtol=1e-10,
+                    atol=1e-12,
+                    equal_nan=True,
+                )
+
+
+def test_qsmomentum_pandas_and_polars_match_with_shuffled_null_input():
+    data = _make_qsmomentum_data()
+    data.loc[(data["symbol"] == "B") & (data["date"] == "2024-01-15"), "close"] = np.nan
+    data = data.sample(frac=1, random_state=123)
+    outputs = {}
+
+    for engine in ["pandas", "polars"]:
+        outputs[engine] = data.groupby("symbol").augment_qsmomentum(
+            date_column="date",
+            close_column="close",
+            roc_fast_period=[2, 4],
+            roc_slow_period=[8, 10],
+            returns_period=[3, 5],
+            engine=engine,
+        )
+
+    qsmomentum_columns = [
+        column for column in outputs["pandas"].columns if "_qsmom_" in column
+    ]
+    for column in qsmomentum_columns:
+        np.testing.assert_allclose(
+            outputs["pandas"][column],
+            outputs["polars"][column],
+            rtol=1e-10,
+            atol=1e-12,
+            equal_nan=True,
+        )
+
+
+@pytest.mark.parametrize("engine", ["pandas", "polars"])
+def test_qsmomentum_supports_multiple_grouping_columns(engine):
+    data = _make_qsmomentum_data()
+    grouped = data.groupby(["market", "symbol"]).augment_qsmomentum(
+        date_column="date",
+        close_column="close",
+        roc_fast_period=2,
+        roc_slow_period=10,
+        returns_period=5,
+        engine=engine,
+    )
+    isolated = pd.concat(
+        [
+            group.augment_qsmomentum(
+                date_column="date",
+                close_column="close",
+                roc_fast_period=2,
+                roc_slow_period=10,
+                returns_period=5,
+                engine=engine,
+            )
+            for _, group in data.groupby(["market", "symbol"])
+        ]
+    ).sort_index()
+
+    np.testing.assert_allclose(
+        grouped["close_qsmom_2_10_5"],
+        isolated["close_qsmom_2_10_5"],
+        rtol=1e-10,
+        atol=1e-12,
+        equal_nan=True,
+    )
+
+
+@pytest.mark.parametrize("invalid_period", [0, -1, [], [2.5], True])
+@pytest.mark.parametrize(
+    "parameter", ["roc_fast_period", "roc_slow_period", "returns_period"]
+)
+def test_qsmomentum_rejects_invalid_period_values(parameter, invalid_period):
+    data = _make_qsmomentum_data(rows_per_group=12)
+    arguments = {
+        "roc_fast_period": 2,
+        "roc_slow_period": 10,
+        "returns_period": 5,
+    }
+    arguments[parameter] = invalid_period
+
+    with pytest.raises((TypeError, ValueError), match="positive integer"):
+        data.augment_qsmomentum(
+            date_column="date",
+            close_column="close",
+            **arguments,
+        )
 
 
 def test_qsmomentum_edge_cases(df):

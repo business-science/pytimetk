@@ -22,6 +22,12 @@ number-sections: false
 - Added regression coverage for multiple window orders, grouped boundaries,
   shuffled and null input data, both FIP methods, and cross-engine parity
   ([#318](https://github.com/business-science/pytimetk/issues/318)).
+- `augment_qsmomentum()` now uses exact fast and slow lookbacks, a consistent
+  population-standard-deviation volatility calculation, and the same warm-up
+  policy across pandas, Polars, and cuDF.
+- Fixed Polars multi-parameter QSM calculations so every output uses its own
+  fast, slow, and returns periods. Pandas QSM calculations now also support
+  multiple grouping columns, and all period inputs must be positive integers.
 
 # pytimetk 2.4.0
 

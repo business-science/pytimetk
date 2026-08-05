@@ -86,10 +86,19 @@ def augment_qsmomentum(
 
     Notes
     -----
-    QSM measures the difference between slow and fast ROC values normalised by
-    the rolling volatility of returns. Only combinations where ``fast < slow``
-    and ``returns_period <= slow`` are evaluated. If no combinations satisfy
-    these rules a ``ValueError`` is raised to surface the configuration issue.
+    For a value at time ``t``, QSM compares an older momentum leg with the
+    most recent momentum leg:
+
+    - slow leg: return from ``t - slow`` to ``t - fast``;
+    - fast leg: return from ``t - fast`` to ``t``;
+    - QSM: ``(slow_leg - fast_leg) / volatility``.
+
+    Volatility is the population standard deviation (``ddof=0``) of the most
+    recent ``returns_period`` one-period returns. A slow period of ``s``
+    therefore requires ``s + 1`` valid closing-price observations. Only
+    combinations where ``fast < slow`` and ``returns_period <= slow`` are
+    evaluated. If no combinations satisfy these rules a ``ValueError`` is
+    raised to surface the configuration issue.
 
     Examples
     --------
@@ -169,18 +178,8 @@ def augment_qsmomentum(
         raise ValueError("`close_column` selector must resolve to exactly one column.")
     close_column = close_columns[0]
 
-    if isinstance(
-        data, (pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy)
-    ):
+    if isinstance(data, (pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy)):
         data, _ = sort_dataframe(data, date_column, keep_grouped_df=True)
-
-    # Normalize params to lists
-    if isinstance(roc_fast_period, int):
-        roc_fast_period = [roc_fast_period]
-    elif isinstance(roc_fast_period, tuple):
-        roc_fast_period = list(range(roc_fast_period[0], roc_fast_period[1] + 1))
-    elif not isinstance(roc_fast_period, list):
-        raise ValueError("roc_fast_period must be an int, tuple or list")
 
     roc_fast_values = _normalize_periods(roc_fast_period, label="roc_fast_period")
     roc_slow_values = _normalize_periods(roc_slow_period, label="roc_slow_period")
@@ -203,7 +202,9 @@ def augment_qsmomentum(
 
     engine_resolved = normalize_engine(engine, data)
 
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -277,23 +278,21 @@ def _calculate_qsmomentum_pandas(
     close, roc_fast_period, roc_slow_period, returns_period
 ):
     close = pd.Series(close).dropna()
-    required = max(roc_slow_period, returns_period, roc_fast_period)
+    required = roc_slow_period + 1
     if len(close) < required:
         return np.nan
-    returns = close.pct_change().iloc[-returns_period:]
-    std_returns = np.std(returns)
+    returns = close.pct_change(fill_method=None).iloc[-returns_period:]
+    std_returns = np.std(returns, ddof=0)
 
     # Check if the standard deviation is too small:
-    if np.abs(std_returns) < 1e-10:
+    if not np.isfinite(std_returns) or np.abs(std_returns) < 1e-10:
         return np.nan
 
     # Calculate the rates of change with a small epsilon added to the denominator
-    roc_slow_calc = (close.iloc[-roc_fast_period] - close.iloc[-roc_slow_period]) / (
-        close.iloc[-roc_slow_period] + 1e-10
-    )
-    roc_fast_calc = (close.iloc[-1] - close.iloc[-roc_fast_period]) / (
-        close.iloc[-roc_fast_period] + 1e-10
-    )
+    fast_close = close.iloc[-(roc_fast_period + 1)]
+    slow_close = close.iloc[-(roc_slow_period + 1)]
+    roc_slow_calc = (fast_close - slow_close) / (slow_close + 1e-10)
+    roc_fast_calc = (close.iloc[-1] - fast_close) / (fast_close + 1e-10)
 
     mom = (roc_slow_calc - roc_fast_calc) / std_returns
     return mom
@@ -305,26 +304,26 @@ def _calculate_qsmomentum_polars(
     close = pl.Series(close).drop_nulls()
     if close.dtype in (pl.Float32, pl.Float64):
         close = close.drop_nans()
-    required = max(roc_slow_period, returns_period, roc_fast_period)
+    required = roc_slow_period + 1
     if close.len() < required:
         return np.nan
     returns = close.pct_change()
     returns_last_returns_period = returns.slice(-returns_period, returns_period)
-    std_returns = returns_last_returns_period.std()
+    std_returns = returns_last_returns_period.std(ddof=0)
 
     # Check if the standard deviation is too small (or undefined)
-    if std_returns is None or std_returns < 1e-10:
+    if std_returns is None or not np.isfinite(std_returns) or std_returns < 1e-10:
         return np.nan
 
-    roc_slow_calc = (close[-roc_fast_period] - close[-roc_slow_period]) / (
-        close[-roc_slow_period] + 1e-10
-    )
-    roc_fast_calc = (close[-1] - close[-roc_fast_period]) / (
-        close[-roc_fast_period] + 1e-10
-    )
+    fast_close = close[-(roc_fast_period + 1)]
+    slow_close = close[-(roc_slow_period + 1)]
+    roc_slow_calc = (fast_close - slow_close) / (slow_close + 1e-10)
+    roc_fast_calc = (close[-1] - fast_close) / (fast_close + 1e-10)
 
     mom = (roc_slow_calc - roc_fast_calc) / std_returns
     return mom
+
+
 def _augment_qsmomentum_pandas(
     data: Union[pd.DataFrame, pd.core.groupby.generic.DataFrameGroupBy],
     close_column: str,
@@ -342,25 +341,18 @@ def _augment_qsmomentum_pandas(
     for fp, sp, rp in combos:
         column = f"{close_column}_qsmom_{fp}_{sp}_{rp}"
         if group_names:
-            df[column] = (
-                df.groupby(group_names)[close_column]
-                .rolling(window=sp, min_periods=sp)
-                .apply(
-                    lambda window: _calculate_qsmomentum_pandas(
-                        window, fp, sp, rp
-                    ),
+            df[column] = df.groupby(group_names, sort=False)[close_column].transform(
+                lambda values: values.rolling(window=sp + 1, min_periods=sp + 1).apply(
+                    lambda window: _calculate_qsmomentum_pandas(window, fp, sp, rp),
                     raw=False,
                 )
-                .reset_index(level=0, drop=True)
             )
         else:
             df[column] = (
                 df[close_column]
-                .rolling(window=sp, min_periods=sp)
+                .rolling(window=sp + 1, min_periods=sp + 1)
                 .apply(
-                    lambda window: _calculate_qsmomentum_pandas(
-                        window, fp, sp, rp
-                    ),
+                    lambda window: _calculate_qsmomentum_pandas(window, fp, sp, rp),
                     raw=False,
                 )
             )
@@ -394,9 +386,16 @@ def _augment_qsmomentum_polars(
     for fp, sp, rp in combos:
         expr = _maybe_over(
             pl.col(close_column).rolling_map(
-                lambda series: _calculate_qsmomentum_polars(series, fp, sp, rp),
-                window_size=sp,
-                min_periods=sp,
+                lambda series, fast=fp, slow=sp, volatility=rp: (
+                    _calculate_qsmomentum_polars(
+                        series,
+                        fast,
+                        slow,
+                        volatility,
+                    )
+                ),
+                window_size=sp + 1,
+                min_periods=sp + 1,
             )
         ).alias(f"{close_column}_qsmom_{fp}_{sp}_{rp}")
         lazy_frame = lazy_frame.with_columns(expr)
@@ -430,22 +429,19 @@ def _augment_qsmomentum_cudf_dataframe(
 
     if group_columns:
         group_list = list(group_columns)
-        df_sorted["__returns"] = (
-            df_sorted.groupby(group_list, sort=False)[close_column]
-            .pct_change()
-        )
+        df_sorted["__returns"] = df_sorted.groupby(group_list, sort=False)[
+            close_column
+        ].pct_change()
     else:
         df_sorted["__returns"] = df_sorted[close_column].pct_change()
 
     for fp, sp, rp in combos:
         if group_columns:
-            fast_shift = (
-                df_sorted.groupby(group_list, sort=False)[close_column]
-                .shift(fp)
+            fast_shift = df_sorted.groupby(group_list, sort=False)[close_column].shift(
+                fp
             )
-            slow_shift = (
-                df_sorted.groupby(group_list, sort=False)[close_column]
-                .shift(sp)
+            slow_shift = df_sorted.groupby(group_list, sort=False)[close_column].shift(
+                sp
             )
         else:
             fast_shift = df_sorted[close_column].shift(fp)
@@ -458,12 +454,12 @@ def _augment_qsmomentum_cudf_dataframe(
             std_returns = (
                 df_sorted.groupby(group_list, sort=False)["__returns"]
                 .rolling(window=rp, min_periods=rp)
-                .std()
+                .std(ddof=0)
                 .reset_index(drop=True)
             )
         else:
             std_returns = (
-                df_sorted["__returns"].rolling(window=rp, min_periods=rp).std()
+                df_sorted["__returns"].rolling(window=rp, min_periods=rp).std(ddof=0)
             )
 
         diff = roc_slow - roc_fast
@@ -486,15 +482,43 @@ def _normalize_periods(
     periods: Union[int, Tuple[int, int], List[int]],
     label: str,
 ) -> List[int]:
-    if isinstance(periods, int):
-        return [periods]
-    if isinstance(periods, tuple):
+    if isinstance(periods, (bool, np.bool_)):
+        raise TypeError(f"All `{label}` values must be positive integers.")
+    if isinstance(periods, (int, np.integer)):
+        values = [periods]
+    elif isinstance(periods, tuple):
         if len(periods) != 2:
             raise ValueError(f"Expected tuple of length 2 for `{label}`.")
         start, end = periods
-        return list(range(start, end + 1))
-    if isinstance(periods, list):
-        return [int(p) for p in periods]
-    raise TypeError(
-        f"Invalid {label} specification: type: {type(periods)}. Please use int, tuple, or list."
-    )
+        for value in (start, end):
+            if isinstance(value, (bool, np.bool_)) or not isinstance(
+                value, (int, np.integer)
+            ):
+                raise TypeError(f"All `{label}` values must be positive integers.")
+        if start > end:
+            raise ValueError(
+                f"`{label}` tuple start must be less than or equal to end."
+            )
+        values = list(range(int(start), int(end) + 1))
+    elif isinstance(periods, list):
+        values = periods
+    else:
+        raise TypeError(
+            f"Invalid {label} specification: type: {type(periods)}. "
+            "Please use int, tuple, or list."
+        )
+
+    if not values:
+        raise ValueError(f"`{label}` must contain at least one positive integer.")
+
+    normalized = []
+    for value in values:
+        if isinstance(value, (bool, np.bool_)) or not isinstance(
+            value, (int, np.integer)
+        ):
+            raise TypeError(f"All `{label}` values must be positive integers.")
+        value = int(value)
+        if value <= 0:
+            raise ValueError(f"All `{label}` values must be positive integers.")
+        normalized.append(value)
+    return normalized
