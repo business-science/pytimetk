@@ -2443,8 +2443,78 @@
     "text": "3.4 Step 4: Visualizing the Forecast\nVisualization is crucial to understand how well the model predicts future values. We collect the actual and predicted values for each fold and combine them for easy plotting.\n\n# Lists to store the combined data\ncombined_data = []\n\n# Iterate through each fold and collect the data\nfor i, (train_index, test_index) in enumerate(cv_splitter.split(X, y), start=1):\n    # Get the training and forecast data from the original DataFrame\n    train_df = walmart_sales_df.iloc[train_index].copy()\n    test_df = walmart_sales_df.iloc[test_index].copy()\n    \n    # Fit the model on the training data\n    model.fit(X.iloc[train_index], y[train_index])\n    \n    # Predict on the test set\n    y_pred = model.predict(X.iloc[test_index])\n    \n    # Add the actual and predicted values\n    train_df['Actual'] = y[train_index]\n    train_df['Predicted'] = None  # No predictions for training data\n    train_df['Fold'] = i  # Indicate the current fold\n    \n    test_df['Actual'] = y[test_index]\n    test_df['Predicted'] = y_pred  # Predictions for the test data\n    test_df['Fold'] = i  # Indicate the current fold\n    \n    # Append both the training and forecast DataFrames to the combined data list\n    combined_data.extend([train_df, test_df])\n\n# Combine all the data into a single DataFrame\nfull_forecast_df = pd.concat(combined_data, ignore_index=True)\n\nfull_forecast_df = full_forecast_df[['id', 'Date', 'Actual', 'Predicted', 'Fold']]\n\nfull_forecast_df.glimpse()\n\n&lt;class 'pandas.core.frame.DataFrame'&gt;: 4060 rows of 5 columns\nid:         object            ['1_1', '1_1', '1_1', '1_1', '1_1', '1_1', ...\nDate:       datetime64[ns]    [Timestamp('2010-08-06 00:00:00'), Timesta ...\nActual:     float64           [17508.41, 15536.4, 15740.13, 15793.87, 16 ...\nPredicted:  float64           [nan, nan, nan, nan, nan, nan, nan, nan, n ...\nFold:       int64             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...\n\n\n\nPreparing Data for Visualization\nTo make the data easier to plot, we use pd.melt() to transform the Actual and Predicted columns into a long format.\n\n# Melt the Actual and Predicted columns\nmelted_df = pd.melt(\n    full_forecast_df,\n    id_vars=['id', 'Date', 'Fold'],  # Columns to keep\n    value_vars=['Actual', 'Predicted'],  # Columns to melt\n    var_name='Type',  # Name for the new column indicating 'Actual' or 'Predicted'\n    value_name='Value'  # Name for the new column with the values\n)\n\nmelted_df[\"unique_id\"] = \"ID_\" + melted_df['id'] + \"-Fold_\" + melted_df[\"Fold\"].astype(str)\n\nmelted_df.glimpse()\n\n&lt;class 'pandas.core.frame.DataFrame'&gt;: 8120 rows of 6 columns\nid:         object            ['1_1', '1_1', '1_1', '1_1', '1_1', '1_1', ...\nDate:       datetime64[ns]    [Timestamp('2010-08-06 00:00:00'), Timesta ...\nFold:       int64             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...\nType:       object            ['Actual', 'Actual', 'Actual', 'Actual', ' ...\nValue:      float64           [17508.41, 15536.4, 15740.13, 15793.87, 16 ...\nunique_id:  object            ['ID_1_1-Fold_1', 'ID_1_1-Fold_1', 'ID_1_1 ...\n\n\n\n\nPlotting the Forecasts\nFinally, we use plot_timeseries() to visualize the forecasts, comparing the actual and predicted values for each fold.\n\nmelted_df \\\n    .groupby('unique_id') \\\n    .plot_timeseries(\n        \"Date\", \"Value\",\n        color_column = \"Type\",\n        smooth=False, \n        plotly_dropdown=True\n    )"
   },
   {
+    "objectID": "changelog-news.html",
+    "href": "changelog-news.html",
+    "title": "Changelog for Pytimetk",
+    "section": "",
+    "text": "Released August 5, 2026 — GitHub release\n\n\nThis patch release corrects grouped financial calculations, aligns pandas, Polars, and cuDF backend semantics, and restores documented benchmark-dependent risk metrics.\n\n\n\n\naugment_fip_momentum() now isolates one-period returns within each group, preventing prices and returns from leaking across symbol boundaries in both the pandas and Polars engines.\nFixed Polars multi-window calculations so each lazy rolling callback uses the window associated with its output column rather than the final requested window.\nStandardized FIP warm-up behavior across pandas, Polars, and cuDF. A window of size w now requires w valid one-period returns, and grouped skip_window handling resets for each group.\nAdded regression coverage for multiple window orders, grouped boundaries, shuffled and null input data, both FIP methods, and cross-engine parity (#318).\naugment_qsmomentum() now uses exact fast and slow lookbacks, a consistent population-standard-deviation volatility calculation, and the same warm-up policy across pandas, Polars, and cuDF.\nFixed Polars multi-parameter QSM calculations so every output uses its own fast, slow, and returns periods. Pandas QSM calculations now also support multiple grouping columns, and all period inputs must be positive integers.\naugment_adx() now calculates true range, directional movement, and ADX smoothing independently within every group. Pandas, Polars, and cuDF use the same warm-up policy, and pandas/Polars results now agree to numerical precision.\naugment_rolling_risk_metrics() now isolates returns at group boundaries, uses a consistent downside-deviation definition for Sortino ratios, and aligns Sharpe, volatility, Omega, skewness, and kurtosis calculations across pandas, Polars, and cuDF.\nRestored Treynor and Information Ratio calculations for grouped pandas data and implemented both benchmark-dependent metrics in the Polars engine.\nStandardized zero-loss RSI behavior: rising windows return 100 across all engines, while flat zero-gain/zero-loss windows remain undefined.\nFixed pandas calculations with multiple grouping columns in augment_atr(), augment_bbands(), augment_ewma_volatility(), augment_hurst_exponent(), and augment_rolling_risk_metrics().\nAdded finance regression coverage for group isolation, multiple grouping columns, strict pandas/Polars parity, benchmark-dependent risk metrics, and RSI zero-loss behavior.\n\n\n\n\n\nNo public API changes. Corrected FIP, QSM, ADX, RSI, Sortino, and other rolling-risk values can differ from 2.5.0 where the previous calculations leaked across groups or used inconsistent backend formulas.\n\nFull 2.5.1 changelog"
+  },
+  {
     "objectID": "changelog-news.html#overview",
     "href": "changelog-news.html#overview",
+    "title": "Changelog for Pytimetk",
+    "section": "",
+    "text": "This patch release corrects grouped financial calculations, aligns pandas, Polars, and cuDF backend semantics, and restores documented benchmark-dependent risk metrics."
+  },
+  {
+    "objectID": "changelog-news.html#bug-fixes",
+    "href": "changelog-news.html#bug-fixes",
+    "title": "Changelog for Pytimetk",
+    "section": "",
+    "text": "augment_fip_momentum() now isolates one-period returns within each group, preventing prices and returns from leaking across symbol boundaries in both the pandas and Polars engines.\nFixed Polars multi-window calculations so each lazy rolling callback uses the window associated with its output column rather than the final requested window.\nStandardized FIP warm-up behavior across pandas, Polars, and cuDF. A window of size w now requires w valid one-period returns, and grouped skip_window handling resets for each group.\nAdded regression coverage for multiple window orders, grouped boundaries, shuffled and null input data, both FIP methods, and cross-engine parity (#318).\naugment_qsmomentum() now uses exact fast and slow lookbacks, a consistent population-standard-deviation volatility calculation, and the same warm-up policy across pandas, Polars, and cuDF.\nFixed Polars multi-parameter QSM calculations so every output uses its own fast, slow, and returns periods. Pandas QSM calculations now also support multiple grouping columns, and all period inputs must be positive integers.\naugment_adx() now calculates true range, directional movement, and ADX smoothing independently within every group. Pandas, Polars, and cuDF use the same warm-up policy, and pandas/Polars results now agree to numerical precision.\naugment_rolling_risk_metrics() now isolates returns at group boundaries, uses a consistent downside-deviation definition for Sortino ratios, and aligns Sharpe, volatility, Omega, skewness, and kurtosis calculations across pandas, Polars, and cuDF.\nRestored Treynor and Information Ratio calculations for grouped pandas data and implemented both benchmark-dependent metrics in the Polars engine.\nStandardized zero-loss RSI behavior: rising windows return 100 across all engines, while flat zero-gain/zero-loss windows remain undefined.\nFixed pandas calculations with multiple grouping columns in augment_atr(), augment_bbands(), augment_ewma_volatility(), augment_hurst_exponent(), and augment_rolling_risk_metrics().\nAdded finance regression coverage for group isolation, multiple grouping columns, strict pandas/Polars parity, benchmark-dependent risk metrics, and RSI zero-loss behavior."
+  },
+  {
+    "objectID": "changelog-news.html#breaking-changes",
+    "href": "changelog-news.html#breaking-changes",
+    "title": "Changelog for Pytimetk",
+    "section": "",
+    "text": "No public API changes. Corrected FIP, QSM, ADX, RSI, Sortino, and other rolling-risk values can differ from 2.5.0 where the previous calculations leaked across groups or used inconsistent backend formulas.\n\nFull 2.5.1 changelog"
+  },
+  {
+    "objectID": "changelog-news.html#overview-1",
+    "href": "changelog-news.html#overview-1",
+    "title": "Changelog for Pytimetk",
+    "section": "Overview",
+    "text": "Overview\nThis release adds pandas 3 compatibility while retaining pandas 2 support on older supported Python versions. It focuses on compatibility and stability across pandas, Polars, grouped operations, datetime handling, and the project test matrix."
+  },
+  {
+    "objectID": "changelog-news.html#compatibility",
+    "href": "changelog-news.html#compatibility",
+    "title": "Changelog for Pytimetk",
+    "section": "Compatibility",
+    "text": "Compatibility\n\nAdded compatibility for pandas 3 GroupBy internals, including the renamed grouper state and the changed GroupBy.apply(include_groups=...) behavior.\nUpdated grouped MACD, PPO, progress, and parallel-apply workflows to preserve their established grouping and output-index behavior on pandas 2 and pandas 3.\nAdded modern pandas frequency-alias handling for month-, quarter-, year-, business-, hour-, minute-, millisecond-, microsecond-, and nanosecond-based frequencies while continuing to accept PyTimeTK’s established aliases.\nNormalized pandas/Polars datetime round-trips and bundled datasets to nanosecond precision for stable cross-engine schemas and comparisons.\nUpdated dependency markers so Python 3.9 and 3.10 remain on pandas 2, while Python 3.11 and newer can use pandas 3."
+  },
+  {
+    "objectID": "changelog-news.html#bug-fixes-1",
+    "href": "changelog-news.html#bug-fixes-1",
+    "title": "Changelog for Pytimetk",
+    "section": "Bug Fixes",
+    "text": "Bug Fixes\n\nRemoved deprecated resampling arguments from apply_by_time() and summarize_by_time() and normalized their frequency inputs.\nFixed grouped augment_ewm() result sorting under newer pandas versions.\nUpdated numeric-column validation to support pandas extension dtypes.\nImproved frequency-summary, date-flooring, dataset-loading, and pandas/Polars conversion behavior under pandas 3.\nUpdated GitHub Actions and Poetry configuration for the supported Python, pandas, and Polars combinations."
+  },
+  {
+    "objectID": "changelog-news.html#breaking-changes-1",
+    "href": "changelog-news.html#breaking-changes-1",
+    "title": "Changelog for Pytimetk",
+    "section": "Breaking Changes",
+    "text": "Breaking Changes\n\nNone identified. Existing pandas 2 workflows remain supported.\n\nFull 2.5.0 changelog"
+  },
+  {
+    "objectID": "changelog-news.html#compatibility-1",
+    "href": "changelog-news.html#compatibility-1",
+    "title": "Changelog for Pytimetk",
+    "section": "Compatibility",
+    "text": "Compatibility\n\nAdded compatibility with pandas-flavor 0.8.0, including support for its renamed DataFrame GroupBy registration decorator.\nAdded a compatibility shim that preserves PyTimeTK’s registered pandas DataFrame and GroupBy methods across both older and newer pandas-flavor releases.\nApplied the compatibility layer during package initialization and in pandas helper registration so existing method-chaining workflows continue to work."
+  },
+  {
+    "objectID": "changelog-news.html#breaking-changes-2",
+    "href": "changelog-news.html#breaking-changes-2",
+    "title": "Changelog for Pytimetk",
+    "section": "Breaking Changes",
+    "text": "Breaking Changes\n\nNone. This was a focused compatibility patch for 2.4.0 users.\n\nFull 2.4.1 changelog"
+  },
+  {
+    "objectID": "changelog-news.html#overview-2",
+    "href": "changelog-news.html#overview-2",
     "title": "Changelog for Pytimetk",
     "section": "Overview",
     "text": "Overview\nThis release introduces significant enhancements to visualization capabilities, integrates tidy selectors for improved column handling, completes the migration to Ray for parallelism, and includes various performance optimizations and bug fixes. Key themes include better diagnostics plotting, more flexible data manipulation, and improved documentation."
@@ -2464,8 +2534,8 @@
     "text": "Improvements\n\nPerformance:\n\nSpeed improvements in future_frame and pad_by_time.\nMigrated from hmmlearn to pomegranate for better performance in regime detection.\nUpgraded pandas datetime aliases for compatibility.\n\nVisualization:\n\nUpdated plotting APIs roadmap.\nEnhanced examples in docs and docstrings.\n\nOther:\n\nAdded fillna option to pad_by_time.\nImproved sorting in plot_timeseries.\nAdded visual elements to docs."
   },
   {
-    "objectID": "changelog-news.html#bug-fixes",
-    "href": "changelog-news.html#bug-fixes",
+    "objectID": "changelog-news.html#bug-fixes-2",
+    "href": "changelog-news.html#bug-fixes-2",
     "title": "Changelog for Pytimetk",
     "section": "Bug Fixes",
     "text": "Bug Fixes\n\nFixed dropdown issues in plot_acf_diagnostics.\nResolved missing multiprocessing in Ray setup.\nFixed bugs in Fourier, Hilbert, and Wavelet transforms.\nCorrected connected smoothers in plot_timeseries.\nGH Actions fixes.\nSorting review and fixes (#286)."
@@ -2485,8 +2555,8 @@
     "text": "Distribution\n\nBuilt and added pytimetk-2.4.0-py3-none-any.whl and pytimetk-2.4.0.tar.gz."
   },
   {
-    "objectID": "changelog-news.html#breaking-changes",
-    "href": "changelog-news.html#breaking-changes",
+    "objectID": "changelog-news.html#breaking-changes-3",
+    "href": "changelog-news.html#breaking-changes-3",
     "title": "Changelog for Pytimetk",
     "section": "Breaking Changes",
     "text": "Breaking Changes\n\nNone identified in this release.\n\nFor full details, see the commit history. Thanks to @mdancho84 for all contributions!"
@@ -2499,8 +2569,8 @@
     "text": "Key Improvements\n\nPolars-Native Optimizations:\n\nAdded dedicated Polars paths for pad_by_time, future_frame, augment_ewm, augment_rolling_apply, augment_expanding_apply, and the scalar branch of apply_by_time. This eliminates unnecessary conversions to pandas, keeping data in Arrow buffers for zero-copy chaining and reduced memory overhead.\nFor EWM operations (augment_ewm), Polars users now benefit from direct ewm_mean/std/var applications, avoiding round-trips to pandas. Benchmark results on 200k rows demonstrate ~7X faster execution (0.004s vs. 0.030s in pandas).\nTightened conversion plumbing to use shallow copies (copy(deep=False)) only when necessary, reusing cached pandas views during fallbacks to minimize copy-on-write churn.\n\nMemory Efficiency:\n\nImplemented shallow pandas copies in various modules to avoid deep-copy overhead.\nPolars fallbacks now clone prepared frames before mutations, preserving originals for reuse and further reducing memory spikes.\nEnhanced row identifier handling inside Polars/cuDF, eliminating mutations on pandas frames.\n\ncuDF Support:\n\nAdded cuDF dataframe operations, extending GPU-accelerated capabilities for compatible environments.\n\nBenchmarking and Documentation:\n\nNew benchmarks (e.g., ewm_polars_profile.py) to quantify improvements—reproducible with commands like PYTHONPATH=src python zzz_local/benchmarks/ewm_polars_profile.py --rows 200000 --groups 25 --repeats 5.\nUpdated roadmap (performance_memory_review.md) with completed items and remaining todos, including Polars-native wide-format for apply_by_time and extending optimizations to finance indicators."
   },
   {
-    "objectID": "changelog-news.html#breaking-changes-1",
-    "href": "changelog-news.html#breaking-changes-1",
+    "objectID": "changelog-news.html#breaking-changes-4",
+    "href": "changelog-news.html#breaking-changes-4",
     "title": "Changelog for Pytimetk",
     "section": "Breaking Changes",
     "text": "Breaking Changes\n\nNone in this release. Existing pandas-based workflows remain fully compatible, with Polars enhancements opt-in via the engine=\"polars\" parameter."
@@ -2548,15 +2618,15 @@
     "text": "Improvements\n\nUpgraded pandas_flavor, refactored tests, and resolved deprecations across anomalize and Hilbert pipelines.\nEnhanced Polars compatibility for diffs, pct change, lags/leads, risk metrics, and plotting helpers.\nDocumentation updates covering Feature Store, spline usage, and new tutorials."
   },
   {
-    "objectID": "changelog-news.html#bug-fixes-1",
-    "href": "changelog-news.html#bug-fixes-1",
+    "objectID": "changelog-news.html#bug-fixes-3",
+    "href": "changelog-news.html#bug-fixes-3",
     "title": "Changelog for Pytimetk",
     "section": "Bug Fixes",
     "text": "Bug Fixes\n\nResolved Plotly x-axis date labeling and multiple Polars interoperability gaps (sequence helpers, summarize/filter utilities, EWM args).\nStabilized GitHub Actions with refreshed dependency matrix.\n\nFull Changelog: https://github.com/business-science/pytimetk/compare/v1.2.5...v2.0.0"
   },
   {
-    "objectID": "changelog-news.html#bug-fixes-2",
-    "href": "changelog-news.html#bug-fixes-2",
+    "objectID": "changelog-news.html#bug-fixes-4",
+    "href": "changelog-news.html#bug-fixes-4",
     "title": "Changelog for Pytimetk",
     "section": "Bug Fixes",
     "text": "Bug Fixes\n\nPolars backends now supply both partition_by and order_by when building window expressions with .over(), resolving runtime errors on recent Polars releases.\n\nFull Changelog: https://github.com/business-science/pytimetk/compare/v1.2.4...v1.2.5"
@@ -2604,15 +2674,15 @@
     "text": "Bug Fixes and Speed Improvements\n\nsummarize_by_time(): polars engine rebuild. Columns should match pandas engine.\n__init__.py: updated to fix circular imports\nget_date_summary(): Fixed issues with polar tz\naugment_hilbert(): Improve polars engine and fix error with groupby()\naugment_ewm(): fix example from pytimetk import augment_ewm\ntest_plot_timeseries: Fix broken test"
   },
   {
-    "objectID": "changelog-news.html#bug-fixes-3",
-    "href": "changelog-news.html#bug-fixes-3",
+    "objectID": "changelog-news.html#bug-fixes-5",
+    "href": "changelog-news.html#bug-fixes-5",
     "title": "Changelog for Pytimetk",
     "section": "Bug Fixes",
     "text": "Bug Fixes\n\naugment_rsi(): fix issue with pandas engine column names"
   },
   {
-    "objectID": "changelog-news.html#bug-fixes-4",
-    "href": "changelog-news.html#bug-fixes-4",
+    "objectID": "changelog-news.html#bug-fixes-6",
+    "href": "changelog-news.html#bug-fixes-6",
     "title": "Changelog for Pytimetk",
     "section": "Bug Fixes",
     "text": "Bug Fixes\n\naugment_ppo(): fixed issues with leftover multi-index when using grouped df and pandas engine\naugment_qsmomentum(): Fixed issue with divide by zero when standard deviation is zero"
@@ -2902,7 +2972,7 @@
     "href": "reference/augment_fip_momentum.html#notes",
     "title": "augment_fip_momentum",
     "section": "Notes",
-    "text": "Notes\n\nFor ‘original’, a positive FIP may indicate inconsistency in the trend.\nFor ‘modified’, a positive FIP indicates stronger momentum in the direction of the trend (upward or downward)."
+    "text": "Notes\n\nFor ‘original’, a positive FIP may indicate inconsistency in the trend.\nFor ‘modified’, a positive FIP indicates stronger momentum in the direction of the trend (upward or downward).\nA window of size w requires w valid one-period returns. For a contiguous price series, the first FIP value is therefore available after w + 1 closing-price observations."
   },
   {
     "objectID": "reference/augment_fip_momentum.html#examples",
@@ -3763,7 +3833,7 @@
     "href": "reference/augment_qsmomentum.html#notes",
     "title": "augment_qsmomentum",
     "section": "Notes",
-    "text": "Notes\nQSM measures the difference between slow and fast ROC values normalised by the rolling volatility of returns. Only combinations where fast &lt; slow and returns_period &lt;= slow are evaluated. If no combinations satisfy these rules a ValueError is raised to surface the configuration issue."
+    "text": "Notes\nFor a value at time t, QSM compares an older momentum leg with the most recent momentum leg:\n\nslow leg: return from t - slow to t - fast;\nfast leg: return from t - fast to t;\nQSM: (slow_leg - fast_leg) / volatility.\n\nVolatility is the population standard deviation (ddof=0) of the most recent returns_period one-period returns. A slow period of s therefore requires s + 1 valid closing-price observations. Only combinations where fast &lt; slow and returns_period &lt;= slow are evaluated. If no combinations satisfy these rules a ValueError is raised to surface the configuration issue."
   },
   {
     "objectID": "reference/augment_qsmomentum.html#examples",

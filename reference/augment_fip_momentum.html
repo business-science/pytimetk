@@ -552,6 +552,7 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 <ul>
 <li>For ‘original’, a positive FIP may indicate inconsistency in the trend.</li>
 <li>For ‘modified’, a positive FIP indicates stronger momentum in the direction of the trend (upward or downward).</li>
+<li>A window of size <code>w</code> requires <code>w</code> valid one-period returns. For a contiguous price series, the first FIP value is therefore available after <code>w + 1</code> closing-price observations.</li>
 </ul>
 </section>
 <section id="examples" class="level2 doc-section doc-section-examples">
