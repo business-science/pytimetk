@@ -174,7 +174,9 @@ def augment_adx(
     periods_list = _normalize_periods(periods)
 
     engine_resolved = normalize_engine(engine, data)
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -270,25 +272,32 @@ def _augment_adx_pandas(
 
     col = close_column
 
+    if grouped is not None:
+        previous_close = df.groupby(grouped, sort=False)[col].shift(1)
+        previous_high = df.groupby(grouped, sort=False)[high_column].shift(1)
+        previous_low = df.groupby(grouped, sort=False)[low_column].shift(1)
+    else:
+        previous_close = df[col].shift(1)
+        previous_high = df[high_column].shift(1)
+        previous_low = df[low_column].shift(1)
+
     df["tr"] = pd.concat(
         [
             df[high_column] - df[low_column],
-            (df[high_column] - df[col].shift(1)).abs(),
-            (df[low_column] - df[col].shift(1)).abs(),
+            (df[high_column] - previous_close).abs(),
+            (df[low_column] - previous_close).abs(),
         ],
         axis=1,
     ).max(axis=1)
 
     df["plus_dm"] = np.where(
-        (df[high_column] - df[high_column].shift(1))
-        > (df[low_column].shift(1) - df[low_column]),
-        np.maximum(df[high_column] - df[high_column].shift(1), 0),
+        (df[high_column] - previous_high) > (previous_low - df[low_column]),
+        np.maximum(df[high_column] - previous_high, 0),
         0,
     )
     df["minus_dm"] = np.where(
-        (df[low_column].shift(1) - df[low_column])
-        > (df[high_column] - df[high_column].shift(1)),
-        np.maximum(df[low_column].shift(1) - df[low_column], 0),
+        (previous_low - df[low_column]) > (df[high_column] - previous_high),
+        np.maximum(previous_low - df[low_column], 0),
         0,
     )
 
@@ -299,23 +308,36 @@ def _augment_adx_pandas(
         alpha = 1 / period
         if grouped is not None:
             tr_smooth = grouped_obj["tr"].transform(
-                lambda s: s.ewm(alpha=alpha, adjust=False).mean()
+                lambda s: s.ewm(alpha=alpha, adjust=False, min_periods=period).mean()
             )
             plus_dm_smooth = grouped_obj["plus_dm"].transform(
-                lambda s: s.ewm(alpha=alpha, adjust=False).mean()
+                lambda s: s.ewm(alpha=alpha, adjust=False, min_periods=period).mean()
             )
             minus_dm_smooth = grouped_obj["minus_dm"].transform(
-                lambda s: s.ewm(alpha=alpha, adjust=False).mean()
+                lambda s: s.ewm(alpha=alpha, adjust=False, min_periods=period).mean()
             )
         else:
-            tr_smooth = df["tr"].ewm(alpha=alpha, adjust=False).mean()
-            plus_dm_smooth = df["plus_dm"].ewm(alpha=alpha, adjust=False).mean()
-            minus_dm_smooth = df["minus_dm"].ewm(alpha=alpha, adjust=False).mean()
+            tr_smooth = (
+                df["tr"].ewm(alpha=alpha, adjust=False, min_periods=period).mean()
+            )
+            plus_dm_smooth = (
+                df["plus_dm"].ewm(alpha=alpha, adjust=False, min_periods=period).mean()
+            )
+            minus_dm_smooth = (
+                df["minus_dm"].ewm(alpha=alpha, adjust=False, min_periods=period).mean()
+            )
 
         plus_di = 100 * (plus_dm_smooth / tr_smooth)
         minus_di = 100 * (minus_dm_smooth / tr_smooth)
         dx = 100 * ((plus_di - minus_di).abs() / (plus_di + minus_di))
-        adx = dx.ewm(alpha=alpha, adjust=False).mean()
+        if grouped is not None:
+            df["__adx_dx"] = dx
+            adx = df.groupby(grouped, sort=False)["__adx_dx"].transform(
+                lambda s: s.ewm(alpha=alpha, adjust=False, min_periods=period).mean()
+            )
+            df.drop(columns="__adx_dx", inplace=True)
+        else:
+            adx = dx.ewm(alpha=alpha, adjust=False, min_periods=period).mean()
 
         df[f"{col}_plus_di_{period}"] = plus_di
         df[f"{col}_minus_di_{period}"] = minus_di
@@ -388,26 +410,49 @@ def _augment_adx_cudf_dataframe(
         if group_list:
             for _, group_df in df_sorted.groupby(group_list, sort=False):
                 idx = group_df.index
-                tr_smooth.loc[idx] = group_df["__adx_tr"].ewm(
-                    alpha=alpha,
-                    adjust=False,
-                ).mean()
-                plus_dm_smooth.loc[idx] = group_df["__adx_plus_dm"].ewm(
-                    alpha=alpha,
-                    adjust=False,
-                ).mean()
-                minus_dm_smooth.loc[idx] = group_df["__adx_minus_dm"].ewm(
-                    alpha=alpha,
-                    adjust=False,
-                ).mean()
+                tr_smooth.loc[idx] = (
+                    group_df["__adx_tr"]
+                    .ewm(
+                        alpha=alpha,
+                        adjust=False,
+                        min_periods=period,
+                    )
+                    .mean()
+                )
+                plus_dm_smooth.loc[idx] = (
+                    group_df["__adx_plus_dm"]
+                    .ewm(
+                        alpha=alpha,
+                        adjust=False,
+                        min_periods=period,
+                    )
+                    .mean()
+                )
+                minus_dm_smooth.loc[idx] = (
+                    group_df["__adx_minus_dm"]
+                    .ewm(
+                        alpha=alpha,
+                        adjust=False,
+                        min_periods=period,
+                    )
+                    .mean()
+                )
         else:
-            tr_smooth = df_sorted["__adx_tr"].ewm(alpha=alpha, adjust=False).mean()
-            plus_dm_smooth = df_sorted["__adx_plus_dm"].ewm(
-                alpha=alpha, adjust=False
-            ).mean()
-            minus_dm_smooth = df_sorted["__adx_minus_dm"].ewm(
-                alpha=alpha, adjust=False
-            ).mean()
+            tr_smooth = (
+                df_sorted["__adx_tr"]
+                .ewm(alpha=alpha, adjust=False, min_periods=period)
+                .mean()
+            )
+            plus_dm_smooth = (
+                df_sorted["__adx_plus_dm"]
+                .ewm(alpha=alpha, adjust=False, min_periods=period)
+                .mean()
+            )
+            minus_dm_smooth = (
+                df_sorted["__adx_minus_dm"]
+                .ewm(alpha=alpha, adjust=False, min_periods=period)
+                .mean()
+            )
 
         plus_di = (plus_dm_smooth / tr_smooth) * 100
         minus_di = (minus_dm_smooth / tr_smooth) * 100
@@ -420,12 +465,17 @@ def _augment_adx_cudf_dataframe(
             adx_series = cudf.Series(np.nan, index=df_sorted.index, dtype="float64")
             for _, group_df in df_sorted.groupby(group_list, sort=False):
                 idx = group_df.index
-                adx_series.loc[idx] = dx.loc[idx].ewm(
-                    alpha=alpha,
-                    adjust=False,
-                ).mean()
+                adx_series.loc[idx] = (
+                    dx.loc[idx]
+                    .ewm(
+                        alpha=alpha,
+                        adjust=False,
+                        min_periods=period,
+                    )
+                    .mean()
+                )
         else:
-            adx_series = dx.ewm(alpha=alpha, adjust=False).mean()
+            adx_series = dx.ewm(alpha=alpha, adjust=False, min_periods=period).mean()
 
         df_sorted[f"{close_column}_plus_di_{period}"] = plus_di
         df_sorted[f"{close_column}_minus_di_{period}"] = minus_di
@@ -492,15 +542,11 @@ def _augment_adx_polars(
             (pl.col(low_column) - pl.col(prev_close_alias)).abs(),
         ).alias(tr_alias),
         pl.when(delta_high_expr > delta_low_expr)
-        .then(
-            pl.max_horizontal(delta_high_expr, pl.lit(0.0))
-        )
+        .then(pl.max_horizontal(delta_high_expr, pl.lit(0.0)))
         .otherwise(0.0)
         .alias(plus_dm_alias),
         pl.when(delta_low_expr > delta_high_expr)
-        .then(
-            pl.max_horizontal(delta_low_expr, pl.lit(0.0))
-        )
+        .then(pl.max_horizontal(delta_low_expr, pl.lit(0.0)))
         .otherwise(0.0)
         .alias(minus_dm_alias),
     )
@@ -517,9 +563,7 @@ def _augment_adx_polars(
         minus_alias = f"{close_column}_minus_di_{period}"
         adx_alias = f"{close_column}_adx_{period}"
 
-        temp_columns.extend(
-            [plus_sm_alias, minus_sm_alias, tr_sm_alias, dx_alias]
-        )
+        temp_columns.extend([plus_sm_alias, minus_sm_alias, tr_sm_alias, dx_alias])
 
         lazy_frame = lazy_frame.with_columns(
             _maybe_over(
@@ -533,19 +577,13 @@ def _augment_adx_polars(
                 )
             ).alias(minus_sm_alias),
             _maybe_over(
-                pl.col(tr_alias).ewm_mean(
-                    alpha=alpha, adjust=False, min_periods=period
-                )
+                pl.col(tr_alias).ewm_mean(alpha=alpha, adjust=False, min_periods=period)
             ).alias(tr_sm_alias),
         )
 
         lazy_frame = lazy_frame.with_columns(
-            (
-                100 * (pl.col(plus_sm_alias) / pl.col(tr_sm_alias))
-            ).alias(plus_alias),
-            (
-                100 * (pl.col(minus_sm_alias) / pl.col(tr_sm_alias))
-            ).alias(minus_alias),
+            (100 * (pl.col(plus_sm_alias) / pl.col(tr_sm_alias))).alias(plus_alias),
+            (100 * (pl.col(minus_sm_alias) / pl.col(tr_sm_alias))).alias(minus_alias),
         )
 
         lazy_frame = lazy_frame.with_columns(
@@ -558,9 +596,7 @@ def _augment_adx_polars(
 
         lazy_frame = lazy_frame.with_columns(
             _maybe_over(
-                pl.col(dx_alias).ewm_mean(
-                    alpha=alpha, adjust=False, min_periods=period
-                )
+                pl.col(dx_alias).ewm_mean(alpha=alpha, adjust=False, min_periods=period)
             ).alias(adx_alias)
         )
 

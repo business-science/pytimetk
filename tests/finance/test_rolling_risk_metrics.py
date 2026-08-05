@@ -3,7 +3,6 @@ import pandas as pd
 import pytimetk as tk
 import os
 import multiprocessing as mp
-from itertools import product
 from pytimetk.utils.selection import contains
 
 # Setup to avoid multiprocessing warnings
@@ -139,8 +138,8 @@ def test_rolling_risk_metrics_edge_cases(df):
             date_column="date", close_column="close", window=[63], engine="pandas"
         )
 
-    # Invalid window (use negative to trigger min_periods error)
-    with pytest.raises(ValueError, match="min_periods must be >= 0"):
+    # Invalid window
+    with pytest.raises(ValueError, match="positive integers"):
         df.augment_rolling_risk_metrics(
             date_column="date", close_column="close", window=[-1], engine="pandas"
         )

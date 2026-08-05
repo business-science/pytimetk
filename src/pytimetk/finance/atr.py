@@ -178,7 +178,9 @@ def augment_atr(
 
     engine_resolved = normalize_engine(engine, data)
 
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -310,11 +312,8 @@ def _augment_atr_pandas(
         ).max(axis=1)
 
         for period in periods:
-            atr = (
-                df.groupby(group_names)["tr"]
-                .rolling(window=period, min_periods=1)
-                .mean()
-                .reset_index(level=0, drop=True)
+            atr = df.groupby(group_names, sort=False)["tr"].transform(
+                lambda series: series.rolling(window=period, min_periods=1).mean()
             )
             if normalize:
                 atr = (atr / df[close_column] * 100).replace(
@@ -379,12 +378,12 @@ def _augment_atr_polars(
         rolling_kwargs = ensure_polars_rolling_kwargs(
             {"window_size": period, "min_samples": 1}
         )
-        atr_expr = _maybe_over(
-            pl.col(tr_alias).rolling_mean(**rolling_kwargs)
-        )
+        atr_expr = _maybe_over(pl.col(tr_alias).rolling_mean(**rolling_kwargs))
         if normalize:
-            atr_expr = pl.when(pl.col(close_column) == 0).then(None).otherwise(
-                atr_expr / pl.col(close_column) * 100
+            atr_expr = (
+                pl.when(pl.col(close_column) == 0)
+                .then(None)
+                .otherwise(atr_expr / pl.col(close_column) * 100)
             )
         lazy_frame = lazy_frame.with_columns(
             atr_expr.alias(f"{close_column}_{type_str}_{period}")
@@ -429,9 +428,7 @@ def _augment_atr_cudf_dataframe(
 
     if group_columns:
         group_list = list(group_columns)
-        prev_close = (
-            df_sorted.groupby(group_list, sort=False)[close_column].shift(1)
-        )
+        prev_close = df_sorted.groupby(group_list, sort=False)[close_column].shift(1)
     else:
         group_list = None
         prev_close = df_sorted[close_column].shift(1)
@@ -454,7 +451,9 @@ def _augment_atr_cudf_dataframe(
                 .reset_index(drop=True)
             )
         else:
-            atr_series = df_sorted["__atr_tr"].rolling(window=period, min_periods=1).mean()
+            atr_series = (
+                df_sorted["__atr_tr"].rolling(window=period, min_periods=1).mean()
+            )
 
         if normalize:
             atr_series = atr_series.where(df_sorted[close_column] != 0, np.nan)

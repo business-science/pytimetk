@@ -115,7 +115,7 @@ def augment_rsi(
             periods=14,
         )
     )
-    
+
     # Selector example
     from pytimetk.utils.selection import contains
     selector_demo = (
@@ -139,7 +139,9 @@ def augment_rsi(
 
     engine_resolved = normalize_engine(engine, data)
 
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -275,14 +277,10 @@ def _augment_rsi_polars(
         )
         lazy_frame = lazy_frame.with_columns(
             _maybe_over(
-                pl.when(pl.col(delta_name) > 0)
-                .then(pl.col(delta_name))
-                .otherwise(0.0)
+                pl.when(pl.col(delta_name) > 0).then(pl.col(delta_name)).otherwise(0.0)
             ).alias(gain_name),
             _maybe_over(
-                pl.when(pl.col(delta_name) < 0)
-                .then(-pl.col(delta_name))
-                .otherwise(0.0)
+                pl.when(pl.col(delta_name) < 0).then(-pl.col(delta_name)).otherwise(0.0)
             ).alias(loss_name),
         )
 
@@ -309,8 +307,10 @@ def _augment_rsi_polars(
             rs_expr = pl.col(avg_gain_name) / pl.col(avg_loss_name)
             rsi_alias = f"{col}_rsi_{period}"
             lazy_frame = lazy_frame.with_columns(
-                pl.when(pl.col(avg_loss_name) == 0)
+                pl.when((pl.col(avg_gain_name) == 0) & (pl.col(avg_loss_name) == 0))
                 .then(None)
+                .when(pl.col(avg_loss_name) == 0)
+                .then(100.0)
                 .otherwise(100 - (100 / (1 + rs_expr)))
                 .alias(rsi_alias)
             )
@@ -367,7 +367,8 @@ def _augment_rsi_cudf_dataframe(
 
                 rs = avg_gain / avg_loss
                 rsi = 100 - (100 / (1 + rs))
-                rsi = rsi.where(avg_loss != 0, np.nan)
+                rsi = rsi.where(avg_loss != 0, 100.0)
+                rsi = rsi.where((avg_gain != 0) | (avg_loss != 0), np.nan)
 
                 df_sorted.loc[idx, f"{col}_rsi_{period}"] = rsi
 
@@ -392,6 +393,8 @@ def _calculate_rsi_pandas(series: pd.Series, period=14):
     # Calculate RSI
     ret = 100 - (100 / (1 + (mean_gains / mean_losses)))
     return ret
+
+
 def _normalize_periods(periods: Union[int, Tuple[int, int], List[int]]) -> List[int]:
     if isinstance(periods, int):
         return [periods]

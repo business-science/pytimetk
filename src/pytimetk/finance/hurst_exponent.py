@@ -190,7 +190,9 @@ def augment_hurst_exponent(
     windows = _normalize_windows(window)
 
     engine_resolved = normalize_engine(engine, data)
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -294,17 +296,20 @@ def _augment_hurst_exponent_pandas(
         group_names = list(data.grouper.names)
         df = resolve_pandas_groupby_frame(data).copy(deep=False)
     else:
-        raise TypeError("Unsupported data type passed to _augment_hurst_exponent_pandas.")
+        raise TypeError(
+            "Unsupported data type passed to _augment_hurst_exponent_pandas."
+        )
 
     col = close_column
 
     for window in windows:
         if group_names:
-            df[f"{col}_hurst_{window}"] = (
-                df.groupby(group_names)[col]
-                .rolling(window=window, min_periods=window)
-                .apply(lambda x: _hurst_from_array(x), raw=True)
-                .reset_index(level=0, drop=True)
+            df[f"{col}_hurst_{window}"] = df.groupby(group_names, sort=False)[
+                col
+            ].transform(
+                lambda series: series.rolling(window=window, min_periods=window).apply(
+                    _hurst_from_array, raw=True
+                )
             )
         else:
             df[f"{col}_hurst_{window}"] = (

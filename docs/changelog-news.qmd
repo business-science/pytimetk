@@ -28,6 +28,24 @@ number-sections: false
 - Fixed Polars multi-parameter QSM calculations so every output uses its own
   fast, slow, and returns periods. Pandas QSM calculations now also support
   multiple grouping columns, and all period inputs must be positive integers.
+- `augment_adx()` now calculates true range, directional movement, and ADX
+  smoothing independently within every group. Pandas, Polars, and cuDF use the
+  same warm-up policy, and pandas/Polars results now agree to numerical
+  precision.
+- `augment_rolling_risk_metrics()` now isolates returns at group boundaries,
+  uses a consistent downside-deviation definition for Sortino ratios, and
+  aligns Sharpe, volatility, Omega, skewness, and kurtosis calculations across
+  pandas, Polars, and cuDF.
+- Restored Treynor and Information Ratio calculations for grouped pandas data
+  and implemented both benchmark-dependent metrics in the Polars engine.
+- Standardized zero-loss RSI behavior: rising windows return `100` across all
+  engines, while flat zero-gain/zero-loss windows remain undefined.
+- Fixed pandas calculations with multiple grouping columns in `augment_atr()`,
+  `augment_bbands()`, `augment_ewma_volatility()`,
+  `augment_hurst_exponent()`, and `augment_rolling_risk_metrics()`.
+- Added finance regression coverage for group isolation, multiple grouping
+  columns, strict pandas/Polars parity, benchmark-dependent risk metrics, and
+  RSI zero-loss behavior.
 
 # pytimetk 2.4.0
 
