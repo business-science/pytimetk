@@ -1,9 +1,11 @@
 import pytest
+import numpy as np
 import pandas as pd
 import pytimetk as tk
 import os
 import multiprocessing as mp
 from itertools import product
+from pytimetk.finance.fip_momentum import _compute_fip_series
 from pytimetk.utils.selection import contains
 
 # Setup to avoid multiprocessing warnings
@@ -46,20 +48,16 @@ def test_fip_momentum(df, engine, window, skip_window):
     assert result_grouped.shape == (16194, len(expected_cols)), (
         f"Expected shape (16194, {len(expected_cols)})"
     )
-    # Verify NaNs (engine-specific expectations due to implementation differences)
+    # A complete window of returns requires w + 1 closing prices, so each
+    # symbol starts with exactly w null feature values.
     for w in window:
         nan_counts = result_grouped.groupby("symbol")[f"close_fip_momentum_{w}"].apply(
             lambda x: x.isna().sum()
         )
         print(f"NaN counts for window {w} ({engine}):", nan_counts.to_dict())
-        if engine == "pandas":
-            assert all(nan_counts >= w - 1), (
-                f"Expected at least {w - 1} NaNs per group for window {w} (pandas)"
-            )
-        else:  # polars
-            assert all(nan_counts >= w // 2 - 1), (
-                f"Expected at least {w // 2 - 1} NaNs per group for window {w} (polars)"
-            )
+        assert all(nan_counts == w), (
+            f"Expected exactly {w} NaNs per group for window {w} ({engine})"
+        )
     assert list(result_grouped.columns) == expected_cols, "Incorrect column names"
 
     # Ungrouped test (single symbol)
@@ -74,15 +72,154 @@ def test_fip_momentum(df, engine, window, skip_window):
         f"Expected shape (2699, {len(expected_cols)})"
     )
     for w in window:
-        if engine == "pandas":
-            assert result_single[f"close_fip_momentum_{w}"].isna().sum() >= w - 1, (
-                f"Expected at least {w - 1} NaNs for window {w} (pandas)"
-            )
-        else:  # polars
-            assert (
-                result_single[f"close_fip_momentum_{w}"].isna().sum() >= w // 2 - 1
-            ), f"Expected at least {w // 2 - 1} NaNs for window {w} (polars)"
+        assert result_single[f"close_fip_momentum_{w}"].isna().sum() == w, (
+            f"Expected exactly {w} NaNs for window {w} ({engine})"
+        )
     assert list(result_single.columns) == expected_cols, "Incorrect column names"
+
+
+def _make_fip_test_data(rows_per_symbol=30):
+    frames = []
+    for symbol_index, symbol in enumerate(["A", "B"]):
+        row = np.arange(rows_per_symbol, dtype=float)
+        frames.append(
+            pd.DataFrame(
+                {
+                    "symbol": symbol,
+                    "date": pd.date_range("2024-01-01", periods=rows_per_symbol),
+                    "close": (
+                        100.0 * (symbol_index + 1) + 0.2 * row + np.sin(row / 3.0)
+                    ),
+                }
+            )
+        )
+    return pd.concat(frames, ignore_index=True)
+
+
+@pytest.mark.parametrize("engine", ["pandas", "polars"])
+@pytest.mark.parametrize("fip_method", ["original", "modified"])
+@pytest.mark.parametrize("windows", [[4, 10], [10, 4]])
+def test_fip_momentum_multi_window_matches_single_window(engine, fip_method, windows):
+    data = _make_fip_test_data()
+    grouped = data.groupby("symbol")
+    multi = grouped.augment_fip_momentum(
+        date_column="date",
+        close_column="close",
+        window=windows,
+        engine=engine,
+        fip_method=fip_method,
+    )
+
+    for window in windows:
+        column = f"close_fip_momentum_{window}"
+        single = grouped.augment_fip_momentum(
+            date_column="date",
+            close_column="close",
+            window=window,
+            engine=engine,
+            fip_method=fip_method,
+        )
+        assert multi[column].notna().any()
+        np.testing.assert_allclose(
+            multi[column],
+            single[column],
+            rtol=1e-10,
+            atol=1e-12,
+            equal_nan=True,
+        )
+
+
+@pytest.mark.parametrize("engine", ["pandas", "polars"])
+def test_fip_momentum_group_boundaries_match_isolated_symbols(engine):
+    data = pd.DataFrame(
+        {
+            "symbol": ["A", "A", "B", "B", "B"],
+            "date": pd.to_datetime(
+                ["2024-01-01", "2024-01-02", "2024-01-01", "2024-01-02", "2024-01-03"]
+            ),
+            "close": [100.0, 100.0, 10.0, 10.0, 10.0],
+        }
+    )
+    grouped = data.groupby("symbol").augment_fip_momentum(
+        date_column="date", close_column="close", window=2, engine=engine
+    )
+    isolated = pd.concat(
+        [
+            group.augment_fip_momentum(
+                date_column="date", close_column="close", window=2, engine=engine
+            )
+            for _, group in data.groupby("symbol")
+        ]
+    ).sort_index()
+
+    np.testing.assert_allclose(
+        grouped["close_fip_momentum_2"],
+        isolated["close_fip_momentum_2"],
+        rtol=1e-10,
+        atol=1e-12,
+        equal_nan=True,
+    )
+    assert (
+        grouped.groupby("symbol")["close_fip_momentum_2"]
+        .apply(lambda values: values.iloc[:2].isna().all())
+        .all()
+    )
+
+
+@pytest.mark.parametrize("fip_method", ["original", "modified"])
+def test_fip_momentum_engines_match_with_shuffled_null_input(fip_method):
+    data = _make_fip_test_data()
+    data.loc[(data["symbol"] == "B") & (data["date"] == "2024-01-13"), "close"] = np.nan
+    data = data.sample(frac=1, random_state=123)
+
+    results = {}
+    for engine in ["pandas", "polars"]:
+        results[engine] = data.groupby("symbol").augment_fip_momentum(
+            date_column="date",
+            close_column="close",
+            window=[4, 10],
+            engine=engine,
+            fip_method=fip_method,
+        )
+
+    for window in [4, 10]:
+        column = f"close_fip_momentum_{window}"
+        np.testing.assert_allclose(
+            results["pandas"][column],
+            results["polars"][column],
+            rtol=1e-10,
+            atol=1e-12,
+            equal_nan=True,
+        )
+
+
+@pytest.mark.parametrize("engine", ["pandas", "polars"])
+def test_fip_momentum_skip_window_is_applied_per_group(engine):
+    data = _make_fip_test_data(rows_per_symbol=8)
+    result = data.groupby("symbol").augment_fip_momentum(
+        date_column="date",
+        close_column="close",
+        window=2,
+        skip_window=4,
+        engine=engine,
+    )
+
+    for _, group in result.groupby("symbol"):
+        assert group["close_fip_momentum_2"].iloc[:4].isna().all()
+        assert group["close_fip_momentum_2"].iloc[4:].notna().all()
+
+
+def test_compute_fip_series_requires_a_complete_window():
+    returns = np.array([np.nan, 0.01, 0.02, 0.03, 0.04])
+    result = _compute_fip_series(
+        returns,
+        window=3,
+        fip_method="original",
+        skip_window=0,
+    )
+
+    assert np.isnan(result[:3]).all()
+    assert np.isfinite(result[3:]).all()
 
 
 def test_fip_momentum_edge_cases(df):

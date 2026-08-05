@@ -95,6 +95,9 @@ def augment_fip_momentum(
 
     - For 'original', a positive FIP may indicate inconsistency in the trend.
     - For 'modified', a positive FIP indicates stronger momentum in the direction of the trend (upward or downward).
+    - A window of size `w` requires `w` valid one-period returns. For a
+      contiguous price series, the first FIP value is therefore available
+      after `w + 1` closing-price observations.
 
     Examples
     --------
@@ -181,7 +184,9 @@ def augment_fip_momentum(
     close_column = close_columns[0]
 
     engine_resolved = normalize_engine(engine, data)
-    if engine_resolved == "cudf" and cudf is None:  # pragma: no cover - optional dependency
+    if (
+        engine_resolved == "cudf" and cudf is None
+    ):  # pragma: no cover - optional dependency
         raise ImportError(
             "cudf is required for engine='cudf', but it is not installed."
         )
@@ -275,16 +280,18 @@ def _augment_fip_momentum_pandas(
         group_names = data.grouper.names
         df = resolve_pandas_groupby_frame(data).copy(deep=False)
     else:
-        raise TypeError(
-            "Unsupported data type passed to _augment_fip_momentum_pandas."
-        )
+        raise TypeError("Unsupported data type passed to _augment_fip_momentum_pandas.")
 
     col = close_column
-    df[f"{col}_returns"] = df[col].pct_change()
+    if group_names:
+        previous_close = df.groupby(group_names, sort=False)[col].shift(1)
+    else:
+        previous_close = df[col].shift(1)
+    df[f"{col}_returns"] = df[col] / previous_close - 1
 
     def calc_fip(ser, window, fip_method):
         returns = ser.dropna()
-        if len(returns) < window // 2:
+        if len(returns) < window:
             return np.nan
 
         total_return = np.prod(1 + returns) - 1
@@ -302,7 +309,7 @@ def _augment_fip_momentum_pandas(
             for name, group_df in df.groupby(group_names):
                 roll = (
                     group_df[f"{col}_returns"]
-                    .rolling(w)
+                    .rolling(window=w, min_periods=w)
                     .apply(lambda x: calc_fip(x, w, fip_method), raw=False)
                 )
                 if skip_window > 0:
@@ -313,7 +320,7 @@ def _augment_fip_momentum_pandas(
         for w in windows:
             roll = (
                 df[f"{col}_returns"]
-                .rolling(w)
+                .rolling(window=w, min_periods=w)
                 .apply(lambda x: calc_fip(x, w, fip_method), raw=False)
             )
             if skip_window > 0:
@@ -336,9 +343,7 @@ def _augment_fip_momentum_cudf_dataframe(
     row_id_column: Optional[str],
 ) -> "cudf.DataFrame":
     if cudf is None:  # pragma: no cover - optional dependency
-        raise ImportError(
-            "cudf is required to execute the cudf FIP momentum backend."
-        )
+        raise ImportError("cudf is required to execute the cudf FIP momentum backend.")
 
     sort_columns: List[str] = [date_column]
     if group_columns:
@@ -399,10 +404,8 @@ def _compute_fip_series(
     fip_values = np.full(len(returns), np.nan, dtype="float64")
     for idx in range(window - 1, len(returns)):
         window_slice = returns[idx - window + 1 : idx + 1]
-        if skip_window > 0:
-            window_slice = window_slice[skip_window:]
         window_slice = window_slice[~np.isnan(window_slice)]
-        if window_slice.size < max(1, window // 2):
+        if window_slice.size < window:
             continue
         total_return = np.prod(1 + window_slice) - 1
         pct_positive = np.mean(window_slice > 0)
@@ -428,7 +431,7 @@ def _augment_fip_momentum_polars(
 ) -> pl.DataFrame:
     def fip_calc(values: np.ndarray, w: int, method: str) -> float:
         valid = ~np.isnan(values)
-        if np.sum(valid) < max(1, w // 2):
+        if np.sum(valid) < w:
             return np.nan
         total_return = np.prod(1 + values[valid]) - 1
         pct_positive = np.sum(values[valid] > 0) / np.sum(valid)
@@ -455,21 +458,24 @@ def _augment_fip_momentum_polars(
     if skip_window > 0:
         temp_columns.append("__fip_row")
 
+    previous_close = pl.col(close_column).shift(1)
+    if resolved_groups:
+        previous_close = previous_close.over(resolved_groups)
+
     lazy_frame = lazy_frame.with_columns(
-        (
-            pl.col(close_column) / pl.col(close_column).shift(1) - 1
-        ).alias("__fip_returns")
+        (pl.col(close_column) / previous_close - 1).alias("__fip_returns")
     )
 
     if skip_window > 0:
-        lazy_frame = lazy_frame.with_row_count("__fip_row")
+        row_number = pl.col(row_col).cum_count() - 1
+        lazy_frame = lazy_frame.with_columns(_maybe_over(row_number).alias("__fip_row"))
 
     for w in windows:
         fip_expr = _maybe_over(
             pl.col("__fip_returns").rolling_map(
-                lambda x: fip_calc(np.array(x), w, fip_method),
+                lambda x, window=w: fip_calc(np.array(x), window, fip_method),
                 window_size=w,
-                min_periods=max(1, w // 2),
+                min_periods=w,
             )
         )
         lazy_frame = lazy_frame.with_columns(
