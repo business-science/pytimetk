@@ -6,6 +6,23 @@ toc-depth: 3
 number-sections: false
 ---
 
+# pytimetk 2.5.0.9000
+
+## Bug Fixes
+
+- `augment_fip_momentum()` now isolates one-period returns within each group,
+  preventing prices and returns from leaking across symbol boundaries in both
+  the pandas and Polars engines.
+- Fixed Polars multi-window calculations so each lazy rolling callback uses
+  the window associated with its output column rather than the final requested
+  window.
+- Standardized FIP warm-up behavior across pandas, Polars, and cuDF. A window
+  of size `w` now requires `w` valid one-period returns, and grouped
+  `skip_window` handling resets for each group.
+- Added regression coverage for multiple window orders, grouped boundaries,
+  shuffled and null input data, both FIP methods, and cross-engine parity
+  ([#318](https://github.com/business-science/pytimetk/issues/318)).
+
 # pytimetk 2.4.0
 
 # pytimetk 2.4.0 Release Notes
