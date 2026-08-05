@@ -194,6 +194,27 @@ def test_rolling_risk_metrics_and_benchmark_metrics_match_engines(grouped_prices
     )
 
 
+@pytest.mark.parametrize("engine", ["pandas", "polars"])
+def test_sortino_is_undefined_without_downside_returns(grouped_prices, engine):
+    window = 8
+    prices = grouped_prices.loc[grouped_prices["symbol"].eq("A")].copy()
+    returns = np.log(prices["close"] / prices["close"].shift(1))
+    rolling_returns = returns.rolling(window, min_periods=window // 2)
+    no_downside = rolling_returns.min().ge(0)
+
+    assert no_downside.any()
+
+    result = prices.augment_rolling_risk_metrics(
+        date_column="date",
+        close_column="close",
+        window=window,
+        metrics=["sortino_ratio"],
+        engine=engine,
+    )
+
+    assert result.loc[no_downside, "close_sortino_ratio_8"].isna().all()
+
+
 @pytest.mark.parametrize(
     "method,kwargs",
     [

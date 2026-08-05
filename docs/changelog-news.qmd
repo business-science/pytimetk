@@ -43,7 +43,9 @@ risk metrics.
 - `augment_rolling_risk_metrics()` now isolates returns at group boundaries,
   uses a consistent downside-deviation definition for Sortino ratios, and
   aligns Sharpe, volatility, Omega, skewness, and kurtosis calculations across
-  pandas, Polars, and cuDF.
+  pandas, Polars, and cuDF. Downside variances at floating-point precision are
+  treated as zero, preventing older Polars versions from producing extremely
+  large Sortino ratios for windows without downside returns.
 - Restored Treynor and Information Ratio calculations for grouped pandas data
   and implemented both benchmark-dependent metrics in the Polars engine.
 - Standardized zero-loss RSI behavior: rising windows return `100` across all

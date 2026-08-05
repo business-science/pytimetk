@@ -30,6 +30,9 @@ from pytimetk.feature_engineering._shift_utils import resolve_shift_columns
 from scipy import stats  # For skewness and kurtosis
 
 
+_DOWNSIDE_VARIANCE_EPSILON = np.finfo(np.float64).eps
+
+
 @pf.register_groupby_method
 @pf.register_dataframe_method
 def augment_rolling_risk_metrics(
@@ -435,9 +438,14 @@ def _augment_rolling_risk_metrics_pandas(
             )
 
         if "sortino_ratio" in metrics:
+            downside_variance = rolling_aggregate(
+                "__rrm_downside_squared", w, "mean"
+            )
             downside_deviation = np.sqrt(
-                rolling_aggregate("__rrm_downside_squared", w, "mean")
-            ).replace(0, np.nan)
+                downside_variance.where(
+                    downside_variance > _DOWNSIDE_VARIANCE_EPSILON
+                )
+            )
             df[f"{col}_sortino_ratio_{w}"] = (
                 (mean_ret - risk_free_rate) / downside_deviation * annualization
             )
@@ -757,11 +765,12 @@ def _augment_rolling_risk_metrics_cudf_dataframe(
 
         if "sortino_ratio" in metrics:
             downside_var = neg_sq / count
-            downside_std = downside_var.pow(0.5)
+            valid_downside = downside_var > _DOWNSIDE_VARIANCE_EPSILON
+            downside_std = downside_var.where(valid_downside, np.nan).pow(0.5)
             sortino = ((mean_ret - risk_free_rate) / downside_std) * np.sqrt(
                 annualization_factor
             )
-            sortino = sortino.where(downside_std > 0, np.nan)
+            sortino = sortino.where(valid_downside, np.nan)
             df_sorted[f"{close_column}_sortino_ratio_{w}"] = sortino
 
         if "omega_ratio" in metrics:
@@ -916,13 +925,15 @@ def _augment_rolling_risk_metrics_polars(
                 ).alias(f"{col}_volatility_annualized_{w}")
             )
         if "sortino_ratio" in metrics:
-            downside_deviation = (
-                pl.col(downside_squared_alias)
-                .rolling_mean(w, min_periods=min_periods)
-                .sqrt()
+            downside_variance = pl.col(downside_squared_alias).rolling_mean(
+                w, min_periods=min_periods
             )
+            downside_deviation = downside_variance.sqrt()
             exprs.append(
-                pl.when(downside_deviation > 0)
+                pl.when(
+                    downside_variance
+                    > pl.lit(_DOWNSIDE_VARIANCE_EPSILON)
+                )
                 .then(
                     (mean_ret - risk_free_rate)
                     / downside_deviation
