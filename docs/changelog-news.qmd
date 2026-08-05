@@ -47,9 +47,70 @@ number-sections: false
   columns, strict pandas/Polars parity, benchmark-dependent risk metrics, and
   RSI zero-loss behavior.
 
-# pytimetk 2.4.0
+# pytimetk 2.5.0
 
-# pytimetk 2.4.0 Release Notes
+_Released March 30, 2026 — [GitHub release](https://github.com/business-science/pytimetk/releases/tag/v2.5.0)_
+
+## Overview
+
+This release adds pandas 3 compatibility while retaining pandas 2 support on
+older supported Python versions. It focuses on compatibility and stability
+across pandas, Polars, grouped operations, datetime handling, and the project
+test matrix.
+
+## Compatibility
+
+- Added compatibility for pandas 3 GroupBy internals, including the renamed
+  grouper state and the changed `GroupBy.apply(include_groups=...)` behavior.
+- Updated grouped `MACD`, `PPO`, progress, and parallel-apply workflows to
+  preserve their established grouping and output-index behavior on pandas 2
+  and pandas 3.
+- Added modern pandas frequency-alias handling for month-, quarter-, year-,
+  business-, hour-, minute-, millisecond-, microsecond-, and nanosecond-based
+  frequencies while continuing to accept PyTimeTK's established aliases.
+- Normalized pandas/Polars datetime round-trips and bundled datasets to
+  nanosecond precision for stable cross-engine schemas and comparisons.
+- Updated dependency markers so Python 3.9 and 3.10 remain on pandas 2, while
+  Python 3.11 and newer can use pandas 3.
+
+## Bug Fixes
+
+- Removed deprecated resampling arguments from `apply_by_time()` and
+  `summarize_by_time()` and normalized their frequency inputs.
+- Fixed grouped `augment_ewm()` result sorting under newer pandas versions.
+- Updated numeric-column validation to support pandas extension dtypes.
+- Improved frequency-summary, date-flooring, dataset-loading, and
+  pandas/Polars conversion behavior under pandas 3.
+- Updated GitHub Actions and Poetry configuration for the supported Python,
+  pandas, and Polars combinations.
+
+## Breaking Changes
+
+- None identified. Existing pandas 2 workflows remain supported.
+
+[Full 2.5.0 changelog](https://github.com/business-science/pytimetk/compare/v2.4.1...v2.5.0)
+
+# pytimetk 2.4.1
+
+_Released November 26, 2025 — [GitHub release](https://github.com/business-science/pytimetk/releases/tag/v2.4.1)_
+
+## Compatibility
+
+- Added compatibility with `pandas-flavor 0.8.0`, including support for its
+  renamed DataFrame GroupBy registration decorator.
+- Added a compatibility shim that preserves PyTimeTK's registered pandas
+  DataFrame and GroupBy methods across both older and newer `pandas-flavor`
+  releases.
+- Applied the compatibility layer during package initialization and in pandas
+  helper registration so existing method-chaining workflows continue to work.
+
+## Breaking Changes
+
+- None. This was a focused compatibility patch for 2.4.0 users.
+
+[Full 2.4.1 changelog](https://github.com/business-science/pytimetk/compare/v2.4.0...v2.4.1)
+
+# pytimetk 2.4.0
 
 ## Overview
 This release introduces significant enhancements to visualization capabilities, integrates tidy selectors for improved column handling, completes the migration to Ray for parallelism, and includes various performance optimizations and bug fixes. Key themes include better diagnostics plotting, more flexible data manipulation, and improved documentation.
