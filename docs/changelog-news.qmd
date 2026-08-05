@@ -6,6 +6,12 @@ toc-depth: 3
 number-sections: false
 ---
 
+# pytimetk 2.5.1.9000
+
+_Development version (unreleased)._
+
+Changes for the next release will be documented here.
+
 # pytimetk 2.5.1
 
 _Released August 5, 2026 — [GitHub release](https://github.com/business-science/pytimetk/releases/tag/v2.5.1)_
