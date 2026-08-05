@@ -31,7 +31,7 @@ First, `import pytimetk as tk`. This gets you access to the most important funct
 ::: {.callout-note collapse="false"}
 ## About the Bike Sales Sample Dataset
 
-This dataset contains "orderlines" for orders recieved. The `order_date` column contains timestamps. We can use this column to peform sales aggregations (e.g. total revenue).
+This dataset contains "orderlines" for orders received. The `order_date` column contains timestamps. We can use this column to peform sales aggregations (e.g. total revenue).
 :::
 
 ```{python}
