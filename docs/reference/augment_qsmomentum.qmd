@@ -36,19 +36,19 @@ Calculate Quant Science Momentum (QSM) for pandas or polars inputs.
 
 ## Notes {.doc-section .doc-section-notes}
 
-For a value at time `t`, QSM compares an older momentum leg with the most
-recent momentum leg:
+For a value at time ``t``, QSM compares an older momentum leg with the
+most recent momentum leg:
 
-- slow leg: return from `t - slow` to `t - fast`;
-- fast leg: return from `t - fast` to `t`;
-- QSM: `(slow_leg - fast_leg) / volatility`.
+- slow leg: return from ``t - slow`` to ``t - fast``;
+- fast leg: return from ``t - fast`` to ``t``;
+- QSM: ``(slow_leg - fast_leg) / volatility``.
 
-Volatility is the population standard deviation (`ddof=0`) of the most recent
-`returns_period` one-period returns. A slow period of `s` therefore requires
-`s + 1` valid closing-price observations. Only combinations where
-`fast < slow` and `returns_period <= slow` are evaluated. If no combinations
-satisfy these rules a `ValueError` is raised to surface the configuration
-issue.
+Volatility is the population standard deviation (``ddof=0``) of the most
+recent ``returns_period`` one-period returns. A slow period of ``s``
+therefore requires ``s + 1`` valid closing-price observations. Only
+combinations where ``fast < slow`` and ``returns_period <= slow`` are
+evaluated. If no combinations satisfy these rules a ``ValueError`` is
+raised to surface the configuration issue.
 
 ## Examples {.doc-section .doc-section-examples}
 

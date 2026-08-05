@@ -49,8 +49,8 @@ to mitigate the effects of mean reversion.
 - For 'original', a positive FIP may indicate inconsistency in the trend.
 - For 'modified', a positive FIP indicates stronger momentum in the direction of the trend (upward or downward).
 - A window of size `w` requires `w` valid one-period returns. For a
-  contiguous price series, the first FIP value is therefore available after
-  `w + 1` closing-price observations.
+  contiguous price series, the first FIP value is therefore available
+  after `w + 1` closing-price observations.
 
 ## Examples {.doc-section .doc-section-examples}
 

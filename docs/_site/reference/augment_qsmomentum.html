@@ -543,7 +543,13 @@ gtag('config', '330861489', { 'anonymize_ip': true});
 </section>
 <section id="notes" class="level2 doc-section doc-section-notes">
 <h2 class="doc-section doc-section-notes anchored" data-anchor-id="notes">Notes</h2>
-<p>QSM measures the difference between slow and fast ROC values normalised by the rolling volatility of returns. Only combinations where <code>fast &lt; slow</code> and <code>returns_period &lt;= slow</code> are evaluated. If no combinations satisfy these rules a <code>ValueError</code> is raised to surface the configuration issue.</p>
+<p>For a value at time <code>t</code>, QSM compares an older momentum leg with the most recent momentum leg:</p>
+<ul>
+<li>slow leg: return from <code>t - slow</code> to <code>t - fast</code>;</li>
+<li>fast leg: return from <code>t - fast</code> to <code>t</code>;</li>
+<li>QSM: <code>(slow_leg - fast_leg) / volatility</code>.</li>
+</ul>
+<p>Volatility is the population standard deviation (<code>ddof=0</code>) of the most recent <code>returns_period</code> one-period returns. A slow period of <code>s</code> therefore requires <code>s + 1</code> valid closing-price observations. Only combinations where <code>fast &lt; slow</code> and <code>returns_period &lt;= slow</code> are evaluated. If no combinations satisfy these rules a <code>ValueError</code> is raised to surface the configuration issue.</p>
 </section>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
