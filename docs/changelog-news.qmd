@@ -6,7 +6,15 @@ toc-depth: 3
 number-sections: false
 ---
 
-# pytimetk 2.5.0.9000
+# pytimetk 2.5.1
+
+_Released August 5, 2026 — [GitHub release](https://github.com/business-science/pytimetk/releases/tag/v2.5.1)_
+
+## Overview
+
+This patch release corrects grouped financial calculations, aligns pandas,
+Polars, and cuDF backend semantics, and restores documented benchmark-dependent
+risk metrics.
 
 ## Bug Fixes
 
@@ -46,6 +54,14 @@ number-sections: false
 - Added finance regression coverage for group isolation, multiple grouping
   columns, strict pandas/Polars parity, benchmark-dependent risk metrics, and
   RSI zero-loss behavior.
+
+## Breaking Changes
+
+- No public API changes. Corrected FIP, QSM, ADX, RSI, Sortino, and other
+  rolling-risk values can differ from 2.5.0 where the previous calculations
+  leaked across groups or used inconsistent backend formulas.
+
+[Full 2.5.1 changelog](https://github.com/business-science/pytimetk/compare/v2.5.0...v2.5.1)
 
 # pytimetk 2.5.0
 
