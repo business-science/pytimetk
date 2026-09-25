@@ -6,7 +6,17 @@ from typing import Optional
 
 import plotly.express as px
 
-from plotnine import ggplot, aes, geom_vline, geom_point, geom_text, labs, xlim
+from plotnine import (
+    ggplot,
+    aes,
+    geom_vline,
+    geom_point,
+    geom_segment,
+    geom_text,
+    labs,
+    scale_y_continuous,
+    xlim,
+)
 
 from pytimetk.plot.theme import theme_timetk
 
@@ -57,7 +67,8 @@ def plot_correlation_funnel(
         horizontal size of the plot.
     height : Optional[int]
         The `height` parameter is used to specify the height of the plot in pixels. It determines the
-        vertical size of the plot when it is rendered.
+        vertical size of the plot when it is rendered. Static plots grow with
+        the number of features when no height is supplied.
     engine : str, optional
         The `engine` parameter determines the plotting engine to be used. It can be set to either "plotly"
         or "plotnine". If set to "plotly", the function will generate an interactive plot using the
@@ -194,31 +205,94 @@ def plot_correlation_funnel(
         return fig
 
     else:
-        data["feature"] = pd.Categorical(
-            data["feature"], categories=data["feature"].unique()[::-1], ordered=True
+        plot_data = data.copy().reset_index(drop=True)
+        feature_labels = list(plot_data["feature"].drop_duplicates())[::-1]
+        feature_positions = {
+            feature: index + 1 for index, feature in enumerate(feature_labels)
+        }
+        plot_data["_feature_y"] = (
+            plot_data["feature"].map(feature_positions).astype(float)
         )
+        plot_data["_label_side"] = np.where(
+            plot_data["correlation"] < 0, "left", "right"
+        )
+        for column in ("_label_x", "_label_y", "_segment_x", "_segment_y"):
+            plot_data[column] = np.nan
+        x_span = limits[1] - limits[0]
+        x_center = (limits[0] + limits[1]) / 2
+
+        # Give each label its own vertical slot on its side of the feature row.
+        # This keeps connectors attached to their points without relying on
+        # adjustText, which can move labels across rows and obscure the arrows.
+        for (_, side), group in plot_data.groupby(["_feature_y", "_label_side"]):
+            group = group.sort_values("correlation")
+            count = len(group)
+            if count == 1:
+                offsets = np.array([0.2])
+            else:
+                extent = min(0.36, 0.13 * (count - 1))
+                offsets = np.linspace(-extent, extent, count)
+
+            if side == "left":
+                label_x = max(
+                    limits[0] + 0.14 * x_span,
+                    min(
+                        x_center - 0.06 * x_span,
+                        group["correlation"].min() - 0.03 * x_span,
+                    ),
+                )
+                segment_x = label_x + 0.01 * x_span
+            else:
+                label_x = min(
+                    limits[1] - 0.14 * x_span,
+                    max(
+                        x_center + 0.06 * x_span,
+                        group["correlation"].max() + 0.03 * x_span,
+                    ),
+                )
+                segment_x = label_x - 0.01 * x_span
+
+            plot_data.loc[group.index, "_label_x"] = label_x
+            plot_data.loc[group.index, "_label_y"] = group["_feature_y"] + offsets
+            plot_data.loc[group.index, "_segment_x"] = segment_x
+            plot_data.loc[group.index, "_segment_y"] = (
+                group["_feature_y"] + offsets * 0.75
+            )
+
+        if height is None:
+            height = max(500, 70 * len(feature_labels) + 80)
 
         p = (
-            ggplot(data, aes(x="correlation", y="feature"))
+            ggplot(plot_data, aes(x="correlation", y="_feature_y"))
             + geom_vline(xintercept=0, linetype="dashed", color="red")
             + geom_point(color=point_color, alpha=alpha)
+            + geom_segment(
+                aes(xend="_segment_x", yend="_segment_y"),
+                color=point_color,
+                alpha=alpha,
+                size=0.25,
+            )
+            + geom_text(
+                aes(x="_label_x", y="_label_y", label="bin"),
+                data=plot_data[plot_data["_label_side"] == "left"],
+                size=base_size * 0.8,
+                color=point_color,
+                ha="right",
+            )
+            + geom_text(
+                aes(x="_label_x", y="_label_y", label="bin"),
+                data=plot_data[plot_data["_label_side"] == "right"],
+                size=base_size * 0.8,
+                color=point_color,
+                ha="left",
+            )
             + labs(title=title, x=x_lab, y=y_lab)
             + xlim(limits[0], limits[1])
+            + scale_y_continuous(
+                breaks=list(range(1, len(feature_labels) + 1)),
+                labels=feature_labels,
+            )
         )
         p = p + theme_timetk(base_size=base_size, width=width, height=height)
-
-        p = p + geom_text(
-            aes(label="bin"),
-            size=base_size * 0.8,
-            color=point_color,
-            nudge_y=0.3,
-            adjust_text={
-                "expand_points": (0.5, 0.5),
-                # 'expand_objects': (1.5, 1.5),
-                "arrowprops": {
-                    "arrowstyle": "-",
-                },
-            },
-        )
 
         return p
