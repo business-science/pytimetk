@@ -196,5 +196,48 @@ def test_augment_timeseries_signature_polars_accessor():
     assert pl_result.height == len(df)
 
 
+@pytest.mark.parametrize("engine", ["pandas", "polars"])
+def test_augment_timeseries_signature_grouped_matches_ungrouped(engine):
+    df = pd.DataFrame(
+        {
+            "id": ["B", "A", "B", "A"],
+            "date": pd.to_datetime(
+                ["2024-02-02", "2024-01-01", "2024-02-01", "2024-01-02"]
+            ),
+            "value": [20, 10, 21, 11],
+        },
+        index=[8, 3, 6, 1],
+    )
+
+    grouped = df.groupby("id").augment_timeseries_signature(
+        date_column="date", engine=engine
+    )
+    ungrouped = df.augment_timeseries_signature(date_column="date", engine=engine)
+
+    pd.testing.assert_frame_equal(grouped, ungrouped)
+    assert grouped.shape[1] == df.shape[1] + 29
+
+
+def test_augment_timeseries_signature_polars_groupby_matches_ungrouped():
+    df = pl.DataFrame(
+        {
+            "id": ["B", "A", "B", "A"],
+            "date": [
+                pd.Timestamp("2024-02-02"),
+                pd.Timestamp("2024-01-01"),
+                pd.Timestamp("2024-02-01"),
+                pd.Timestamp("2024-01-02"),
+            ],
+            "value": [20, 10, 21, 11],
+        }
+    )
+
+    grouped = df.group_by("id").tk.augment_timeseries_signature(date_column="date")
+    ungrouped = df.tk.augment_timeseries_signature(date_column="date")
+
+    assert grouped.equals(ungrouped)
+    assert grouped.width == df.width + 29
+
+
 if __name__ == "__main__":
     pytest.main()

@@ -17,6 +17,7 @@ from pytimetk.utils.dataframe_ops import (
     FrameConversion,
     convert_to_engine,
     normalize_engine,
+    resolve_pandas_groupby_frame,
     restore_output_type,
 )
 
