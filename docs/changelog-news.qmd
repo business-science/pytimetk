@@ -6,11 +6,41 @@ toc-depth: 3
 number-sections: false
 ---
 
-# pytimetk 2.5.1.9000
+# pytimetk 2.5.2
 
-_Development version (unreleased)._
+_Released September 25, 2026 — [GitHub release](https://github.com/business-science/pytimetk/releases/tag/v2.5.2)_
 
-Changes for the next release will be documented here.
+## Overview
+
+This patch release fixes grouped time series signatures and makes static
+correlation funnel plots easier to read when several bins have similar
+correlations.
+
+## Bug Fixes
+
+- `augment_timeseries_signature()` now works with pandas and Polars grouped
+  inputs. It appends all 29 date features while preserving the original rows,
+  order, and pandas index ([#321](https://github.com/business-science/pytimetk/issues/321)).
+- Static `plot_correlation_funnel(engine="plotnine")` charts now place bin labels
+  in separate slots with short connectors to their points. This avoids the
+  overlapping labels and misaligned arrows in dense plots
+  ([#281](https://github.com/business-science/pytimetk/issues/281)).
+
+## Behavior and Documentation
+
+- Static correlation funnel height now grows with the number of features when
+  `height` is omitted. An explicit `height` continues to set the chart size.
+- Static correlation funnel plotting no longer modifies the input DataFrame.
+- Added regression tests for grouped pandas and Polars signatures, plus dense
+  static correlation funnels. See the [updated example image](images/issue-281-correlation-funnel-fixed.png)
+  and the [before-and-after comparison](https://github.com/business-science/pytimetk/issues/281#issuecomment-5839443875).
+
+## Breaking Changes
+
+- No public API changes. Static correlation funnel label placement and its
+  default height have changed as described above.
+
+[Full 2.5.2 changelog](https://github.com/business-science/pytimetk/compare/v2.5.1...v2.5.2)
 
 # pytimetk 2.5.1
 
