@@ -35,9 +35,10 @@ def _polars_supports_min_samples() -> bool:
 
 def ensure_polars_rolling_kwargs(kwargs: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Translate rolling keyword arguments to match the runtime Polars version.
+    Translate window keyword arguments to match the runtime Polars version.
 
-    Polars < 1.3 expects `min_periods` whereas newer versions use `min_samples`.
+    Polars < 1.21 expects `min_periods` whereas newer versions use `min_samples`
+    for both rolling and exponentially weighted window methods.
     This helper rewrites whichever key is missing so callers can always supply
     `min_samples` in their source code.
     """

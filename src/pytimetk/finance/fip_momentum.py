@@ -9,6 +9,7 @@ try:  # Optional cudf dependency
     import cudf  # type: ignore
 except ImportError:  # pragma: no cover - cudf optional
     cudf = None  # type: ignore
+from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
 )
@@ -471,11 +472,13 @@ def _augment_fip_momentum_polars(
         lazy_frame = lazy_frame.with_columns(_maybe_over(row_number).alias("__fip_row"))
 
     for w in windows:
+        rolling_kwargs = ensure_polars_rolling_kwargs(
+            {"window_size": w, "min_samples": w}
+        )
         fip_expr = _maybe_over(
             pl.col("__fip_returns").rolling_map(
                 lambda x, window=w: fip_calc(np.array(x), window, fip_method),
-                window_size=w,
-                min_periods=w,
+                **rolling_kwargs,
             )
         )
         lazy_frame = lazy_frame.with_columns(

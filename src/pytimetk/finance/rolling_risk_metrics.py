@@ -10,6 +10,7 @@ try:  # Optional cudf dependency
     import cudf  # type: ignore
 except ImportError:  # pragma: no cover - cudf optional
     cudf = None  # type: ignore
+from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
 )
@@ -903,13 +904,15 @@ def _augment_rolling_risk_metrics_polars(
 
     # Loop over each window separately
     for w in windows:
-        min_periods = max(1, w // 2)
+        rolling_kwargs = ensure_polars_rolling_kwargs(
+            {"window_size": w, "min_samples": max(1, w // 2)}
+        )
         exprs = []
         returns = pl.col(returns_alias)
-        mean_ret = returns.rolling_mean(w, min_periods=min_periods)
+        mean_ret = returns.rolling_mean(**rolling_kwargs)
 
         if "sharpe_ratio" in metrics:
-            std_ret = returns.rolling_std(w, min_periods=min_periods)
+            std_ret = returns.rolling_std(**rolling_kwargs)
             exprs.append(
                 (
                     (mean_ret - risk_free_rate)
@@ -920,13 +923,13 @@ def _augment_rolling_risk_metrics_polars(
         if "volatility_annualized" in metrics:
             exprs.append(
                 (
-                    returns.rolling_std(w, min_periods=min_periods)
+                    returns.rolling_std(**rolling_kwargs)
                     * pl.lit(np.sqrt(annualization_factor))
                 ).alias(f"{col}_volatility_annualized_{w}")
             )
         if "sortino_ratio" in metrics:
             downside_variance = pl.col(downside_squared_alias).rolling_mean(
-                w, min_periods=min_periods
+                **rolling_kwargs
             )
             downside_deviation = downside_variance.sqrt()
             exprs.append(
@@ -944,10 +947,10 @@ def _augment_rolling_risk_metrics_polars(
             )
         if "omega_ratio" in metrics:
             positive_sum = pl.col(positive_returns_alias).rolling_sum(
-                w, min_periods=min_periods
+                **rolling_kwargs
             )
             negative_sum = pl.col(negative_returns_alias).rolling_sum(
-                w, min_periods=min_periods
+                **rolling_kwargs
             )
             exprs.append(
                 pl.when(negative_sum < 0)
@@ -957,11 +960,11 @@ def _augment_rolling_risk_metrics_polars(
             )
         if "skewness" in metrics or "kurtosis" in metrics:
             mean_1 = mean_ret
-            mean_2 = (returns**2).rolling_mean(w, min_periods=min_periods)
+            mean_2 = (returns**2).rolling_mean(**rolling_kwargs)
             variance = mean_2 - mean_1**2
 
             if "skewness" in metrics:
-                mean_3 = (returns**3).rolling_mean(w, min_periods=min_periods)
+                mean_3 = (returns**3).rolling_mean(**rolling_kwargs)
                 third_moment = mean_3 - 3 * mean_1 * mean_2 + 2 * mean_1**3
                 exprs.append(
                     pl.when(variance > 0)
@@ -971,8 +974,8 @@ def _augment_rolling_risk_metrics_polars(
                 )
 
             if "kurtosis" in metrics:
-                mean_3 = (returns**3).rolling_mean(w, min_periods=min_periods)
-                mean_4 = (returns**4).rolling_mean(w, min_periods=min_periods)
+                mean_3 = (returns**3).rolling_mean(**rolling_kwargs)
+                mean_4 = (returns**4).rolling_mean(**rolling_kwargs)
                 fourth_moment = (
                     mean_4
                     - 4 * mean_1 * mean_3
@@ -988,14 +991,14 @@ def _augment_rolling_risk_metrics_polars(
 
         if benchmark_required:
             benchmark_returns = pl.col(benchmark_returns_alias)
-            benchmark_mean = benchmark_returns.rolling_mean(w, min_periods=min_periods)
+            benchmark_mean = benchmark_returns.rolling_mean(**rolling_kwargs)
 
             if "treynor_ratio" in metrics:
                 mean_product = (returns * benchmark_returns).rolling_mean(
-                    w, min_periods=min_periods
+                    **rolling_kwargs
                 )
                 mean_benchmark_squared = (benchmark_returns**2).rolling_mean(
-                    w, min_periods=min_periods
+                    **rolling_kwargs
                 )
                 covariance = mean_product - (mean_ret * benchmark_mean)
                 benchmark_variance = mean_benchmark_squared - benchmark_mean**2
@@ -1013,7 +1016,7 @@ def _augment_rolling_risk_metrics_polars(
 
             if "information_ratio" in metrics:
                 tracking_error = (returns - benchmark_returns).rolling_std(
-                    w, min_periods=min_periods
+                    **rolling_kwargs
                 )
                 exprs.append(
                     pl.when(tracking_error != 0)

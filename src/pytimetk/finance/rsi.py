@@ -11,6 +11,7 @@ try:  # Optional cudf dependency
 except ImportError:  # pragma: no cover - cudf optional
     cudf = None  # type: ignore
 
+from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
 )
@@ -285,22 +286,19 @@ def _augment_rsi_polars(
         )
 
         for period in periods:
+            rolling_kwargs = ensure_polars_rolling_kwargs(
+                {"window_size": period, "min_samples": period}
+            )
             avg_gain_name = f"__rsi_avg_gain_{col}_{period}"
             avg_loss_name = f"__rsi_avg_loss_{col}_{period}"
             temp_columns.extend([avg_gain_name, avg_loss_name])
 
             lazy_frame = lazy_frame.with_columns(
                 _maybe_over(
-                    pl.col(gain_name).rolling_mean(
-                        window_size=period,
-                        min_periods=period,
-                    )
+                    pl.col(gain_name).rolling_mean(**rolling_kwargs)
                 ).alias(avg_gain_name),
                 _maybe_over(
-                    pl.col(loss_name).rolling_mean(
-                        window_size=period,
-                        min_periods=period,
-                    )
+                    pl.col(loss_name).rolling_mean(**rolling_kwargs)
                 ).alias(avg_loss_name),
             )
 

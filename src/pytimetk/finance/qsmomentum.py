@@ -10,6 +10,7 @@ try:  # Optional cudf dependency
 except ImportError:  # pragma: no cover - cudf optional
     cudf = None  # type: ignore
 
+from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
 )
@@ -384,6 +385,9 @@ def _augment_qsmomentum_polars(
     lazy_frame = sorted_frame.lazy()
 
     for fp, sp, rp in combos:
+        rolling_kwargs = ensure_polars_rolling_kwargs(
+            {"window_size": sp + 1, "min_samples": sp + 1}
+        )
         expr = _maybe_over(
             pl.col(close_column).rolling_map(
                 lambda series, fast=fp, slow=sp, volatility=rp: (
@@ -394,8 +398,7 @@ def _augment_qsmomentum_polars(
                         volatility,
                     )
                 ),
-                window_size=sp + 1,
-                min_periods=sp + 1,
+                **rolling_kwargs,
             )
         ).alias(f"{close_column}_qsmom_{fp}_{sp}_{rp}")
         lazy_frame = lazy_frame.with_columns(expr)

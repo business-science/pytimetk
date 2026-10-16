@@ -11,6 +11,7 @@ try:  # Optional cudf dependency
 except ImportError:  # pragma: no cover - cudf optional
     cudf = None  # type: ignore
 
+from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
 )
@@ -414,11 +415,13 @@ def _augment_hurst_exponent_polars(
     lazy_frame = sorted_frame.lazy()
 
     for window in windows:
+        rolling_kwargs = ensure_polars_rolling_kwargs(
+            {"window_size": window, "min_samples": window}
+        )
         expr = _maybe_over(
             pl.col(col).rolling_map(
                 hurst_udf,
-                window_size=window,
-                min_periods=window,
+                **rolling_kwargs,
             )
         ).alias(f"{col}_hurst_{window}")
         lazy_frame = lazy_frame.with_columns(expr)
