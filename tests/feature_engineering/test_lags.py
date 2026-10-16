@@ -1,6 +1,7 @@
 import pandas as pd
 import polars as pl
 import pytest
+from polars.testing import assert_frame_equal
 
 # Ensure the function and dependencies are imported
 import pytimetk as tk
@@ -109,6 +110,42 @@ def test_polars_groupby_roundtrip(df_sample, pl_df_sample):
 
     assert isinstance(polars_group, pl.DataFrame)
     pd.testing.assert_frame_equal(pandas_group, polars_group.to_pandas())
+
+
+@pytest.mark.parametrize("engine", ["auto", "polars"])
+@pytest.mark.parametrize("input_kind", ["dataframe", "groupby"])
+@pytest.mark.parametrize("row_id_collision", [False, True])
+def test_polars_lags_without_row_count(
+    pl_df_sample, monkeypatch, engine, input_kind, row_id_collision
+):
+    # Exercise the Polars 2.0 removal even when running against Polars 1.x.
+    monkeypatch.delattr(pl.DataFrame, "with_row_count", raising=False)
+    frame = pl_df_sample[[4, 1, 3, 0, 2]]
+    if row_id_collision:
+        frame = frame.with_columns(
+            pl.Series("__pytimetk_row_id__", [50, 40, 30, 20, 10]),
+            pl.Series("__pytimetk_row_id___1", [5, 4, 3, 2, 1]),
+        )
+
+    if input_kind == "groupby":
+        data = frame.group_by("id")
+        expected_lags = [4, 1, None, None, 2]
+    else:
+        data = frame
+        expected_lags = [4, 1, 3, None, 2]
+
+    result = tk.augment_lags(
+        data,
+        date_column="date",
+        value_column="value",
+        lags=1,
+        engine=engine,
+    )
+
+    assert isinstance(result, pl.DataFrame)
+    assert result.columns == frame.columns + ["value_lag_1"]
+    assert_frame_equal(result.select(frame.columns), frame)
+    assert result["value_lag_1"].to_list() == expected_lags
 
 
 def test_lags_with_selectors(df_sample):

@@ -566,7 +566,7 @@ def ensure_row_id_column(
     if existing_column:
         return frame, existing_column, False
     column = _make_temp_column(frame.columns)
-    return frame.with_row_count(column), column, True
+    return frame.with_row_index(name=column, offset=0), column, True
 
 
 def _make_temp_column(columns: Sequence[str], base: str = ROW_ID_BASE) -> str:
