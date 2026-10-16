@@ -11,6 +11,7 @@ try:  # Optional cudf dependency
 except ImportError:  # pragma: no cover - cudf optional
     cudf = None  # type: ignore
 
+from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
 )
@@ -363,12 +364,9 @@ def _augment_macd_polars(
     sort_keys.append(date_column)
     sorted_frame = frame_with_id.sort(sort_keys)
 
-    fast_ema_expr = pl.col(close_column).ewm_mean(
-        span=fast_period, adjust=False, min_periods=0
-    )
-    slow_ema_expr = pl.col(close_column).ewm_mean(
-        span=slow_period, adjust=False, min_periods=0
-    )
+    ewm_kwargs = ensure_polars_rolling_kwargs({"adjust": False, "min_samples": 0})
+    fast_ema_expr = pl.col(close_column).ewm_mean(span=fast_period, **ewm_kwargs)
+    slow_ema_expr = pl.col(close_column).ewm_mean(span=slow_period, **ewm_kwargs)
 
     if resolved_groups:
         fast_ema_expr = fast_ema_expr.over(resolved_groups)
@@ -395,9 +393,7 @@ def _augment_macd_polars(
         ]
     )
 
-    signal_expr = pl.col(macd_alias).ewm_mean(
-        span=signal_period, adjust=False, min_periods=0
-    )
+    signal_expr = pl.col(macd_alias).ewm_mean(span=signal_period, **ewm_kwargs)
     if resolved_groups:
         signal_expr = signal_expr.over(resolved_groups)
 

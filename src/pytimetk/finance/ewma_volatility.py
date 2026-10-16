@@ -11,6 +11,7 @@ try:  # Optional cudf dependency
 except ImportError:  # pragma: no cover - cudf optional
     cudf = None  # type: ignore
 
+from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
 )
@@ -460,10 +461,11 @@ def _augment_ewma_volatility_polars(
     )
 
     for win in windows:
+        ewm_kwargs = ensure_polars_rolling_kwargs(
+            {"alpha": 1 - decay_factor, "adjust": False, "min_samples": win}
+        )
         vol_expr = _maybe_over(
-            pl.col("__ewma_sq_return").ewm_mean(
-                alpha=1 - decay_factor, adjust=False, min_periods=win
-            )
+            pl.col("__ewma_sq_return").ewm_mean(**ewm_kwargs)
         ).sqrt()
         lazy_frame = lazy_frame.with_columns(
             vol_expr.alias(f"{close_column}_ewma_vol_{win}_{decay_factor:.2f}")

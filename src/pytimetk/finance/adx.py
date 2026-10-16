@@ -11,6 +11,7 @@ try:  # Optional cudf dependency
 except ImportError:  # pragma: no cover - cudf optional
     cudf = None  # type: ignore
 
+from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
 )
@@ -555,6 +556,9 @@ def _augment_adx_polars(
 
     for period in periods:
         alpha = 1.0 / period
+        ewm_kwargs = ensure_polars_rolling_kwargs(
+            {"alpha": alpha, "adjust": False, "min_samples": period}
+        )
         plus_sm_alias = f"__adx_plus_sm_{period}"
         minus_sm_alias = f"__adx_minus_sm_{period}"
         tr_sm_alias = f"__adx_tr_sm_{period}"
@@ -567,17 +571,13 @@ def _augment_adx_polars(
 
         lazy_frame = lazy_frame.with_columns(
             _maybe_over(
-                pl.col(plus_dm_alias).ewm_mean(
-                    alpha=alpha, adjust=False, min_periods=period
-                )
+                pl.col(plus_dm_alias).ewm_mean(**ewm_kwargs)
             ).alias(plus_sm_alias),
             _maybe_over(
-                pl.col(minus_dm_alias).ewm_mean(
-                    alpha=alpha, adjust=False, min_periods=period
-                )
+                pl.col(minus_dm_alias).ewm_mean(**ewm_kwargs)
             ).alias(minus_sm_alias),
             _maybe_over(
-                pl.col(tr_alias).ewm_mean(alpha=alpha, adjust=False, min_periods=period)
+                pl.col(tr_alias).ewm_mean(**ewm_kwargs)
             ).alias(tr_sm_alias),
         )
 
@@ -596,7 +596,7 @@ def _augment_adx_polars(
 
         lazy_frame = lazy_frame.with_columns(
             _maybe_over(
-                pl.col(dx_alias).ewm_mean(alpha=alpha, adjust=False, min_periods=period)
+                pl.col(dx_alias).ewm_mean(**ewm_kwargs)
             ).alias(adx_alias)
         )
 

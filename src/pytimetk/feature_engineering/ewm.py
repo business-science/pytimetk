@@ -12,6 +12,7 @@ try:  # Optional dependency for GPU acceleration
 except ImportError:  # pragma: no cover - cudf optional
     cudf = None  # type: ignore
 
+from pytimetk._polars_compat import ensure_polars_rolling_kwargs
 from pytimetk.utils.checks import (
     check_dataframe_or_groupby,
     check_date_column,
@@ -434,6 +435,7 @@ def _augment_ewm_polars(
     for col in value_columns:
         for decay_label, decay_value, params in decay_configs:
             filtered_params = {k: params[k] for k in params if k in allowed_params}
+            filtered_params = ensure_polars_rolling_kwargs(filtered_params)
             for func in window_funcs:
                 if func == "mean":
                     expr = pl.col(col).ewm_mean(**filtered_params)
