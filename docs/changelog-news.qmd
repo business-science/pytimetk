@@ -6,6 +6,44 @@ toc-depth: 3
 number-sections: false
 ---
 
+# pytimetk 2.5.3
+
+_Released October 16, 2026 — [GitHub release](https://github.com/business-science/pytimetk/releases/tag/v2.5.3)_
+
+## Overview
+
+This patch release restores Polars 2.0 compatibility for native lag
+augmentation, financial indicators, and exponentially weighted window
+calculations while retaining support for older Polars versions.
+
+## Bug Fixes
+
+- Native Polars `augment_lags()` inputs now use `with_row_index()` in place
+  of the removed `with_row_count()` method. The shared row identifier helper
+  preserves input order and avoids collisions with existing column names
+  ([#322](https://github.com/business-science/pytimetk/issues/322)).
+- Updated Polars rolling calculations in `augment_rsi()`,
+  `augment_fip_momentum()`, `augment_hurst_exponent()`, `augment_qsmomentum()`,
+  and `augment_rolling_risk_metrics()` to select `min_samples` or
+  `min_periods` according to the installed Polars version.
+- Applied the same compatibility handling to exponentially weighted
+  calculations in `augment_adx()`, `augment_ewma_volatility()`,
+  `augment_macd()`, `augment_ppo()`, and `augment_ewm()`, preserving existing
+  minimum observation requirements and grouped calculations.
+
+## Validation
+
+- Added regression coverage for native and grouped lag inputs, row ordering,
+  temporary column collisions, window argument compatibility, and grouped
+  and ungrouped EWM mean, standard deviation, and variance.
+- All 539 tests pass on each of Polars 1.2.0, 1.35.1, and 2.0.0.
+
+## Breaking Changes
+
+- No public API changes.
+
+[Full 2.5.3 changelog](https://github.com/business-science/pytimetk/compare/v2.5.2...v2.5.3)
+
 # pytimetk 2.5.2
 
 _Released September 25, 2026 — [GitHub release](https://github.com/business-science/pytimetk/releases/tag/v2.5.2)_
